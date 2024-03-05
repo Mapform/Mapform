@@ -1,4 +1,3 @@
-import { randomBytes } from "node:crypto";
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();

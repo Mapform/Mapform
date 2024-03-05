@@ -10,3 +10,18 @@ datasource db {
     url          = env("DATABASE_URL")
     relationMode = "prisma"
 }
+
+model Organization {
+    id         String      @id @default(cuid())
+    name       String      @db.TinyText()
+    workspaces Workspace[]
+}
+
+model Workspace {
+    id             String        @id @default(cuid())
+    name           String        @db.TinyText()
+    Organization   Organization? @relation(fields: [organizationId], references: [id])
+    organizationId String?
+
+    @@index([organizationId])
+}
