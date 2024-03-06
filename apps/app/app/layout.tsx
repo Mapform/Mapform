@@ -17,8 +17,10 @@ export default function RootLayout({
 }): JSX.Element {
   return (
     <ClerkProvider>
-      <html lang="en">
-        <body className={inter.className}>{children}</body>
+      <html className="h-full" lang="en">
+        <body className={`${inter.className} h-full bg-gray-50`}>
+          {children}
+        </body>
       </html>
     </ClerkProvider>
   );
