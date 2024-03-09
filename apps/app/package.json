@@ -18,7 +18,6 @@
   },
   "devDependencies": {
     "@mapform/eslint-config": "workspace:*",
-    "@mapform/tailwind": "workspace:*",
     "@mapform/typescript-config": "workspace:*",
     "@types/node": "^20",
     "@types/react": "^18",

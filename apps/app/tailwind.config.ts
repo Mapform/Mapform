@@ -1,4 +1,4 @@
-import sharedConfig from "@mapform/tailwind";
+import sharedConfig from "@mapform/ui/tailwind.config.ts";
 
 const config = {
   presets: [sharedConfig],
