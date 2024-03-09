@@ -1,34 +1,30 @@
 {
-  "name": "@floe/app",
+  "name": "app",
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --port 3001",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint . --max-warnings 0",
-    "webhooks": "npx inngest-cli@latest dev"
+    "lint": "next lint"
   },
   "dependencies": {
-    "@clerk/nextjs": "^4.29.9",
-    "@floe/ui": "workspace:*",
-    "inngest": "^3.15.4",
-    "next": "^14.1.1",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react": "^18",
+    "react-dom": "^18",
+    "next": "14.1.3"
   },
   "devDependencies": {
-    "@floe/tailwind": "workspace:*",
-    "@next/eslint-plugin-next": "^14.1.1",
-    "@repo/eslint-config": "workspace:*",
-    "@repo/typescript-config": "workspace:*",
-    "@types/eslint": "^8.56.5",
-    "@types/node": "^20.11.24",
-    "@types/react": "^18.2.61",
-    "@types/react-dom": "^18.2.19",
-    "eslint": "^8.57.0",
-    "postcss": "^8.4.31",
-    "tailwindcss": "^3.4.1",
-    "typescript": "^5.3.3"
+    "@mapform/tailwind": "workspace:*",
+    "@mapform/eslint-config": "workspace:*",
+    "@mapform/typescript-config": "workspace:*",
+    "typescript": "^5",
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "autoprefixer": "^10.0.1",
+    "postcss": "^8",
+    "tailwindcss": "^3.3.0",
+    "eslint": "^8",
+    "eslint-config-next": "14.1.3"
   }
 }

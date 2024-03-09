@@ -1,21 +1,18 @@
 {
-  "extends": "@repo/typescript-config/nextjs.json",
+  "extends": "@mapform/typescript-config/nextjs.json",
   "compilerOptions": {
     "paths": {
-      "~/*": ["./*"]
-    },
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ]
+      "~/*": ["./src/*"]
+    }
   },
   "include": [
+    ".eslintrc.js",
     "next-env.d.ts",
-    "next.config.js",
     "**/*.ts",
     "**/*.tsx",
+    "**/*.cjs",
+    "**/*.mjs",
     ".next/types/**/*.ts"
   ],
-  "exclude": ["node_modules"]
+  "exclude": ["dist", "build", "node_modules"]
 }
