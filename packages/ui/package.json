@@ -10,8 +10,8 @@
     "./globals.css": "./globals.css"
   },
   "scripts": {
-    "lint": "eslint . --max-warnings 0",
-    "generate:component": "turbo gen react-component"
+    "ui:add": "pnpm dlx shadcn-ui@latest add",
+    "lint": "eslint . --max-warnings 0"
   },
   "dependencies": {
     "@mapform/lib": "workspace:*",
