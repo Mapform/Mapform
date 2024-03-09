@@ -5,7 +5,7 @@ export default function Home() {
   return (
     <main className="flex flex-col items-center justify-between min-h-screen p-24">
       <UserButton />
-      <Button appName="test">test</Button>
+      <Button variant="default">test</Button>
     </main>
   );
 }

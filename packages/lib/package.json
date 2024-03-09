@@ -1,0 +1,15 @@
+{
+  "name": "@mapform/lib",
+  "version": "0.1.0",
+  "dependencies": {
+    "clsx": "^2.1.0",
+    "tailwind-merge": "^2.2.1"
+  },
+  "devDependencies": {
+    "@mapform/eslint-config": "workspace:*",
+    "@mapform/typescript-config": "workspace:*",
+    "@types/node": "^20.8.10",
+    "eslint": "^8.57.0",
+    "typescript": "^5.3.3"
+  }
+}
