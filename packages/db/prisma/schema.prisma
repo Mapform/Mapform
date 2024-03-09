@@ -2,36 +2,15 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-    provider = "prisma-client-js"
+    provider        = "prisma-client-js"
+    previewFeatures = ["driverAdapters"]
 }
 
 datasource db {
-    provider     = "mysql"
-    url          = env("DATABASE_URL")
-    relationMode = "prisma"
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
 }
 
 model User {
-    id        String  @id
-    email     String
-    firstName String?
-    lastName  String?
-    imageUrl  String?
-}
-
-model Organization {
-    id         String      @id
-    name       String
-    slug       String?     @unique
-    imageUrl   String?
-    workspaces Workspace[]
-}
-
-model Workspace {
-    id             String        @id @default(cuid())
-    name           String        @db.TinyText()
-    Organization   Organization? @relation(fields: [organizationId], references: [id])
-    organizationId String?
-
-    @@index([organizationId])
+    id Int @id
 }
