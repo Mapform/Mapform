@@ -1,0 +1,5 @@
+{
+  "extends": "@mapform/typescript-config/nextjs.json",
+  "include": ["."],
+  "exclude": ["dist", "build", "node_modules"]
+}

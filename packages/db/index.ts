@@ -11,7 +11,6 @@ const connectionString = `${process.env.DATABASE_URL}`;
 const pool = new Pool({ connectionString });
 const adapter = new PrismaNeon(pool);
 
-// @ts-ignore
 export const prisma = new PrismaClient({ adapter });
 export type { PrismaClient };
 export * from "@prisma/client";

@@ -6,10 +6,13 @@ export const syncUser = inngest.createFunction(
   { event: "clerk/user.created" }, // ← This is the function's triggering event
   async ({ event }) => {
     const user = event.data; // The event payload's data will be the Clerk User json object
+
     const { id, first_name, last_name } = user;
     const email = user.email_addresses.find(
-      (e: { id: number }) => e.id === user.primary_email_address_id
-    ).email;
+      (e: { id: string }) => e.id === user.primary_email_address_id
+    )?.email_address;
+
+    console.log(11111, email);
     await prisma.user.create({
       data: {
         id,
