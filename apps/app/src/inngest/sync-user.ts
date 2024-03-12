@@ -12,7 +12,6 @@ export const syncUser = inngest.createFunction(
       (e: { id: string }) => e.id === user.primary_email_address_id
     )?.email_address;
 
-    console.log(11111, email);
     await prisma.user.create({
       data: {
         id,
