@@ -18,7 +18,7 @@ export const createOrg = inngest.createFunction(
 
     await prisma.organization.create({
       data: {
-        tenantId: id,
+        id,
         name,
         slug,
         imageUrl: iamge_url,
@@ -37,10 +37,10 @@ export const updateOrg = inngest.createFunction(
 
     await prisma.organization.update({
       where: {
-        tenantId: id,
+        id,
       },
       data: {
-        tenantId: id,
+        id,
         name,
         slug,
         imageUrl: iamge_url,
@@ -59,7 +59,7 @@ export const deleteOrg = inngest.createFunction(
 
     await prisma.organization.delete({
       where: {
-        tenantId: id,
+        id,
       },
     });
   }

@@ -14,19 +14,29 @@ datasource db {
 
 // Managed through Clerk and synced with Prisma
 model User {
-    id        String  @id @default(cuid())
-    tenantId  String  @unique // The Clerk User ID
-    firstName String
-    lastName  String
-    email     String
-    imageUrl  String?
+    id                     String                   @id // The Clerk User ID
+    firstName              String
+    lastName               String
+    email                  String
+    imageUrl               String?
+    OrganizationMembership OrganizationMembership[]
 }
 
 // Managed through Clerk and synced with Prisma
 model Organization {
-    id       String  @id @default(cuid())
-    tenantId String  @unique // The Clerk User ID
-    name     String
-    slug     String  @unique
-    imageUrl String?
+    id                     String                   @id // The Clerk Organization ID
+    name                   String
+    slug                   String                   @unique
+    imageUrl               String?
+    OrganizationMembership OrganizationMembership[]
+}
+
+// Managed through Clerk and synced with Prisma
+model OrganizationMembership {
+    id             String       @id // The Clerk OrganizationMembership ID
+    organizationId String
+    userId         String
+    role           String
+    user           User         @relation(fields: [userId], references: [id])
+    organization   Organization @relation(fields: [organizationId], references: [id])
 }

@@ -7,17 +7,18 @@ export const createUser = inngest.createFunction(
   async ({ event }) => {
     const user = event.data; // The event payload's data will be the Clerk User json object
 
-    const { id, first_name, last_name } = user;
+    const { id, first_name, last_name, image_url } = user;
     const email = user.email_addresses.find(
       (e: { id: string }) => e.id === user.primary_email_address_id
     )?.email_address;
 
     await prisma.user.create({
       data: {
-        tenantId: id,
+        id,
         firstName: first_name,
         lastName: last_name,
         email,
+        imageUrl: image_url,
       },
     });
   }
@@ -29,20 +30,21 @@ export const updateUser = inngest.createFunction(
   async ({ event }) => {
     const user = event.data; // The event payload's data will be the Clerk User json object
 
-    const { id, first_name, last_name } = user;
+    const { id, first_name, last_name, image_url } = user;
     const email = user.email_addresses.find(
       (e: { id: string }) => e.id === user.primary_email_address_id
     )?.email_address;
 
     await prisma.user.update({
       where: {
-        tenantId: id,
+        id,
       },
       data: {
         id,
         firstName: first_name,
         lastName: last_name,
         email,
+        imageUrl: image_url,
       },
     });
   }
@@ -58,7 +60,7 @@ export const deleteUser = inngest.createFunction(
 
     await prisma.user.delete({
       where: {
-        tenantId: id,
+        id,
       },
     });
   }
