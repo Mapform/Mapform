@@ -1,9 +1,18 @@
 import { serve } from "inngest/next";
 import { inngest } from "~/inngest/client";
-import { syncUser } from "~/inngest/sync-user";
+import { createUser, updateUser, deleteUser } from "~/inngest/sync-user";
+import { createOrg, updateOrg, deleteOrg } from "~/inngest/sync-org";
 
-// Create an API that serves zero functions
 export const { GET, POST, PUT } = serve({
   client: inngest,
-  functions: [syncUser],
+  functions: [
+    // Users
+    createUser,
+    updateUser,
+    deleteUser,
+    // Orgs
+    createOrg,
+    updateOrg,
+    deleteOrg,
+  ],
 });

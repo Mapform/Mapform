@@ -12,9 +12,21 @@ datasource db {
     directUrl = env("DIRECT_URL")
 }
 
+// Managed through Clerk and synced with Prisma
 model User {
-    id        String @id
+    id        String  @id @default(cuid())
+    tenantId  String  @unique // The Clerk User ID
     firstName String
     lastName  String
     email     String
+    imageUrl  String?
+}
+
+// Managed through Clerk and synced with Prisma
+model Organization {
+    id       String  @id @default(cuid())
+    tenantId String  @unique // The Clerk User ID
+    name     String
+    slug     String  @unique
+    imageUrl String?
 }

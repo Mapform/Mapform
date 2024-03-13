@@ -5,18 +5,19 @@
   "type": "module",
   "scripts": {
     "db:generate": "prisma generate",
-    "db:migrate": "prisma dev migrate",
+    "db:migrate": "prisma migrate dev",
     "db:studio": "prisma studio",
     "postinstall": "prisma generate",
-    "seed": "node --loader ts-node/esm seed.ts"
+    "seed": "node --loader ts-node/esm prisma/seed.ts"
   },
   "prisma": {
-    "seed": "node --loader ts-node/esm seed.ts"
+    "seed": "node --loader ts-node/esm prisma/seed.ts"
   },
   "devDependencies": {
     "@types/node": "^20.11.24",
     "@types/ws": "^8.5.10",
     "prisma": "^5.11.0",
+    "ts-node": "^10.9.2",
     "typescript": "^5.3.3"
   },
   "dependencies": {
