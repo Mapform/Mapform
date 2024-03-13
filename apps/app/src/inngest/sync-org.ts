@@ -5,7 +5,7 @@ type ClerkOrganizationData = {
   id: string;
   name: string;
   slug: string;
-  iamge_url?: string;
+  image_url?: string;
 };
 
 export const createOrg = inngest.createFunction(
@@ -14,14 +14,14 @@ export const createOrg = inngest.createFunction(
   async ({ event }) => {
     const org = event.data as ClerkOrganizationData;
 
-    const { id, name, slug, iamge_url } = org;
+    const { id, name, slug, image_url } = org;
 
     await prisma.organization.create({
       data: {
         id,
         name,
         slug,
-        imageUrl: iamge_url,
+        imageUrl: image_url,
       },
     });
   }
@@ -33,7 +33,7 @@ export const updateOrg = inngest.createFunction(
   async ({ event }) => {
     const org = event.data as ClerkOrganizationData;
 
-    const { id, name, slug, iamge_url } = org;
+    const { id, name, slug, image_url } = org;
 
     await prisma.organization.update({
       where: {
@@ -43,7 +43,7 @@ export const updateOrg = inngest.createFunction(
         id,
         name,
         slug,
-        imageUrl: iamge_url,
+        imageUrl: image_url,
       },
     });
   }
