@@ -1,4 +1,5 @@
 import { ClerkProvider } from "@clerk/nextjs";
+import StackedLayout from "./StackedLayout";
 
 export default async function Layout({
   children,
@@ -7,7 +8,7 @@ export default async function Layout({
 }) {
   return (
     <ClerkProvider>
-      <main>{children}</main>
+      <StackedLayout>{children}</StackedLayout>
     </ClerkProvider>
   );
 }
