@@ -4,6 +4,7 @@ import { Fragment } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { MenuIcon, XIcon } from "lucide-react";
 import { cn } from "@mapform/lib/classnames";
+import { OrganizationSwitcher } from "@clerk/nextjs";
 
 const user = {
   name: "Tom Cook",
@@ -23,11 +24,7 @@ const userNavigation = [
   { name: "Sign out", href: "#" },
 ];
 
-export default function StackedLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export function StackedLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
       <div className="min-h-full">
@@ -49,7 +46,11 @@ export default function StackedLayout({
                         alt="Your Company"
                       />
                     </div>
+                    {/* TODO: Remove in favour of custom switcher */}
                     <div className="hidden sm:-my-px sm:ml-6 sm:flex sm:space-x-8">
+                      <OrganizationSwitcher />
+                    </div>
+                    {/* <div className="hidden sm:-my-px sm:ml-6 sm:flex sm:space-x-8">
                       {navigation.map((item) => (
                         <a
                           key={item.name}
@@ -65,7 +66,7 @@ export default function StackedLayout({
                           {item.name}
                         </a>
                       ))}
-                    </div>
+                    </div> */}
                   </div>
                   <div className="hidden sm:ml-6 sm:flex sm:items-center">
                     {/* Profile dropdown */}
@@ -129,7 +130,7 @@ export default function StackedLayout({
               </div>
 
               <Disclosure.Panel className="sm:hidden">
-                <div className="space-y-1 pb-3 pt-2">
+                {/* <div className="space-y-1 pb-3 pt-2">
                   {navigation.map((item) => (
                     <Disclosure.Button
                       key={item.name}
@@ -146,7 +147,7 @@ export default function StackedLayout({
                       {item.name}
                     </Disclosure.Button>
                   ))}
-                </div>
+                </div> */}
                 <div className="border-t border-gray-200 pb-3 pt-4">
                   <div className="flex items-center px-4">
                     <div className="flex-shrink-0">

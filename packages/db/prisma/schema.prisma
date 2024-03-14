@@ -19,16 +19,18 @@ model User {
     lastName               String
     email                  String
     imageUrl               String?
-    OrganizationMembership OrganizationMembership[]
+    organizationMembership OrganizationMembership[]
+    workspaceMembership    WorkspaceMembership[]
 }
 
 // Managed through Clerk and synced with Prisma
 model Organization {
-    id                     String                   @id // The Clerk Organization ID
-    name                   String
-    slug                   String                   @unique
-    imageUrl               String?
-    OrganizationMembership OrganizationMembership[]
+    id         String                   @id // The Clerk Organization ID
+    name       String
+    slug       String                   @unique
+    imageUrl   String?
+    members    OrganizationMembership[]
+    workspaces Workspace[]
 }
 
 // Managed through Clerk and synced with Prisma
@@ -39,4 +41,28 @@ model OrganizationMembership {
     role           String
     user           User         @relation(fields: [userId], references: [id])
     organization   Organization @relation(fields: [organizationId], references: [id])
+}
+
+enum WorkspaceMembershipRole {
+    OWNER
+    MEMBER
+}
+
+// We store as an explicit many-to-many relationship because we need to store
+// additional details on the relationship itself, namely role.
+model WorkspaceMembership {
+    id          String                  @id @default(uuid())
+    userId      String
+    workspaceId String
+    role        WorkspaceMembershipRole
+    user        User                    @relation(fields: [userId], references: [id])
+    workspace   Workspace               @relation(fields: [workspaceId], references: [id])
+}
+
+model Workspace {
+    id             String                @id @default(uuid())
+    name           String
+    members        WorkspaceMembership[]
+    organizationId String
+    organization   Organization          @relation(fields: [organizationId], references: [id])
 }

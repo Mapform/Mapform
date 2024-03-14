@@ -1,5 +1,5 @@
 import { ClerkProvider } from "@clerk/nextjs";
-import StackedLayout from "./StackedLayout";
+import { StackedLayout } from "./StackedLayout";
 
 export default async function Layout({
   children,
