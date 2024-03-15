@@ -14,13 +14,13 @@ datasource db {
 
 // Managed through Clerk and synced with Prisma
 model User {
-    id                     String                   @id // The Clerk User ID
-    firstName              String
-    lastName               String
-    email                  String
-    imageUrl               String?
-    organizationMembership OrganizationMembership[]
-    workspaceMembership    WorkspaceMembership[]
+    id                      String                   @id // The Clerk User ID
+    firstName               String
+    lastName                String
+    email                   String
+    imageUrl                String?
+    organizationMemberships OrganizationMembership[]
+    workspaceMemberships    WorkspaceMembership[]
 }
 
 // Managed through Clerk and synced with Prisma
