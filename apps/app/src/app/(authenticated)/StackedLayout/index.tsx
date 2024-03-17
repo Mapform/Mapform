@@ -4,7 +4,7 @@ import { Fragment } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { MenuIcon, XIcon } from "lucide-react";
 import { cn } from "@mapform/lib/classnames";
-import { OrganizationSwitcher } from "@clerk/nextjs";
+import { OrganizationSwitcher, useClerk } from "@clerk/nextjs";
 
 const user = {
   name: "Tom Cook",
@@ -18,13 +18,15 @@ const navigation = [
   { name: "Projects", href: "#", current: false },
   { name: "Calendar", href: "#", current: false },
 ];
-const userNavigation = [
-  { name: "Your Profile", href: "#" },
-  { name: "Settings", href: "#" },
-  { name: "Sign out", href: "#" },
-];
 
 export function StackedLayout({ children }: { children: React.ReactNode }) {
+  const { signOut, user } = useClerk();
+  const userNavigation = [
+    // { name: "Your Profile", href: "#" },
+    { name: "Settings", href: "#" },
+    { name: "Sign out", action: signOut },
+  ];
+
   return (
     <>
       <div className="min-h-full">
@@ -77,7 +79,7 @@ export function StackedLayout({ children }: { children: React.ReactNode }) {
                           <span className="sr-only">Open user menu</span>
                           <img
                             className="h-8 w-8 rounded-full"
-                            src={user.imageUrl}
+                            src={user?.imageUrl}
                             alt=""
                           />
                         </Menu.Button>
@@ -94,17 +96,29 @@ export function StackedLayout({ children }: { children: React.ReactNode }) {
                         <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                           {userNavigation.map((item) => (
                             <Menu.Item key={item.name}>
-                              {({ active }) => (
-                                <a
-                                  href={item.href}
-                                  className={cn(
-                                    active ? "bg-gray-100" : "",
-                                    "block px-4 py-2 text-sm text-gray-700"
-                                  )}
-                                >
-                                  {item.name}
-                                </a>
-                              )}
+                              {({ active }) =>
+                                item.action ? (
+                                  <button
+                                    onClick={() => item.action()}
+                                    className={cn(
+                                      active ? "bg-gray-100" : "",
+                                      "block w-full text-left px-4 py-2 text-sm text-gray-700"
+                                    )}
+                                  >
+                                    {item.name}
+                                  </button>
+                                ) : (
+                                  <a
+                                    href={item.href}
+                                    className={cn(
+                                      active ? "bg-gray-100" : "",
+                                      "block px-4 py-2 text-sm text-gray-700"
+                                    )}
+                                  >
+                                    {item.name}
+                                  </a>
+                                )
+                              }
                             </Menu.Item>
                           ))}
                         </Menu.Items>
@@ -153,30 +167,40 @@ export function StackedLayout({ children }: { children: React.ReactNode }) {
                     <div className="flex-shrink-0">
                       <img
                         className="h-10 w-10 rounded-full"
-                        src={user.imageUrl}
+                        src={user?.imageUrl}
                         alt=""
                       />
                     </div>
                     <div className="ml-3">
                       <div className="text-base font-medium text-gray-800">
-                        {user.name}
+                        {user?.fullName}
                       </div>
                       <div className="text-sm font-medium text-gray-500">
-                        {user.email}
+                        {user?.primaryEmailAddress?.toString()}
                       </div>
                     </div>
                   </div>
                   <div className="mt-3 space-y-1">
-                    {userNavigation.map((item) => (
-                      <Disclosure.Button
-                        key={item.name}
-                        as="a"
-                        href={item.href}
-                        className="block px-4 py-2 text-base font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-800"
-                      >
-                        {item.name}
-                      </Disclosure.Button>
-                    ))}
+                    {userNavigation.map((item) =>
+                      item.action ? (
+                        <Disclosure.Button
+                          key={item.name}
+                          onClick={() => item.action()}
+                          className="block px-4 py-2 text-base font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-800"
+                        >
+                          {item.name}
+                        </Disclosure.Button>
+                      ) : (
+                        <Disclosure.Button
+                          key={item.name}
+                          as="a"
+                          href={item.href}
+                          className="block px-4 py-2 text-base font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-800"
+                        >
+                          {item.name}
+                        </Disclosure.Button>
+                      )
+                    )}
                   </div>
                 </div>
               </Disclosure.Panel>
