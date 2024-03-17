@@ -14,8 +14,7 @@ datasource db {
 
 // Managed through Clerk and synced with Prisma
 model User {
-    id                      String                   @id @default(uuid())
-    clerkId                 String                   @unique
+    id                      String                   @id // Clerk id
     firstName               String
     lastName                String
     email                   String
@@ -26,8 +25,7 @@ model User {
 
 // Managed through Clerk and synced with Prisma
 model Organization {
-    id         String                   @id @default(uuid())
-    clerkId    String                   @unique
+    id         String                   @id // Clerk id
     name       String
     slug       String                   @unique
     imageUrl   String?
@@ -37,8 +35,7 @@ model Organization {
 
 // Managed through Clerk and synced with Prisma
 model OrganizationMembership {
-    id             String       @id @default(uuid())
-    clerkId        String       @unique
+    id             String       @id // Clerk id
     organizationId String
     userId         String
     role           String
