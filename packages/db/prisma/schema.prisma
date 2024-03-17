@@ -14,7 +14,8 @@ datasource db {
 
 // Managed through Clerk and synced with Prisma
 model User {
-    id                      String                   @id // The Clerk User ID
+    id                      String                   @id @default(uuid())
+    clerkId                 String                   @unique
     firstName               String
     lastName                String
     email                   String
@@ -25,7 +26,8 @@ model User {
 
 // Managed through Clerk and synced with Prisma
 model Organization {
-    id         String                   @id // The Clerk Organization ID
+    id         String                   @id @default(uuid())
+    clerkId    String                   @unique
     name       String
     slug       String                   @unique
     imageUrl   String?
@@ -35,12 +37,13 @@ model Organization {
 
 // Managed through Clerk and synced with Prisma
 model OrganizationMembership {
-    id             String       @id // The Clerk OrganizationMembership ID
+    id             String       @id @default(uuid())
+    clerkId        String       @unique
     organizationId String
     userId         String
     role           String
-    user           User         @relation(fields: [userId], references: [id])
-    organization   Organization @relation(fields: [organizationId], references: [id])
+    user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+    organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 }
 
 enum WorkspaceMembershipRole {
@@ -55,8 +58,8 @@ model WorkspaceMembership {
     userId      String
     workspaceId String
     role        WorkspaceMembershipRole
-    user        User                    @relation(fields: [userId], references: [id])
-    workspace   Workspace               @relation(fields: [workspaceId], references: [id])
+    user        User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
+    workspace   Workspace               @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 }
 
 model Workspace {
