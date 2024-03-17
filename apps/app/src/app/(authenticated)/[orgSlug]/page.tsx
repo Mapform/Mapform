@@ -4,9 +4,11 @@ import Create from "./Create";
 export default async function Orgnization({
   params,
 }: {
-  params: { org: string };
+  params: { orgSlug: string };
 }) {
-  const org = await organizationModel.findOne(params.org.toLocaleLowerCase());
+  const org = await organizationModel.findOne(
+    params.orgSlug.toLocaleLowerCase()
+  );
 
   if (!org) {
     return <div>Organization not found</div>;
@@ -15,7 +17,7 @@ export default async function Orgnization({
   return (
     <div>
       {org.name}
-      <Create />
+      <Create organizationId={org.slug} />
     </div>
   );
 }

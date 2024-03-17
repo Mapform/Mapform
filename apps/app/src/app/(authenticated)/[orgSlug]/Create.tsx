@@ -11,8 +11,15 @@ import {
 import { Button } from "@mapform/ui/components/button";
 import { Label } from "@mapform/ui/components/label";
 import { Input } from "@mapform/ui/components/input";
+import { createWorkspace } from "./actions";
 
-export default function Create() {
+interface OrganizationProps {
+  organizationId: string;
+}
+
+export default function Create({ organizationId }: OrganizationProps) {
+  const createWorkspaceWithName = createWorkspace.bind(null, organizationId);
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -21,11 +28,11 @@ export default function Create() {
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Create</DialogTitle>
-          <DialogDescription>Create a new thing</DialogDescription>
+          <DialogDescription>Create a workspace</DialogDescription>
         </DialogHeader>
-        <form>
+        <form action={createWorkspaceWithName}>
           <Label htmlFor="create-input">Name</Label>
-          <Input type="text" placeholder="Name" id="create-input" />
+          <Input type="text" placeholder="Name" name="name" id="create-input" />
           <Button type="submit">Create</Button>
         </form>
       </DialogContent>

@@ -62,7 +62,7 @@ model WorkspaceMembership {
 model Workspace {
     id             String                @id @default(uuid())
     name           String
-    slug           String
+    slug           String                @unique
     members        WorkspaceMembership[]
     organizationId String
     organization   Organization          @relation(fields: [organizationId], references: [id])

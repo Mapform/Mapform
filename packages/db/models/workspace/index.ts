@@ -6,10 +6,10 @@ export async function findOne<
   U extends Prisma.WorkspaceGetPayload<{
     include: T;
   }>,
->(id: string, include?: T): Promise<U | null> {
+>(slug: string, include?: T): Promise<U | null> {
   const workspace = (await prisma.workspace.findUnique({
     where: {
-      id,
+      slug,
     },
     include,
   })) as U;
