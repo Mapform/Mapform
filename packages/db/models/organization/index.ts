@@ -6,7 +6,14 @@ export async function findOne<
   U extends Prisma.OrganizationGetPayload<{
     include: T;
   }>,
->(slug: string, include?: T): Promise<U | null> {
+>(
+  {
+    slug,
+  }: {
+    slug: string;
+  },
+  include?: T
+): Promise<U | null> {
   const organization = (await prisma.organization.findUnique({
     where: {
       slug,

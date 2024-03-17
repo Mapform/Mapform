@@ -1,22 +1,25 @@
-import { workspaceModel } from "@mapform/db/models";
+import { Create } from "./Create";
+import { getWorkspaceWithOrg } from "./actions";
 
 export default async function Workspace({
   params,
 }: {
-  params: { workspaceSlug: string };
+  params: { orgSlug: string; workspaceSlug: string };
 }) {
-  const workspace = await workspaceModel.findOne(
-    params.workspaceSlug.toLocaleLowerCase()
+  const workspaceWithOrg = await getWorkspaceWithOrg(
+    params.workspaceSlug.toLocaleLowerCase(),
+    params.orgSlug
   );
 
-  if (!workspace) {
+  if (!workspaceWithOrg) {
+    // TODO: 404
     return <div>Workspace not found</div>;
   }
 
   return (
     <div>
-      {workspace.name}
-      {/* <Create organizationId={org.slug} /> */}
+      {workspaceWithOrg.name}
+      <Create workspaceWithOrg={workspaceWithOrg} />
     </div>
   );
 }

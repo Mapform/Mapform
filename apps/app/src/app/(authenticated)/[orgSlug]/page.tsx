@@ -6,11 +6,12 @@ export default async function Orgnization({
 }: {
   params: { orgSlug: string };
 }) {
-  const org = await organizationModel.findOne(
-    params.orgSlug.toLocaleLowerCase()
-  );
+  const org = await organizationModel.findOne({
+    slug: params.orgSlug.toLocaleLowerCase(),
+  });
 
   if (!org) {
+    // TODO: 404
     return <div>Organization not found</div>;
   }
 

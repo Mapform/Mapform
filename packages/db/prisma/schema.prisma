@@ -62,10 +62,21 @@ model WorkspaceMembership {
 model Workspace {
     id             String                @id @default(uuid())
     name           String
-    slug           String                @unique
+    slug           String
     members        WorkspaceMembership[]
     organizationId String
-    organization   Organization          @relation(fields: [organizationId], references: [id])
+    organization   Organization          @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+    forms          Form[]
 
     @@unique([organizationId, slug])
+}
+
+model Form {
+    id          String    @id @default(uuid())
+    name        String
+    slug        String
+    workspaceId String
+    workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+    @@unique([workspaceId, slug])
 }

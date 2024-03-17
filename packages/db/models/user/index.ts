@@ -6,7 +6,7 @@ export async function findOne<
   U extends Prisma.UserGetPayload<{
     include: T;
   }>,
->(id: string, include?: T): Promise<U | null> {
+>({ id }: { id: string }, include?: T): Promise<U | null> {
   const user = (await prisma.user.findUnique({
     where: {
       id,

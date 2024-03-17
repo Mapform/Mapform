@@ -1,3 +1,4 @@
+import { organizationModel } from "..";
 import { prisma } from "../..";
 import type { Prisma } from "../..";
 
@@ -6,10 +7,30 @@ export async function findOne<
   U extends Prisma.WorkspaceGetPayload<{
     include: T;
   }>,
->(slug: string, include?: T): Promise<U | null> {
+>(
+  {
+    slug,
+    organizationSlug,
+  }: {
+    slug: string;
+    organizationSlug: string;
+  },
+  include?: T
+): Promise<U | null> {
+  const org = await organizationModel.findOne({
+    slug: organizationSlug,
+  });
+
+  if (!org) {
+    return null;
+  }
+
   const workspace = (await prisma.workspace.findUnique({
     where: {
-      slug,
+      organizationId_slug: {
+        organizationId: org.id,
+        slug,
+      },
     },
     include,
   })) as U;
