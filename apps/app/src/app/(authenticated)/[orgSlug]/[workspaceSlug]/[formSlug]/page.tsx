@@ -1,5 +1,6 @@
 import { formModel } from "@mapform/db/models";
 import { MapForm } from "@mapform/mapform";
+import { env } from "~/env.mjs";
 
 export default async function Workspace({
   params,
@@ -20,7 +21,7 @@ export default async function Workspace({
   return (
     <div>
       {form.name}
-      <MapForm />
+      <MapForm mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN} />
     </div>
   );
 }

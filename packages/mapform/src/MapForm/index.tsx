@@ -1,27 +1,27 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { createMap, MapApi } from "@unfolded/map-sdk";
+import Map from "react-map-gl";
 
-export function MapForm() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [map, setMap] = useState<MapApi | null>(null);
+interface MapFormProps {
+  mapboxAccessToken: string;
+  // initialViewState: {
+  //   longitude: number;
+  //   latitude: number;
+  //   zoom: number;
+  // };
+}
 
-  useEffect(() => {
-    const initMap = async () => {
-      const map = await createMap({
-        container: containerRef.current!,
-      });
-
-      setMap(map);
-    };
-
-    initMap();
-  }, []);
-
-  useEffect(() => {
-    map && console.log(map.getMapConfig());
-  }, [map]);
-
-  return <div id="map-container" ref={containerRef}></div>;
+export function MapForm({ mapboxAccessToken }: MapFormProps) {
+  return (
+    <Map
+      mapboxAccessToken={mapboxAccessToken}
+      initialViewState={{
+        longitude: -122.4,
+        latitude: 37.8,
+        zoom: 14,
+      }}
+      style={{ width: 600, height: 400 }}
+      mapStyle="mapbox://styles/mapbox/streets-v9"
+    />
+  );
 }
