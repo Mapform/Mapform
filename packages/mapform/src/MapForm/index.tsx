@@ -1,6 +1,7 @@
 "use client";
 
 import Map from "react-map-gl";
+import "mapbox-gl/dist/mapbox-gl.css";
 
 interface MapFormProps {
   mapboxAccessToken: string;
@@ -13,15 +14,18 @@ interface MapFormProps {
 
 export function MapForm({ mapboxAccessToken }: MapFormProps) {
   return (
-    <Map
-      mapboxAccessToken={mapboxAccessToken}
-      initialViewState={{
-        longitude: -122.4,
-        latitude: 37.8,
-        zoom: 14,
-      }}
-      style={{ width: 600, height: 400 }}
-      mapStyle="mapbox://styles/mapbox/streets-v9"
-    />
+    <div className="flex w-full h-full">
+      <div className="w-32 flex-shrink-0 bg-red-200">Sidebar</div>
+      <Map
+        mapboxAccessToken={mapboxAccessToken}
+        initialViewState={{
+          longitude: -122.4,
+          latitude: 37.8,
+          zoom: 14,
+        }}
+        style={{ flex: 1 }}
+        mapStyle="mapbox://styles/mapbox/streets-v9"
+      />
+    </div>
   );
 }
