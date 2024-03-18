@@ -25,6 +25,8 @@ export function MapForm({ mapboxAccessToken }: MapFormProps) {
           longitude: -122.4,
           latitude: 37.8,
           zoom: 14,
+          bearing: 0,
+          pitch: 0,
         }}
         style={{ flex: 1 }}
         mapStyle="mapbox://styles/mapbox/streets-v9"

@@ -75,8 +75,27 @@ model Form {
     id          String    @id @default(uuid())
     name        String
     slug        String
+    steps       Step[]
     workspaceId String
     workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
     @@unique([workspaceId, slug])
+}
+
+enum StepType {
+    CONTENT
+    SHORT_TEXT
+    LONG_TEXT
+}
+
+model Step {
+    id        String @id @default(uuid())
+    name      String
+    latitude  Float
+    longitude Float
+    zoom      Int
+    pitch     Int
+    bearing   Int
+    formId    String
+    form      Form   @relation(fields: [formId], references: [id])
 }
