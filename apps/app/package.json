@@ -14,6 +14,7 @@
     "@headlessui/react": "^1.7.18",
     "@mapform/db": "workspace:*",
     "@mapform/lib": "workspace:*",
+    "@mapform/mapform": "workspace:*",
     "@mapform/ui": "workspace:*",
     "inngest": "^3.16.0",
     "lucide-react": "^0.354.0",

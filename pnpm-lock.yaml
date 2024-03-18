@@ -35,6 +35,9 @@ importers:
       '@mapform/lib':
         specifier: workspace:*
         version: link:../../packages/lib
+      '@mapform/mapform':
+        specifier: workspace:*
+        version: link:../../packages/mapform
       '@mapform/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -186,6 +189,52 @@ importers:
       eslint:
         specifier: ^8.57.0
         version: 8.57.0
+      typescript:
+        specifier: ^5.3.3
+        version: 5.3.3
+
+  packages/mapform:
+    dependencies:
+      '@mapform/lib':
+        specifier: workspace:*
+        version: link:../lib
+      '@mapform/ui':
+        specifier: workspace:*
+        version: link:../ui
+      '@unfolded/map-sdk':
+        specifier: ^1
+        version: 1.13.0
+      lucide-react:
+        specifier: ^0.354.0
+        version: 0.354.0(react@18.2.0)
+    devDependencies:
+      '@mapform/eslint-config':
+        specifier: workspace:*
+        version: link:../eslint-config
+      '@mapform/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      '@types/eslint':
+        specifier: ^8.56.5
+        version: 8.56.5
+      '@types/node':
+        specifier: ^20.11.24
+        version: 20.11.25
+      '@types/react':
+        specifier: ^18.2.61
+        version: 18.2.61
+      '@types/react-dom':
+        specifier: ^18.2.19
+        version: 18.2.19
+      eslint:
+        specifier: ^8.57.0
+        version: 8.57.0
+      react:
+        specifier: ^18.2.0
+        version: 18.2.0
+      tailwindcss:
+        specifier: ^3.3.0
+        version: 3.4.1
       typescript:
         specifier: ^5.3.3
         version: 5.3.3
@@ -1345,6 +1394,10 @@ packages:
       '@types/serve-static': 1.15.5
     dev: false
 
+  /@types/geojson@7946.0.14:
+    resolution: {integrity: sha512-WCfD5Ht3ZesJUsONdhvm84dmzWOiOzOAqOncN0++w0lBw1o8OuDNJF2McvvCef/yBqb/HYRahp1BYtODFQ8bRg==}
+    dev: false
+
   /@types/http-errors@2.0.4:
     resolution: {integrity: sha512-D0CFMMtydbJAegzOyHjtiKPLlvnm3iTZyZRSZoLq2mRhDdmLfIWOCYPfQJ4cu2erKghU++QvjcUjp/5h7hESpA==}
     dev: false
@@ -1787,6 +1840,14 @@ packages:
       '@typescript-eslint/types': 7.1.0
       eslint-visitor-keys: 3.4.3
     dev: true
+
+  /@unfolded/map-sdk@1.13.0:
+    resolution: {integrity: sha512-99yxSeYl/WsJzIcSTmTsywc2RHHMaJ3FRuDEWFTjmw2H3kRP48hkmYV2y/MJxhrJwT8Y63UryEAilSd/FmPhCw==}
+    dependencies:
+      '@types/geojson': 7946.0.14
+      csstype: 3.1.2
+      type-fest: 2.19.0
+    dev: false
 
   /@ungap/structured-clone@1.2.0:
     resolution: {integrity: sha512-zuVdFrMJiuCDQUMCzQaD6KL28MjnqqN8XnAqiEq9PNm/hCPTSGfrXCOfwj1ow4LFb/tNymJPwsNbVePc1xFqrQ==}

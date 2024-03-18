@@ -1,4 +1,5 @@
 import { formModel } from "@mapform/db/models";
+import { MapForm } from "@mapform/mapform";
 
 export default async function Workspace({
   params,
@@ -16,5 +17,10 @@ export default async function Workspace({
     return <div>Form not found</div>;
   }
 
-  return <div>{form.name}</div>;
+  return (
+    <div>
+      {form.name}
+      <MapForm />
+    </div>
+  );
 }
