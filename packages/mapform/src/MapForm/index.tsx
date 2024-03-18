@@ -2,6 +2,7 @@
 
 import Map from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
+import { Tiptap } from "./TipTap";
 
 interface MapFormProps {
   mapboxAccessToken: string;
@@ -15,7 +16,9 @@ interface MapFormProps {
 export function MapForm({ mapboxAccessToken }: MapFormProps) {
   return (
     <div className="flex w-full h-full">
-      <div className="w-32 flex-shrink-0 bg-red-200">Sidebar</div>
+      <div className="w-64 flex-shrink-0 bg-background">
+        <Tiptap />
+      </div>
       <Map
         mapboxAccessToken={mapboxAccessToken}
         initialViewState={{

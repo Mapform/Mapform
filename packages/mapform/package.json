@@ -10,6 +10,9 @@
   "dependencies": {
     "@mapform/lib": "workspace:*",
     "@mapform/ui": "workspace:*",
+    "@tiptap/pm": "^2.2.4",
+    "@tiptap/react": "^2.2.4",
+    "@tiptap/starter-kit": "^2.2.4",
     "@types/mapbox-gl": "^3.1.0",
     "lucide-react": "^0.354.0",
     "mapbox-gl": "^3.2.0",
