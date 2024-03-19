@@ -19,11 +19,12 @@ export default async function Workspace({
   }
 
   return (
-    <div>
-      <h1>{form.name}</h1>
-      <div className="h-[400px] w-full">
+    <div className="flex flex-1">
+      <div className="h-[500px] w-full p-4 bg-slate-100">
         <MapForm mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN} />
       </div>
+      {/* SIDE BAR */}
+      <div className="w-[400px] border-l">Side</div>
     </div>
   );
 }
