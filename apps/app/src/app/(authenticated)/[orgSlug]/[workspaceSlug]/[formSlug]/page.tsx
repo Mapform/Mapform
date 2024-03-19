@@ -20,7 +20,7 @@ export default async function Workspace({
 
   return (
     <div>
-      {form.name}
+      <h1>{form.name}</h1>
       <div className="h-[400px] w-full">
         <MapForm mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN} />
       </div>
