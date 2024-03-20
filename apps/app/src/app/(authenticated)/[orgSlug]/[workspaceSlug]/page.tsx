@@ -1,4 +1,4 @@
-import { Create } from "./Create";
+import { Create } from "./create";
 import { getWorkspaceWithOrg } from "./actions";
 
 export default async function Workspace({

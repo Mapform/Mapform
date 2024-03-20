@@ -1,8 +1,11 @@
-import { formModel } from "@mapform/db/models";
+"use client";
+
 import { MapForm } from "@mapform/mapform";
 import { Button } from "@mapform/ui/components/button";
+import { useSearchParams } from "next/navigation";
 import { env } from "~/env.mjs";
-import { createStep } from "./actions";
+import type { FormType } from "../actions";
+import { createStep } from "../actions";
 
 // TODO. Temporary. Should get initial view state from previous step, or from user location
 const initialViewState = {
@@ -13,28 +16,10 @@ const initialViewState = {
   pitch: 0,
 };
 
-export default async function Workspace({
-  params,
-}: {
-  params: { formSlug: string; orgSlug: string; workspaceSlug: string };
-}) {
-  const form = await formModel.findOne(
-    {
-      slug: params.formSlug.toLocaleLowerCase(),
-      workspaceSlug: params.workspaceSlug.toLocaleLowerCase(),
-      organizationSlug: params.orgSlug.toLocaleLowerCase(),
-    },
-    {
-      steps: true,
-    }
-  );
-
-  if (!form) {
-    // TODO: 404
-    return <div>Form not found</div>;
-  }
-
+export function Container({ form }: { form: NonNullable<FormType> }) {
+  const searchParams = useSearchParams();
   const createStepWithFromId = createStep.bind(null, form.id, initialViewState);
+  const s = searchParams.get("s");
 
   return (
     <div className="flex flex-1">

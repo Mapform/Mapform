@@ -3,6 +3,7 @@
 import { z } from "zod";
 import { prisma } from "@mapform/db";
 import { revalidatePath } from "next/cache";
+import { formModel } from "@mapform/db/models";
 
 const schema = z.object({
   type: z.enum(["SHORT_TEXT", "LONG_TEXT", "CONTENT"]),
@@ -44,3 +45,22 @@ export const createStep = async (
 
   revalidatePath("/");
 };
+
+export const getForm = async (
+  formSlug: string,
+  workspaceSlug: string,
+  orgSlug: string
+) => {
+  return formModel.findOne(
+    {
+      slug: formSlug.toLocaleLowerCase(),
+      workspaceSlug: workspaceSlug.toLocaleLowerCase(),
+      organizationSlug: orgSlug.toLocaleLowerCase(),
+    },
+    {
+      steps: true,
+    }
+  );
+};
+
+export type FormType = Awaited<ReturnType<typeof getForm>>;
