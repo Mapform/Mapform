@@ -89,13 +89,15 @@ enum StepType {
 }
 
 model Step {
-    id        String @id @default(uuid())
-    name      String
-    latitude  Float
-    longitude Float
-    zoom      Int
-    pitch     Int
-    bearing   Int
-    formId    String
-    form      Form   @relation(fields: [formId], references: [id])
+    id          String   @id @default(uuid())
+    title       String?
+    description String?
+    type        StepType
+    latitude    Float
+    longitude   Float
+    zoom        Int
+    pitch       Int
+    bearing     Int
+    formId      String
+    form        Form     @relation(fields: [formId], references: [id])
 }
