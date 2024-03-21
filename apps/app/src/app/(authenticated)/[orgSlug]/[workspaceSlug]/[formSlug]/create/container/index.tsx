@@ -41,6 +41,13 @@ export function Container({ form }: { form: NonNullable<FormType> }) {
     [searchParams]
   );
 
+  const setCurrentStep = useCallback(
+    (stepId: string) => {
+      router.push(`${pathname}?${createQueryString("s", stepId)}`);
+    },
+    [createQueryString, pathname, router]
+  );
+
   useEffect(() => {
     if (form.steps[0] && !s) {
       router.push(`${pathname}?${createQueryString("s", form.steps[0].id)}`);
@@ -48,6 +55,19 @@ export function Container({ form }: { form: NonNullable<FormType> }) {
   }, [s, form.steps, pathname, router, createQueryString]);
 
   const currentStep = form.steps.find((step) => step.id === s);
+
+  useEffect(() => {
+    if (currentStep) {
+      setViewState({
+        ...initialViewState,
+        longitude: currentStep.longitude,
+        latitude: currentStep.latitude,
+        zoom: currentStep.zoom,
+        pitch: currentStep.pitch,
+        bearing: currentStep.bearing,
+      });
+    }
+  }, [currentStep]);
 
   return (
     <div className="flex flex-1">
@@ -67,9 +87,16 @@ export function Container({ form }: { form: NonNullable<FormType> }) {
             <Button>New step</Button>
           </form>
           {form.steps.map((step, i) => (
-            <div className="bg-blue-200" key={step.id}>
+            <button
+              className="bg-blue-200"
+              key={step.id}
+              onClick={() => {
+                setCurrentStep(step.id);
+              }}
+              type="button"
+            >
               {i + 1}: {step.type}
-            </div>
+            </button>
           ))}
         </div>
       </div>
