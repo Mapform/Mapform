@@ -1,14 +1,14 @@
 "use client";
 
 import { useCallback, useEffect, useState, useRef } from "react";
-import type { MapRef } from "@mapform/mapform";
+import type { Step } from "@mapform/db";
+import type { MapRef, ViewState } from "@mapform/mapform";
 import { MapForm } from "@mapform/mapform";
 import { Button } from "@mapform/ui/components/button";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { env } from "~/env.mjs";
 import type { FormType } from "../actions";
 import { createStep } from "../actions";
-
 // TODO. Temporary. Should get initial view state from previous step, or from user location
 const initialViewState = {
   longitude: -122.4,
@@ -30,8 +30,8 @@ export function Container({ form }: { form: NonNullable<FormType> }) {
   const searchParams = useSearchParams();
   const createStepWithFromId = createStep.bind(null, form.id, initialViewState);
   const s = searchParams.get("s");
-  const [viewState, setViewState] = useState(initialViewState);
-  const map = useRef<MapRef>();
+  const [viewState, setViewState] = useState<ViewState>(initialViewState);
+  const map = useRef<MapRef>(null);
 
   const createQueryString = useCallback(
     (name: string, value: string) => {
@@ -43,19 +43,12 @@ export function Container({ form }: { form: NonNullable<FormType> }) {
     [searchParams]
   );
 
-  const setCurrentStep = useCallback(
-    (stepId: string) => {
-      router.push(`${pathname}?${createQueryString("s", stepId)}`);
-    },
-    [createQueryString, pathname, router]
-  );
-
-  const setCurrentSte2 = (step: any) => {
-    console.log(1111);
+  const setCurrentStep = (step: Step) => {
     map.current?.flyTo({
       center: [step.longitude, step.latitude],
       duration: 1000,
     });
+    router.push(`${pathname}?${createQueryString("s", step.id)}`);
   };
 
   useEffect(() => {
@@ -63,26 +56,6 @@ export function Container({ form }: { form: NonNullable<FormType> }) {
       router.push(`${pathname}?${createQueryString("s", form.steps[0].id)}`);
     }
   }, [s, form.steps, pathname, router, createQueryString]);
-
-  const currentStep = form.steps.find((step) => step.id === s);
-
-  useEffect(() => {
-    if (currentStep) {
-      console.log("Fly you fools");
-      // map.current?.flyTo({
-      //   center: [currentStep.longitude, currentStep.latitude],
-      //   duration: 1000,
-      // });
-      // setViewState({
-      //   ...initialViewState,
-      //   longitude: currentStep.longitude,
-      //   latitude: currentStep.latitude,
-      //   zoom: currentStep.zoom,
-      //   pitch: currentStep.pitch,
-      //   bearing: currentStep.bearing,
-      // });
-    }
-  }, [currentStep, map]);
 
   return (
     <div className="flex flex-1">
@@ -108,7 +81,7 @@ export function Container({ form }: { form: NonNullable<FormType> }) {
               key={step.id}
               onClick={() => {
                 // setCurrentStep(step.id);
-                setCurrentSte2(step);
+                setCurrentStep(step);
               }}
               type="button"
             >
