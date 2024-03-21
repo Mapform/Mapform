@@ -21,7 +21,7 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
   ({ mapboxAccessToken, viewState, setViewState }, ref) => {
     return (
       <div className="flex w-full h-full">
-        <div className="w-64 flex-shrink-0 bg-background">
+        <div className="w-64 flex-shrink-0 bg-background p-4">
           <Tiptap />
         </div>
         <Map

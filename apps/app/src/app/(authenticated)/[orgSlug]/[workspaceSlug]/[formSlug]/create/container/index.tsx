@@ -29,9 +29,9 @@ export function Container({ form }: { form: NonNullable<FormType> }) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const createStepWithFromId = createStep.bind(null, form.id, initialViewState);
   const s = searchParams.get("s");
   const [viewState, setViewState] = useState<ViewState>(initialViewState);
+  const createStepWithFromId = createStep.bind(null, form.id, viewState);
   const map = useRef<MapRef>(null);
 
   const createQueryString = useCallback(
@@ -62,14 +62,16 @@ export function Container({ form }: { form: NonNullable<FormType> }) {
     <div className="flex flex-1">
       <div className="flex flex-col flex-1">
         <div className="h-[500px] w-full p-4 bg-slate-100">
-          <MapForm
-            mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
-            ref={map}
-            setViewState={(evt) => {
-              setViewState(evt.viewState);
-            }}
-            viewState={viewState}
-          />
+          <div className="shadow h-full w-full rounded-md overflow-hidden">
+            <MapForm
+              mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
+              ref={map}
+              setViewState={(evt) => {
+                setViewState(evt.viewState);
+              }}
+              viewState={viewState}
+            />
+          </div>
         </div>
         <div className="border-t">
           <form action={createStepWithFromId}>
