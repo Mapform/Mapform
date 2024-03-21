@@ -3,13 +3,14 @@
 
 generator client {
     provider        = "prisma-client-js"
-    previewFeatures = ["driverAdapters"]
+    previewFeatures = ["driverAdapters", "postgresqlExtensions"]
 }
 
 datasource db {
-    provider  = "postgresql"
-    url       = env("DATABASE_URL")
-    directUrl = env("DIRECT_URL")
+    provider   = "postgresql"
+    url        = env("DATABASE_URL")
+    directUrl  = env("DIRECT_URL")
+    extensions = [postgis]
 }
 
 // Managed through Clerk and synced with Prisma
@@ -100,4 +101,11 @@ model Step {
     bearing     Int
     formId      String
     form        Form     @relation(fields: [formId], references: [id])
+    // shortTextStep ShortTextStep?
 }
+
+// model ShortTextStep {
+//     id    String @id @default(uuid())
+//     value String
+//     step  Step   @relation(fields: [id], references: [id])
+// }
