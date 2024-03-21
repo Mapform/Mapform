@@ -9,6 +9,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { env } from "~/env.mjs";
 import type { FormType } from "../actions";
 import { createStep } from "../actions";
+import { Sidebar } from "./sidebar";
 // TODO. Temporary. Should get initial view state from previous step, or from user location
 const initialViewState = {
   longitude: -122.4,
@@ -90,8 +91,7 @@ export function Container({ form }: { form: NonNullable<FormType> }) {
           ))}
         </div>
       </div>
-      {/* SIDE BAR */}
-      <div className="w-[400px] border-l">Side</div>
+      <Sidebar />
     </div>
   );
 }
