@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useRef } from "react";
+import type { MapRef } from "@mapform/mapform";
 import { MapForm } from "@mapform/mapform";
 import { Button } from "@mapform/ui/components/button";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -30,6 +31,7 @@ export function Container({ form }: { form: NonNullable<FormType> }) {
   const createStepWithFromId = createStep.bind(null, form.id, initialViewState);
   const s = searchParams.get("s");
   const [viewState, setViewState] = useState(initialViewState);
+  const map = useRef<MapRef>();
 
   const createQueryString = useCallback(
     (name: string, value: string) => {
@@ -48,6 +50,14 @@ export function Container({ form }: { form: NonNullable<FormType> }) {
     [createQueryString, pathname, router]
   );
 
+  const setCurrentSte2 = (step: any) => {
+    console.log(1111);
+    map.current?.flyTo({
+      center: [step.longitude, step.latitude],
+      duration: 1000,
+    });
+  };
+
   useEffect(() => {
     if (form.steps[0] && !s) {
       router.push(`${pathname}?${createQueryString("s", form.steps[0].id)}`);
@@ -58,16 +68,21 @@ export function Container({ form }: { form: NonNullable<FormType> }) {
 
   useEffect(() => {
     if (currentStep) {
-      setViewState({
-        ...initialViewState,
-        longitude: currentStep.longitude,
-        latitude: currentStep.latitude,
-        zoom: currentStep.zoom,
-        pitch: currentStep.pitch,
-        bearing: currentStep.bearing,
-      });
+      console.log("Fly you fools");
+      // map.current?.flyTo({
+      //   center: [currentStep.longitude, currentStep.latitude],
+      //   duration: 1000,
+      // });
+      // setViewState({
+      //   ...initialViewState,
+      //   longitude: currentStep.longitude,
+      //   latitude: currentStep.latitude,
+      //   zoom: currentStep.zoom,
+      //   pitch: currentStep.pitch,
+      //   bearing: currentStep.bearing,
+      // });
     }
-  }, [currentStep]);
+  }, [currentStep, map]);
 
   return (
     <div className="flex flex-1">
@@ -75,6 +90,7 @@ export function Container({ form }: { form: NonNullable<FormType> }) {
         <div className="h-[500px] w-full p-4 bg-slate-100">
           <MapForm
             mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
+            ref={map}
             setViewState={(evt) => {
               setViewState(evt.viewState);
             }}
@@ -91,7 +107,8 @@ export function Container({ form }: { form: NonNullable<FormType> }) {
               className="bg-blue-200"
               key={step.id}
               onClick={() => {
-                setCurrentStep(step.id);
+                // setCurrentStep(step.id);
+                setCurrentSte2(step);
               }}
               type="button"
             >

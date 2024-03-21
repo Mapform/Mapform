@@ -1,3 +1,4 @@
+import { MapProvider } from "@mapform/mapform";
 import { getForm } from "./actions";
 import { Container } from "./container";
 
@@ -17,5 +18,9 @@ export default async function Workspace({
     return <div>Form not found</div>;
   }
 
-  return <Container form={form} />;
+  return (
+    <MapProvider>
+      <Container form={form} />
+    </MapProvider>
+  );
 }

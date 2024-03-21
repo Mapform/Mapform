@@ -1,8 +1,15 @@
 "use client";
 
-import Map, { ViewState, ViewStateChangeEvent } from "react-map-gl";
+import Map, {
+  MapRef,
+  ViewState,
+  ViewStateChangeEvent,
+  MapProvider,
+  useMap,
+} from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { Tiptap } from "./TipTap";
+import { forwardRef } from "react";
 
 interface MapFormProps {
   mapboxAccessToken: string;
@@ -10,23 +17,24 @@ interface MapFormProps {
   setViewState: (viewState: ViewStateChangeEvent) => void;
 }
 
-export function MapForm({
-  mapboxAccessToken,
-  viewState,
-  setViewState,
-}: MapFormProps) {
-  return (
-    <div className="flex w-full h-full">
-      <div className="w-64 flex-shrink-0 bg-background">
-        <Tiptap />
+export const MapForm = forwardRef<MapRef, MapFormProps>(
+  ({ mapboxAccessToken, viewState, setViewState }, ref) => {
+    return (
+      <div className="flex w-full h-full">
+        <div className="w-64 flex-shrink-0 bg-background">
+          <Tiptap />
+        </div>
+        <Map
+          {...viewState}
+          style={{ flex: 1 }}
+          onMove={setViewState}
+          mapboxAccessToken={mapboxAccessToken}
+          mapStyle="mapbox://styles/mapbox/streets-v9"
+          ref={ref}
+        />
       </div>
-      <Map
-        {...viewState}
-        style={{ flex: 1 }}
-        onMove={setViewState}
-        mapboxAccessToken={mapboxAccessToken}
-        mapStyle="mapbox://styles/mapbox/streets-v9"
-      />
-    </div>
-  );
-}
+    );
+  }
+);
+export { MapProvider, useMap };
+export type { ViewState, ViewStateChangeEvent, MapRef };
