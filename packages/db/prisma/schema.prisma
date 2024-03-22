@@ -96,12 +96,25 @@ model Step {
     type        StepType
     latitude    Float
     longitude   Float
+    // coords      Unsupported("geometry(Point, 4326)")
     zoom        Int
     pitch       Int
     bearing     Int
     formId      String
     form        Form     @relation(fields: [formId], references: [id])
     // shortTextStep ShortTextStep?
+
+    locationId String   @unique
+    location   Location @relation(fields: [locationId], references: [id])
+}
+
+model Location {
+    id   String                               @id @default(uuid())
+    geom Unsupported("geometry(Point, 4326)")
+    step Step?
+
+    // the index for that column
+    @@index([geom], name: "location_idx", type: Gist)
 }
 
 // model ShortTextStep {
