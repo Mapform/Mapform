@@ -79,4 +79,11 @@ export const getForm = async (
   );
 };
 
+// It works :)
+export const getLocation = async (locationId: string) => {
+  return prisma.$queryRaw`
+    SELECT ST_X(geom) AS longitude, ST_Y(geom) AS latitude FROM "Location" WHERE id = ${locationId}
+  `;
+};
+
 export type FormType = Awaited<ReturnType<typeof getForm>>;
