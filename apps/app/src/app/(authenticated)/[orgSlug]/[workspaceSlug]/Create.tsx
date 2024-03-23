@@ -19,7 +19,7 @@ interface OrganizationProps {
 }
 
 export function Create({ workspaceWithOrg }: OrganizationProps) {
-  const createWorkspaceWithName = createForm.bind(
+  const createFormWithName = createForm.bind(
     null,
     workspaceWithOrg.slug,
     workspaceWithOrg.organization.slug
@@ -33,9 +33,9 @@ export function Create({ workspaceWithOrg }: OrganizationProps) {
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Create</DialogTitle>
-          <DialogDescription>Create a workspace</DialogDescription>
+          <DialogDescription>Create a form</DialogDescription>
         </DialogHeader>
-        <form action={createWorkspaceWithName}>
+        <form action={createFormWithName}>
           <Label htmlFor="create-input">Name</Label>
           <Input id="create-input" name="name" placeholder="Name" type="text" />
           <Button type="submit">Create</Button>

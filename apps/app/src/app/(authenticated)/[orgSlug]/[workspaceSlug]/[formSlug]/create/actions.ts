@@ -4,6 +4,7 @@ import { z } from "zod";
 import { prisma } from "@mapform/db";
 import { revalidatePath } from "next/cache";
 import { formModel } from "@mapform/db/models";
+import { v4 as uuidv4 } from "uuid";
 
 const schema = z.object({
   type: z.enum(["SHORT_TEXT", "LONG_TEXT", "CONTENT"]),
@@ -31,6 +32,16 @@ export const createStep = async (
     };
   }
 
+  // This works 🎉
+  // TODO:
+  // 1. Figure out how to get ids working
+  const locationId = uuidv4();
+  // 2. Pass the location id to the step creation step
+  const stepLocation = await prisma.$queryRaw`
+      INSERT INTO "Location" (geom, id)
+      VALUES(ST_SetSRID(ST_MakePoint(-73.9857, 40.7484), 4326), ${locationId})
+    `;
+
   await prisma.step.create({
     data: {
       type: validatedFields.data.type,
@@ -40,6 +51,7 @@ export const createStep = async (
       pitch: location.pitch,
       bearing: location.bearing,
       formId,
+      locationId,
     },
   });
 
@@ -58,7 +70,11 @@ export const getForm = async (
       organizationSlug: orgSlug.toLocaleLowerCase(),
     },
     {
-      steps: true,
+      steps: {
+        include: {
+          location: true,
+        },
+      },
     }
   );
 };
