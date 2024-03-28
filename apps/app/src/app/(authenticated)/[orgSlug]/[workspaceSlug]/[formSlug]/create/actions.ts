@@ -59,11 +59,7 @@ export const getForm = async (
       organizationSlug: orgSlug.toLocaleLowerCase(),
     },
     {
-      steps: {
-        include: {
-          location: true,
-        },
-      },
+      steps: true,
     }
   );
 };

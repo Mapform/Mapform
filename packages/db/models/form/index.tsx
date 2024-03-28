@@ -4,6 +4,9 @@ import type { Prisma } from "../..";
 
 export async function findOne<
   T extends Parameters<typeof prisma.form.findUnique>[0]["include"],
+  U extends Prisma.FormGetPayload<{
+    include: T;
+  }>,
 >(
   {
     slug,
@@ -15,7 +18,7 @@ export async function findOne<
     organizationSlug: string;
   },
   include?: T
-) {
+): Promise<U | null> {
   const workspace = await workspaceModel.findOne({
     slug: workspaceSlug,
     organizationSlug,
@@ -25,7 +28,7 @@ export async function findOne<
     return null;
   }
 
-  const form = await prisma.form.findUnique({
+  const form = (await prisma.form.findUnique({
     where: {
       workspaceId_slug: {
         workspaceId: workspace.id,
@@ -33,7 +36,7 @@ export async function findOne<
       },
     },
     include,
-  });
+  })) as U;
 
   return form;
 }
