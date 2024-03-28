@@ -94,8 +94,6 @@ model Step {
     title       String?
     description String?
     type        StepType
-    latitude    Float
-    longitude   Float
     // coords      Unsupported("geometry(Point, 4326)")
     zoom        Int
     pitch       Int
