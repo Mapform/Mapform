@@ -1,5 +1,5 @@
 import { MapProvider } from "@mapform/mapform";
-import { getForm, getLocation } from "./actions";
+import { getForm, getLocation, getSteps } from "./actions";
 import { Container } from "./container";
 
 export default async function Workspace({
@@ -13,19 +13,15 @@ export default async function Workspace({
     params.orgSlug.toLocaleLowerCase()
   );
 
-  if (form?.steps[0]?.locationId) {
-    const location = await getLocation(form?.steps[0]?.locationId);
-    console.log(99999, location);
+  if (!form) {
+    return <div>Form does not exist.</div>;
   }
 
-  if (!form) {
-    // TODO: 404
-    return <div>Form not found</div>;
-  }
+  const steps = await getSteps(form.id);
 
   return (
     <MapProvider>
-      <Container form={form} />
+      <Container form={form} steps={steps} />
     </MapProvider>
   );
 }

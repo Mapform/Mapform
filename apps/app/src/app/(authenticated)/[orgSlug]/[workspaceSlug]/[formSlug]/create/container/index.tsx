@@ -7,7 +7,7 @@ import { MapForm } from "@mapform/mapform";
 import { Button } from "@mapform/ui/components/button";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { env } from "~/env.mjs";
-import type { FormType } from "../actions";
+import type { FormType, StepsType } from "../actions";
 import { createStep } from "../actions";
 import { Sidebar } from "./sidebar";
 // TODO. Temporary. Should get initial view state from previous step, or from user location
@@ -25,7 +25,13 @@ const initialViewState = {
   },
 };
 
-export function Container({ form }: { form: NonNullable<FormType> }) {
+export function Container({
+  form,
+  steps,
+}: {
+  form: NonNullable<FormType>;
+  steps: NonNullable<StepsType>;
+}) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -44,7 +50,8 @@ export function Container({ form }: { form: NonNullable<FormType> }) {
     [searchParams]
   );
 
-  const setCurrentStep = (step: Step) => {
+  const setCurrentStep = (step: StepsType[number]) => {
+    console.log(1111, step);
     map.current?.flyTo({
       center: [step.longitude, step.latitude],
       duration: 1000,
@@ -53,10 +60,10 @@ export function Container({ form }: { form: NonNullable<FormType> }) {
   };
 
   useEffect(() => {
-    if (form.steps[0] && !s) {
-      router.push(`${pathname}?${createQueryString("s", form.steps[0].id)}`);
+    if (steps[0] && !s) {
+      router.push(`${pathname}?${createQueryString("s", steps[0].id)}`);
     }
-  }, [s, form.steps, pathname, router, createQueryString]);
+  }, [s, steps, pathname, router, createQueryString]);
 
   return (
     <div className="flex flex-1">
@@ -78,7 +85,7 @@ export function Container({ form }: { form: NonNullable<FormType> }) {
             <input name="type" value="CONTENT" />
             <Button>New step</Button>
           </form>
-          {form.steps.map((step, i) => (
+          {steps.map((step, i) => (
             <button
               className="bg-blue-200"
               key={step.id}
