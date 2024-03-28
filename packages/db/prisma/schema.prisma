@@ -3,13 +3,14 @@
 
 generator client {
     provider        = "prisma-client-js"
-    previewFeatures = ["driverAdapters"]
+    previewFeatures = ["driverAdapters", "postgresqlExtensions"]
 }
 
 datasource db {
-    provider  = "postgresql"
-    url       = env("DATABASE_URL")
-    directUrl = env("DIRECT_URL")
+    provider   = "postgresql"
+    url        = env("DATABASE_URL")
+    directUrl  = env("DIRECT_URL")
+    extensions = [postgis]
 }
 
 // Managed through Clerk and synced with Prisma
@@ -93,11 +94,30 @@ model Step {
     title       String?
     description String?
     type        StepType
-    latitude    Float
-    longitude   Float
+    // coords      Unsupported("geometry(Point, 4326)")
     zoom        Int
     pitch       Int
     bearing     Int
     formId      String
     form        Form     @relation(fields: [formId], references: [id])
+    // shortTextStep ShortTextStep?
+
+    locationId String   @unique
+    location   Location @relation(fields: [locationId], references: [id])
 }
+
+model Location {
+    id   String                               @id @default(uuid())
+    geom Unsupported("geometry(Point, 4326)")
+    step Step?
+    // the geometry column itself
+
+    // the index for that column
+    @@index([geom], name: "location_idx", type: Gist)
+}
+
+// model ShortTextStep {
+//     id    String @id @default(uuid())
+//     value String
+//     step  Step   @relation(fields: [id], references: [id])
+// }

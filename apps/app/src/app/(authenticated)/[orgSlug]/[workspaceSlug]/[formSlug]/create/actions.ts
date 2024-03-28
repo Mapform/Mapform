@@ -31,16 +31,17 @@ export const createStep = async (
     };
   }
 
-  await prisma.step.create({
-    data: {
-      type: validatedFields.data.type,
-      latitude: location.latitude,
-      longitude: location.longitude,
-      zoom: location.zoom,
-      pitch: location.pitch,
-      bearing: location.bearing,
-      formId,
-    },
+  /**
+   * This uses the Prisma extension to create a step with a location
+   */
+  await prisma.step.createWithLocation({
+    formId,
+    type: validatedFields.data.type,
+    zoom: location.zoom,
+    pitch: location.pitch,
+    bearing: location.bearing,
+    latitude: location.latitude,
+    longitude: location.longitude,
   });
 
   revalidatePath("/");
@@ -58,9 +59,19 @@ export const getForm = async (
       organizationSlug: orgSlug.toLocaleLowerCase(),
     },
     {
-      steps: true,
+      steps: {
+        include: {
+          location: true,
+        },
+      },
     }
   );
+};
+
+export const getLocation = async (locationId: string) => {
+  return prisma.$queryRaw`
+    SELECT ST_X(geom) AS longitude, ST_Y(geom) AS latitude FROM "Location" WHERE id = ${locationId}
+  `;
 };
 
 export type FormType = Awaited<ReturnType<typeof getForm>>;
