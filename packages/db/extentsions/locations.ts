@@ -23,7 +23,7 @@ export function extendWithLocations<T extends PrismaClient>(prisma: T) {
           const [_, step] = await prisma.$transaction([
             prisma.$queryRaw`
             INSERT INTO "Location" (geom, id)
-            VALUES(ST_SetSRID(ST_MakePoint(${latitude}, ${longitude}), 4326), ${locationId})
+            VALUES(ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), 4326), ${locationId})
           `,
             prisma.step.create({
               data: {
