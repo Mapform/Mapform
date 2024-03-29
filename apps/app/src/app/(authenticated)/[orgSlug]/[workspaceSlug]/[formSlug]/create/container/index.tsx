@@ -50,9 +50,11 @@ export function Container({
   );
 
   const setCurrentStep = (step: StepsType[number]) => {
-    console.log(1111, step);
     map.current?.flyTo({
       center: [step.longitude, step.latitude],
+      zoom: step.zoom,
+      pitch: step.pitch,
+      bearing: step.bearing,
       duration: 1000,
     });
     router.push(`${pathname}?${createQueryString("s", step.id)}`);

@@ -101,7 +101,6 @@ model Step {
 
     type StepType
 
-    content   ContentStep?
     shortText ShortTextStep?
     longText  LongTextStep?
     yesNo     YesNoStep?
@@ -113,12 +112,6 @@ model Step {
 
     locationId String   @unique
     location   Location @relation(fields: [locationId], references: [id])
-}
-
-model ContentStep {
-    id     String @id @default(uuid())
-    stepId String @unique
-    step   Step   @relation(fields: [stepId], references: [id])
 }
 
 model ShortTextStep {
