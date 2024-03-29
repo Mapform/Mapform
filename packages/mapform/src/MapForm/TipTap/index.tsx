@@ -23,9 +23,18 @@ export function Tiptap({
 }: TiptapProps) {
   const prevId = usePrevious(id);
   const titleEditor = useEditor({
-    extensions: [StarterKit, Placeholder.configure({ placeholder: "Title" })],
+    extensions: [
+      StarterKit,
+      Placeholder.configure({ placeholder: "Untitled" }),
+    ],
     content: title,
     editable: Boolean(onTitleChange),
+    editorProps: {
+      attributes: {
+        class:
+          "prose dark:prose-invert font-semibold prose-xl mb-1 focus:outline-none",
+      },
+    },
     onUpdate: ({ editor }) => {
       onTitleChange?.(editor.getHTML());
     },
@@ -38,6 +47,11 @@ export function Tiptap({
     ],
     content: description,
     editable: Boolean(onDescriptionChange),
+    editorProps: {
+      attributes: {
+        class: "prose dark:prose-invert text-gray-500 mb-2 focus:outline-none",
+      },
+    },
     onUpdate: ({ editor }) => {
       onDescriptionChange?.(editor.getHTML());
     },
