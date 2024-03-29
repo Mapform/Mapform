@@ -13,8 +13,12 @@ export function extendWithLocations<T extends PrismaClient>(prisma: T) {
         createWithLocation: async ({
           latitude,
           longitude,
+          formId,
           ...args
-        }: Omit<Prisma.StepCreateInput, "form" | "location"> & {
+        }: Omit<
+          Prisma.StepCreateInput,
+          "draftedForm" | "publishedForm" | "location"
+        > & {
           latitude: number;
           longitude: number;
           formId: string;
@@ -28,6 +32,8 @@ export function extendWithLocations<T extends PrismaClient>(prisma: T) {
             prisma.step.create({
               data: {
                 ...args,
+                draftedFormId: formId,
+                publishedFormId: formId,
                 locationId,
               },
             }),

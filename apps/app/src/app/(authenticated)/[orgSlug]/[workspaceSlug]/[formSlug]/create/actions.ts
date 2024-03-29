@@ -67,7 +67,7 @@ export const getSteps = async (
     SELECT "Step".*, ST_X("Location".geom) AS longitude, ST_Y("Location".geom) AS latitude
     FROM "Step"
     LEFT JOIN "Location" ON "Step"."locationId" = "Location".id
-    WHERE "Step"."formId" = ${formId};
+    WHERE "Step"."draftedFormId" = ${formId};
   `;
 };
 
