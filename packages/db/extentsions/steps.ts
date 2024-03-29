@@ -18,7 +18,7 @@ export function stepsExtension() {
             ...args
           }: Omit<
             Prisma.StepCreateInput,
-            "draftedForm" | "publishedForm" | "location"
+            "formOfDraftStep" | "formOfPublishedStep" | "location"
           > & {
             latitude: number;
             longitude: number;
@@ -33,8 +33,8 @@ export function stepsExtension() {
               prisma.step.create({
                 data: {
                   ...args,
-                  draftedFormId: formId,
-                  publishedFormId: formId,
+                  formOfDraftStepId: formId,
+                  formOfPublishedStepId: formId,
                   locationId,
                 },
               }),
@@ -52,7 +52,7 @@ export function stepsExtension() {
               SELECT "Step".*, ST_X("Location".geom) AS longitude, ST_Y("Location".geom) AS latitude
               FROM "Step"
               LEFT JOIN "Location" ON "Step"."locationId" = "Location".id
-              WHERE "Step"."draftedFormId" = ${formId};
+              WHERE "Step"."formOfDraftStepId" = ${formId};
             `;
           },
         },

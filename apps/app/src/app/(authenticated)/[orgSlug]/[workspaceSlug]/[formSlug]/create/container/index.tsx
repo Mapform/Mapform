@@ -7,7 +7,7 @@ import { Button } from "@mapform/ui/components/button";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { env } from "~/env.mjs";
 import type { FormType, StepsType } from "../actions";
-import { createStep } from "../actions";
+import { createStep, updateStep } from "../actions";
 import { Sidebar } from "./sidebar";
 // TODO. Temporary. Should get initial view state from previous step, or from user location
 const initialViewState = {
@@ -66,19 +66,33 @@ export function Container({
     }
   }, [s, steps, pathname, router, createQueryString]);
 
+  if (!s) {
+    return null;
+  }
+
+  const currentStep = steps.find((step) => step.id === s);
+
+  console.log(11111, currentStep);
+
   return (
     <div className="flex flex-1">
       <div className="flex flex-col flex-1">
         <div className="h-[500px] w-full p-4 bg-slate-100 inset-0  bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px]">
           <div className="shadow h-full w-full rounded-md overflow-hidden">
             <MapForm
-              currentStepId={s}
+              currentStep={currentStep}
               mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
+              onTitleChange={async (content: string) => {
+                // TODO: Debounce
+                await updateStep({
+                  stepId: s,
+                  title: content,
+                });
+              }}
               ref={map}
               setViewState={(evt) => {
                 setViewState(evt.viewState);
               }}
-              steps={steps}
               viewState={viewState}
             />
           </div>

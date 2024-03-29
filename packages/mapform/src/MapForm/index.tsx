@@ -7,23 +7,43 @@ import { forwardRef } from "react";
 import type { Step } from "@mapform/db";
 import { Tiptap } from "./TipTap";
 
+type ExtendedStep = Step & { latitude: number; longitude: number };
+
 interface MapFormProps {
   mapboxAccessToken: string;
+  currentStep?: ExtendedStep;
   viewState: ViewState;
   setViewState: (viewState: ViewStateChangeEvent) => void;
-  steps: (Step & { latitude: number; longitude: number })[];
-  currentStepId: string | null;
+  onTitleChange?: (content: string) => void;
+  onDescriptionChange?: (content: string) => void;
 }
 
 export const MapForm = forwardRef<MapRef, MapFormProps>(
   (
-    { mapboxAccessToken, viewState, setViewState, steps, currentStepId },
+    {
+      mapboxAccessToken,
+      viewState,
+      setViewState,
+      currentStep,
+      onTitleChange,
+      onDescriptionChange,
+    },
     ref
   ) => {
+    if (!currentStep) {
+      return null;
+    }
+
     return (
       <div className="flex w-full h-full">
         <div className="w-64 flex-shrink-0 bg-background p-4">
-          <Tiptap />
+          <Tiptap
+            description={currentStep.description || ""}
+            id={currentStep.id}
+            onDescriptionChange={onDescriptionChange}
+            onTitleChange={onTitleChange}
+            title={currentStep.title || ""}
+          />
         </div>
         <Map
           {...viewState}

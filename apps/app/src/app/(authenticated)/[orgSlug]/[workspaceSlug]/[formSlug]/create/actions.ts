@@ -65,5 +65,25 @@ export const getSteps = (formId: string) => {
   });
 };
 
+export const updateStep = async ({
+  title,
+  description,
+  stepId,
+}: {
+  title?: string;
+  description?: string;
+  stepId: string;
+}) => {
+  return prisma.step.update({
+    where: {
+      id: stepId,
+    },
+    data: {
+      title,
+      description,
+    },
+  });
+};
+
 export type FormType = Awaited<ReturnType<typeof getForm>>;
 export type StepsType = Awaited<ReturnType<typeof getSteps>>;

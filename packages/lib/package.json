@@ -9,7 +9,10 @@
     "@mapform/eslint-config": "workspace:*",
     "@mapform/typescript-config": "workspace:*",
     "@types/node": "^20.8.10",
+    "@types/react": "^18.2.73",
+    "@types/react-dom": "^18.2.23",
     "eslint": "^8.57.0",
+    "react": "^18.2.0",
     "typescript": "^5.3.3"
   }
 }

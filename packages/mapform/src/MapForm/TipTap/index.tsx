@@ -1,31 +1,61 @@
-import {
-  useEditor,
-  EditorContent,
-  FloatingMenu,
-  BubbleMenu,
-} from "@tiptap/react";
+import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
+import { useEffect } from "react";
+import { usePrevious } from "@mapform/lib/use-previous";
 
 // define your extension array
 const extensions = [StarterKit];
 
-const content = "<p>Hello World!</p>";
+interface TiptapProps {
+  id: string;
+  title: string;
+  description: string;
+  onTitleChange?: (content: string) => void;
+  onDescriptionChange?: (content: string) => void;
+}
 
-export const Tiptap = () => {
-  const editor = useEditor({
+export function Tiptap({
+  id,
+  title,
+  description,
+  onTitleChange,
+  onDescriptionChange,
+}: TiptapProps) {
+  const prevId = usePrevious(id);
+  const titleEditor = useEditor({
     extensions,
-    content,
+    content: title,
+    editable: Boolean(onTitleChange),
+    onUpdate: ({ editor }) => {
+      onTitleChange?.(editor.getHTML());
+    },
   });
 
-  if (!editor) {
-    return null;
-  }
+  const descriptionEditor = useEditor({
+    extensions,
+    content: description,
+    editable: Boolean(onDescriptionChange),
+    onUpdate: ({ editor }) => {
+      onDescriptionChange?.(editor.getHTML());
+    },
+  });
+
+  /**
+   * Update TipTap
+   */
+  useEffect(() => {
+    if (prevId === id) return;
+
+    titleEditor?.commands.setContent(title);
+    descriptionEditor?.commands.setContent(description);
+  }, [id, titleEditor, title, descriptionEditor, description, prevId]);
 
   return (
     <>
-      <EditorContent editor={editor} />
-      {/* <FloatingMenu editor={editor}>This is the floating menu</FloatingMenu>
-      <BubbleMenu editor={editor}>This is the bubble menu</BubbleMenu> */}
+      {/* Title */}
+      <EditorContent editor={titleEditor} />
+      {/* Description */}
+      <EditorContent editor={descriptionEditor} />
     </>
   );
-};
+}
