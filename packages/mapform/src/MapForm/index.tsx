@@ -38,11 +38,11 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
       <div className="flex w-full h-full">
         <div className="w-64 flex-shrink-0 bg-background p-4">
           <Tiptap
-            description={currentStep.description || ""}
+            description={currentStep.description || undefined}
             id={currentStep.id}
             onDescriptionChange={onDescriptionChange}
             onTitleChange={onTitleChange}
-            title={currentStep.title || ""}
+            title={currentStep.title || undefined}
           />
         </div>
         <Map

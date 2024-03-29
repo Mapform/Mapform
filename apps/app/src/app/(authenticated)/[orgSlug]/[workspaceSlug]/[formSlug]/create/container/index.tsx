@@ -72,8 +72,6 @@ export function Container({
 
   const currentStep = steps.find((step) => step.id === s);
 
-  console.log(11111, currentStep);
-
   return (
     <div className="flex flex-1">
       <div className="flex flex-col flex-1">
@@ -82,6 +80,13 @@ export function Container({
             <MapForm
               currentStep={currentStep}
               mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
+              onDescriptionChange={async (content: string) => {
+                // TODO: Debounce
+                await updateStep({
+                  stepId: s,
+                  description: content,
+                });
+              }}
               onTitleChange={async (content: string) => {
                 // TODO: Debounce
                 await updateStep({

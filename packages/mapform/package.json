@@ -10,6 +10,7 @@
     "@mapform/db": "workspace:*",
     "@mapform/lib": "workspace:*",
     "@mapform/ui": "workspace:*",
+    "@tiptap/extension-placeholder": "^2.2.4",
     "@tiptap/pm": "^2.2.4",
     "@tiptap/react": "^2.2.4",
     "@tiptap/starter-kit": "^2.2.4",

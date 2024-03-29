@@ -1,15 +1,15 @@
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
+import Placeholder from "@tiptap/extension-placeholder";
 import { useEffect } from "react";
 import { usePrevious } from "@mapform/lib/use-previous";
 
-// define your extension array
-const extensions = [StarterKit];
+import "./placeholder.css";
 
 interface TiptapProps {
   id: string;
-  title: string;
-  description: string;
+  title?: string;
+  description?: string;
   onTitleChange?: (content: string) => void;
   onDescriptionChange?: (content: string) => void;
 }
@@ -23,7 +23,7 @@ export function Tiptap({
 }: TiptapProps) {
   const prevId = usePrevious(id);
   const titleEditor = useEditor({
-    extensions,
+    extensions: [StarterKit, Placeholder.configure({ placeholder: "Title" })],
     content: title,
     editable: Boolean(onTitleChange),
     onUpdate: ({ editor }) => {
@@ -32,7 +32,10 @@ export function Tiptap({
   });
 
   const descriptionEditor = useEditor({
-    extensions,
+    extensions: [
+      StarterKit,
+      Placeholder.configure({ placeholder: "Description" }),
+    ],
     content: description,
     editable: Boolean(onDescriptionChange),
     onUpdate: ({ editor }) => {
@@ -46,8 +49,13 @@ export function Tiptap({
   useEffect(() => {
     if (prevId === id) return;
 
-    titleEditor?.commands.setContent(title);
-    descriptionEditor?.commands.setContent(description);
+    if (title) {
+      titleEditor?.commands.setContent(title);
+    }
+
+    if (description) {
+      descriptionEditor?.commands.setContent(description);
+    }
   }, [id, titleEditor, title, descriptionEditor, description, prevId]);
 
   return (
