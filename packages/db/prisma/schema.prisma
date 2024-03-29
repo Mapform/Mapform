@@ -73,12 +73,13 @@ model Workspace {
 }
 
 model Form {
-    id          String    @id @default(uuid())
-    name        String
-    slug        String
-    steps       Step[]
-    workspaceId String
-    workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+    id             String    @id @default(uuid())
+    name           String
+    slug           String
+    publishedSteps Step[]    @relation(name: "PublishedSteps")
+    draftSteps     Step[]    @relation(name: "DraftSteps")
+    workspaceId    String
+    workspace      Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
     @@unique([workspaceId, slug])
 }
@@ -87,23 +88,61 @@ enum StepType {
     CONTENT
     SHORT_TEXT
     LONG_TEXT
+    YES_NO
 }
 
 model Step {
-    id          String   @id @default(uuid())
+    id          String  @id @default(uuid())
     title       String?
     description String?
-    type        StepType
-    // coords      Unsupported("geometry(Point, 4326)")
     zoom        Int
     pitch       Int
     bearing     Int
-    formId      String
-    form        Form     @relation(fields: [formId], references: [id])
-    // shortTextStep ShortTextStep?
+
+    type StepType
+
+    content   ContentStep?
+    shortText ShortTextStep?
+    longText  LongTextStep?
+    yesNo     YesNoStep?
+
+    draftedFormId   String
+    publishedFormId String
+    draftedForm     Form   @relation(name: "DraftSteps", fields: [draftedFormId], references: [id])
+    publishedForm   Form   @relation(name: "PublishedSteps", fields: [publishedFormId], references: [id])
 
     locationId String   @unique
     location   Location @relation(fields: [locationId], references: [id])
+}
+
+model ContentStep {
+    id     String @id @default(uuid())
+    stepId String @unique
+    step   Step   @relation(fields: [stepId], references: [id])
+}
+
+model ShortTextStep {
+    id       String  @id @default(uuid())
+    value    String  @db.VarChar(255)
+    required Boolean @default(false)
+    stepId   String  @unique
+    step     Step    @relation(fields: [stepId], references: [id])
+}
+
+model LongTextStep {
+    id       String  @id @default(uuid())
+    value    String
+    required Boolean @default(false)
+    stepId   String  @unique
+    step     Step    @relation(fields: [stepId], references: [id])
+}
+
+model YesNoStep {
+    id       String  @id @default(uuid())
+    value    Boolean
+    required Boolean @default(false)
+    stepId   String  @unique
+    step     Step    @relation(fields: [stepId], references: [id])
 }
 
 model Location {
