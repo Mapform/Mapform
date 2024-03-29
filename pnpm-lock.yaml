@@ -204,6 +204,9 @@ importers:
 
   packages/mapform:
     dependencies:
+      '@mapform/db':
+        specifier: workspace:*
+        version: link:../db
       '@mapform/lib':
         specifier: workspace:*
         version: link:../lib

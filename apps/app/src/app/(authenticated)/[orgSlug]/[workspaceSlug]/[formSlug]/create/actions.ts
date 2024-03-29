@@ -1,7 +1,6 @@
 "use server";
 
 import { z } from "zod";
-import type { Step } from "@mapform/db";
 import { prisma } from "@mapform/db";
 import { revalidatePath } from "next/cache";
 import { formModel } from "@mapform/db/models";
@@ -60,21 +59,10 @@ export const getForm = async (
   });
 };
 
-export const getSteps = async (
-  formId: string
-): Promise<(Step & { latitude: number; longitude: number })[]> => {
-  return prisma.$queryRaw`
-    SELECT "Step".*, ST_X("Location".geom) AS longitude, ST_Y("Location".geom) AS latitude
-    FROM "Step"
-    LEFT JOIN "Location" ON "Step"."locationId" = "Location".id
-    WHERE "Step"."draftedFormId" = ${formId};
-  `;
-};
-
-export const getLocation = async (locationId: string) => {
-  return prisma.$queryRaw`
-    SELECT ST_X(geom) AS longitude, ST_Y(geom) AS latitude FROM "Location" WHERE id = ${locationId}
-  `;
+export const getSteps = (formId: string) => {
+  return prisma.step.findManyWithLocation({
+    formId,
+  });
 };
 
 export type FormType = Awaited<ReturnType<typeof getForm>>;

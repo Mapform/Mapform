@@ -1,5 +1,5 @@
 import { MapProvider } from "@mapform/mapform";
-import { getForm, getLocation, getSteps } from "./actions";
+import { getForm, getSteps } from "./actions";
 import { Container } from "./container";
 
 export default async function Workspace({

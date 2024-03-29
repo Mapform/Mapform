@@ -1,7 +1,7 @@
 import { Pool, neonConfig } from "@neondatabase/serverless";
 import { PrismaNeon } from "@prisma/adapter-neon";
-import { PrismaClient } from "@prisma/client";
-import { extendWithLocations } from "./extentsions/locations";
+import { PrismaClient as PrismaClientWithoutExtension } from "@prisma/client";
+import { stepsExtension } from "./extentsions/steps";
 import dotenv from "dotenv";
 import ws from "ws";
 
@@ -12,6 +12,9 @@ const connectionString = `${process.env.DATABASE_URL}`;
 const pool = new Pool({ connectionString });
 const adapter = new PrismaNeon(pool);
 
-export const prisma = extendWithLocations(new PrismaClient({ adapter }));
-export type { PrismaClient };
+export const prisma = new PrismaClientWithoutExtension({ adapter }).$extends(
+  stepsExtension()
+);
+type PrismaClientWithExtensions = typeof prisma;
+export type PrismaClient = PrismaClientWithExtensions;
 export * from "@prisma/client";

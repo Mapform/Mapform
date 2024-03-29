@@ -72,11 +72,13 @@ export function Container({
         <div className="h-[500px] w-full p-4 bg-slate-100 inset-0  bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px]">
           <div className="shadow h-full w-full rounded-md overflow-hidden">
             <MapForm
+              currentStepId={s}
               mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
               ref={map}
               setViewState={(evt) => {
                 setViewState(evt.viewState);
               }}
+              steps={steps}
               viewState={viewState}
             />
           </div>

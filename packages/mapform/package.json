@@ -3,11 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "main": "./src/index.tsx",
-  "type": "module",
   "scripts": {
     "lint": "eslint . --max-warnings 0"
   },
   "dependencies": {
+    "@mapform/db": "workspace:*",
     "@mapform/lib": "workspace:*",
     "@mapform/ui": "workspace:*",
     "@tiptap/pm": "^2.2.4",

@@ -1,6 +1,7 @@
 import { workspaceModel } from "..";
 import { prisma } from "../..";
 import type { Prisma } from "../..";
+import type { PrismaClient } from "../..";
 
 export async function findOne<
   T extends Parameters<typeof prisma.form.findUnique>[0]["include"],
