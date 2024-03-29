@@ -1,3 +1,4 @@
+import { Button } from "@mapform/ui/components/button";
 import {
   Select,
   SelectContent,
@@ -7,20 +8,28 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@mapform/ui/components/select";
+import { deleteStep } from "../../actions";
 
-export function Sidebar() {
+export function Sidebar({ stepId }: { stepId?: string }) {
   return (
     <div className="w-[400px] border-l p-4">
-      <Select>
-        <SelectTrigger>
-          <SelectValue placeholder="Theme" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="light">Light</SelectItem>
-          <SelectItem value="dark">Dark</SelectItem>
-          <SelectItem value="system">System</SelectItem>
-        </SelectContent>
-      </Select>
+      {stepId ? (
+        <>
+          <Select>
+            <SelectTrigger>
+              <SelectValue placeholder="Theme" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="light">Light</SelectItem>
+              <SelectItem value="dark">Dark</SelectItem>
+              <SelectItem value="system">System</SelectItem>
+            </SelectContent>
+          </Select>
+          <Button onClick={() => deleteStep(stepId)} variant="destructive">
+            Delete Step
+          </Button>
+        </>
+      ) : null}
     </div>
   );
 }

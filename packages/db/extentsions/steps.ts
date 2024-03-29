@@ -43,6 +43,30 @@ export function stepsExtension() {
             return step;
           },
 
+          /**
+           * Delete the step with the associated location
+           */
+          deleteWithLocation: async ({
+            stepId,
+          }: {
+            stepId: string;
+          }): Promise<any> => {
+            const step = await prisma.step.findUnique({
+              where: {
+                id: stepId,
+              },
+            });
+
+            if (!step) {
+              throw new Error("Step not found");
+            }
+
+            return prisma.$transaction([
+              prisma.$queryRaw`DELETE FROM "Step" WHERE id = ${stepId};`,
+              prisma.$queryRaw`DELETE FROM "Location" WHERE id = ${step.locationId}`,
+            ]);
+          },
+
           findManyWithLocation: async ({
             formId,
           }: {

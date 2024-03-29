@@ -123,7 +123,7 @@ export function Container({
           ))}
         </div>
       </div>
-      <Sidebar />
+      <Sidebar stepId={currentStep?.id} />
     </div>
   );
 }
