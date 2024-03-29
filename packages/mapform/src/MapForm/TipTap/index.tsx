@@ -32,7 +32,7 @@ export function Tiptap({
     editorProps: {
       attributes: {
         class:
-          "prose dark:prose-invert font-semibold prose-xl mb-1 focus:outline-none",
+          "prose dark:prose-invert font-semibold prose-xl mb-1 leading-normal focus:outline-none",
       },
     },
     onUpdate: ({ editor }) => {

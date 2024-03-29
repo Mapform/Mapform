@@ -5,6 +5,7 @@ import type { MapRef, ViewState } from "@mapform/mapform";
 import { MapForm } from "@mapform/mapform";
 import { Button } from "@mapform/ui/components/button";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useDebounce } from "@mapform/lib/use-debounce";
 import { env } from "~/env.mjs";
 import type { FormType, StepsType } from "../actions";
 import { createStep, updateStep } from "../actions";
@@ -66,6 +67,8 @@ export function Container({
     }
   }, [s, steps, pathname, router, createQueryString]);
 
+  const debouncedUpdateStep = useDebounce(updateStep, 500);
+
   if (!s) {
     return null;
   }
@@ -81,15 +84,13 @@ export function Container({
               currentStep={currentStep}
               mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
               onDescriptionChange={async (content: string) => {
-                // TODO: Debounce
-                await updateStep({
+                await debouncedUpdateStep({
                   stepId: s,
                   description: content,
                 });
               }}
               onTitleChange={async (content: string) => {
-                // TODO: Debounce
-                await updateStep({
+                await debouncedUpdateStep({
                   stepId: s,
                   title: content,
                 });
