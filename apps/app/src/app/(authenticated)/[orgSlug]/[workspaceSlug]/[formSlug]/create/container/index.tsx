@@ -6,9 +6,12 @@ import { MapForm } from "@mapform/mapform";
 import { Button } from "@mapform/ui/components/button";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useDebounce } from "@mapform/lib/use-debounce";
+import { DndContext } from "@dnd-kit/core";
+import { SortableContext } from "@dnd-kit/sortable";
 import { env } from "~/env.mjs";
 import type { FormType, StepsType } from "../actions";
 import { createStep, updateStep } from "../actions";
+import { Draggable } from "./draggable";
 import { Sidebar } from "./sidebar";
 // TODO. Temporary. Should get initial view state from previous step, or from user location
 const initialViewState = {
@@ -39,6 +42,7 @@ export function Container({
   const [viewState, setViewState] = useState<ViewState>(initialViewState);
   const createStepWithFromId = createStep.bind(null, form.id, viewState);
   const map = useRef<MapRef>(null);
+  const [isDropped, setIsDropped] = useState(false);
 
   const createQueryString = useCallback(
     (name: string, value: string) => {
@@ -75,11 +79,6 @@ export function Container({
 
   const currentStep = steps.find((step) => step.id === s);
 
-  console.log(
-    11111,
-    steps.map((step) => step.order)
-  );
-
   return (
     <div className="flex flex-1">
       <div className="flex flex-col flex-1">
@@ -113,21 +112,29 @@ export function Container({
             <input name="type" value="CONTENT" />
             <Button>New step</Button>
           </form>
-          <div className="flex gap-1">
-            {steps.map((step, i) => (
-              <button
-                className="bg-blue-200 py-2 px-4 rounded-md"
-                key={step.id}
-                onClick={() => {
-                  // setCurrentStep(step.id);
-                  setCurrentStep(step);
-                }}
-                type="button"
-              >
-                {i + 1}: {step.type}
-              </button>
-            ))}
-          </div>
+          <DndContext
+            onDragEnd={(e) => {
+              console.log(1111, e);
+            }}
+          >
+            <div className="flex gap-1">
+              <SortableContext items={steps}>
+                {steps.map((step) => (
+                  <Draggable id={step.id} key={step.id}>
+                    <button
+                      className="bg-blue-200 py-2 px-4 rounded-md"
+                      onClick={() => {
+                        setCurrentStep(step);
+                      }}
+                      type="button"
+                    >
+                      {step.id}: {step.type}
+                    </button>
+                  </Draggable>
+                ))}
+              </SortableContext>
+            </div>
+          </DndContext>
         </div>
       </div>
       <Sidebar stepId={currentStep?.id} />
