@@ -7,7 +7,12 @@ import { Button } from "@mapform/ui/components/button";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useDebounce } from "@mapform/lib/use-debounce";
 import type { DragEndEvent } from "@dnd-kit/core";
-import { DndContext } from "@dnd-kit/core";
+import {
+  DndContext,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
 import { arrayMove, SortableContext } from "@dnd-kit/sortable";
 import { env } from "~/env.mjs";
 import type { FormType, StepsType } from "../actions";
@@ -74,6 +79,14 @@ export function Container({
 
   const debouncedUpdateStep = useDebounce(updateStep, 500);
 
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    })
+  );
+
   if (!s) {
     return null;
   }
@@ -127,7 +140,7 @@ export function Container({
             <input name="type" value="CONTENT" />
             <Button>New step</Button>
           </form>
-          <DndContext onDragEnd={reorderSteps}>
+          <DndContext onDragEnd={reorderSteps} sensors={sensors}>
             <div className="flex gap-1">
               <SortableContext items={steps}>
                 {steps.map((step) => (
@@ -135,6 +148,7 @@ export function Container({
                     <button
                       className="bg-blue-200 py-2 px-4 rounded-md"
                       onClick={() => {
+                        console.log(11111);
                         setCurrentStep(step);
                       }}
                       type="button"
