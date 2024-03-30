@@ -6,8 +6,9 @@ import { MapForm } from "@mapform/mapform";
 import { Button } from "@mapform/ui/components/button";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useDebounce } from "@mapform/lib/use-debounce";
+import type { DragEndEvent } from "@dnd-kit/core";
 import { DndContext } from "@dnd-kit/core";
-import { SortableContext } from "@dnd-kit/sortable";
+import { arrayMove, SortableContext } from "@dnd-kit/sortable";
 import { env } from "~/env.mjs";
 import type { FormType, StepsType } from "../actions";
 import { createStep, updateStep } from "../actions";
@@ -79,6 +80,20 @@ export function Container({
 
   const currentStep = steps.find((step) => step.id === s);
 
+  const reorderSteps = async (e: DragEndEvent) => {
+    if (!e.over) return;
+
+    if (e.active.id !== e.over.id) {
+      const oldOrder = steps.find((step) => step.id === e.active.id)?.order;
+      const newOrder = steps.find((step) => step.id === e.over?.id)?.order;
+
+      console.log(11111, oldOrder, newOrder);
+      // setGamesList((gamesList) => {
+      //   return arrayMove(gamesList, oldIdx, newIdx);
+      // });
+    }
+  };
+
   return (
     <div className="flex flex-1">
       <div className="flex flex-col flex-1">
@@ -112,11 +127,7 @@ export function Container({
             <input name="type" value="CONTENT" />
             <Button>New step</Button>
           </form>
-          <DndContext
-            onDragEnd={(e) => {
-              console.log(1111, e);
-            }}
-          >
+          <DndContext onDragEnd={reorderSteps}>
             <div className="flex gap-1">
               <SortableContext items={steps}>
                 {steps.map((step) => (
