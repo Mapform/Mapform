@@ -79,6 +79,9 @@ export function Container({
 
   const debouncedUpdateStep = useDebounce(updateStep, 500);
 
+  /**
+   * Needed to support click events on DND items
+   */
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {

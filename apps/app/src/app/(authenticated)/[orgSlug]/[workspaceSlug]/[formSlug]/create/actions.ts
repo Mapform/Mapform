@@ -74,7 +74,7 @@ export const updateStep = async ({
   description?: string;
   stepId: string;
 }) => {
-  return prisma.step.update({
+  await prisma.step.update({
     where: {
       id: stepId,
     },
@@ -83,12 +83,16 @@ export const updateStep = async ({
       description,
     },
   });
+
+  revalidatePath("/");
 };
 
-export const deleteStep = (stepId: string) => {
-  return prisma.step.deleteWithLocation({
+export const deleteStep = async (stepId: string) => {
+  await prisma.step.deleteWithLocation({
     stepId,
   });
+
+  revalidatePath("/");
 };
 
 export type FormType = Awaited<ReturnType<typeof getForm>>;

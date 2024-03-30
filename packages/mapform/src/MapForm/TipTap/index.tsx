@@ -63,13 +63,8 @@ export function Tiptap({
   useEffect(() => {
     if (prevId === id) return;
 
-    if (title) {
-      titleEditor?.commands.setContent(title);
-    }
-
-    if (description) {
-      descriptionEditor?.commands.setContent(description);
-    }
+    titleEditor?.commands.setContent(title || "<p></p>");
+    descriptionEditor?.commands.setContent(description || "<p></p>");
   }, [id, titleEditor, title, descriptionEditor, description, prevId]);
 
   return (
