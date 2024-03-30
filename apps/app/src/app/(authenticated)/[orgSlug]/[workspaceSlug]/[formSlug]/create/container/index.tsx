@@ -75,6 +75,11 @@ export function Container({
 
   const currentStep = steps.find((step) => step.id === s);
 
+  console.log(
+    11111,
+    steps.map((step) => step.order)
+  );
+
   return (
     <div className="flex flex-1">
       <div className="flex flex-col flex-1">
@@ -108,19 +113,21 @@ export function Container({
             <input name="type" value="CONTENT" />
             <Button>New step</Button>
           </form>
-          {steps.map((step, i) => (
-            <button
-              className="bg-blue-200"
-              key={step.id}
-              onClick={() => {
-                // setCurrentStep(step.id);
-                setCurrentStep(step);
-              }}
-              type="button"
-            >
-              {i + 1}: {step.type}
-            </button>
-          ))}
+          <div className="flex gap-1">
+            {steps.map((step, i) => (
+              <button
+                className="bg-blue-200 py-2 px-4 rounded-md"
+                key={step.id}
+                onClick={() => {
+                  // setCurrentStep(step.id);
+                  setCurrentStep(step);
+                }}
+                type="button"
+              >
+                {i + 1}: {step.type}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
       <Sidebar stepId={currentStep?.id} />

@@ -99,6 +99,8 @@ model Step {
     pitch       Int
     bearing     Int
 
+    order Int
+
     type StepType
 
     content   ContentStep?
@@ -113,6 +115,10 @@ model Step {
 
     locationId String   @unique
     location   Location @relation(fields: [locationId], references: [id])
+
+    // Add DB constraints so that the step order is unique within a form
+    @@unique([formOfDraftStepId, order])
+    @@unique([formOfPublishedStepId, order])
 }
 
 model ContentStep {

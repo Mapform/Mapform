@@ -18,29 +18,36 @@ export function stepsExtension() {
             ...args
           }: Omit<
             Prisma.StepCreateInput,
-            "formOfDraftStep" | "formOfPublishedStep" | "location"
+            "formOfDraftStep" | "formOfPublishedStep" | "location" | "order"
           > & {
             latitude: number;
             longitude: number;
             formId: string;
           }) => {
             const locationId = v4();
-            const [_, step] = await prisma.$transaction([
-              prisma.$queryRaw`
-            INSERT INTO "Location" (geom, id)
-            VALUES(ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), 4326), ${locationId})
-          `,
-              prisma.step.create({
+
+            return prisma.$transaction(async (tx) => {
+              const stepCount = await tx.step.count({
+                where: {
+                  formOfDraftStepId: formId,
+                },
+              });
+
+              await tx.$queryRaw`
+                INSERT INTO "Location" (geom, id)
+                VALUES(ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), 4326), ${locationId})
+              `;
+
+              return tx.step.create({
                 data: {
                   ...args,
+                  order: stepCount + 1,
                   formOfDraftStepId: formId,
                   formOfPublishedStepId: formId,
                   locationId,
                 },
-              }),
-            ]);
-
-            return step;
+              });
+            });
           },
 
           /**
@@ -76,7 +83,8 @@ export function stepsExtension() {
               SELECT "Step".*, ST_X("Location".geom) AS longitude, ST_Y("Location".geom) AS latitude
               FROM "Step"
               LEFT JOIN "Location" ON "Step"."locationId" = "Location".id
-              WHERE "Step"."formOfDraftStepId" = ${formId};
+              WHERE "Step"."formOfDraftStepId" = ${formId}
+              ORDER BY "Step"."order" ASC;
             `;
           },
         },
