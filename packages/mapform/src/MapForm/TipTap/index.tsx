@@ -28,11 +28,13 @@ export function Tiptap({
       Placeholder.configure({ placeholder: "Untitled" }),
     ],
     content: title,
+    enableInputRules: false,
+    enablePasteRules: false,
     editable: Boolean(onTitleChange),
     editorProps: {
       attributes: {
         class:
-          "prose dark:prose-invert font-semibold prose-xl mb-1 leading-normal focus:outline-none",
+          "prose dark:prose-invert text-gray-800 font-semibold prose-xl mb-1 leading-normal focus:outline-none",
       },
     },
     onUpdate: ({ editor }) => {
@@ -47,9 +49,12 @@ export function Tiptap({
     ],
     content: description,
     editable: Boolean(onDescriptionChange),
+    // enableInputRules: false,
+    // enablePasteRules: false,
     editorProps: {
       attributes: {
-        class: "prose dark:prose-invert text-gray-500 mb-2 focus:outline-none",
+        class:
+          "prose dark:prose-invert text-gray-800 mb-2 leading-normal focus:outline-none",
       },
     },
     onUpdate: ({ editor }) => {
