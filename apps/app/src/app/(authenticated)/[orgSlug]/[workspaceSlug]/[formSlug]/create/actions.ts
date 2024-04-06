@@ -4,6 +4,10 @@ import { z } from "zod";
 import { prisma } from "@mapform/db";
 import { revalidatePath } from "next/cache";
 import { formModel } from "@mapform/db/models";
+import {
+  StepUpdateArgsSchema,
+  StepUpdateManyArgsSchema,
+} from "@mapform/db/prisma/zod";
 
 const schema = z.object({
   type: z.enum(["SHORT_TEXT", "LONG_TEXT", "CONTENT"]),
@@ -65,24 +69,58 @@ export const getSteps = (formId: string) => {
   });
 };
 
-export const updateStep = async ({
-  title,
-  description,
-  stepId,
-}: {
-  title?: string;
-  description?: string;
-  stepId: string;
-}) => {
-  await prisma.step.update({
-    where: {
-      id: stepId,
-    },
-    data: {
-      title,
-      description,
-    },
-  });
+// export const updateStep = async ({
+//   title,
+//   description,
+//   stepId,
+// }: {
+//   title?: string;
+//   description?: string;
+//   stepId: string;
+// }) => {
+//   await prisma.step.update({
+//     where: {
+//       id: stepId,
+//     },
+//     data: {
+//       title,
+//       description,
+//     },
+//   });
+
+//   revalidatePath("/");
+// };
+
+export const updateStep = async (
+  input: z.infer<typeof StepUpdateArgsSchema>
+) => {
+  const validatedFields = StepUpdateArgsSchema.safeParse(input);
+
+  // Return early if the form data is invalid
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+    };
+  }
+
+  await prisma.step.update(validatedFields.data);
+
+  revalidatePath("/");
+};
+
+export const updateManySteps = async (
+  input: z.infer<typeof StepUpdateManyArgsSchema>
+) => {
+  const validatedFields = StepUpdateManyArgsSchema.safeParse(input);
+
+  // Return early if the form data is invalid
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+    };
+  }
+
+  await prisma.step.updateMany(validatedFields.data);
 
   revalidatePath("/");
 };

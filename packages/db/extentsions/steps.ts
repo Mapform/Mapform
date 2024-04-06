@@ -27,24 +27,41 @@ export function stepsExtension() {
             const locationId = v4();
 
             return prisma.$transaction(async (tx) => {
-              const stepCount = await tx.step.count({
-                where: {
-                  formOfDraftStepId: formId,
-                },
-              });
-
               await tx.$queryRaw`
                 INSERT INTO "Location" (geom, id)
                 VALUES(ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), 4326), ${locationId})
               `;
 
-              return tx.step.create({
+              const newStep = await tx.step.create({
                 data: {
                   ...args,
-                  order: stepCount + 1,
                   formOfDraftStepId: formId,
                   formOfPublishedStepId: formId,
                   locationId,
+                },
+              });
+
+              const currentStepOrder = await tx.form.findUnique({
+                where: {
+                  id: formId,
+                },
+                select: {
+                  stepOrder: true,
+                },
+              });
+
+              if (!currentStepOrder) {
+                throw new Error("Form not found");
+              }
+
+              await tx.form.update({
+                where: {
+                  id: formId,
+                },
+                data: {
+                  stepOrder: {
+                    set: [...currentStepOrder.stepOrder, newStep.id],
+                  },
                 },
               });
             });
@@ -64,20 +81,40 @@ export function stepsExtension() {
               },
             });
 
-            if (!step) {
+            if (!step?.formOfDraftStepId) {
               throw new Error("Step not found");
             }
 
-            return prisma.$transaction([
-              prisma.$queryRaw`DELETE FROM "Step" WHERE id = ${stepId};`,
-              prisma.$queryRaw`DELETE FROM "Location" WHERE id = ${step.locationId}`,
-              // Update the order of the remaining steps
-              prisma.$queryRaw`
-                UPDATE "Step"
-                SET "order" = "order" - 1
-                WHERE "formOfDraftStepId" = ${step.formOfDraftStepId}
-                AND "order" > ${step.order}`,
-            ]);
+            return prisma.$transaction(async (tx) => {
+              await tx.$queryRaw`DELETE FROM "Step" WHERE id = ${stepId};`;
+              await tx.$queryRaw`DELETE FROM "Location" WHERE id = ${step.locationId}`;
+
+              const currentStepOrder = await tx.form.findUnique({
+                where: {
+                  id: step.formOfDraftStepId!,
+                },
+                select: {
+                  stepOrder: true,
+                },
+              });
+
+              if (!currentStepOrder) {
+                throw new Error("Form not found");
+              }
+
+              await tx.form.update({
+                where: {
+                  id: step.formOfDraftStepId!,
+                },
+                data: {
+                  stepOrder: {
+                    set: currentStepOrder.stepOrder.filter(
+                      (id) => id !== stepId
+                    ),
+                  },
+                },
+              });
+            });
           },
 
           findManyWithLocation: async ({
@@ -89,8 +126,7 @@ export function stepsExtension() {
               SELECT "Step".*, ST_X("Location".geom) AS longitude, ST_Y("Location".geom) AS latitude
               FROM "Step"
               LEFT JOIN "Location" ON "Step"."locationId" = "Location".id
-              WHERE "Step"."formOfDraftStepId" = ${formId}
-              ORDER BY "Step"."order" ASC;
+              WHERE "Step"."formOfDraftStepId" = ${formId};
             `;
           },
         },

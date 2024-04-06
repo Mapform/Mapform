@@ -16,7 +16,7 @@ import {
 import { arrayMove, SortableContext } from "@dnd-kit/sortable";
 import { env } from "~/env.mjs";
 import type { FormType, StepsType } from "../actions";
-import { createStep, updateStep } from "../actions";
+import { createStep, updateManySteps, updateStep } from "../actions";
 import { Draggable } from "./draggable";
 import { Sidebar } from "./sidebar";
 // TODO. Temporary. Should get initial view state from previous step, or from user location
@@ -100,10 +100,25 @@ export function Container({
     if (!e.over) return;
 
     if (e.active.id !== e.over.id) {
-      const oldOrder = steps.find((step) => step.id === e.active.id)?.order;
-      const newOrder = steps.find((step) => step.id === e.over?.id)?.order;
+      const activeStep = steps.find((step) => step.id === e.active.id);
+      const overStep = steps.find((step) => step.id === e.over?.id);
 
-      console.log(11111, oldOrder, newOrder);
+      if (!activeStep || !overStep) return;
+
+      const newStepList = arrayMove(
+        steps,
+        activeStep.order - 1,
+        overStep.order - 1
+      );
+      console.log(1111111, newStepList);
+
+      await updateManySteps({
+        where: {
+          formOfDraftStepId: form.id,
+        },
+        data: {},
+      });
+
       // setGamesList((gamesList) => {
       //   return arrayMove(gamesList, oldIdx, newIdx);
       // });
@@ -120,14 +135,22 @@ export function Container({
               mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
               onDescriptionChange={async (content: string) => {
                 await debouncedUpdateStep({
-                  stepId: s,
-                  description: content,
+                  where: {
+                    id: s,
+                  },
+                  data: {
+                    description: content,
+                  },
                 });
               }}
               onTitleChange={async (content: string) => {
                 await debouncedUpdateStep({
-                  stepId: s,
-                  title: content,
+                  where: {
+                    id: s,
+                  },
+                  data: {
+                    title: content,
+                  },
                 });
               }}
               ref={map}
