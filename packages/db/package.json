@@ -2,16 +2,14 @@
   "name": "@mapform/db",
   "version": "0.1.0",
   "main": "index.ts",
-  "type": "module",
   "scripts": {
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:studio": "prisma studio",
-    "postinstall": "prisma generate",
-    "seed": "node --loader ts-node/esm prisma/seed.ts"
+    "postinstall": "prisma generate"
   },
   "prisma": {
-    "seed": "node --loader ts-node/esm prisma/seed.ts"
+    "seed": "ts-node --transpile-only --compiler-options {\"module\":\"CommonJS\"} ./prisma/seed.ts"
   },
   "devDependencies": {
     "@types/node": "^20.11.24",
@@ -19,7 +17,8 @@
     "@types/ws": "^8.5.10",
     "prisma": "^5.11.0",
     "ts-node": "^10.9.2",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "zod-prisma-types": "^3.1.6"
   },
   "dependencies": {
     "@mapform/typescript-config": "workspace:*",
@@ -28,7 +27,8 @@
     "@prisma/client": "^5.11.0",
     "dotenv": "^16.4.5",
     "uuid": "^9.0.1",
-    "ws": "^8.16.0"
+    "ws": "^8.16.0",
+    "zod": "3.21.1"
   },
   "optionalDependencies": {
     "bufferutil": "^4.0.8"

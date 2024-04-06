@@ -6,6 +6,15 @@ generator client {
     previewFeatures = ["driverAdapters", "postgresqlExtensions"]
 }
 
+generator zod {
+    provider                  = "zod-prisma-types"
+    output                    = "./zod"
+    // addIncludeType         = false
+    // addSelectType          = false
+    // addInputTypeValidation = false
+    createRelationValuesTypes = true
+}
+
 datasource db {
     provider   = "postgresql"
     url        = env("DATABASE_URL")
