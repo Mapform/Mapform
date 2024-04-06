@@ -1,5 +1,10 @@
 import { MapProvider } from "@mapform/mapform";
-import { getForm, getSteps } from "./actions";
+import {
+  dehydrate,
+  HydrationBoundary,
+  QueryClient,
+} from "@tanstack/react-query";
+import { getFormWithSteps } from "./actions";
 import { Container } from "./container";
 
 export default async function Workspace({
@@ -7,21 +12,26 @@ export default async function Workspace({
 }: {
   params: { formSlug: string; orgSlug: string; workspaceSlug: string };
 }) {
-  const form = await getForm(
-    params.formSlug.toLocaleLowerCase(),
-    params.workspaceSlug.toLocaleLowerCase(),
-    params.orgSlug.toLocaleLowerCase()
-  );
-
-  if (!form) {
-    return <div>Form does not exist.</div>;
-  }
-
-  const steps = await getSteps(form.id);
+  const queryClient = new QueryClient();
+  await queryClient.prefetchQuery({
+    queryKey: ["forms", params.formSlug, params.workspaceSlug, params.orgSlug],
+    queryFn: () =>
+      getFormWithSteps(
+        params.formSlug.toLocaleLowerCase(),
+        params.workspaceSlug.toLocaleLowerCase(),
+        params.orgSlug.toLocaleLowerCase()
+      ),
+  });
 
   return (
-    <MapProvider>
-      <Container form={form} steps={steps} />
-    </MapProvider>
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <MapProvider>
+        <Container
+          formSlug={params.formSlug}
+          orgSlug={params.orgSlug}
+          workspaceSlug={params.workspaceSlug}
+        />
+      </MapProvider>
+    </HydrationBoundary>
   );
 }

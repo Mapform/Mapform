@@ -14,14 +14,15 @@ import {
   useSensors,
 } from "@dnd-kit/core";
 import { arrayMove, SortableContext } from "@dnd-kit/sortable";
+import { useQuery } from "@tanstack/react-query";
 import { env } from "~/env.mjs";
-import type { FormType, StepsType } from "../actions";
 import {
   createStep,
-  updateManySteps,
   updateStep,
   updateForm,
+  getFormWithSteps,
 } from "../actions";
+import { type StepsType } from "../actions";
 import { Draggable } from "./draggable";
 import { Sidebar } from "./sidebar";
 // TODO. Temporary. Should get initial view state from previous step, or from user location
@@ -40,20 +41,24 @@ const initialViewState = {
 };
 
 export function Container({
-  form,
-  steps,
+  formSlug,
+  orgSlug,
+  workspaceSlug,
 }: {
-  form: NonNullable<FormType>;
-  steps: NonNullable<StepsType>;
+  formSlug: string;
+  orgSlug: string;
+  workspaceSlug: string;
 }) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const s = searchParams.get("s");
   const [viewState, setViewState] = useState<ViewState>(initialViewState);
-  const createStepWithFromId = createStep.bind(null, form.id, viewState);
   const map = useRef<MapRef>(null);
-  const [isDropped, setIsDropped] = useState(false);
+  const { data, error, isLoading } = useQuery({
+    queryKey: ["forms", formSlug, workspaceSlug, orgSlug],
+    queryFn: () => getFormWithSteps(formSlug, workspaceSlug, orgSlug),
+  });
 
   const createQueryString = useCallback(
     (name: string, value: string) => {
@@ -77,10 +82,10 @@ export function Container({
   };
 
   useEffect(() => {
-    if (steps[0] && !s) {
-      router.push(`${pathname}?${createQueryString("s", steps[0].id)}`);
+    if (data?.steps[0] && !s) {
+      router.push(`${pathname}?${createQueryString("s", data.steps[0].id)}`);
     }
-  }, [s, steps, pathname, router, createQueryString]);
+  }, [s, data?.steps, pathname, router, createQueryString]);
 
   const debouncedUpdateStep = useDebounce(updateStep, 500);
 
@@ -95,34 +100,45 @@ export function Container({
     })
   );
 
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
+
+  if (!data) {
+    return null;
+  }
+
   if (!s) {
     return null;
   }
 
-  const currentStep = steps.find((step) => step.id === s);
+  const createStepWithFromId = createStep.bind(null, data.id, viewState);
+  const currentStep = data.steps.find((step) => step.id === s);
 
   const reorderSteps = async (e: DragEndEvent) => {
     if (!e.over) return;
 
     if (e.active.id !== e.over.id) {
-      const activeStepIndex = form.stepOrder.findIndex(
+      const activeStepIndex = data.stepOrder.findIndex(
         (id) => id === e.active.id
       );
-      const overStepIndex = form.stepOrder.findIndex((id) => id === e.over?.id);
+      const overStepIndex = data.stepOrder.findIndex((id) => id === e.over?.id);
 
       if (activeStepIndex < 0 || overStepIndex < 0) return;
 
       const newStepList = arrayMove(
-        form.stepOrder,
+        data.stepOrder,
         activeStepIndex,
         overStepIndex
       );
 
-      console.log(111111, newStepList);
-
       await updateForm({
         where: {
-          id: form.id,
+          id: data.id,
         },
         data: {
           stepOrder: newStepList,
@@ -178,8 +194,8 @@ export function Container({
           </form>
           <DndContext onDragEnd={reorderSteps} sensors={sensors}>
             <div className="flex gap-1">
-              <SortableContext items={steps}>
-                {steps.map((step) => (
+              <SortableContext items={data.steps}>
+                {data.steps.map((step) => (
                   <Draggable id={step.id} key={step.id}>
                     <button
                       className="bg-blue-200 py-2 px-4 rounded-md"

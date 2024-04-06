@@ -52,16 +52,29 @@ export const createStep = async (
   revalidatePath("/");
 };
 
-export const getForm = async (
+export const getFormWithSteps = async (
   formSlug: string,
   workspaceSlug: string,
   orgSlug: string
 ) => {
-  return formModel.findOne({
+  const form = await formModel.findOne({
     slug: formSlug.toLocaleLowerCase(),
     workspaceSlug: workspaceSlug.toLocaleLowerCase(),
     organizationSlug: orgSlug.toLocaleLowerCase(),
   });
+
+  if (!form) {
+    return null;
+  }
+
+  const steps = await prisma.step.findManyWithLocation({
+    formId: form.id,
+  });
+
+  return {
+    ...form,
+    steps,
+  };
 };
 
 export const updateForm = async (
@@ -151,5 +164,4 @@ export const deleteStep = async (stepId: string) => {
   revalidatePath("/");
 };
 
-export type FormType = Awaited<ReturnType<typeof getForm>>;
 export type StepsType = Awaited<ReturnType<typeof getSteps>>;

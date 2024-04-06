@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "@mapform/ui/globals.css";
 import { cn } from "@mapform/lib/classnames";
+import Providers from "~/components/Providers";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -16,8 +17,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="h-full">
-      <body className={cn("h-full", inter.className)}>{children}</body>
+    <html className="h-full" lang="en">
+      <Providers>
+        <body className={cn("h-full", inter.className)}>{children}</body>
+      </Providers>
     </html>
   );
 }
