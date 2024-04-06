@@ -5,6 +5,7 @@ import { prisma } from "@mapform/db";
 import { revalidatePath } from "next/cache";
 import { formModel } from "@mapform/db/models";
 import {
+  FormUpdateArgsSchema,
   StepUpdateArgsSchema,
   StepUpdateManyArgsSchema,
 } from "@mapform/db/prisma/zod";
@@ -61,6 +62,23 @@ export const getForm = async (
     workspaceSlug: workspaceSlug.toLocaleLowerCase(),
     organizationSlug: orgSlug.toLocaleLowerCase(),
   });
+};
+
+export const updateForm = async (
+  input: z.infer<typeof FormUpdateArgsSchema>
+) => {
+  const validatedFields = FormUpdateArgsSchema.safeParse(input);
+
+  // Return early if the form data is invalid
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+    };
+  }
+
+  await prisma.form.update(validatedFields.data);
+
+  revalidatePath("/");
 };
 
 export const getSteps = (formId: string) => {

@@ -16,7 +16,12 @@ import {
 import { arrayMove, SortableContext } from "@dnd-kit/sortable";
 import { env } from "~/env.mjs";
 import type { FormType, StepsType } from "../actions";
-import { createStep, updateManySteps, updateStep } from "../actions";
+import {
+  createStep,
+  updateManySteps,
+  updateStep,
+  updateForm,
+} from "../actions";
 import { Draggable } from "./draggable";
 import { Sidebar } from "./sidebar";
 // TODO. Temporary. Should get initial view state from previous step, or from user location
@@ -100,23 +105,28 @@ export function Container({
     if (!e.over) return;
 
     if (e.active.id !== e.over.id) {
-      const activeStep = steps.find((step) => step.id === e.active.id);
-      const overStep = steps.find((step) => step.id === e.over?.id);
+      const activeStepIndex = form.stepOrder.findIndex(
+        (id) => id === e.active.id
+      );
+      const overStepIndex = form.stepOrder.findIndex((id) => id === e.over?.id);
 
-      if (!activeStep || !overStep) return;
+      if (activeStepIndex < 0 || overStepIndex < 0) return;
 
       const newStepList = arrayMove(
-        steps,
-        activeStep.order - 1,
-        overStep.order - 1
+        form.stepOrder,
+        activeStepIndex,
+        overStepIndex
       );
-      console.log(1111111, newStepList);
 
-      await updateManySteps({
+      console.log(111111, newStepList);
+
+      await updateForm({
         where: {
-          formOfDraftStepId: form.id,
+          id: form.id,
         },
-        data: {},
+        data: {
+          stepOrder: newStepList,
+        },
       });
 
       // setGamesList((gamesList) => {
