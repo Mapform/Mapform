@@ -14,7 +14,7 @@ import {
   useSensors,
 } from "@dnd-kit/core";
 import { arrayMove, SortableContext } from "@dnd-kit/sortable";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { env } from "~/env.mjs";
 import {
   createStep,
@@ -25,6 +25,8 @@ import {
 import { type StepsType } from "../actions";
 import { Draggable } from "./draggable";
 import { Sidebar } from "./sidebar";
+import { z } from "zod";
+import { FormUpdateArgsSchema } from "@mapform/db/prisma/zod";
 // TODO. Temporary. Should get initial view state from previous step, or from user location
 const initialViewState = {
   longitude: -122.4,
@@ -53,11 +55,49 @@ export function Container({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const s = searchParams.get("s");
+  const queryClient = useQueryClient();
   const [viewState, setViewState] = useState<ViewState>(initialViewState);
   const map = useRef<MapRef>(null);
   const { data, error, isLoading } = useQuery({
     queryKey: ["forms", formSlug, workspaceSlug, orgSlug],
     queryFn: () => getFormWithSteps(formSlug, workspaceSlug, orgSlug),
+  });
+  const { mutateAsync } = useMutation({
+    mutationFn: updateForm,
+    onMutate: async (args: z.infer<typeof FormUpdateArgsSchema>) => {
+      await queryClient.cancelQueries({
+        queryKey: ["forms", formSlug, workspaceSlug, orgSlug],
+      });
+
+      // Snapshot the previous value
+      const previousForm = queryClient.getQueryData([
+        "forms",
+        formSlug,
+        workspaceSlug,
+        orgSlug,
+      ]) as any;
+
+      const newForm = {
+        ...previousForm,
+        stepOrder: args.data.stepOrder,
+        steps: [...previousForm.steps].sort(
+          (a, b) =>
+            args.data.stepOrder.indexOf(a.id) -
+            args.data.stepOrder.indexOf(b.id)
+        ),
+      };
+
+      console.log(11111, previousForm, newForm);
+
+      // Optimistically update to the new value
+      queryClient.setQueryData(
+        ["forms", formSlug, workspaceSlug, orgSlug],
+        newForm
+      );
+
+      // Return a context with the previous and new todo
+      return { previousForm, newForm };
+    },
   });
 
   const createQueryString = useCallback(
@@ -116,6 +156,8 @@ export function Container({
     return null;
   }
 
+  console.log(99999, data);
+
   const createStepWithFromId = createStep.bind(null, data.id, viewState);
   const currentStep = data.steps.find((step) => step.id === s);
 
@@ -136,7 +178,7 @@ export function Container({
         overStepIndex
       );
 
-      await updateForm({
+      await mutateAsync({
         where: {
           id: data.id,
         },
@@ -144,10 +186,6 @@ export function Container({
           stepOrder: newStepList,
         },
       });
-
-      // setGamesList((gamesList) => {
-      //   return arrayMove(gamesList, oldIdx, newIdx);
-      // });
     }
   };
 
