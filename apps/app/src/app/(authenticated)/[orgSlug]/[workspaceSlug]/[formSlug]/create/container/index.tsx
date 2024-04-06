@@ -188,7 +188,7 @@ export function Container({
   return (
     <div className="flex flex-1">
       <div className="flex flex-col flex-1">
-        <div className="h-[500px] w-full p-4 bg-slate-100 inset-0  bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px]">
+        <div className="flex-1 w-full p-4 bg-slate-100 inset-0  bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px]">
           <div className="shadow h-full w-full rounded-md overflow-hidden">
             <MapForm
               currentStep={currentStep}
@@ -221,7 +221,7 @@ export function Container({
             />
           </div>
         </div>
-        <div className="border-t">
+        <div className="border-t p-4">
           <form action={createStepWithFromId}>
             <input name="type" value="CONTENT" />
             <Button>New step</Button>
