@@ -122,11 +122,10 @@ model Step {
 }
 
 model ContentStep {
-    id       String  @id @default(uuid())
-    value    String  @db.VarChar(255)
-    required Boolean @default(false)
-    stepId   String  @unique
-    step     Step    @relation(fields: [stepId], references: [id])
+    id     String @id @default(uuid())
+    value  String @db.VarChar(255)
+    stepId String @unique
+    step   Step   @relation(fields: [stepId], references: [id])
 }
 
 model ShortTextStep {

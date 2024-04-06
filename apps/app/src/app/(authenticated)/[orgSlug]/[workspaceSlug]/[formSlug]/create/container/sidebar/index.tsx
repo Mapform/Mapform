@@ -8,7 +8,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@mapform/ui/components/select";
+import type { StepType } from "@mapform/db";
 import { deleteStep } from "../../actions";
+
+const steps: { value: StepType; label: string }[] = [
+  { value: "SHORT_TEXT", label: "Short Text" },
+  { value: "LONG_TEXT", label: "Long Text" },
+  { value: "CONTENT", label: "Content" },
+  { value: "YES_NO", label: "Yes / No" },
+];
 
 export function Sidebar({ stepId }: { stepId?: string }) {
   return (
@@ -17,12 +25,14 @@ export function Sidebar({ stepId }: { stepId?: string }) {
         <>
           <Select>
             <SelectTrigger>
-              <SelectValue placeholder="Theme" />
+              <SelectValue placeholder="Type" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="light">Light</SelectItem>
-              <SelectItem value="dark">Dark</SelectItem>
-              <SelectItem value="system">System</SelectItem>
+              {steps.map((step) => (
+                <SelectItem key={step.value} value={step.value}>
+                  {step.label}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
           <Button onClick={() => deleteStep(stepId)} variant="destructive">

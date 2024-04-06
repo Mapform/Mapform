@@ -71,6 +71,12 @@ export function stepsExtension() {
             return prisma.$transaction([
               prisma.$queryRaw`DELETE FROM "Step" WHERE id = ${stepId};`,
               prisma.$queryRaw`DELETE FROM "Location" WHERE id = ${step.locationId}`,
+              // Update the order of the remaining steps
+              prisma.$queryRaw`
+                UPDATE "Step"
+                SET "order" = "order" - 1
+                WHERE "formOfDraftStepId" = ${step.formOfDraftStepId}
+                AND "order" > ${step.order}`,
             ]);
           },
 
