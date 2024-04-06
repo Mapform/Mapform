@@ -27,6 +27,7 @@ model User {
     id                      String                   @id // Clerk id
     firstName               String
     lastName                String
+    /// @zod.string.email()
     email                   String
     imageUrl                String?
     organizationMemberships OrganizationMembership[]
