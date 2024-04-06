@@ -15,6 +15,8 @@ import {
 } from "@dnd-kit/core";
 import { arrayMove, SortableContext } from "@dnd-kit/sortable";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import type { z } from "zod";
+import type { FormUpdateArgsSchema } from "@mapform/db/prisma/zod";
 import { env } from "~/env.mjs";
 import {
   createStep,
@@ -25,8 +27,6 @@ import {
 import { type StepsType } from "../actions";
 import { Draggable } from "./draggable";
 import { Sidebar } from "./sidebar";
-import { z } from "zod";
-import { FormUpdateArgsSchema } from "@mapform/db/prisma/zod";
 // TODO. Temporary. Should get initial view state from previous step, or from user location
 const initialViewState = {
   longitude: -122.4,
@@ -75,7 +75,7 @@ export function Container({
         formSlug,
         workspaceSlug,
         orgSlug,
-      ]) as any;
+      ]);
 
       const newForm = {
         ...previousForm,
@@ -86,8 +86,6 @@ export function Container({
             args.data.stepOrder.indexOf(b.id)
         ),
       };
-
-      console.log(11111, previousForm, newForm);
 
       // Optimistically update to the new value
       queryClient.setQueryData(
@@ -155,8 +153,6 @@ export function Container({
   if (!s) {
     return null;
   }
-
-  console.log(99999, data);
 
   const createStepWithFromId = createStep.bind(null, data.id, viewState);
   const currentStep = data.steps.find((step) => step.id === s);
@@ -238,7 +234,6 @@ export function Container({
                     <button
                       className="bg-blue-200 py-2 px-4 rounded-md"
                       onClick={() => {
-                        console.log(11111);
                         setCurrentStep(step);
                       }}
                       type="button"

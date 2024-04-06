@@ -117,17 +117,38 @@ export function stepsExtension() {
             });
           },
 
+          // Order by Form.stepOrder using WITH ORDINALITY
           findManyWithLocation: async ({
             formId,
           }: {
             formId: string;
           }): Promise<(Step & { latitude: number; longitude: number })[]> => {
-            return prisma.$queryRaw`
+            const steps = await prisma.$queryRaw`
               SELECT "Step".*, ST_X("Location".geom) AS longitude, ST_Y("Location".geom) AS latitude
               FROM "Step"
               LEFT JOIN "Location" ON "Step"."locationId" = "Location".id
               WHERE "Step"."formOfDraftStepId" = ${formId};
             `;
+
+            const form = await prisma.form.findUnique({
+              where: {
+                id: formId,
+              },
+              select: {
+                stepOrder: true,
+              },
+            });
+
+            if (!form) {
+              throw new Error("Form not found");
+            }
+
+            // Order the steps according to the form's stepOrder
+            const orderedSteps = form.stepOrder.map((id) => {
+              return steps.find((step) => step.id === id);
+            });
+
+            return orderedSteps;
           },
         },
       },
