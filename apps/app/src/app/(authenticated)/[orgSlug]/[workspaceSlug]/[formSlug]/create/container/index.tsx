@@ -20,7 +20,7 @@ import {
   SortableContext,
 } from "@dnd-kit/sortable";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import type { z } from "zod";
+import { type z } from "zod";
 import type { FormUpdateArgsSchema } from "@mapform/db/prisma/zod";
 import { env } from "~/env.mjs";
 import {
@@ -65,6 +65,7 @@ export function Container({
   const queryClient = useQueryClient();
   const [viewState, setViewState] = useState<ViewState>(initialViewState);
   const map = useRef<MapRef>(null);
+  // We hold the steps in its own React state due to this issue: https://github.com/clauderic/dnd-kit/issues/921
   const [dragSteps, setDragSteps] = useState<FormWithSteps["steps"]>([]);
   const { data, error, isLoading } = useQuery({
     queryKey: ["forms", formSlug, workspaceSlug, orgSlug],
@@ -178,33 +179,32 @@ export function Container({
   }
 
   const createStepWithFromId = createStep.bind(null, data.id, viewState);
-  const currentStep = data.steps.find((step) => step.id === s);
+  const currentStep = dragSteps.find((step) => step.id === s);
 
   const reorderSteps = async (e: DragEndEvent) => {
     if (!e.over) return;
 
     if (e.active.id !== e.over.id) {
-      const activeStepIndex = data.stepOrder.findIndex(
-        (id) => id === e.active.id
+      const activeStepIndex = dragSteps.findIndex(
+        (step) => step.id === e.active.id
       );
-      const overStepIndex = data.stepOrder.findIndex((id) => id === e.over?.id);
+      const overStepIndex = dragSteps.findIndex(
+        (step) => step.id === e.over?.id
+      );
 
       if (activeStepIndex < 0 || overStepIndex < 0) return;
 
-      const newStepList = arrayMove(
-        data.stepOrder,
-        activeStepIndex,
-        overStepIndex
-      );
+      const newStepList = arrayMove(dragSteps, activeStepIndex, overStepIndex);
+      setDragSteps(newStepList);
 
-      // await mutateAsync({
-      //   where: {
-      //     id: data.id,
-      //   },
-      //   data: {
-      //     stepOrder: newStepList,
-      //   },
-      // });
+      await mutateAsync({
+        where: {
+          id: data.id,
+        },
+        data: {
+          stepOrder: newStepList.map((step) => step.id),
+        },
+      });
     }
   };
 
@@ -259,7 +259,7 @@ export function Container({
                 items={dragSteps}
                 strategy={horizontalListSortingStrategy}
               >
-                {data.steps.map((step) => (
+                {dragSteps.map((step) => (
                   <Draggable id={step.id} key={step.id}>
                     <button
                       className="bg-blue-200 py-2 px-4 rounded-md"

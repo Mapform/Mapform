@@ -13,7 +13,7 @@ export function Draggable({
     useSortable({
       id,
       transition: {
-        duration: 1000, // milliseconds
+        duration: 500,
         easing: "cubic-bezier(0.25, 1, 0.5, 1)",
       },
     });
