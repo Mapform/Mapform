@@ -20,7 +20,7 @@ const steps: { value: StepType; label: string }[] = [
 
 export function Sidebar({ stepId }: { stepId?: string }) {
   return (
-    <div className="w-[400px] border-l p-4">
+    <div className="w-[400px] border-l p-4 flex-shrink-0">
       {stepId ? (
         <>
           <Select>

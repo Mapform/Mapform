@@ -210,8 +210,8 @@ export function Container({
 
   return (
     <div className="flex flex-1">
-      <div className="flex flex-col flex-1">
-        <div className="flex-1 w-full p-4 bg-slate-100 inset-0  bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px]">
+      <div className="flex flex-col flex-1 overflow-hidden">
+        <div className="flex-1 p-4 bg-slate-100 inset-0  bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px]">
           <div className="shadow h-full w-full rounded-md overflow-hidden">
             <MapForm
               currentStep={currentStep}
@@ -244,8 +244,8 @@ export function Container({
             />
           </div>
         </div>
-        <div className="border-t p-4">
-          <form action={createStepWithFromId}>
+        <div className="border-t">
+          <form action={createStepWithFromId} className="p-4">
             <input name="type" value="CONTENT" />
             <Button>New step</Button>
           </form>
@@ -254,7 +254,7 @@ export function Container({
             onDragEnd={reorderSteps}
             sensors={sensors}
           >
-            <div className="flex gap-1">
+            <div className="flex gap-2 overflow-x-auto pb-4">
               <SortableContext
                 items={dragSteps}
                 strategy={horizontalListSortingStrategy}
