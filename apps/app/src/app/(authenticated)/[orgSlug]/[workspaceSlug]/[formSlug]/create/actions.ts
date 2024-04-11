@@ -100,28 +100,6 @@ export const getSteps = (formId: string) => {
   });
 };
 
-// export const updateStep = async ({
-//   title,
-//   description,
-//   stepId,
-// }: {
-//   title?: string;
-//   description?: string;
-//   stepId: string;
-// }) => {
-//   await prisma.step.update({
-//     where: {
-//       id: stepId,
-//     },
-//     data: {
-//       title,
-//       description,
-//     },
-//   });
-
-//   revalidatePath("/");
-// };
-
 export const updateStep = async (
   input: z.infer<typeof StepUpdateArgsSchema>
 ) => {

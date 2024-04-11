@@ -75,15 +75,19 @@ export function Container({
         formSlug,
         workspaceSlug,
         orgSlug,
-      ]);
+      ]) as Awaited<ReturnType<typeof getFormWithSteps>> | null;
+
+      if (!previousForm) {
+        return;
+      }
 
       const newForm = {
         ...previousForm,
         stepOrder: args.data.stepOrder,
         steps: [...previousForm.steps].sort(
           (a, b) =>
-            args.data.stepOrder.indexOf(a.id) -
-            args.data.stepOrder.indexOf(b.id)
+            (args.data.stepOrder as string[]).indexOf(a.id) -
+            (args.data.stepOrder as string[]).indexOf(b.id)
         ),
       };
 
