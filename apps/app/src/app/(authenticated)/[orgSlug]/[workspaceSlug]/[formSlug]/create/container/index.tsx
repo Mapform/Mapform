@@ -10,10 +10,15 @@ import type { DragEndEvent } from "@dnd-kit/core";
 import {
   DndContext,
   PointerSensor,
+  closestCenter,
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
-import { arrayMove, SortableContext } from "@dnd-kit/sortable";
+import {
+  arrayMove,
+  horizontalListSortingStrategy,
+  SortableContext,
+} from "@dnd-kit/sortable";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import type { z } from "zod";
 import type { FormUpdateArgsSchema } from "@mapform/db/prisma/zod";
@@ -42,6 +47,8 @@ const initialViewState = {
   },
 };
 
+type FormWithSteps = NonNullable<Awaited<ReturnType<typeof getFormWithSteps>>>;
+
 export function Container({
   formSlug,
   orgSlug,
@@ -58,9 +65,21 @@ export function Container({
   const queryClient = useQueryClient();
   const [viewState, setViewState] = useState<ViewState>(initialViewState);
   const map = useRef<MapRef>(null);
+  const [dragSteps, setDragSteps] = useState<FormWithSteps["steps"]>([]);
   const { data, error, isLoading } = useQuery({
     queryKey: ["forms", formSlug, workspaceSlug, orgSlug],
-    queryFn: () => getFormWithSteps(formSlug, workspaceSlug, orgSlug),
+    queryFn: async () => {
+      const formWithSteps = await getFormWithSteps(
+        formSlug,
+        workspaceSlug,
+        orgSlug
+      );
+
+      if (formWithSteps) {
+        setDragSteps(formWithSteps.steps);
+      }
+      return formWithSteps;
+    },
   });
   const { mutateAsync } = useMutation({
     mutationFn: updateForm,
@@ -75,7 +94,7 @@ export function Container({
         formSlug,
         workspaceSlug,
         orgSlug,
-      ]) as Awaited<ReturnType<typeof getFormWithSteps>> | null;
+      ]) as FormWithSteps | null;
 
       if (!previousForm) {
         return;
@@ -178,14 +197,14 @@ export function Container({
         overStepIndex
       );
 
-      await mutateAsync({
-        where: {
-          id: data.id,
-        },
-        data: {
-          stepOrder: newStepList,
-        },
-      });
+      // await mutateAsync({
+      //   where: {
+      //     id: data.id,
+      //   },
+      //   data: {
+      //     stepOrder: newStepList,
+      //   },
+      // });
     }
   };
 
@@ -230,9 +249,16 @@ export function Container({
             <input name="type" value="CONTENT" />
             <Button>New step</Button>
           </form>
-          <DndContext onDragEnd={reorderSteps} sensors={sensors}>
+          <DndContext
+            collisionDetection={closestCenter}
+            onDragEnd={reorderSteps}
+            sensors={sensors}
+          >
             <div className="flex gap-1">
-              <SortableContext items={data.steps}>
+              <SortableContext
+                items={dragSteps}
+                strategy={horizontalListSortingStrategy}
+              >
                 {data.steps.map((step) => (
                   <Draggable id={step.id} key={step.id}>
                     <button
