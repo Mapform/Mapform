@@ -38,11 +38,11 @@ export function StackedLayout({
       <Disclosure as="nav" className="bg-white shadow-sm">
         {({ open }) => (
           <>
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-              <div className="flex h-16 justify-between">
+            <div className="mx-auto px-4">
+              <div className="flex h-16 justify-between items-center">
                 <div className="flex">
                   <div className="flex flex-shrink-0 items-center">
-                    <img
+                    {/* <img
                       alt="Your Company"
                       className="block h-8 w-auto lg:hidden"
                       src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
@@ -51,7 +51,8 @@ export function StackedLayout({
                       alt="Your Company"
                       className="hidden h-8 w-auto lg:block"
                       src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
-                    />
+                    /> */}
+                    <span className="text-xl font-semibold">MF</span>
                   </div>
                   {/* TODO: Remove in favour of custom switcher */}
                   <div className="hidden sm:-my-px sm:ml-6 sm:flex sm:space-x-8">
