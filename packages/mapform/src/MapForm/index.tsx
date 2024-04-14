@@ -11,6 +11,7 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import { forwardRef } from "react";
 import type { Step } from "@mapform/db";
 import { Tiptap } from "./TipTap";
+import { Blocknote } from "./Blocknote";
 
 type ExtendedStep = Step & { latitude: number; longitude: number };
 
@@ -81,13 +82,14 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
     return (
       <div className="flex w-full h-full">
         <div className="w-64 flex-shrink-0 bg-background p-4">
-          <Tiptap
+          {/* <Tiptap
             description={currentStep.description || undefined}
             id={currentStep.id}
             onDescriptionChange={onDescriptionChange}
             onTitleChange={onTitleChange}
             title={currentStep.title || undefined}
-          />
+          /> */}
+          <Blocknote />
         </div>
         <Map
           {...viewState}
