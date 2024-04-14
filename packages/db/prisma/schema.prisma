@@ -105,7 +105,7 @@ enum StepType {
 model Step {
     id          String  @id @default(uuid())
     title       String?
-    description String?
+    description Json?
     zoom        Int
     pitch       Int
     bearing     Int

@@ -6,12 +6,12 @@ import type {
   ViewState,
   ViewStateChangeEvent,
 } from "react-map-gl";
-import Map, { Layer, MapProvider, useMap } from "react-map-gl";
+import Map, { MapProvider, useMap } from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { forwardRef } from "react";
 import type { Step } from "@mapform/db";
-import { Tiptap } from "./TipTap";
-import { Blocknote } from "./Blocknote";
+import type { Block } from "@blocknote/core";
+import { Blocknote } from "./blocknote";
 
 type ExtendedStep = Step & { latitude: number; longitude: number };
 
@@ -21,7 +21,7 @@ interface MapFormProps {
   viewState: ViewState;
   setViewState: (viewState: ViewStateChangeEvent) => void;
   onTitleChange?: (content: string) => void;
-  onDescriptionChange?: (content: string) => void;
+  onDescriptionChange?: (content: { content: Block[] }) => void;
 }
 
 /**
@@ -82,14 +82,15 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
     return (
       <div className="flex w-full h-full">
         <div className="w-64 flex-shrink-0 bg-background p-4">
-          {/* <Tiptap
-            description={currentStep.description || undefined}
-            id={currentStep.id}
+          <Blocknote
+            description={currentStep.description as { content: Block[] }}
+            // Need key to force re-render, otherwise Blocknote state doesn't
+            // change when changing steps
+            key={currentStep.id}
             onDescriptionChange={onDescriptionChange}
             onTitleChange={onTitleChange}
-            title={currentStep.title || undefined}
-          /> */}
-          <Blocknote />
+            title={currentStep.title}
+          />
         </div>
         <Map
           {...viewState}

@@ -216,7 +216,7 @@ export function Container({
             <MapForm
               currentStep={currentStep}
               mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
-              onDescriptionChange={async (content: string) => {
+              onDescriptionChange={async (content: { content: any[] }) => {
                 await debouncedUpdateStep({
                   where: {
                     id: s,
