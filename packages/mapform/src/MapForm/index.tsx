@@ -1,11 +1,6 @@
 "use client";
 
-import type {
-  FillLayer,
-  MapRef,
-  ViewState,
-  ViewStateChangeEvent,
-} from "react-map-gl";
+import type { MapRef, ViewState, ViewStateChangeEvent } from "react-map-gl";
 import Map, { MapProvider, useMap } from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { forwardRef } from "react";
@@ -23,45 +18,6 @@ interface MapFormProps {
   onTitleChange?: (content: string) => void;
   onDescriptionChange?: (content: { content: Block[] }) => void;
 }
-
-/**
- * TODO: This adds 3D buildings to the map, but there might be a better way
- * https://github.com/alex3165/react-mapbox-gl/issues/79
- */
-const parkLayer: FillLayer = {
-  id: "add-3d-buildings",
-  source: "composite",
-  "source-layer": "building",
-  filter: ["==", "extrude", "true"],
-  type: "fill-extrusion",
-  minzoom: 15,
-  paint: {
-    "fill-extrusion-color": "#e6e4e0",
-
-    // Use an 'interpolate' expression to
-    // add a smooth transition effect to
-    // the buildings as the user zooms in.
-    "fill-extrusion-height": [
-      "interpolate",
-      ["linear"],
-      ["zoom"],
-      15,
-      0,
-      15.05,
-      ["get", "height"],
-    ],
-    "fill-extrusion-base": [
-      "interpolate",
-      ["linear"],
-      ["zoom"],
-      15,
-      0,
-      15.05,
-      ["get", "min_height"],
-    ],
-    "fill-extrusion-opacity": 0.6,
-  },
-};
 
 export const MapForm = forwardRef<MapRef, MapFormProps>(
   (
@@ -81,7 +37,7 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
 
     return (
       <div className="flex w-full h-full">
-        <div className="w-64 flex-shrink-0 bg-background p-4">
+        <div className="max-w-[320px] w-full flex-shrink-0 bg-background p-4">
           <Blocknote
             description={currentStep.description as { content: Block[] }}
             // Need key to force re-render, otherwise Blocknote state doesn't
@@ -95,14 +51,11 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
         <Map
           {...viewState}
           mapStyle="mapbox://styles/nichaley/clsxaiasf00ue01qjfhtt2v81"
-          // mapStyle="mapbox://styles/mapbox/streets-v12"
           mapboxAccessToken={mapboxAccessToken}
           onMove={setViewState}
           ref={ref}
           style={{ flex: 1 }}
-        >
-          {/* <Layer {...parkLayer} /> */}
-        </Map>
+        />
       </div>
     );
   }
