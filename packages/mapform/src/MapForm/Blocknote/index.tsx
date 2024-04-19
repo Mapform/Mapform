@@ -17,10 +17,10 @@ import {
 } from "@blocknote/react";
 import "@blocknote/react/style.css";
 import { TextIcon } from "lucide-react";
+import { Button } from "@mapform/ui/components/button";
 import { Form, useForm } from "@mapform/ui/components/form";
 import { ShortTextInput } from "./custom-blocks/short-text-input";
 import "./style.css";
-import { Button } from "@mapform/ui/components/button";
 
 const schema = BlockNoteSchema.create({
   blockSpecs: {
@@ -30,17 +30,21 @@ const schema = BlockNoteSchema.create({
   },
 });
 
+type CustomBlock = typeof schema.Block;
+
 interface BlocknoteProps {
+  editable: boolean;
   title?: string | null;
   description?: {
     content: Block[];
   };
   onTitleChange?: (content: string) => void;
-  onDescriptionChange?: (content: { content: Block[] }) => void;
+  onDescriptionChange?: (content: { content: CustomBlock[] }) => void;
 }
 
 export function Blocknote({
   title,
+  editable,
   description,
   onTitleChange,
   onDescriptionChange,
@@ -61,10 +65,10 @@ export function Blocknote({
     schema,
   });
 
-  const insertAlert = (editor: typeof schema.BlockNoteEditor) => ({
+  const insertAlert = (edtr: typeof schema.BlockNoteEditor) => ({
     title: "Short Text Input",
     onItemClick: () => {
-      insertOrUpdateBlock(editor, {
+      insertOrUpdateBlock(edtr, {
         type: "short-text-input",
       });
     },
@@ -80,7 +84,10 @@ export function Blocknote({
     group: "Other",
     icon: <TextIcon />,
   });
-  const onSubmit = (data) => console.log(data);
+
+  const onSubmit = (data) => {
+    console.log(data);
+  };
 
   // Renders the editor instance using a React component.
   return (
@@ -103,6 +110,7 @@ export function Blocknote({
         {/* Description */}
         <BlockNoteView
           className="flex-1"
+          editable={editable}
           editor={editor}
           onChange={() => {
             onDescriptionChange &&
@@ -114,14 +122,14 @@ export function Blocknote({
           slashMenu={false}
         >
           <SuggestionMenuController
-            triggerCharacter="/"
-            getItems={async (query) =>
+            getItems={async (query) => {
               // Gets all default slash menu items and `insertAlert` item.
-              filterSuggestionItems(
+              return filterSuggestionItems(
                 [...getDefaultReactSlashMenuItems(editor), insertAlert(editor)],
                 query
-              )
-            }
+              );
+            }}
+            triggerCharacter="/"
           />
         </BlockNoteView>
         <div className="mt-auto">

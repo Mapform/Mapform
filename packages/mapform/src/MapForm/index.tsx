@@ -11,6 +11,7 @@ import { Blocknote } from "./blocknote";
 type ExtendedStep = Step & { latitude: number; longitude: number };
 
 interface MapFormProps {
+  editable?: boolean;
   mapboxAccessToken: string;
   currentStep?: ExtendedStep;
   viewState: ViewState;
@@ -23,6 +24,7 @@ interface MapFormProps {
 export const MapForm = forwardRef<MapRef, MapFormProps>(
   (
     {
+      editable = false,
       mapboxAccessToken,
       viewState,
       setViewState,
@@ -44,6 +46,7 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
             description={currentStep.description as { content: Block[] }}
             // Need key to force re-render, otherwise Blocknote state doesn't
             // change when changing steps
+            editable={editable}
             key={currentStep.id}
             onDescriptionChange={onDescriptionChange}
             onTitleChange={onTitleChange}

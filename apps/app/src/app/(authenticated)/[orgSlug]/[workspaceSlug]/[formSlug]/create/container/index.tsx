@@ -227,10 +227,11 @@ export function Container({
         )}
       >
         {/* MAP */}
-        <div className="p-4 max-w-screen-lg flex-1 flex">
-          <div className="shadow flex-1 rounded-md overflow-hidden">
+        <div className="p-8 flex-1 flex justify-center">
+          <div className="shadow max-w-screen-lg flex-1 rounded-md overflow-hidden">
             <MapForm
               currentStep={currentStep}
+              editable
               mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
               onDescriptionChange={async (content: { content: any[] }) => {
                 await debouncedUpdateStep({
@@ -282,13 +283,18 @@ export function Container({
                 {dragSteps.map((step) => (
                   <Draggable id={step.id} key={step.id}>
                     <button
-                      className="bg-blue-200 py-2 px-4 rounded-md"
+                      className={cn(
+                        "bg-gray-200 px-4 rounded-md min-w-24 h-3",
+                        {
+                          "bg-gray-400": currentStep?.id === step.id,
+                        }
+                      )}
                       onClick={() => {
                         setCurrentStep(step);
                       }}
                       type="button"
                     >
-                      {step.id}
+                      {/* {step.id} */}
                     </button>
                   </Draggable>
                 ))}
