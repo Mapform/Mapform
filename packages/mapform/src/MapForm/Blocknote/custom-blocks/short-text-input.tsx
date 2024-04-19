@@ -32,6 +32,7 @@ export const ShortTextInput = createReactBlockSpec(
         <FormField
           control={form.control}
           // disabled
+          // This is what allows us to match the user value back to the input
           name={block.id}
           render={({ field }) => (
             <FormItem>

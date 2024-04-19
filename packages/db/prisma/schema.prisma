@@ -83,14 +83,15 @@ model Workspace {
 }
 
 model Form {
-    id             String    @id @default(uuid())
+    id             String           @id @default(uuid())
     name           String
     slug           String
     stepOrder      String[]
-    publishedSteps Step[]    @relation(name: "PublishedSteps")
-    draftSteps     Step[]    @relation(name: "DraftSteps")
+    publishedSteps Step[]           @relation(name: "PublishedSteps")
+    draftSteps     Step[]           @relation(name: "DraftSteps")
     workspaceId    String
-    workspace      Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+    workspace      Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+    formSubmission FormSubmission[]
 
     @@unique([workspaceId, slug])
 }
@@ -103,31 +104,44 @@ model Step {
     pitch       Int
     bearing     Int
 
+    // If the form is a published step, it should reference the draft step from which it was created
+    draftStepId String?
+
     formOfDraftStepId     String?
     formOfPublishedStepId String?
     formOfDraftStep       Form?   @relation(name: "DraftSteps", fields: [formOfDraftStepId], references: [id])
     formOfPublishedStep   Form?   @relation(name: "PublishedSteps", fields: [formOfPublishedStepId], references: [id])
 
-    // inputQuestions InputQuestion[]
-
     locationId String   @unique
     location   Location @relation(fields: [locationId], references: [id])
+
+    shortTextInputFields ShortTextInputField[]
 }
 
-// WIP - Figure out response models
-// model InputQuestion {
-//     id        String                  @id
-//     stepId    String
-//     step      Step                    @relation(fields: [stepId], references: [id])
-//     responses InputQuestionResponse[]
-// }
+model FormSubmission {
+    id                     String                   @id @default(uuid())
+    formId                 String
+    form                   Form                     @relation(fields: [formId], references: [id])
+    shortTextInputResponse ShortTextInputResponse[]
+}
 
-// model InputQuestionResponse {
-//     id              String        @id
-//     inputQuestionId String
-//     value           String
-//     inputQuestion   InputQuestion @relation(fields: [inputQuestionId], references: [id])
-// }
+model ShortTextInputField {
+    id                     String                   @id @default(uuid())
+    blockNoteId            String                   @unique // ID comes from BlockNote
+    stepId                 String
+    step                   Step                     @relation(fields: [stepId], references: [id])
+    shortTextInputResponse ShortTextInputResponse[]
+}
+
+model ShortTextInputResponse {
+    id                    String @id @default(uuid())
+    formSubmissionId      String
+    shortTextInputFieldId String
+    value                 String
+
+    formSubmission      FormSubmission      @relation(fields: [formSubmissionId], references: [id])
+    shortTextInputField ShortTextInputField @relation(fields: [shortTextInputFieldId], references: [id])
+}
 
 model Location {
     id   String                               @id @default(uuid())

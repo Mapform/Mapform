@@ -2,13 +2,7 @@
 
 import { useState } from "react";
 import "@blocknote/core/fonts/inter.css";
-import {
-  BlockNoteSchema,
-  defaultBlockSpecs,
-  filterSuggestionItems,
-  insertOrUpdateBlock,
-  type Block,
-} from "@blocknote/core";
+import { filterSuggestionItems, insertOrUpdateBlock } from "@blocknote/core";
 import {
   BlockNoteView,
   SuggestionMenuController,
@@ -19,24 +13,14 @@ import "@blocknote/react/style.css";
 import { TextIcon } from "lucide-react";
 import { Button } from "@mapform/ui/components/button";
 import { Form, useForm } from "@mapform/ui/components/form";
-import { ShortTextInput } from "./custom-blocks/short-text-input";
+import { schema, type CustomBlock } from "./block-note-schema";
 import "./style.css";
-
-const schema = BlockNoteSchema.create({
-  blockSpecs: {
-    // Adds all default blocks.
-    ...defaultBlockSpecs,
-    "short-text-input": ShortTextInput,
-  },
-});
-
-type CustomBlock = typeof schema.Block;
 
 interface BlocknoteProps {
   editable: boolean;
   title?: string | null;
   description?: {
-    content: Block[];
+    content: CustomBlock[];
   };
   onTitleChange?: (content: string) => void;
   onDescriptionChange?: (content: { content: CustomBlock[] }) => void;

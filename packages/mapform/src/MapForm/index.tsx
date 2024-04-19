@@ -5,8 +5,8 @@ import Map, { MapProvider, useMap } from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { forwardRef } from "react";
 import type { Step } from "@mapform/db";
-import type { Block } from "@blocknote/core";
 import { Blocknote } from "./blocknote";
+import { type CustomBlock } from "./blocknote/block-note-schema";
 
 type ExtendedStep = Step & { latitude: number; longitude: number };
 
@@ -18,7 +18,7 @@ interface MapFormProps {
   setViewState: (viewState: ViewStateChangeEvent) => void;
   onLoad?: () => void;
   onTitleChange?: (content: string) => void;
-  onDescriptionChange?: (content: { content: Block[] }) => void;
+  onDescriptionChange?: (content: { content: CustomBlock[] }) => void;
 }
 
 export const MapForm = forwardRef<MapRef, MapFormProps>(
@@ -43,7 +43,7 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
       <div className="flex w-full h-full">
         <div className="max-w-[320px] w-full flex-shrink-0 bg-background p-4">
           <Blocknote
-            description={currentStep.description as { content: Block[] }}
+            description={currentStep.description as { content: CustomBlock[] }}
             // Need key to force re-render, otherwise Blocknote state doesn't
             // change when changing steps
             editable={editable}
