@@ -15,6 +15,7 @@ interface MapFormProps {
   currentStep?: ExtendedStep;
   viewState: ViewState;
   setViewState: (viewState: ViewStateChangeEvent) => void;
+  onLoad?: () => void;
   onTitleChange?: (content: string) => void;
   onDescriptionChange?: (content: { content: Block[] }) => void;
 }
@@ -26,6 +27,7 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
       viewState,
       setViewState,
       currentStep,
+      onLoad,
       onTitleChange,
       onDescriptionChange,
     },
@@ -52,6 +54,7 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
           {...viewState}
           mapStyle="mapbox://styles/nichaley/clsxaiasf00ue01qjfhtt2v81"
           mapboxAccessToken={mapboxAccessToken}
+          onLoad={onLoad}
           onMove={setViewState}
           ref={ref}
           style={{ flex: 1 }}
