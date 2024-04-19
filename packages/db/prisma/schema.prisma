@@ -95,13 +95,6 @@ model Form {
     @@unique([workspaceId, slug])
 }
 
-enum StepType {
-    CONTENT
-    SHORT_TEXT
-    LONG_TEXT
-    YES_NO
-}
-
 model Step {
     id          String  @id @default(uuid())
     title       String?
@@ -110,52 +103,31 @@ model Step {
     pitch       Int
     bearing     Int
 
-    type StepType
-
-    content   ContentStep?
-    shortText ShortTextStep?
-    longText  LongTextStep?
-    yesNo     YesNoStep?
-
     formOfDraftStepId     String?
     formOfPublishedStepId String?
     formOfDraftStep       Form?   @relation(name: "DraftSteps", fields: [formOfDraftStepId], references: [id])
     formOfPublishedStep   Form?   @relation(name: "PublishedSteps", fields: [formOfPublishedStepId], references: [id])
 
+    // inputQuestions InputQuestion[]
+
     locationId String   @unique
     location   Location @relation(fields: [locationId], references: [id])
 }
 
-model ContentStep {
-    id     String @id @default(uuid())
-    value  String @db.VarChar(255)
-    stepId String @unique
-    step   Step   @relation(fields: [stepId], references: [id])
-}
+// WIP - Figure out response models
+// model InputQuestion {
+//     id        String                  @id
+//     stepId    String
+//     step      Step                    @relation(fields: [stepId], references: [id])
+//     responses InputQuestionResponse[]
+// }
 
-model ShortTextStep {
-    id       String  @id @default(uuid())
-    value    String  @db.VarChar(255)
-    required Boolean @default(false)
-    stepId   String  @unique
-    step     Step    @relation(fields: [stepId], references: [id])
-}
-
-model LongTextStep {
-    id       String  @id @default(uuid())
-    value    String
-    required Boolean @default(false)
-    stepId   String  @unique
-    step     Step    @relation(fields: [stepId], references: [id])
-}
-
-model YesNoStep {
-    id       String  @id @default(uuid())
-    value    Boolean
-    required Boolean @default(false)
-    stepId   String  @unique
-    step     Step    @relation(fields: [stepId], references: [id])
-}
+// model InputQuestionResponse {
+//     id              String        @id
+//     inputQuestionId String
+//     value           String
+//     inputQuestion   InputQuestion @relation(fields: [inputQuestionId], references: [id])
+// }
 
 model Location {
     id   String                               @id @default(uuid())

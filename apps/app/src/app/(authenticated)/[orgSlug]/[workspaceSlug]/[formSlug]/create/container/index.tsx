@@ -31,7 +31,6 @@ import {
 } from "../actions";
 import { type StepsType } from "../actions";
 import { Draggable } from "./draggable";
-import { Sidebar } from "./sidebar";
 // TODO. Temporary. Should get initial view state from previous step, or from user location
 const initialViewState = {
   longitude: -122.4,
@@ -246,7 +245,6 @@ export function Container({
         </div>
         <div className="border-t">
           <form action={createStepWithFromId} className="p-4">
-            <input name="type" value="CONTENT" />
             <Button>New step</Button>
           </form>
           <DndContext
@@ -268,7 +266,7 @@ export function Container({
                       }}
                       type="button"
                     >
-                      {step.id}: {step.type}
+                      {step.id}
                     </button>
                   </Draggable>
                 ))}
@@ -277,7 +275,6 @@ export function Container({
           </DndContext>
         </div>
       </div>
-      <Sidebar stepId={currentStep?.id} />
     </div>
   );
 }

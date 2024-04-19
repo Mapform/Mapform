@@ -22,26 +22,13 @@ export const createStep = async (
     zoom: number;
     pitch: number;
     bearing: number;
-  },
-  formData: FormData
-) => {
-  const validatedFields = schema.safeParse({
-    type: formData.get("type"),
-  });
-
-  // Return early if the form data is invalid
-  if (!validatedFields.success) {
-    return {
-      errors: validatedFields.error.flatten().fieldErrors,
-    };
   }
-
+) => {
   /**
    * This uses the Prisma extension to create a step with a location
    */
   await prisma.step.createWithLocation({
     formId,
-    type: validatedFields.data.type,
     zoom: location.zoom,
     pitch: location.pitch,
     bearing: location.bearing,
