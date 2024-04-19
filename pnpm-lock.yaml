@@ -123,21 +123,6 @@ importers:
 
   apps/widget:
     dependencies:
-      '@clerk/nextjs':
-        specifier: ^4.29.9
-        version: 4.29.9(next@14.1.3)(react-dom@18.2.0)(react@18.2.0)
-      '@dnd-kit/core':
-        specifier: ^6.1.0
-        version: 6.1.0(react-dom@18.2.0)(react@18.2.0)
-      '@dnd-kit/sortable':
-        specifier: ^8.0.0
-        version: 8.0.0(@dnd-kit/core@6.1.0)(react@18.2.0)
-      '@dnd-kit/utilities':
-        specifier: ^3.2.2
-        version: 3.2.2(react@18.2.0)
-      '@headlessui/react':
-        specifier: ^1.7.18
-        version: 1.7.18(react-dom@18.2.0)(react@18.2.0)
       '@mapform/db':
         specifier: workspace:*
         version: link:../../packages/db
@@ -159,9 +144,6 @@ importers:
       '@tanstack/react-query-devtools':
         specifier: ^5.29.0
         version: 5.29.0(@tanstack/react-query@5.29.0)(react@18.2.0)
-      inngest:
-        specifier: ^3.16.0
-        version: 3.16.0(typescript@5.3.3)
       lucide-react:
         specifier: ^0.354.0
         version: 0.354.0(react@18.2.0)
@@ -174,12 +156,6 @@ importers:
       react-dom:
         specifier: ^18
         version: 18.2.0(react@18.2.0)
-      slugify:
-        specifier: ^1.6.6
-        version: 1.6.6
-      unique-slug:
-        specifier: ^4.0.0
-        version: 4.0.0
       zod:
         specifier: 3.21.1
         version: 3.21.1
