@@ -221,8 +221,8 @@ export function Container({
         className={cn(
           "flex flex-col flex-1  transition-all duration-300 ease-in-out",
           {
-            invisible: !mapformLoaded,
-            opacity: mapformLoaded ? 1 : 0,
+            // invisible: !mapformLoaded,
+            // opacity: mapformLoaded ? 1 : 0,
           }
         )}
       >
