@@ -22,6 +22,8 @@ import {
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { type z } from "zod";
 import type { FormUpdateArgsSchema } from "@mapform/db/prisma/zod";
+import { Spinner } from "@mapform/ui/components/spinner";
+import { cn } from "@mapform/lib/classnames";
 import { env } from "~/env.mjs";
 import {
   createStep,
@@ -31,8 +33,6 @@ import {
 } from "../actions";
 import { type StepsType } from "../actions";
 import { Draggable } from "./draggable";
-import { Spinner } from "@mapform/ui/components/spinner";
-import { cn } from "@mapform/lib/classnames";
 // TODO. Temporary. Should get initial view state from previous step, or from user location
 const initialViewState = {
   longitude: -122.4,
@@ -221,8 +221,8 @@ export function Container({
         className={cn(
           "flex flex-col flex-1  transition-all duration-300 ease-in-out",
           {
-            // invisible: !mapformLoaded,
-            // opacity: mapformLoaded ? 1 : 0,
+            invisible: !mapformLoaded,
+            opacity: mapformLoaded ? 1 : 0,
           }
         )}
       >

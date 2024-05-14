@@ -1,6 +1,6 @@
 "use server";
 
-import { z } from "zod";
+import type { z } from "zod";
 import { prisma } from "@mapform/db";
 import { revalidatePath } from "next/cache";
 import { formModel } from "@mapform/db/models";
@@ -9,10 +9,6 @@ import {
   StepUpdateArgsSchema,
   StepUpdateManyArgsSchema,
 } from "@mapform/db/prisma/zod";
-
-const schema = z.object({
-  type: z.enum(["SHORT_TEXT", "LONG_TEXT", "CONTENT"]),
-});
 
 export const createStep = async (
   formId: string,
