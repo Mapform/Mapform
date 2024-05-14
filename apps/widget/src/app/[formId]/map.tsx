@@ -32,7 +32,6 @@ export function Map({ formWithSteps }: MapProps) {
   return (
     <MapForm
       currentStep={currentStep}
-      editable
       mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
       // onLoad={() => {
       //   setMapformLoaded(true);
