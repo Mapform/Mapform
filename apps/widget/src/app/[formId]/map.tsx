@@ -14,14 +14,19 @@ interface MapProps {
 type Step = NonNullable<FormWithSteps>["steps"][number];
 
 export function Map({ formWithSteps }: MapProps) {
-  const fisrtStep = formWithSteps.steps[0];
+  const router = useRouter();
+  const map = useRef<MapRef>(null);
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const s = searchParams.get("s");
+  const currentStep = formWithSteps.steps.find((step) => step.id === s);
 
   const initialViewState = {
-    longitude: fisrtStep!.longitude,
-    latitude: fisrtStep!.latitude,
-    zoom: fisrtStep!.zoom,
-    bearing: fisrtStep!.bearing,
-    pitch: fisrtStep!.pitch,
+    longitude: currentStep!.longitude,
+    latitude: currentStep!.latitude,
+    zoom: currentStep!.zoom,
+    bearing: currentStep!.bearing,
+    pitch: currentStep!.pitch,
     padding: {
       top: 0,
       bottom: 0,
@@ -29,11 +34,6 @@ export function Map({ formWithSteps }: MapProps) {
       right: 0,
     },
   };
-  const router = useRouter();
-  const map = useRef<MapRef>(null);
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const s = searchParams.get("s");
   const [viewState, setViewState] = useState<ViewState>(initialViewState);
 
   const createQueryString = useCallback(
@@ -68,8 +68,6 @@ export function Map({ formWithSteps }: MapProps) {
   if (!s) {
     return null;
   }
-
-  const currentStep = formWithSteps.steps.find((step) => step.id === s);
 
   return (
     <MapForm
