@@ -11,7 +11,7 @@ interface MapProps {
   formWithSteps: NonNullable<FormWithSteps>;
 }
 
-type Step = NonNullable<FormWithSteps>["steps"][0];
+type Step = NonNullable<FormWithSteps>["steps"][number];
 
 export function Map({ formWithSteps }: MapProps) {
   const fisrtStep = formWithSteps.steps[0];
@@ -31,7 +31,6 @@ export function Map({ formWithSteps }: MapProps) {
   };
   const router = useRouter();
   const map = useRef<MapRef>(null);
-  // const [currentStep, setCurrentStep] = useState(fisrtStep);
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const s = searchParams.get("s");
@@ -80,13 +79,21 @@ export function Map({ formWithSteps }: MapProps) {
         const nextStepIndex =
           formWithSteps.steps.findIndex((step) => step.id === currentStep!.id) +
           1;
-        setCurrentStep(formWithSteps.steps[nextStepIndex]);
+        const nextStep = formWithSteps.steps[nextStepIndex];
+
+        if (nextStep) {
+          setCurrentStep(nextStep);
+        }
       }}
       onPrev={() => {
         const prevStepIndex =
           formWithSteps.steps.findIndex((step) => step.id === currentStep!.id) -
           1;
-        setCurrentStep(formWithSteps.steps[prevStepIndex]);
+        const prevStep = formWithSteps.steps[prevStepIndex];
+
+        if (prevStep) {
+          setCurrentStep(prevStep);
+        }
       }}
       // onLoad={() => {
       //   setMapformLoaded(true);
