@@ -10,7 +10,7 @@ import {
   useCreateBlockNote,
 } from "@blocknote/react";
 import "@blocknote/react/style.css";
-import { TextIcon } from "lucide-react";
+import { TextIcon, ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { Button } from "@mapform/ui/components/button";
 import { Form, useForm } from "@mapform/ui/components/form";
 import { schema, type CustomBlock } from "./block-note-schema";
@@ -22,12 +22,16 @@ interface BlocknoteProps {
   description?: {
     content: CustomBlock[];
   };
+  onNext?: () => void;
+  onPrev?: () => void;
   onTitleChange?: (content: string) => void;
   onDescriptionChange?: (content: { content: CustomBlock[] }) => void;
 }
 
 export function Blocknote({
   title,
+  onPrev,
+  onNext,
   editable,
   description,
   onTitleChange,
@@ -80,44 +84,60 @@ export function Blocknote({
         className="h-full flex flex-col"
         onSubmit={form.handleSubmit(onSubmit)}
       >
-        {/* Title */}
-        <input
-          className="border-0 text-2xl font-bold w-full mb-2 p-0 outline-none border-transparent focus:border-transparent focus:ring-0 placeholder-gray-300"
-          onChange={(e) => {
-            setUncontrolledTitle(e.target.value);
-            onTitleChange && onTitleChange(e.target.value);
-          }}
-          placeholder="Untitled"
-          value={uncontrolledTitle}
-        />
-
-        {/* Description */}
-        <BlockNoteView
-          className="flex-1"
-          editable={editable}
-          editor={editor}
-          onChange={() => {
-            onDescriptionChange &&
-              onDescriptionChange({
-                content: editor.document,
-              });
-          }}
-          sideMenu={false}
-          slashMenu={false}
-        >
-          <SuggestionMenuController
-            getItems={async (query) => {
-              // Gets all default slash menu items and `insertAlert` item.
-              return filterSuggestionItems(
-                [...getDefaultReactSlashMenuItems(editor), insertAlert(editor)],
-                query
-              );
+        {/* Content */}
+        <div className="overflow-y-auto p-4 pb-0">
+          {/* Title */}
+          <input
+            className="border-0 text-2xl font-bold w-full mb-2 p-0 outline-none border-transparent focus:border-transparent focus:ring-0 placeholder-gray-300"
+            onChange={(e) => {
+              setUncontrolledTitle(e.target.value);
+              onTitleChange && onTitleChange(e.target.value);
             }}
-            triggerCharacter="/"
+            placeholder="Untitled"
+            value={uncontrolledTitle}
           />
-        </BlockNoteView>
-        <div className="mt-auto">
-          <Button type="submit">Submit</Button>
+
+          {/* Description */}
+          <BlockNoteView
+            className="flex-1"
+            editable={editable}
+            editor={editor}
+            onChange={() => {
+              onDescriptionChange &&
+                onDescriptionChange({
+                  content: editor.document,
+                });
+            }}
+            sideMenu={false}
+            slashMenu={false}
+          >
+            <SuggestionMenuController
+              getItems={async (query) => {
+                // Gets all default slash menu items and `insertAlert` item.
+                return filterSuggestionItems(
+                  [
+                    ...getDefaultReactSlashMenuItems(editor),
+                    insertAlert(editor),
+                  ],
+                  query
+                );
+              }}
+              triggerCharacter="/"
+            />
+          </BlockNoteView>
+        </div>
+        <div className="mt-auto flex justify-between p-4">
+          <div className="gap-2">
+            <Button onClick={onPrev} size="icon" type="button" variant="ghost">
+              <ChevronLeftIcon />
+            </Button>
+            <Button onClick={onNext} size="icon" type="button" variant="ghost">
+              <ChevronRightIcon />
+            </Button>
+          </div>
+          <Button onClick={onNext} type="submit">
+            Next
+          </Button>
         </div>
       </form>
     </Form>

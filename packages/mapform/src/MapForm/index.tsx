@@ -16,6 +16,8 @@ interface MapFormProps {
   currentStep?: ExtendedStep;
   viewState: ViewState;
   setViewState: (viewState: ViewStateChangeEvent) => void;
+  onPrev?: () => void;
+  onNext?: () => void;
   onLoad?: () => void;
   onTitleChange?: (content: string) => void;
   onDescriptionChange?: (content: { content: CustomBlock[] }) => void;
@@ -25,6 +27,8 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
   (
     {
       editable = false,
+      onPrev,
+      onNext,
       mapboxAccessToken,
       viewState,
       setViewState,
@@ -41,7 +45,7 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
 
     return (
       <div className="flex w-full h-full">
-        <div className="max-w-[320px] w-full flex-shrink-0 bg-background p-4">
+        <div className="max-w-[320px] lg:max-w-[400px] w-full flex-shrink-0 bg-background shadow z-10">
           <Blocknote
             description={currentStep.description as { content: CustomBlock[] }}
             // Need key to force re-render, otherwise Blocknote state doesn't
@@ -49,6 +53,8 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
             editable={editable}
             key={currentStep.id}
             onDescriptionChange={onDescriptionChange}
+            onNext={onNext}
+            onPrev={onPrev}
             onTitleChange={onTitleChange}
             title={currentStep.title}
           />
