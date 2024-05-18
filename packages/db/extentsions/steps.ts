@@ -16,10 +16,7 @@ export function stepsExtension() {
             longitude,
             formId,
             ...args
-          }: Omit<
-            Prisma.StepCreateInput,
-            "formOfDraftStep" | "formOfPublishedStep" | "location" | "order"
-          > & {
+          }: Omit<Prisma.StepCreateInput, "form" | "location" | "order"> & {
             latitude: number;
             longitude: number;
             formId: string;
@@ -35,8 +32,7 @@ export function stepsExtension() {
               const newStep = await tx.step.create({
                 data: {
                   ...args,
-                  formOfDraftStepId: formId,
-                  formOfPublishedStepId: formId,
+                  formId,
                   locationId,
                 },
               });
@@ -81,7 +77,7 @@ export function stepsExtension() {
               },
             });
 
-            if (!step?.formOfDraftStepId) {
+            if (!step?.formId) {
               throw new Error("Step not found");
             }
 
@@ -91,7 +87,7 @@ export function stepsExtension() {
 
               const currentStepOrder = await tx.form.findUnique({
                 where: {
-                  id: step.formOfDraftStepId!,
+                  id: step.formId!,
                 },
                 select: {
                   stepOrder: true,
@@ -104,7 +100,7 @@ export function stepsExtension() {
 
               await tx.form.update({
                 where: {
-                  id: step.formOfDraftStepId!,
+                  id: step.formId!,
                 },
                 data: {
                   stepOrder: {
@@ -118,17 +114,13 @@ export function stepsExtension() {
           },
 
           // Order by Form.stepOrder using WITH ORDINALITY
-          findManyWithLocation: async ({
-            formId,
-          }: {
-            formId: string;
-          }): Promise<(Step & { latitude: number; longitude: number })[]> => {
-            const steps = await prisma.$queryRaw`
+          findManyWithLocation: async ({ formId }: { formId: string }) => {
+            const steps = (await prisma.$queryRaw`
               SELECT "Step".*, ST_X("Location".geom) AS longitude, ST_Y("Location".geom) AS latitude
               FROM "Step"
               LEFT JOIN "Location" ON "Step"."locationId" = "Location".id
-              WHERE "Step"."formOfDraftStepId" = ${formId};
-            `;
+              WHERE "Step"."formId" = ${formId};
+            `) as (Step & { latitude: number; longitude: number })[];
 
             const form = await prisma.form.findUnique({
               where: {
@@ -144,9 +136,14 @@ export function stepsExtension() {
             }
 
             // Order the steps according to the form's stepOrder
-            const orderedSteps = form.stepOrder.map((id) => {
-              return steps.find((step) => step.id === id);
-            });
+            const orderedSteps = form.stepOrder
+              .map((id) => {
+                return steps.find((step) => step.id === id);
+              })
+              .filter((s) => Boolean(s)) as (Step & {
+              latitude: number;
+              longitude: number;
+            })[];
 
             return orderedSteps;
           },

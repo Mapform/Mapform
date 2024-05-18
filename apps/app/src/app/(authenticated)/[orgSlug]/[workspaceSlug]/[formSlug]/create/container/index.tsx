@@ -22,6 +22,8 @@ import {
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { type z } from "zod";
 import type { FormUpdateArgsSchema } from "@mapform/db/prisma/zod";
+import { Spinner } from "@mapform/ui/components/spinner";
+import { cn } from "@mapform/lib/classnames";
 import { env } from "~/env.mjs";
 import {
   createStep,
@@ -31,7 +33,6 @@ import {
 } from "../actions";
 import { type StepsType } from "../actions";
 import { Draggable } from "./draggable";
-import { Sidebar } from "./sidebar";
 // TODO. Temporary. Should get initial view state from previous step, or from user location
 const initialViewState = {
   longitude: -122.4,
@@ -63,6 +64,7 @@ export function Container({
   const searchParams = useSearchParams();
   const s = searchParams.get("s");
   const queryClient = useQueryClient();
+  const [mapformLoaded, setMapformLoaded] = useState(false);
   const [viewState, setViewState] = useState<ViewState>(initialViewState);
   const map = useRef<MapRef>(null);
   // We hold the steps in its own React state due to this issue: https://github.com/clauderic/dnd-kit/issues/921
@@ -174,9 +176,9 @@ export function Container({
     return null;
   }
 
-  if (!s) {
-    return null;
-  }
+  // if (!s) {
+  //   return null;
+  // }
 
   const createStepWithFromId = createStep.bind(null, data.id, viewState);
   const currentStep = dragSteps.find((step) => step.id === s);
@@ -209,14 +211,33 @@ export function Container({
   };
 
   return (
-    <div className="flex flex-1">
-      <div className="flex flex-col flex-1 overflow-hidden">
-        <div className="flex-1 p-4 bg-slate-100 inset-0  bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px]">
-          <div className="shadow h-full w-full rounded-md overflow-hidden">
+    <div className="relative flex flex-col flex-1 bg-slate-100 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px]">
+      {mapformLoaded ? null : (
+        <div className="absolute inset-0 flex justify-center items-center">
+          <Spinner variant="dark" />
+        </div>
+      )}
+      <div
+        className={cn(
+          "flex flex-col flex-1  transition-all duration-300 ease-in-out",
+          {
+            invisible: !mapformLoaded,
+            opacity: mapformLoaded ? 1 : 0,
+          }
+        )}
+      >
+        {/* MAP */}
+        <div className="p-8 flex-1 flex justify-center">
+          <div className="shadow max-w-screen-lg flex-1 rounded-md overflow-hidden">
             <MapForm
               currentStep={currentStep}
+              editable
               mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
-              onDescriptionChange={async (content: string) => {
+              onDescriptionChange={async (content: { content: any[] }) => {
+                if (!s) {
+                  return;
+                }
+
                 await debouncedUpdateStep({
                   where: {
                     id: s,
@@ -226,7 +247,14 @@ export function Container({
                   },
                 });
               }}
+              onLoad={() => {
+                setMapformLoaded(true);
+              }}
               onTitleChange={async (content: string) => {
+                if (!s) {
+                  return;
+                }
+
                 await debouncedUpdateStep({
                   where: {
                     id: s,
@@ -244,9 +272,10 @@ export function Container({
             />
           </div>
         </div>
-        <div className="border-t">
+
+        {/* STEPS */}
+        <div className="border-t bg-white">
           <form action={createStepWithFromId} className="p-4">
-            <input name="type" value="CONTENT" />
             <Button>New step</Button>
           </form>
           <DndContext
@@ -262,13 +291,18 @@ export function Container({
                 {dragSteps.map((step) => (
                   <Draggable id={step.id} key={step.id}>
                     <button
-                      className="bg-blue-200 py-2 px-4 rounded-md"
+                      className={cn(
+                        "bg-gray-200 px-4 rounded-md min-w-24 h-3",
+                        {
+                          "bg-gray-400": currentStep?.id === step.id,
+                        }
+                      )}
                       onClick={() => {
                         setCurrentStep(step);
                       }}
                       type="button"
                     >
-                      {step.id}: {step.type}
+                      {/* {step.id} */}
                     </button>
                   </Draggable>
                 ))}
@@ -277,7 +311,6 @@ export function Container({
           </DndContext>
         </div>
       </div>
-      <Sidebar stepId={currentStep?.id} />
     </div>
   );
 }

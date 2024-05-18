@@ -83,78 +83,60 @@ model Workspace {
 }
 
 model Form {
-    id             String    @id @default(uuid())
-    name           String
-    slug           String
-    stepOrder      String[]
-    publishedSteps Step[]    @relation(name: "PublishedSteps")
-    draftSteps     Step[]    @relation(name: "DraftSteps")
-    workspaceId    String
-    workspace      Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+    id              String           @id @default(uuid())
+    name            String
+    slug            String
+    isPublished     Boolean          @default(false)
+    stepOrder       String[]
+    steps           Step[]           @relation(name: "Steps")
+    workspaceId     String
+    workspace       Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+    formSubmission  FormSubmission[]
+    publishedFormId String?          @unique
+    publishedForm   Form?            @relation("PublishedVersion", fields: [publishedFormId], references: [id])
+    draftForm       Form?            @relation("PublishedVersion")
 
     @@unique([workspaceId, slug])
 }
 
-enum StepType {
-    CONTENT
-    SHORT_TEXT
-    LONG_TEXT
-    YES_NO
-}
-
 model Step {
-    id          String  @id @default(uuid())
+    id          String   @id @default(uuid())
     title       String?
-    description String?
+    description Json?
     zoom        Int
     pitch       Int
     bearing     Int
+    formId      String?
+    form        Form?    @relation(name: "Steps", fields: [formId], references: [id])
+    locationId  String   @unique
+    location    Location @relation(fields: [locationId], references: [id])
 
-    type StepType
-
-    content   ContentStep?
-    shortText ShortTextStep?
-    longText  LongTextStep?
-    yesNo     YesNoStep?
-
-    formOfDraftStepId     String?
-    formOfPublishedStepId String?
-    formOfDraftStep       Form?   @relation(name: "DraftSteps", fields: [formOfDraftStepId], references: [id])
-    formOfPublishedStep   Form?   @relation(name: "PublishedSteps", fields: [formOfPublishedStepId], references: [id])
-
-    locationId String   @unique
-    location   Location @relation(fields: [locationId], references: [id])
+    shortTextInputFields ShortTextInputField[]
 }
 
-model ContentStep {
-    id     String @id @default(uuid())
-    value  String @db.VarChar(255)
-    stepId String @unique
-    step   Step   @relation(fields: [stepId], references: [id])
+model FormSubmission {
+    id                     String                   @id @default(uuid())
+    formId                 String
+    form                   Form                     @relation(fields: [formId], references: [id])
+    shortTextInputResponse ShortTextInputResponse[]
 }
 
-model ShortTextStep {
-    id       String  @id @default(uuid())
-    value    String  @db.VarChar(255)
-    required Boolean @default(false)
-    stepId   String  @unique
-    step     Step    @relation(fields: [stepId], references: [id])
+model ShortTextInputField {
+    id                     String                   @id @default(uuid())
+    blockNoteId            String                   @unique // ID comes from BlockNote
+    stepId                 String
+    step                   Step                     @relation(fields: [stepId], references: [id])
+    shortTextInputResponse ShortTextInputResponse[]
 }
 
-model LongTextStep {
-    id       String  @id @default(uuid())
-    value    String
-    required Boolean @default(false)
-    stepId   String  @unique
-    step     Step    @relation(fields: [stepId], references: [id])
-}
+model ShortTextInputResponse {
+    id                    String @id @default(uuid())
+    formSubmissionId      String
+    shortTextInputFieldId String
+    value                 String
 
-model YesNoStep {
-    id       String  @id @default(uuid())
-    value    Boolean
-    required Boolean @default(false)
-    stepId   String  @unique
-    step     Step    @relation(fields: [stepId], references: [id])
+    formSubmission      FormSubmission      @relation(fields: [formSubmissionId], references: [id])
+    shortTextInputField ShortTextInputField @relation(fields: [shortTextInputFieldId], references: [id])
 }
 
 model Location {
