@@ -4,7 +4,7 @@ import { Fragment } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { MenuIcon, XIcon } from "lucide-react";
 import { cn } from "@mapform/lib/classnames";
-import { OrganizationSwitcher, useClerk } from "@clerk/nextjs";
+import { signOut } from "~/auth";
 
 const user = {
   name: "Tom Cook",
@@ -26,7 +26,6 @@ export function StackedLayout({
   children: React.ReactNode;
   subnav: React.ReactNode;
 }) {
-  const { signOut, user } = useClerk();
   const userNavigation = [
     // { name: "Your Profile", href: "#" },
     { name: "Settings", href: "#" },
@@ -55,9 +54,7 @@ export function StackedLayout({
                     <span className="text-xl font-semibold">MF</span>
                   </div>
                   {/* TODO: Remove in favour of custom switcher */}
-                  <div className="hidden sm:-my-px sm:ml-6 sm:flex sm:space-x-8">
-                    <OrganizationSwitcher />
-                  </div>
+                  <div className="hidden sm:-my-px sm:ml-6 sm:flex sm:space-x-8"></div>
                   <div>{subnav}</div>
                   {/* <div className="hidden sm:-my-px sm:ml-6 sm:flex sm:space-x-8">
                       {navigation.map((item) => (
@@ -177,10 +174,10 @@ export function StackedLayout({
                   </div>
                   <div className="ml-3">
                     <div className="text-base font-medium text-gray-800">
-                      {user?.fullName}
+                      {/* {user?.fullName} */}
                     </div>
                     <div className="text-sm font-medium text-gray-500">
-                      {user?.primaryEmailAddress?.toString()}
+                      {/* {user?.primaryEmailAddress?.toString()} */}
                     </div>
                   </div>
                 </div>
