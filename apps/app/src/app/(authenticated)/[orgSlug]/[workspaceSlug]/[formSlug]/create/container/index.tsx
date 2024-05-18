@@ -176,9 +176,9 @@ export function Container({
     return null;
   }
 
-  if (!s) {
-    return null;
-  }
+  // if (!s) {
+  //   return null;
+  // }
 
   const createStepWithFromId = createStep.bind(null, data.id, viewState);
   const currentStep = dragSteps.find((step) => step.id === s);
@@ -234,6 +234,10 @@ export function Container({
               editable
               mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
               onDescriptionChange={async (content: { content: any[] }) => {
+                if (!s) {
+                  return;
+                }
+
                 await debouncedUpdateStep({
                   where: {
                     id: s,
@@ -247,6 +251,10 @@ export function Container({
                 setMapformLoaded(true);
               }}
               onTitleChange={async (content: string) => {
+                if (!s) {
+                  return;
+                }
+
                 await debouncedUpdateStep({
                   where: {
                     id: s,

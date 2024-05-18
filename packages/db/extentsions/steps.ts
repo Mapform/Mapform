@@ -120,7 +120,7 @@ export function stepsExtension() {
               FROM "Step"
               LEFT JOIN "Location" ON "Step"."locationId" = "Location".id
               WHERE "Step"."formId" = ${formId};
-            `) as Step[];
+            `) as (Step & { latitude: number; longitude: number })[];
 
             const form = await prisma.form.findUnique({
               where: {
@@ -136,9 +136,14 @@ export function stepsExtension() {
             }
 
             // Order the steps according to the form's stepOrder
-            const orderedSteps = form.stepOrder.map((id) => {
-              return steps.find((step) => step.id === id);
-            });
+            const orderedSteps = form.stepOrder
+              .map((id) => {
+                return steps.find((step) => step.id === id);
+              })
+              .filter((s) => Boolean(s)) as (Step & {
+              latitude: number;
+              longitude: number;
+            })[];
 
             return orderedSteps;
           },
