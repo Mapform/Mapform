@@ -21,4 +21,5 @@ export default async function Home() {
   //   redirect(`/new`);
   // }
   // redirect(`/${userWithOrgs?.organizationMemberships[0]?.organization.slug}`);
+  return <div>Home</div>;
 }
