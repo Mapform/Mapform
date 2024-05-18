@@ -1,4 +1,3 @@
-import { ClerkProvider } from "@clerk/nextjs";
 import { StackedLayout } from "./StackedLayout";
 
 export default function Layout({
@@ -8,9 +7,5 @@ export default function Layout({
   children: React.ReactNode;
   subnav: React.ReactNode;
 }) {
-  return (
-    <ClerkProvider>
-      <StackedLayout subnav={subnav}>{children}</StackedLayout>
-    </ClerkProvider>
-  );
+  return <StackedLayout subnav={subnav}>{children}</StackedLayout>;
 }
