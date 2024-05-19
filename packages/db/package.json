@@ -12,6 +12,7 @@
     "seed": "ts-node --transpile-only --compiler-options {\"module\":\"CommonJS\"} ./prisma/seed.ts"
   },
   "devDependencies": {
+    "@clerk/clerk-sdk-node": "^5.0.7",
     "@types/node": "^20.11.24",
     "@types/uuid": "^9.0.8",
     "@types/ws": "^8.5.10",
