@@ -23,7 +23,7 @@ import {
 import { Input } from "@mapform/ui/components/input";
 import { toast } from "@mapform/ui/components/toaster";
 import { createOrg } from "./actions";
-import { createOrgSchema, type CreateOrgSchema } from "./schema";
+import { createOrgSchema, type CreateOrgSchema } from "./[orgSlug]/schema";
 
 export function CreateDialog() {
   const form = useForm<CreateOrgSchema>({

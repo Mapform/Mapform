@@ -5,7 +5,7 @@ import { prisma } from "@mapform/db";
 import { revalidatePath } from "next/cache";
 import { clerkClient, auth } from "@clerk/nextjs";
 import { action } from "~/lib/safe-action";
-import { createOrgSchema } from "./schema";
+import { createOrgSchema } from "./[orgSlug]/schema";
 
 export const createOrg = action(createOrgSchema, async ({ name }) => {
   const { userId } = auth();

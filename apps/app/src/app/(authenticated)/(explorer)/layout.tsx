@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import { cn } from "@mapform/lib/classnames";
 import { auth } from "@clerk/nextjs";
 import Link from "next/link";
+import { CreateDialog } from "./dialog";
 
 export default async function Layout({
   children,
@@ -95,6 +96,7 @@ export default async function Layout({
               </li>
             ))}
           </ul>
+          <CreateDialog />
         </nav>
       </div>
 
