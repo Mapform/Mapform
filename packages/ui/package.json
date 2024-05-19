@@ -23,7 +23,9 @@
     "@radix-ui/react-slot": "^1.0.2",
     "class-variance-authority": "^0.7.0",
     "lucide-react": "^0.354.0",
+    "next-themes": "^0.3.0",
     "react-hook-form": "^7.51.3",
+    "sonner": "^1.4.41",
     "tailwindcss-animate": "^1.0.7",
     "zod": "3.21.1"
   },

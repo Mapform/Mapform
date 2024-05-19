@@ -34,8 +34,6 @@ export default async function Layout({
     },
   });
 
-  console.log(111111, userId, userOrgs);
-
   return (
     <div className="flex flex-1">
       {/* NAV */}

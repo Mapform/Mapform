@@ -27,8 +27,6 @@ export default async function Home() {
   const firstOrgSlug =
     userWithOrgs?.organizationMemberships[0]?.organization.slug;
 
-  console.log(11111, firstOrgSlug);
-
   return <div>Explorer root</div>;
 
   // if (!firstOrgSlug) {
