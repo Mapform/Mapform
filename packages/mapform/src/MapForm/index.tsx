@@ -5,8 +5,8 @@ import Map, { MapProvider, useMap } from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { forwardRef } from "react";
 import type { Step } from "@mapform/db";
-import { Blocknote } from "./blocknote";
-import { type CustomBlock } from "./blocknote/block-note-schema";
+import { Blocknote } from "./block-note";
+import { type CustomBlock } from "./block-note/block-note-schema";
 
 type ExtendedStep = Step & { latitude: number; longitude: number };
 
@@ -39,25 +39,26 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
     },
     ref
   ) => {
-    if (!currentStep) {
-      return null;
-    }
 
     return (
       <div className="flex w-full h-full">
         <div className="max-w-[320px] lg:max-w-[400px] w-full flex-shrink-0 bg-background shadow z-10">
-          <Blocknote
-            description={currentStep.description as { content: CustomBlock[] }}
-            // Need key to force re-render, otherwise Blocknote state doesn't
-            // change when changing steps
-            editable={editable}
-            key={currentStep.id}
-            onDescriptionChange={onDescriptionChange}
-            onNext={onNext}
-            onPrev={onPrev}
-            onTitleChange={onTitleChange}
-            title={currentStep.title}
-          />
+          {currentStep ? (
+            <Blocknote
+              description={
+                currentStep.description as { content: CustomBlock[] }
+              }
+              // Need key to force re-render, otherwise Blocknote state doesn't
+              // change when changing steps
+              editable={editable}
+              key={currentStep.id}
+              onDescriptionChange={onDescriptionChange}
+              onNext={onNext}
+              onPrev={onPrev}
+              onTitleChange={onTitleChange}
+              title={currentStep.title}
+            />
+          ) : null}
         </div>
         <Map
           {...viewState}

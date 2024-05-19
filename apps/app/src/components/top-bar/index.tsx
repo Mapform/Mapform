@@ -6,7 +6,7 @@ import { MenuIcon, XIcon } from "lucide-react";
 import { cn } from "@mapform/lib/classnames";
 import { useClerk } from "@clerk/nextjs";
 
-export function StackedLayout({ children }: { children: React.ReactNode }) {
+export function TopBar({ children }: { children: React.ReactNode }) {
   const { signOut, user } = useClerk();
   const userNavigation = [
     { name: "Settings", href: "#" },
@@ -14,7 +14,7 @@ export function StackedLayout({ children }: { children: React.ReactNode }) {
   ];
 
   return (
-    <div className="min-h-full flex flex-col">
+    <div>
       <Disclosure as="nav" className="bg-white shadow-sm">
         {({ open }) => (
           <>
@@ -141,8 +141,6 @@ export function StackedLayout({ children }: { children: React.ReactNode }) {
           </>
         )}
       </Disclosure>
-
-      <main className="flex flex-col flex-1">{children}</main>
     </div>
   );
 }
