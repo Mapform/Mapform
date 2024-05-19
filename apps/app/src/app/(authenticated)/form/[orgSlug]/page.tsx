@@ -1,5 +1,4 @@
 import { organizationModel } from "@mapform/db/models";
-import Create from "./Create";
 
 export default async function Orgnization({
   params,
@@ -15,10 +14,5 @@ export default async function Orgnization({
     return <div>Organization not found</div>;
   }
 
-  return (
-    <div>
-      {org.name}
-      <Create organizationId={org.slug} />
-    </div>
-  );
+  return <div>{org.name}</div>;
 }

@@ -50,7 +50,7 @@ export default async function Layout({
                       : "text-gray-700 hover:text-indigo-600 hover:bg-gray-50",
                     "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
                   )}
-                  href={membership.organization.slug}
+                  href={`/${membership.organization.slug}`}
                 >
                   <span
                     className={cn(
@@ -66,7 +66,7 @@ export default async function Layout({
                     {membership.organization.name}
                   </span>
                 </Link>
-                <ul className="-mx-2 mt-2 space-y-1">
+                <ul className="ml-8 space-y-1">
                   {membership.organization.workspaces.map((workspace) => (
                     <li key={workspace.id}>
                       <Link
@@ -76,18 +76,8 @@ export default async function Layout({
                             : "text-gray-700 hover:text-indigo-600 hover:bg-gray-50",
                           "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
                         )}
-                        href={workspace.slug}
+                        href={`/${membership.organization.slug}/${workspace.slug}`}
                       >
-                        <span
-                          className={cn(
-                            pathname === workspace.slug
-                              ? "text-indigo-600 border-indigo-600"
-                              : "text-gray-400 border-gray-200 group-hover:border-indigo-600 group-hover:text-indigo-600",
-                            "flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border text-[0.625rem] font-medium bg-white"
-                          )}
-                        >
-                          {workspace.name[0]}
-                        </span>
                         <span className="truncate">{workspace.name}</span>
                       </Link>
                     </li>
