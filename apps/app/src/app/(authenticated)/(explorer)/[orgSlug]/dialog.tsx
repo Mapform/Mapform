@@ -22,20 +22,25 @@ import {
 } from "@mapform/ui/components/form";
 import { Input } from "@mapform/ui/components/input";
 import { toast } from "@mapform/ui/components/toaster";
-import { createOrg } from "./actions";
-import { createOrgSchema, type CreateOrgSchema } from "./schema";
+import { createWorkspace } from "./actions";
+import { createWorkspaceSchema, type CreateWorkspaceSchema } from "./schema";
 
-export function CreateDialog() {
-  const form = useForm<CreateOrgSchema>({
+export function CreateDialog({
+  organizationSlug,
+}: {
+  organizationSlug: string;
+}) {
+  const form = useForm<CreateWorkspaceSchema>({
     defaultValues: {
       name: "",
+      organizationSlug,
     },
     mode: "onChange",
-    resolver: zodResolver(createOrgSchema),
+    resolver: zodResolver(createWorkspaceSchema),
   });
 
-  const onSubmit = async (values: CreateOrgSchema) => {
-    const { serverError, validationErrors } = await createOrg(values);
+  const onSubmit = async (values: CreateWorkspaceSchema) => {
+    const { serverError, validationErrors } = await createWorkspace(values);
 
     if (serverError) {
       toast(serverError);
@@ -43,28 +48,26 @@ export function CreateDialog() {
     }
 
     if (validationErrors) {
-      toast("There was an error creating the organization");
+      toast("There was an error creating the workspace");
       return;
     }
 
     form.reset();
 
-    toast("Your organization has been created.");
+    toast("Your workspace has been created.");
   };
 
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline">Create Organization</Button>
+        <Button variant="outline">Create Workspace</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <DialogHeader>
-              <DialogTitle>Create Organization</DialogTitle>
-              <DialogDescription>
-                Create a new organization to group your workspaces.
-              </DialogDescription>
+              <DialogTitle>Create Workspace</DialogTitle>
+              <DialogDescription>Create a new team workspace</DialogDescription>
             </DialogHeader>
             <div className="flex items-center space-x-2">
               <FormField

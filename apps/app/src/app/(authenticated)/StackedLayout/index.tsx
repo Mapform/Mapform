@@ -22,7 +22,7 @@ export function StackedLayout({ children }: { children: React.ReactNode }) {
               <div className="flex h-16 justify-between items-center">
                 <div className="flex">
                   <div className="flex flex-shrink-0 items-center">
-                    <span className="text-xl font-semibold">MF</span>
+                    <span className="text-xl font-semibold">MapForm</span>
                   </div>
                 </div>
                 <div className="hidden sm:ml-6 sm:flex sm:items-center">

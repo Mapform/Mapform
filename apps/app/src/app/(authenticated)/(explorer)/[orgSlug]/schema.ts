@@ -1,7 +1,8 @@
 import { z } from "zod";
 
-export const createOrgSchema = z.object({
+export const createWorkspaceSchema = z.object({
   name: z.string(),
+  organizationSlug: z.string(),
 });
 
-export type CreateOrgSchema = z.infer<typeof createOrgSchema>;
+export type CreateWorkspaceSchema = z.infer<typeof createWorkspaceSchema>;
