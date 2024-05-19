@@ -13,10 +13,12 @@ export async function findOne<
     slug,
     workspaceSlug,
     organizationSlug,
+    isPublished,
   }: {
     slug: string;
     workspaceSlug: string;
     organizationSlug: string;
+    isPublished: boolean;
   },
   include?: T
 ): Promise<U | null> {
@@ -31,9 +33,10 @@ export async function findOne<
 
   const form = (await prisma.form.findUnique({
     where: {
-      workspaceId_slug: {
+      workspaceId_slug_isPublished: {
         workspaceId: workspace.id,
         slug,
+        isPublished,
       },
     },
     include,

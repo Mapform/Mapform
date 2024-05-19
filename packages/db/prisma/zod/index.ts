@@ -1095,7 +1095,7 @@ export const FormWhereUniqueInputSchema: z.ZodType<Prisma.FormWhereUniqueInput> 
   z.object({
     id: z.string().uuid(),
     publishedFormId: z.string(),
-    workspaceId_slug: z.lazy(() => FormWorkspaceIdSlugCompoundUniqueInputSchema)
+    workspaceId_slug_isPublished: z.lazy(() => FormWorkspaceIdSlugIsPublishedCompoundUniqueInputSchema)
   }),
   z.object({
     id: z.string().uuid(),
@@ -1103,26 +1103,26 @@ export const FormWhereUniqueInputSchema: z.ZodType<Prisma.FormWhereUniqueInput> 
   }),
   z.object({
     id: z.string().uuid(),
-    workspaceId_slug: z.lazy(() => FormWorkspaceIdSlugCompoundUniqueInputSchema),
+    workspaceId_slug_isPublished: z.lazy(() => FormWorkspaceIdSlugIsPublishedCompoundUniqueInputSchema),
   }),
   z.object({
     id: z.string().uuid(),
   }),
   z.object({
     publishedFormId: z.string(),
-    workspaceId_slug: z.lazy(() => FormWorkspaceIdSlugCompoundUniqueInputSchema),
+    workspaceId_slug_isPublished: z.lazy(() => FormWorkspaceIdSlugIsPublishedCompoundUniqueInputSchema),
   }),
   z.object({
     publishedFormId: z.string(),
   }),
   z.object({
-    workspaceId_slug: z.lazy(() => FormWorkspaceIdSlugCompoundUniqueInputSchema),
+    workspaceId_slug_isPublished: z.lazy(() => FormWorkspaceIdSlugIsPublishedCompoundUniqueInputSchema),
   }),
 ])
 .and(z.object({
   id: z.string().uuid().optional(),
   publishedFormId: z.string().optional(),
-  workspaceId_slug: z.lazy(() => FormWorkspaceIdSlugCompoundUniqueInputSchema).optional(),
+  workspaceId_slug_isPublished: z.lazy(() => FormWorkspaceIdSlugIsPublishedCompoundUniqueInputSchema).optional(),
   AND: z.union([ z.lazy(() => FormWhereInputSchema),z.lazy(() => FormWhereInputSchema).array() ]).optional(),
   OR: z.lazy(() => FormWhereInputSchema).array().optional(),
   NOT: z.union([ z.lazy(() => FormWhereInputSchema),z.lazy(() => FormWhereInputSchema).array() ]).optional(),
@@ -2326,9 +2326,10 @@ export const FormSubmissionOrderByRelationAggregateInputSchema: z.ZodType<Prisma
   _count: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
-export const FormWorkspaceIdSlugCompoundUniqueInputSchema: z.ZodType<Prisma.FormWorkspaceIdSlugCompoundUniqueInput> = z.object({
+export const FormWorkspaceIdSlugIsPublishedCompoundUniqueInputSchema: z.ZodType<Prisma.FormWorkspaceIdSlugIsPublishedCompoundUniqueInput> = z.object({
   workspaceId: z.string(),
-  slug: z.string()
+  slug: z.string(),
+  isPublished: z.boolean()
 }).strict();
 
 export const FormCountOrderByAggregateInputSchema: z.ZodType<Prisma.FormCountOrderByAggregateInput> = z.object({

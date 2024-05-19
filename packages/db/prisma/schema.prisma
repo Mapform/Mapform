@@ -96,7 +96,7 @@ model Form {
     publishedForm   Form?            @relation("PublishedVersion", fields: [publishedFormId], references: [id])
     draftForm       Form?            @relation("PublishedVersion")
 
-    @@unique([workspaceId, slug])
+    @@unique([workspaceId, slug, isPublished])
 }
 
 model Step {

@@ -44,6 +44,7 @@ export const getFormWithSteps = async (
     slug: formSlug.toLocaleLowerCase(),
     workspaceSlug: workspaceSlug.toLocaleLowerCase(),
     organizationSlug: orgSlug.toLocaleLowerCase(),
+    isPublished: false,
   });
 
   if (!form) {

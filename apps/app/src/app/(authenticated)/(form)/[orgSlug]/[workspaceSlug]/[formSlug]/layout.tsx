@@ -12,6 +12,7 @@ export default async function Layout({
     slug: params.formSlug.toLocaleLowerCase(),
     workspaceSlug: params.workspaceSlug.toLocaleLowerCase(),
     organizationSlug: params.orgSlug.toLocaleLowerCase(),
+    isPublished: false,
   });
 
   if (!form) {
