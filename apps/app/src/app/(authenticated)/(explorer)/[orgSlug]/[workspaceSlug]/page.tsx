@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { prisma } from "@mapform/db";
 import { CreateDialog } from "./dialog";
 
@@ -31,7 +32,13 @@ export default async function Organization({
       <CreateDialog workspaceId={workspace.id} />
       <ul>
         {forms.map((form) => (
-          <li key={form.id}>{form.name}</li>
+          <li key={form.id}>
+            <Link
+              href={`/${params.orgSlug}/${params.workspaceSlug}/${form.slug}`}
+            >
+              {form.name}
+            </Link>
+          </li>
         ))}
       </ul>
     </form>
