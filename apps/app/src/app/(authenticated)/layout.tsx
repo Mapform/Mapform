@@ -3,8 +3,10 @@ import { StackedLayout } from "./StackedLayout";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <ClerkProvider>
-      <StackedLayout>{children}</StackedLayout>
-    </ClerkProvider>
+    <div className="bg-gray-100 h-full">
+      <ClerkProvider>
+        <StackedLayout>{children}</StackedLayout>
+      </ClerkProvider>
+    </div>
   );
 }

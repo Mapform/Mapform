@@ -4,25 +4,11 @@ import { Fragment } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { MenuIcon, XIcon } from "lucide-react";
 import { cn } from "@mapform/lib/classnames";
-import { OrganizationSwitcher, useClerk } from "@clerk/nextjs";
-
-const user = {
-  name: "Tom Cook",
-  email: "tom@example.com",
-  imageUrl:
-    "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-};
-const navigation = [
-  { name: "Dashboard", href: "#", current: true },
-  { name: "Team", href: "#", current: false },
-  { name: "Projects", href: "#", current: false },
-  { name: "Calendar", href: "#", current: false },
-];
+import { useClerk } from "@clerk/nextjs";
 
 export function StackedLayout({ children }: { children: React.ReactNode }) {
   const { signOut, user } = useClerk();
   const userNavigation = [
-    // { name: "Your Profile", href: "#" },
     { name: "Settings", href: "#" },
     { name: "Sign out", action: signOut },
   ];
@@ -36,39 +22,8 @@ export function StackedLayout({ children }: { children: React.ReactNode }) {
               <div className="flex h-16 justify-between items-center">
                 <div className="flex">
                   <div className="flex flex-shrink-0 items-center">
-                    {/* <img
-                      alt="Your Company"
-                      className="block h-8 w-auto lg:hidden"
-                      src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
-                    />
-                    <img
-                      alt="Your Company"
-                      className="hidden h-8 w-auto lg:block"
-                      src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
-                    /> */}
                     <span className="text-xl font-semibold">MF</span>
                   </div>
-                  {/* TODO: Remove in favour of custom switcher */}
-                  <div className="hidden sm:-my-px sm:ml-6 sm:flex sm:space-x-8">
-                    <OrganizationSwitcher />
-                  </div>
-                  {/* <div className="hidden sm:-my-px sm:ml-6 sm:flex sm:space-x-8">
-                      {navigation.map((item) => (
-                        <a
-                          key={item.name}
-                          href={item.href}
-                          className={cn(
-                            item.current
-                              ? "border-indigo-500 text-gray-900"
-                              : "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700",
-                            "inline-flex items-center border-b-2 px-1 pt-1 text-sm font-medium"
-                          )}
-                          aria-current={item.current ? "page" : undefined}
-                        >
-                          {item.name}
-                        </a>
-                      ))}
-                    </div> */}
                 </div>
                 <div className="hidden sm:ml-6 sm:flex sm:items-center">
                   {/* Profile dropdown */}
@@ -141,24 +96,6 @@ export function StackedLayout({ children }: { children: React.ReactNode }) {
             </div>
 
             <Disclosure.Panel className="sm:hidden">
-              {/* <div className="space-y-1 pb-3 pt-2">
-                  {navigation.map((item) => (
-                    <Disclosure.Button
-                      key={item.name}
-                      as="a"
-                      href={item.href}
-                      className={cn(
-                        item.current
-                          ? "border-indigo-500 bg-indigo-50 text-indigo-700"
-                          : "border-transparent text-gray-600 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-800",
-                        "block border-l-4 py-2 pl-3 pr-4 text-base font-medium"
-                      )}
-                      aria-current={item.current ? "page" : undefined}
-                    >
-                      {item.name}
-                    </Disclosure.Button>
-                  ))}
-                </div> */}
               <div className="border-t border-gray-200 pb-3 pt-4">
                 <div className="flex items-center px-4">
                   <div className="flex-shrink-0">

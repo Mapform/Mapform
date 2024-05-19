@@ -27,9 +27,13 @@ export default async function Home() {
   const firstOrgSlug =
     userWithOrgs?.organizationMemberships[0]?.organization.slug;
 
-  if (!firstOrgSlug) {
-    redirect(`/new`);
-  }
+  console.log(11111, firstOrgSlug);
 
-  redirect(`/${userWithOrgs.organizationMemberships[0]?.organization.slug}`);
+  return <div>Explorer root</div>;
+
+  // if (!firstOrgSlug) {
+  //   redirect(`/new`);
+  // }
+
+  // redirect(`/${userWithOrgs.organizationMemberships[0]?.organization.slug}`);
 }
