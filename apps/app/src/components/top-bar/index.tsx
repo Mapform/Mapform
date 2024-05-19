@@ -6,7 +6,7 @@ import { MenuIcon, XIcon } from "lucide-react";
 import { cn } from "@mapform/lib/classnames";
 import { useClerk } from "@clerk/nextjs";
 
-export function TopBar({ children }: { children: React.ReactNode }) {
+export function TopBar({ children }: { children?: React.ReactNode }) {
   const { signOut, user } = useClerk();
   const userNavigation = [
     { name: "Settings", href: "#" },
@@ -25,6 +25,10 @@ export function TopBar({ children }: { children: React.ReactNode }) {
                     <span className="text-xl font-semibold">MapForm</span>
                   </div>
                 </div>
+
+                {/* MIDDLE */}
+                <div className="flex-1">{children}</div>
+
                 <div className="hidden sm:ml-6 sm:flex sm:items-center">
                   {/* Profile dropdown */}
                   <Menu as="div" className="relative ml-3">

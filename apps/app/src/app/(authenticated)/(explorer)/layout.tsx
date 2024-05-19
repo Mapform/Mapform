@@ -38,9 +38,7 @@ export default async function Layout({
 
   return (
     <div className="flex flex-col flex-1">
-      <TopBar>
-        <div>Some content</div>
-      </TopBar>
+      <TopBar />
       <div className="flex flex-1">
         {/* NAV */}
         <div className="flex flex-col gap-y-5 overflow-y-auto bg-white px-6 pb-2 w-[300px]">
