@@ -19,13 +19,7 @@ const navigation = [
   { name: "Calendar", href: "#", current: false },
 ];
 
-export function StackedLayout({
-  children,
-  subnav,
-}: {
-  children: React.ReactNode;
-  subnav: React.ReactNode;
-}) {
+export function StackedLayout({ children }: { children: React.ReactNode }) {
   const { signOut, user } = useClerk();
   const userNavigation = [
     // { name: "Your Profile", href: "#" },
@@ -58,7 +52,6 @@ export function StackedLayout({
                   <div className="hidden sm:-my-px sm:ml-6 sm:flex sm:space-x-8">
                     <OrganizationSwitcher />
                   </div>
-                  <div>{subnav}</div>
                   {/* <div className="hidden sm:-my-px sm:ml-6 sm:flex sm:space-x-8">
                       {navigation.map((item) => (
                         <a

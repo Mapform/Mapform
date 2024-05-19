@@ -1,6 +1,6 @@
-import { userModel } from "@mapform/db/models";
 import { redirect } from "next/navigation";
 import { currentUser } from "@clerk/nextjs";
+import { prisma } from "@mapform/db";
 
 export default async function Home() {
   // Need to redirect to the orgs page
@@ -11,10 +11,15 @@ export default async function Home() {
     return null;
   }
 
-  const userWithOrgs = await userModel.findOne(clerkUser.id, {
-    organizationMemberships: {
-      include: {
-        organization: true,
+  const userWithOrgs = await prisma.user.findUnique({
+    where: {
+      id: clerkUser.id,
+    },
+    include: {
+      organizationMemberships: {
+        include: {
+          organization: true,
+        },
       },
     },
   });
@@ -26,5 +31,5 @@ export default async function Home() {
     redirect(`/new`);
   }
 
-  redirect(`/${userWithOrgs?.organizationMemberships[0]?.organization.slug}`);
+  redirect(`/${userWithOrgs.organizationMemberships[0]?.organization.slug}`);
 }
