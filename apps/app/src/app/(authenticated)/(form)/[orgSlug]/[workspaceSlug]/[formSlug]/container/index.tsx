@@ -91,6 +91,8 @@ export function Container({
         queryKey: ["forms", formSlug, workspaceSlug, orgSlug],
       });
 
+      console.log(999999);
+
       // Snapshot the previous value
       const previousForm = queryClient.getQueryData([
         "forms",
@@ -244,6 +246,7 @@ export function Container({
                   },
                   data: {
                     description: content,
+                    formId: data.id,
                   },
                 });
               }}
@@ -261,6 +264,7 @@ export function Container({
                   },
                   data: {
                     title: content,
+                    formId: data.id,
                   },
                 });
               }}

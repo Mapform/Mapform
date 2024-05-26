@@ -221,8 +221,8 @@ importers:
         specifier: ^8.16.0
         version: 8.16.0(bufferutil@4.0.8)
       zod:
-        specifier: 3.21.1
-        version: 3.21.1
+        specifier: ^3.23.8
+        version: 3.23.8
     optionalDependencies:
       bufferutil:
         specifier: ^4.0.8

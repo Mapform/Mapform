@@ -23,6 +23,7 @@ export function Nav({ form }: { form: Form }) {
             </Button>
           ) : null}
           <Button
+            disabled={!form.isDirty}
             onClick={() => publishForm({ formId: form.id })}
             variant="outline"
           >

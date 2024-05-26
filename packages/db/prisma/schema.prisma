@@ -87,6 +87,7 @@ model Form {
     name            String
     slug            String
     isPublished     Boolean          @default(false)
+    isDirty         Boolean          @default(false)
     stepOrder       String[]
     steps           Step[]           @relation(name: "Steps")
     workspaceId     String

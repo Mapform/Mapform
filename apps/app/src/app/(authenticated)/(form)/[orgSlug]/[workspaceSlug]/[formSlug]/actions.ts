@@ -61,6 +61,9 @@ export const getFormWithSteps = async (
   };
 };
 
+/**
+ * TODO: Update these to use next-safe-action. Also, do more validation
+ */
 export const updateForm = async (
   input: z.infer<typeof FormUpdateArgsSchema>
 ) => {
@@ -96,24 +99,19 @@ export const updateStep = async (
     };
   }
 
-  await prisma.step.update(validatedFields.data);
-
-  revalidatePath("/");
-};
-
-export const updateManySteps = async (
-  input: z.infer<typeof StepUpdateManyArgsSchema>
-) => {
-  const validatedFields = StepUpdateManyArgsSchema.safeParse(input);
-
-  // Return early if the form data is invalid
-  if (!validatedFields.success) {
-    return {
-      errors: validatedFields.error.flatten().fieldErrors,
-    };
+  if (!validatedFields.data.data.formId) {
+    throw new Error("formId is required");
   }
 
-  await prisma.step.updateMany(validatedFields.data);
+  await prisma.step.update(validatedFields.data);
+  await prisma.form.update({
+    where: {
+      id: validatedFields.data.data.formId as string,
+    },
+    data: {
+      isDirty: true,
+    },
+  });
 
   revalidatePath("/");
 };
