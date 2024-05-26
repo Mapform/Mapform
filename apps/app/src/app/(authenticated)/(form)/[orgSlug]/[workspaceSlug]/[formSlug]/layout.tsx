@@ -21,7 +21,7 @@ export default async function Layout({
 
   return (
     <div className="flex-1 flex flex-col">
-      <Nav formId={form.id} />
+      <Nav form={form} />
       {children}
     </div>
   );

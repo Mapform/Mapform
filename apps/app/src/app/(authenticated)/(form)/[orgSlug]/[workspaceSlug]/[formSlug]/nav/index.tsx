@@ -1,20 +1,34 @@
 "use client";
 
+import { type Form } from "@mapform/db";
 import { Button } from "@mapform/ui/components/button";
 import { TopBar } from "~/components/top-bar";
 import { publishForm } from "./actions";
 
-export function Nav({ formId }: { formId: string }) {
+export function Nav({ form }: { form: Form }) {
   return (
     <TopBar>
       <div className="flex">
-        <Button
-          className="ml-auto"
-          onClick={() => publishForm({ formId })}
-          variant="outline"
-        >
-          Publish
-        </Button>
+        <div className="flex gap-2 ml-auto">
+          {form.publishedFormId ? (
+            <Button
+              onClick={async () => {
+                await navigator.clipboard.writeText(
+                  `http://localhost:3001/${form.publishedFormId}`
+                );
+              }}
+              variant="outline"
+            >
+              Copy link
+            </Button>
+          ) : null}
+          <Button
+            onClick={() => publishForm({ formId: form.id })}
+            variant="outline"
+          >
+            Publish
+          </Button>
+        </div>
       </div>
     </TopBar>
   );

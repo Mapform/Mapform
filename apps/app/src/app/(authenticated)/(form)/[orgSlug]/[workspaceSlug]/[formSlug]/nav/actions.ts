@@ -2,14 +2,12 @@
 
 import { prisma } from "@mapform/db";
 import { revalidatePath } from "next/cache";
-import { clerkClient, auth } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs";
 import { action } from "~/lib/safe-action";
 import { publishFormSchema } from "./schema";
 
 export const publishForm = action(publishFormSchema, async ({ formId }) => {
   const { userId } = auth();
-
-  console.log(111111, formId);
 
   if (!userId) {
     throw new Error("Not authenticated");
