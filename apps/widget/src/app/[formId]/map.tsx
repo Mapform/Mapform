@@ -19,7 +19,10 @@ export function Map({ formWithSteps }: MapProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const s = searchParams.get("s");
-  const currentStep = formWithSteps.steps.find((step) => step.id === s);
+  const currentStep =
+    formWithSteps.steps.find((step) => step.id === s) || formWithSteps.steps[0];
+
+  console.log(11111, currentStep);
 
   const initialViewState = {
     longitude: currentStep!.longitude,

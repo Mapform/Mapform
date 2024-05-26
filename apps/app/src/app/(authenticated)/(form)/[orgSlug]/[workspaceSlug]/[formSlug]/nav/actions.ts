@@ -50,6 +50,8 @@ export const publishForm = action(publishFormSchema, async ({ formId }) => {
           bearing: step.bearing,
           latitude: step.latitude,
           longitude: step.longitude,
+          title: step.title,
+          description: step.description || undefined,
         });
       })
     );
@@ -80,6 +82,8 @@ export const publishForm = action(publishFormSchema, async ({ formId }) => {
           bearing: step.bearing,
           latitude: step.latitude,
           longitude: step.longitude,
+          title: step.title,
+          description: step.description || undefined,
         });
       })
     );
