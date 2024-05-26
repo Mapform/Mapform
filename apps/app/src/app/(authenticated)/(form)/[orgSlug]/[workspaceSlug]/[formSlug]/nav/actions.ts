@@ -27,6 +27,8 @@ export const publishForm = action(publishFormSchema, async ({ formId }) => {
     formId: draftForm.id,
   });
 
+  // TODO: Wrap this in a transaction
+
   if (draftForm.publishedFormId) {
     await prisma.form.update({
       where: {
@@ -51,6 +53,15 @@ export const publishForm = action(publishFormSchema, async ({ formId }) => {
         });
       })
     );
+
+    await prisma.form.update({
+      where: {
+        id: draftForm.id,
+      },
+      data: {
+        isDirty: false,
+      },
+    });
   } else {
     const publishedForm = await prisma.form.create({
       data: {
@@ -79,6 +90,7 @@ export const publishForm = action(publishFormSchema, async ({ formId }) => {
       },
       data: {
         publishedFormId: publishedForm.id,
+        isDirty: false,
       },
     });
   }
