@@ -19,7 +19,8 @@
     "@types/mapbox-gl": "^3.1.0",
     "lucide-react": "^0.354.0",
     "mapbox-gl": "^3.2.0",
-    "react-map-gl": "^7.1.7"
+    "react-map-gl": "^7.1.7",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@mapform/eslint-config": "workspace:*",

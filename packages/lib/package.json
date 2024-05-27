@@ -1,9 +1,13 @@
 {
   "name": "@mapform/lib",
   "version": "0.1.0",
+  "type": "module",
   "dependencies": {
+    "@mapform/ui": "workspace:*",
     "clsx": "^2.1.0",
-    "tailwind-merge": "^2.2.1"
+    "lucide-react": "^0.354.0",
+    "tailwind-merge": "^2.2.1",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@mapform/eslint-config": "workspace:*",

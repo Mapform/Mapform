@@ -21,6 +21,7 @@ interface MapFormProps {
   onLoad?: () => void;
   onTitleChange?: (content: string) => void;
   onDescriptionChange?: (content: { content: CustomBlock[] }) => void;
+  onStepSubmit?: (data: Record<string, string>) => void;
 }
 
 export const MapForm = forwardRef<MapRef, MapFormProps>(
@@ -36,10 +37,10 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
       onLoad,
       onTitleChange,
       onDescriptionChange,
+      onStepSubmit,
     },
     ref
   ) => {
-
     return (
       <div className="flex w-full h-full">
         <div className="max-w-[320px] lg:max-w-[400px] w-full flex-shrink-0 bg-background shadow z-10">
@@ -55,6 +56,7 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
               onDescriptionChange={onDescriptionChange}
               onNext={onNext}
               onPrev={onPrev}
+              onStepSubmit={onStepSubmit}
               onTitleChange={onTitleChange}
               title={currentStep.title}
             />

@@ -3,7 +3,9 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import type { MapRef, ViewState } from "@mapform/mapform";
 import { MapForm } from "@mapform/mapform";
+import { useAction } from "next-safe-action/hooks";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { submitFormStep } from "~/server/actions/submit-form-step";
 import { env } from "../env.mjs";
 import type { FormWithSteps } from "./getters";
 
@@ -21,6 +23,7 @@ export function Map({ formWithSteps }: MapProps) {
   const s = searchParams.get("s");
   const currentStep =
     formWithSteps.steps.find((step) => step.id === s) || formWithSteps.steps[0];
+  const { execute, result } = useAction(submitFormStep);
 
   const initialViewState = {
     longitude: currentStep!.longitude,
@@ -70,6 +73,8 @@ export function Map({ formWithSteps }: MapProps) {
     return null;
   }
 
+  console.log(999, currentStep);
+
   return (
     <MapForm
       currentStep={currentStep}
@@ -93,6 +98,10 @@ export function Map({ formWithSteps }: MapProps) {
         if (prevStep) {
           setCurrentStep(prevStep);
         }
+      }}
+      onStepSubmit={(data) => {
+        console.log(1111, data);
+        execute(data);
       }}
       // onLoad={() => {
       //   setMapformLoaded(true);

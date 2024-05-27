@@ -13,6 +13,10 @@ import "@blocknote/react/style.css";
 import { TextIcon, ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { Button } from "@mapform/ui/components/button";
 import { Form, useForm, zodResolver } from "@mapform/ui/components/form";
+import {
+  type FormSchema,
+  formSchema,
+} from "@mapform/lib/schemas/form-step-schema";
 import { schema, type CustomBlock } from "./block-note-schema";
 import "./style.css";
 import { StepContext } from "./context";
@@ -27,6 +31,7 @@ interface BlocknoteProps {
   onPrev?: () => void;
   onTitleChange?: (content: string) => void;
   onDescriptionChange?: (content: { content: CustomBlock[] }) => void;
+  onStepSubmit?: (data: FormSchema) => void;
 }
 
 export function Blocknote({
@@ -40,7 +45,8 @@ export function Blocknote({
   onStepSubmit,
 }: BlocknoteProps) {
   // TODO - Add zod schema validation
-  const form = useForm({
+  const form = useForm<FormSchema>({
+    resolver: zodResolver(formSchema),
     // defaultValues: {
     //   "8d4cafab-a24b-483a-ade5-9c37734058c3": "test",
     // },
@@ -76,8 +82,9 @@ export function Blocknote({
     icon: <TextIcon />,
   });
 
-  const onSubmit = (data) => {
+  const onSubmit = (data: FormSchema) => {
     console.log(data);
+    onStepSubmit && onStepSubmit(data);
   };
 
   // Renders the editor instance using a React component.

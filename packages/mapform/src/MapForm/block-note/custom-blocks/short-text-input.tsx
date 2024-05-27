@@ -21,12 +21,14 @@ export const ShortTextInput = createReactBlockSpec(
         default: "Labelll",
         type: "string",
       },
-      // textAlignment: defaultProps.textAlignment,
-      // textColor: defaultProps.textColor,
-      // type: {
-      //   default: "warning",
-      //   values: ["warning", "error", "info", "success"],
-      // },
+      placeholder: {
+        default: "",
+        type: "string",
+      },
+      required: {
+        default: true,
+        type: "boolean",
+      },
     },
     content: "none",
   },
@@ -34,8 +36,6 @@ export const ShortTextInput = createReactBlockSpec(
     render: ({ block, editor }) => {
       const form = useFormContext();
       const { editable } = useStepContext();
-
-      console.log(999, editable);
 
       return (
         <FormField
