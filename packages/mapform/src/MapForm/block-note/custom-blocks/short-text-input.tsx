@@ -26,7 +26,7 @@ export const ShortTextInput = createReactBlockSpec(
         type: "string",
       },
       required: {
-        default: true,
+        default: false,
         type: "boolean",
       },
     },

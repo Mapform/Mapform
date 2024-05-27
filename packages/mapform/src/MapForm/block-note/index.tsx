@@ -1,5 +1,6 @@
 "use client";
 
+import { z } from "zod";
 import { useState } from "react";
 import "@blocknote/core/fonts/inter.css";
 import { filterSuggestionItems, insertOrUpdateBlock } from "@blocknote/core";
@@ -20,6 +21,7 @@ import {
 import { schema, type CustomBlock } from "./block-note-schema";
 import "./style.css";
 import { StepContext } from "./context";
+import { getZodSchemaFromBlockNote } from "./zod-schema-from-blocknote";
 
 interface BlocknoteProps {
   editable: boolean;
@@ -44,9 +46,12 @@ export function Blocknote({
   onDescriptionChange,
   onStepSubmit,
 }: BlocknoteProps) {
+  const blocknoteStepSchema = getZodSchemaFromBlockNote(
+    description?.content || []
+  );
   // TODO - Add zod schema validation
-  const form = useForm<FormSchema>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof blocknoteStepSchema>>({
+    resolver: zodResolver(blocknoteStepSchema),
     // defaultValues: {
     //   "8d4cafab-a24b-483a-ade5-9c37734058c3": "test",
     // },
