@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "type": "module",
   "dependencies": {
-    "@mapform/ui": "workspace:*",
     "clsx": "^2.1.0",
     "lucide-react": "^0.354.0",
     "tailwind-merge": "^2.2.1",

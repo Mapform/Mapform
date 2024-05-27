@@ -101,7 +101,10 @@ export function Map({ formWithSteps }: MapProps) {
       }}
       onStepSubmit={(data) => {
         console.log(1111, data);
-        execute(data);
+        execute({
+          stepId: s,
+          payload: data,
+        });
       }}
       // onLoad={() => {
       //   setMapformLoaded(true);

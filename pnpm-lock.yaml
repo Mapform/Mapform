@@ -137,7 +137,7 @@ importers:
         version: link:../../packages/ui
       '@t3-oss/env-nextjs':
         specifier: ^0.9.2
-        version: 0.9.2(typescript@5.5.0-dev.20240514)(zod@3.21.1)
+        version: 0.9.2(typescript@5.5.0-dev.20240514)(zod@3.23.8)
       '@tanstack/react-query':
         specifier: ^5.29.0
         version: 5.29.0(react@18.2.0)
@@ -160,8 +160,8 @@ importers:
         specifier: ^18
         version: 18.2.0(react@18.2.0)
       zod:
-        specifier: 3.21.1
-        version: 3.21.1
+        specifier: ^3.23.8
+        version: 3.23.8
     devDependencies:
       '@mapform/eslint-config':
         specifier: workspace:*
@@ -282,9 +282,6 @@ importers:
 
   packages/lib:
     dependencies:
-      '@mapform/ui':
-        specifier: workspace:*
-        version: link:../ui
       clsx:
         specifier: ^2.1.0
         version: 2.1.0
@@ -2078,19 +2075,6 @@ packages:
       tslib: 2.6.2
     dev: false
 
-  /@t3-oss/env-core@0.9.2(typescript@5.5.0-dev.20240514)(zod@3.21.1):
-    resolution: {integrity: sha512-KgWXljUTHgO3o7GMZQPAD5+P+HqpauMNNHowlm7V2b9IeMitSUpNKwG6xQrup/xARWHTdxRVIl0mSI4wCevQhQ==}
-    peerDependencies:
-      typescript: '>=5.0.0'
-      zod: ^3.0.0
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dependencies:
-      typescript: 5.5.0-dev.20240514
-      zod: 3.21.1
-    dev: false
-
   /@t3-oss/env-core@0.9.2(typescript@5.5.0-dev.20240514)(zod@3.23.8):
     resolution: {integrity: sha512-KgWXljUTHgO3o7GMZQPAD5+P+HqpauMNNHowlm7V2b9IeMitSUpNKwG6xQrup/xARWHTdxRVIl0mSI4wCevQhQ==}
     peerDependencies:
@@ -2102,20 +2086,6 @@ packages:
     dependencies:
       typescript: 5.5.0-dev.20240514
       zod: 3.23.8
-    dev: false
-
-  /@t3-oss/env-nextjs@0.9.2(typescript@5.5.0-dev.20240514)(zod@3.21.1):
-    resolution: {integrity: sha512-dklHrgKLESStNVB67Jdbu6osxDYA+xNKaPBRerlnkEvzbCccSKMvZENx6EZebJuR4snqB3/yRykNMn/bdIAyiQ==}
-    peerDependencies:
-      typescript: '>=5.0.0'
-      zod: ^3.0.0
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dependencies:
-      '@t3-oss/env-core': 0.9.2(typescript@5.5.0-dev.20240514)(zod@3.21.1)
-      typescript: 5.5.0-dev.20240514
-      zod: 3.21.1
     dev: false
 
   /@t3-oss/env-nextjs@0.9.2(typescript@5.5.0-dev.20240514)(zod@3.23.8):
