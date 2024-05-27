@@ -22,8 +22,6 @@ export function Map({ formWithSteps }: MapProps) {
   const currentStep =
     formWithSteps.steps.find((step) => step.id === s) || formWithSteps.steps[0];
 
-  console.log(11111, currentStep);
-
   const initialViewState = {
     longitude: currentStep!.longitude,
     latitude: currentStep!.latitude,

@@ -12,7 +12,7 @@ import {
 import "@blocknote/react/style.css";
 import { TextIcon, ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { Button } from "@mapform/ui/components/button";
-import { Form, useForm } from "@mapform/ui/components/form";
+import { Form, useForm, zodResolver } from "@mapform/ui/components/form";
 import { schema, type CustomBlock } from "./block-note-schema";
 import "./style.css";
 
@@ -36,11 +36,13 @@ export function Blocknote({
   description,
   onTitleChange,
   onDescriptionChange,
+  onStepSubmit,
 }: BlocknoteProps) {
+  // TODO - Add zod schema validation
   const form = useForm({
-    defaultValues: {
-      "8d4cafab-a24b-483a-ade5-9c37734058c3": "test",
-    },
+    // defaultValues: {
+    //   "8d4cafab-a24b-483a-ade5-9c37734058c3": "test",
+    // },
   });
   const [uncontrolledTitle, setUncontrolledTitle] = useState<string>(
     title || ""
