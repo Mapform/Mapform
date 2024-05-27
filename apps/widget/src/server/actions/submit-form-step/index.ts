@@ -14,13 +14,17 @@ export const submitFormStep = action(
       },
     });
 
+    console.log(stepId, step);
+
     if (!step) {
       throw new Error("Step not found");
     }
 
     // TODO: VALIDATION
 
-    const validationSchema = getZodSchemaFromBlockNote(step.description as any);
+    const validationSchema = getZodSchemaFromBlockNote(
+      (step.description as any).content
+    );
 
     const { success, error } = validationSchema.safeParse(payload);
 

@@ -73,8 +73,6 @@ export function Map({ formWithSteps }: MapProps) {
     return null;
   }
 
-  console.log(999, currentStep);
-
   return (
     <MapForm
       currentStep={currentStep}
@@ -102,7 +100,7 @@ export function Map({ formWithSteps }: MapProps) {
       onStepSubmit={(data) => {
         console.log(1111, data);
         execute({
-          stepId: s,
+          stepId: currentStep!.id,
           payload: data,
         });
       }}
