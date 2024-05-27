@@ -11,6 +11,7 @@ import {
 } from "@mapform/ui/components/form";
 import { Input } from "@mapform/ui/components/input";
 import { EllipsisIcon } from "lucide-react";
+import { useStepContext } from "../context";
 
 export const ShortTextInput = createReactBlockSpec(
   {
@@ -32,6 +33,9 @@ export const ShortTextInput = createReactBlockSpec(
   {
     render: ({ block, editor }) => {
       const form = useFormContext();
+      const { editable } = useStepContext();
+
+      console.log(999, editable);
 
       return (
         <FormField
@@ -41,15 +45,22 @@ export const ShortTextInput = createReactBlockSpec(
           name={block.id}
           render={({ field }) => (
             <FormItem>
-              <FormLabel
-                onClick={() =>
-                  editor.updateBlock(block, {
-                    type: "short-text-input",
-                    props: { label: "New Label" },
-                  })
-                }
-              >
-                {block.props.label}
+              <FormLabel>
+                {editable ? (
+                  <input
+                    className="text-sm font-medium border-0 w-full p-0 outline-none border-transparent focus:border-transparent focus:ring-0 placeholder-gray-300"
+                    onChange={(e) => {
+                      editor.updateBlock(block, {
+                        type: "short-text-input",
+                        props: { label: e.target.value },
+                      });
+                    }}
+                    placeholder="Label"
+                    value={block.props.label}
+                  />
+                ) : (
+                  <>{block.props.label}</>
+                )}
               </FormLabel>
               <FormControl>
                 <Input {...field} />

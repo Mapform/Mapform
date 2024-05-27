@@ -15,6 +15,7 @@ import { Button } from "@mapform/ui/components/button";
 import { Form, useForm, zodResolver } from "@mapform/ui/components/form";
 import { schema, type CustomBlock } from "./block-note-schema";
 import "./style.css";
+import { StepContext } from "./context";
 
 interface BlocknoteProps {
   editable: boolean;
@@ -81,67 +82,79 @@ export function Blocknote({
 
   // Renders the editor instance using a React component.
   return (
-    <Form {...form}>
-      <form
-        className="h-full flex flex-col"
-        onSubmit={form.handleSubmit(onSubmit)}
-      >
-        {/* Content */}
-        <div className="overflow-y-auto p-4 pb-0">
-          {/* Title */}
-          <input
-            className="border-0 text-2xl font-bold w-full mb-2 p-0 outline-none border-transparent focus:border-transparent focus:ring-0 placeholder-gray-300"
-            onChange={(e) => {
-              setUncontrolledTitle(e.target.value);
-              onTitleChange && onTitleChange(e.target.value);
-            }}
-            placeholder="Untitled"
-            value={uncontrolledTitle}
-          />
-
-          {/* Description */}
-          <BlockNoteView
-            className="flex-1"
-            editable={editable}
-            editor={editor}
-            onChange={() => {
-              onDescriptionChange &&
-                onDescriptionChange({
-                  content: editor.document,
-                });
-            }}
-            sideMenu={false}
-            slashMenu={false}
-          >
-            <SuggestionMenuController
-              getItems={async (query) => {
-                // Gets all default slash menu items and `insertAlert` item.
-                return filterSuggestionItems(
-                  [
-                    ...getDefaultReactSlashMenuItems(editor),
-                    insertAlert(editor),
-                  ],
-                  query
-                );
+    <StepContext.Provider value={{ editable }}>
+      <Form {...form}>
+        <form
+          className="h-full flex flex-col"
+          onSubmit={form.handleSubmit(onSubmit)}
+        >
+          {/* Content */}
+          <div className="overflow-y-auto p-4 pb-0">
+            {/* Title */}
+            <input
+              className="border-0 text-2xl font-bold w-full mb-2 p-0 outline-none border-transparent focus:border-transparent focus:ring-0 placeholder-gray-300"
+              onChange={(e) => {
+                setUncontrolledTitle(e.target.value);
+                onTitleChange && onTitleChange(e.target.value);
               }}
-              triggerCharacter="/"
+              placeholder="Untitled"
+              value={uncontrolledTitle}
             />
-          </BlockNoteView>
-        </div>
-        <div className="mt-auto flex justify-between p-4">
-          <div className="gap-2">
-            <Button onClick={onPrev} size="icon" type="button" variant="ghost">
-              <ChevronLeftIcon />
-            </Button>
-            <Button onClick={onNext} size="icon" type="button" variant="ghost">
-              <ChevronRightIcon />
+
+            {/* Description */}
+            <BlockNoteView
+              className="flex-1"
+              editable={editable}
+              editor={editor}
+              onChange={() => {
+                onDescriptionChange &&
+                  onDescriptionChange({
+                    content: editor.document,
+                  });
+              }}
+              sideMenu={false}
+              slashMenu={false}
+            >
+              <SuggestionMenuController
+                getItems={async (query) => {
+                  // Gets all default slash menu items and `insertAlert` item.
+                  return filterSuggestionItems(
+                    [
+                      ...getDefaultReactSlashMenuItems(editor),
+                      insertAlert(editor),
+                    ],
+                    query
+                  );
+                }}
+                triggerCharacter="/"
+              />
+            </BlockNoteView>
+          </div>
+          <div className="mt-auto flex justify-between p-4">
+            <div className="gap-2">
+              <Button
+                onClick={onPrev}
+                size="icon"
+                type="button"
+                variant="ghost"
+              >
+                <ChevronLeftIcon />
+              </Button>
+              <Button
+                onClick={onNext}
+                size="icon"
+                type="button"
+                variant="ghost"
+              >
+                <ChevronRightIcon />
+              </Button>
+            </div>
+            <Button onClick={onNext} type="submit">
+              Next
             </Button>
           </div>
-          <Button onClick={onNext} type="submit">
-            Next
-          </Button>
-        </div>
-      </form>
-    </Form>
+        </form>
+      </Form>
+    </StepContext.Provider>
   );
 }
