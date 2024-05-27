@@ -112,7 +112,7 @@ model Step {
     locationId  String   @unique
     location    Location @relation(fields: [locationId], references: [id])
 
-    // shortTextInputFields ShortTextInputField[]
+    shortTextInputResponses ShortTextInputResponse[]
 }
 
 model FormSubmission {
@@ -122,26 +122,16 @@ model FormSubmission {
     shortTextInputResponse ShortTextInputResponse[]
 }
 
-// Just store this in the Step description NodeBlock instead. Should simplify persistance
-// model ShortTextInputField {
-//     id                     String                   @id @default(uuid())
-//     blockNoteId            String                   @unique // ID comes from BlockNote
-//     label                  String
-//     placeholder            String?
-//     required               Boolean                  @default(true)
-//     stepId                 String
-//     step                   Step                     @relation(fields: [stepId], references: [id])
-//     shortTextInputResponse ShortTextInputResponse[]
-// }
-
 model ShortTextInputResponse {
-    id                    String @id @default(uuid())
-    formSubmissionId      String
-    shortTextInputFieldId String
-    value                 String
+    id               String @id @default(uuid())
+    blockNoteId      String @unique // ID comes from BlockNote
+    title            String
+    value            String
+    stepId           String
+    formSubmissionId String
 
+    step           Step           @relation(fields: [stepId], references: [id])
     formSubmission FormSubmission @relation(fields: [formSubmissionId], references: [id])
-    // shortTextInputField ShortTextInputField @relation(fields: [shortTextInputFieldId], references: [id])
 }
 
 model Location {
