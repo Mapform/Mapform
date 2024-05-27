@@ -3,6 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "main": "./src/index.tsx",
+  "exports": {
+    ".": "./src/index.tsx",
+    "./lib/*": "./src/lib/*.ts"
+  },
   "scripts": {
     "lint": "eslint . --max-warnings 0"
   },

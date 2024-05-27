@@ -11,7 +11,7 @@ import {
 } from "@mapform/ui/components/form";
 import { Input } from "@mapform/ui/components/input";
 import { EllipsisIcon } from "lucide-react";
-import { useStepContext } from "../context";
+import { useStepContext } from "../../mapform/block-note/context";
 
 export const ShortTextInput = createReactBlockSpec(
   {

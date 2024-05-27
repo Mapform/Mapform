@@ -6,7 +6,7 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import { forwardRef } from "react";
 import type { Step } from "@mapform/db";
 import { Blocknote } from "./block-note";
-import { type CustomBlock } from "./block-note/block-note-schema";
+import { type CustomBlock } from "../lib/block-note-schema";
 
 type ExtendedStep = Step & { latitude: number; longitude: number };
 

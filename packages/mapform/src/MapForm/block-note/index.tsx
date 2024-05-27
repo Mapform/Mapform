@@ -18,10 +18,10 @@ import {
   type FormSchema,
   formSchema,
 } from "@mapform/lib/schemas/form-step-schema";
-import { schema, type CustomBlock } from "./block-note-schema";
+import { schema, type CustomBlock } from "../../lib/block-note-schema";
 import "./style.css";
 import { StepContext } from "./context";
-import { getZodSchemaFromBlockNote } from "./zod-schema-from-blocknote";
+import { getZodSchemaFromBlockNote } from "../../lib/zod-schema-from-blocknote";
 
 interface BlocknoteProps {
   editable: boolean;
