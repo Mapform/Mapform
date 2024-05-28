@@ -42,14 +42,12 @@ export const submitFormStep = action(
           return prisma.shortTextInputResponse.upsert({
             create: {
               formSubmissionId,
-              stepId,
               blockNoteId: key,
               value: value as string,
               title: block.props.label,
             },
             update: {
               formSubmissionId,
-              stepId,
               blockNoteId: key,
               value: value as string,
               title: block.props.label,

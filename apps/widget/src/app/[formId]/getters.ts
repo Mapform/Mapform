@@ -22,3 +22,11 @@ export async function getFormWithSteps(formId: string) {
 }
 
 export type FormWithSteps = Awaited<ReturnType<typeof getFormWithSteps>>;
+
+export async function getInputValues(formSubmissionId: string) {
+  return prisma.shortTextInputResponse.findMany({
+    where: {
+      formSubmissionId,
+    },
+  });
+}

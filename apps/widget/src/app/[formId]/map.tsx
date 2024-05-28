@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import type { MapRef, ViewState } from "@mapform/mapform";
 import { MapForm } from "@mapform/mapform";
 import { useAction } from "next-safe-action/hooks";
+import { type ShortTextInputResponse } from "@mapform/db";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { submitFormStep } from "~/server/actions/submit-form-step";
 import { createFormSubmission } from "~/server/actions/create-form-submission";
@@ -12,11 +13,12 @@ import type { FormWithSteps } from "./getters";
 
 interface MapProps {
   formWithSteps: NonNullable<FormWithSteps>;
+  formValues: ShortTextInputResponse[];
 }
 
 type Step = NonNullable<FormWithSteps>["steps"][number];
 
-export function Map({ formWithSteps }: MapProps) {
+export function Map({ formWithSteps, formValues }: MapProps) {
   const router = useRouter();
   const map = useRef<MapRef>(null);
   const pathname = usePathname();
@@ -26,8 +28,6 @@ export function Map({ formWithSteps }: MapProps) {
     formWithSteps.steps.find((step) => step.id === s) || formWithSteps.steps[0];
   const { execute, result } = useAction(submitFormStep);
   const [currentSession, setCurrentSession] = useState<string | null>(null);
-
-  console.log(11111, currentSession);
 
   const initialViewState = {
     longitude: currentStep!.longitude,
@@ -67,7 +67,7 @@ export function Map({ formWithSteps }: MapProps) {
 
   useEffect(() => {
     void (async () => {
-      let session = window.localStorage.getItem("session");
+      let session = getCookie("mapform-form-submission");
 
       if (!session) {
         const { data } = await createFormSubmission({
@@ -76,10 +76,8 @@ export function Map({ formWithSteps }: MapProps) {
 
         if (data) {
           session = data;
-          window.localStorage.setItem("session", session);
         }
       }
-
       setCurrentSession(session);
     })();
   }, []);
@@ -92,6 +90,19 @@ export function Map({ formWithSteps }: MapProps) {
     }
   }, [s, formWithSteps.steps, pathname, router, createQueryString]);
 
+  const stepValues = (currentStep?.description as any)?.content.reduce(
+    (acc: Record<string, string>, block: any) => {
+      if (block.type === "short-text-input") {
+        acc[block.id] = formValues.find(
+          (value) => value.blockNoteId === block.id
+        )?.value;
+      }
+
+      return acc;
+    },
+    {}
+  );
+
   if (!s || !currentSession || !currentStep) {
     return null;
   }
@@ -99,6 +110,7 @@ export function Map({ formWithSteps }: MapProps) {
   return (
     <MapForm
       currentStep={currentStep}
+      defaultFormValues={stepValues}
       mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
       onNext={() => {
         const nextStepIndex =
@@ -137,5 +149,22 @@ export function Map({ formWithSteps }: MapProps) {
       }}
       viewState={viewState}
     />
+  );
+}
+
+// Given a cookie key `name`, returns the value of
+// the cookie or `null`, if the key is not found.
+function getCookie(name: string) {
+  const nameLenPlus = name.length + 1;
+  return (
+    document.cookie
+      .split(";")
+      .map((c) => c.trim())
+      .filter((cookie) => {
+        return cookie.substring(0, nameLenPlus) === `${name}=`;
+      })
+      .map((cookie) => {
+        return decodeURIComponent(cookie.substring(nameLenPlus));
+      })[0] || null
   );
 }

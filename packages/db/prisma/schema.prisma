@@ -111,8 +111,6 @@ model Step {
     form        Form?    @relation(name: "Steps", fields: [formId], references: [id])
     locationId  String   @unique
     location    Location @relation(fields: [locationId], references: [id])
-
-    shortTextInputResponses ShortTextInputResponse[]
 }
 
 model FormSubmission {
@@ -127,10 +125,8 @@ model ShortTextInputResponse {
     blockNoteId      String
     title            String
     value            String
-    stepId           String
     formSubmissionId String
 
-    step           Step           @relation(fields: [stepId], references: [id])
     formSubmission FormSubmission @relation(fields: [formSubmissionId], references: [id])
 
     @@unique([blockNoteId, formSubmissionId])

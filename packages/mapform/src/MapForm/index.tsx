@@ -5,8 +5,8 @@ import Map, { MapProvider, useMap } from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { forwardRef } from "react";
 import type { Step } from "@mapform/db";
-import { Blocknote } from "./block-note";
 import { type CustomBlock } from "../lib/block-note-schema";
+import { Blocknote } from "./block-note";
 
 type ExtendedStep = Step & { latitude: number; longitude: number };
 
@@ -15,6 +15,7 @@ interface MapFormProps {
   mapboxAccessToken: string;
   currentStep?: ExtendedStep;
   viewState: ViewState;
+  defaultFormValues?: Record<string, string>;
   setViewState: (viewState: ViewStateChangeEvent) => void;
   onPrev?: () => void;
   onNext?: () => void;
@@ -38,6 +39,7 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
       onTitleChange,
       onDescriptionChange,
       onStepSubmit,
+      defaultFormValues,
     },
     ref
   ) => {
@@ -59,6 +61,7 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
               onStepSubmit={onStepSubmit}
               onTitleChange={onTitleChange}
               title={currentStep.title}
+              defaultFormValues={defaultFormValues}
             />
           ) : null}
         </div>
