@@ -39,13 +39,26 @@ export const submitFormStep = action(
         );
 
         if (block?.type === "short-text-input") {
-          return prisma.shortTextInputResponse.create({
-            data: {
+          return prisma.shortTextInputResponse.upsert({
+            create: {
               formSubmissionId,
               stepId,
               blockNoteId: key,
               value: value as string,
               title: block.props.label,
+            },
+            update: {
+              formSubmissionId,
+              stepId,
+              blockNoteId: key,
+              value: value as string,
+              title: block.props.label,
+            },
+            where: {
+              blockNoteId_formSubmissionId: {
+                blockNoteId: key,
+                formSubmissionId,
+              },
             },
           });
         }

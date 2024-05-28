@@ -1276,11 +1276,21 @@ export const ShortTextInputResponseOrderByWithRelationInputSchema: z.ZodType<Pri
   formSubmission: z.lazy(() => FormSubmissionOrderByWithRelationInputSchema).optional()
 }).strict();
 
-export const ShortTextInputResponseWhereUniqueInputSchema: z.ZodType<Prisma.ShortTextInputResponseWhereUniqueInput> = z.object({
-  id: z.string().uuid()
-})
+export const ShortTextInputResponseWhereUniqueInputSchema: z.ZodType<Prisma.ShortTextInputResponseWhereUniqueInput> = z.union([
+  z.object({
+    id: z.string().uuid(),
+    blockNoteId_formSubmissionId: z.lazy(() => ShortTextInputResponseBlockNoteIdFormSubmissionIdCompoundUniqueInputSchema)
+  }),
+  z.object({
+    id: z.string().uuid(),
+  }),
+  z.object({
+    blockNoteId_formSubmissionId: z.lazy(() => ShortTextInputResponseBlockNoteIdFormSubmissionIdCompoundUniqueInputSchema),
+  }),
+])
 .and(z.object({
   id: z.string().uuid().optional(),
+  blockNoteId_formSubmissionId: z.lazy(() => ShortTextInputResponseBlockNoteIdFormSubmissionIdCompoundUniqueInputSchema).optional(),
   AND: z.union([ z.lazy(() => ShortTextInputResponseWhereInputSchema),z.lazy(() => ShortTextInputResponseWhereInputSchema).array() ]).optional(),
   OR: z.lazy(() => ShortTextInputResponseWhereInputSchema).array().optional(),
   NOT: z.union([ z.lazy(() => ShortTextInputResponseWhereInputSchema),z.lazy(() => ShortTextInputResponseWhereInputSchema).array() ]).optional(),
@@ -2396,6 +2406,11 @@ export const StepRelationFilterSchema: z.ZodType<Prisma.StepRelationFilter> = z.
 export const FormSubmissionRelationFilterSchema: z.ZodType<Prisma.FormSubmissionRelationFilter> = z.object({
   is: z.lazy(() => FormSubmissionWhereInputSchema).optional(),
   isNot: z.lazy(() => FormSubmissionWhereInputSchema).optional()
+}).strict();
+
+export const ShortTextInputResponseBlockNoteIdFormSubmissionIdCompoundUniqueInputSchema: z.ZodType<Prisma.ShortTextInputResponseBlockNoteIdFormSubmissionIdCompoundUniqueInput> = z.object({
+  blockNoteId: z.string(),
+  formSubmissionId: z.string()
 }).strict();
 
 export const ShortTextInputResponseCountOrderByAggregateInputSchema: z.ZodType<Prisma.ShortTextInputResponseCountOrderByAggregateInput> = z.object({

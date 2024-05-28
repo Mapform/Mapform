@@ -132,6 +132,8 @@ model ShortTextInputResponse {
 
     step           Step           @relation(fields: [stepId], references: [id])
     formSubmission FormSubmission @relation(fields: [formSubmissionId], references: [id])
+
+    @@unique([blockNoteId, formSubmissionId])
 }
 
 model Location {
