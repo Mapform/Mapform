@@ -7,7 +7,7 @@ import { submitFormStepSchema } from "./schema";
 
 export const submitFormStep = action(
   submitFormStepSchema,
-  async ({ stepId, payload }) => {
+  async ({ stepId, formSubmissionId, payload }) => {
     const step = await prisma.step.findUnique({
       where: {
         id: stepId,
@@ -26,6 +26,32 @@ export const submitFormStep = action(
       (step.description as any).content
     );
 
-    const { success, error } = validationSchema.safeParse(payload);
+    const { data, error } = validationSchema.safeParse(payload);
+
+    if (error) {
+      throw new Error("Invalid payload");
+    }
+
+    await Promise.all(
+      Object.entries(data).map(async ([key, value]) => {
+        const block = (step.description as any).content.find(
+          (b) => b.id === key
+        );
+
+        if (block?.type === "short-text-input") {
+          return prisma.shortTextInputResponse.create({
+            data: {
+              formSubmissionId,
+              stepId,
+              blockNoteId: key,
+              value: value as string,
+              title: block.props.label,
+            },
+          });
+        }
+      })
+    );
+
+    // return formSubmissionStep;
   }
 );

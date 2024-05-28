@@ -1276,24 +1276,15 @@ export const ShortTextInputResponseOrderByWithRelationInputSchema: z.ZodType<Pri
   formSubmission: z.lazy(() => FormSubmissionOrderByWithRelationInputSchema).optional()
 }).strict();
 
-export const ShortTextInputResponseWhereUniqueInputSchema: z.ZodType<Prisma.ShortTextInputResponseWhereUniqueInput> = z.union([
-  z.object({
-    id: z.string().uuid(),
-    blockNoteId: z.string()
-  }),
-  z.object({
-    id: z.string().uuid(),
-  }),
-  z.object({
-    blockNoteId: z.string(),
-  }),
-])
+export const ShortTextInputResponseWhereUniqueInputSchema: z.ZodType<Prisma.ShortTextInputResponseWhereUniqueInput> = z.object({
+  id: z.string().uuid()
+})
 .and(z.object({
   id: z.string().uuid().optional(),
-  blockNoteId: z.string().optional(),
   AND: z.union([ z.lazy(() => ShortTextInputResponseWhereInputSchema),z.lazy(() => ShortTextInputResponseWhereInputSchema).array() ]).optional(),
   OR: z.lazy(() => ShortTextInputResponseWhereInputSchema).array().optional(),
   NOT: z.union([ z.lazy(() => ShortTextInputResponseWhereInputSchema),z.lazy(() => ShortTextInputResponseWhereInputSchema).array() ]).optional(),
+  blockNoteId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   title: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   value: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   stepId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),

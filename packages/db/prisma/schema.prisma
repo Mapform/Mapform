@@ -124,7 +124,7 @@ model FormSubmission {
 
 model ShortTextInputResponse {
     id               String @id @default(uuid())
-    blockNoteId      String @unique // ID comes from BlockNote
+    blockNoteId      String
     title            String
     value            String
     stepId           String

@@ -92,7 +92,7 @@ export function Map({ formWithSteps }: MapProps) {
     }
   }, [s, formWithSteps.steps, pathname, router, createQueryString]);
 
-  if (!s) {
+  if (!s || !currentSession || !currentStep) {
     return null;
   }
 
@@ -102,7 +102,7 @@ export function Map({ formWithSteps }: MapProps) {
       mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
       onNext={() => {
         const nextStepIndex =
-          formWithSteps.steps.findIndex((step) => step.id === currentStep!.id) +
+          formWithSteps.steps.findIndex((step) => step.id === currentStep.id) +
           1;
         const nextStep = formWithSteps.steps[nextStepIndex];
 
@@ -112,7 +112,7 @@ export function Map({ formWithSteps }: MapProps) {
       }}
       onPrev={() => {
         const prevStepIndex =
-          formWithSteps.steps.findIndex((step) => step.id === currentStep!.id) -
+          formWithSteps.steps.findIndex((step) => step.id === currentStep.id) -
           1;
         const prevStep = formWithSteps.steps[prevStepIndex];
 
@@ -123,7 +123,8 @@ export function Map({ formWithSteps }: MapProps) {
       onStepSubmit={(data) => {
         console.log(1111, data);
         execute({
-          stepId: currentStep!.id,
+          stepId: currentStep.id,
+          formSubmissionId: currentSession,
           payload: data,
         });
       }}
