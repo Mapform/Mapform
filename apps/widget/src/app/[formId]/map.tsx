@@ -6,6 +6,7 @@ import { MapForm } from "@mapform/mapform";
 import { useAction } from "next-safe-action/hooks";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { submitFormStep } from "~/server/actions/submit-form-step";
+import { createFormSubmission } from "~/server/actions/create-form-submission";
 import { env } from "../env.mjs";
 import type { FormWithSteps } from "./getters";
 
@@ -24,6 +25,9 @@ export function Map({ formWithSteps }: MapProps) {
   const currentStep =
     formWithSteps.steps.find((step) => step.id === s) || formWithSteps.steps[0];
   const { execute, result } = useAction(submitFormStep);
+  const [currentSession, setCurrentSession] = useState<string | null>(null);
+
+  console.log(11111, currentSession);
 
   const initialViewState = {
     longitude: currentStep!.longitude,
@@ -60,6 +64,25 @@ export function Map({ formWithSteps }: MapProps) {
     });
     router.push(`${pathname}?${createQueryString("s", step.id)}`);
   };
+
+  useEffect(() => {
+    void (async () => {
+      let session = window.localStorage.getItem("session");
+
+      if (!session) {
+        const { data } = await createFormSubmission({
+          formId: formWithSteps.id,
+        });
+
+        if (data) {
+          session = data;
+          window.localStorage.setItem("session", session);
+        }
+      }
+
+      setCurrentSession(session);
+    })();
+  }, []);
 
   useEffect(() => {
     if (formWithSteps.steps[0] && !s) {

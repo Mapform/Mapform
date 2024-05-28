@@ -27,7 +27,5 @@ export const submitFormStep = action(
     );
 
     const { success, error } = validationSchema.safeParse(payload);
-
-    console.log(999999, success, error);
   }
 );
