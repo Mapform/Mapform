@@ -1,16 +1,14 @@
-import { defaultProps } from "@blocknote/core";
 import { createReactBlockSpec } from "@blocknote/react";
 import {
   FormField,
   FormItem,
   FormLabel,
   FormControl,
-  FormDescription,
   FormMessage,
   useFormContext,
 } from "@mapform/ui/components/form";
 import { Input } from "@mapform/ui/components/input";
-import { EllipsisIcon } from "lucide-react";
+// import { EllipsisIcon } from "lucide-react";
 import { useStepContext } from "../../mapform/block-note/context";
 
 export const ShortTextInput = createReactBlockSpec(

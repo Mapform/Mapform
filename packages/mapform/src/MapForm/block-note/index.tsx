@@ -17,8 +17,8 @@ import { Form, useForm, zodResolver } from "@mapform/ui/components/form";
 import { type FormSchema } from "@mapform/lib/schemas/form-step-schema";
 import { schema, type CustomBlock } from "../../lib/block-note-schema";
 import { getZodSchemaFromBlockNote } from "../../lib/zod-schema-from-blocknote";
-import "./style.css";
 import { StepContext } from "./context";
+import "./style.css";
 
 interface BlocknoteProps {
   editable: boolean;
@@ -48,7 +48,6 @@ export function Blocknote({
   const blocknoteStepSchema = getZodSchemaFromBlockNote(
     description?.content || []
   );
-  // TODO - Add zod schema validation
   const form = useForm<z.infer<typeof blocknoteStepSchema>>({
     resolver: zodResolver(blocknoteStepSchema),
     defaultValues: defaultFormValues,
@@ -64,7 +63,7 @@ export function Blocknote({
     schema,
   });
 
-  const insertAlert = (edtr: typeof schema.BlockNoteEditor) => ({
+  const insertShortTextInput = (edtr: typeof schema.BlockNoteEditor) => ({
     title: "Short Text Input",
     onItemClick: () => {
       insertOrUpdateBlock(edtr, {
@@ -85,7 +84,6 @@ export function Blocknote({
   });
 
   const onSubmit = (data: FormSchema) => {
-    console.log(data);
     onStepSubmit && onStepSubmit(data);
   };
 
@@ -132,11 +130,10 @@ export function Blocknote({
             >
               <SuggestionMenuController
                 getItems={async (query) => {
-                  // Gets all default slash menu items and `insertAlert` item.
                   return filterSuggestionItems(
                     [
                       ...getDefaultReactSlashMenuItems(editor),
-                      insertAlert(editor),
+                      insertShortTextInput(editor),
                     ],
                     query
                   );

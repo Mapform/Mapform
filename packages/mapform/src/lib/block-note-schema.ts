@@ -1,4 +1,8 @@
-import { BlockNoteSchema, defaultBlockSpecs } from "@blocknote/core";
+import {
+  BlockNoteSchema,
+  defaultBlockSpecs,
+  type Block,
+} from "@blocknote/core";
 import { ShortTextInput } from "./custom-blocks/short-text-input";
 
 export const customBlockSpecs = {
@@ -14,4 +18,9 @@ export const schema = BlockNoteSchema.create({
   },
 });
 
-export type CustomBlock = typeof schema.Block;
+export type CustomBlock = Block<
+  typeof schema.blockSchema,
+  typeof schema.inlineContentSchema,
+  typeof schema.styleSchema
+>;
+export type DocumentContent = CustomBlock[];
