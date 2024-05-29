@@ -1,6 +1,7 @@
 "use server";
 
 import { prisma } from "@mapform/db";
+import { type DocumentContent } from "@mapform/mapform/lib/block-note-schema";
 import { getZodSchemaFromBlockNote } from "@mapform/mapform/lib/zod-schema-from-blocknote";
 import { action } from "~/lib/safe-action";
 import { submitFormStepSchema } from "./schema";
@@ -14,17 +15,16 @@ export const submitFormStep = action(
       },
     });
 
-    console.log(stepId, step);
-
     if (!step) {
       throw new Error("Step not found");
     }
 
+    const documentContent = (step.description as { content: DocumentContent })
+      .content;
+
     // TODO: VALIDATION
 
-    const validationSchema = getZodSchemaFromBlockNote(
-      (step.description as any).content
-    );
+    const validationSchema = getZodSchemaFromBlockNote(documentContent);
 
     const { data, error } = validationSchema.safeParse(payload);
 
@@ -34,9 +34,7 @@ export const submitFormStep = action(
 
     await Promise.all(
       Object.entries(data).map(async ([key, value]) => {
-        const block = (step.description as any).content.find(
-          (b) => b.id === key
-        );
+        const block = documentContent.find((b) => b.id === key);
 
         if (block?.type === "short-text-input") {
           return prisma.shortTextInputResponse.upsert({
