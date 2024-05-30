@@ -5,6 +5,7 @@ import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { MenuIcon, XIcon } from "lucide-react";
 import { cn } from "@mapform/lib/classnames";
 import { useClerk } from "@clerk/nextjs";
+import Link from "next/link";
 
 export function TopBar({ children }: { children?: React.ReactNode }) {
   const { signOut, user } = useClerk();
@@ -22,7 +23,9 @@ export function TopBar({ children }: { children?: React.ReactNode }) {
               <div className="flex h-16 justify-between items-center">
                 <div className="flex">
                   <div className="flex flex-shrink-0 items-center">
-                    <span className="text-xl font-semibold">MapForm</span>
+                    <Link href="/">
+                      <span className="text-xl font-semibold">MapForm</span>
+                    </Link>
                   </div>
                 </div>
 
