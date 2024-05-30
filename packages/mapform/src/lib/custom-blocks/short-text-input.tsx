@@ -8,8 +8,9 @@ import {
   useFormContext,
 } from "@mapform/ui/components/form";
 import { Input } from "@mapform/ui/components/input";
-// import { EllipsisIcon } from "lucide-react";
+import { EllipsisIcon } from "lucide-react";
 import { useStepContext } from "../../mapform/block-note/context";
+import { Button } from "@mapform/ui/components/button";
 
 export const ShortTextInput = createReactBlockSpec(
   {
@@ -44,17 +45,22 @@ export const ShortTextInput = createReactBlockSpec(
           render={({ field }) => (
             <FormItem>
               {editable ? (
-                <input
-                  className="text-sm font-medium border-0 w-full p-0 outline-none border-transparent focus:border-transparent focus:ring-0 placeholder-gray-300"
-                  onChange={(e) => {
-                    editor.updateBlock(block, {
-                      type: "short-text-input",
-                      props: { label: e.target.value },
-                    });
-                  }}
-                  placeholder="Label"
-                  value={block.props.label}
-                />
+                <div className="flex justify-between">
+                  <input
+                    className="text-sm font-medium border-0 w-full p-0 outline-none border-transparent focus:border-transparent focus:ring-0 placeholder-gray-300"
+                    onChange={(e) => {
+                      editor.updateBlock(block, {
+                        type: "short-text-input",
+                        props: { label: e.target.value },
+                      });
+                    }}
+                    placeholder="Label"
+                    value={block.props.label}
+                  />
+                  <button>
+                    <EllipsisIcon className="h-4 w-4" />
+                  </button>
+                </div>
               ) : (
                 <FormLabel>{block.props.label}</FormLabel>
               )}
