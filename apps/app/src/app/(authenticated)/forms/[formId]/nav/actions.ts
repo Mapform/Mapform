@@ -42,19 +42,29 @@ export const publishForm = action(publishFormSchema, async ({ formId }) => {
       },
     });
 
-    await Promise.all(
-      steps.map((step) => {
-        return prisma.step.createWithLocation({
-          formId: draftForm.publishedFormId!,
-          zoom: step.zoom,
-          pitch: step.pitch,
-          bearing: step.bearing,
-          latitude: step.latitude,
-          longitude: step.longitude,
-          title: step.title,
-          description: step.description || undefined,
-        });
-      })
+    /**
+     * TODO: Improve this
+     *
+     * Synchronously create the steps for the published form. We need to do this
+     * so that the step order is correct. This is pretty slow though, and we can
+     * prob improve this, perhaps by moving the logic to update the step order
+     * from outside the createWithLocation func.
+     */
+    await steps.reduce(
+      (acc, step) =>
+        acc.then(() => {
+          return prisma.step.createWithLocation({
+            formId: draftForm.publishedFormId!,
+            zoom: step.zoom,
+            pitch: step.pitch,
+            bearing: step.bearing,
+            latitude: step.latitude,
+            longitude: step.longitude,
+            title: step.title,
+            description: step.description || undefined,
+          });
+        }),
+      Promise.resolve()
     );
 
     await prisma.form.update({
