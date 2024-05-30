@@ -43,23 +43,21 @@ export const ShortTextInput = createReactBlockSpec(
           name={block.id}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>
-                {editable ? (
-                  <input
-                    className="text-sm font-medium border-0 w-full p-0 outline-none border-transparent focus:border-transparent focus:ring-0 placeholder-gray-300"
-                    onChange={(e) => {
-                      editor.updateBlock(block, {
-                        type: "short-text-input",
-                        props: { label: e.target.value },
-                      });
-                    }}
-                    placeholder="Label"
-                    value={block.props.label}
-                  />
-                ) : (
-                  <>{block.props.label}</>
-                )}
-              </FormLabel>
+              {editable ? (
+                <input
+                  className="text-sm font-medium border-0 w-full p-0 outline-none border-transparent focus:border-transparent focus:ring-0 placeholder-gray-300"
+                  onChange={(e) => {
+                    editor.updateBlock(block, {
+                      type: "short-text-input",
+                      props: { label: e.target.value },
+                    });
+                  }}
+                  placeholder="Label"
+                  value={block.props.label}
+                />
+              ) : (
+                <FormLabel>{block.props.label}</FormLabel>
+              )}
               <FormControl>
                 <Input {...field} />
               </FormControl>
