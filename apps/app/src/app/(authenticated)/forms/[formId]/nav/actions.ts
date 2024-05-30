@@ -35,6 +35,7 @@ export const publishForm = action(publishFormSchema, async ({ formId }) => {
         id: draftForm.publishedFormId,
       },
       data: {
+        stepOrder: [],
         steps: {
           deleteMany: {},
         },

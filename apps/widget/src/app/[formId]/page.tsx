@@ -23,5 +23,7 @@ export default async function Page({ params }: { params: { formId: string } }) {
     return <div>Form has no steps</div>;
   }
 
-  return <Map formWithSteps={formWithSteps} formValues={formValues} />;
+  console.log(111111, formWithSteps);
+
+  return <Map formValues={formValues} formWithSteps={formWithSteps} />;
 }

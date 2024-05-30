@@ -1,4 +1,4 @@
-import { authMiddleware } from "@clerk/nextjs";
+import { authMiddleware, redirectToSignIn } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
 
 export default authMiddleware({
@@ -15,6 +15,10 @@ export default authMiddleware({
   ],
 
   afterAuth(auth, request) {
+    if (!auth.userId && !auth.isPublicRoute) {
+      return redirectToSignIn({ returnBackUrl: request.url });
+    }
+
     if (request.nextUrl.pathname === "/") {
       const url = request.nextUrl.clone();
       url.pathname = "/orgs";

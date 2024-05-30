@@ -7,6 +7,7 @@ import {
   FormUpdateArgsSchema,
   StepUpdateArgsSchema,
 } from "@mapform/db/prisma/zod";
+import { auth } from "@clerk/nextjs";
 
 export const createStep = async (
   formId: string,
@@ -18,6 +19,12 @@ export const createStep = async (
     bearing: number;
   }
 ) => {
+  const { userId } = auth();
+
+  if (!userId) {
+    throw new Error("Not authenticated");
+  }
+
   /**
    * This uses the Prisma extension to create a step with a location
    */
@@ -34,6 +41,12 @@ export const createStep = async (
 };
 
 export const getFormWithSteps = async (formId: string) => {
+  const { userId } = auth();
+
+  if (!userId) {
+    throw new Error("Not authenticated");
+  }
+
   const form = await prisma.form.findUnique({
     where: {
       id: formId,
@@ -60,6 +73,12 @@ export const getFormWithSteps = async (formId: string) => {
 export const updateForm = async (
   input: z.infer<typeof FormUpdateArgsSchema>
 ) => {
+  const { userId } = auth();
+
+  if (!userId) {
+    throw new Error("Not authenticated");
+  }
+
   const validatedFields = FormUpdateArgsSchema.safeParse(input);
 
   // Return early if the form data is invalid
@@ -75,6 +94,12 @@ export const updateForm = async (
 };
 
 export const getSteps = (formId: string) => {
+  const { userId } = auth();
+
+  if (!userId) {
+    throw new Error("Not authenticated");
+  }
+
   return prisma.step.findManyWithLocation({
     formId,
   });
@@ -83,6 +108,12 @@ export const getSteps = (formId: string) => {
 export const updateStep = async (
   input: z.infer<typeof StepUpdateArgsSchema>
 ) => {
+  const { userId } = auth();
+
+  if (!userId) {
+    throw new Error("Not authenticated");
+  }
+
   const validatedFields = StepUpdateArgsSchema.safeParse(input);
 
   // Return early if the form data is invalid
@@ -110,6 +141,12 @@ export const updateStep = async (
 };
 
 export const deleteStep = async (stepId: string) => {
+  const { userId } = auth();
+
+  if (!userId) {
+    throw new Error("Not authenticated");
+  }
+
   await prisma.step.deleteWithLocation({
     stepId,
   });
