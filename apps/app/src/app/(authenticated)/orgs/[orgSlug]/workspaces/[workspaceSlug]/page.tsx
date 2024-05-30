@@ -33,11 +33,7 @@ export default async function Organization({
       <ul>
         {forms.map((form) => (
           <li key={form.id}>
-            <Link
-              href={`/${params.orgSlug}/${params.workspaceSlug}/${form.slug}`}
-            >
-              {form.name}
-            </Link>
+            <Link href={`/forms/${form.id}`}>{form.name}</Link>
           </li>
         ))}
       </ul>

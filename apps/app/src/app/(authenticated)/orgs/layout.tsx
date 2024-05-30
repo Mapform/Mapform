@@ -53,7 +53,7 @@ export default async function Layout({
                         : "text-gray-700 hover:text-indigo-600 hover:bg-gray-50",
                       "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
                     )}
-                    href={`/${membership.organization.slug}`}
+                    href={`/orgs/${membership.organization.slug}`}
                   >
                     <span
                       className={cn(
@@ -79,7 +79,7 @@ export default async function Layout({
                               : "text-gray-700 hover:text-indigo-600 hover:bg-gray-50",
                             "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
                           )}
-                          href={`/${membership.organization.slug}/${workspace.slug}`}
+                          href={`/orgs/${membership.organization.slug}/workspaces/${workspace.slug}`}
                         >
                           <span className="truncate">{workspace.name}</span>
                         </Link>

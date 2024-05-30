@@ -10,27 +10,18 @@ import { Container } from "./container";
 export default async function Workspace({
   params,
 }: {
-  params: { formSlug: string; orgSlug: string; workspaceSlug: string };
+  params: { formId: string };
 }) {
   const queryClient = new QueryClient();
   await queryClient.prefetchQuery({
-    queryKey: ["forms", params.formSlug, params.workspaceSlug, params.orgSlug],
-    queryFn: () =>
-      getFormWithSteps(
-        params.formSlug.toLocaleLowerCase(),
-        params.workspaceSlug.toLocaleLowerCase(),
-        params.orgSlug.toLocaleLowerCase()
-      ),
+    queryKey: ["forms", params.formId],
+    queryFn: () => getFormWithSteps(params.formId),
   });
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
       <MapProvider>
-        <Container
-          formSlug={params.formSlug}
-          orgSlug={params.orgSlug}
-          workspaceSlug={params.workspaceSlug}
-        />
+        <Container formId={params.formId} />
       </MapProvider>
     </HydrationBoundary>
   );

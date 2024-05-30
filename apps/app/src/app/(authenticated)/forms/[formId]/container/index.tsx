@@ -50,15 +50,7 @@ const initialViewState = {
 
 type FormWithSteps = NonNullable<Awaited<ReturnType<typeof getFormWithSteps>>>;
 
-export function Container({
-  formSlug,
-  orgSlug,
-  workspaceSlug,
-}: {
-  formSlug: string;
-  orgSlug: string;
-  workspaceSlug: string;
-}) {
+export function Container({ formId }: { formId: string }) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -70,13 +62,9 @@ export function Container({
   // We hold the steps in its own React state due to this issue: https://github.com/clauderic/dnd-kit/issues/921
   const [dragSteps, setDragSteps] = useState<FormWithSteps["steps"]>([]);
   const { data, error, isLoading } = useQuery({
-    queryKey: ["forms", formSlug, workspaceSlug, orgSlug],
+    queryKey: ["forms", formId],
     queryFn: async () => {
-      const formWithSteps = await getFormWithSteps(
-        formSlug,
-        workspaceSlug,
-        orgSlug
-      );
+      const formWithSteps = await getFormWithSteps(formId);
 
       if (formWithSteps) {
         setDragSteps(formWithSteps.steps);
@@ -88,17 +76,13 @@ export function Container({
     mutationFn: updateForm,
     onMutate: async (args: z.infer<typeof FormUpdateArgsSchema>) => {
       await queryClient.cancelQueries({
-        queryKey: ["forms", formSlug, workspaceSlug, orgSlug],
+        queryKey: ["forms", formId],
       });
-
-      console.log(999999);
 
       // Snapshot the previous value
       const previousForm = queryClient.getQueryData([
         "forms",
-        formSlug,
-        workspaceSlug,
-        orgSlug,
+        formId,
       ]) as FormWithSteps | null;
 
       if (!previousForm) {
@@ -116,10 +100,7 @@ export function Container({
       };
 
       // Optimistically update to the new value
-      queryClient.setQueryData(
-        ["forms", formSlug, workspaceSlug, orgSlug],
-        newForm
-      );
+      queryClient.setQueryData(["forms", formId], newForm);
 
       // Return a context with the previous and new todo
       return { previousForm, newForm };

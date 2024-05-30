@@ -3,11 +3,9 @@
 import type { z } from "zod";
 import { prisma } from "@mapform/db";
 import { revalidatePath } from "next/cache";
-import { formModel } from "@mapform/db/models";
 import {
   FormUpdateArgsSchema,
   StepUpdateArgsSchema,
-  StepUpdateManyArgsSchema,
 } from "@mapform/db/prisma/zod";
 
 export const createStep = async (
@@ -35,16 +33,11 @@ export const createStep = async (
   revalidatePath("/");
 };
 
-export const getFormWithSteps = async (
-  formSlug: string,
-  workspaceSlug: string,
-  orgSlug: string
-) => {
-  const form = await formModel.findOne({
-    slug: formSlug.toLocaleLowerCase(),
-    workspaceSlug: workspaceSlug.toLocaleLowerCase(),
-    organizationSlug: orgSlug.toLocaleLowerCase(),
-    isPublished: false,
+export const getFormWithSteps = async (formId: string) => {
+  const form = await prisma.form.findUnique({
+    where: {
+      id: formId,
+    },
   });
 
   if (!form) {

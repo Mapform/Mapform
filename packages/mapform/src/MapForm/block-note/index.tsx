@@ -31,6 +31,7 @@ interface BlocknoteProps {
   onPrev?: () => void;
   onTitleChange?: (content: string) => void;
   onDescriptionChange?: (content: { content: CustomBlock[] }) => void;
+
   onStepSubmit?: (data: FormSchema) => void;
 }
 
