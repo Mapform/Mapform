@@ -9,10 +9,12 @@ export const customBlockSpecs = {
   "short-text-input": ShortTextInput,
 } as const;
 
+const { table: _, ...rest } = defaultBlockSpecs;
+
 export const schema = BlockNoteSchema.create({
   blockSpecs: {
     // Adds all default blocks.
-    ...defaultBlockSpecs,
+    ...rest,
     // Adds custom blocks.
     ...customBlockSpecs,
   },
