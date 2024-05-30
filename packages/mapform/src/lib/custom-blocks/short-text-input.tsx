@@ -16,11 +16,11 @@ export const ShortTextInput = createReactBlockSpec(
     type: "short-text-input",
     propSchema: {
       label: {
-        default: "Labelll",
+        default: "Label",
         type: "string",
       },
       placeholder: {
-        default: "",
+        default: "Placeholder",
         type: "string",
       },
       required: {
@@ -59,7 +59,19 @@ export const ShortTextInput = createReactBlockSpec(
                 <FormLabel>{block.props.label}</FormLabel>
               )}
               <FormControl>
-                <Input {...field} />
+                {editable ? (
+                  <Input
+                    className="text-muted-foreground"
+                    onChange={(e) => {
+                      editor.updateBlock(block, {
+                        type: "short-text-input",
+                        props: { placeholder: e.target.value },
+                      });
+                    }}
+                  />
+                ) : (
+                  <Input {...field} placeholder={block.props.placeholder} />
+                )}
               </FormControl>
               <FormMessage />
             </FormItem>
