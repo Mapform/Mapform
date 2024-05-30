@@ -1,4 +1,5 @@
 import { authMiddleware } from "@clerk/nextjs";
+import { NextResponse } from "next/server";
 
 export default authMiddleware({
   // Routes that can be accessed while signed out
@@ -12,6 +13,14 @@ export default authMiddleware({
     "/.redwood/functions/inngest",
     "/.netlify/functions/inngest",
   ],
+
+  afterAuth(auth, request) {
+    if (request.nextUrl.pathname === "/") {
+      const url = request.nextUrl.clone();
+      url.pathname = "/orgs";
+      return NextResponse.redirect(url);
+    }
+  },
 });
 
 export const config = {

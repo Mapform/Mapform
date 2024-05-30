@@ -23,6 +23,7 @@ export default async function Organization({
   const forms = await prisma.form.findMany({
     where: {
       workspaceId: workspace.id,
+      isPublished: false,
     },
   });
 
