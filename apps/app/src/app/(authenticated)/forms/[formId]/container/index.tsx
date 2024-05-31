@@ -68,7 +68,7 @@ export function Container({ formId }: { formId: string }) {
       if (formWithSteps.data) {
         setDragSteps(formWithSteps.data.steps);
       }
-      return formWithSteps;
+      return formWithSteps.data;
     },
   });
   const { mutateAsync } = useMutation({
@@ -128,12 +128,10 @@ export function Container({ formId }: { formId: string }) {
   };
 
   useEffect(() => {
-    if (data?.data?.steps[0] && !s) {
-      router.push(
-        `${pathname}?${createQueryString("s", data.data.steps[0].id)}`
-      );
+    if (data?.steps[0] && !s) {
+      router.push(`${pathname}?${createQueryString("s", data.steps[0].id)}`);
     }
-  }, [s, data?.data?.steps, pathname, router, createQueryString]);
+  }, [s, data?.steps, pathname, router, createQueryString]);
 
   const debouncedUpdateStep = useDebounce(updateStep, 500);
 
@@ -187,7 +185,7 @@ export function Container({ formId }: { formId: string }) {
       setDragSteps(newStepList);
 
       await mutateAsync({
-        formId: data!.data?.id,
+        formId: data.id,
         data: {
           stepOrder: newStepList.map((step) => step.id),
         },
@@ -243,7 +241,7 @@ export function Container({ formId }: { formId: string }) {
                   stepId: s,
                   data: {
                     title: content,
-                    formId: data.data.id,
+                    formId: data.id,
                   },
                 });
               }}
