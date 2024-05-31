@@ -22,8 +22,11 @@ import {
 } from "@mapform/ui/components/form";
 import { Input } from "@mapform/ui/components/input";
 import { toast } from "@mapform/ui/components/toaster";
-import { createForm } from "./actions";
-import { createFormSchema, type CreateFormSchema } from "./schema";
+import { createForm } from "~/server/actions/forms/create";
+import {
+  createFormSchema,
+  type CreateFormSchema,
+} from "~/server/actions/forms/create/schema";
 
 export function CreateDialog({ workspaceId }: { workspaceId: string }) {
   const form = useForm<CreateFormSchema>({

@@ -1,4 +1,3 @@
-import { redirect } from "next/navigation";
 import { currentUser } from "@clerk/nextjs";
 import { prisma } from "@mapform/db";
 

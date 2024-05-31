@@ -15,10 +15,12 @@ export default async function Workspace({
   const queryClient = new QueryClient();
   await queryClient.prefetchQuery({
     queryKey: ["forms", params.formId],
-    queryFn: () =>
-      getFormWithSteps({
-        formId: params.formId,
-      }),
+    queryFn: async () =>
+      (
+        await getFormWithSteps({
+          formId: params.formId,
+        })
+      ).data,
   });
 
   return (

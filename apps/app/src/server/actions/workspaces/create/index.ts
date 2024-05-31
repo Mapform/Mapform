@@ -3,23 +3,16 @@
 import slugify from "slugify";
 import { prisma } from "@mapform/db";
 import { revalidatePath } from "next/cache";
-import { auth } from "@clerk/nextjs";
-import { action } from "~/lib/safe-action";
+import { authAction } from "~/lib/safe-action";
 import { createWorkspaceSchema } from "./schema";
 
-export const createWorkspace = action(
+export const createWorkspace = authAction(
   createWorkspaceSchema,
-  async ({ name, organizationSlug }) => {
-    const { userId } = auth();
-
+  async ({ name, organizationSlug }, { userId }) => {
     const slug = slugify(name, {
       lower: true,
       strict: true,
     });
-
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
 
     // Check if user has access to the organization
     const organization = await prisma.organization.findFirst({

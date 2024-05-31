@@ -22,8 +22,11 @@ import {
 } from "@mapform/ui/components/form";
 import { Input } from "@mapform/ui/components/input";
 import { toast } from "@mapform/ui/components/toaster";
-import { createWorkspace } from "./actions";
-import { createWorkspaceSchema, type CreateWorkspaceSchema } from "./schema";
+import { createWorkspace } from "~/server/actions/workspaces/create";
+import {
+  createWorkspaceSchema,
+  type CreateWorkspaceSchema,
+} from "~/server/actions/workspaces/create/schema";
 
 export function CreateDialog({
   organizationSlug,
