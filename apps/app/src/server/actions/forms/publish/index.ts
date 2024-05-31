@@ -2,17 +2,10 @@
 
 import { prisma } from "@mapform/db";
 import { revalidatePath } from "next/cache";
-import { auth } from "@clerk/nextjs";
-import { action } from "~/lib/safe-action";
+import { authAction } from "~/lib/safe-action";
 import { publishFormSchema } from "./schema";
 
-export const publishForm = action(publishFormSchema, async ({ formId }) => {
-  const { userId } = auth();
-
-  if (!userId) {
-    throw new Error("Not authenticated");
-  }
-
+export const publishForm = authAction(publishFormSchema, async ({ formId }) => {
   const draftForm = await prisma.form.findUnique({
     where: {
       id: formId,
@@ -28,6 +21,7 @@ export const publishForm = action(publishFormSchema, async ({ formId }) => {
   });
 
   // TODO: Wrap this in a transaction
+  // TODO: Validate that the form belongs to the user
 
   if (draftForm.publishedFormId) {
     await prisma.form.update({

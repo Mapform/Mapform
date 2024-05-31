@@ -3,7 +3,7 @@
 import { type Form } from "@mapform/db";
 import { Button } from "@mapform/ui/components/button";
 import { TopBar } from "~/components/top-bar";
-import { publishForm } from "./actions";
+import { publishForm } from "~/server/actions/forms/publish";
 
 export function Nav({ form }: { form: Form }) {
   return (
