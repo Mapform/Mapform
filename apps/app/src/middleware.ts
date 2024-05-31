@@ -1,4 +1,5 @@
-import { authMiddleware } from "@clerk/nextjs";
+import { authMiddleware, redirectToSignIn } from "@clerk/nextjs";
+import { NextResponse } from "next/server";
 
 export default authMiddleware({
   // Routes that can be accessed while signed out
@@ -12,6 +13,18 @@ export default authMiddleware({
     "/.redwood/functions/inngest",
     "/.netlify/functions/inngest",
   ],
+
+  afterAuth(auth, request) {
+    if (!auth.userId && !auth.isPublicRoute) {
+      return redirectToSignIn({ returnBackUrl: request.url });
+    }
+
+    if (request.nextUrl.pathname === "/") {
+      const url = request.nextUrl.clone();
+      url.pathname = "/orgs";
+      return NextResponse.redirect(url);
+    }
+  },
 });
 
 export const config = {

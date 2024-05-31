@@ -17,8 +17,8 @@ import { Form, useForm, zodResolver } from "@mapform/ui/components/form";
 import { type FormSchema } from "@mapform/lib/schemas/form-step-schema";
 import { schema, type CustomBlock } from "../../lib/block-note-schema";
 import { getZodSchemaFromBlockNote } from "../../lib/zod-schema-from-blocknote";
-import "./style.css";
 import { StepContext } from "./context";
+import "./style.css";
 
 interface BlocknoteProps {
   editable: boolean;
@@ -31,6 +31,7 @@ interface BlocknoteProps {
   onPrev?: () => void;
   onTitleChange?: (content: string) => void;
   onDescriptionChange?: (content: { content: CustomBlock[] }) => void;
+
   onStepSubmit?: (data: FormSchema) => void;
 }
 
@@ -48,7 +49,6 @@ export function Blocknote({
   const blocknoteStepSchema = getZodSchemaFromBlockNote(
     description?.content || []
   );
-  // TODO - Add zod schema validation
   const form = useForm<z.infer<typeof blocknoteStepSchema>>({
     resolver: zodResolver(blocknoteStepSchema),
     defaultValues: defaultFormValues,
@@ -64,7 +64,7 @@ export function Blocknote({
     schema,
   });
 
-  const insertAlert = (edtr: typeof schema.BlockNoteEditor) => ({
+  const insertShortTextInput = (edtr: typeof schema.BlockNoteEditor) => ({
     title: "Short Text Input",
     onItemClick: () => {
       insertOrUpdateBlock(edtr, {
@@ -85,7 +85,6 @@ export function Blocknote({
   });
 
   const onSubmit = (data: FormSchema) => {
-    console.log(data);
     onStepSubmit && onStepSubmit(data);
   };
 
@@ -100,15 +99,21 @@ export function Blocknote({
           {/* Content */}
           <div className="overflow-y-auto p-4 pb-0">
             {/* Title */}
-            <input
-              className="border-0 text-2xl font-bold w-full mb-2 p-0 outline-none border-transparent focus:border-transparent focus:ring-0 placeholder-gray-300"
-              onChange={(e) => {
-                setUncontrolledTitle(e.target.value);
-                onTitleChange && onTitleChange(e.target.value);
-              }}
-              placeholder="Untitled"
-              value={uncontrolledTitle}
-            />
+            {editable ? (
+              <input
+                className="border-0 text-2xl font-bold w-full mb-2 p-0 outline-none border-transparent focus:border-transparent focus:ring-0 placeholder-gray-300"
+                onChange={(e) => {
+                  setUncontrolledTitle(e.target.value);
+                  onTitleChange && onTitleChange(e.target.value);
+                }}
+                placeholder="Untitled"
+                value={uncontrolledTitle}
+              />
+            ) : (
+              <h1 className="border-0 text-2xl font-bold w-full mb-2 p-0">
+                {title ?? "Untitled"}
+              </h1>
+            )}
 
             {/* Description */}
             <BlockNoteView
@@ -126,11 +131,10 @@ export function Blocknote({
             >
               <SuggestionMenuController
                 getItems={async (query) => {
-                  // Gets all default slash menu items and `insertAlert` item.
                   return filterSuggestionItems(
                     [
                       ...getDefaultReactSlashMenuItems(editor),
-                      insertAlert(editor),
+                      insertShortTextInput(editor),
                     ],
                     query
                   );

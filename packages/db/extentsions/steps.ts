@@ -1,6 +1,14 @@
 import { Prisma, Step } from "@prisma/client";
 import { v4 } from "uuid";
 
+type StepWithLocation = Step & {
+  latitude: number;
+  longitude: number;
+  description: {
+    content: any[];
+  };
+};
+
 /**
  * Prisma does not yet natively support PostGIS
  * So, to use PostGIS with Prisma, we need to extend the Prisma client
@@ -120,7 +128,7 @@ export function stepsExtension() {
               FROM "Step"
               LEFT JOIN "Location" ON "Step"."locationId" = "Location".id
               WHERE "Step"."formId" = ${formId};
-            `) as (Step & { latitude: number; longitude: number })[];
+            `) as StepWithLocation[];
 
             const form = await prisma.form.findUnique({
               where: {
@@ -140,10 +148,7 @@ export function stepsExtension() {
               .map((id) => {
                 return steps.find((step) => step.id === id);
               })
-              .filter((s) => Boolean(s)) as (Step & {
-              latitude: number;
-              longitude: number;
-            })[];
+              .filter((s) => Boolean(s)) as StepWithLocation[];
 
             return orderedSteps;
           },

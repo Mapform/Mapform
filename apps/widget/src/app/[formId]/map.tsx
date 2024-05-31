@@ -6,6 +6,7 @@ import { MapForm } from "@mapform/mapform";
 import { useAction } from "next-safe-action/hooks";
 import { type ShortTextInputResponse } from "@mapform/db";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { type DocumentContent } from "@mapform/mapform/lib/block-note-schema";
 import { submitFormStep } from "~/server/actions/submit-form-step";
 import { createFormSubmission } from "~/server/actions/create-form-submission";
 import { env } from "../env.mjs";
@@ -90,18 +91,17 @@ export function Map({ formWithSteps, formValues }: MapProps) {
     }
   }, [s, formWithSteps.steps, pathname, router, createQueryString]);
 
-  const stepValues = (currentStep?.description as any)?.content.reduce(
-    (acc: Record<string, string>, block: any) => {
-      if (block.type === "short-text-input") {
-        acc[block.id] = formValues.find(
-          (value) => value.blockNoteId === block.id
-        )?.value;
-      }
+  const stepValues = (
+    currentStep?.description?.content as DocumentContent
+  ).reduce((acc: Record<string, string>, block) => {
+    const value = formValues.find((v) => v.blockNoteId === block.id)?.value;
 
-      return acc;
-    },
-    {}
-  );
+    if (value) {
+      acc[block.id] = value;
+    }
+
+    return acc;
+  }, {});
 
   if (!s || !currentSession || !currentStep) {
     return null;
@@ -133,7 +133,6 @@ export function Map({ formWithSteps, formValues }: MapProps) {
         }
       }}
       onStepSubmit={(data) => {
-        console.log(1111, data);
         execute({
           stepId: currentStep.id,
           formSubmissionId: currentSession,

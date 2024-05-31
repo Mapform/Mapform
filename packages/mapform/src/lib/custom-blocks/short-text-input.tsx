@@ -1,28 +1,27 @@
-import { defaultProps } from "@blocknote/core";
 import { createReactBlockSpec } from "@blocknote/react";
 import {
   FormField,
   FormItem,
   FormLabel,
   FormControl,
-  FormDescription,
   FormMessage,
   useFormContext,
 } from "@mapform/ui/components/form";
 import { Input } from "@mapform/ui/components/input";
 import { EllipsisIcon } from "lucide-react";
 import { useStepContext } from "../../mapform/block-note/context";
+import { Button } from "@mapform/ui/components/button";
 
 export const ShortTextInput = createReactBlockSpec(
   {
     type: "short-text-input",
     propSchema: {
       label: {
-        default: "Labelll",
+        default: "Label",
         type: "string",
       },
       placeholder: {
-        default: "",
+        default: "Placeholder",
         type: "string",
       },
       required: {
@@ -45,8 +44,8 @@ export const ShortTextInput = createReactBlockSpec(
           name={block.id}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>
-                {editable ? (
+              {editable ? (
+                <div className="flex justify-between">
                   <input
                     className="text-sm font-medium border-0 w-full p-0 outline-none border-transparent focus:border-transparent focus:ring-0 placeholder-gray-300"
                     onChange={(e) => {
@@ -58,12 +57,27 @@ export const ShortTextInput = createReactBlockSpec(
                     placeholder="Label"
                     value={block.props.label}
                   />
-                ) : (
-                  <>{block.props.label}</>
-                )}
-              </FormLabel>
+                  <button>
+                    <EllipsisIcon className="h-4 w-4" />
+                  </button>
+                </div>
+              ) : (
+                <FormLabel>{block.props.label}</FormLabel>
+              )}
               <FormControl>
-                <Input {...field} />
+                {editable ? (
+                  <Input
+                    className="text-muted-foreground"
+                    onChange={(e) => {
+                      editor.updateBlock(block, {
+                        type: "short-text-input",
+                        props: { placeholder: e.target.value },
+                      });
+                    }}
+                  />
+                ) : (
+                  <Input {...field} placeholder={block.props.placeholder} />
+                )}
               </FormControl>
               <FormMessage />
             </FormItem>
