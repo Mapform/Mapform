@@ -1,35 +1,19 @@
 "use client";
 
-import { useCallback, useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import type { MapRef, ViewState } from "@mapform/mapform";
 import { MapForm } from "@mapform/mapform";
-import { Button } from "@mapform/ui/components/button";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useDebounce } from "@mapform/lib/use-debounce";
-import type { DragEndEvent } from "@dnd-kit/core";
-import {
-  DndContext,
-  PointerSensor,
-  closestCenter,
-  useSensor,
-  useSensors,
-} from "@dnd-kit/core";
-import {
-  arrayMove,
-  horizontalListSortingStrategy,
-  SortableContext,
-} from "@dnd-kit/sortable";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { Spinner } from "@mapform/ui/components/spinner";
 import { cn } from "@mapform/lib/classnames";
 import { env } from "~/env.mjs";
 import { updateStep } from "~/server/actions/steps/update";
-import { createStep } from "~/server/actions/steps/create";
-import { updateForm } from "~/server/actions/forms/update";
-import { type UpdateFormSchema } from "~/server/actions/forms/update/schema";
 import { getFormWithSteps } from "~/server/actions/forms/get-form-with-steps";
-import { type StepsType } from "~/server/actions/forms/get-form-with-steps/schema";
-import { Draggable } from "./draggable";
+import { useCreateQueryString } from "~/lib/create-query-string";
+import { Steps } from "./steps";
+
 // TODO. Temporary. Should get initial view state from previous step, or from user location
 const initialViewState = {
   longitude: -122.4,
@@ -53,8 +37,8 @@ export function Container({ formId }: { formId: string }) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const createQueryString = useCreateQueryString();
   const s = searchParams.get("s");
-  const queryClient = useQueryClient();
   const [mapformLoaded, setMapformLoaded] = useState(false);
   const [viewState, setViewState] = useState<ViewState>(initialViewState);
   const map = useRef<MapRef>(null);
@@ -71,61 +55,6 @@ export function Container({ formId }: { formId: string }) {
       return formWithSteps.data;
     },
   });
-  const { mutateAsync } = useMutation({
-    mutationFn: updateForm,
-    onMutate: async (args: UpdateFormSchema) => {
-      await queryClient.cancelQueries({
-        queryKey: ["forms", formId],
-      });
-
-      // Snapshot the previous value
-      const previousForm = queryClient.getQueryData([
-        "forms",
-        formId,
-      ]) as FormWithSteps | null;
-
-      if (!previousForm) {
-        return;
-      }
-
-      const stepOrder = args.data.stepOrder ?? [];
-
-      const newForm = {
-        ...previousForm,
-        stepOrder,
-        steps: [...previousForm.steps].sort(
-          (a, b) => stepOrder.indexOf(a.id) - stepOrder.indexOf(b.id)
-        ),
-      };
-
-      // Optimistically update to the new value
-      queryClient.setQueryData(["forms", formId], newForm);
-
-      // Return a context with the previous and new todo
-      return { previousForm, newForm };
-    },
-  });
-
-  const createQueryString = useCallback(
-    (name: string, value: string) => {
-      const params = new URLSearchParams(searchParams.toString());
-      params.set(name, value);
-
-      return params.toString();
-    },
-    [searchParams]
-  );
-
-  const setCurrentStep = (step: StepsType[number]) => {
-    map.current?.flyTo({
-      center: [step.longitude, step.latitude],
-      zoom: step.zoom,
-      pitch: step.pitch,
-      bearing: step.bearing,
-      duration: 1000,
-    });
-    router.push(`${pathname}?${createQueryString("s", step.id)}`);
-  };
 
   useEffect(() => {
     if (data?.steps[0] && !s) {
@@ -134,17 +63,6 @@ export function Container({ formId }: { formId: string }) {
   }, [s, data?.steps, pathname, router, createQueryString]);
 
   const debouncedUpdateStep = useDebounce(updateStep, 500);
-
-  /**
-   * Needed to support click events on DND items
-   */
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 8,
-      },
-    })
-  );
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -162,36 +80,7 @@ export function Container({ formId }: { formId: string }) {
   //   return null;
   // }
 
-  const createStepWithFromId = createStep.bind(null, {
-    formId,
-    location: viewState,
-  });
   const currentStep = dragSteps.find((step) => step.id === s);
-
-  const reorderSteps = async (e: DragEndEvent) => {
-    if (!e.over) return;
-
-    if (e.active.id !== e.over.id) {
-      const activeStepIndex = dragSteps.findIndex(
-        (step) => step.id === e.active.id
-      );
-      const overStepIndex = dragSteps.findIndex(
-        (step) => step.id === e.over?.id
-      );
-
-      if (activeStepIndex < 0 || overStepIndex < 0) return;
-
-      const newStepList = arrayMove(dragSteps, activeStepIndex, overStepIndex);
-      setDragSteps(newStepList);
-
-      await mutateAsync({
-        formId: data.id,
-        data: {
-          stepOrder: newStepList.map((step) => step.id),
-        },
-      });
-    }
-  };
 
   return (
     <div className="relative flex flex-col flex-1 bg-slate-100 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px]">
@@ -255,42 +144,14 @@ export function Container({ formId }: { formId: string }) {
         </div>
 
         {/* STEPS */}
-        <div className="border-t bg-white">
-          <form action={createStepWithFromId} className="p-4">
-            <Button>New step</Button>
-          </form>
-          <DndContext
-            collisionDetection={closestCenter}
-            onDragEnd={reorderSteps}
-            sensors={sensors}
-          >
-            <div className="flex gap-2 overflow-x-auto pb-4">
-              <SortableContext
-                items={dragSteps}
-                strategy={horizontalListSortingStrategy}
-              >
-                {dragSteps.map((step) => (
-                  <Draggable id={step.id} key={step.id}>
-                    <button
-                      className={cn(
-                        "bg-gray-200 px-4 rounded-md min-w-24 h-3",
-                        {
-                          "bg-gray-400": currentStep?.id === step.id,
-                        }
-                      )}
-                      onClick={() => {
-                        setCurrentStep(step);
-                      }}
-                      type="button"
-                    >
-                      {/* {step.id} */}
-                    </button>
-                  </Draggable>
-                ))}
-              </SortableContext>
-            </div>
-          </DndContext>
-        </div>
+        <Steps
+          currentStep={currentStep}
+          dragSteps={dragSteps}
+          formId={formId}
+          map={map}
+          setDragSteps={setDragSteps}
+          viewState={viewState}
+        />
       </div>
     </div>
   );

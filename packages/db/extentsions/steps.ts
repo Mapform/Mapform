@@ -1,7 +1,7 @@
 import { Prisma, Step } from "@prisma/client";
 import { v4 } from "uuid";
 
-type StepWithLocation = Step & {
+export type StepWithLocation = Step & {
   latitude: number;
   longitude: number;
   description: {
