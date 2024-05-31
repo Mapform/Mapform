@@ -20,18 +20,15 @@ import {
   SortableContext,
 } from "@dnd-kit/sortable";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { type z } from "zod";
-import type { FormUpdateArgsSchema } from "@mapform/db/prisma/zod";
 import { Spinner } from "@mapform/ui/components/spinner";
 import { cn } from "@mapform/lib/classnames";
 import { env } from "~/env.mjs";
-import {
-  createStep,
-  updateStep,
-  updateForm,
-  getFormWithSteps,
-} from "../actions";
-import { type StepsType } from "../actions";
+import { updateStep } from "~/server/actions/steps/update";
+import { createStep } from "~/server/actions/steps/create";
+import { updateForm } from "~/server/actions/forms/update";
+import { type UpdateFormSchema } from "~/server/actions/forms/update/schema";
+import { getFormWithSteps } from "~/server/actions/forms/get-form-with-steps";
+import { type StepsType } from "~/server/actions/forms/get-form-with-steps/schema";
 import { Draggable } from "./draggable";
 // TODO. Temporary. Should get initial view state from previous step, or from user location
 const initialViewState = {
@@ -48,7 +45,9 @@ const initialViewState = {
   },
 };
 
-type FormWithSteps = NonNullable<Awaited<ReturnType<typeof getFormWithSteps>>>;
+type FormWithSteps = NonNullable<
+  Awaited<ReturnType<typeof getFormWithSteps>>["data"]
+>;
 
 export function Container({ formId }: { formId: string }) {
   const router = useRouter();
@@ -64,17 +63,17 @@ export function Container({ formId }: { formId: string }) {
   const { data, error, isLoading } = useQuery({
     queryKey: ["forms", formId],
     queryFn: async () => {
-      const formWithSteps = await getFormWithSteps(formId);
+      const formWithSteps = await getFormWithSteps({ formId });
 
-      if (formWithSteps) {
-        setDragSteps(formWithSteps.steps);
+      if (formWithSteps.data) {
+        setDragSteps(formWithSteps.data.steps);
       }
       return formWithSteps;
     },
   });
   const { mutateAsync } = useMutation({
     mutationFn: updateForm,
-    onMutate: async (args: z.infer<typeof FormUpdateArgsSchema>) => {
+    onMutate: async (args: UpdateFormSchema) => {
       await queryClient.cancelQueries({
         queryKey: ["forms", formId],
       });
@@ -89,13 +88,13 @@ export function Container({ formId }: { formId: string }) {
         return;
       }
 
+      const stepOrder = args.data.stepOrder ?? [];
+
       const newForm = {
         ...previousForm,
-        stepOrder: args.data.stepOrder,
+        stepOrder,
         steps: [...previousForm.steps].sort(
-          (a, b) =>
-            (args.data.stepOrder as string[]).indexOf(a.id) -
-            (args.data.stepOrder as string[]).indexOf(b.id)
+          (a, b) => stepOrder.indexOf(a.id) - stepOrder.indexOf(b.id)
         ),
       };
 
@@ -129,10 +128,12 @@ export function Container({ formId }: { formId: string }) {
   };
 
   useEffect(() => {
-    if (data?.steps[0] && !s) {
-      router.push(`${pathname}?${createQueryString("s", data.steps[0].id)}`);
+    if (data?.data?.steps[0] && !s) {
+      router.push(
+        `${pathname}?${createQueryString("s", data.data.steps[0].id)}`
+      );
     }
-  }, [s, data?.steps, pathname, router, createQueryString]);
+  }, [s, data?.data?.steps, pathname, router, createQueryString]);
 
   const debouncedUpdateStep = useDebounce(updateStep, 500);
 
@@ -163,7 +164,10 @@ export function Container({ formId }: { formId: string }) {
   //   return null;
   // }
 
-  const createStepWithFromId = createStep.bind(null, data.id, viewState);
+  const createStepWithFromId = createStep.bind(null, {
+    formId,
+    location: viewState,
+  });
   const currentStep = dragSteps.find((step) => step.id === s);
 
   const reorderSteps = async (e: DragEndEvent) => {
@@ -183,9 +187,7 @@ export function Container({ formId }: { formId: string }) {
       setDragSteps(newStepList);
 
       await mutateAsync({
-        where: {
-          id: data.id,
-        },
+        formId: data!.data?.id,
         data: {
           stepOrder: newStepList.map((step) => step.id),
         },
@@ -222,9 +224,7 @@ export function Container({ formId }: { formId: string }) {
                 }
 
                 await debouncedUpdateStep({
-                  where: {
-                    id: s,
-                  },
+                  stepId: s,
                   data: {
                     description: content,
                     formId: data.id,
@@ -240,12 +240,10 @@ export function Container({ formId }: { formId: string }) {
                 }
 
                 await debouncedUpdateStep({
-                  where: {
-                    id: s,
-                  },
+                  stepId: s,
                   data: {
                     title: content,
-                    formId: data.id,
+                    formId: data.data.id,
                   },
                 });
               }}

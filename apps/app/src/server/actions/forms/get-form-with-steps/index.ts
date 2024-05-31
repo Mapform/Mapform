@@ -6,17 +6,18 @@ import { getFormWithStepsSchema } from "./schema";
 
 export const getFormWithSteps = authAction(
   getFormWithStepsSchema,
-  async ({ formId }) => {
-    // TODO: Check if form belongs to the user
-
+  async ({ formId }, { orgId }) => {
     const form = await prisma.form.findUnique({
       where: {
         id: formId,
+        workspace: {
+          organizationId: orgId,
+        },
       },
     });
 
     if (!form) {
-      return null;
+      throw new Error("User does not have access to this form.");
     }
 
     const steps = await prisma.step.findManyWithLocation({

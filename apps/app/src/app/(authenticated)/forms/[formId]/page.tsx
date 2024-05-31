@@ -4,7 +4,7 @@ import {
   HydrationBoundary,
   QueryClient,
 } from "@tanstack/react-query";
-import { getFormWithSteps } from "./actions";
+import { getFormWithSteps } from "~/server/actions/forms/get-form-with-steps";
 import { Container } from "./container";
 
 export default async function Workspace({
@@ -15,7 +15,10 @@ export default async function Workspace({
   const queryClient = new QueryClient();
   await queryClient.prefetchQuery({
     queryKey: ["forms", params.formId],
-    queryFn: () => getFormWithSteps(params.formId),
+    queryFn: () =>
+      getFormWithSteps({
+        formId: params.formId,
+      }),
   });
 
   return (
