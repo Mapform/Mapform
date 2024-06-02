@@ -4,7 +4,7 @@ import { v4 } from "uuid";
 export type StepWithLocation = Step & {
   latitude: number;
   longitude: number;
-  description: {
+  description?: {
     content: any[];
   };
 };
