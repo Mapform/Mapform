@@ -139,35 +139,56 @@ export function Steps({
 
   return (
     <div className="border-t bg-white">
-      <form action={createStepWithFromId} className="p-4">
-        <Button>New step</Button>
+      <form action={createStepWithFromId} className="px-4 py-2 border-b">
+        <Button size="icon" variant="secondary">
+          +
+        </Button>
       </form>
       <DndContext
         collisionDetection={closestCenter}
         onDragEnd={reorderSteps}
         sensors={sensors}
       >
-        <div className="flex gap-2 overflow-x-auto pb-4">
-          <SortableContext
-            items={dragSteps}
-            strategy={horizontalListSortingStrategy}
+        <div className="flex gap-16 overflow-x-auto p-4">
+          <div className="text-sm font-semibold">STEPS</div>
+          <div
+            className="grid gap-2"
+            style={{
+              gridTemplateColumns: `repeat(${dragSteps.length}, 150px)`,
+            }}
           >
+            {/* STEP NUMBERS */}
             {dragSteps.map((step) => (
-              <Draggable id={step.id} key={step.id}>
-                <button
-                  className={cn("bg-gray-200 px-4 rounded-md min-w-24 h-3", {
-                    "bg-gray-400": currentStep?.id === step.id,
-                  })}
-                  onClick={() => {
-                    setCurrentStep(step);
-                  }}
-                  type="button"
-                >
-                  {/* {step.id} */}
-                </button>
-              </Draggable>
+              <div className="text-sm text-gray-500" key={step.id}>
+                {dragSteps.indexOf(step) + 1}
+              </div>
             ))}
-          </SortableContext>
+
+            {/* STEPS */}
+            <SortableContext
+              items={dragSteps}
+              strategy={horizontalListSortingStrategy}
+            >
+              {dragSteps.map((step) => (
+                <Draggable id={step.id} key={step.id}>
+                  <button
+                    className={cn(
+                      "rounded-md text-md h-16 w-full bg-orange-300",
+                      {
+                        "ring-4 ring-orange-500": currentStep?.id === step.id,
+                      }
+                    )}
+                    onClick={() => {
+                      setCurrentStep(step);
+                    }}
+                    type="button"
+                  >
+                    {step.title ?? "Untitled"}
+                  </button>
+                </Draggable>
+              ))}
+            </SortableContext>
+          </div>
         </div>
       </DndContext>
     </div>
