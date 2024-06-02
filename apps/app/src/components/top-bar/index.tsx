@@ -16,7 +16,7 @@ export function TopBar({ children }: { children?: React.ReactNode }) {
 
   return (
     <div>
-      <Disclosure as="nav" className="bg-white shadow-sm">
+      <Disclosure as="nav" className="bg-white border-b">
         {({ open }) => (
           <>
             <div className="mx-auto px-4">

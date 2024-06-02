@@ -139,18 +139,20 @@ export function Steps({
 
   return (
     <div className="border-t bg-white">
-      <form action={createStepWithFromId} className="px-4 py-2 border-b">
-        <Button size="icon" variant="secondary">
-          +
-        </Button>
-      </form>
       <DndContext
         collisionDetection={closestCenter}
         onDragEnd={reorderSteps}
         sensors={sensors}
       >
         <div className="flex gap-16 overflow-x-auto p-4">
-          <div className="text-sm font-semibold">STEPS</div>
+          <div className="flex flex-col gap-y-2">
+            <div className="text-sm font-semibold">STEPS</div>
+            <form action={createStepWithFromId}>
+              <Button size="icon" variant="secondary">
+                +
+              </Button>
+            </form>
+          </div>
           <div
             className="grid gap-2"
             style={{
