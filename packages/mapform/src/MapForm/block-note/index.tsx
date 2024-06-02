@@ -146,6 +146,7 @@ export function Blocknote({
           <div className="mt-auto flex justify-between p-4">
             <div className="gap-2">
               <Button
+                disabled={editable}
                 onClick={onPrev}
                 size="icon"
                 type="button"
@@ -154,6 +155,7 @@ export function Blocknote({
                 <ChevronLeftIcon />
               </Button>
               <Button
+                disabled={editable}
                 onClick={onNext}
                 size="icon"
                 type="button"
@@ -162,7 +164,7 @@ export function Blocknote({
                 <ChevronRightIcon />
               </Button>
             </div>
-            <Button onClick={onNext} type="submit">
+            <Button disabled={editable} onClick={onNext} type="submit">
               Next
             </Button>
           </div>

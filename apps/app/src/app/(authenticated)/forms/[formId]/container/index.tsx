@@ -100,7 +100,7 @@ export function Container({ formId }: { formId: string }) {
       >
         {/* MAP */}
         <div className="p-8 flex-1 flex justify-center">
-          <div className="shadow max-w-screen-lg flex-1 rounded-md overflow-hidden">
+          <div className="max-w-screen-lg flex-1 border overflow-hidden">
             <MapForm
               currentStep={currentStep}
               editable

@@ -175,7 +175,7 @@ export function Steps({
                 <Draggable id={step.id} key={step.id}>
                   <button
                     className={cn(
-                      "rounded-md text-md h-16 w-full bg-orange-300",
+                      "flex relative px-3 rounded-md text-md h-16 w-full bg-orange-200",
                       {
                         "ring-4 ring-orange-500": currentStep?.id === step.id,
                       }
@@ -185,7 +185,9 @@ export function Steps({
                     }}
                     type="button"
                   >
-                    {step.title ?? "Untitled"}
+                    <div className="flex-1 h-full flex justify-center items-center bg-orange-300">
+                      {step.title ?? "Untitled"}
+                    </div>
                   </button>
                 </Draggable>
               ))}
