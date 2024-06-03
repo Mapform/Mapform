@@ -1,14 +1,19 @@
-import { CreateDialog } from "./dialog";
+import { prisma } from "@mapform/db";
 
-export default function Organization({
+export default async function Organization({
   params,
 }: {
   params: { orgSlug: string };
 }) {
-  return (
-    <form>
-      <h1>Organization</h1>
-      <CreateDialog organizationSlug={params.orgSlug} />
-    </form>
-  );
+  const currentOrg = await prisma.organization.findUnique({
+    where: {
+      slug: params.orgSlug,
+    },
+  });
+
+  if (!currentOrg) {
+    return <div>Organization not found</div>;
+  }
+
+  return <div>Workspaces</div>;
 }
