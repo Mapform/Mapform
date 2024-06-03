@@ -1,6 +1,5 @@
-import Link from "next/link";
 import { prisma } from "@mapform/db";
-import WorkspaceLayout from "./workspace-layout";
+import WorkspaceLayout from "../workspace-layout";
 
 export default async function Organization({
   params,
@@ -12,13 +11,6 @@ export default async function Organization({
       slug: params.workspaceSlug,
       organization: {
         slug: params.orgSlug,
-      },
-    },
-    include: {
-      forms: {
-        where: {
-          isPublished: false,
-        },
       },
     },
   });
@@ -34,13 +26,7 @@ export default async function Organization({
       workspaceId={workspace.id}
       workspaceSlug={params.workspaceSlug}
     >
-      <ul>
-        {workspace.forms.map((form) => (
-          <li key={form.id}>
-            <Link href={`/forms/${form.id}`}>{form.name}</Link>
-          </li>
-        ))}
-      </ul>
+      Settings
     </WorkspaceLayout>
   );
 }
