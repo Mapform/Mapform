@@ -43,7 +43,6 @@ export function Container({ formId }: { formId: string }) {
   const [viewState, setViewState] = useState<ViewState>(initialViewState);
   const map = useRef<MapRef>(null);
   // We hold the steps in its own React state due to this issue: https://github.com/clauderic/dnd-kit/issues/921
-  const [dragSteps, setDragSteps] = useState<FormWithSteps["steps"]>([]);
   const { data, error, isLoading } = useQuery({
     queryKey: ["forms", formId],
     queryFn: async () => {
@@ -55,6 +54,9 @@ export function Container({ formId }: { formId: string }) {
       return formWithSteps.data;
     },
   });
+  const [dragSteps, setDragSteps] = useState<FormWithSteps["steps"]>(
+    data?.steps ?? []
+  );
 
   useEffect(() => {
     if (data?.steps[0] && !s) {
