@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@mapform/db";
-import WorkspaceLayout from "./workspace-layout";
 import { ChevronRightIcon } from "lucide-react";
+import WorkspaceLayout from "./workspace-layout";
 
 export default async function Organization({
   params,
@@ -41,8 +41,8 @@ export default async function Organization({
           //   <Link href={`/forms/${form.id}`}>{form.name}</Link>
           // </li>
           <li
-            key={form.id}
             className="relative flex justify-between gap-x-6 px-4 py-5 hover:bg-gray-50 sm:px-6"
+            key={form.id}
           >
             <div className="flex min-w-0 gap-x-4">
               {/* <img
@@ -52,10 +52,10 @@ export default async function Organization({
               /> */}
               <div className="min-w-0 flex-auto">
                 <p className="text-sm font-semibold leading-6 text-gray-900">
-                  <a href={`/forms/${form.id}`}>
+                  <Link href={`/forms/${form.id}`}>
                     <span className="absolute inset-x-0 -top-px bottom-0" />
                     {form.name}
-                  </a>
+                  </Link>
                 </p>
                 <p className="mt-1 flex text-xs leading-5 text-gray-500">
                   {/* <a
@@ -87,8 +87,8 @@ export default async function Organization({
                 )} */}
               </div>
               <ChevronRightIcon
-                className="h-5 w-5 flex-none text-gray-400"
                 aria-hidden="true"
+                className="h-5 w-5 flex-none text-gray-400"
               />
             </div>
           </li>
