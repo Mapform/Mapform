@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { prisma } from "@mapform/db";
+import { format } from "date-fns";
 import OrgLayout from "./org-layout";
 
 export default async function Organization({
@@ -13,7 +14,13 @@ export default async function Organization({
       slug: params.orgSlug,
     },
     include: {
-      workspaces: true,
+      workspaces: {
+        include: {
+          _count: {
+            select: { forms: true },
+          },
+        },
+      },
     },
   });
 
@@ -23,7 +30,7 @@ export default async function Organization({
 
   return (
     <OrgLayout name={currentOrg.name} slug={params.orgSlug}>
-      <ul className="flex flex-wrap">
+      <ul className="flex flex-wrap gap-4">
         {currentOrg.workspaces.map((workspace) => (
           <li
             className="overflow-hidden rounded-xl border w-72"
@@ -35,12 +42,15 @@ export default async function Organization({
               </div>
               <dl className="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
                 <div className="flex justify-between gap-x-4 py-3">
+                  <dt className="text-gray-500">Forms</dt>
+                  <dd className="text-gray-700">{workspace._count.forms}</dd>
+                </div>
+                <div className="flex justify-between gap-x-4 py-3">
                   <dt className="text-gray-500">Created</dt>
                   <dd className="text-gray-700">
-                    Some text
-                    {/* <time dateTime={workspace.lastInvoice.dateTime}>
-                      {client.lastInvoice.date}
-                    </time> */}
+                    <time dateTime={workspace.createdAt.toDateString()}>
+                      {format(workspace.createdAt, "MMMM do, yyyy")}
+                    </time>
                   </dd>
                 </div>
               </dl>
