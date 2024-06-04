@@ -28,7 +28,13 @@ import {
   type CreateFormSchema,
 } from "~/server/actions/forms/create/schema";
 
-export function CreateDialog({ workspaceId }: { workspaceId: string }) {
+export function CreateDialog({
+  workspaceId,
+  disabled,
+}: {
+  workspaceId: string;
+  disabled: boolean;
+}) {
   const form = useForm<CreateFormSchema>({
     defaultValues: {
       name: "",
@@ -39,6 +45,8 @@ export function CreateDialog({ workspaceId }: { workspaceId: string }) {
   });
 
   const onSubmit = async (values: CreateFormSchema) => {
+    if (disabled) return;
+
     const { serverError, validationErrors } = await createForm(values);
 
     if (serverError) {
@@ -59,7 +67,9 @@ export function CreateDialog({ workspaceId }: { workspaceId: string }) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline">Create Form</Button>
+        <Button disabled={disabled} variant="outline">
+          Create Form
+        </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <Form {...form}>
