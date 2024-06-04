@@ -25,7 +25,10 @@ export const updateForm = authAction(
       where: {
         id: formId,
       },
-      data,
+      data: {
+        ...data,
+        isDirty: true,
+      },
     });
 
     revalidatePath("/");

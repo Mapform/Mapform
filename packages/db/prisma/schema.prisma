@@ -32,6 +32,9 @@ model User {
     imageUrl                String?
     organizationMemberships OrganizationMembership[]
     workspaceMemberships    WorkspaceMembership[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 }
 
 // Managed through Clerk and synced with Prisma
@@ -42,6 +45,9 @@ model Organization {
     imageUrl   String?
     members    OrganizationMembership[]
     workspaces Workspace[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 }
 
 // Managed through Clerk and synced with Prisma
@@ -52,6 +58,9 @@ model OrganizationMembership {
     role           String
     user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
     organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 }
 
 enum WorkspaceMembershipRole {
@@ -79,6 +88,9 @@ model Workspace {
     organization   Organization          @relation(fields: [organizationId], references: [id], onDelete: Cascade)
     forms          Form[]
 
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
     @@unique([organizationId, slug])
 }
 
@@ -97,6 +109,9 @@ model Form {
     publishedForm   Form?            @relation("PublishedVersion", fields: [publishedFormId], references: [id])
     draftForm       Form?            @relation("PublishedVersion")
 
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
     @@unique([workspaceId, slug, isPublished])
 }
 
@@ -111,6 +126,9 @@ model Step {
     form        Form?    @relation(name: "Steps", fields: [formId], references: [id])
     locationId  String   @unique
     location    Location @relation(fields: [locationId], references: [id])
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 }
 
 model FormSubmission {
@@ -118,6 +136,9 @@ model FormSubmission {
     formId                 String
     form                   Form                     @relation(fields: [formId], references: [id])
     shortTextInputResponse ShortTextInputResponse[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 }
 
 model ShortTextInputResponse {

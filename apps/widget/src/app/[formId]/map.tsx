@@ -92,7 +92,7 @@ export function Map({ formWithSteps, formValues }: MapProps) {
   }, [s, formWithSteps.steps, pathname, router, createQueryString]);
 
   const stepValues = (
-    currentStep?.description?.content as DocumentContent
+    (currentStep?.description?.content as DocumentContent) ?? []
   ).reduce((acc: Record<string, string>, block) => {
     const value = formValues.find((v) => v.blockNoteId === block.id)?.value;
 
