@@ -15,11 +15,8 @@ export default async function Layout({
       <TopBar />
       <div className="flex flex-1">
         {/* NAV */}
-        <div className="flex flex-col gap-y-5 overflow-y-auto bg-white px-6 pb-2 w-[300px]">
+        <div className="flex flex-col gap-y-5 overflow-y-auto bg-white px-6 pb-2 w-[300px] border-r">
           <nav className="flex flex-1 flex-col mt-6">
-            <h3 className="text-xs font-semibold leading-6 text-gray-400">
-              Teams
-            </h3>
             <ActiveLinks userOrgs={userOrgs} />
             <CreateDialog />
           </nav>
