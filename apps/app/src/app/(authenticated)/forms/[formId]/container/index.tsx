@@ -85,7 +85,7 @@ export function Container({ formId }: { formId: string }) {
   const currentStep = dragSteps.find((step) => step.id === s);
 
   return (
-    <div className="relative flex flex-col flex-1 bg-slate-100 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px]">
+    <div className="relative flex flex-col flex-1 bg-gray-50 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px]">
       {mapformLoaded ? null : (
         <div className="absolute inset-0 flex justify-center items-center">
           <Spinner variant="dark" />
