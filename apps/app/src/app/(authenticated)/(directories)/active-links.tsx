@@ -36,7 +36,7 @@ export default function ActiveLinks({ userOrgs }: ActiveLinksProps) {
               "flex h-6 w-6 shrink-0 items-center justify-center text-[0.625rem] font-medium"
             )}
           >
-            <Clock4Icon size={16} />
+            <Clock4Icon size={20} />
           </span>
           <span className="truncate">Recent</span>
         </Link>
