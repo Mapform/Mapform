@@ -71,6 +71,44 @@ export function stepsExtension() {
             });
           },
 
+          updateWithLocation: async ({
+            stepId,
+            latitude,
+            longitude,
+            ...args
+          }: Omit<Prisma.StepUpdateInput, "location"> & {
+            stepId: string;
+            latitude?: number;
+            longitude?: number;
+          }) => {
+            const step = await prisma.step.findUnique({
+              where: {
+                id: stepId,
+              },
+            });
+
+            if (!step?.locationId) {
+              throw new Error("Step not found");
+            }
+
+            return prisma.$transaction(async (tx) => {
+              if (latitude && longitude) {
+                await tx.$queryRaw`
+                  UPDATE "Location"
+                  SET geom = ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), 4326)
+                  WHERE id = ${step.locationId}
+                `;
+              }
+
+              await tx.step.update({
+                where: {
+                  id: stepId,
+                },
+                data: args,
+              });
+            });
+          },
+
           /**
            * Delete the step with the associated location
            */

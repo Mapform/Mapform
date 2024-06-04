@@ -13,6 +13,7 @@ import { updateStep } from "~/server/actions/steps/update";
 import { getFormWithSteps } from "~/server/actions/forms/get-form-with-steps";
 import { useCreateQueryString } from "~/lib/create-query-string";
 import { Steps } from "./steps";
+import { Sidebar } from "./sidebar";
 
 // TODO. Temporary. Should get initial view state from previous step, or from user location
 const initialViewState = {
@@ -85,7 +86,8 @@ export function Container({ formId }: { formId: string }) {
   const currentStep = dragSteps.find((step) => step.id === s);
 
   return (
-    <div className="relative flex flex-col flex-1 bg-gray-50 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px]">
+    // Radial gradient in case I want to add back bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px]"
+    <div className="relative flex flex-col flex-1 bg-gray-50">
       {mapformLoaded ? null : (
         <div className="absolute inset-0 flex justify-center items-center">
           <Spinner variant="dark" />
@@ -100,49 +102,58 @@ export function Container({ formId }: { formId: string }) {
           }
         )}
       >
-        {/* MAP */}
-        <div className="p-8 flex-1 flex justify-center">
-          <div className="max-w-screen-lg flex-1 border overflow-hidden">
-            <MapForm
-              currentStep={currentStep}
-              editable
-              mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
-              onDescriptionChange={async (content: { content: any[] }) => {
-                if (!s) {
-                  return;
-                }
+        <div className="flex flex-1">
+          {/* MAP */}
+          <div className="p-8 flex-1 flex justify-center">
+            <div className="max-w-screen-lg flex-1 border overflow-hidden">
+              <MapForm
+                currentStep={currentStep}
+                editable
+                mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
+                onDescriptionChange={async (content: { content: any[] }) => {
+                  if (!s) {
+                    return;
+                  }
 
-                await debouncedUpdateStep({
-                  stepId: s,
-                  data: {
-                    description: content,
-                    formId: data.id,
-                  },
-                });
-              }}
-              onLoad={() => {
-                setMapformLoaded(true);
-              }}
-              onTitleChange={async (content: string) => {
-                if (!s) {
-                  return;
-                }
+                  await debouncedUpdateStep({
+                    stepId: s,
+                    data: {
+                      description: content,
+                      formId: data.id,
+                    },
+                  });
+                }}
+                onLoad={() => {
+                  setMapformLoaded(true);
+                }}
+                onTitleChange={async (content: string) => {
+                  if (!s) {
+                    return;
+                  }
 
-                await debouncedUpdateStep({
-                  stepId: s,
-                  data: {
-                    title: content,
-                    formId: data.id,
-                  },
-                });
-              }}
-              ref={map}
-              setViewState={(evt) => {
-                setViewState(evt.viewState);
-              }}
-              viewState={viewState}
-            />
+                  await debouncedUpdateStep({
+                    stepId: s,
+                    data: {
+                      title: content,
+                      formId: data.id,
+                    },
+                  });
+                }}
+                ref={map}
+                setViewState={(evt) => {
+                  setViewState(evt.viewState);
+                }}
+                viewState={viewState}
+              />
+            </div>
           </div>
+
+          {/* SIDEBAR */}
+          <Sidebar
+            currentStep={currentStep}
+            setViewState={setViewState}
+            viewState={viewState}
+          />
         </div>
 
         {/* STEPS */}
