@@ -30,8 +30,10 @@ import {
 
 export function CreateDialog({
   organizationSlug,
+  disabled = false,
 }: {
   organizationSlug: string;
+  disabled?: boolean;
 }) {
   const form = useForm<CreateWorkspaceSchema>({
     defaultValues: {
@@ -43,6 +45,8 @@ export function CreateDialog({
   });
 
   const onSubmit = async (values: CreateWorkspaceSchema) => {
+    if (disabled) return;
+
     const { serverError, validationErrors } = await createWorkspace(values);
 
     if (serverError) {
@@ -63,7 +67,9 @@ export function CreateDialog({
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline">Create Workspace</Button>
+        <Button disabled={disabled} variant="outline">
+          Create Workspace
+        </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <Form {...form}>
