@@ -8,7 +8,6 @@ import { updateStepLocationSchema } from "./schema";
 export const updateStepWithLocation = authAction(
   updateStepLocationSchema,
   async ({ stepId, data }, { orgId }) => {
-    console.log(222222);
     // if (!data.formId) {
     //   throw new Error("Form ID is required.");
     // }

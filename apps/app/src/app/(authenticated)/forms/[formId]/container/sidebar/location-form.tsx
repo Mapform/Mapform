@@ -36,7 +36,6 @@ export function LocationForm({
   const form = useForm<UpdateStepLocationSchema>({
     resolver: zodResolver(updateStepLocationSchema),
     defaultValues: {
-      stepId,
       data: {
         zoom: viewState.zoom,
         pitch: viewState.pitch,
@@ -55,8 +54,10 @@ export function LocationForm({
   });
 
   const onSubmit = (data: UpdateStepLocationSchema) => {
-    console.log(111111);
-    execute(data);
+    execute({
+      stepId,
+      data: data.data,
+    });
   };
 
   useEffect(() => {
