@@ -5,13 +5,12 @@ import type { MapRef, ViewState } from "@mapform/mapform";
 import { MapForm } from "@mapform/mapform";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useDebounce } from "@mapform/lib/use-debounce";
-import { useQuery } from "@tanstack/react-query";
 import { Spinner } from "@mapform/ui/components/spinner";
 import { cn } from "@mapform/lib/classnames";
 import { env } from "~/env.mjs";
 import { updateStep } from "~/server/actions/steps/update";
-import { getFormWithSteps } from "~/server/actions/forms/get-form-with-steps";
 import { useCreateQueryString } from "~/lib/create-query-string";
+import { type FormWithSteps } from "../requests";
 import { Steps } from "./steps";
 import { Sidebar } from "./sidebar";
 
@@ -30,11 +29,7 @@ const initialViewState = {
   },
 };
 
-type FormWithSteps = NonNullable<
-  Awaited<ReturnType<typeof getFormWithSteps>>["data"]
->;
-
-export function Container({ formId }: { formId: string }) {
+export function Container({ formWithSteps }: { formWithSteps: FormWithSteps }) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -42,20 +37,8 @@ export function Container({ formId }: { formId: string }) {
   const s = searchParams.get("s");
   const [mapformLoaded, setMapformLoaded] = useState(false);
   const map = useRef<MapRef>(null);
-  // We hold the steps in its own React state due to this issue: https://github.com/clauderic/dnd-kit/issues/921
-  const { data, error, isLoading } = useQuery({
-    queryKey: ["forms", formId],
-    queryFn: async () => {
-      const formWithSteps = await getFormWithSteps({ formId });
-
-      if (formWithSteps.data) {
-        setDragSteps(formWithSteps.data.steps);
-      }
-      return formWithSteps.data;
-    },
-  });
   const [dragSteps, setDragSteps] = useState<FormWithSteps["steps"]>(
-    data?.steps ?? []
+    formWithSteps.steps ?? []
   );
 
   const currentStep = dragSteps.find((step) => step.id === s);
@@ -69,24 +52,14 @@ export function Container({ formId }: { formId: string }) {
   });
 
   useEffect(() => {
-    if (data?.steps[0] && !s) {
-      router.push(`${pathname}?${createQueryString("s", data.steps[0].id)}`);
+    if (formWithSteps.steps[0] && !s) {
+      router.push(
+        `${pathname}?${createQueryString("s", formWithSteps.steps[0].id)}`
+      );
     }
-  }, [s, data?.steps, pathname, router, createQueryString]);
+  }, [s, formWithSteps.steps, pathname, router, createQueryString]);
 
   const debouncedUpdateStep = useDebounce(updateStep, 500);
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    return <div>Error: {error.message}</div>;
-  }
-
-  if (!data) {
-    return null;
-  }
 
   return (
     // Radial gradient in case I want to add back bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px]"
@@ -122,7 +95,7 @@ export function Container({ formId }: { formId: string }) {
                     stepId: s,
                     data: {
                       description: content,
-                      formId: data.id,
+                      formId: formWithSteps.id,
                     },
                   });
                 }}
@@ -138,7 +111,7 @@ export function Container({ formId }: { formId: string }) {
                     stepId: s,
                     data: {
                       title: content,
-                      formId: data.id,
+                      formId: formWithSteps.id,
                     },
                   });
                 }}
@@ -164,7 +137,7 @@ export function Container({ formId }: { formId: string }) {
         <Steps
           currentStep={currentStep}
           dragSteps={dragSteps}
-          formId={formId}
+          formId={formWithSteps.id}
           map={map}
           setDragSteps={setDragSteps}
           viewState={viewState}

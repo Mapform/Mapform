@@ -1,33 +1,19 @@
 import { MapProvider } from "@mapform/mapform";
-import {
-  dehydrate,
-  HydrationBoundary,
-  QueryClient,
-} from "@tanstack/react-query";
-import { getFormWithSteps } from "~/server/actions/forms/get-form-with-steps";
 import { Container } from "./container";
+import { getFormWithSteps } from "./requests";
 
 export default async function Workspace({
   params,
 }: {
   params: { formId: string };
 }) {
-  const queryClient = new QueryClient();
-  await queryClient.prefetchQuery({
-    queryKey: ["forms", params.formId],
-    queryFn: async () =>
-      (
-        await getFormWithSteps({
-          formId: params.formId,
-        })
-      ).data,
+  const formWithSteps = await getFormWithSteps({
+    formId: params.formId,
   });
 
   return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
-      <MapProvider>
-        <Container formId={params.formId} />
-      </MapProvider>
-    </HydrationBoundary>
+    <MapProvider>
+      <Container formWithSteps={formWithSteps} />
+    </MapProvider>
   );
 }

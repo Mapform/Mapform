@@ -56,6 +56,7 @@ export function Blocknote({
   const [uncontrolledTitle, setUncontrolledTitle] = useState<string>(
     title || ""
   );
+  //
   const editor = useCreateBlockNote({
     initialContent: description?.content,
     placeholders: {

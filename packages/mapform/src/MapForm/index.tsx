@@ -48,6 +48,7 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
         <div className="max-w-[320px] lg:max-w-[400px] w-full flex-shrink-0 bg-background shadow z-10">
           {currentStep ? (
             <Blocknote
+              defaultFormValues={defaultFormValues}
               description={
                 currentStep.description as { content: CustomBlock[] }
               }
@@ -61,7 +62,6 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
               onStepSubmit={onStepSubmit}
               onTitleChange={onTitleChange}
               title={currentStep.title}
-              defaultFormValues={defaultFormValues}
             />
           ) : null}
         </div>

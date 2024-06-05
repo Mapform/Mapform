@@ -24,7 +24,6 @@ export const createStep = authAction(
 
     revalidatePath("/");
 
-    console.log("CREATED STEP: ", newStep);
     return newStep;
   }
 );
