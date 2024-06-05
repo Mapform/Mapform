@@ -154,6 +154,7 @@ export function Container({ formId }: { formId: string }) {
           {/* SIDEBAR */}
           <Sidebar
             currentStep={currentStep}
+            setDragSteps={setDragSteps}
             setViewState={setViewState}
             viewState={viewState}
           />

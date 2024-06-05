@@ -1,6 +1,7 @@
 import { type StepWithLocation } from "@mapform/db/extentsions/steps";
 import { type ViewState } from "@mapform/mapform";
 import type { Dispatch, SetStateAction } from "react";
+import { type StepsType } from "~/server/actions/forms/get-form-with-steps/schema";
 import { LocationForm } from "./location-form";
 import { DeleteButton } from "./delete-button";
 
@@ -8,12 +9,14 @@ interface SidebarProps {
   viewState: ViewState;
   setViewState: Dispatch<SetStateAction<ViewState>>;
   currentStep: StepWithLocation | undefined;
+  setDragSteps: React.Dispatch<React.SetStateAction<StepsType>>;
 }
 
 export function Sidebar({
   currentStep,
   viewState,
   setViewState,
+  setDragSteps,
 }: SidebarProps) {
   if (!currentStep) {
     return <div className="bg-white w-[400px] border-l" />;
@@ -38,7 +41,7 @@ export function Sidebar({
         <h3 className="text-xs font-semibold leading-6 text-gray-400 mb-2">
           Danger Zone
         </h3>
-        <DeleteButton stepId={currentStep.id} />
+        <DeleteButton setDragSteps={setDragSteps} stepId={currentStep.id} />
       </section>
     </div>
   );
