@@ -68,6 +68,8 @@ export function stepsExtension() {
                   },
                 },
               });
+
+              return newStep;
             });
           },
 
