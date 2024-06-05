@@ -36,6 +36,7 @@ export function LocationForm({
   const form = useForm<UpdateStepLocationSchema>({
     resolver: zodResolver(updateStepLocationSchema),
     defaultValues: {
+      stepId,
       data: {
         zoom: viewState.zoom,
         pitch: viewState.pitch,

@@ -8,37 +8,21 @@ import { updateStepLocationSchema } from "./schema";
 export const updateStepWithLocation = authAction(
   updateStepLocationSchema,
   async ({ stepId, data }, { orgId }) => {
-    // if (!data.formId) {
-    //   throw new Error("Form ID is required.");
-    // }
+    const stepOfOrg = await prisma.step.findUnique({
+      where: {
+        id: stepId,
+        form: {
+          workspace: {
+            organizationId: orgId,
+          },
+        },
+      },
+    });
 
-    // const userForm = await prisma.form.findUnique({
-    //   where: {
-    //     id: data.formId,
-    //     workspace: {
-    //       organizationId: orgId,
-    //     },
-    //   },
-    // });
+    if (!stepOfOrg?.formId) {
+      throw new Error("User does not have access to this organization.");
+    }
 
-    // if (!userForm) {
-    //   throw new Error("User does not have access to this organization.");
-    // }
-
-    // await prisma.step.update({
-    //   where: {
-    //     id: stepId,
-    //   },
-    //   data,
-    // });
-    // await prisma.form.update({
-    //   where: {
-    //     id: data.formId,
-    //   },
-    //   data: {
-    //     isDirty: true,
-    //   },
-    // });
     await prisma.step
       .updateWithLocation({
         stepId,
@@ -52,6 +36,15 @@ export const updateStepWithLocation = authAction(
         console.error(e);
         throw new Error("Failed to update step with location");
       });
+
+    await prisma.form.update({
+      where: {
+        id: stepOfOrg.formId,
+      },
+      data: {
+        isDirty: true,
+      },
+    });
 
     revalidatePath("/");
   }
