@@ -16,7 +16,6 @@ import { cn } from "@mapform/lib/classnames";
 import { Button } from "@mapform/ui/components/button";
 import { Spinner } from "@mapform/ui/components/spinner";
 import type { MapRef, ViewState } from "@mapform/mapform";
-import { useMutation } from "@tanstack/react-query";
 import { type StepWithLocation } from "@mapform/db/extentsions/steps";
 import { useAction } from "next-safe-action/hooks";
 import { type StepsType } from "~/server/actions/forms/get-form-with-steps/schema";
@@ -46,9 +45,6 @@ export function Steps({
   const pathname = usePathname();
   const createQueryString = useCreateQueryString();
   const { execute: createStepMutation, status } = useAction(createStep);
-  const { mutateAsync: updateFormMutation } = useMutation({
-    mutationFn: updateForm,
-  });
 
   /**
    * Needed to support click events on DND items
@@ -77,7 +73,7 @@ export function Steps({
       const newStepList = arrayMove(dragSteps, activeStepIndex, overStepIndex);
       setDragSteps(newStepList);
 
-      await updateFormMutation({
+      await updateForm({
         formId,
         data: {
           stepOrder: newStepList.map((step) => step.id),

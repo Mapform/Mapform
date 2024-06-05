@@ -7,6 +7,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useDebounce } from "@mapform/lib/use-debounce";
 import { Spinner } from "@mapform/ui/components/spinner";
 import { cn } from "@mapform/lib/classnames";
+import { useOptimisticAction } from "next-safe-action/hooks";
 import { env } from "~/env.mjs";
 import { updateStep } from "~/server/actions/steps/update";
 import { useCreateQueryString } from "~/lib/create-query-string";
@@ -38,10 +39,24 @@ export function Container({ formWithSteps }: { formWithSteps: FormWithSteps }) {
   const [mapformLoaded, setMapformLoaded] = useState(false);
   const map = useRef<MapRef>(null);
   const [dragSteps, setDragSteps] = useState<FormWithSteps["steps"]>(
-    formWithSteps.steps ?? []
+    formWithSteps.steps
+  );
+  const { execute, result, optimisticData, status } = useOptimisticAction(
+    updateStep,
+    { step: formWithSteps.steps.find((step) => step.id === s) },
+    (state, { data }) => {
+      return {
+        ...state.step,
+        data,
+      };
+    }
   );
 
-  const currentStep = dragSteps.find((step) => step.id === s);
+  const currentStep =
+    result.data?.step ??
+    optimisticData?.step ??
+    formWithSteps.steps.find((step) => step.id === s);
+
   const [viewState, setViewState] = useState<ViewState>({
     latitude: currentStep?.latitude ?? initialViewState.latitude,
     longitude: currentStep?.longitude ?? initialViewState.longitude,
@@ -59,7 +74,7 @@ export function Container({ formWithSteps }: { formWithSteps: FormWithSteps }) {
     }
   }, [s, formWithSteps.steps, pathname, router, createQueryString]);
 
-  const debouncedUpdateStep = useDebounce(updateStep, 500);
+  const debouncedUpdateStep = useDebounce(execute, 500);
 
   return (
     // Radial gradient in case I want to add back bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px]"
@@ -86,12 +101,12 @@ export function Container({ formWithSteps }: { formWithSteps: FormWithSteps }) {
                 currentStep={currentStep}
                 editable
                 mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
-                onDescriptionChange={async (content: { content: any[] }) => {
+                onDescriptionChange={(content: { content: any[] }) => {
                   if (!s) {
                     return;
                   }
 
-                  await debouncedUpdateStep({
+                  debouncedUpdateStep({
                     stepId: s,
                     data: {
                       description: content,
@@ -102,12 +117,12 @@ export function Container({ formWithSteps }: { formWithSteps: FormWithSteps }) {
                 onLoad={() => {
                   setMapformLoaded(true);
                 }}
-                onTitleChange={async (content: string) => {
+                onTitleChange={(content: string) => {
                   if (!s) {
                     return;
                   }
 
-                  await debouncedUpdateStep({
+                  debouncedUpdateStep({
                     stepId: s,
                     data: {
                       title: content,

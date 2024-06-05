@@ -25,7 +25,7 @@ export const updateStep = authAction(
       throw new Error("User does not have access to this organization.");
     }
 
-    await prisma.step.update({
+    const step = await prisma.step.update({
       where: {
         id: stepId,
       },
@@ -42,5 +42,7 @@ export const updateStep = authAction(
     });
 
     revalidatePath("/");
+
+    return { step };
   }
 );
