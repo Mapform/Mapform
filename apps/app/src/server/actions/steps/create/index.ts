@@ -13,7 +13,7 @@ export const createStep = authAction(
     /**
      * This uses the Prisma extension to create a step with a location
      */
-    await prisma.step.createWithLocation({
+    const newStep = await prisma.step.createWithLocation({
       formId,
       zoom: location.zoom,
       pitch: location.pitch,
@@ -23,5 +23,8 @@ export const createStep = authAction(
     });
 
     revalidatePath("/");
+
+    console.log("CREATED STEP: ", newStep);
+    return newStep;
   }
 );

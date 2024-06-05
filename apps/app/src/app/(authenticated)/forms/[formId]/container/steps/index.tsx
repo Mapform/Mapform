@@ -14,20 +14,16 @@ import {
 import { useRouter, usePathname } from "next/navigation";
 import { cn } from "@mapform/lib/classnames";
 import { Button } from "@mapform/ui/components/button";
+import { Spinner } from "@mapform/ui/components/spinner";
 import type { MapRef, ViewState } from "@mapform/mapform";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { type StepWithLocation } from "@mapform/db/extentsions/steps";
+import { useAction } from "next-safe-action/hooks";
 import { type StepsType } from "~/server/actions/forms/get-form-with-steps/schema";
 import { createStep } from "~/server/actions/steps/create";
 import { updateForm } from "~/server/actions/forms/update";
 import { useCreateQueryString } from "~/lib/create-query-string";
-import { type UpdateFormSchema } from "~/server/actions/forms/update/schema";
-import { type getFormWithSteps } from "~/server/actions/forms/get-form-with-steps";
 import { Draggable } from "../draggable";
-
-type FormWithSteps = NonNullable<
-  Awaited<ReturnType<typeof getFormWithSteps>>["data"]
->;
 
 interface StepsProps {
   map: React.RefObject<MapRef>;
@@ -48,41 +44,10 @@ export function Steps({
 }: StepsProps) {
   const router = useRouter();
   const pathname = usePathname();
-  const queryClient = useQueryClient();
   const createQueryString = useCreateQueryString();
-  const { mutateAsync } = useMutation({
+  const { execute: createStepMutation, status } = useAction(createStep);
+  const { mutateAsync: updateFormMutation } = useMutation({
     mutationFn: updateForm,
-    onMutate: async (args: UpdateFormSchema) => {
-      await queryClient.cancelQueries({
-        queryKey: ["forms", formId],
-      });
-
-      // Snapshot the previous value
-      const previousForm = queryClient.getQueryData([
-        "forms",
-        formId,
-      ]) as FormWithSteps | null;
-
-      if (!previousForm) {
-        return;
-      }
-
-      const stepOrder = args.data.stepOrder ?? [];
-
-      const newForm = {
-        ...previousForm,
-        stepOrder,
-        steps: [...previousForm.steps].sort(
-          (a, b) => stepOrder.indexOf(a.id) - stepOrder.indexOf(b.id)
-        ),
-      };
-
-      // Optimistically update to the new value
-      queryClient.setQueryData(["forms", formId], newForm);
-
-      // Return a context with the previous and new todo
-      return { previousForm, newForm };
-    },
   });
 
   /**
@@ -95,11 +60,6 @@ export function Steps({
       },
     })
   );
-
-  const createStepWithFromId = createStep.bind(null, {
-    formId,
-    location: viewState,
-  });
 
   const reorderSteps = async (e: DragEndEvent) => {
     if (!e.over) return;
@@ -117,7 +77,7 @@ export function Steps({
       const newStepList = arrayMove(dragSteps, activeStepIndex, overStepIndex);
       setDragSteps(newStepList);
 
-      await mutateAsync({
+      await updateFormMutation({
         formId,
         data: {
           stepOrder: newStepList.map((step) => step.id),
@@ -137,6 +97,13 @@ export function Steps({
     router.push(`${pathname}?${createQueryString("s", step.id)}`);
   };
 
+  const onAdd = () => {
+    createStepMutation({
+      formId,
+      location: viewState,
+    });
+  };
+
   return (
     <div className="border-t bg-white">
       <DndContext
@@ -147,11 +114,14 @@ export function Steps({
         <div className="flex gap-16 overflow-x-auto p-4">
           <div className="flex flex-col gap-y-2">
             <div className="text-sm font-semibold">STEPS</div>
-            <form action={createStepWithFromId}>
-              <Button size="icon" variant="secondary">
-                +
-              </Button>
-            </form>
+            <Button
+              disabled={status === "executing"}
+              onClick={onAdd}
+              size="icon"
+              variant="secondary"
+            >
+              {status === "executing" ? <Spinner variant="dark" /> : "+"}
+            </Button>
           </div>
           <div
             className="grid gap-2"

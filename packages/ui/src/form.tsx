@@ -166,5 +166,5 @@ export {
   FormMessage,
   FormField,
 };
-export { useForm, useFormContext } from "react-hook-form";
+export { useForm, useController, useFormContext } from "react-hook-form";
 export { zodResolver } from "@hookform/resolvers/zod";
