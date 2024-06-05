@@ -1,8 +1,8 @@
 import { type StepWithLocation } from "@mapform/db/extentsions/steps";
-import { Button } from "@mapform/ui/components/button";
 import { type ViewState } from "@mapform/mapform";
 import type { Dispatch, SetStateAction } from "react";
 import { LocationForm } from "./location-form";
+import { DeleteButton } from "./delete-button";
 
 interface SidebarProps {
   viewState: ViewState;
@@ -38,7 +38,7 @@ export function Sidebar({
         <h3 className="text-xs font-semibold leading-6 text-gray-400 mb-2">
           Danger Zone
         </h3>
-        <Button variant="destructive">Delete this step</Button>
+        <DeleteButton stepId={currentStep.id} />
       </section>
     </div>
   );
