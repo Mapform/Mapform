@@ -41,7 +41,6 @@ export function Container({ formId }: { formId: string }) {
   const createQueryString = useCreateQueryString();
   const s = searchParams.get("s");
   const [mapformLoaded, setMapformLoaded] = useState(false);
-  const [viewState, setViewState] = useState<ViewState>(initialViewState);
   const map = useRef<MapRef>(null);
   // We hold the steps in its own React state due to this issue: https://github.com/clauderic/dnd-kit/issues/921
   const { data, error, isLoading } = useQuery({
@@ -58,6 +57,16 @@ export function Container({ formId }: { formId: string }) {
   const [dragSteps, setDragSteps] = useState<FormWithSteps["steps"]>(
     data?.steps ?? []
   );
+
+  const currentStep = dragSteps.find((step) => step.id === s);
+  const [viewState, setViewState] = useState<ViewState>({
+    latitude: currentStep?.latitude ?? initialViewState.latitude,
+    longitude: currentStep?.longitude ?? initialViewState.longitude,
+    zoom: currentStep?.zoom ?? initialViewState.zoom,
+    bearing: currentStep?.bearing ?? initialViewState.bearing,
+    pitch: currentStep?.pitch ?? initialViewState.pitch,
+    padding: initialViewState.padding,
+  });
 
   useEffect(() => {
     if (data?.steps[0] && !s) {
@@ -78,12 +87,6 @@ export function Container({ formId }: { formId: string }) {
   if (!data) {
     return null;
   }
-
-  // if (!s) {
-  //   return null;
-  // }
-
-  const currentStep = dragSteps.find((step) => step.id === s);
 
   return (
     // Radial gradient in case I want to add back bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px]"
