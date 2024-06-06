@@ -23,11 +23,11 @@ export const ShortTextInput = createReactBlockSpec(
     type: "short-text-input",
     propSchema: {
       label: {
-        default: "Label",
+        default: "My Label",
         type: "string",
       },
       placeholder: {
-        default: "Placeholder",
+        default: "",
         type: "string",
       },
       required: {
@@ -99,6 +99,8 @@ export const ShortTextInput = createReactBlockSpec(
                         props: { placeholder: e.target.value },
                       });
                     }}
+                    placeholder="My placeholder text"
+                    value={block.props.placeholder}
                   />
                 ) : (
                   <Input {...field} placeholder={block.props.placeholder} />
