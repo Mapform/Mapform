@@ -8,14 +8,12 @@ interface SidebarProps {
   viewState: ViewState;
   setViewState: Dispatch<SetStateAction<ViewState>>;
   currentStep: StepWithLocation | undefined;
-  setDragSteps: Dispatch<SetStateAction<string[]>>;
 }
 
 export function Sidebar({
   currentStep,
   viewState,
   setViewState,
-  setDragSteps,
 }: SidebarProps) {
   if (!currentStep) {
     return <div className="bg-white w-[400px] border-l" />;
@@ -40,7 +38,7 @@ export function Sidebar({
         <h3 className="text-xs font-semibold leading-6 text-gray-400 mb-2">
           Danger Zone
         </h3>
-        <DeleteButton setDragSteps={setDragSteps} stepId={currentStep.id} />
+        <DeleteButton stepId={currentStep.id} />
       </section>
     </div>
   );

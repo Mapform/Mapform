@@ -11,41 +11,26 @@ import {
   horizontalListSortingStrategy,
   SortableContext,
 } from "@dnd-kit/sortable";
-import { useRouter, usePathname } from "next/navigation";
 import { cn } from "@mapform/lib/classnames";
 import { Button } from "@mapform/ui/components/button";
 import { Spinner } from "@mapform/ui/components/spinner";
-import type { MapRef, ViewState } from "@mapform/mapform";
+import type { ViewState } from "@mapform/mapform";
 import { useMutation } from "@tanstack/react-query";
 import { type StepWithLocation } from "@mapform/db/extentsions/steps";
-import type { Dispatch, SetStateAction } from "react";
-import { type StepsType } from "~/server/actions/forms/get-form-with-steps/schema";
 import { createStep } from "~/server/actions/steps/create";
 import { updateForm } from "~/server/actions/forms/update";
-import { useCreateQueryString } from "~/lib/create-query-string";
 import type { FormWithSteps } from "~/server/actions/forms/get-form-with-steps";
 import { Draggable } from "../draggable";
+import { useContainerContext } from "../context";
 
 interface StepsProps {
-  map: React.RefObject<MapRef>;
   viewState: ViewState;
   formWithSteps: FormWithSteps;
   currentStep: StepWithLocation | undefined;
-  dragSteps: string[];
-  setDragSteps: Dispatch<SetStateAction<string[]>>;
 }
 
-export function Steps({
-  map,
-  formWithSteps,
-  viewState,
-  currentStep,
-  dragSteps,
-  setDragSteps,
-}: StepsProps) {
-  const router = useRouter();
-  const pathname = usePathname();
-  const createQueryString = useCreateQueryString();
+export function Steps({ formWithSteps, viewState, currentStep }: StepsProps) {
+  const { dragSteps, setDragSteps, setCurrentStep } = useContainerContext();
   // const { execute: createStepMutation, status } = useAction(createStep);
   const { mutateAsync: updateFormMutation } = useMutation({
     mutationFn: updateForm,
@@ -88,17 +73,6 @@ export function Steps({
     }
   };
 
-  const setCurrentStep = (step: StepsType[number]) => {
-    map.current?.flyTo({
-      center: [step.longitude, step.latitude],
-      zoom: step.zoom,
-      pitch: step.pitch,
-      bearing: step.bearing,
-      duration: 1000,
-    });
-    router.push(`${pathname}?${createQueryString("s", step.id)}`);
-  };
-
   const onAdd = async () => {
     const newStep = await createStepMutation({
       formId: formWithSteps.id,
@@ -110,7 +84,7 @@ export function Steps({
     if (!newStepId || !newStep.data) return;
 
     setDragSteps((prev) => [...prev, newStepId]);
-    setCurrentStep(newStep.data);
+    setCurrentStep(newStep.data.id);
   };
 
   return (
@@ -165,7 +139,7 @@ export function Steps({
                         }
                       )}
                       onClick={() => {
-                        setCurrentStep(step);
+                        setCurrentStep(step.id);
                       }}
                       type="button"
                     >

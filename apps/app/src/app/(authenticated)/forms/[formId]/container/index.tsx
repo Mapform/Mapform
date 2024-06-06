@@ -17,6 +17,7 @@ import {
 import { useCreateQueryString } from "~/lib/create-query-string";
 import { Steps } from "./steps";
 import { Sidebar } from "./sidebar";
+import { ContainerProvider } from "./context";
 
 // TODO. Temporary. Should get initial view state from previous step, or from user location
 const initialViewState = {
@@ -50,10 +51,6 @@ export function Container({ formId }: { formId: string }) {
       return formWithSteps.data;
     },
   });
-  // We hold the steps in its own React state due to this issue: https://github.com/clauderic/dnd-kit/issues/921
-  const [dragSteps, setDragSteps] = useState<string[]>(
-    data?.steps.map((step) => step.id) ?? []
-  );
   const { mutateAsync: updateStepMutation } = useMutation({
     mutationFn: updateStep,
     onMutate: async ({ stepId, data: d }) => {
@@ -103,88 +100,86 @@ export function Container({ formId }: { formId: string }) {
     return null;
   }
 
+  // Radial gradient in case I want to add back bg-[radial-gradient(#e5e7eb_1px,transparent_1px)][background-size:16px_16px]"
   return (
-    // Radial gradient in case I want to add back bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px]"
-    <div className="relative flex flex-col flex-1 bg-gray-50">
-      {mapformLoaded ? null : (
-        <div className="absolute inset-0 flex justify-center items-center">
-          <Spinner variant="dark" />
-        </div>
-      )}
-      <div
-        className={cn(
-          "flex flex-col flex-1  transition-all duration-300 ease-in-out",
-          {
-            invisible: !mapformLoaded,
-            opacity: mapformLoaded ? 1 : 0,
-          }
+    <ContainerProvider formWithSteps={data} map={map}>
+      <div className="relative flex flex-col flex-1 bg-gray-50">
+        {mapformLoaded ? null : (
+          <div className="absolute inset-0 flex justify-center items-center">
+            <Spinner variant="dark" />
+          </div>
         )}
-      >
-        <div className="flex flex-1">
-          {/* MAP */}
-          <div className="p-8 flex-1 flex justify-center">
-            <div className="max-w-screen-lg flex-1 border overflow-hidden">
-              <MapForm
-                currentStep={currentStep}
-                editable
-                mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
-                onDescriptionChange={async (content: { content: any[] }) => {
-                  if (!s) {
-                    return;
-                  }
+        <div
+          className={cn(
+            "flex flex-col flex-1  transition-all duration-300 ease-in-out",
+            {
+              invisible: !mapformLoaded,
+              opacity: mapformLoaded ? 1 : 0,
+            }
+          )}
+        >
+          <div className="flex flex-1">
+            {/* MAP */}
+            <div className="p-8 flex-1 flex justify-center">
+              <div className="max-w-screen-lg flex-1 border overflow-hidden">
+                <MapForm
+                  currentStep={currentStep}
+                  editable
+                  mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
+                  onDescriptionChange={async (content: { content: any[] }) => {
+                    if (!s) {
+                      return;
+                    }
 
-                  await debouncedUpdateStep({
-                    stepId: s,
-                    data: {
-                      description: content,
-                      formId: data.id,
-                    },
-                  });
-                }}
-                onLoad={() => {
-                  setMapformLoaded(true);
-                }}
-                onTitleChange={async (content: string) => {
-                  if (!s) {
-                    return;
-                  }
+                    await debouncedUpdateStep({
+                      stepId: s,
+                      data: {
+                        description: content,
+                        formId: data.id,
+                      },
+                    });
+                  }}
+                  onLoad={() => {
+                    setMapformLoaded(true);
+                  }}
+                  onTitleChange={async (content: string) => {
+                    if (!s) {
+                      return;
+                    }
 
-                  await debouncedUpdateStep({
-                    stepId: s,
-                    data: {
-                      title: content,
-                      formId: data.id,
-                    },
-                  });
-                }}
-                ref={map}
-                setViewState={(evt) => {
-                  setViewState(evt.viewState);
-                }}
-                viewState={viewState}
-              />
+                    await debouncedUpdateStep({
+                      stepId: s,
+                      data: {
+                        title: content,
+                        formId: data.id,
+                      },
+                    });
+                  }}
+                  ref={map}
+                  setViewState={(evt) => {
+                    setViewState(evt.viewState);
+                  }}
+                  viewState={viewState}
+                />
+              </div>
             </div>
+
+            {/* SIDEBAR */}
+            <Sidebar
+              currentStep={currentStep}
+              setViewState={setViewState}
+              viewState={viewState}
+            />
           </div>
 
-          {/* SIDEBAR */}
-          <Sidebar
+          {/* STEPS */}
+          <Steps
             currentStep={currentStep}
-            setDragSteps={setDragSteps}
-            setViewState={setViewState}
+            formWithSteps={data}
             viewState={viewState}
           />
         </div>
-
-        {/* STEPS */}
-        <Steps
-          currentStep={currentStep}
-          dragSteps={dragSteps}
-          formWithSteps={data}
-          map={map}
-          setDragSteps={setDragSteps}
-          viewState={viewState}
-        />
       </div>
-    </div>
+    </ContainerProvider>
   );
 }
