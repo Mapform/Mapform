@@ -1,7 +1,6 @@
 import { type StepWithLocation } from "@mapform/db/extentsions/steps";
 import { type ViewState } from "@mapform/mapform";
 import type { Dispatch, SetStateAction } from "react";
-import { type StepsType } from "~/server/actions/forms/get-form-with-steps/schema";
 import { LocationForm } from "./location-form";
 import { DeleteButton } from "./delete-button";
 
@@ -9,7 +8,7 @@ interface SidebarProps {
   viewState: ViewState;
   setViewState: Dispatch<SetStateAction<ViewState>>;
   currentStep: StepWithLocation | undefined;
-  setDragSteps: React.Dispatch<React.SetStateAction<StepsType>>;
+  setDragSteps: Dispatch<SetStateAction<string[]>>;
 }
 
 export function Sidebar({

@@ -10,7 +10,10 @@ import { Spinner } from "@mapform/ui/components/spinner";
 import { cn } from "@mapform/lib/classnames";
 import { env } from "~/env.mjs";
 import { updateStep } from "~/server/actions/steps/update";
-import { getFormWithSteps } from "~/server/actions/forms/get-form-with-steps";
+import {
+  type FormWithSteps,
+  getFormWithSteps,
+} from "~/server/actions/forms/get-form-with-steps";
 import { useCreateQueryString } from "~/lib/create-query-string";
 import { Steps } from "./steps";
 import { Sidebar } from "./sidebar";
@@ -30,10 +33,6 @@ const initialViewState = {
   },
 };
 
-type FormWithSteps = NonNullable<
-  Awaited<ReturnType<typeof getFormWithSteps>>["data"]
->;
-
 export function Container({ formId }: { formId: string }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -43,18 +42,18 @@ export function Container({ formId }: { formId: string }) {
   const s = searchParams.get("s");
   const [mapformLoaded, setMapformLoaded] = useState(false);
   const map = useRef<MapRef>(null);
-  // We hold the steps in its own React state due to this issue: https://github.com/clauderic/dnd-kit/issues/921
   const { data, error, isLoading } = useQuery({
     queryKey: ["forms", formId],
     queryFn: async () => {
       const formWithSteps = await getFormWithSteps({ formId });
 
-      if (formWithSteps.data) {
-        setDragSteps(formWithSteps.data.steps);
-      }
       return formWithSteps.data;
     },
   });
+  // We hold the steps in its own React state due to this issue: https://github.com/clauderic/dnd-kit/issues/921
+  const [dragSteps, setDragSteps] = useState<string[]>(
+    data?.steps.map((step) => step.id) ?? []
+  );
   const { mutateAsync: updateStepMutation } = useMutation({
     mutationFn: updateStep,
     onMutate: async ({ stepId, data: d }) => {
@@ -75,10 +74,6 @@ export function Container({ formId }: { formId: string }) {
     },
   });
   const debouncedUpdateStep = useDebounce(updateStepMutation, 500);
-
-  const [dragSteps, setDragSteps] = useState<FormWithSteps["steps"]>(
-    data?.steps ?? []
-  );
 
   const currentStep = data?.steps.find((step) => step.id === s);
   const [viewState, setViewState] = useState<ViewState>({
@@ -184,7 +179,7 @@ export function Container({ formId }: { formId: string }) {
         <Steps
           currentStep={currentStep}
           dragSteps={dragSteps}
-          formId={formId}
+          formWithSteps={data}
           map={map}
           setDragSteps={setDragSteps}
           viewState={viewState}

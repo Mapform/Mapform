@@ -30,3 +30,7 @@ export const getFormWithSteps = authAction(
     };
   }
 );
+
+export type FormWithSteps = NonNullable<
+  Awaited<ReturnType<typeof getFormWithSteps>>["data"]
+>;

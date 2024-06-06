@@ -23,24 +23,25 @@ import { type StepsType } from "~/server/actions/forms/get-form-with-steps/schem
 import { createStep } from "~/server/actions/steps/create";
 import { updateForm } from "~/server/actions/forms/update";
 import { useCreateQueryString } from "~/lib/create-query-string";
+import type { FormWithSteps } from "~/server/actions/forms/get-form-with-steps";
 import { Draggable } from "../draggable";
 
 interface StepsProps {
   map: React.RefObject<MapRef>;
-  formId: string;
   viewState: ViewState;
+  formWithSteps: FormWithSteps;
   currentStep: StepWithLocation | undefined;
-  dragSteps: StepsType;
-  setDragSteps: React.Dispatch<React.SetStateAction<StepsType>>;
+  dragSteps: string[];
+  setDragSteps: (steps: string[]) => void;
 }
 
 export function Steps({
   map,
-  formId,
+  formWithSteps,
   viewState,
+  currentStep,
   dragSteps,
   setDragSteps,
-  currentStep,
 }: StepsProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -66,11 +67,9 @@ export function Steps({
 
     if (e.active.id !== e.over.id) {
       const activeStepIndex = dragSteps.findIndex(
-        (step) => step.id === e.active.id
+        (step) => step === e.active.id
       );
-      const overStepIndex = dragSteps.findIndex(
-        (step) => step.id === e.over?.id
-      );
+      const overStepIndex = dragSteps.findIndex((step) => step === e.over?.id);
 
       if (activeStepIndex < 0 || overStepIndex < 0) return;
 
@@ -78,9 +77,9 @@ export function Steps({
       setDragSteps(newStepList);
 
       await updateFormMutation({
-        formId,
+        formId: formWithSteps.id,
         data: {
-          stepOrder: newStepList.map((step) => step.id),
+          stepOrder: newStepList,
         },
       });
     }
@@ -99,7 +98,7 @@ export function Steps({
 
   const onAdd = () => {
     createStepMutation({
-      formId,
+      formId: formWithSteps.id,
       location: viewState,
     });
   };
@@ -130,9 +129,9 @@ export function Steps({
             }}
           >
             {/* STEP NUMBERS */}
-            {dragSteps.map((step) => (
-              <div className="text-sm text-gray-500" key={step.id}>
-                {dragSteps.indexOf(step) + 1}
+            {dragSteps.map((stepId) => (
+              <div className="text-sm text-gray-500" key={stepId}>
+                {dragSteps.indexOf(stepId) + 1}
               </div>
             ))}
 
@@ -141,26 +140,32 @@ export function Steps({
               items={dragSteps}
               strategy={horizontalListSortingStrategy}
             >
-              {dragSteps.map((step) => (
-                <Draggable id={step.id} key={step.id}>
-                  <button
-                    className={cn(
-                      "flex relative px-3 rounded-md text-md h-16 w-full bg-orange-200",
-                      {
-                        "ring-4 ring-orange-500": currentStep?.id === step.id,
-                      }
-                    )}
-                    onClick={() => {
-                      setCurrentStep(step);
-                    }}
-                    type="button"
-                  >
-                    <div className="flex-1 h-full flex justify-center items-center bg-orange-300">
-                      {step.title ?? "Untitled"}
-                    </div>
-                  </button>
-                </Draggable>
-              ))}
+              {dragSteps.map((stepId) => {
+                const step = formWithSteps.steps.find((s) => s.id === stepId);
+
+                if (!step) return null;
+
+                return (
+                  <Draggable id={stepId} key={stepId}>
+                    <button
+                      className={cn(
+                        "flex relative px-3 rounded-md text-md h-16 w-full bg-orange-200",
+                        {
+                          "ring-4 ring-orange-500": currentStep?.id === stepId,
+                        }
+                      )}
+                      onClick={() => {
+                        setCurrentStep(step);
+                      }}
+                      type="button"
+                    >
+                      <div className="flex-1 h-full flex justify-center items-center bg-orange-300">
+                        {step.title || "Untitled"}
+                      </div>
+                    </button>
+                  </Draggable>
+                );
+              })}
             </SortableContext>
           </div>
         </div>
