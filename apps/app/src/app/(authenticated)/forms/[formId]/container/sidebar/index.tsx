@@ -1,20 +1,10 @@
-import { type StepWithLocation } from "@mapform/db/extentsions/steps";
-import { type ViewState } from "@mapform/mapform";
-import type { Dispatch, SetStateAction } from "react";
+import { useContainerContext } from "../context";
 import { LocationForm } from "./location-form";
 import { DeleteButton } from "./delete-button";
 
-interface SidebarProps {
-  viewState: ViewState;
-  setViewState: Dispatch<SetStateAction<ViewState>>;
-  currentStep: StepWithLocation | undefined;
-}
+export function Sidebar() {
+  const { currentStep, setViewState, viewState } = useContainerContext();
 
-export function Sidebar({
-  currentStep,
-  viewState,
-  setViewState,
-}: SidebarProps) {
   if (!currentStep) {
     return <div className="bg-white w-[400px] border-l" />;
   }

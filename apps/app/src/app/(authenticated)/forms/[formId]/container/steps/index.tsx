@@ -14,24 +14,21 @@ import {
 import { cn } from "@mapform/lib/classnames";
 import { Button } from "@mapform/ui/components/button";
 import { Spinner } from "@mapform/ui/components/spinner";
-import type { ViewState } from "@mapform/mapform";
 import { useMutation } from "@tanstack/react-query";
-import { type StepWithLocation } from "@mapform/db/extentsions/steps";
 import { createStep } from "~/server/actions/steps/create";
 import { updateForm } from "~/server/actions/forms/update";
-import type { FormWithSteps } from "~/server/actions/forms/get-form-with-steps";
 import { Draggable } from "../draggable";
 import { useContainerContext } from "../context";
 
-interface StepsProps {
-  viewState: ViewState;
-  formWithSteps: FormWithSteps;
-  currentStep: StepWithLocation | undefined;
-}
-
-export function Steps({ formWithSteps, viewState, currentStep }: StepsProps) {
-  const { dragSteps, setDragSteps, setCurrentStep } = useContainerContext();
-  // const { execute: createStepMutation, status } = useAction(createStep);
+export function Steps() {
+  const {
+    dragSteps,
+    setDragSteps,
+    setCurrentStep,
+    formWithSteps,
+    viewState,
+    currentStep,
+  } = useContainerContext();
   const { mutateAsync: updateFormMutation } = useMutation({
     mutationFn: updateForm,
   });
@@ -84,7 +81,7 @@ export function Steps({ formWithSteps, viewState, currentStep }: StepsProps) {
     if (!newStepId || !newStep.data) return;
 
     setDragSteps((prev) => [...prev, newStepId]);
-    setCurrentStep(newStep.data.id);
+    setCurrentStep(newStepId);
   };
 
   return (
