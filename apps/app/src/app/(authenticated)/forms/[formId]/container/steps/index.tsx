@@ -18,7 +18,7 @@ import { Spinner } from "@mapform/ui/components/spinner";
 import type { MapRef, ViewState } from "@mapform/mapform";
 import { useMutation } from "@tanstack/react-query";
 import { type StepWithLocation } from "@mapform/db/extentsions/steps";
-import { useAction } from "next-safe-action/hooks";
+import type { Dispatch, SetStateAction } from "react";
 import { type StepsType } from "~/server/actions/forms/get-form-with-steps/schema";
 import { createStep } from "~/server/actions/steps/create";
 import { updateForm } from "~/server/actions/forms/update";
@@ -32,7 +32,7 @@ interface StepsProps {
   formWithSteps: FormWithSteps;
   currentStep: StepWithLocation | undefined;
   dragSteps: string[];
-  setDragSteps: (steps: string[]) => void;
+  setDragSteps: Dispatch<SetStateAction<string[]>>;
 }
 
 export function Steps({
@@ -46,9 +46,12 @@ export function Steps({
   const router = useRouter();
   const pathname = usePathname();
   const createQueryString = useCreateQueryString();
-  const { execute: createStepMutation, status } = useAction(createStep);
+  // const { execute: createStepMutation, status } = useAction(createStep);
   const { mutateAsync: updateFormMutation } = useMutation({
     mutationFn: updateForm,
+  });
+  const { mutateAsync: createStepMutation, status } = useMutation({
+    mutationFn: createStep,
   });
 
   /**
@@ -96,11 +99,18 @@ export function Steps({
     router.push(`${pathname}?${createQueryString("s", step.id)}`);
   };
 
-  const onAdd = () => {
-    createStepMutation({
+  const onAdd = async () => {
+    const newStep = await createStepMutation({
       formId: formWithSteps.id,
       location: viewState,
     });
+
+    const newStepId = newStep.data?.id;
+
+    if (!newStepId || !newStep.data) return;
+
+    setDragSteps((prev) => [...prev, newStepId]);
+    setCurrentStep(newStep.data);
   };
 
   return (
@@ -114,12 +124,12 @@ export function Steps({
           <div className="flex flex-col gap-y-2">
             <div className="text-sm font-semibold">STEPS</div>
             <Button
-              disabled={status === "executing"}
+              disabled={status === "pending"}
               onClick={onAdd}
               size="icon"
               variant="secondary"
             >
-              {status === "executing" ? <Spinner variant="dark" /> : "+"}
+              {status === "pending" ? <Spinner variant="dark" /> : "+"}
             </Button>
           </div>
           <div

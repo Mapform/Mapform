@@ -69,7 +69,11 @@ export function stepsExtension() {
                 },
               });
 
-              return newStep;
+              return {
+                ...newStep,
+                latitude,
+                longitude,
+              } as StepWithLocation;
             });
           },
 
