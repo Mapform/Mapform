@@ -5,7 +5,7 @@ import type { MapRef, ViewState } from "@mapform/mapform";
 import { MapForm } from "@mapform/mapform";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useDebounce } from "@mapform/lib/use-debounce";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Spinner } from "@mapform/ui/components/spinner";
 import { cn } from "@mapform/lib/classnames";
 import { env } from "~/env.mjs";
@@ -37,6 +37,7 @@ type FormWithSteps = NonNullable<
 export function Container({ formId }: { formId: string }) {
   const router = useRouter();
   const pathname = usePathname();
+  const queryClient = useQueryClient();
   const searchParams = useSearchParams();
   const createQueryString = useCreateQueryString();
   const s = searchParams.get("s");
@@ -54,11 +55,32 @@ export function Container({ formId }: { formId: string }) {
       return formWithSteps.data;
     },
   });
+  const { mutateAsync: updateStepMutation } = useMutation({
+    mutationFn: updateStep,
+    onMutate: async ({ stepId, data: d }) => {
+      const queryKey = ["forms", d.formId];
+      await queryClient.cancelQueries({ queryKey });
+
+      const prevForm: FormWithSteps = queryClient.getQueryData(queryKey)!;
+      const newForm = {
+        ...prevForm,
+        steps: prevForm.steps.map((step) =>
+          step.id === stepId ? { ...step, ...d } : step
+        ),
+      };
+
+      queryClient.setQueryData(queryKey, () => newForm);
+
+      return { prevForm, newForm };
+    },
+  });
+  const debouncedUpdateStep = useDebounce(updateStepMutation, 500);
+
   const [dragSteps, setDragSteps] = useState<FormWithSteps["steps"]>(
     data?.steps ?? []
   );
 
-  const currentStep = dragSteps.find((step) => step.id === s);
+  const currentStep = data?.steps.find((step) => step.id === s);
   const [viewState, setViewState] = useState<ViewState>({
     latitude: currentStep?.latitude ?? initialViewState.latitude,
     longitude: currentStep?.longitude ?? initialViewState.longitude,
@@ -73,8 +95,6 @@ export function Container({ formId }: { formId: string }) {
       router.push(`${pathname}?${createQueryString("s", data.steps[0].id)}`);
     }
   }, [s, data?.steps, pathname, router, createQueryString]);
-
-  const debouncedUpdateStep = useDebounce(updateStep, 500);
 
   if (isLoading) {
     return <div>Loading...</div>;
