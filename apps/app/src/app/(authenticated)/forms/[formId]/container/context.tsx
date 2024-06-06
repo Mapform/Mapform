@@ -1,4 +1,4 @@
-import { StepWithLocation } from "@mapform/db/extentsions/steps";
+import { type StepWithLocation } from "@mapform/db/extentsions/steps";
 import { useDebounce } from "@mapform/lib/use-debounce";
 import type { ViewState, MapRef } from "@mapform/mapform";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -25,7 +25,7 @@ export interface ContainerContextProps {
   setViewState: Dispatch<SetStateAction<ViewState>>;
   setDragSteps: Dispatch<SetStateAction<string[]>>;
   setCurrentStep: (stepId: string) => void;
-  debouncedUpdateStep: (args: any) => Promise<any>;
+  debouncedUpdateStep: typeof updateStep;
 }
 
 export const ContainerContext = createContext<ContainerContextProps>(

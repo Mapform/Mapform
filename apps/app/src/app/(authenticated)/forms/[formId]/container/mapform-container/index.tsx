@@ -1,4 +1,5 @@
 import { MapForm } from "@mapform/mapform";
+import type { CustomBlock } from "@mapform/mapform/lib/block-note-schema";
 import { env } from "~/env.mjs";
 import { useContainerContext } from "../context";
 
@@ -23,7 +24,7 @@ export function MapFormContainer({
           currentStep={currentStep}
           editable
           mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
-          onDescriptionChange={async (content: { content: any[] }) => {
+          onDescriptionChange={async (content: { content: CustomBlock[] }) => {
             if (!currentStep) {
               return;
             }
