@@ -30,3 +30,11 @@ export async function getInputValues(formSubmissionId: string) {
     },
   });
 }
+
+export async function getSession(formSubmissionId: string) {
+  return prisma.formSubmission.findUnique({
+    where: {
+      id: formSubmissionId,
+    },
+  });
+}

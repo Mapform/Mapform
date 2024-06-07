@@ -10,16 +10,17 @@ import { type DocumentContent } from "@mapform/mapform/lib/block-note-schema";
 import { submitFormStep } from "~/server/actions/submit-form-step";
 import { createFormSubmission } from "~/server/actions/create-form-submission";
 import { env } from "../env.mjs";
-import type { FormWithSteps } from "./getters";
+import type { FormWithSteps } from "./requests";
 
 interface MapProps {
   formWithSteps: NonNullable<FormWithSteps>;
   formValues: ShortTextInputResponse[];
+  sessionId: string | null;
 }
 
 type Step = NonNullable<FormWithSteps>["steps"][number];
 
-export function Map({ formWithSteps, formValues }: MapProps) {
+export function Map({ formWithSteps, formValues, sessionId }: MapProps) {
   const router = useRouter();
   const map = useRef<MapRef>(null);
   const pathname = usePathname();
@@ -68,18 +69,18 @@ export function Map({ formWithSteps, formValues }: MapProps) {
 
   useEffect(() => {
     void (async () => {
-      let session = getCookie("mapform-form-submission");
+      let newSessionId = sessionId;
 
-      if (!session) {
+      if (!newSessionId) {
         const { data } = await createFormSubmission({
           formId: formWithSteps.id,
         });
 
         if (data) {
-          session = data;
+          newSessionId = data;
         }
       }
-      setCurrentSession(session);
+      setCurrentSession(newSessionId);
     })();
   }, []);
 
