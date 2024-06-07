@@ -20,9 +20,9 @@ export function TopBar({ children }: { children?: React.ReactNode }) {
         {({ open }) => (
           <>
             <div className="mx-auto px-4">
-              <div className="flex h-16 justify-between items-center">
+              <div className="flex h-14 justify-between items-center">
                 <div className="flex">
-                  <div className="flex flex-shrink-0 items-center">
+                  <div className="flex flex-shrink-0 items-center mr-6">
                     <Link href="/">
                       <span className="text-xl font-semibold">MapForm</span>
                     </Link>
