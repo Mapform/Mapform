@@ -1,7 +1,13 @@
 "use client";
 
-import type { MapRef, ViewState, ViewStateChangeEvent } from "react-map-gl";
-import Map, { MapProvider, useMap } from "react-map-gl";
+import Map, {
+  type MapRef,
+  type ViewState,
+  type ViewStateChangeEvent,
+  MapProvider,
+  useMap,
+  NavigationControl,
+} from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { forwardRef } from "react";
 import type { Step } from "@mapform/db";
@@ -48,6 +54,7 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
         <div className="max-w-[320px] lg:max-w-[400px] w-full flex-shrink-0 bg-background shadow z-10">
           {currentStep ? (
             <Blocknote
+              defaultFormValues={defaultFormValues}
               description={
                 currentStep.description as { content: CustomBlock[] }
               }
@@ -61,7 +68,6 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
               onStepSubmit={onStepSubmit}
               onTitleChange={onTitleChange}
               title={currentStep.title}
-              defaultFormValues={defaultFormValues}
             />
           ) : null}
         </div>
@@ -73,7 +79,9 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
           onMove={setViewState}
           ref={ref}
           style={{ flex: 1 }}
-        />
+        >
+          <NavigationControl />
+        </Map>
       </div>
     );
   }
