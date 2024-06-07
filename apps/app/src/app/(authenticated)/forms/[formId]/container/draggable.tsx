@@ -24,7 +24,13 @@ export function Draggable({
   };
 
   return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}
+      suppressHydrationWarning
+    >
       {children}
     </div>
   );
