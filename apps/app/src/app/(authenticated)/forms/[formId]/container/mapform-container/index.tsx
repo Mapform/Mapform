@@ -1,9 +1,10 @@
+import dynamic from "next/dynamic";
 import { MapForm } from "@mapform/mapform";
 import type { CustomBlock } from "@mapform/mapform/lib/block-note-schema";
 import { env } from "~/env.mjs";
 import { useContainerContext } from "../context";
 
-export function MapFormContainer({
+function MapFormContainer({
   setMapformLoaded,
 }: {
   setMapformLoaded: (loaded: boolean) => void;
@@ -63,3 +64,6 @@ export function MapFormContainer({
     </div>
   );
 }
+
+// To this to avoid SSR caused by Blocknote / Tiptap
+export default dynamic(() => Promise.resolve(MapFormContainer), { ssr: false });

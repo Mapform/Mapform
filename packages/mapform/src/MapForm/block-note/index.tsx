@@ -56,8 +56,15 @@ export function Blocknote({
   const [uncontrolledTitle, setUncontrolledTitle] = useState<string>(
     title || ""
   );
+
   const editor = useCreateBlockNote({
-    initialContent: description?.content,
+    initialContent: description?.content || [
+      {
+        id: "temp",
+        type: "paragraph",
+        content: [],
+      },
+    ],
     placeholders: {
       default: "Write a description, or press '/' for commands...",
     },

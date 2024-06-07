@@ -38,6 +38,8 @@ export function LocationForm({
     defaultValues: {
       stepId,
       data: {
+        latitude: viewState.latitude,
+        longitude: viewState.longitude,
         zoom: viewState.zoom,
         pitch: viewState.pitch,
         bearing: viewState.bearing,

@@ -8,7 +8,7 @@ import { getFormWithSteps } from "~/server/actions/forms/get-form-with-steps";
 import { Steps } from "./steps";
 import { Sidebar } from "./sidebar";
 import { ContainerProvider } from "./context";
-import { MapFormContainer } from "./mapform-container";
+import MapFormContainer from "./mapform-container";
 
 export function Container({ formId }: { formId: string }) {
   const [mapformLoaded, setMapformLoaded] = useState(false);
