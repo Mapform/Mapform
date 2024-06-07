@@ -35,6 +35,7 @@ export function DeleteButton({ stepId }: DeleteButtonProps) {
           return newDragSteps;
         });
       }}
+      size="sm"
       variant="destructive"
     >
       Delete this step
