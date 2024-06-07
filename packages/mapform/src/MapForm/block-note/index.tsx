@@ -143,6 +143,13 @@ export function Blocknote({
               />
             </BlockNoteView>
           </div>
+          {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions -- Disable a11y checks here */}
+          <div
+            className="flex-1"
+            onClick={() => {
+              editor.focus();
+            }}
+          />
           <div className="mt-auto flex justify-between p-4">
             <div className="gap-2">
               <Button
