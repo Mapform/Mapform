@@ -24,8 +24,8 @@ export function Nav({ form }: { form: Form }) {
     //   href: `/forms/${form.id}/branding`,
     // },
     {
-      name: "Results",
-      href: `/forms/${form.id}/results`,
+      name: "Submissions",
+      href: `/forms/${form.id}/submissions`,
     },
   ];
 
