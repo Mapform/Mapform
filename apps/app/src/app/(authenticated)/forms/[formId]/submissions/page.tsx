@@ -113,7 +113,7 @@ export default async function Submissions({
                     </td>
                     <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                       {/* {formSubmission.form.steps.} */}
-                      {getTotalSubmissionInputs(formSubmission)} /
+                      {getTotalSubmissionInputs(formSubmission)} /{" "}
                       {getTotalFormInputs(formSubmission.form.steps)}
                     </td>
                     <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
