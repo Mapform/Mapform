@@ -18,7 +18,20 @@ export default async function Results({
     },
   });
 
-  console.log(111111, formSubmissions);
-
-  return <div>Results</div>;
+  return (
+    <div>
+      {formSubmissions.map((formSubmission) => (
+        <div className="border-b" key={formSubmission.id}>
+          {formSubmission.shortTextInputResponses.map((response) => (
+            <div key={response.id}>
+              {response.title}: {response.value}
+            </div>
+          ))}
+          {formSubmission.shortTextInputResponses.length === 0 ? (
+            <div>No responses</div>
+          ) : null}
+        </div>
+      ))}
+    </div>
+  );
 }
