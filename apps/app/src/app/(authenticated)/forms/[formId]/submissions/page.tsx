@@ -1,6 +1,7 @@
-import { prisma } from "@mapform/db";
-import { Button } from "@mapform/ui/components/button";
+import { type Step, prisma } from "@mapform/db";
+import { type DocumentContent } from "@mapform/mapform/lib/block-note-schema";
 import { format } from "date-fns";
+import memoize from "lodash.memoize";
 
 export default async function Submissions({
   params,
@@ -18,8 +19,8 @@ export default async function Submissions({
     include: {
       shortTextInputResponses: true,
       form: {
-        select: {
-          version: true,
+        include: {
+          steps: true,
         },
       },
     },
@@ -27,6 +28,30 @@ export default async function Submissions({
       id: "desc",
     },
   });
+
+  const getTotalFormInputs = memoize((steps: Step[]) => {
+    return steps.reduce((total, step) => {
+      const description = step.description as {
+        content?: DocumentContent;
+      } | null;
+
+      if (!description?.content) {
+        return total;
+      }
+
+      return (
+        total +
+        description.content.filter((block) => block.type === "short-text-input")
+          .length
+      );
+    }, 0);
+  });
+
+  const getTotalSubmissionInputs = memoize(
+    (formSubmission: (typeof formSubmissions)[number]) => {
+      return formSubmission.shortTextInputResponses.length;
+    }
+  );
 
   return (
     <div className="px-4 sm:px-6 lg:px-8 mt-12">
@@ -39,11 +64,11 @@ export default async function Submissions({
             A list of all form submissions.
           </p>
         </div>
-        <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+        {/* <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
           <Button size="sm" variant="outline">
             Download CSV
           </Button>
-        </div>
+        </div> */}
       </div>
       <div className="mt-8 flow-root">
         <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -56,12 +81,6 @@ export default async function Submissions({
                     scope="col"
                   >
                     Created On
-                  </th>
-                  <th
-                    className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                    scope="col"
-                  >
-                    Updated on
                   </th>
                   <th
                     className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
@@ -90,43 +109,18 @@ export default async function Submissions({
                       {format(formSubmission.createdAt, "LLLL do, yyyy")}
                     </td>
                     <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                      {format(formSubmission.updatedAt, "LLLL do, yyyy")}
-                    </td>
-                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                       {formSubmission.form.version}
                     </td>
                     <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                      Bar shart
+                      {/* {formSubmission.form.steps.} */}
+                      {getTotalSubmissionInputs(formSubmission)} /
+                      {getTotalFormInputs(formSubmission.form.steps)}
                     </td>
                     <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                       View
                     </td>
                   </tr>
                 ))}
-                {/* {people.map((person) => (
-                  <tr key={person.email}>
-                    <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
-                      {person.name}
-                    </td>
-                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                      {person.title}
-                    </td>
-                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                      {person.email}
-                    </td>
-                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                      {person.role}
-                    </td>
-                    <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
-                      <a
-                        className="text-indigo-600 hover:text-indigo-900"
-                        href="#"
-                      >
-                        Edit<span className="sr-only">, {person.name}</span>
-                      </a>
-                    </td>
-                  </tr>
-                ))} */}
               </tbody>
             </table>
           </div>

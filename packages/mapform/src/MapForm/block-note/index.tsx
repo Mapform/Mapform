@@ -57,8 +57,6 @@ export function Blocknote({
     title || ""
   );
 
-  console.log(1111, description);
-
   const editor = useCreateBlockNote({
     initialContent: description?.content,
     placeholders: {

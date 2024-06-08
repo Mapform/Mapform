@@ -62,6 +62,9 @@ importers:
       date-fns:
         specifier: ^3.6.0
         version: 3.6.0
+      lodash.memoize:
+        specifier: ^4.1.2
+        version: 4.1.2
       lucide-react:
         specifier: ^0.354.0
         version: 0.354.0(react@18.2.0)
@@ -93,6 +96,9 @@ importers:
       '@mapform/typescript-config':
         specifier: workspace:*
         version: link:../../packages/typescript-config
+      '@types/lodash.memoize':
+        specifier: ^4.1.9
+        version: 4.1.9
       '@types/node':
         specifier: ^20
         version: 20.11.24
@@ -330,7 +336,7 @@ importers:
         version: 0.14.0
       '@blocknote/react':
         specifier: ^0.14.0
-        version: 0.14.0(@tiptap/pm@2.2.4)(react-dom@18.2.0)(react@18.2.0)
+        version: 0.14.0(@tiptap/pm@2.4.0)(react-dom@18.2.0)(react@18.2.0)
       '@mapform/db':
         specifier: workspace:*
         version: link:../db
@@ -752,7 +758,7 @@ packages:
       - supports-color
     dev: false
 
-  /@blocknote/react@0.14.0(@tiptap/pm@2.2.4)(react-dom@18.2.0)(react@18.2.0):
+  /@blocknote/react@0.14.0(@tiptap/pm@2.4.0)(react-dom@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-18B/ou/ibRzemN4ZsBi4VsmG6CU3e+bUqcyady/CUJSXLhRMG5EBmt8wu0LrTe6VnhkTmuQA5zc+04Q/rwImbA==}
     peerDependencies:
       react: ^18
@@ -760,8 +766,8 @@ packages:
     dependencies:
       '@blocknote/core': 0.14.0
       '@floating-ui/react': 0.26.12(react-dom@18.2.0)(react@18.2.0)
-      '@tiptap/core': 2.4.0(@tiptap/pm@2.2.4)
-      '@tiptap/react': 2.4.0(@tiptap/core@2.4.0)(@tiptap/pm@2.2.4)(react-dom@18.2.0)(react@18.2.0)
+      '@tiptap/core': 2.4.0(@tiptap/pm@2.4.0)
+      '@tiptap/react': 2.4.0(@tiptap/core@2.4.0)(@tiptap/pm@2.4.0)(react-dom@18.2.0)(react@18.2.0)
       lodash.merge: 4.6.2
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
@@ -2207,14 +2213,6 @@ packages:
     resolution: {integrity: sha512-Y5B4EYyv1j9V8LzeAoOVeTg0LI7Fo5InYKgAjkY1Pu9GjtUwX/EKxNcU7ng3sKr99WEf+bPTcktAeybyMOYo+g==}
     dev: false
 
-  /@tiptap/core@2.4.0(@tiptap/pm@2.2.4):
-    resolution: {integrity: sha512-YJSahk8pkxpCs8SflCZfTnJpE7IPyUWIylfgXM2DefjRQa5DZ+c6sNY0s/zbxKYFQ6AuHVX40r9pCfcqHChGxQ==}
-    peerDependencies:
-      '@tiptap/pm': ^2.0.0
-    dependencies:
-      '@tiptap/pm': 2.2.4
-    dev: false
-
   /@tiptap/core@2.4.0(@tiptap/pm@2.4.0):
     resolution: {integrity: sha512-YJSahk8pkxpCs8SflCZfTnJpE7IPyUWIylfgXM2DefjRQa5DZ+c6sNY0s/zbxKYFQ6AuHVX40r9pCfcqHChGxQ==}
     peerDependencies:
@@ -2231,14 +2229,14 @@ packages:
       '@tiptap/core': 2.4.0(@tiptap/pm@2.4.0)
     dev: false
 
-  /@tiptap/extension-bubble-menu@2.4.0(@tiptap/core@2.4.0)(@tiptap/pm@2.2.4):
+  /@tiptap/extension-bubble-menu@2.4.0(@tiptap/core@2.4.0)(@tiptap/pm@2.4.0):
     resolution: {integrity: sha512-s99HmttUtpW3rScWq8rqk4+CGCwergNZbHLTkF6Rp6TSboMwfp+rwL5Q/JkcAG9KGLso1vGyXKbt1xHOvm8zMw==}
     peerDependencies:
       '@tiptap/core': ^2.0.0
       '@tiptap/pm': ^2.0.0
     dependencies:
-      '@tiptap/core': 2.4.0(@tiptap/pm@2.2.4)
-      '@tiptap/pm': 2.2.4
+      '@tiptap/core': 2.4.0(@tiptap/pm@2.4.0)
+      '@tiptap/pm': 2.4.0
       tippy.js: 6.3.7
     dev: false
 
@@ -2282,14 +2280,14 @@ packages:
       '@tiptap/pm': 2.4.0
     dev: false
 
-  /@tiptap/extension-floating-menu@2.4.0(@tiptap/core@2.4.0)(@tiptap/pm@2.2.4):
+  /@tiptap/extension-floating-menu@2.4.0(@tiptap/core@2.4.0)(@tiptap/pm@2.4.0):
     resolution: {integrity: sha512-vLb9v+htbHhXyty0oaXjT3VC8St4xuGSHWUB9GuAJAQ+NajIO6rBPbLUmm9qM0Eh2zico5mpSD1Qtn5FM6xYzg==}
     peerDependencies:
       '@tiptap/core': ^2.0.0
       '@tiptap/pm': ^2.0.0
     dependencies:
-      '@tiptap/core': 2.4.0(@tiptap/pm@2.2.4)
-      '@tiptap/pm': 2.2.4
+      '@tiptap/core': 2.4.0(@tiptap/pm@2.4.0)
+      '@tiptap/pm': 2.4.0
       tippy.js: 6.3.7
     dev: false
 
@@ -2406,29 +2404,6 @@ packages:
       '@tiptap/core': 2.4.0(@tiptap/pm@2.4.0)
     dev: false
 
-  /@tiptap/pm@2.2.4:
-    resolution: {integrity: sha512-Po0klR165zgtinhVp1nwMubjyKx6gAY9kH3IzcniYLCkqhPgiqnAcCr61TBpp4hfK8YURBS4ihvCB1dyfCyY8A==}
-    dependencies:
-      prosemirror-changeset: 2.2.1
-      prosemirror-collab: 1.3.1
-      prosemirror-commands: 1.5.2
-      prosemirror-dropcursor: 1.8.1
-      prosemirror-gapcursor: 1.3.2
-      prosemirror-history: 1.3.2
-      prosemirror-inputrules: 1.4.0
-      prosemirror-keymap: 1.2.2
-      prosemirror-markdown: 1.12.0
-      prosemirror-menu: 1.2.4
-      prosemirror-model: 1.19.4
-      prosemirror-schema-basic: 1.2.2
-      prosemirror-schema-list: 1.3.0
-      prosemirror-state: 1.4.3
-      prosemirror-tables: 1.3.7
-      prosemirror-trailing-node: 2.0.8(prosemirror-model@1.19.4)(prosemirror-state@1.4.3)(prosemirror-view@1.33.1)
-      prosemirror-transform: 1.8.0
-      prosemirror-view: 1.33.1
-    dev: false
-
   /@tiptap/pm@2.4.0:
     resolution: {integrity: sha512-B1HMEqGS4MzIVXnpgRZDLm30mxDWj51LkBT/if1XD+hj5gm8B9Q0c84bhvODX6KIs+c6z+zsY9VkVu8w9Yfgxg==}
     dependencies:
@@ -2452,7 +2427,7 @@ packages:
       prosemirror-view: 1.33.7
     dev: false
 
-  /@tiptap/react@2.4.0(@tiptap/core@2.4.0)(@tiptap/pm@2.2.4)(react-dom@18.2.0)(react@18.2.0):
+  /@tiptap/react@2.4.0(@tiptap/core@2.4.0)(@tiptap/pm@2.4.0)(react-dom@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-baxnIr6Dy+5iGagOEIKFeHzdl1ZRa6Cg+SJ3GDL/BVLpO6KiCM3Mm5ymB726UKP1w7icrBiQD2fGY3Bx8KaiSA==}
     peerDependencies:
       '@tiptap/core': ^2.0.0
@@ -2460,10 +2435,10 @@ packages:
       react: ^17.0.0 || ^18.0.0
       react-dom: ^17.0.0 || ^18.0.0
     dependencies:
-      '@tiptap/core': 2.4.0(@tiptap/pm@2.2.4)
-      '@tiptap/extension-bubble-menu': 2.4.0(@tiptap/core@2.4.0)(@tiptap/pm@2.2.4)
-      '@tiptap/extension-floating-menu': 2.4.0(@tiptap/core@2.4.0)(@tiptap/pm@2.2.4)
-      '@tiptap/pm': 2.2.4
+      '@tiptap/core': 2.4.0(@tiptap/pm@2.4.0)
+      '@tiptap/extension-bubble-menu': 2.4.0(@tiptap/core@2.4.0)(@tiptap/pm@2.4.0)
+      '@tiptap/extension-floating-menu': 2.4.0(@tiptap/core@2.4.0)(@tiptap/pm@2.4.0)
+      '@tiptap/pm': 2.4.0
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
     dev: false
@@ -2576,6 +2551,16 @@ packages:
   /@types/keygrip@1.0.6:
     resolution: {integrity: sha512-lZuNAY9xeJt7Bx4t4dx0rYCDqGPW8RXhQZK1td7d4H6E9zYbLoOtjBvfwdTKpsyxQI/2jv+armjX/RW+ZNpXOQ==}
     dev: false
+
+  /@types/lodash.memoize@4.1.9:
+    resolution: {integrity: sha512-glY1nQuoqX4Ft8Uk+KfJudOD7DQbbEDF6k9XpGncaohW3RW4eSWBlx6AA0fZCrh40tZcQNH4jS/Oc59J6Eq+aw==}
+    dependencies:
+      '@types/lodash': 4.17.5
+    dev: true
+
+  /@types/lodash@4.17.5:
+    resolution: {integrity: sha512-MBIOHVZqVqgfro1euRDWX7OO0fBVUUMrN6Pwm8LQsz8cWhEpihlvR70ENj3f40j58TNxZaWv2ndSkInykNBBJw==}
+    dev: true
 
   /@types/mapbox-gl@3.1.0:
     resolution: {integrity: sha512-hI6cQDjw1bkJw7MC/eHMqq5TWUamLwsujnUUeiIX2KDRjxRNSYMjnHz07+LATz9I9XIsKumOtUz4gRYnZOJ/FA==}
@@ -5577,6 +5562,10 @@ packages:
     resolution: {integrity: sha512-oSXzaWypCMHkPC3NvBEaPHf0KsA5mvPrOPgQWDsbg8n7orZ290M0BmC/jgRZ4vcJ6DTAhjrsSYgdsW/F+MFOBA==}
     dev: true
 
+  /lodash.memoize@4.1.2:
+    resolution: {integrity: sha512-t7j+NzmgnQzTAYXcsHYLgimltOV1MXHtlOWf6GjL9Kj8GK5FInw5JotxvbOs+IvV1/Dzo04/fCGfLVs7aXb4Ag==}
+    dev: false
+
   /lodash.merge@4.6.2:
     resolution: {integrity: sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==}
 
@@ -6763,12 +6752,6 @@ packages:
       prosemirror-state: 1.4.3
     dev: false
 
-  /prosemirror-model@1.19.4:
-    resolution: {integrity: sha512-RPmVXxUfOhyFdayHawjuZCxiROsm9L4FCUA6pWI+l7n2yCBsWy9VpdE1hpDHUS8Vad661YLY9AzqfjLhAKQ4iQ==}
-    dependencies:
-      orderedmap: 2.1.1
-    dev: false
-
   /prosemirror-model@1.21.1:
     resolution: {integrity: sha512-IVBAuMqOfltTr7yPypwpfdGT+6rGAteVOw2FO6GEvCGGa1ZwxLseqC1Eax/EChDvG/xGquB2d/hLdgh3THpsYg==}
     dependencies:
@@ -6807,20 +6790,6 @@ packages:
       prosemirror-view: 1.33.7
     dev: false
 
-  /prosemirror-trailing-node@2.0.8(prosemirror-model@1.19.4)(prosemirror-state@1.4.3)(prosemirror-view@1.33.1):
-    resolution: {integrity: sha512-ujRYhSuhQb1Jsarh1IHqb2KoSnRiD7wAMDGucP35DN7j5af6X7B18PfdPIrbwsPTqIAj0fyOvxbuPsWhNvylmA==}
-    peerDependencies:
-      prosemirror-model: ^1.19.0
-      prosemirror-state: ^1.4.2
-      prosemirror-view: ^1.31.2
-    dependencies:
-      '@remirror/core-constants': 2.0.2
-      escape-string-regexp: 4.0.0
-      prosemirror-model: 1.19.4
-      prosemirror-state: 1.4.3
-      prosemirror-view: 1.33.1
-    dev: false
-
   /prosemirror-trailing-node@2.0.8(prosemirror-model@1.21.1)(prosemirror-state@1.4.3)(prosemirror-view@1.33.7):
     resolution: {integrity: sha512-ujRYhSuhQb1Jsarh1IHqb2KoSnRiD7wAMDGucP35DN7j5af6X7B18PfdPIrbwsPTqIAj0fyOvxbuPsWhNvylmA==}
     peerDependencies:
@@ -6835,24 +6804,10 @@ packages:
       prosemirror-view: 1.33.7
     dev: false
 
-  /prosemirror-transform@1.8.0:
-    resolution: {integrity: sha512-BaSBsIMv52F1BVVMvOmp1yzD3u65uC3HTzCBQV1WDPqJRQ2LuHKcyfn0jwqodo8sR9vVzMzZyI+Dal5W9E6a9A==}
-    dependencies:
-      prosemirror-model: 1.19.4
-    dev: false
-
   /prosemirror-transform@1.9.0:
     resolution: {integrity: sha512-5UXkr1LIRx3jmpXXNKDhv8OyAOeLTGuXNwdVfg8x27uASna/wQkr9p6fD3eupGOi4PLJfbezxTyi/7fSJypXHg==}
     dependencies:
       prosemirror-model: 1.21.1
-    dev: false
-
-  /prosemirror-view@1.33.1:
-    resolution: {integrity: sha512-62qkYgSJIkwIMMCpuGuPzc52DiK1Iod6TWoIMxP4ja6BTD4yO8kCUL64PZ/WhH/dJ9fW0CDO39FhH1EMyhUFEg==}
-    dependencies:
-      prosemirror-model: 1.19.4
-      prosemirror-state: 1.4.3
-      prosemirror-transform: 1.8.0
     dev: false
 
   /prosemirror-view@1.33.7:
