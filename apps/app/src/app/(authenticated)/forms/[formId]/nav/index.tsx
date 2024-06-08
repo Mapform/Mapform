@@ -19,10 +19,10 @@ export function Nav({ form }: { form: Form }) {
       name: "Create",
       href: `/forms/${form.id}`,
     },
-    {
-      name: "Branding",
-      href: `/forms/${form.id}/branding`,
-    },
+    // {
+    //   name: "Branding",
+    //   href: `/forms/${form.id}/branding`,
+    // },
     {
       name: "Results",
       href: `/forms/${form.id}/results`,

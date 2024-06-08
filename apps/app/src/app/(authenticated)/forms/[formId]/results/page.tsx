@@ -28,7 +28,7 @@ export default async function Results({
             </div>
           ))}
           {formSubmission.shortTextInputResponses.length === 0 ? (
-            <div>No responses</div>
+            <div>Empty</div>
           ) : null}
         </div>
       ))}
