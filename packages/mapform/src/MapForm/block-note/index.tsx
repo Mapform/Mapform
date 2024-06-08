@@ -57,14 +57,10 @@ export function Blocknote({
     title || ""
   );
 
+  console.log(1111, description);
+
   const editor = useCreateBlockNote({
-    initialContent: description?.content || [
-      {
-        id: "temp",
-        type: "paragraph",
-        content: [],
-      },
-    ],
+    initialContent: description?.content,
     placeholders: {
       default: "Write a description, or press '/' for commands...",
     },
