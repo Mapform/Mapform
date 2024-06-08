@@ -11,15 +11,11 @@
     "lint": "eslint . --max-warnings 0"
   },
   "dependencies": {
-    "@blocknote/core": "^0.12.4",
-    "@blocknote/react": "^0.12.4",
+    "@blocknote/core": "^0.14.0",
+    "@blocknote/react": "^0.14.0",
     "@mapform/db": "workspace:*",
     "@mapform/lib": "workspace:*",
     "@mapform/ui": "workspace:*",
-    "@tiptap/extension-placeholder": "^2.2.4",
-    "@tiptap/pm": "^2.2.4",
-    "@tiptap/react": "^2.2.4",
-    "@tiptap/starter-kit": "^2.2.4",
     "@types/mapbox-gl": "^3.1.0",
     "lucide-react": "^0.354.0",
     "mapbox-gl": "^3.2.0",
