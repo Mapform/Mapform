@@ -132,10 +132,10 @@ model Step {
 }
 
 model FormSubmission {
-    id                     String                   @id @default(uuid())
-    formId                 String
-    form                   Form                     @relation(fields: [formId], references: [id])
-    shortTextInputResponse ShortTextInputResponse[]
+    id                      String                   @id @default(uuid())
+    formId                  String
+    form                    Form                     @relation(fields: [formId], references: [id])
+    shortTextInputResponses ShortTextInputResponse[]
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt

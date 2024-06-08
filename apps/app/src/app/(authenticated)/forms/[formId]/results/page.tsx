@@ -7,11 +7,18 @@ export default async function Results({
 }) {
   const formSubmissions = await prisma.formSubmission.findMany({
     where: {
-      formId: params.formId,
+      form: {
+        draftForm: {
+          id: params.formId,
+        },
+      },
+    },
+    include: {
+      shortTextInputResponses: true,
     },
   });
 
-  console.log(formSubmissions);
+  console.log(111111, formSubmissions);
 
   return <div>Results</div>;
 }
