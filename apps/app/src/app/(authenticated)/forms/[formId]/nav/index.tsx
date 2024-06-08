@@ -1,6 +1,5 @@
 "use client";
 
-import { type Form } from "@mapform/db";
 import { usePathname } from "next/navigation";
 import { useAction } from "next-safe-action/hooks";
 import { Button } from "@mapform/ui/components/button";
@@ -9,6 +8,7 @@ import { Spinner } from "@mapform/ui/components/spinner";
 import { cn } from "@mapform/lib/classnames";
 import { TopBar } from "~/components/top-bar";
 import { publishForm } from "~/server/actions/forms/publish";
+import { type Form } from "../requests";
 
 export function Nav({ form }: { form: Form }) {
   const pathname = usePathname();
@@ -59,9 +59,9 @@ export function Nav({ form }: { form: Form }) {
         
         */}
         <div className="flex gap-2">
-          {form.publishedFormId ? (
+          {form._count.formVersions > 0 ? (
             <Clipboard
-              clipboardText={`http://localhost:3001/${form.publishedFormId}`}
+              clipboardText={`http://localhost:3001/${form.id}`}
               copiedText="Copied!"
               copyText="Copy link"
               size="sm"

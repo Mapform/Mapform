@@ -1,5 +1,5 @@
-import { prisma } from "@mapform/db";
 import { Nav } from "./nav";
+import { getForm } from "./requests";
 
 export default async function Layout({
   children,
@@ -8,11 +8,7 @@ export default async function Layout({
   children: React.ReactNode;
   params: { formId: string };
 }) {
-  const form = await prisma.form.findUnique({
-    where: {
-      id: params.formId,
-    },
-  });
+  const form = await getForm(params.formId);
 
   if (!form) {
     return null;

@@ -5,10 +5,21 @@ import { revalidatePath } from "next/cache";
 import { authAction } from "~/lib/safe-action";
 import { publishFormSchema } from "./schema";
 
+/**
+ * When we publish, we always create a new form version. By keeping track of
+ * version history, we can allow users to revert to previous versions, and we
+ * can show more detailed submission results.
+ */
 export const publishForm = authAction(publishFormSchema, async ({ formId }) => {
   const draftForm = await prisma.form.findUnique({
     where: {
       id: formId,
+      isDraft: true,
+    },
+    include: {
+      _count: {
+        select: { formVersions: true },
+      },
     },
   });
 
@@ -20,91 +31,46 @@ export const publishForm = authAction(publishFormSchema, async ({ formId }) => {
     formId: draftForm.id,
   });
 
-  // TODO: Wrap this in a transaction
-  // TODO: Validate that the form belongs to the user
+  /**
+   * TODO: Since step.createWithLocation is custom, Prisma transactions don't
+   * work here. Instead, I should manually handle the case where one of the
+   * steps fails to create.
+   */
+  const newPublishedForm = await prisma.form.create({
+    data: {
+      name: draftForm.name,
+      slug: draftForm.slug,
+      stepOrder: draftForm.stepOrder,
+      workspaceId: draftForm.workspaceId,
+      isDraft: false,
+      draftFormId: draftForm.id,
+      version: draftForm._count.formVersions + 1,
+    },
+  });
 
-  if (draftForm.publishedFormId) {
-    await prisma.form.update({
-      where: {
-        id: draftForm.publishedFormId,
-      },
-      data: {
-        stepOrder: [],
-        steps: {
-          deleteMany: {},
-        },
-      },
-    });
+  await Promise.all(
+    steps.map((step) => {
+      return prisma.step.createWithLocation({
+        formId: newPublishedForm.id,
+        zoom: step.zoom,
+        pitch: step.pitch,
+        bearing: step.bearing,
+        latitude: step.latitude,
+        longitude: step.longitude,
+        title: step.title,
+        description: step.description || undefined,
+      });
+    })
+  );
 
-    /**
-     * TODO: Improve this
-     *
-     * Synchronously create the steps for the published form. We need to do this
-     * so that the step order is correct. This is pretty slow though, and we can
-     * prob improve this, perhaps by moving the logic to update the step order
-     * from outside the createWithLocation func.
-     */
-    await steps.reduce(
-      (acc, step) =>
-        acc.then(() => {
-          return prisma.step.createWithLocation({
-            formId: draftForm.publishedFormId!,
-            zoom: step.zoom,
-            pitch: step.pitch,
-            bearing: step.bearing,
-            latitude: step.latitude,
-            longitude: step.longitude,
-            title: step.title,
-            description: step.description || undefined,
-          });
-        }),
-      Promise.resolve()
-    );
-
-    await prisma.form.update({
-      where: {
-        id: draftForm.id,
-      },
-      data: {
-        isDirty: false,
-      },
-    });
-  } else {
-    const publishedForm = await prisma.form.create({
-      data: {
-        ...draftForm,
-        isPublished: true,
-        id: undefined,
-      },
-    });
-
-    await Promise.all(
-      steps.map((step) => {
-        return prisma.step.createWithLocation({
-          formId: publishedForm.id,
-          zoom: step.zoom,
-          pitch: step.pitch,
-          bearing: step.bearing,
-          latitude: step.latitude,
-          longitude: step.longitude,
-          title: step.title,
-          description: step.description || undefined,
-        });
-      })
-    );
-
-    await prisma.form.update({
-      where: {
-        id: draftForm.id,
-      },
-      data: {
-        publishedFormId: publishedForm.id,
-        isDirty: false,
-      },
-    });
-  }
-
-  // Crearte a new published form, or update the existing one
+  await prisma.form.update({
+    where: {
+      id: draftForm.id,
+    },
+    data: {
+      isDirty: false,
+    },
+  });
 
   revalidatePath("/");
 });

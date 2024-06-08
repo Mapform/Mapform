@@ -17,6 +17,14 @@ export default async function Submissions({
     },
     include: {
       shortTextInputResponses: true,
+      form: {
+        select: {
+          version: true,
+        },
+      },
+    },
+    orderBy: {
+      id: "desc",
     },
   });
 
@@ -59,6 +67,12 @@ export default async function Submissions({
                     className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
                     scope="col"
                   >
+                    Form Version
+                  </th>
+                  <th
+                    className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                    scope="col"
+                  >
                     Completion
                   </th>
                   <th
@@ -77,6 +91,9 @@ export default async function Submissions({
                     </td>
                     <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                       {format(formSubmission.updatedAt, "LLLL do, yyyy")}
+                    </td>
+                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                      {formSubmission.form.version}
                     </td>
                     <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                       Bar shart
