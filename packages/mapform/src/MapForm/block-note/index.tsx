@@ -11,7 +11,12 @@ import {
   useCreateBlockNote,
 } from "@blocknote/react";
 import "@blocknote/react/style.css";
-import { TextIcon, ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+import {
+  TextIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  ImageIcon,
+} from "lucide-react";
 import { Button } from "@mapform/ui/components/button";
 import { Form, useForm, zodResolver } from "@mapform/ui/components/form";
 import { type FormSchema } from "@mapform/lib/schemas/form-step-schema";
@@ -72,17 +77,21 @@ export function Blocknote({
         type: "short-text-input",
       });
     },
-    aliases: [
-      "alert",
-      "notification",
-      "emphasize",
-      "warning",
-      "error",
-      "info",
-      "success",
-    ],
-    group: "Other",
+    aliases: ["input", "short-text"],
+    group: "Inputs",
     icon: <TextIcon />,
+  });
+
+  const insertImage = (edtr: typeof schema.BlockNoteEditor) => ({
+    title: "Image",
+    onItemClick: () => {
+      insertOrUpdateBlock(edtr, {
+        type: "image",
+      });
+    },
+    aliases: ["photo"],
+    group: "Media",
+    icon: <ImageIcon />,
   });
 
   const onSubmit = (data: FormSchema) => {
@@ -136,6 +145,7 @@ export function Blocknote({
                     [
                       ...getDefaultReactSlashMenuItems(editor),
                       insertShortTextInput(editor),
+                      insertImage(editor),
                     ],
                     query
                   );
