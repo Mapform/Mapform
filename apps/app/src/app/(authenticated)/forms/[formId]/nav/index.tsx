@@ -31,12 +31,12 @@ export function Nav({ form }: { form: Form }) {
 
   return (
     <TopBar>
-      <div className="flex justify-between items-center">
+      <div className="grid grid-cols-3 items-center">
         {/* LEFT */}
         <div className="text-sm text-gray-700 font-semibold">{form.name}</div>
 
         {/* CENTER */}
-        <div className="mt-0.5 space-x-4">
+        <div className="mt-5 space-x-4 flex justify-center">
           {tabs.map((tab) => (
             <a
               className={cn(
@@ -53,12 +53,8 @@ export function Nav({ form }: { form: Form }) {
           ))}
         </div>
 
-        {/* RIGHT
-        
-        
-        
-        */}
-        <div className="flex gap-2">
+        {/* RIGHT */}
+        <div className="flex gap-2 justify-end">
           {form._count.formVersions > 0 ? (
             <Clipboard
               clipboardText={`http://localhost:3001/${form.id}`}
