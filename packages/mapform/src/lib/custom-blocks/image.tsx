@@ -8,7 +8,7 @@ import { Input } from "@mapform/ui/components/input";
 import { Switch } from "@mapform/ui/components/switch";
 import { EllipsisIcon, ImageIcon, ImageOffIcon } from "lucide-react";
 import { Label } from "@mapform/ui/components/label";
-import { useStepContext } from "../../mapform/block-note/context";
+import { useMapFormContext } from "../../mapform/context";
 
 export const Image = createReactBlockSpec(
   {
@@ -23,9 +23,36 @@ export const Image = createReactBlockSpec(
   },
   {
     render: ({ block, editor }) => {
-      const { editable } = useStepContext();
+      const { editable, onImageUpload } = useMapFormContext();
+
+      const onFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        console.log(11111, e.target.files?.[0]);
+
+        if (onImageUpload) {
+          const image = await onImageUpload(e.target.files?.[0] as File);
+
+          if (!image) {
+            return;
+          }
+
+          console.log(111111, image);
+
+          editor.updateBlock(block, {
+            type: "image",
+            props: { imageUrl: image },
+          });
+        }
+      };
 
       if (editable) {
+        if (block.props.imageUrl) {
+          return (
+            <div>
+              <img alt="Image" src={block.props.imageUrl} />
+            </div>
+          );
+        }
+
         return (
           <Popover>
             <PopoverTrigger className="w-full">
@@ -35,7 +62,7 @@ export const Image = createReactBlockSpec(
               </div>
             </PopoverTrigger>
             <PopoverContent>
-              <Input type="file" />
+              <Input onChange={onFileChange} type="file" />
             </PopoverContent>
           </Popover>
         );
@@ -51,7 +78,7 @@ export const Image = createReactBlockSpec(
 
       return (
         <div>
-          <img src={block.props.imageUrl} alt="Image" />
+          <img alt="Image" src={block.props.imageUrl} />
         </div>
       );
     },
