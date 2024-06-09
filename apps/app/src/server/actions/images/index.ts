@@ -1,29 +1,22 @@
 "use server";
 
 import { put } from "@vercel/blob";
-import { authAction } from "~/lib/safe-action";
 import { uploadImageSchema } from "./schema";
 
-// export const uploadImage = authAction(uploadImageSchema, async ({ image }) => {
-//   console.log(111111, image);
+export const uploadImage = async (formData: FormData) => {
+  const { data, error } = uploadImageSchema.safeParse({
+    image: formData.get("image"),
+  });
 
-//   if (!image) {
-//     throw new Error("No image provided.");
-//   }
+  console.log(1111, data, error);
 
-//   console.log(22222);
+  if (error) {
+    throw new Error("Invalid image");
+  }
 
-// return put(image.name, image, {
-//   access: "public",
-// });
-// });
-
-export const uploadImage = async (data: any) => {
-  const image = data.get("image");
+  const image = data.image as File;
 
   return put(image.name, image, {
     access: "public",
   });
-  // const { name, age, likesPizza } = schema.parse(await request.formData());
-  // do something with parsed data
 };

@@ -26,16 +26,18 @@ export const Image = createReactBlockSpec(
       const { editable, onImageUpload } = useMapFormContext();
 
       const onFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        console.log(11111, e.target.files?.[0]);
+        const file = e.target.files?.[0];
+
+        if (!file) {
+          return;
+        }
 
         if (onImageUpload) {
-          const image = await onImageUpload(e.target.files?.[0] as File);
+          const image = await onImageUpload(file);
 
           if (!image) {
             return;
           }
-
-          console.log(111111, image);
 
           editor.updateBlock(block, {
             type: "image",
