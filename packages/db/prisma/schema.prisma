@@ -95,24 +95,26 @@ model Workspace {
 }
 
 model Form {
-    id              String           @id @default(uuid())
-    name            String
-    slug            String
-    isPublished     Boolean          @default(false)
-    isDirty         Boolean          @default(false)
-    stepOrder       String[]
-    steps           Step[]           @relation(name: "Steps")
-    workspaceId     String
-    workspace       Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-    formSubmission  FormSubmission[]
-    publishedFormId String?          @unique
-    publishedForm   Form?            @relation("PublishedVersion", fields: [publishedFormId], references: [id])
-    draftForm       Form?            @relation("PublishedVersion")
+    id             String           @id @default(uuid())
+    name           String
+    slug           String
+    isDraft        Boolean          @default(false)
+    isDirty        Boolean          @default(false)
+    isClosed       Boolean          @default(false)
+    stepOrder      String[]
+    steps          Step[]           @relation(name: "Steps")
+    workspaceId    String
+    workspace      Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+    formSubmission FormSubmission[]
+    draftFormId    String?
+    draftForm      Form?            @relation("FormVersions", fields: [draftFormId], references: [id])
+    formVersions   Form[]           @relation("FormVersions")
+    version        Int?
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
-    @@unique([workspaceId, slug, isPublished])
+    @@unique([workspaceId, slug, version])
 }
 
 model Step {
@@ -132,10 +134,10 @@ model Step {
 }
 
 model FormSubmission {
-    id                     String                   @id @default(uuid())
-    formId                 String
-    form                   Form                     @relation(fields: [formId], references: [id])
-    shortTextInputResponse ShortTextInputResponse[]
+    id                      String                   @id @default(uuid())
+    formId                  String
+    form                    Form                     @relation(fields: [formId], references: [id])
+    shortTextInputResponses ShortTextInputResponse[]
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt

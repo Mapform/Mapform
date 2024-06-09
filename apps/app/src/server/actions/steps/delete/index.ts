@@ -19,7 +19,7 @@ export const deleteStep = authAction(
       },
     });
 
-    if (!userStep) {
+    if (!userStep?.formId) {
       throw new Error("User does not have access to this organization.");
     }
 
@@ -28,6 +28,15 @@ export const deleteStep = authAction(
      */
     await prisma.step.deleteWithLocation({
       stepId,
+    });
+
+    await prisma.form.update({
+      where: {
+        id: userStep.formId,
+      },
+      data: {
+        isDirty: true,
+      },
     });
 
     revalidatePath("/");

@@ -1,27 +1,48 @@
 import React from "react";
 import { cookies } from "next/headers";
-import { type ShortTextInputResponse } from "@mapform/db";
+import { type FormSubmission, type ShortTextInputResponse } from "@mapform/db";
 import { Map } from "./map";
-import { getFormWithSteps, getInputValues } from "./getters";
+import {
+  getFormWithSteps,
+  getFormWithStepsFromDraftId,
+  getInputValues,
+  getSession,
+} from "./requests";
 
 export default async function Page({ params }: { params: { formId: string } }) {
-  const formWithSteps = await getFormWithSteps(params.formId);
   const cookieStore = cookies();
-  const session = cookieStore.get("mapform-form-submission");
+  const cookie = cookieStore.get("mapform-form-submission");
   const formValues: ShortTextInputResponse[] = [];
+  let session: FormSubmission | null = null;
+  let formWithSteps = null;
 
-  if (session) {
-    const inputValues = await getInputValues(session.value);
-    formValues.push(...inputValues);
+  if (cookie) {
+    session = await getSession(cookie.value);
+
+    if (session) {
+      formWithSteps = await getFormWithSteps(session.formId);
+      const inputValues = await getInputValues(session.id);
+      formValues.push(...inputValues);
+    }
   }
 
   if (!formWithSteps) {
-    return <div>Form not found</div>;
+    formWithSteps = await getFormWithStepsFromDraftId(params.formId);
+
+    if (!formWithSteps) {
+      return <div>Form not found</div>;
+    }
   }
 
   if (!formWithSteps.steps.length) {
     return <div>Form has no steps</div>;
   }
 
-  return <Map formValues={formValues} formWithSteps={formWithSteps} />;
+  return (
+    <Map
+      formValues={formValues}
+      formWithSteps={formWithSteps}
+      sessionId={session?.id || null}
+    />
+  );
 }

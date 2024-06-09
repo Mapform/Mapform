@@ -18,7 +18,7 @@ export default async function Organization({
     include: {
       forms: {
         where: {
-          isPublished: false,
+          isDraft: true,
         },
         include: {
           _count: {
