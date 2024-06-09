@@ -18,7 +18,7 @@ export function getFormSubmissions({ formId }: { formId: string }) {
       },
     },
     orderBy: {
-      id: "desc",
+      createdAt: "desc",
     },
   });
 }

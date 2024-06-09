@@ -7,7 +7,7 @@ export async function getFormWithStepsFromDraftId(formId: string) {
     await prisma.form.findMany({
       where: { draftFormId: formId },
       orderBy: {
-        id: "desc",
+        createdAt: "desc",
       },
       take: 1,
     })
