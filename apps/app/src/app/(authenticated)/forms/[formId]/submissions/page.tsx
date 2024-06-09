@@ -33,7 +33,9 @@ export default async function Submissions({
 
   const getTotalSubmissionInputs = memoize(
     (formSubmission: (typeof formSubmissions)[number]) => {
-      return formSubmission.shortTextInputResponses.length;
+      return formSubmission.shortTextInputResponses.filter(
+        (r) => r.value !== ""
+      ).length;
     }
   );
 
