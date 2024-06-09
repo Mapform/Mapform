@@ -1,34 +1,17 @@
-import { type Step, prisma } from "@mapform/db";
+import { type Step } from "@mapform/db";
 import { type DocumentContent } from "@mapform/mapform/lib/block-note-schema";
 import { ProgressBar } from "@mapform/ui/components/progress-bar";
 import { format } from "date-fns";
 import memoize from "lodash.memoize";
+import { ResultsDialog } from "./results-dialog";
+import { getFormSubmissions } from "./requests";
 
 export default async function Submissions({
   params,
 }: {
   params: { formId: string };
 }) {
-  const formSubmissions = await prisma.formSubmission.findMany({
-    where: {
-      form: {
-        draftForm: {
-          id: params.formId,
-        },
-      },
-    },
-    include: {
-      shortTextInputResponses: true,
-      form: {
-        include: {
-          steps: true,
-        },
-      },
-    },
-    orderBy: {
-      id: "desc",
-    },
-  });
+  const formSubmissions = await getFormSubmissions({ formId: params.formId });
 
   const getTotalFormInputs = memoize((steps: Step[]) => {
     return steps.reduce((total, step) => {
@@ -108,6 +91,8 @@ export default async function Submissions({
                   const totalFormInputs = getTotalFormInputs(
                     formSubmission.form.steps
                   );
+                  const totalSubmissionInputs =
+                    getTotalSubmissionInputs(formSubmission);
 
                   return (
                     <tr key={formSubmission.id}>
@@ -122,9 +107,7 @@ export default async function Submissions({
                           <ProgressBar
                             className="w-2/3"
                             value={
-                              (getTotalSubmissionInputs(formSubmission) /
-                                totalFormInputs) *
-                              100
+                              (totalSubmissionInputs / totalFormInputs) * 100
                             }
                           />
                         ) : (
@@ -132,7 +115,11 @@ export default async function Submissions({
                         )}
                       </td>
                       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                        View
+                        {totalSubmissionInputs > 0 && totalFormInputs > 0 ? (
+                          <ResultsDialog formSubmission={formSubmission} />
+                        ) : (
+                          "No results"
+                        )}
                       </td>
                     </tr>
                   );

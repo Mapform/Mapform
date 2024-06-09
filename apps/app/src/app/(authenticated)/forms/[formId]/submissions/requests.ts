@@ -1,0 +1,28 @@
+import { prisma } from "@mapform/db";
+
+export function getFormSubmissions({ formId }: { formId: string }) {
+  return prisma.formSubmission.findMany({
+    where: {
+      form: {
+        draftForm: {
+          id: formId,
+        },
+      },
+    },
+    include: {
+      shortTextInputResponses: true,
+      form: {
+        include: {
+          steps: true,
+        },
+      },
+    },
+    orderBy: {
+      id: "desc",
+    },
+  });
+}
+
+export type FormSubmissions = NonNullable<
+  Awaited<ReturnType<typeof getFormSubmissions>>
+>;
