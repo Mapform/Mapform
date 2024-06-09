@@ -1,5 +1,6 @@
 import { type Step, prisma } from "@mapform/db";
 import { type DocumentContent } from "@mapform/mapform/lib/block-note-schema";
+import { ProgressBar } from "@mapform/ui/components/progress-bar";
 import { format } from "date-fns";
 import memoize from "lodash.memoize";
 
@@ -103,24 +104,39 @@ export default async function Submissions({
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
-                {formSubmissions.map((formSubmission) => (
-                  <tr key={formSubmission.id}>
-                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 sm:pl-0">
-                      {format(formSubmission.createdAt, "LLLL do, yyyy")}
-                    </td>
-                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                      {formSubmission.form.version}
-                    </td>
-                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                      {/* {formSubmission.form.steps.} */}
-                      {getTotalSubmissionInputs(formSubmission)} /{" "}
-                      {getTotalFormInputs(formSubmission.form.steps)}
-                    </td>
-                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                      View
-                    </td>
-                  </tr>
-                ))}
+                {formSubmissions.map((formSubmission) => {
+                  const totalFormInputs = getTotalFormInputs(
+                    formSubmission.form.steps
+                  );
+
+                  return (
+                    <tr key={formSubmission.id}>
+                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 sm:pl-0">
+                        {format(formSubmission.createdAt, "LLLL do, yyyy")}
+                      </td>
+                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                        {formSubmission.form.version}
+                      </td>
+                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                        {totalFormInputs > 0 ? (
+                          <ProgressBar
+                            className="w-2/3"
+                            value={
+                              (getTotalSubmissionInputs(formSubmission) /
+                                totalFormInputs) *
+                              100
+                            }
+                          />
+                        ) : (
+                          "No inputs"
+                        )}
+                      </td>
+                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                        View
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
