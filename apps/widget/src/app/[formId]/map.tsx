@@ -91,16 +91,6 @@ export function Map({ formWithSteps, formValues, sessionId }: MapProps) {
       currentStep={currentStep}
       defaultFormValues={stepValues}
       mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
-      onNext={() => {
-        const nextStepIndex =
-          formWithSteps.steps.findIndex((step) => step.id === currentStep.id) +
-          1;
-        const nextStep = formWithSteps.steps[nextStepIndex];
-
-        if (nextStep) {
-          setCurrentStepAndFly(nextStep);
-        }
-      }}
       onPrev={() => {
         const prevStepIndex =
           formWithSteps.steps.findIndex((step) => step.id === currentStep.id) -
@@ -117,6 +107,15 @@ export function Map({ formWithSteps, formValues, sessionId }: MapProps) {
           formSubmissionId: currentSession,
           payload: data,
         });
+
+        const nextStepIndex =
+          formWithSteps.steps.findIndex((step) => step.id === currentStep.id) +
+          1;
+        const nextStep = formWithSteps.steps[nextStepIndex];
+
+        if (nextStep) {
+          setCurrentStepAndFly(nextStep);
+        }
       }}
       ref={map}
       setViewState={(evt) => {

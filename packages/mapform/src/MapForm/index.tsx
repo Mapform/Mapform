@@ -25,7 +25,6 @@ interface MapFormProps {
   defaultFormValues?: Record<string, string>;
   setViewState: (viewState: ViewStateChangeEvent) => void;
   onPrev?: () => void;
-  onNext?: () => void;
   onLoad?: () => void;
   onTitleChange?: (content: string) => void;
   onDescriptionChange?: (content: { content: CustomBlock[] }) => void;
@@ -38,7 +37,6 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
     {
       editable = false,
       onPrev,
-      onNext,
       mapboxAccessToken,
       viewState,
       setViewState,
@@ -67,7 +65,6 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
                 editable={editable}
                 key={currentStep.id}
                 onDescriptionChange={onDescriptionChange}
-                onNext={onNext}
                 onPrev={onPrev}
                 onStepSubmit={onStepSubmit}
                 onTitleChange={onTitleChange}

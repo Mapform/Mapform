@@ -11,12 +11,7 @@ import {
   useCreateBlockNote,
 } from "@blocknote/react";
 import "@blocknote/react/style.css";
-import {
-  TextIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  ImageIcon,
-} from "lucide-react";
+import { TextIcon, ChevronLeftIcon, ImageIcon } from "lucide-react";
 import { Button } from "@mapform/ui/components/button";
 import { Form, useForm, zodResolver } from "@mapform/ui/components/form";
 import { type FormSchema } from "@mapform/lib/schemas/form-step-schema";
@@ -42,7 +37,6 @@ interface BlocknoteProps {
 export function Blocknote({
   title,
   onPrev,
-  onNext,
   editable,
   description,
   onTitleChange,
@@ -170,17 +164,8 @@ export function Blocknote({
             >
               <ChevronLeftIcon />
             </Button>
-            <Button
-              disabled={editable}
-              onClick={onNext}
-              size="icon"
-              type="button"
-              variant="ghost"
-            >
-              <ChevronRightIcon />
-            </Button>
           </div>
-          <Button disabled={editable} onClick={onNext} type="submit">
+          <Button disabled={editable} type="submit">
             Next
           </Button>
         </div>
