@@ -1,6 +1,7 @@
 "use server";
 
 import { prisma } from "@mapform/db";
+import { revalidatePath } from "next/cache";
 import { type DocumentContent } from "@mapform/mapform/lib/block-note-schema";
 import { getZodSchemaFromBlockNote } from "@mapform/mapform/lib/zod-schema-from-blocknote";
 import { action } from "~/lib/safe-action";
@@ -61,6 +62,6 @@ export const submitFormStep = action(
       })
     );
 
-    // return formSubmissionStep;
+    revalidatePath(`/${step.formId}`);
   }
 );
