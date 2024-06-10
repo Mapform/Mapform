@@ -7,9 +7,7 @@ import {
 } from "@mapform/ui/components/popover";
 import { Input } from "@mapform/ui/components/input";
 import NextImage from "next/image";
-import { Switch } from "@mapform/ui/components/switch";
-import { EllipsisIcon, ImageIcon, ImageOffIcon } from "lucide-react";
-import { Label } from "@mapform/ui/components/label";
+import { ImageIcon, ImageOffIcon } from "lucide-react";
 import { useMapFormContext } from "../../mapform/context";
 
 export const Image = createReactBlockSpec(
