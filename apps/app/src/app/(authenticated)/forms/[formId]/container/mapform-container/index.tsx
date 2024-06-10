@@ -1,6 +1,10 @@
+"use client";
+
 import dynamic from "next/dynamic";
 import { MapForm } from "@mapform/mapform";
+import { toast } from "@mapform/ui/components/toaster";
 import type { CustomBlock } from "@mapform/mapform/lib/block-note-schema";
+import { uploadImage } from "~/server/actions/images";
 import { env } from "~/env.mjs";
 import { useContainerContext } from "../context";
 
@@ -37,6 +41,19 @@ function MapFormContainer({
                 formId: formWithSteps.id,
               },
             });
+          }}
+          onImageUpload={async (file: File) => {
+            const formData = new FormData();
+            formData.append("image", file);
+
+            const { success, error } = await uploadImage(formData);
+
+            if (error) {
+              toast(error);
+              return null;
+            }
+
+            return success?.url || null;
           }}
           onLoad={() => {
             setMapformLoaded(true);

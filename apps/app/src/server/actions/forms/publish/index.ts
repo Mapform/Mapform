@@ -48,20 +48,20 @@ export const publishForm = authAction(publishFormSchema, async ({ formId }) => {
     },
   });
 
-  await Promise.all(
-    steps.map((step) => {
-      return prisma.step.createWithLocation({
-        formId: newPublishedForm.id,
-        zoom: step.zoom,
-        pitch: step.pitch,
-        bearing: step.bearing,
-        latitude: step.latitude,
-        longitude: step.longitude,
-        title: step.title,
-        description: step.description || undefined,
-      });
-    })
-  );
+  // TODO: Improve this. This query is very slow and inefficient.
+  for (const step of steps) {
+    // eslint-disable-next-line no-await-in-loop -- We want to execute sequentially
+    await prisma.step.createWithLocation({
+      formId: newPublishedForm.id,
+      zoom: step.zoom,
+      pitch: step.pitch,
+      bearing: step.bearing,
+      latitude: step.latitude,
+      longitude: step.longitude,
+      title: step.title,
+      description: step.description || undefined,
+    });
+  }
 
   await prisma.form.update({
     where: {

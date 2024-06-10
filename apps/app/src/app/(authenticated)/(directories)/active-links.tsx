@@ -22,8 +22,8 @@ export default function ActiveLinks({ userOrgs }: ActiveLinksProps) {
         <Link
           className={cn(
             pathname === "/"
-              ? "bg-gray-50 text-indigo-600"
-              : "text-gray-700 hover:text-indigo-600 hover:bg-gray-50",
+              ? "bg-gray-50 text-primary"
+              : "text-gray-700 hover:text-primary hover:bg-gray-50",
             "group flex gap-x-3 rounded-md p-1.5 text-sm leading-6 font-semibold"
           )}
           href="/"
@@ -31,8 +31,8 @@ export default function ActiveLinks({ userOrgs }: ActiveLinksProps) {
           <span
             className={cn(
               pathname === "/"
-                ? "text-indigo-600 border-indigo-600"
-                : "text-gray-400 border-gray-200 group-hover:border-indigo-600 group-hover:text-indigo-600",
+                ? "text-primary border-primary"
+                : "text-gray-400 border-gray-200 group-hover:border-primary group-hover:text-primary",
               "flex h-6 w-6 shrink-0 items-center justify-center text-[0.625rem] font-medium"
             )}
           >
@@ -50,8 +50,8 @@ export default function ActiveLinks({ userOrgs }: ActiveLinksProps) {
             <Link
               className={cn(
                 pathname === `/orgs/${membership.organization.slug}`
-                  ? "bg-gray-50 text-indigo-600"
-                  : "text-gray-700 hover:text-indigo-600 hover:bg-gray-50",
+                  ? "bg-gray-50 text-primary"
+                  : "text-gray-700 hover:text-primary hover:bg-gray-50",
                 "group flex gap-x-3 rounded-md p-1.5 text-sm leading-6 font-semibold"
               )}
               href={`/orgs/${membership.organization.slug}`}
@@ -59,8 +59,8 @@ export default function ActiveLinks({ userOrgs }: ActiveLinksProps) {
               <span
                 className={cn(
                   pathname === `/orgs/${membership.organization.slug}`
-                    ? "text-indigo-600 border-indigo-600"
-                    : "text-gray-400 border-gray-200 group-hover:border-indigo-600 group-hover:text-indigo-600",
+                    ? "text-primary border-primary"
+                    : "text-gray-400 border-gray-200 group-hover:border-primary group-hover:text-primary",
                   "flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border text-[0.625rem] font-medium bg-white"
                 )}
               >
@@ -75,8 +75,8 @@ export default function ActiveLinks({ userOrgs }: ActiveLinksProps) {
                     className={cn(
                       pathname ===
                         `/orgs/${membership.organization.slug}/workspaces/${workspace.slug}`
-                        ? "bg-gray-50 text-indigo-600"
-                        : "text-gray-700 hover:text-indigo-600 hover:bg-gray-50",
+                        ? "bg-gray-50 text-primary"
+                        : "text-gray-700 hover:text-primary hover:bg-gray-50",
                       "group flex gap-x-3 rounded-md p-1.5 text-sm leading-6"
                     )}
                     href={`/orgs/${membership.organization.slug}/workspaces/${workspace.slug}`}

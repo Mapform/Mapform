@@ -3,13 +3,15 @@ import {
   defaultBlockSpecs,
   type Block,
 } from "@blocknote/core";
+import { Image } from "./custom-blocks/image";
 import { ShortTextInput } from "./custom-blocks/short-text-input";
 
 export const customBlockSpecs = {
+  image: Image,
   "short-text-input": ShortTextInput,
 } as const;
 
-const { table: _, ...rest } = defaultBlockSpecs;
+const { table: _, image: _2, ...rest } = defaultBlockSpecs;
 
 export const schema = BlockNoteSchema.create({
   blockSpecs: {
