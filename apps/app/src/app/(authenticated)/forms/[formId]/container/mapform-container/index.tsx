@@ -2,6 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { MapForm } from "@mapform/mapform";
+import { toast } from "@mapform/ui/components/toaster";
 import type { CustomBlock } from "@mapform/mapform/lib/block-note-schema";
 import { uploadImage } from "~/server/actions/images";
 import { env } from "~/env.mjs";
@@ -45,9 +46,14 @@ function MapFormContainer({
             const formData = new FormData();
             formData.append("image", file);
 
-            const image = await uploadImage(formData);
+            const { success, error } = await uploadImage(formData);
 
-            return image.url;
+            if (error) {
+              toast(error);
+              return null;
+            }
+
+            return success?.url || null;
           }}
           onLoad={() => {
             setMapformLoaded(true);

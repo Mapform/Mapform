@@ -40,8 +40,6 @@ export async function getFormWithSteps(formId: string) {
     formId: form.id,
   });
 
-  console.log(9999, steps);
-
   return {
     ...form,
     steps,

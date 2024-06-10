@@ -48,6 +48,7 @@ export const publishForm = authAction(publishFormSchema, async ({ formId }) => {
     },
   });
 
+  // TODO: Improve this. This query is very slow and inefficient.
   for (const step of steps) {
     // eslint-disable-next-line no-await-in-loop -- We want to execute sequentially
     await prisma.step.createWithLocation({

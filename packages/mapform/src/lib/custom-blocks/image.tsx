@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { createReactBlockSpec } from "@blocknote/react";
 import {
   Popover,
@@ -23,6 +24,7 @@ export const Image = createReactBlockSpec(
   },
   {
     render: ({ block, editor }) => {
+      const [isUploading, setIsUploading] = useState(false);
       const { editable, onImageUpload } = useMapFormContext();
 
       const onFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -33,7 +35,9 @@ export const Image = createReactBlockSpec(
         }
 
         if (onImageUpload) {
+          setIsUploading(true);
           const image = await onImageUpload(file);
+          setIsUploading(false);
 
           if (!image) {
             return;
@@ -58,13 +62,17 @@ export const Image = createReactBlockSpec(
         return (
           <Popover>
             <PopoverTrigger className="w-full">
-              <div className="w-full p-2 bg-gray-100 rounded text-gray-500 text-sm flex gap-2 items-center font-medium">
+              <div className="w-full p-2 bg-gray-100 rounded-md text-gray-500 text-sm flex gap-2 items-center font-medium">
                 <ImageIcon />
                 <span>Add an image</span>
               </div>
             </PopoverTrigger>
             <PopoverContent>
-              <Input onChange={onFileChange} type="file" />
+              <Input
+                disabled={isUploading}
+                onChange={onFileChange}
+                type="file"
+              />
             </PopoverContent>
           </Popover>
         );
