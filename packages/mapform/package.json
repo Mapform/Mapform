@@ -19,6 +19,7 @@
     "@types/mapbox-gl": "^3.1.0",
     "lucide-react": "^0.354.0",
     "mapbox-gl": "^3.2.0",
+    "next": "14.1.3",
     "react-map-gl": "^7.1.7",
     "zod": "^3.23.8"
   },
