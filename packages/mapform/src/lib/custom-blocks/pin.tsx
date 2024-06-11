@@ -15,8 +15,9 @@ import {
 import { Switch } from "@mapform/ui/components/switch";
 import { EllipsisIcon } from "lucide-react";
 import { Label } from "@mapform/ui/components/label";
-import { useMapFormContext } from "../../mapform/context";
 import { Button } from "@mapform/ui/components/button";
+import { useMapFormContext } from "../../mapform/context";
+import { useState } from "react";
 
 export const Pin = createReactBlockSpec(
   {
@@ -41,9 +42,30 @@ export const Pin = createReactBlockSpec(
     render: ({ block, editor }) => {
       const form = useFormContext();
       const { editable } = useMapFormContext();
+      const [isSelecting, setIsSelecting] = useState(false);
+
+      if (isSelecting) {
+        return (
+          <Button
+            className="w-full"
+            onClick={() => {
+              setIsSelecting(false);
+            }}
+            variant="secondary"
+          >
+            Cancel
+          </Button>
+        );
+      }
 
       return (
-        <Button className="w-full" variant="secondary">
+        <Button
+          className="w-full"
+          onClick={() => {
+            setIsSelecting(true);
+          }}
+          variant="secondary"
+        >
           Pick a Location
         </Button>
       );
