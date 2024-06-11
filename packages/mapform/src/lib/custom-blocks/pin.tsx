@@ -75,11 +75,9 @@ export const Pin = createReactBlockSpec(
             name={`${block.id}.latitude`}
             render={({ field }) => (
               <FormItem className="flex-1">
-                <FormLabel>Latitude</FormLabel>
                 <FormControl>
-                  <Input placeholder="" {...field} type="number" />
+                  <Input placeholder="" {...field} type="hidden" />
                 </FormControl>
-                <FormMessage />
               </FormItem>
             )}
           />
@@ -90,11 +88,9 @@ export const Pin = createReactBlockSpec(
             name={`${block.id}.longitude`}
             render={({ field }) => (
               <FormItem className="flex-1">
-                <FormLabel>Longitude</FormLabel>
                 <FormControl>
-                  <Input placeholder="" {...field} type="number" />
+                  <Input placeholder="" {...field} type="hidden" />
                 </FormControl>
-                <FormMessage />
               </FormItem>
             )}
           />
