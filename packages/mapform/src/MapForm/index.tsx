@@ -4,6 +4,7 @@ import Map, {
   type MapRef,
   type ViewState,
   type ViewStateChangeEvent,
+  Marker,
   MapProvider,
   useMap,
   NavigationControl,
@@ -76,12 +77,19 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
             {...viewState}
             mapStyle="mapbox://styles/nichaley/clsxaiasf00ue01qjfhtt2v81"
             mapboxAccessToken={mapboxAccessToken}
+            onClick={(e) => {
+              console.log(e);
+            }}
             onLoad={onLoad}
             onMove={setViewState}
             ref={ref}
             style={{ flex: 1 }}
           >
             <NavigationControl />
+            {/* <Marker
+              latitude={currentStep?.latitude}
+              longitude={currentStep?.longitude}
+            /> */}
           </Map>
         </div>
       </MapFormContext.Provider>

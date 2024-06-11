@@ -18,6 +18,7 @@ import { Label } from "@mapform/ui/components/label";
 import { Button } from "@mapform/ui/components/button";
 import { useMapFormContext } from "../../mapform/context";
 import { useState } from "react";
+import { Input } from "@mapform/ui/components/input";
 
 export const Pin = createReactBlockSpec(
   {
@@ -44,30 +45,60 @@ export const Pin = createReactBlockSpec(
       const { editable } = useMapFormContext();
       const [isSelecting, setIsSelecting] = useState(false);
 
-      if (isSelecting) {
-        return (
-          <Button
-            className="w-full"
-            onClick={() => {
-              setIsSelecting(false);
-            }}
-            variant="secondary"
-          >
-            Cancel
-          </Button>
-        );
-      }
-
       return (
-        <Button
-          className="w-full"
-          onClick={() => {
-            setIsSelecting(true);
-          }}
-          variant="secondary"
-        >
-          Pick a Location
-        </Button>
+        <>
+          {isSelecting ? (
+            <Button
+              className="w-full"
+              onClick={() => {
+                setIsSelecting(false);
+              }}
+              variant="secondary"
+            >
+              Cancel
+            </Button>
+          ) : (
+            <Button
+              className="w-full"
+              onClick={() => {
+                setIsSelecting(true);
+              }}
+              variant="secondary"
+            >
+              Pick a Location
+            </Button>
+          )}
+          <FormField
+            control={form.control}
+            // disabled
+            // This is what allows us to match the user value back to the input
+            name={`${block.id}.latitude`}
+            render={({ field }) => (
+              <FormItem className="flex-1">
+                <FormLabel>Latitude</FormLabel>
+                <FormControl>
+                  <Input placeholder="" {...field} type="number" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            // disabled
+            // This is what allows us to match the user value back to the input
+            name={`${block.id}.longitude`}
+            render={({ field }) => (
+              <FormItem className="flex-1">
+                <FormLabel>Longitude</FormLabel>
+                <FormControl>
+                  <Input placeholder="" {...field} type="number" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </>
       );
     },
   }
