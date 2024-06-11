@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import type { MapRef, ViewState } from "@mapform/mapform";
 import { MapForm } from "@mapform/mapform";
 import { useAction } from "next-safe-action/hooks";
-import { type ShortTextInputResponse } from "@mapform/db";
+import { type InputResponse } from "@mapform/db";
 import { type DocumentContent } from "@mapform/mapform/lib/block-note-schema";
 import { submitFormStep } from "~/server/actions/submit-form-step";
 import { createFormSubmission } from "~/server/actions/create-form-submission";
@@ -13,7 +13,7 @@ import type { FormWithSteps } from "./requests";
 
 interface MapProps {
   formWithSteps: NonNullable<FormWithSteps>;
-  formValues: ShortTextInputResponse[];
+  formValues: InputResponse[];
   sessionId: string | null;
 }
 

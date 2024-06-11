@@ -1,6 +1,6 @@
 import React from "react";
 import { cookies } from "next/headers";
-import { type FormSubmission, type ShortTextInputResponse } from "@mapform/db";
+import { type FormSubmission, type InputResponse } from "@mapform/db";
 import { Map } from "./map";
 import { getFormWithSteps, getInputValues, getSession } from "./requests";
 
@@ -9,7 +9,7 @@ export default async function Page({ params }: { params: { formId: string } }) {
   const formWithSteps = await getFormWithSteps(params.formId);
   const cookieStore = cookies();
   const cookie = cookieStore.get("mapform-form-submission");
-  const formValues: ShortTextInputResponse[] = [];
+  const formValues: InputResponse[] = [];
   let session: FormSubmission | null = null;
 
   if (!formWithSteps) {

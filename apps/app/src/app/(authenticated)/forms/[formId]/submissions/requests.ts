@@ -10,7 +10,7 @@ export function getFormSubmissions({ formId }: { formId: string }) {
       },
     },
     include: {
-      shortTextInputResponses: true,
+      inputResponses: true,
       form: {
         include: {
           steps: true,

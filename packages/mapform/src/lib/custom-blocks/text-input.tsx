@@ -20,7 +20,7 @@ import { useMapFormContext } from "../../mapform/context";
 
 export const ShortTextInput = createReactBlockSpec(
   {
-    type: "short-text-input",
+    type: "text-input",
     propSchema: {
       label: {
         default: "My Label",
@@ -56,7 +56,7 @@ export const ShortTextInput = createReactBlockSpec(
                     className="text-sm font-medium border-0 w-full p-0 outline-none border-transparent focus:border-transparent focus:ring-0 placeholder-gray-300"
                     onChange={(e) => {
                       editor.updateBlock(block, {
-                        type: "short-text-input",
+                        type: "text-input",
                         props: { label: e.target.value },
                       });
                     }}
@@ -77,7 +77,7 @@ export const ShortTextInput = createReactBlockSpec(
                           checked={block.props.required}
                           onCheckedChange={(e) => {
                             editor.updateBlock(block, {
-                              type: "short-text-input",
+                              type: "text-input",
                               props: { required: e },
                             });
                           }}
@@ -95,7 +95,7 @@ export const ShortTextInput = createReactBlockSpec(
                     className="text-muted-foreground"
                     onChange={(e) => {
                       editor.updateBlock(block, {
-                        type: "short-text-input",
+                        type: "text-input",
                         props: { placeholder: e.target.value },
                       });
                     }}

@@ -4,11 +4,11 @@ import {
   type Block,
 } from "@blocknote/core";
 import { Image } from "./custom-blocks/image";
-import { ShortTextInput } from "./custom-blocks/short-text-input";
+import { ShortTextInput } from "./custom-blocks/text-input";
 
 export const customBlockSpecs = {
   image: Image,
-  "short-text-input": ShortTextInput,
+  "text-input": ShortTextInput,
 } as const;
 
 const { table: _, image: _2, ...rest } = defaultBlockSpecs;

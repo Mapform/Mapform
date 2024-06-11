@@ -63,11 +63,11 @@ export function Blocknote({
     schema,
   });
 
-  const insertShortTextInput = (edtr: typeof schema.BlockNoteEditor) => ({
-    title: "Short Text Input",
+  const insertTextInput = (edtr: typeof schema.BlockNoteEditor) => ({
+    title: "Text Input",
     onItemClick: () => {
       insertOrUpdateBlock(edtr, {
-        type: "short-text-input",
+        type: "text-input",
       });
     },
     aliases: ["input", "short-text"],
@@ -136,7 +136,7 @@ export function Blocknote({
                 return filterSuggestionItems(
                   [
                     ...getDefaultReactSlashMenuItems(editor),
-                    insertShortTextInput(editor),
+                    insertTextInput(editor),
                     insertImage(editor),
                   ],
                   query

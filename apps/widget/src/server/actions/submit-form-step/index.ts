@@ -37,8 +37,8 @@ export const submitFormStep = action(
       Object.entries(data).map(async ([key, value]) => {
         const block = documentContent.find((b) => b.id === key);
 
-        if (block?.type === "short-text-input") {
-          return prisma.shortTextInputResponse.upsert({
+        if (block?.type === "text-input") {
+          return prisma.inputResponse.upsert({
             create: {
               formSubmissionId,
               blockNoteId: key,

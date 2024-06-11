@@ -134,16 +134,17 @@ model Step {
 }
 
 model FormSubmission {
-    id                      String                   @id @default(uuid())
-    formId                  String
-    form                    Form                     @relation(fields: [formId], references: [id])
-    shortTextInputResponses ShortTextInputResponse[]
+    id                String             @id @default(uuid())
+    formId            String
+    form              Form               @relation(fields: [formId], references: [id])
+    inputResponses    InputResponse[]
+    locationResponses LocationResponse[]
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 }
 
-model ShortTextInputResponse {
+model InputResponse {
     id               String @id @default(uuid())
     blockNoteId      String
     title            String
@@ -155,10 +156,23 @@ model ShortTextInputResponse {
     @@unique([blockNoteId, formSubmissionId])
 }
 
+model LocationResponse {
+    id               String @id @default(uuid())
+    blockNoteId      String
+    locationId       String @unique
+    formSubmissionId String
+
+    location       Location       @relation(fields: [locationId], references: [id])
+    formSubmission FormSubmission @relation(fields: [formSubmissionId], references: [id])
+
+    @@unique([blockNoteId, formSubmissionId])
+}
+
 model Location {
-    id   String                               @id @default(uuid())
-    geom Unsupported("geometry(Point, 4326)")
-    step Step?
+    id               String                               @id @default(uuid())
+    geom             Unsupported("geometry(Point, 4326)")
+    step             Step?
+    locationResponse LocationResponse?
 
     @@index([geom], name: "location_idx", type: Gist)
 }

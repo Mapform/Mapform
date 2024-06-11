@@ -18,7 +18,7 @@ interface ResultsDialogProps {
 
 export function ResultsDialog({ formSubmission }: ResultsDialogProps) {
   const getResults = () => {
-    return formSubmission.shortTextInputResponses.map((response) => {
+    return formSubmission.inputResponses.map((response) => {
       return {
         id: response.id,
         title: response.title,
