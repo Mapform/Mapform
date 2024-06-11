@@ -1,6 +1,5 @@
 "use client";
 
-import type { z } from "zod";
 import { useState } from "react";
 import "@blocknote/core/fonts/inter.css";
 import { filterSuggestionItems, insertOrUpdateBlock } from "@blocknote/core";
@@ -13,10 +12,7 @@ import {
 import "@blocknote/react/style.css";
 import { TextIcon, ChevronLeftIcon, ImageIcon, MapPinIcon } from "lucide-react";
 import { Button } from "@mapform/ui/components/button";
-import { Form, useForm, zodResolver } from "@mapform/ui/components/form";
-import { type FormSchema } from "@mapform/lib/schemas/form-step-schema";
 import { schema, type CustomBlock } from "../../lib/block-note-schema";
-import { getZodSchemaFromBlockNote } from "../../lib/zod-schema-from-blocknote";
 import "./style.css";
 
 interface BlocknoteProps {
@@ -30,8 +26,6 @@ interface BlocknoteProps {
   onPrev?: () => void;
   onTitleChange?: (content: string) => void;
   onDescriptionChange?: (content: { content: CustomBlock[] }) => void;
-
-  onStepSubmit?: (data: FormSchema) => void;
 }
 
 export function Blocknote({
@@ -41,16 +35,7 @@ export function Blocknote({
   description,
   onTitleChange,
   onDescriptionChange,
-  onStepSubmit,
-  defaultFormValues,
 }: BlocknoteProps) {
-  const blocknoteStepSchema = getZodSchemaFromBlockNote(
-    description?.content || []
-  );
-  const form = useForm<z.infer<typeof blocknoteStepSchema>>({
-    resolver: zodResolver(blocknoteStepSchema),
-    defaultValues: defaultFormValues,
-  });
   const [uncontrolledTitle, setUncontrolledTitle] = useState<string>(
     title || ""
   );
@@ -99,90 +84,81 @@ export function Blocknote({
     icon: <ImageIcon />,
   });
 
-  const onSubmit = (data: FormSchema) => {
-    onStepSubmit && onStepSubmit(data);
-  };
-
   // Renders the editor instance using a React component.
   return (
-    <Form {...form}>
-      <form
-        className="h-full flex flex-col"
-        onSubmit={form.handleSubmit(onSubmit)}
-      >
-        {/* Content */}
-        <div className="overflow-y-auto p-4 pb-0">
-          {/* Title */}
-          {editable ? (
-            <input
-              className="border-0 text-2xl font-bold w-full mb-2 p-0 outline-none border-transparent focus:border-transparent focus:ring-0 placeholder-gray-300"
-              onChange={(e) => {
-                setUncontrolledTitle(e.target.value);
-                onTitleChange && onTitleChange(e.target.value);
-              }}
-              placeholder="Untitled"
-              value={uncontrolledTitle}
-            />
-          ) : (
-            <h1 className="border-0 text-2xl font-bold w-full mb-2 p-0">
-              {title ?? "Untitled"}
-            </h1>
-          )}
-
-          {/* Description */}
-          <BlockNoteView
-            className="flex-1"
-            editable={editable}
-            editor={editor}
-            onChange={() => {
-              onDescriptionChange &&
-                onDescriptionChange({
-                  content: editor.document,
-                });
+    <div className="h-full flex flex-col">
+      {/* Content */}
+      <div className="overflow-y-auto p-4 pb-0">
+        {/* Title */}
+        {editable ? (
+          <input
+            className="border-0 text-2xl font-bold w-full mb-2 p-0 outline-none border-transparent focus:border-transparent focus:ring-0 placeholder-gray-300"
+            onChange={(e) => {
+              setUncontrolledTitle(e.target.value);
+              onTitleChange && onTitleChange(e.target.value);
             }}
-            sideMenu={false}
-            slashMenu={false}
-          >
-            <SuggestionMenuController
-              getItems={async (query) => {
-                return filterSuggestionItems(
-                  [
-                    ...getDefaultReactSlashMenuItems(editor),
-                    insertPin(editor),
-                    insertTextInput(editor),
-                    insertImage(editor),
-                  ],
-                  query
-                );
-              }}
-              triggerCharacter="/"
-            />
-          </BlockNoteView>
-        </div>
-        {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions -- Disable a11y checks here */}
-        <div
+            placeholder="Untitled"
+            value={uncontrolledTitle}
+          />
+        ) : (
+          <h1 className="border-0 text-2xl font-bold w-full mb-2 p-0">
+            {title ?? "Untitled"}
+          </h1>
+        )}
+
+        {/* Description */}
+        <BlockNoteView
           className="flex-1"
-          onClick={() => {
-            editor.focus();
+          editable={editable}
+          editor={editor}
+          onChange={() => {
+            onDescriptionChange &&
+              onDescriptionChange({
+                content: editor.document,
+              });
           }}
-        />
-        <div className="mt-auto flex justify-between p-4">
-          <div className="gap-2">
-            <Button
-              disabled={editable}
-              onClick={onPrev}
-              size="icon"
-              type="button"
-              variant="ghost"
-            >
-              <ChevronLeftIcon />
-            </Button>
-          </div>
-          <Button disabled={editable} type="submit">
-            Next
+          sideMenu={false}
+          slashMenu={false}
+        >
+          <SuggestionMenuController
+            getItems={async (query) => {
+              return filterSuggestionItems(
+                [
+                  ...getDefaultReactSlashMenuItems(editor),
+                  insertPin(editor),
+                  insertTextInput(editor),
+                  insertImage(editor),
+                ],
+                query
+              );
+            }}
+            triggerCharacter="/"
+          />
+        </BlockNoteView>
+      </div>
+      {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions -- Disable a11y checks here */}
+      <div
+        className="flex-1"
+        onClick={() => {
+          editor.focus();
+        }}
+      />
+      <div className="mt-auto flex justify-between p-4">
+        <div className="gap-2">
+          <Button
+            disabled={editable}
+            onClick={onPrev}
+            size="icon"
+            type="button"
+            variant="ghost"
+          >
+            <ChevronLeftIcon />
           </Button>
         </div>
-      </form>
-    </Form>
+        <Button disabled={editable} type="submit">
+          Next
+        </Button>
+      </div>
+    </div>
   );
 }
