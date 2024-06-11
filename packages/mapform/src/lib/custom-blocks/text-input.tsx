@@ -18,7 +18,7 @@ import { EllipsisIcon } from "lucide-react";
 import { Label } from "@mapform/ui/components/label";
 import { useMapFormContext } from "../../mapform/context";
 
-export const ShortTextInput = createReactBlockSpec(
+export const TextInput = createReactBlockSpec(
   {
     type: "text-input",
     propSchema: {

@@ -11,7 +11,7 @@ import {
   useCreateBlockNote,
 } from "@blocknote/react";
 import "@blocknote/react/style.css";
-import { TextIcon, ChevronLeftIcon, ImageIcon } from "lucide-react";
+import { TextIcon, ChevronLeftIcon, ImageIcon, MapPinIcon } from "lucide-react";
 import { Button } from "@mapform/ui/components/button";
 import { Form, useForm, zodResolver } from "@mapform/ui/components/form";
 import { type FormSchema } from "@mapform/lib/schemas/form-step-schema";
@@ -61,6 +61,18 @@ export function Blocknote({
       default: "Write a description, or press '/' for commands...",
     },
     schema,
+  });
+
+  const insertPin = (edtr: typeof schema.BlockNoteEditor) => ({
+    title: "Pin",
+    onItemClick: () => {
+      insertOrUpdateBlock(edtr, {
+        type: "pin",
+      });
+    },
+    aliases: ["location", "pins"],
+    group: "Inputs",
+    icon: <MapPinIcon />,
   });
 
   const insertTextInput = (edtr: typeof schema.BlockNoteEditor) => ({
@@ -136,6 +148,7 @@ export function Blocknote({
                 return filterSuggestionItems(
                   [
                     ...getDefaultReactSlashMenuItems(editor),
+                    insertPin(editor),
                     insertTextInput(editor),
                     insertImage(editor),
                   ],
