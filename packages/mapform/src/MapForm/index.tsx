@@ -19,6 +19,7 @@ import { getZodSchemaFromBlockNote } from "../lib/zod-schema-from-blocknote";
 import { type CustomBlock } from "../lib/block-note-schema";
 import { Blocknote } from "./block-note";
 import { MapFormContext } from "./context";
+import { cn } from "@mapform/lib/classnames";
 
 type ExtendedStep = Step & { latitude: number; longitude: number };
 
@@ -86,6 +87,7 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
             value={{
               editable,
               viewState,
+              setViewState,
               onImageUpload,
               isSelectingPinLocationFor,
               setIsSelectingPinLocationFor,
@@ -113,21 +115,6 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
               {...viewState}
               mapStyle="mapbox://styles/nichaley/clsxaiasf00ue01qjfhtt2v81"
               mapboxAccessToken={mapboxAccessToken}
-              onClick={(e) => {
-                if (!isSelectingPinLocationFor) {
-                  return;
-                }
-
-                form.setValue(
-                  `${isSelectingPinLocationFor}.latitude`,
-                  e.lngLat.lat
-                );
-
-                form.setValue(
-                  `${isSelectingPinLocationFor}.longitude`,
-                  e.lngLat.lng
-                );
-              }}
               onLoad={onLoad}
               onMove={setViewState}
               ref={ref}
@@ -135,27 +122,34 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
             >
               <NavigationControl />
 
-              {/* Render all Pin blocks for current step */}
-              {pinBlocks.map((block) => {
-                const latitude = form.watch(`${block.id}.latitude`);
-                const longitude = form.watch(`${block.id}.longitude`);
+              {isSelectingPinLocationFor ? (
+                <Marker
+                  color="red"
+                  latitude={viewState.latitude}
+                  longitude={viewState.longitude}
+                />
+              ) : (
+                pinBlocks.map((block) => {
+                  const latitude = form.watch(`${block.id}.latitude`);
+                  const longitude = form.watch(`${block.id}.longitude`);
 
-                if (!latitude || !longitude) {
-                  return null;
-                }
+                  if (!latitude || !longitude) {
+                    return null;
+                  }
 
-                return (
-                  <Marker
-                    color="red"
-                    latitude={latitude}
-                    longitude={longitude}
-                    onDragEnd={(e) => {
-                      form.setValue(`${block.id}.latitude`, e.lngLat.lat);
-                      form.setValue(`${block.id}.longitude`, e.lngLat.lng);
-                    }}
-                  />
-                );
-              })}
+                  return (
+                    <Marker
+                      color="red"
+                      latitude={latitude}
+                      longitude={longitude}
+                      onDragEnd={(e) => {
+                        form.setValue(`${block.id}.latitude`, e.lngLat.lat);
+                        form.setValue(`${block.id}.longitude`, e.lngLat.lng);
+                      }}
+                    />
+                  );
+                })
+              )}
             </Map>
           </MapFormContext.Provider>
         </form>

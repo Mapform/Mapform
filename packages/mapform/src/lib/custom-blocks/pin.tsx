@@ -53,6 +53,14 @@ export const Pin = createReactBlockSpec(
               <Button
                 className="w-full"
                 onClick={() => {
+                  form.setValue(`${block.id}.latitude`, viewState.latitude);
+                  form.setValue(`${block.id}.longitude`, viewState.longitude);
+                  setViewState({
+                    viewState: {
+                      ...viewState,
+                      zoom: viewState.zoom - 1,
+                    },
+                  });
                   setIsSelectingPinLocationFor(null);
                 }}
               >
@@ -73,11 +81,25 @@ export const Pin = createReactBlockSpec(
               className="w-full"
               onClick={() => {
                 setIsSelectingPinLocationFor(block.id);
-                // setViewState({
-                //   viewState: {
-                //     ...viewState,
-                //   },
-                // });
+
+                const currentLatitude = form.getValues(`${block.id}.latitude`);
+                const currentLongitude = form.getValues(
+                  `${block.id}.longitude`
+                );
+
+                if (!currentLatitude || !currentLongitude) {
+                  return;
+                }
+
+                form.getValues(`${block.id}.latitude`) &&
+                  setViewState({
+                    viewState: {
+                      ...viewState,
+                      zoom: viewState.zoom + 1,
+                      latitude: currentLatitude,
+                      longitude: currentLongitude,
+                    },
+                  });
               }}
               variant="secondary"
             >
