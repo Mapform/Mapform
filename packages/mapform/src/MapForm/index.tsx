@@ -61,7 +61,8 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
     ref
   ) => {
     const blocknoteStepSchema = getZodSchemaFromBlockNote(
-      (currentStep?.description as { content: CustomBlock[] }).content || []
+      (currentStep?.description as { content: CustomBlock[] } | null)
+        ?.content || []
     );
     const form = useForm<z.infer<typeof blocknoteStepSchema>>({
       resolver: zodResolver(blocknoteStepSchema),
@@ -76,8 +77,8 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
     };
 
     const pinBlocks = (
-      currentStep?.description as { content: CustomBlock[] }
-    ).content.filter((c) => {
+      currentStep?.description as { content: CustomBlock[] } | undefined
+    )?.content.filter((c) => {
       return c.type === "pin";
     });
 
@@ -138,7 +139,7 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
                   longitude={viewState.longitude}
                 />
               ) : (
-                pinBlocks.map((block) => {
+                pinBlocks?.map((block) => {
                   // @ts-expect-error -- This does in fact exist. Because the form is dynamic, TS can't infer the type.
                   const latitude = form.watch(`${block.id}.latitude`) as number;
                   // @ts-expect-error -- This does in fact exist. Because the form is dynamic, TS can't infer the type.
