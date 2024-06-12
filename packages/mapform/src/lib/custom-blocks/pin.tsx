@@ -21,12 +21,8 @@ export const Pin = createReactBlockSpec(
   {
     type: "pin",
     propSchema: {
-      label: {
-        default: "My Label",
-        type: "string",
-      },
-      placeholder: {
-        default: "",
+      text: {
+        default: "Pick a Location",
         type: "string",
       },
       required: {
@@ -47,6 +43,23 @@ export const Pin = createReactBlockSpec(
         setIsSelectingPinLocationFor,
       } = useMapFormContext();
       const [prevViewState, setPrevViewState] = useState(viewState);
+
+      if (editable) {
+        return (
+          <Button className="w-full cursor-default" variant="secondary">
+            <input
+              className="w-full bg-transparent text-center text-sm font-medium border-0 p-0 outline-none border-transparent focus:border-transparent focus:ring-0"
+              onChange={(e) => {
+                editor.updateBlock(block, {
+                  type: "pin",
+                  props: { text: e.target.value },
+                });
+              }}
+              value={block.props.text}
+            />
+          </Button>
+        );
+      }
 
       return (
         <>
@@ -100,7 +113,7 @@ export const Pin = createReactBlockSpec(
               }}
               variant="secondary"
             >
-              Pick a Location
+              {block.props.text}
             </Button>
           )}
           <FormField
