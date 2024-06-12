@@ -13,7 +13,6 @@ import {
 import { Switch } from "@mapform/ui/components/switch";
 import { EllipsisIcon } from "lucide-react";
 import { Button } from "@mapform/ui/components/button";
-import { useState } from "react";
 import { Input } from "@mapform/ui/components/input";
 import { useMapFormContext } from "../../mapform/context";
 
@@ -41,13 +40,14 @@ export const Pin = createReactBlockSpec(
       const form = useFormContext();
       const {
         editable,
+        viewState,
         isSelectingPinLocationFor,
         setIsSelectingPinLocationFor,
       } = useMapFormContext();
 
       return (
         <>
-          {isSelectingPinLocationFor ? (
+          {isSelectingPinLocationFor === block.id ? (
             <Button
               className="w-full"
               onClick={() => {
@@ -62,6 +62,9 @@ export const Pin = createReactBlockSpec(
               className="w-full"
               onClick={() => {
                 setIsSelectingPinLocationFor(block.id);
+                console.log("viewState", viewState);
+                form.setValue(`${block.id}.latitude`, viewState.latitude);
+                form.setValue(`${block.id}.longitude`, viewState.longitude);
               }}
               variant="secondary"
             >

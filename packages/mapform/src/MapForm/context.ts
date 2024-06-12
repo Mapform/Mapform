@@ -1,7 +1,9 @@
+import type { ViewState } from "react-map-gl";
 import { createContext, useContext } from "react";
 
 export interface MapFormContextProps {
   editable: boolean;
+  viewState: ViewState;
   onImageUpload?: (file: File) => Promise<string | null>;
   isSelectingPinLocationFor: string | null;
   setIsSelectingPinLocationFor: React.Dispatch<

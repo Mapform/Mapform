@@ -70,6 +70,12 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
       onStepSubmit && onStepSubmit(data);
     };
 
+    const pinBlocks = (
+      currentStep?.description as { content: CustomBlock[] }
+    ).content.filter((c) => {
+      return c.type === "pin";
+    });
+
     return (
       <Form {...form}>
         <form
@@ -79,6 +85,7 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
           <MapFormContext.Provider
             value={{
               editable,
+              viewState,
               onImageUpload,
               isSelectingPinLocationFor,
               setIsSelectingPinLocationFor,
@@ -127,10 +134,29 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
               style={{ flex: 1 }}
             >
               <NavigationControl />
-              {/* <Marker
-              latitude={currentStep?.latitude}
-              longitude={currentStep?.longitude}
-            /> */}
+
+              {/* Render all Pin blocks for current step */}
+              {pinBlocks.map((block) => {
+                const latitude = form.watch(`${block.id}.latitude`);
+                const longitude = form.watch(`${block.id}.longitude`);
+
+                if (!latitude || !longitude) {
+                  return null;
+                }
+
+                return (
+                  <Marker
+                    color="red"
+                    draggable
+                    latitude={latitude}
+                    longitude={longitude}
+                    onDragEnd={(e) => {
+                      form.setValue(`${block.id}.latitude`, e.lngLat.lat);
+                      form.setValue(`${block.id}.longitude`, e.lngLat.lng);
+                    }}
+                  />
+                );
+              })}
             </Map>
           </MapFormContext.Provider>
         </form>
