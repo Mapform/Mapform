@@ -41,6 +41,7 @@ export const Pin = createReactBlockSpec(
       const {
         editable,
         viewState,
+        setViewState,
         isSelectingPinLocationFor,
         setIsSelectingPinLocationFor,
       } = useMapFormContext();
@@ -48,23 +49,35 @@ export const Pin = createReactBlockSpec(
       return (
         <>
           {isSelectingPinLocationFor === block.id ? (
-            <Button
-              className="w-full"
-              onClick={() => {
-                setIsSelectingPinLocationFor(null);
-              }}
-              variant="secondary"
-            >
-              Cancel
-            </Button>
+            <div className="flex flex-row-reverse gap-2">
+              <Button
+                className="w-full"
+                onClick={() => {
+                  setIsSelectingPinLocationFor(null);
+                }}
+              >
+                Done
+              </Button>
+              <Button
+                className="w-full"
+                onClick={() => {
+                  setIsSelectingPinLocationFor(null);
+                }}
+                variant="secondary"
+              >
+                Cancel
+              </Button>
+            </div>
           ) : (
             <Button
               className="w-full"
               onClick={() => {
                 setIsSelectingPinLocationFor(block.id);
-                console.log("viewState", viewState);
-                form.setValue(`${block.id}.latitude`, viewState.latitude);
-                form.setValue(`${block.id}.longitude`, viewState.longitude);
+                // setViewState({
+                //   viewState: {
+                //     ...viewState,
+                //   },
+                // });
               }}
               variant="secondary"
             >
@@ -79,7 +92,7 @@ export const Pin = createReactBlockSpec(
             render={({ field }) => (
               <FormItem className="flex-1">
                 <FormControl>
-                  <Input placeholder="" {...field} type="number" />
+                  <Input placeholder="" {...field} type="hidden" />
                 </FormControl>
               </FormItem>
             )}

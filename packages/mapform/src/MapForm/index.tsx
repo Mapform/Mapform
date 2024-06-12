@@ -147,7 +147,6 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
                 return (
                   <Marker
                     color="red"
-                    draggable
                     latitude={latitude}
                     longitude={longitude}
                     onDragEnd={(e) => {
