@@ -10,6 +10,8 @@ import { submitFormStepSchema } from "./schema";
 export const submitFormStep = action(
   submitFormStepSchema,
   async ({ stepId, formSubmissionId, payload }) => {
+    console.log(111111, payload);
+
     const step = await prisma.step.findUnique({
       where: {
         id: stepId,
@@ -58,6 +60,10 @@ export const submitFormStep = action(
               },
             },
           });
+        }
+
+        if (block?.type === "pin") {
+          // Need to manually create since Location is custom
         }
       })
     );

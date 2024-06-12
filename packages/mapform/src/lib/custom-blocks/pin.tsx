@@ -61,10 +61,13 @@ export const Pin = createReactBlockSpec(
         );
       }
 
+      const currentLatitude = form.watch(`${block.id}.latitude`);
+      const currentLongitude = form.watch(`${block.id}.longitude`);
+
       return (
         <>
           {isSelectingPinLocationFor === block.id ? (
-            <div className="flex flex-row-reverse gap-2">
+            <div className="flex flex-col gap-2">
               <Button
                 className="w-full"
                 onClick={() => {
@@ -76,6 +79,20 @@ export const Pin = createReactBlockSpec(
               >
                 Done
               </Button>
+              {currentLatitude && currentLongitude ? (
+                <Button
+                  className="w-full"
+                  onClick={() => {
+                    form.setValue(`${block.id}.latitude`, "");
+                    form.setValue(`${block.id}.longitude`, "");
+                    setViewState(prevViewState);
+                    setIsSelectingPinLocationFor(null);
+                  }}
+                  variant="secondary"
+                >
+                  Clear Selection
+                </Button>
+              ) : null}
               <Button
                 className="w-full"
                 onClick={() => {
@@ -92,11 +109,6 @@ export const Pin = createReactBlockSpec(
               className="w-full"
               onClick={() => {
                 setIsSelectingPinLocationFor(block.id);
-
-                const currentLatitude = form.getValues(`${block.id}.latitude`);
-                const currentLongitude = form.getValues(
-                  `${block.id}.longitude`
-                );
 
                 setPrevViewState(viewState);
 
