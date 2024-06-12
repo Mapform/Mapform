@@ -2,9 +2,7 @@ import { createReactBlockSpec } from "@blocknote/react";
 import {
   FormField,
   FormItem,
-  FormLabel,
   FormControl,
-  FormMessage,
   useFormContext,
 } from "@mapform/ui/components/form";
 import {
@@ -14,11 +12,10 @@ import {
 } from "@mapform/ui/components/popover";
 import { Switch } from "@mapform/ui/components/switch";
 import { EllipsisIcon } from "lucide-react";
-import { Label } from "@mapform/ui/components/label";
 import { Button } from "@mapform/ui/components/button";
-import { useMapFormContext } from "../../mapform/context";
 import { useState } from "react";
 import { Input } from "@mapform/ui/components/input";
+import { useMapFormContext } from "../../mapform/context";
 
 export const Pin = createReactBlockSpec(
   {
@@ -42,16 +39,19 @@ export const Pin = createReactBlockSpec(
   {
     render: ({ block, editor }) => {
       const form = useFormContext();
-      const { editable } = useMapFormContext();
-      const [isSelecting, setIsSelecting] = useState(false);
+      const {
+        editable,
+        isSelectingPinLocationFor,
+        setIsSelectingPinLocationFor,
+      } = useMapFormContext();
 
       return (
         <>
-          {isSelecting ? (
+          {isSelectingPinLocationFor ? (
             <Button
               className="w-full"
               onClick={() => {
-                setIsSelecting(false);
+                setIsSelectingPinLocationFor(null);
               }}
               variant="secondary"
             >
@@ -61,7 +61,7 @@ export const Pin = createReactBlockSpec(
             <Button
               className="w-full"
               onClick={() => {
-                setIsSelecting(true);
+                setIsSelectingPinLocationFor(block.id);
               }}
               variant="secondary"
             >
@@ -76,7 +76,7 @@ export const Pin = createReactBlockSpec(
             render={({ field }) => (
               <FormItem className="flex-1">
                 <FormControl>
-                  <Input placeholder="" {...field} type="hidden" />
+                  <Input placeholder="" {...field} type="number" />
                 </FormControl>
               </FormItem>
             )}

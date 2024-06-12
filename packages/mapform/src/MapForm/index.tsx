@@ -10,7 +10,7 @@ import Map, {
   NavigationControl,
 } from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
-import { forwardRef } from "react";
+import { forwardRef, useState } from "react";
 import type { Step } from "@mapform/db";
 import { Form, useForm, zodResolver } from "@mapform/ui/components/form";
 import type { z } from "zod";
@@ -62,12 +62,13 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
       resolver: zodResolver(blocknoteStepSchema),
       defaultValues: defaultFormValues,
     });
+    const [isSelectingPinLocationFor, setIsSelectingPinLocationFor] = useState<
+      string | null
+    >(null);
 
     const onSubmit = (data: FormSchema) => {
       onStepSubmit && onStepSubmit(data);
     };
-
-    console.log(111111, currentStep?.description);
 
     return (
       <Form {...form}>
@@ -75,7 +76,14 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
           className="flex w-full h-full"
           onSubmit={form.handleSubmit(onSubmit)}
         >
-          <MapFormContext.Provider value={{ editable, onImageUpload }}>
+          <MapFormContext.Provider
+            value={{
+              editable,
+              onImageUpload,
+              isSelectingPinLocationFor,
+              setIsSelectingPinLocationFor,
+            }}
+          >
             <div className="max-w-[320px] lg:max-w-[400px] w-full flex-shrink-0 bg-background shadow z-10">
               {currentStep ? (
                 <Blocknote
@@ -99,13 +107,17 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
               mapStyle="mapbox://styles/nichaley/clsxaiasf00ue01qjfhtt2v81"
               mapboxAccessToken={mapboxAccessToken}
               onClick={(e) => {
+                if (!isSelectingPinLocationFor) {
+                  return;
+                }
+
                 form.setValue(
-                  `5b0ce843-96d4-417a-b30e-a5a287adcd28.latitude`,
+                  `${isSelectingPinLocationFor}.latitude`,
                   e.lngLat.lat
                 );
 
                 form.setValue(
-                  `5b0ce843-96d4-417a-b30e-a5a287adcd28.longitude`,
+                  `${isSelectingPinLocationFor}.longitude`,
                   e.lngLat.lng
                 );
               }}
