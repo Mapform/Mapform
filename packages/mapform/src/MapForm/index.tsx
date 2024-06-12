@@ -139,8 +139,13 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
                 />
               ) : (
                 pinBlocks.map((block) => {
-                  const latitude = form.watch(`${block.id}.latitude`);
-                  const longitude = form.watch(`${block.id}.longitude`);
+                  // @ts-expect-error -- This does in fact exist. Because the form is dynamic, TS can't infer the type.
+                  const latitude = form.watch(`${block.id}.latitude`) as number;
+                  // @ts-expect-error -- This does in fact exist. Because the form is dynamic, TS can't infer the type.
+                  const longitude = form.watch(
+                    // @ts-expect-error -- This does in fact exist. Because the form is dynamic, TS can't infer the type.
+                    `${block.id}.longitude`
+                  ) as number;
 
                   if (!latitude || !longitude) {
                     return null;
@@ -153,7 +158,9 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
                       latitude={latitude}
                       longitude={longitude}
                       onDragEnd={(e) => {
+                        // @ts-expect-error -- This does in fact exist. Because the form is dynamic, TS can't infer the type.
                         form.setValue(`${block.id}.latitude`, e.lngLat.lat);
+                        // @ts-expect-error -- This does in fact exist. Because the form is dynamic, TS can't infer the type.
                         form.setValue(`${block.id}.longitude`, e.lngLat.lng);
                       }}
                     />
