@@ -12,10 +12,10 @@ import {
 } from "@mapform/ui/components/popover";
 import { Switch } from "@mapform/ui/components/switch";
 import { EllipsisIcon } from "lucide-react";
+import { useState } from "react";
 import { Button } from "@mapform/ui/components/button";
 import { Input } from "@mapform/ui/components/input";
 import { useMapFormContext } from "../../mapform/context";
-import { useState } from "react";
 
 export const Pin = createReactBlockSpec(
   {
@@ -57,9 +57,7 @@ export const Pin = createReactBlockSpec(
                 onClick={() => {
                   form.setValue(`${block.id}.latitude`, viewState.latitude);
                   form.setValue(`${block.id}.longitude`, viewState.longitude);
-                  setViewState({
-                    viewState: prevViewState,
-                  });
+                  setViewState(prevViewState);
                   setIsSelectingPinLocationFor(null);
                 }}
               >
@@ -68,9 +66,7 @@ export const Pin = createReactBlockSpec(
               <Button
                 className="w-full"
                 onClick={() => {
-                  setViewState({
-                    viewState: prevViewState,
-                  });
+                  setViewState(prevViewState);
                   setIsSelectingPinLocationFor(null);
                 }}
                 variant="secondary"
@@ -92,16 +88,14 @@ export const Pin = createReactBlockSpec(
                 setPrevViewState(viewState);
 
                 setViewState({
-                  viewState: {
-                    ...viewState,
-                    zoom: viewState.zoom * 1.2,
-                    latitude: currentLatitude
-                      ? currentLatitude
-                      : viewState.latitude,
-                    longitude: currentLongitude
-                      ? currentLongitude
-                      : viewState.longitude,
-                  },
+                  ...viewState,
+                  zoom: viewState.zoom * 1.2,
+                  latitude: currentLatitude
+                    ? currentLatitude
+                    : viewState.latitude,
+                  longitude: currentLongitude
+                    ? currentLongitude
+                    : viewState.longitude,
                 });
               }}
               variant="secondary"

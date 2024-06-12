@@ -120,9 +120,7 @@ export function Map({ formWithSteps, formValues, sessionId }: MapProps) {
         }
       }}
       ref={map}
-      setViewState={(evt) => {
-        setViewState(evt.viewState);
-      }}
+      setViewState={setViewState}
       viewState={viewState}
     />
   );

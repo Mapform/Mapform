@@ -10,7 +10,12 @@ import Map, {
   NavigationControl,
 } from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
-import { forwardRef, useState } from "react";
+import {
+  type Dispatch,
+  type SetStateAction,
+  forwardRef,
+  useState,
+} from "react";
 import type { Step } from "@mapform/db";
 import { Form, useForm, zodResolver } from "@mapform/ui/components/form";
 import type { z } from "zod";
@@ -19,7 +24,6 @@ import { getZodSchemaFromBlockNote } from "../lib/zod-schema-from-blocknote";
 import { type CustomBlock } from "../lib/block-note-schema";
 import { Blocknote } from "./block-note";
 import { MapFormContext } from "./context";
-import { cn } from "@mapform/lib/classnames";
 
 type ExtendedStep = Step & { latitude: number; longitude: number };
 
@@ -29,7 +33,7 @@ interface MapFormProps {
   currentStep?: ExtendedStep;
   viewState: ViewState;
   defaultFormValues?: Record<string, string>;
-  setViewState: (viewState: ViewStateChangeEvent) => void;
+  setViewState: Dispatch<SetStateAction<ViewState>>;
   onPrev?: () => void;
   onLoad?: () => void;
   onTitleChange?: (content: string) => void;
@@ -116,7 +120,12 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
               mapStyle="mapbox://styles/nichaley/clsxaiasf00ue01qjfhtt2v81"
               mapboxAccessToken={mapboxAccessToken}
               onLoad={onLoad}
-              onMove={setViewState}
+              onMove={(event) => {
+                setViewState((prev) => ({
+                  ...prev,
+                  ...event.viewState,
+                }));
+              }}
               ref={ref}
               style={{ flex: 1 }}
             >
@@ -140,6 +149,7 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
                   return (
                     <Marker
                       color="red"
+                      key={block.id}
                       latitude={latitude}
                       longitude={longitude}
                       onDragEnd={(e) => {

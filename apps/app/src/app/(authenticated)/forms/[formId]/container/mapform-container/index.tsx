@@ -72,9 +72,7 @@ function MapFormContainer({
             });
           }}
           ref={map}
-          setViewState={(evt) => {
-            setViewState(evt.viewState);
-          }}
+          setViewState={setViewState}
           viewState={viewState}
         />
       </div>
