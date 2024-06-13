@@ -13,7 +13,13 @@ import type { FormWithSteps } from "./requests";
 
 interface MapProps {
   formWithSteps: NonNullable<FormWithSteps>;
-  formValues: InputResponse[];
+  formValues: {
+    id: string;
+    blockNoteId: string;
+    // TODO: Use the correct type
+    value: any;
+    type: "text-input" | "pin";
+  }[];
   sessionId: string | null;
 }
 
