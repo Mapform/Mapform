@@ -1,5 +1,4 @@
 import { Prisma, Step } from "@prisma/client";
-import { v4 } from "uuid";
 
 export type StepWithLocation = Step & {
   latitude: number;
@@ -29,19 +28,22 @@ export function stepsExtension() {
             longitude: number;
             formId: string;
           }) => {
-            const locationId = v4();
-
             return prisma.$transaction(async (tx) => {
-              await tx.$queryRaw`
-                INSERT INTO "Location" (geom, id)
-                VALUES(ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), 4326), ${locationId})
+              const locationId: { id: number }[] = await tx.$queryRaw`
+                INSERT INTO "Location" (geom)
+                VALUES(ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), 4326))
+                RETURNING id
               `;
+
+              if (!locationId[0]?.id) {
+                throw new Error("Failed to create location");
+              }
 
               const newStep = await tx.step.create({
                 data: {
                   ...args,
                   formId,
-                  locationId,
+                  locationId: locationId[0].id,
                 },
               });
 

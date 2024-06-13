@@ -126,7 +126,7 @@ model Step {
     bearing     Int
     formId      String?
     form        Form?    @relation(name: "Steps", fields: [formId], references: [id])
-    locationId  String   @unique
+    locationId  Int      @unique
     location    Location @relation(fields: [locationId], references: [id])
 
     createdAt DateTime @default(now())
@@ -159,7 +159,7 @@ model InputResponse {
 model LocationResponse {
     id               String @id @default(uuid())
     blockNoteId      String
-    locationId       String @unique
+    locationId       Int    @unique
     formSubmissionId String
 
     location       Location       @relation(fields: [locationId], references: [id])
@@ -169,7 +169,7 @@ model LocationResponse {
 }
 
 model Location {
-    id               String                               @id @default(uuid())
+    id               Int                                  @id @default(autoincrement())
     geom             Unsupported("geometry(Point, 4326)")
     step             Step?
     locationResponse LocationResponse?

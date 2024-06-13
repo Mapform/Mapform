@@ -102,8 +102,6 @@ export function Map({ formWithSteps, formValues, sessionId }: MapProps) {
         }
       }}
       onStepSubmit={(data) => {
-        console.log(222222, data);
-
         execute({
           stepId: currentStep.id,
           formSubmissionId: currentSession,
