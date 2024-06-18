@@ -13,12 +13,16 @@ export const customBlockSpecs = {
   "text-input": TextInput,
 } as const;
 
-const { table: _, image: _2, ...rest } = defaultBlockSpecs;
+const { paragraph, numberedListItem, bulletListItem, heading } =
+  defaultBlockSpecs;
 
 export const schema = BlockNoteSchema.create({
   blockSpecs: {
-    // Adds all default blocks.
-    ...rest,
+    heading,
+    paragraph,
+    numberedListItem,
+    bulletListItem,
+
     // Adds custom blocks.
     ...customBlockSpecs,
   },

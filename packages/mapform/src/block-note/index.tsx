@@ -126,6 +126,7 @@ export function Blocknote({
               return filterSuggestionItems(
                 [
                   ...getDefaultReactSlashMenuItems(editor),
+
                   insertPin(editor),
                   insertTextInput(editor),
                   insertImage(editor),
