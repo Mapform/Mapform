@@ -18,8 +18,8 @@ const { paragraph, numberedListItem, bulletListItem, heading } =
 
 export const schema = BlockNoteSchema.create({
   blockSpecs: {
-    heading,
     paragraph,
+    heading,
     numberedListItem,
     bulletListItem,
 
