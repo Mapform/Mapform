@@ -4,15 +4,15 @@ import { useState } from "react";
 import "@blocknote/core/fonts/inter.css";
 import { filterSuggestionItems, insertOrUpdateBlock } from "@blocknote/core";
 import {
-  BlockNoteView,
   SuggestionMenuController,
   getDefaultReactSlashMenuItems,
   useCreateBlockNote,
 } from "@blocknote/react";
-import "@blocknote/react/style.css";
+import "@blocknote/mantine/style.css";
+import { BlockNoteView } from "@blocknote/mantine";
 import { TextIcon, ChevronLeftIcon, ImageIcon, MapPinIcon } from "lucide-react";
 import { Button } from "@mapform/ui/components/button";
-import { schema, type CustomBlock } from "../../lib/block-note-schema";
+import { schema, type CustomBlock } from "../lib/block-note-schema";
 import "./style.css";
 
 interface BlocknoteProps {
@@ -121,6 +121,7 @@ export function Blocknote({
           slashMenu={false}
         >
           <SuggestionMenuController
+            // eslint-disable-next-line @typescript-eslint/require-await -- Needs to return a Promise
             getItems={async (query) => {
               return filterSuggestionItems(
                 [

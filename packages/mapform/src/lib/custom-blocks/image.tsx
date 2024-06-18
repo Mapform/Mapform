@@ -8,7 +8,7 @@ import {
 import { Input } from "@mapform/ui/components/input";
 import NextImage from "next/image";
 import { ImageIcon, ImageOffIcon } from "lucide-react";
-import { useMapFormContext } from "../../mapform/context";
+import { useMapFormContext } from "../../context";
 
 export const Image = createReactBlockSpec(
   {
