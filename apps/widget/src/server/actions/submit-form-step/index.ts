@@ -37,8 +37,8 @@ export const submitFormStep = action(
       Object.entries(data).map(async ([key, value]) => {
         const block = documentContent.find((b) => b.id === key);
 
-        if (block?.type === "short-text-input") {
-          return prisma.shortTextInputResponse.upsert({
+        if (block?.type === "text-input") {
+          return prisma.inputResponse.upsert({
             create: {
               formSubmissionId,
               blockNoteId: key,
@@ -57,6 +57,56 @@ export const submitFormStep = action(
                 formSubmissionId,
               },
             },
+          });
+        }
+
+        if (block?.type === "pin") {
+          // First, create a Location with raw SQL query since Prisma doesn't support Postgis
+          await prisma.$transaction(async (tx) => {
+            const currentResponse = await tx.locationResponse.findUnique({
+              where: {
+                blockNoteId_formSubmissionId: {
+                  blockNoteId: key,
+                  formSubmissionId,
+                },
+              },
+            });
+            const currentLocationId = currentResponse?.locationId;
+
+            const locationId: { id: number }[] = await tx.$queryRaw`
+                INSERT INTO "Location" (geom)
+                VALUES(ST_SetSRID(ST_MakePoint(${value.longitude}, ${value.latitude}), 4326))
+                RETURNING id
+              `;
+
+            if (!locationId[0]?.id) {
+              throw new Error("Failed to create location");
+            }
+
+            await tx.locationResponse.upsert({
+              create: {
+                formSubmissionId,
+                blockNoteId: key,
+                locationId: locationId[0].id,
+              },
+              update: {
+                formSubmissionId,
+                blockNoteId: key,
+                locationId: locationId[0].id,
+              },
+              where: {
+                blockNoteId_formSubmissionId: {
+                  blockNoteId: key,
+                  formSubmissionId,
+                },
+              },
+            });
+
+            if (currentLocationId) {
+              await tx.$queryRaw`
+                DELETE FROM "Location" WHERE id = ${currentLocationId}
+              `;
+            }
           });
         }
       })

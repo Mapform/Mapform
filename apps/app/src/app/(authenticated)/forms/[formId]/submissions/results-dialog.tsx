@@ -6,8 +6,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
-  DialogFooter,
 } from "@mapform/ui/components/dialog";
 import { Button } from "@mapform/ui/components/button";
 import { type FormSubmissions } from "./requests";
@@ -17,8 +15,13 @@ interface ResultsDialogProps {
 }
 
 export function ResultsDialog({ formSubmission }: ResultsDialogProps) {
-  const getResults = () => {
-    return formSubmission.shortTextInputResponses.map((response) => {
+  const getResults = (): {
+    id: string;
+    title?: string;
+    value: string;
+    type: string;
+  }[] => {
+    const inputResponses = formSubmission.inputResponses.map((response) => {
       return {
         id: response.id,
         title: response.title,
@@ -26,6 +29,18 @@ export function ResultsDialog({ formSubmission }: ResultsDialogProps) {
         type: "Short Text Input",
       };
     });
+
+    const locationResponses = formSubmission.locationResponses.map(
+      (response) => {
+        return {
+          id: response.id,
+          value: `${response.location.latitude}, ${response.location.longitude}`,
+          type: "Pin",
+        };
+      }
+    );
+
+    return [...inputResponses, ...locationResponses];
   };
 
   return (

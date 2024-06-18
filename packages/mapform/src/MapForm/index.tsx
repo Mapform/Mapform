@@ -4,13 +4,23 @@ import Map, {
   type MapRef,
   type ViewState,
   type ViewStateChangeEvent,
+  Marker,
   MapProvider,
   useMap,
   NavigationControl,
 } from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
-import { forwardRef } from "react";
+import {
+  type Dispatch,
+  type SetStateAction,
+  forwardRef,
+  useState,
+} from "react";
 import type { Step } from "@mapform/db";
+import { Form, useForm, zodResolver } from "@mapform/ui/components/form";
+import type { z } from "zod";
+import type { FormSchema } from "@mapform/lib/schemas/form-step-schema";
+import { getZodSchemaFromBlockNote } from "../lib/zod-schema-from-blocknote";
 import { type CustomBlock } from "../lib/block-note-schema";
 import { Blocknote } from "./block-note";
 import { MapFormContext } from "./context";
@@ -23,7 +33,7 @@ interface MapFormProps {
   currentStep?: ExtendedStep;
   viewState: ViewState;
   defaultFormValues?: Record<string, string>;
-  setViewState: (viewState: ViewStateChangeEvent) => void;
+  setViewState: Dispatch<SetStateAction<ViewState>>;
   onPrev?: () => void;
   onLoad?: () => void;
   onTitleChange?: (content: string) => void;
@@ -50,41 +60,118 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
     },
     ref
   ) => {
+    const blocknoteStepSchema = getZodSchemaFromBlockNote(
+      (currentStep?.description as { content: CustomBlock[] } | null)
+        ?.content || []
+    );
+    const form = useForm<z.infer<typeof blocknoteStepSchema>>({
+      resolver: zodResolver(blocknoteStepSchema),
+      defaultValues: defaultFormValues,
+    });
+    const [isSelectingPinLocationFor, setIsSelectingPinLocationFor] = useState<
+      string | null
+    >(null);
+
+    const onSubmit = (data: FormSchema) => {
+      onStepSubmit && onStepSubmit(data);
+    };
+
+    const pinBlocks = (
+      currentStep?.description as { content: CustomBlock[] } | undefined
+    )?.content.filter((c) => {
+      return c.type === "pin";
+    });
+
     return (
-      <MapFormContext.Provider value={{ editable, onImageUpload }}>
-        <div className="flex w-full h-full">
-          <div className="max-w-[320px] lg:max-w-[400px] w-full flex-shrink-0 bg-background shadow z-10">
-            {currentStep ? (
-              <Blocknote
-                defaultFormValues={defaultFormValues}
-                description={
-                  currentStep.description as { content: CustomBlock[] }
-                }
-                // Need key to force re-render, otherwise Blocknote state doesn't
-                // change when changing steps
-                editable={editable}
-                key={currentStep.id}
-                onDescriptionChange={onDescriptionChange}
-                onPrev={onPrev}
-                onStepSubmit={onStepSubmit}
-                onTitleChange={onTitleChange}
-                title={currentStep.title}
-              />
-            ) : null}
-          </div>
-          <Map
-            {...viewState}
-            mapStyle="mapbox://styles/nichaley/clsxaiasf00ue01qjfhtt2v81"
-            mapboxAccessToken={mapboxAccessToken}
-            onLoad={onLoad}
-            onMove={setViewState}
-            ref={ref}
-            style={{ flex: 1 }}
+      <Form {...form}>
+        <form
+          className="flex w-full h-full"
+          onSubmit={form.handleSubmit(onSubmit)}
+        >
+          <MapFormContext.Provider
+            value={{
+              editable,
+              viewState,
+              setViewState,
+              onImageUpload,
+              isSelectingPinLocationFor,
+              setIsSelectingPinLocationFor,
+            }}
           >
-            <NavigationControl />
-          </Map>
-        </div>
-      </MapFormContext.Provider>
+            <div className="max-w-[320px] lg:max-w-[400px] w-full flex-shrink-0 bg-background shadow z-10">
+              {currentStep ? (
+                <Blocknote
+                  defaultFormValues={defaultFormValues}
+                  description={
+                    currentStep.description as { content: CustomBlock[] }
+                  }
+                  // Need key to force re-render, otherwise Blocknote state doesn't
+                  // change when changing steps
+                  editable={editable}
+                  key={currentStep.id}
+                  onDescriptionChange={onDescriptionChange}
+                  onPrev={onPrev}
+                  onTitleChange={onTitleChange}
+                  title={currentStep.title}
+                />
+              ) : null}
+            </div>
+            <Map
+              {...viewState}
+              mapStyle="mapbox://styles/nichaley/clsxaiasf00ue01qjfhtt2v81"
+              mapboxAccessToken={mapboxAccessToken}
+              onLoad={onLoad}
+              onMove={(event) => {
+                setViewState((prev) => ({
+                  ...prev,
+                  ...event.viewState,
+                }));
+              }}
+              ref={ref}
+              style={{ flex: 1 }}
+            >
+              <NavigationControl />
+
+              {isSelectingPinLocationFor ? (
+                <Marker
+                  color="red"
+                  latitude={viewState.latitude}
+                  longitude={viewState.longitude}
+                />
+              ) : (
+                pinBlocks?.map((block) => {
+                  // @ts-expect-error -- This does in fact exist. Because the form is dynamic, TS can't infer the type.
+                  const latitude = form.watch(`${block.id}.latitude`) as number;
+                  // @ts-expect-error -- This does in fact exist. Because the form is dynamic, TS can't infer the type.
+                  const longitude = form.watch(
+                    // @ts-expect-error -- This does in fact exist. Because the form is dynamic, TS can't infer the type.
+                    `${block.id}.longitude`
+                  ) as number;
+
+                  if (!latitude || !longitude) {
+                    return null;
+                  }
+
+                  return (
+                    <Marker
+                      color="red"
+                      key={block.id}
+                      latitude={latitude}
+                      longitude={longitude}
+                      onDragEnd={(e) => {
+                        // @ts-expect-error -- This does in fact exist. Because the form is dynamic, TS can't infer the type.
+                        form.setValue(`${block.id}.latitude`, e.lngLat.lat);
+                        // @ts-expect-error -- This does in fact exist. Because the form is dynamic, TS can't infer the type.
+                        form.setValue(`${block.id}.longitude`, e.lngLat.lng);
+                      }}
+                    />
+                  );
+                })
+              )}
+            </Map>
+          </MapFormContext.Provider>
+        </form>
+      </Form>
     );
   }
 );

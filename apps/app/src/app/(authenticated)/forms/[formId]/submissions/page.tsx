@@ -25,17 +25,19 @@ export default async function Submissions({
 
       return (
         total +
-        description.content.filter((block) => block.type === "short-text-input")
-          .length
+        description.content.filter(
+          (block) => block.type === "text-input" || block.type === "pin"
+        ).length
       );
     }, 0);
   });
 
   const getTotalSubmissionInputs = memoize(
     (formSubmission: (typeof formSubmissions)[number]) => {
-      return formSubmission.shortTextInputResponses.filter(
-        (r) => r.value !== ""
-      ).length;
+      return (
+        formSubmission.inputResponses.filter((r) => r.value !== "").length +
+        formSubmission.locationResponses.length
+      );
     }
   );
 
