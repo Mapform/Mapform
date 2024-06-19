@@ -14,6 +14,7 @@ import { TextIcon, ChevronLeftIcon, ImageIcon, MapPinIcon } from "lucide-react";
 import { Button } from "@mapform/ui/components/button";
 import { schema, type CustomBlock } from "../lib/block-note-schema";
 import "./style.css";
+import { AutoSizeTextArea } from "./autosize-text-area";
 
 interface BlocknoteProps {
   editable: boolean;
@@ -91,13 +92,11 @@ export function Blocknote({
       <div className="overflow-y-auto p-4 pb-0">
         {/* Title */}
         {editable ? (
-          <input
-            className="border-0 text-2xl font-bold w-full mb-2 p-0 outline-none border-transparent focus:border-transparent focus:ring-0 placeholder-gray-300"
-            onChange={(e) => {
-              setUncontrolledTitle(e.target.value);
-              onTitleChange && onTitleChange(e.target.value);
+          <AutoSizeTextArea
+            onChange={(val) => {
+              setUncontrolledTitle(val);
+              onTitleChange && onTitleChange(val);
             }}
-            placeholder="Untitled"
             value={uncontrolledTitle}
           />
         ) : (
