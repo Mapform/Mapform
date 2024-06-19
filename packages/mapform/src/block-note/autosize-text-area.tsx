@@ -6,9 +6,14 @@ import { useCallback, useEffect } from "react";
 interface AutoSizeTextAreaProps {
   value: string;
   onChange: (value: string) => void;
+  onEnter: () => void;
 }
 
-export function AutoSizeTextArea({ value, onChange }: AutoSizeTextAreaProps) {
+export function AutoSizeTextArea({
+  value,
+  onChange,
+  onEnter,
+}: AutoSizeTextAreaProps) {
   const { ref, bounds } = useMeasure<HTMLTextAreaElement>();
 
   const updateHeight = useCallback(() => {
@@ -28,6 +33,12 @@ export function AutoSizeTextArea({ value, onChange }: AutoSizeTextAreaProps) {
       onChange={(e) => {
         onChange(e.target.value);
         updateHeight();
+      }}
+      onKeyDown={(e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          onEnter();
+        }
       }}
       placeholder="Untitled"
       ref={ref}

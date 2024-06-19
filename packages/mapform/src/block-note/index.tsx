@@ -98,6 +98,9 @@ export function Blocknote({
                 setUncontrolledTitle(val);
                 onTitleChange && onTitleChange(val);
               }}
+              onEnter={() => {
+                editor.focus();
+              }}
               value={uncontrolledTitle}
             />
           ) : (
