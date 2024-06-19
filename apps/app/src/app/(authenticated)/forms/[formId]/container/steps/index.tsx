@@ -141,7 +141,9 @@ export function Steps() {
                       type="button"
                     >
                       <div className="flex-1 h-full flex justify-center items-center bg-orange-300">
-                        {step.title || "Untitled"}
+                        <span className="line-clamp-2 break-words">
+                          {step.title || "Untitled"}
+                        </span>
                       </div>
                     </button>
                   </Draggable>
