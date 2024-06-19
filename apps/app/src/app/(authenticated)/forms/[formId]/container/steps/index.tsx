@@ -141,7 +141,7 @@ export function Steps() {
                       type="button"
                     >
                       <div className="flex-1 h-full flex justify-center items-center bg-orange-300">
-                        <span className="line-clamp-2 break-words">
+                        <span className="line-clamp-2 break-words px-1">
                           {step.title || "Untitled"}
                         </span>
                       </div>
