@@ -34,3 +34,12 @@ export type CustomBlock = Block<
   typeof schema.styleSchema
 >;
 export type DocumentContent = CustomBlock[];
+
+export type TextInputBlock = (typeof schema.blockSchema)["textInput"];
+export type PinBlock = (typeof schema.blockSchema)["pin"];
+export type ImageBlock = (typeof schema.blockSchema)["image"];
+export type ParagraphBlock = (typeof schema.blockSchema)["paragraph"];
+export type HeadingBlock = (typeof schema.blockSchema)["heading"];
+export type NumberedListItemBlock =
+  (typeof schema.blockSchema)["numberedListItem"];
+export type BulletListItemBlock = (typeof schema.blockSchema)["bulletListItem"];

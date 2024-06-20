@@ -19,12 +19,12 @@ import {
 import type { Step } from "@mapform/db";
 import { Form, useForm, zodResolver } from "@mapform/ui/components/form";
 import type { z } from "zod";
+import { cn } from "@mapform/lib/classnames";
 import type { FormSchema } from "@mapform/lib/schemas/form-step-schema";
-import { getZodSchemaFromBlockNote } from "./lib/zod-schema-from-blocknote";
+import { getFormSchemaFromBlockNote } from "./lib/zod-schema-from-blocknote";
 import { type CustomBlock } from "./lib/block-note-schema";
 import { Blocknote } from "./block-note";
 import { MapFormContext } from "./context";
-import { cn } from "@mapform/lib/classnames";
 
 type ExtendedStep = Step & { latitude: number; longitude: number };
 
@@ -61,7 +61,7 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
     },
     ref
   ) => {
-    const blocknoteStepSchema = getZodSchemaFromBlockNote(
+    const blocknoteStepSchema = getFormSchemaFromBlockNote(
       (currentStep?.description as { content: CustomBlock[] } | null)
         ?.content || []
     );

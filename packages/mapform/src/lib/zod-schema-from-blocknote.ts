@@ -1,19 +1,18 @@
-/**
- * This is for generate a zod schema for use with the user Form. TODO: This
- * should be refactored. The logic is spread across too many files. Should be
- * much easier to drop in new blocks.
- */
 import { z } from "zod";
-import { type CustomBlock } from "./block-note-schema";
+import type { CustomBlock } from "./block-note-schema";
 
-// TODO: Figure out appropriate types for props
 const schemaMap = {
-  pin: (props: any) =>
-    z.object({
-      latitude: z.number(),
-      longitude: z.number(),
-    }),
-  textInput: (props: any) => {
+  pin: (props: { required: boolean }) =>
+    props.required
+      ? z.object({
+          latitude: z.number(),
+          longitude: z.number(),
+        })
+      : z.object({
+          latitude: z.number().optional(),
+          longitude: z.number().optional(),
+        }),
+  textInput: (props: { required: boolean }) => {
     return props.required
       ? z.string()
       : z.string().optional().or(z.literal(""));
@@ -21,20 +20,21 @@ const schemaMap = {
 };
 
 /**
- * Scehmas for custom input blocks
+ * This is used to generate a Zod schema from a list of custom blocks inputs.
  */
-type CustomBlockTypes = "textInput" | "pin";
-const customBlocks = ["textInput", "pin"] as CustomBlockTypes[];
+type InputCustomBlockTypes = "textInput" | "pin";
+const customBlocks = ["textInput", "pin"] as InputCustomBlockTypes[];
 
-export function getZodSchemaFromBlockNote(blocks: CustomBlock[]) {
+export function getFormSchemaFromBlockNote(blocks: CustomBlock[]) {
   const filteredBlocks = blocks.filter((block) =>
-    customBlocks.includes(block.type as CustomBlockTypes)
+    customBlocks.includes(block.type as InputCustomBlockTypes)
   );
 
   const zodObj = filteredBlocks.reduce(
     (acc, cur) => ({
       ...acc,
-      [cur.id]: schemaMap[cur.type as CustomBlockTypes](cur.props),
+      // @ts-expect-error -- Complex TS type needed. Ignoring for now.
+      [cur.id]: schemaMap[cur.type as InputCustomBlockTypes](cur.props),
     }),
     {}
   );

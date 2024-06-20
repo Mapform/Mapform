@@ -3,7 +3,7 @@
 import { prisma } from "@mapform/db";
 import { revalidatePath } from "next/cache";
 import { type DocumentContent } from "@mapform/mapform/lib/block-note-schema";
-import { getZodSchemaFromBlockNote } from "@mapform/mapform/lib/zod-schema-from-blocknote";
+import { getFormSchemaFromBlockNote } from "@mapform/mapform/lib/zod-schema-from-blocknote";
 import { action } from "~/lib/safe-action";
 import { submitFormStepSchema } from "./schema";
 
@@ -25,7 +25,7 @@ export const submitFormStep = action(
 
     // TODO: VALIDATION
 
-    const validationSchema = getZodSchemaFromBlockNote(documentContent);
+    const validationSchema = getFormSchemaFromBlockNote(documentContent);
 
     const { data, error } = validationSchema.safeParse(payload);
 
