@@ -15,7 +15,7 @@ import { EllipsisIcon } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@mapform/ui/components/button";
 import { Input } from "@mapform/ui/components/input";
-import { useMapFormContext } from "../../mapform/context";
+import { useMapFormContext } from "../../context";
 
 export const Pin = createReactBlockSpec(
   {

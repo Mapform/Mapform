@@ -4,16 +4,17 @@ import { useState } from "react";
 import "@blocknote/core/fonts/inter.css";
 import { filterSuggestionItems, insertOrUpdateBlock } from "@blocknote/core";
 import {
-  BlockNoteView,
   SuggestionMenuController,
   getDefaultReactSlashMenuItems,
   useCreateBlockNote,
 } from "@blocknote/react";
-import "@blocknote/react/style.css";
+import "@blocknote/mantine/style.css";
+import { BlockNoteView } from "@blocknote/mantine";
 import { TextIcon, ChevronLeftIcon, ImageIcon, MapPinIcon } from "lucide-react";
 import { Button } from "@mapform/ui/components/button";
-import { schema, type CustomBlock } from "../../lib/block-note-schema";
+import { schema, type CustomBlock } from "../lib/block-note-schema";
 import "./style.css";
+import { AutoSizeTextArea } from "./autosize-text-area";
 
 interface BlocknoteProps {
   editable: boolean;
@@ -43,7 +44,7 @@ export function Blocknote({
   const editor = useCreateBlockNote({
     initialContent: description?.content,
     placeholders: {
-      default: "Write a description, or press '/' for commands...",
+      default: "Write something, or press '/' for commands...",
     },
     schema,
   });
@@ -86,63 +87,70 @@ export function Blocknote({
 
   // Renders the editor instance using a React component.
   return (
-    <div className="h-full flex flex-col">
-      {/* Content */}
-      <div className="overflow-y-auto p-4 pb-0">
-        {/* Title */}
-        {editable ? (
-          <input
-            className="border-0 text-2xl font-bold w-full mb-2 p-0 outline-none border-transparent focus:border-transparent focus:ring-0 placeholder-gray-300"
-            onChange={(e) => {
-              setUncontrolledTitle(e.target.value);
-              onTitleChange && onTitleChange(e.target.value);
-            }}
-            placeholder="Untitled"
-            value={uncontrolledTitle}
-          />
-        ) : (
-          <h1 className="border-0 text-2xl font-bold w-full mb-2 p-0">
-            {title ?? "Untitled"}
-          </h1>
-        )}
+    <div className="h-full flex flex-col prose mx-auto">
+      <div className="flex-1 flex flex-col overflow-y-auto">
+        {/* Content */}
+        <div className="overflow-y-auto p-4 pb-0">
+          {/* Title */}
+          {editable ? (
+            <AutoSizeTextArea
+              onChange={(val) => {
+                setUncontrolledTitle(val);
+                onTitleChange && onTitleChange(val);
+              }}
+              onEnter={() => {
+                if (description?.content[0]) {
+                  editor.setTextCursorPosition(description.content[0], "start");
+                }
+                editor.focus();
+              }}
+              value={uncontrolledTitle}
+            />
+          ) : (
+            <h1 className="border-0 text-2xl font-bold w-full mb-2 p-0">
+              {title ?? "Untitled"}
+            </h1>
+          )}
 
-        {/* Description */}
-        <BlockNoteView
-          className="flex-1"
-          editable={editable}
-          editor={editor}
-          onChange={() => {
-            onDescriptionChange &&
-              onDescriptionChange({
-                content: editor.document,
-              });
-          }}
-          sideMenu={false}
-          slashMenu={false}
-        >
-          <SuggestionMenuController
-            getItems={async (query) => {
-              return filterSuggestionItems(
-                [
-                  ...getDefaultReactSlashMenuItems(editor),
-                  insertPin(editor),
-                  insertTextInput(editor),
-                  insertImage(editor),
-                ],
-                query
-              );
+          {/* Description */}
+          <BlockNoteView
+            className="flex-1"
+            editable={editable}
+            editor={editor}
+            onChange={() => {
+              onDescriptionChange &&
+                onDescriptionChange({
+                  content: editor.document,
+                });
             }}
-            triggerCharacter="/"
-          />
-        </BlockNoteView>
+            slashMenu={false}
+          >
+            <SuggestionMenuController
+              // eslint-disable-next-line @typescript-eslint/require-await -- Needs to return a Promise
+              getItems={async (query) => {
+                return filterSuggestionItems(
+                  [
+                    ...getDefaultReactSlashMenuItems(editor),
+
+                    insertPin(editor),
+                    insertTextInput(editor),
+                    insertImage(editor),
+                  ],
+                  query
+                );
+              }}
+              triggerCharacter="/"
+            />
+          </BlockNoteView>
+        </div>
+        {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions -- Disable a11y checks here */}
+        <div
+          className="flex-1"
+          onClick={() => {
+            editor.focus();
+          }}
+        />
       </div>
-      {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions -- Disable a11y checks here */}
-      <div
-        className="flex-1"
-        onClick={() => {
-          editor.focus();
-        }}
-      />
       <div className="mt-auto flex justify-between p-4">
         <div className="gap-2">
           <Button

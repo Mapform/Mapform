@@ -43,14 +43,14 @@ export function Container({ formId }: { formId: string }) {
       )}
       <div
         className={cn(
-          "flex flex-col flex-1  transition-all duration-300 ease-in-out",
+          "flex flex-col flex-1 overflow-hidden transition-all duration-300 ease-in-out",
           {
             invisible: !mapformLoaded,
             opacity: mapformLoaded ? 1 : 0,
           }
         )}
       >
-        <div className="flex flex-1">
+        <div className="flex flex-1 overflow-hidden">
           {/* MAP */}
           <MapFormContainer setMapformLoaded={setMapformLoaded} />
 

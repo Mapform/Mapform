@@ -16,7 +16,7 @@ import { Input } from "@mapform/ui/components/input";
 import { Switch } from "@mapform/ui/components/switch";
 import { EllipsisIcon } from "lucide-react";
 import { Label } from "@mapform/ui/components/label";
-import { useMapFormContext } from "../../mapform/context";
+import { useMapFormContext } from "../../context";
 
 export const TextInput = createReactBlockSpec(
   {

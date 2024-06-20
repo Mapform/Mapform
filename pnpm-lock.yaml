@@ -335,11 +335,14 @@ importers:
   packages/mapform:
     dependencies:
       '@blocknote/core':
-        specifier: ^0.12.4
-        version: 0.12.4
+        specifier: ^0.14.1
+        version: 0.14.1
+      '@blocknote/mantine':
+        specifier: ^0.14.1
+        version: 0.14.1(@tiptap/pm@2.4.0)(@types/react@18.2.61)(react-dom@18.2.0)(react@18.2.0)
       '@blocknote/react':
-        specifier: ^0.12.4
-        version: 0.12.4(@tiptap/pm@2.4.0)(@types/react@18.2.61)(react-dom@18.2.0)(react@18.2.0)
+        specifier: ^0.14.1
+        version: 0.14.1(@tiptap/pm@2.4.0)(react-dom@18.2.0)(react@18.2.0)
       '@mapform/db':
         specifier: workspace:*
         version: link:../db
@@ -430,6 +433,9 @@ importers:
       '@radix-ui/react-switch':
         specifier: ^1.0.3
         version: 1.0.3(@types/react-dom@18.2.19)(@types/react@18.2.61)(react-dom@18.2.0)(react@18.2.0)
+      '@tailwindcss/line-clamp':
+        specifier: ^0.4.4
+        version: 0.4.4(tailwindcss@3.4.1)
       class-variance-authority:
         specifier: ^0.7.0
         version: 0.7.0
@@ -718,14 +724,14 @@ packages:
       to-fast-properties: 2.0.0
     dev: true
 
-  /@blocknote/core@0.12.4:
-    resolution: {integrity: sha512-njnrEZUZ7sPm0CIwxSfFfnP1IgB+H+Kvk5+2Etr3tozuQgwdQ0X6wn6E+MTCP97Nxl/aPA7S1F/XUoy1L8ICXQ==}
+  /@blocknote/core@0.14.1:
+    resolution: {integrity: sha512-VUrbGiARmKhSorLpXYee0VIhtVO3T3KxJM04UvIC2UwzW+J1z9LAShR5EYAfKHFbgPPqZ5y6gcH29Yu9pSeNgw==}
     dependencies:
       '@tiptap/core': 2.4.0(@tiptap/pm@2.4.0)
       '@tiptap/extension-bold': 2.4.0(@tiptap/core@2.4.0)
       '@tiptap/extension-code': 2.4.0(@tiptap/core@2.4.0)
-      '@tiptap/extension-collaboration': 2.4.0(@tiptap/core@2.4.0)(@tiptap/pm@2.4.0)(y-prosemirror@1.2.1)
-      '@tiptap/extension-collaboration-cursor': 2.4.0(@tiptap/core@2.4.0)(y-prosemirror@1.2.1)
+      '@tiptap/extension-collaboration': 2.4.0(@tiptap/core@2.4.0)(@tiptap/pm@2.4.0)(y-prosemirror@1.2.5)
+      '@tiptap/extension-collaboration-cursor': 2.4.0(@tiptap/core@2.4.0)(y-prosemirror@1.2.5)
       '@tiptap/extension-dropcursor': 2.4.0(@tiptap/core@2.4.0)(@tiptap/pm@2.4.0)
       '@tiptap/extension-gapcursor': 2.4.0(@tiptap/core@2.4.0)(@tiptap/pm@2.4.0)
       '@tiptap/extension-hard-break': 2.4.0(@tiptap/core@2.4.0)
@@ -757,34 +763,51 @@ packages:
       remark-stringify: 10.0.3
       unified: 10.1.2
       uuid: 8.3.2
-      y-prosemirror: 1.2.1(prosemirror-model@1.21.1)(prosemirror-state@1.4.3)(prosemirror-view@1.33.7)(y-protocols@1.0.6)(yjs@13.6.15)
+      y-prosemirror: 1.2.5(prosemirror-model@1.21.1)(prosemirror-state@1.4.3)(prosemirror-view@1.33.7)(y-protocols@1.0.6)(yjs@13.6.15)
       y-protocols: 1.0.6(yjs@13.6.15)
       yjs: 13.6.15
     transitivePeerDependencies:
       - supports-color
     dev: false
 
-  /@blocknote/react@0.12.4(@tiptap/pm@2.4.0)(@types/react@18.2.61)(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-cgtQmPUhRmWwHifskhfuwq7SflXTagilblzkfKmkvHYsldeH2WcOHGbgskX5bdx7ulvryrLnTSbXszLuTGd5Hw==}
+  /@blocknote/mantine@0.14.1(@tiptap/pm@2.4.0)(@types/react@18.2.61)(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-tCwWHaxWbBsfpZ8SaghoPrOF47UyK/0zxx1JyH8D/OCsfGP3dFJE0Hb0bLxJQ/eLMMQoigb2uulklcrkije+4Q==}
     peerDependencies:
       react: ^18
       react-dom: ^18
     dependencies:
-      '@blocknote/core': 0.12.4
-      '@floating-ui/react': 0.26.12(react-dom@18.2.0)(react@18.2.0)
+      '@blocknote/core': 0.14.1
+      '@blocknote/react': 0.14.1(@tiptap/pm@2.4.0)(react-dom@18.2.0)(react@18.2.0)
       '@mantine/core': 7.10.1(@mantine/hooks@7.10.1)(@types/react@18.2.61)(react-dom@18.2.0)(react@18.2.0)
       '@mantine/hooks': 7.10.1(react@18.2.0)
       '@mantine/utils': 6.0.21(react@18.2.0)
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+      react-icons: 5.2.1(react@18.2.0)
+      use-prefers-color-scheme: 1.1.3(react@18.2.0)
+    transitivePeerDependencies:
+      - '@tiptap/pm'
+      - '@types/react'
+      - supports-color
+    dev: false
+
+  /@blocknote/react@0.14.1(@tiptap/pm@2.4.0)(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-Wj4fNkDhtBmvtkGixzF8qesJMKGkrNWx3WGgg2WEyVusjhwx7DwatVmU92dvQ3rbz+VZDkrXZFKtcgxo3dMOFw==}
+    peerDependencies:
+      react: ^18
+      react-dom: ^18
+    dependencies:
+      '@blocknote/core': 0.14.1
+      '@floating-ui/react': 0.26.12(react-dom@18.2.0)(react@18.2.0)
       '@tiptap/core': 2.4.0(@tiptap/pm@2.4.0)
       '@tiptap/react': 2.4.0(@tiptap/core@2.4.0)(@tiptap/pm@2.4.0)(react-dom@18.2.0)(react@18.2.0)
       lodash.merge: 4.6.2
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
-      react-icons: 4.12.0(react@18.2.0)
+      react-icons: 5.2.1(react@18.2.0)
       use-prefers-color-scheme: 1.1.3(react@18.2.0)
     transitivePeerDependencies:
       - '@tiptap/pm'
-      - '@types/react'
       - supports-color
     dev: false
 
@@ -2209,6 +2232,14 @@ packages:
       tailwindcss: 3.4.1
     dev: true
 
+  /@tailwindcss/line-clamp@0.4.4(tailwindcss@3.4.1):
+    resolution: {integrity: sha512-5U6SY5z8N42VtrCrKlsTAA35gy2VSyYtHWCsg1H87NU1SXnEfekTVlrga9fzUDrrHcGi2Lb5KenUWb4lRQT5/g==}
+    peerDependencies:
+      tailwindcss: '>=2.0.0 || >=3.0.0 || >=3.0.0-alpha.1'
+    dependencies:
+      tailwindcss: 3.4.1
+    dev: false
+
   /@tailwindcss/typography@0.5.10(tailwindcss@3.4.1):
     resolution: {integrity: sha512-Pe8BuPJQJd3FfRnm6H0ulKIGoMEQS+Vq01R6M5aCrFB/ccR/shT+0kXLjouGC1gFLm9hopTFN+DMP0pfwRWzPw==}
     peerDependencies:
@@ -2299,17 +2330,17 @@ packages:
       '@tiptap/core': 2.4.0(@tiptap/pm@2.4.0)
     dev: false
 
-  /@tiptap/extension-collaboration-cursor@2.4.0(@tiptap/core@2.4.0)(y-prosemirror@1.2.1):
+  /@tiptap/extension-collaboration-cursor@2.4.0(@tiptap/core@2.4.0)(y-prosemirror@1.2.5):
     resolution: {integrity: sha512-BTVy9FCTGdHxYieJ4lteVLrRY5qAPQyfunhMwakVf1NT3iU9quE6CaeaIwt6wEDJPMPPKzOHg1/ltSz9nIDe4A==}
     peerDependencies:
       '@tiptap/core': ^2.0.0
       y-prosemirror: ^1.2.5
     dependencies:
       '@tiptap/core': 2.4.0(@tiptap/pm@2.4.0)
-      y-prosemirror: 1.2.1(prosemirror-model@1.21.1)(prosemirror-state@1.4.3)(prosemirror-view@1.33.7)(y-protocols@1.0.6)(yjs@13.6.15)
+      y-prosemirror: 1.2.5(prosemirror-model@1.21.1)(prosemirror-state@1.4.3)(prosemirror-view@1.33.7)(y-protocols@1.0.6)(yjs@13.6.15)
     dev: false
 
-  /@tiptap/extension-collaboration@2.4.0(@tiptap/core@2.4.0)(@tiptap/pm@2.4.0)(y-prosemirror@1.2.1):
+  /@tiptap/extension-collaboration@2.4.0(@tiptap/core@2.4.0)(@tiptap/pm@2.4.0)(y-prosemirror@1.2.5):
     resolution: {integrity: sha512-achU+GU9tqxn3zsU61CbwWrCausf0U23MJIpo8vnywOIx6E955by6okHEHoUazLIGVFXVc5DBzBP7bf+Snzk0Q==}
     peerDependencies:
       '@tiptap/core': ^2.0.0
@@ -2318,7 +2349,7 @@ packages:
     dependencies:
       '@tiptap/core': 2.4.0(@tiptap/pm@2.4.0)
       '@tiptap/pm': 2.4.0
-      y-prosemirror: 1.2.1(prosemirror-model@1.21.1)(prosemirror-state@1.4.3)(prosemirror-view@1.33.7)(y-protocols@1.0.6)(yjs@13.6.15)
+      y-prosemirror: 1.2.5(prosemirror-model@1.21.1)(prosemirror-state@1.4.3)(prosemirror-view@1.33.7)(y-protocols@1.0.6)(yjs@13.6.15)
     dev: false
 
   /@tiptap/extension-dropcursor@2.4.0(@tiptap/core@2.4.0)(@tiptap/pm@2.4.0):
@@ -6950,8 +6981,8 @@ packages:
       react: 18.2.0
     dev: false
 
-  /react-icons@4.12.0(react@18.2.0):
-    resolution: {integrity: sha512-IBaDuHiShdZqmfc/TwHu6+d6k2ltNCf3AszxNmjJc1KUfXdEeRJOKyNvLmAHaarhzGmTSVygNdyu8/opXv2gaw==}
+  /react-icons@5.2.1(react@18.2.0):
+    resolution: {integrity: sha512-zdbW5GstTzXaVKvGSyTaBalt7HSfuK5ovrzlpyiWHAFXndXTdd/1hdDHI4xBM1Mn7YriT6aqESucFl9kEXzrdw==}
     peerDependencies:
       react: '*'
     dependencies:
@@ -8473,8 +8504,9 @@ packages:
     engines: {node: '>=0.4'}
     dev: false
 
-  /y-prosemirror@1.2.1(prosemirror-model@1.21.1)(prosemirror-state@1.4.3)(prosemirror-view@1.33.7)(y-protocols@1.0.6)(yjs@13.6.15):
-    resolution: {integrity: sha512-czMBfB1eL2awqmOSxQM8cS/fsUOGE6fjvyPLInrh4crPxFiw67wDpwIW+EGBYKRa04sYbS0ScGj7ZgvWuDrmBQ==}
+  /y-prosemirror@1.2.5(prosemirror-model@1.21.1)(prosemirror-state@1.4.3)(prosemirror-view@1.33.7)(y-protocols@1.0.6)(yjs@13.6.15):
+    resolution: {integrity: sha512-T/JATxC8P2Dbvq/dAiaiztD1a8KEwRP8oLRlT8YlaZdNlLGE1Ea0IJ8If25UlDYmk+4+uqLbqT/S+dzUmwwgbA==}
+    engines: {node: '>=16.0.0', npm: '>=8.0.0'}
     peerDependencies:
       prosemirror-model: ^1.7.1
       prosemirror-state: ^1.2.3
