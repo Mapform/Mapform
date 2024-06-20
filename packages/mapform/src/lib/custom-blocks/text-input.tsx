@@ -49,7 +49,7 @@ export const TextInput = createReactBlockSpec(
           // This is what allows us to match the user value back to the input
           name={block.id}
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="w-full">
               {editable ? (
                 <div className="flex justify-between">
                   <input
