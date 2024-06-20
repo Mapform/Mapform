@@ -23,8 +23,8 @@ function MapFormContainer({
   } = useContainerContext();
 
   return (
-    <div className="p-8 flex-1 flex justify-center">
-      <div className="max-w-screen-lg flex-1 border overflow-hidden">
+    <div className="p-4 flex-1 flex justify-center">
+      <div className="flex-1 border shadow rounded-md overflow-hidden">
         <MapForm
           currentStep={currentStep}
           editable

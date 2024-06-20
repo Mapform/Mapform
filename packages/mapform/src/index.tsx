@@ -24,6 +24,7 @@ import { getZodSchemaFromBlockNote } from "./lib/zod-schema-from-blocknote";
 import { type CustomBlock } from "./lib/block-note-schema";
 import { Blocknote } from "./block-note";
 import { MapFormContext } from "./context";
+import { cn } from "@mapform/lib/classnames";
 
 type ExtendedStep = Step & { latitude: number; longitude: number };
 
@@ -98,7 +99,11 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
               setIsSelectingPinLocationFor,
             }}
           >
-            <div className="max-w-[320px] lg:max-w-[400px] w-full flex-shrink-0 bg-background shadow z-10">
+            <div
+              className={cn("w-full flex-shrink-0 bg-background shadow z-10", {
+                "max-w-[320px] lg:max-w-[400px]": true,
+              })}
+            >
               {currentStep ? (
                 <Blocknote
                   defaultFormValues={defaultFormValues}

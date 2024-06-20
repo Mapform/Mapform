@@ -44,7 +44,7 @@ export function Blocknote({
   const editor = useCreateBlockNote({
     initialContent: description?.content,
     placeholders: {
-      default: "Write a description, or press '/' for commands...",
+      default: "Write something, or press '/' for commands...",
     },
     schema,
   });
@@ -87,7 +87,7 @@ export function Blocknote({
 
   // Renders the editor instance using a React component.
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col prose mx-auto">
       <div className="flex-1 flex flex-col overflow-y-auto">
         {/* Content */}
         <div className="overflow-y-auto p-4 pb-0">
@@ -99,6 +99,9 @@ export function Blocknote({
                 onTitleChange && onTitleChange(val);
               }}
               onEnter={() => {
+                if (description?.content[0]) {
+                  editor.setTextCursorPosition(description.content[0], "start");
+                }
                 editor.focus();
               }}
               value={uncontrolledTitle}
@@ -120,7 +123,6 @@ export function Blocknote({
                   content: editor.document,
                 });
             }}
-            sideMenu={false}
             slashMenu={false}
           >
             <SuggestionMenuController
