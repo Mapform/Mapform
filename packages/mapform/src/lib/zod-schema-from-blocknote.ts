@@ -13,7 +13,7 @@ const schemaMap = {
       latitude: z.number(),
       longitude: z.number(),
     }),
-  "text-input": (props: any) => {
+  textInput: (props: any) => {
     return props.required
       ? z.string()
       : z.string().optional().or(z.literal(""));
@@ -23,8 +23,8 @@ const schemaMap = {
 /**
  * Scehmas for custom input blocks
  */
-type CustomBlockTypes = "text-input" | "pin";
-const customBlocks = ["text-input", "pin"] as CustomBlockTypes[];
+type CustomBlockTypes = "textInput" | "pin";
+const customBlocks = ["textInput", "pin"] as CustomBlockTypes[];
 
 export function getZodSchemaFromBlockNote(blocks: CustomBlock[]) {
   const filteredBlocks = blocks.filter((block) =>

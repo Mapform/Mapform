@@ -26,7 +26,7 @@ export default async function Submissions({
       return (
         total +
         description.content.filter(
-          (block) => block.type === "text-input" || block.type === "pin"
+          (block) => block.type === "textInput" || block.type === "pin"
         ).length
       );
     }, 0);

@@ -10,8 +10,24 @@ export async function getFormSubmissions({ formId }: { formId: string }) {
       },
     },
     include: {
-      inputResponses: true,
-      locationResponses: true,
+      inputResponses: {
+        include: {
+          step: {
+            select: {
+              id: true,
+            },
+          },
+        },
+      },
+      locationResponses: {
+        include: {
+          step: {
+            select: {
+              id: true,
+            },
+          },
+        },
+      },
       form: {
         include: {
           steps: true,

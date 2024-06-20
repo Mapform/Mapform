@@ -10,7 +10,7 @@ import { TextInput } from "./custom-blocks/text-input";
 export const customBlockSpecs = {
   pin: Pin,
   image: Image,
-  "text-input": TextInput,
+  textInput: TextInput,
 } as const;
 
 const { paragraph, numberedListItem, bulletListItem, heading } =

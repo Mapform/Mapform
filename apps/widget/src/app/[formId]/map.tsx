@@ -18,7 +18,7 @@ interface MapProps {
     blockNoteId: string;
     // TODO: Use the correct type
     value: any;
-    type: "text-input" | "pin";
+    type: "textInput" | "pin";
   }[];
   sessionId: string | null;
 }

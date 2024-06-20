@@ -15,17 +15,19 @@ interface ResultsDialogProps {
 }
 
 export function ResultsDialog({ formSubmission }: ResultsDialogProps) {
+  const stepOrder = formSubmission.form.stepOrder;
   const getResults = (): {
     id: string;
     title?: string;
     value: string;
+    step: number;
     type: string;
   }[] => {
     const inputResponses = formSubmission.inputResponses.map((response) => {
       return {
         id: response.id,
-        title: response.title,
         value: response.value,
+        step: stepOrder.indexOf(response.step.id) + 1,
         type: "Short Text Input",
       };
     });
@@ -35,6 +37,7 @@ export function ResultsDialog({ formSubmission }: ResultsDialogProps) {
         return {
           id: response.id,
           value: `${response.location.latitude}, ${response.location.longitude}`,
+          step: stepOrder.indexOf(response.step.id) + 1,
           type: "Pin",
         };
       }
@@ -74,6 +77,12 @@ export function ResultsDialog({ formSubmission }: ResultsDialogProps) {
                   className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
                   scope="col"
                 >
+                  Step
+                </th>
+                <th
+                  className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                  scope="col"
+                >
                   Type
                 </th>
               </tr>
@@ -86,6 +95,9 @@ export function ResultsDialog({ formSubmission }: ResultsDialogProps) {
                   </td>
                   <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                     {result.value}
+                  </td>
+                  <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                    {result.step}
                   </td>
                   <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                     {result.type}

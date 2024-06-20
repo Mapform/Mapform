@@ -37,19 +37,18 @@ export const submitFormStep = action(
       Object.entries(data).map(async ([key, value]) => {
         const block = documentContent.find((b) => b.id === key);
 
-        if (block?.type === "text-input") {
+        if (block?.type === "textInput") {
           return prisma.inputResponse.upsert({
             create: {
               formSubmissionId,
               blockNoteId: key,
               value: value as string,
-              title: block.props.label,
+              stepId,
             },
             update: {
               formSubmissionId,
               blockNoteId: key,
               value: value as string,
-              title: block.props.label,
             },
             where: {
               blockNoteId_formSubmissionId: {
@@ -88,6 +87,7 @@ export const submitFormStep = action(
                 formSubmissionId,
                 blockNoteId: key,
                 locationId: locationId[0].id,
+                stepId,
               },
               update: {
                 formSubmissionId,
