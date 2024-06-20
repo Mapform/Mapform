@@ -1,8 +1,5 @@
-import {
-  BlockNoteSchema,
-  defaultBlockSpecs,
-  type Block,
-} from "@blocknote/core";
+import { BlockNoteSchema, defaultBlockSpecs } from "@blocknote/core";
+import type { BlockFromConfig, Block } from "@blocknote/core";
 import { Pin } from "./custom-blocks/pin";
 import { Image } from "./custom-blocks/image";
 import { TextInput } from "./custom-blocks/text-input";
@@ -35,11 +32,20 @@ export type CustomBlock = Block<
 >;
 export type DocumentContent = CustomBlock[];
 
-export type TextInputBlock = (typeof schema.blockSchema)["textInput"];
-export type PinBlock = (typeof schema.blockSchema)["pin"];
-export type ImageBlock = (typeof schema.blockSchema)["image"];
-export type ParagraphBlock = (typeof schema.blockSchema)["paragraph"];
-export type HeadingBlock = (typeof schema.blockSchema)["heading"];
-export type NumberedListItemBlock =
-  (typeof schema.blockSchema)["numberedListItem"];
-export type BulletListItemBlock = (typeof schema.blockSchema)["bulletListItem"];
+export type TextInputBlock = BlockFromConfig<
+  typeof TextInput.config,
+  typeof schema.inlineContentSchema,
+  typeof schema.styleSchema
+>;
+
+export type PinBlock = BlockFromConfig<
+  typeof Pin.config,
+  typeof schema.inlineContentSchema,
+  typeof schema.styleSchema
+>;
+
+export type ImageBlock = BlockFromConfig<
+  typeof Image.config,
+  typeof schema.inlineContentSchema,
+  typeof schema.styleSchema
+>;

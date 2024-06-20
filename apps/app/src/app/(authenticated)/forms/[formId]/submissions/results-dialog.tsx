@@ -8,6 +8,11 @@ import {
   DialogTitle,
 } from "@mapform/ui/components/dialog";
 import { Button } from "@mapform/ui/components/button";
+import type {
+  TextInputBlock,
+  CustomBlock,
+  PinBlock,
+} from "@mapform/mapform/lib/block-note-schema";
 import { type FormSubmissions } from "./requests";
 
 interface ResultsDialogProps {
@@ -24,8 +29,17 @@ export function ResultsDialog({ formSubmission }: ResultsDialogProps) {
     type: string;
   }[] => {
     const inputResponses = formSubmission.inputResponses.map((response) => {
+      const step = formSubmission.form.steps.find(
+        (s) => s.id === response.step.id
+      );
+      const block = getBlockById(
+        (step?.description as { content: CustomBlock[] } | null)?.content || [],
+        response.blockNoteId
+      ) as TextInputBlock | null;
+
       return {
         id: response.id,
+        title: block?.props.label,
         value: response.value,
         step: stepOrder.indexOf(response.step.id) + 1,
         type: "Short Text Input",
@@ -34,8 +48,18 @@ export function ResultsDialog({ formSubmission }: ResultsDialogProps) {
 
     const locationResponses = formSubmission.locationResponses.map(
       (response) => {
+        const step = formSubmission.form.steps.find(
+          (s) => s.id === response.step.id
+        );
+        const block = getBlockById(
+          (step?.description as { content: CustomBlock[] } | null)?.content ||
+            [],
+          response.blockNoteId
+        ) as PinBlock | null;
+
         return {
           id: response.id,
+          title: block?.props.text,
           value: `${response.location.latitude}, ${response.location.longitude}`,
           step: stepOrder.indexOf(response.step.id) + 1,
           type: "Pin",
@@ -110,4 +134,22 @@ export function ResultsDialog({ formSubmission }: ResultsDialogProps) {
       </DialogContent>
     </Dialog>
   );
+}
+
+/**
+ * Recursively step through the blocks to find the block with the given ID.
+ */
+function getBlockById(blocks: CustomBlock[], id: string): CustomBlock | null {
+  for (const block of blocks) {
+    if (block.id === id) {
+      return block;
+    }
+
+    const foundBlock = getBlockById(block.children, id);
+    if (foundBlock) {
+      return foundBlock;
+    }
+  }
+
+  return null;
 }

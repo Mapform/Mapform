@@ -37,8 +37,6 @@ export function Blocknote({
   onTitleChange,
   onDescriptionChange,
 }: BlocknoteProps) {
-  console.log(1111, description);
-
   const [uncontrolledTitle, setUncontrolledTitle] = useState<string>(
     title || ""
   );

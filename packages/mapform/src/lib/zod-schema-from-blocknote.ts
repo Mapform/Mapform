@@ -1,8 +1,8 @@
 import { z } from "zod";
-import type { CustomBlock } from "./block-note-schema";
+import type { PinBlock, TextInputBlock } from "./block-note-schema";
 
 const schemaMap = {
-  pin: (props: { required: boolean }) =>
+  pin: (props: PinBlock["props"]) =>
     props.required
       ? z.object({
           latitude: z.number(),
@@ -12,7 +12,7 @@ const schemaMap = {
           latitude: z.number().optional(),
           longitude: z.number().optional(),
         }),
-  textInput: (props: { required: boolean }) => {
+  textInput: (props: TextInputBlock["props"]) => {
     return props.required
       ? z.string()
       : z.string().optional().or(z.literal(""));
@@ -22,10 +22,12 @@ const schemaMap = {
 /**
  * This is used to generate a Zod schema from a list of custom blocks inputs.
  */
-type InputCustomBlockTypes = "textInput" | "pin";
+type InputCustomBlockTypes = PinBlock["type"] | TextInputBlock["type"];
 const customBlocks = ["textInput", "pin"] as InputCustomBlockTypes[];
 
-export function getFormSchemaFromBlockNote(blocks: CustomBlock[]) {
+export function getFormSchemaFromBlockNote(
+  blocks: (PinBlock | TextInputBlock)[]
+) {
   const filteredBlocks = blocks.filter((block) =>
     customBlocks.includes(block.type as InputCustomBlockTypes)
   );
