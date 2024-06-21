@@ -4,6 +4,10 @@ import { useState } from "react";
 import "@blocknote/core/fonts/inter.css";
 import { filterSuggestionItems, insertOrUpdateBlock } from "@blocknote/core";
 import {
+  DragHandleMenu,
+  RemoveBlockItem,
+  SideMenu,
+  SideMenuController,
   SuggestionMenuController,
   getDefaultReactSlashMenuItems,
   useCreateBlockNote,
@@ -123,6 +127,7 @@ export function Blocknote({
                   content: editor.document,
                 });
             }}
+            sideMenu={false}
             slashMenu={false}
           >
             <SuggestionMenuController
@@ -141,6 +146,7 @@ export function Blocknote({
               }}
               triggerCharacter="/"
             />
+            <SideMenuController sideMenu={CustomSideMenu} />
           </BlockNoteView>
         </div>
         {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions -- Disable a11y checks here */}
@@ -168,5 +174,18 @@ export function Blocknote({
         </Button>
       </div>
     </div>
+  );
+}
+
+function CustomSideMenu(props: any) {
+  return <SideMenu {...props} dragHandleMenu={CustomDragMenu} />;
+}
+
+function CustomDragMenu(props: any) {
+  return (
+    <DragHandleMenu {...props}>
+      <RemoveBlockItem {...props}>Delete</RemoveBlockItem>
+      Test
+    </DragHandleMenu>
   );
 }
