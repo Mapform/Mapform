@@ -2,10 +2,7 @@
 
 import { prisma } from "@mapform/db";
 import { revalidatePath } from "next/cache";
-import {
-  type DocumentContent,
-  getFormSchemaFromBlockNote,
-} from "@mapform/blocknote";
+import { getFormSchemaFromBlockNote } from "@mapform/blocknote";
 import { action } from "~/lib/safe-action";
 import { submitFormStepSchema } from "./schema";
 
@@ -22,8 +19,11 @@ export const submitFormStep = action(
       throw new Error("Step not found");
     }
 
-    const documentContent = (step.description as { content: DocumentContent })
-      .content;
+    const documentContent = step.description?.content;
+
+    if (!documentContent) {
+      throw new Error("Step has no content");
+    }
 
     // TODO: VALIDATION
 

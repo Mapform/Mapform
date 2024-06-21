@@ -29,7 +29,7 @@ export function ResultsDialog({ formSubmission }: ResultsDialogProps) {
         (s) => s.id === response.step.id
       );
       const block = getBlockById(
-        (step?.description as { content: CustomBlock[] } | null)?.content || [],
+        step?.description?.content || [],
         response.blockNoteId
       ) as TextInputBlock | null;
 
@@ -48,8 +48,7 @@ export function ResultsDialog({ formSubmission }: ResultsDialogProps) {
           (s) => s.id === response.step.id
         );
         const block = getBlockById(
-          (step?.description as { content: CustomBlock[] } | null)?.content ||
-            [],
+          step?.description?.content || [],
           response.blockNoteId
         ) as PinBlock | null;
 

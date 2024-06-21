@@ -10,10 +10,12 @@ import {
   getDefaultReactSlashMenuItems,
   useCreateBlockNote,
   BlockNoteView,
+  schema,
+  type CustomBlock,
+  type DocumentContent,
 } from "@mapform/blocknote";
 import { TextIcon, ChevronLeftIcon, ImageIcon, MapPinIcon } from "lucide-react";
 import { Button } from "@mapform/ui/components/button";
-import { schema, type CustomBlock } from "@mapform/blocknote";
 import "./style.css";
 import { AutoSizeTextArea } from "./autosize-text-area";
 
@@ -21,7 +23,7 @@ interface BlocknoteProps {
   editable: boolean;
   title?: string | null;
   description?: {
-    content: CustomBlock[];
+    content: DocumentContent;
   };
   defaultFormValues?: Record<string, string>;
   onNext?: () => void;

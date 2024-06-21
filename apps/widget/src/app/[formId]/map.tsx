@@ -4,7 +4,6 @@ import React, { useEffect, useRef, useState } from "react";
 import type { MapRef, ViewState } from "@mapform/mapform";
 import { MapForm } from "@mapform/mapform";
 import { useAction } from "next-safe-action/hooks";
-import { type DocumentContent } from "@mapform/blocknote";
 import { submitFormStep } from "~/server/actions/submit-form-step";
 import { createFormSubmission } from "~/server/actions/create-form-submission";
 import { env } from "../env.mjs";
@@ -75,17 +74,18 @@ export function Map({ formWithSteps, formValues, sessionId }: MapProps) {
     })();
   }, []);
 
-  const stepValues = (
-    (currentStep?.description?.content as DocumentContent) ?? []
-  ).reduce((acc: Record<string, string>, block) => {
-    const value = formValues.find((v) => v.blockNoteId === block.id)?.value;
+  const stepValues = (currentStep?.description?.content ?? []).reduce(
+    (acc: Record<string, string>, block) => {
+      const value = formValues.find((v) => v.blockNoteId === block.id)?.value;
 
-    if (value) {
-      acc[block.id] = value;
-    }
+      if (value) {
+        acc[block.id] = value;
+      }
 
-    return acc;
-  }, {});
+      return acc;
+    },
+    {}
+  );
 
   if (!currentSession || !currentStep) {
     return null;

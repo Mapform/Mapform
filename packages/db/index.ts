@@ -22,6 +22,10 @@ export * from "@prisma/client";
 
 declare global {
   namespace PrismaJson {
-    type DocumentType = { content: DocumentContent };
+    type DocumentType =
+      | {
+          content: DocumentContent;
+        }
+      | undefined;
   }
 }

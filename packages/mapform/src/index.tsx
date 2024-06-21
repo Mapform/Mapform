@@ -106,9 +106,7 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
               {currentStep ? (
                 <Blocknote
                   defaultFormValues={defaultFormValues}
-                  description={
-                    currentStep.description as { content: CustomBlock[] }
-                  }
+                  description={currentStep.description ?? undefined}
                   // Need key to force re-render, otherwise Blocknote state doesn't
                   // change when changing steps
                   editable={editable}
