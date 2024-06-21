@@ -8,15 +8,7 @@ import {
   FormMessage,
   useFormContext,
 } from "@mapform/ui/components/form";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@mapform/ui/components/popover";
 import { Input } from "@mapform/ui/components/input";
-import { Switch } from "@mapform/ui/components/switch";
-import { EllipsisIcon } from "lucide-react";
-import { Label } from "@mapform/ui/components/label";
 import { useCustomBlockContext } from "../../context";
 
 export const TextInput = createReactBlockSpec(
@@ -64,28 +56,6 @@ export const TextInput = createReactBlockSpec(
                     placeholder="Label"
                     value={block.props.label}
                   />
-                  <Popover>
-                    <PopoverTrigger>
-                      <EllipsisIcon className="h-4 w-4" />
-                    </PopoverTrigger>
-                    <PopoverContent>
-                      <div className="text-xs font-semibold leading-6 text-gray-400 mb-2">
-                        Settings
-                      </div>
-                      <Label className="flex justify-between items-center">
-                        Required
-                        <Switch
-                          checked={block.props.required}
-                          onCheckedChange={(e) => {
-                            editor.updateBlock(block, {
-                              type: "textInput",
-                              props: { required: e },
-                            });
-                          }}
-                        />
-                      </Label>
-                    </PopoverContent>
-                  </Popover>
                 </div>
               ) : (
                 <FormLabel>{block.props.label}</FormLabel>
