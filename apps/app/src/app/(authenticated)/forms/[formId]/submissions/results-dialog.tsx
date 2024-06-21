@@ -8,11 +8,7 @@ import {
   DialogTitle,
 } from "@mapform/ui/components/dialog";
 import { Button } from "@mapform/ui/components/button";
-import type {
-  TextInputBlock,
-  CustomBlock,
-  PinBlock,
-} from "@mapform/mapform/lib/block-note-schema";
+import type { TextInputBlock, CustomBlock, PinBlock } from "@mapform/blocknote";
 import { type FormSubmissions } from "./requests";
 
 interface ResultsDialogProps {

@@ -1,5 +1,9 @@
 import { z } from "zod";
-import type { PinBlock, TextInputBlock } from "./block-note-schema";
+import type {
+  DocumentContent,
+  PinBlock,
+  TextInputBlock,
+} from "./block-note-schema";
 
 const schemaMap = {
   pin: (props: PinBlock["props"]) =>
@@ -25,9 +29,7 @@ const schemaMap = {
 type InputCustomBlockTypes = PinBlock["type"] | TextInputBlock["type"];
 const customBlocks = ["textInput", "pin"] as InputCustomBlockTypes[];
 
-export function getFormSchemaFromBlockNote(
-  blocks: (PinBlock | TextInputBlock)[]
-) {
+export function getFormSchemaFromBlockNote(blocks: DocumentContent) {
   const filteredBlocks = blocks.filter((block) =>
     customBlocks.includes(block.type as InputCustomBlockTypes)
   );

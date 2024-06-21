@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 import { MapForm } from "@mapform/mapform";
 import { toast } from "@mapform/ui/components/toaster";
-import type { CustomBlock } from "@mapform/mapform/lib/block-note-schema";
+import type { CustomBlock } from "@mapform/blocknote";
 import { uploadImage } from "~/server/actions/images";
 import { env } from "~/env.mjs";
 import { useContainerContext } from "../context";

@@ -64,8 +64,7 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
     ref
   ) => {
     const blocknoteStepSchema = getFormSchemaFromBlockNote(
-      (currentStep?.description as { content: CustomBlock[] } | null)
-        ?.content || []
+      currentStep?.description?.content || []
     );
     const form = useForm<z.infer<typeof blocknoteStepSchema>>({
       resolver: zodResolver(blocknoteStepSchema),
@@ -79,9 +78,7 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
       onStepSubmit && onStepSubmit(data);
     };
 
-    const pinBlocks = (
-      currentStep?.description as { content: CustomBlock[] } | undefined
-    )?.content.filter((c) => {
+    const pinBlocks = currentStep?.description?.content.filter((c) => {
       return c.type === "pin";
     });
 

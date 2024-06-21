@@ -38,6 +38,9 @@ importers:
       '@headlessui/react':
         specifier: ^1.7.18
         version: 1.7.18(react-dom@18.2.0)(react@18.2.0)
+      '@mapform/blocknote':
+        specifier: workspace:*
+        version: link:../../packages/blocknote
       '@mapform/db':
         specifier: workspace:*
         version: link:../../packages/db

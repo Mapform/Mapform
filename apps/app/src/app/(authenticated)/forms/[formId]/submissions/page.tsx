@@ -1,5 +1,5 @@
 import { type Step } from "@mapform/db";
-import { type DocumentContent } from "@mapform/mapform/lib/block-note-schema";
+import { type DocumentContent } from "@mapform/blocknote";
 import { ProgressBar } from "@mapform/ui/components/progress-bar";
 import { format } from "date-fns";
 import memoize from "lodash.memoize";
