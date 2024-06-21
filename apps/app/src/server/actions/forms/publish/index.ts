@@ -35,12 +35,14 @@ export const publishForm = authAction(publishFormSchema, async ({ formId }) => {
    * TODO: Since step.createWithLocation is custom, Prisma transactions don't
    * work here. Instead, I should manually handle the case where one of the
    * steps fails to create.
+   *
+   * Note: We create with empty stepOrder since we need to create brand new steps and log those IDs later on.
    */
   const newPublishedForm = await prisma.form.create({
     data: {
       name: draftForm.name,
       slug: draftForm.slug,
-      stepOrder: draftForm.stepOrder,
+      stepOrder: [],
       workspaceId: draftForm.workspaceId,
       isDraft: false,
       draftFormId: draftForm.id,

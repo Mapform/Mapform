@@ -17,6 +17,7 @@ interface ResultsDialogProps {
 
 export function ResultsDialog({ formSubmission }: ResultsDialogProps) {
   const stepOrder = formSubmission.form.stepOrder;
+
   const getResults = (): {
     id: string;
     title?: string;
