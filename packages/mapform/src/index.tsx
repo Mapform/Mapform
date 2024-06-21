@@ -19,12 +19,14 @@ import {
 import type { Step } from "@mapform/db";
 import { Form, useForm, zodResolver } from "@mapform/ui/components/form";
 import type { z } from "zod";
-import type { FormSchema } from "@mapform/lib/schemas/form-step-schema";
-import { getZodSchemaFromBlockNote } from "./lib/zod-schema-from-blocknote";
-import { type CustomBlock } from "./lib/block-note-schema";
-import { Blocknote } from "./block-note";
-import { MapFormContext } from "./context";
 import { cn } from "@mapform/lib/classnames";
+import type { FormSchema } from "@mapform/lib/schemas/form-step-schema";
+import { CustomBlockContext } from "@mapform/blocknote";
+import {
+  type CustomBlock,
+  getFormSchemaFromBlockNote,
+} from "@mapform/blocknote";
+import { Blocknote } from "./block-note";
 
 type ExtendedStep = Step & { latitude: number; longitude: number };
 
@@ -61,9 +63,8 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
     },
     ref
   ) => {
-    const blocknoteStepSchema = getZodSchemaFromBlockNote(
-      (currentStep?.description as { content: CustomBlock[] } | null)
-        ?.content || []
+    const blocknoteStepSchema = getFormSchemaFromBlockNote(
+      currentStep?.description?.content || []
     );
     const form = useForm<z.infer<typeof blocknoteStepSchema>>({
       resolver: zodResolver(blocknoteStepSchema),
@@ -77,9 +78,7 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
       onStepSubmit && onStepSubmit(data);
     };
 
-    const pinBlocks = (
-      currentStep?.description as { content: CustomBlock[] } | undefined
-    )?.content.filter((c) => {
+    const pinBlocks = currentStep?.description?.content.filter((c) => {
       return c.type === "pin";
     });
 
@@ -89,7 +88,7 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
           className="flex w-full h-full"
           onSubmit={form.handleSubmit(onSubmit)}
         >
-          <MapFormContext.Provider
+          <CustomBlockContext.Provider
             value={{
               editable,
               viewState,
@@ -107,9 +106,7 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
               {currentStep ? (
                 <Blocknote
                   defaultFormValues={defaultFormValues}
-                  description={
-                    currentStep.description as { content: CustomBlock[] }
-                  }
+                  description={currentStep.description ?? undefined}
                   // Need key to force re-render, otherwise Blocknote state doesn't
                   // change when changing steps
                   editable={editable}
@@ -174,7 +171,7 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
                 })
               )}
             </Map>
-          </MapFormContext.Provider>
+          </CustomBlockContext.Provider>
         </form>
       </Form>
     );

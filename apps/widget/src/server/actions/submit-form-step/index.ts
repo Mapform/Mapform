@@ -2,8 +2,7 @@
 
 import { prisma } from "@mapform/db";
 import { revalidatePath } from "next/cache";
-import { type DocumentContent } from "@mapform/mapform/lib/block-note-schema";
-import { getZodSchemaFromBlockNote } from "@mapform/mapform/lib/zod-schema-from-blocknote";
+import { getFormSchemaFromBlockNote } from "@mapform/blocknote";
 import { action } from "~/lib/safe-action";
 import { submitFormStepSchema } from "./schema";
 
@@ -20,12 +19,15 @@ export const submitFormStep = action(
       throw new Error("Step not found");
     }
 
-    const documentContent = (step.description as { content: DocumentContent })
-      .content;
+    const documentContent = step.description?.content;
+
+    if (!documentContent) {
+      throw new Error("Step has no content");
+    }
 
     // TODO: VALIDATION
 
-    const validationSchema = getZodSchemaFromBlockNote(documentContent);
+    const validationSchema = getFormSchemaFromBlockNote(documentContent);
 
     const { data, error } = validationSchema.safeParse(payload);
 
@@ -37,19 +39,18 @@ export const submitFormStep = action(
       Object.entries(data).map(async ([key, value]) => {
         const block = documentContent.find((b) => b.id === key);
 
-        if (block?.type === "text-input") {
+        if (block?.type === "textInput") {
           return prisma.inputResponse.upsert({
             create: {
               formSubmissionId,
               blockNoteId: key,
               value: value as string,
-              title: block.props.label,
+              stepId,
             },
             update: {
               formSubmissionId,
               blockNoteId: key,
               value: value as string,
-              title: block.props.label,
             },
             where: {
               blockNoteId_formSubmissionId: {
@@ -88,6 +89,7 @@ export const submitFormStep = action(
                 formSubmissionId,
                 blockNoteId: key,
                 locationId: locationId[0].id,
+                stepId,
               },
               update: {
                 formSubmissionId,

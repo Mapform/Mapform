@@ -1,3 +1,6 @@
+"use client";
+
+/* eslint-disable react-hooks/rules-of-hooks -- Valid */
 import { createReactBlockSpec } from "@blocknote/react";
 import {
   FormField,
@@ -5,17 +8,10 @@ import {
   FormControl,
   useFormContext,
 } from "@mapform/ui/components/form";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@mapform/ui/components/popover";
-import { Switch } from "@mapform/ui/components/switch";
-import { EllipsisIcon } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@mapform/ui/components/button";
 import { Input } from "@mapform/ui/components/input";
-import { useMapFormContext } from "../../context";
+import { useCustomBlockContext } from "../context";
 
 export const Pin = createReactBlockSpec(
   {
@@ -41,7 +37,7 @@ export const Pin = createReactBlockSpec(
         setViewState,
         isSelectingPinLocationFor,
         setIsSelectingPinLocationFor,
-      } = useMapFormContext();
+      } = useCustomBlockContext();
       const [prevViewState, setPrevViewState] = useState(viewState);
 
       if (editable) {

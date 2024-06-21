@@ -39,6 +39,6 @@ export const deleteStep = authAction(
       },
     });
 
-    revalidatePath("/");
+    revalidatePath(`/forms/${userStep.formId}`);
   }
 );

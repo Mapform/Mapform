@@ -19,7 +19,7 @@ export default async function Page({ params }: { params: { formId: string } }) {
     blockNoteId: string;
     // TODO: Use the correct type
     value: any;
-    type: "text-input" | "pin";
+    type: "textInput" | "pin";
   }[] = [];
   let session: FormSubmission | null = null;
 
@@ -46,7 +46,7 @@ export default async function Page({ params }: { params: { formId: string } }) {
           id: v.blockNoteId,
           blockNoteId: v.blockNoteId,
           value: v.value,
-          type: "text-input" as const,
+          type: "textInput" as const,
         })),
         ...values[1].map((v) => ({
           id: v.blockNoteId,

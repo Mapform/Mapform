@@ -8,6 +8,7 @@ import {
   DialogTitle,
 } from "@mapform/ui/components/dialog";
 import { Button } from "@mapform/ui/components/button";
+import type { TextInputBlock, CustomBlock, PinBlock } from "@mapform/blocknote";
 import { type FormSubmissions } from "./requests";
 
 interface ResultsDialogProps {
@@ -15,26 +16,47 @@ interface ResultsDialogProps {
 }
 
 export function ResultsDialog({ formSubmission }: ResultsDialogProps) {
+  const stepOrder = formSubmission.form.stepOrder;
   const getResults = (): {
     id: string;
     title?: string;
     value: string;
+    step: number;
     type: string;
   }[] => {
     const inputResponses = formSubmission.inputResponses.map((response) => {
+      const step = formSubmission.form.steps.find(
+        (s) => s.id === response.step.id
+      );
+      const block = getBlockById(
+        step?.description?.content || [],
+        response.blockNoteId
+      ) as TextInputBlock | null;
+
       return {
         id: response.id,
-        title: response.title,
+        title: block?.props.label,
         value: response.value,
+        step: stepOrder.indexOf(response.step.id) + 1,
         type: "Short Text Input",
       };
     });
 
     const locationResponses = formSubmission.locationResponses.map(
       (response) => {
+        const step = formSubmission.form.steps.find(
+          (s) => s.id === response.step.id
+        );
+        const block = getBlockById(
+          step?.description?.content || [],
+          response.blockNoteId
+        ) as PinBlock | null;
+
         return {
           id: response.id,
+          title: block?.props.text,
           value: `${response.location.latitude}, ${response.location.longitude}`,
+          step: stepOrder.indexOf(response.step.id) + 1,
           type: "Pin",
         };
       }
@@ -74,6 +96,12 @@ export function ResultsDialog({ formSubmission }: ResultsDialogProps) {
                   className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
                   scope="col"
                 >
+                  Step
+                </th>
+                <th
+                  className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                  scope="col"
+                >
                   Type
                 </th>
               </tr>
@@ -88,6 +116,9 @@ export function ResultsDialog({ formSubmission }: ResultsDialogProps) {
                     {result.value}
                   </td>
                   <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                    {result.step}
+                  </td>
+                  <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                     {result.type}
                   </td>
                 </tr>
@@ -98,4 +129,22 @@ export function ResultsDialog({ formSubmission }: ResultsDialogProps) {
       </DialogContent>
     </Dialog>
   );
+}
+
+/**
+ * Recursively step through the blocks to find the block with the given ID.
+ */
+function getBlockById(blocks: CustomBlock[], id: string): CustomBlock | null {
+  for (const block of blocks) {
+    if (block.id === id) {
+      return block;
+    }
+
+    const foundBlock = getBlockById(block.children, id);
+    if (foundBlock) {
+      return foundBlock;
+    }
+  }
+
+  return null;
 }

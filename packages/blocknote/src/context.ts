@@ -1,3 +1,5 @@
+"use client";
+
 import type { ViewState } from "react-map-gl";
 import {
   useContext,
@@ -6,7 +8,10 @@ import {
   type SetStateAction,
 } from "react";
 
-export interface MapFormContextProps {
+/**
+ * Context needed to support custom blocks
+ */
+export interface CustomBlockContextProps {
   editable: boolean;
   viewState: ViewState;
   setViewState: Dispatch<SetStateAction<ViewState>>;
@@ -17,7 +22,7 @@ export interface MapFormContextProps {
   >;
 }
 
-export const MapFormContext = createContext<MapFormContextProps>(
-  {} as MapFormContextProps
+export const CustomBlockContext = createContext<CustomBlockContextProps>(
+  {} as CustomBlockContextProps
 );
-export const useMapFormContext = () => useContext(MapFormContext);
+export const useCustomBlockContext = () => useContext(CustomBlockContext);

@@ -1,5 +1,4 @@
 import { type Step } from "@mapform/db";
-import { type DocumentContent } from "@mapform/mapform/lib/block-note-schema";
 import { ProgressBar } from "@mapform/ui/components/progress-bar";
 import { format } from "date-fns";
 import memoize from "lodash.memoize";
@@ -15,9 +14,7 @@ export default async function Submissions({
 
   const getTotalFormInputs = memoize((steps: Step[]) => {
     return steps.reduce((total, step) => {
-      const description = step.description as {
-        content?: DocumentContent;
-      } | null;
+      const description = step.description;
 
       if (!description?.content) {
         return total;
@@ -26,7 +23,7 @@ export default async function Submissions({
       return (
         total +
         description.content.filter(
-          (block) => block.type === "text-input" || block.type === "pin"
+          (block) => block.type === "textInput" || block.type === "pin"
         ).length
       );
     }, 0);

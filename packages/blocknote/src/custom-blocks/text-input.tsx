@@ -1,3 +1,6 @@
+"use client";
+
+/* eslint-disable react-hooks/rules-of-hooks -- Valid */
 import { createReactBlockSpec } from "@blocknote/react";
 import {
   FormField,
@@ -16,11 +19,11 @@ import { Input } from "@mapform/ui/components/input";
 import { Switch } from "@mapform/ui/components/switch";
 import { EllipsisIcon } from "lucide-react";
 import { Label } from "@mapform/ui/components/label";
-import { useMapFormContext } from "../../context";
+import { useCustomBlockContext } from "../context";
 
 export const TextInput = createReactBlockSpec(
   {
-    type: "text-input",
+    type: "textInput",
     propSchema: {
       label: {
         default: "My Label",
@@ -40,7 +43,7 @@ export const TextInput = createReactBlockSpec(
   {
     render: ({ block, editor }) => {
       const form = useFormContext();
-      const { editable } = useMapFormContext();
+      const { editable } = useCustomBlockContext();
 
       return (
         <FormField
@@ -49,14 +52,14 @@ export const TextInput = createReactBlockSpec(
           // This is what allows us to match the user value back to the input
           name={block.id}
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="w-full">
               {editable ? (
                 <div className="flex justify-between">
                   <input
                     className="text-sm font-medium border-0 w-full p-0 outline-none border-transparent focus:border-transparent focus:ring-0 placeholder-gray-300"
                     onChange={(e) => {
                       editor.updateBlock(block, {
-                        type: "text-input",
+                        type: "textInput",
                         props: { label: e.target.value },
                       });
                     }}
@@ -77,7 +80,7 @@ export const TextInput = createReactBlockSpec(
                           checked={block.props.required}
                           onCheckedChange={(e) => {
                             editor.updateBlock(block, {
-                              type: "text-input",
+                              type: "textInput",
                               props: { required: e },
                             });
                           }}
@@ -95,7 +98,7 @@ export const TextInput = createReactBlockSpec(
                     className="text-muted-foreground"
                     onChange={(e) => {
                       editor.updateBlock(block, {
-                        type: "text-input",
+                        type: "textInput",
                         props: { placeholder: e.target.value },
                       });
                     }}

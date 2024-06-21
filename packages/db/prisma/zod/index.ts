@@ -72,9 +72,9 @@ export const StepScalarFieldEnumSchema = z.enum(['id','title','description','zoo
 
 export const FormSubmissionScalarFieldEnumSchema = z.enum(['id','formId','createdAt','updatedAt']);
 
-export const InputResponseScalarFieldEnumSchema = z.enum(['id','blockNoteId','title','value','formSubmissionId']);
+export const InputResponseScalarFieldEnumSchema = z.enum(['id','blockNoteId','value','formSubmissionId','stepId']);
 
-export const LocationResponseScalarFieldEnumSchema = z.enum(['id','blockNoteId','locationId','formSubmissionId']);
+export const LocationResponseScalarFieldEnumSchema = z.enum(['id','blockNoteId','locationId','formSubmissionId','stepId']);
 
 export const LocationScalarFieldEnumSchema = z.enum(['id']);
 
@@ -296,6 +296,9 @@ export const FormWithRelationsSchema: z.ZodType<FormWithRelations> = FormSchema.
 export const StepSchema = z.object({
   id: z.string().uuid(),
   title: z.string().nullable(),
+  /**
+   * [DocumentType]
+   */
   description: JsonValueSchema,
   zoom: z.number().int(),
   pitch: z.number().int(),
@@ -314,6 +317,8 @@ export type Step = z.infer<typeof StepSchema>
 export type StepRelations = {
   form?: FormWithRelations | null;
   location: LocationWithRelations;
+  inputResponses: InputResponseWithRelations[];
+  locationResponses: LocationResponseWithRelations[];
 };
 
 export type StepWithRelations = Omit<z.infer<typeof StepSchema>, "description"> & {
@@ -323,6 +328,8 @@ export type StepWithRelations = Omit<z.infer<typeof StepSchema>, "description"> 
 export const StepWithRelationsSchema: z.ZodType<StepWithRelations> = StepSchema.merge(z.object({
   form: z.lazy(() => FormWithRelationsSchema).nullable(),
   location: z.lazy(() => LocationWithRelationsSchema),
+  inputResponses: z.lazy(() => InputResponseWithRelationsSchema).array(),
+  locationResponses: z.lazy(() => LocationResponseWithRelationsSchema).array(),
 }))
 
 /////////////////////////////////////////
@@ -362,9 +369,9 @@ export const FormSubmissionWithRelationsSchema: z.ZodType<FormSubmissionWithRela
 export const InputResponseSchema = z.object({
   id: z.string().uuid(),
   blockNoteId: z.string(),
-  title: z.string(),
   value: z.string(),
   formSubmissionId: z.string(),
+  stepId: z.string(),
 })
 
 export type InputResponse = z.infer<typeof InputResponseSchema>
@@ -374,12 +381,14 @@ export type InputResponse = z.infer<typeof InputResponseSchema>
 
 export type InputResponseRelations = {
   formSubmission: FormSubmissionWithRelations;
+  step: StepWithRelations;
 };
 
 export type InputResponseWithRelations = z.infer<typeof InputResponseSchema> & InputResponseRelations
 
 export const InputResponseWithRelationsSchema: z.ZodType<InputResponseWithRelations> = InputResponseSchema.merge(z.object({
   formSubmission: z.lazy(() => FormSubmissionWithRelationsSchema),
+  step: z.lazy(() => StepWithRelationsSchema),
 }))
 
 /////////////////////////////////////////
@@ -391,6 +400,7 @@ export const LocationResponseSchema = z.object({
   blockNoteId: z.string(),
   locationId: z.number().int(),
   formSubmissionId: z.string(),
+  stepId: z.string(),
 })
 
 export type LocationResponse = z.infer<typeof LocationResponseSchema>
@@ -401,6 +411,7 @@ export type LocationResponse = z.infer<typeof LocationResponseSchema>
 export type LocationResponseRelations = {
   location: LocationWithRelations;
   formSubmission: FormSubmissionWithRelations;
+  step: StepWithRelations;
 };
 
 export type LocationResponseWithRelations = z.infer<typeof LocationResponseSchema> & LocationResponseRelations
@@ -408,6 +419,7 @@ export type LocationResponseWithRelations = z.infer<typeof LocationResponseSchem
 export const LocationResponseWithRelationsSchema: z.ZodType<LocationResponseWithRelations> = LocationResponseSchema.merge(z.object({
   location: z.lazy(() => LocationWithRelationsSchema),
   formSubmission: z.lazy(() => FormSubmissionWithRelationsSchema),
+  step: z.lazy(() => StepWithRelationsSchema),
 }))
 
 /////////////////////////////////////////
@@ -647,11 +659,23 @@ export const FormSelectSchema: z.ZodType<Prisma.FormSelect> = z.object({
 export const StepIncludeSchema: z.ZodType<Prisma.StepInclude> = z.object({
   form: z.union([z.boolean(),z.lazy(() => FormArgsSchema)]).optional(),
   location: z.union([z.boolean(),z.lazy(() => LocationArgsSchema)]).optional(),
+  inputResponses: z.union([z.boolean(),z.lazy(() => InputResponseFindManyArgsSchema)]).optional(),
+  locationResponses: z.union([z.boolean(),z.lazy(() => LocationResponseFindManyArgsSchema)]).optional(),
+  _count: z.union([z.boolean(),z.lazy(() => StepCountOutputTypeArgsSchema)]).optional(),
 }).strict()
 
 export const StepArgsSchema: z.ZodType<Prisma.StepDefaultArgs> = z.object({
   select: z.lazy(() => StepSelectSchema).optional(),
   include: z.lazy(() => StepIncludeSchema).optional(),
+}).strict();
+
+export const StepCountOutputTypeArgsSchema: z.ZodType<Prisma.StepCountOutputTypeDefaultArgs> = z.object({
+  select: z.lazy(() => StepCountOutputTypeSelectSchema).nullish(),
+}).strict();
+
+export const StepCountOutputTypeSelectSchema: z.ZodType<Prisma.StepCountOutputTypeSelect> = z.object({
+  inputResponses: z.boolean().optional(),
+  locationResponses: z.boolean().optional(),
 }).strict();
 
 export const StepSelectSchema: z.ZodType<Prisma.StepSelect> = z.object({
@@ -667,6 +691,9 @@ export const StepSelectSchema: z.ZodType<Prisma.StepSelect> = z.object({
   updatedAt: z.boolean().optional(),
   form: z.union([z.boolean(),z.lazy(() => FormArgsSchema)]).optional(),
   location: z.union([z.boolean(),z.lazy(() => LocationArgsSchema)]).optional(),
+  inputResponses: z.union([z.boolean(),z.lazy(() => InputResponseFindManyArgsSchema)]).optional(),
+  locationResponses: z.union([z.boolean(),z.lazy(() => LocationResponseFindManyArgsSchema)]).optional(),
+  _count: z.union([z.boolean(),z.lazy(() => StepCountOutputTypeArgsSchema)]).optional(),
 }).strict()
 
 // FORM SUBMISSION
@@ -709,6 +736,7 @@ export const FormSubmissionSelectSchema: z.ZodType<Prisma.FormSubmissionSelect> 
 
 export const InputResponseIncludeSchema: z.ZodType<Prisma.InputResponseInclude> = z.object({
   formSubmission: z.union([z.boolean(),z.lazy(() => FormSubmissionArgsSchema)]).optional(),
+  step: z.union([z.boolean(),z.lazy(() => StepArgsSchema)]).optional(),
 }).strict()
 
 export const InputResponseArgsSchema: z.ZodType<Prisma.InputResponseDefaultArgs> = z.object({
@@ -719,10 +747,11 @@ export const InputResponseArgsSchema: z.ZodType<Prisma.InputResponseDefaultArgs>
 export const InputResponseSelectSchema: z.ZodType<Prisma.InputResponseSelect> = z.object({
   id: z.boolean().optional(),
   blockNoteId: z.boolean().optional(),
-  title: z.boolean().optional(),
   value: z.boolean().optional(),
   formSubmissionId: z.boolean().optional(),
+  stepId: z.boolean().optional(),
   formSubmission: z.union([z.boolean(),z.lazy(() => FormSubmissionArgsSchema)]).optional(),
+  step: z.union([z.boolean(),z.lazy(() => StepArgsSchema)]).optional(),
 }).strict()
 
 // LOCATION RESPONSE
@@ -731,6 +760,7 @@ export const InputResponseSelectSchema: z.ZodType<Prisma.InputResponseSelect> = 
 export const LocationResponseIncludeSchema: z.ZodType<Prisma.LocationResponseInclude> = z.object({
   location: z.union([z.boolean(),z.lazy(() => LocationArgsSchema)]).optional(),
   formSubmission: z.union([z.boolean(),z.lazy(() => FormSubmissionArgsSchema)]).optional(),
+  step: z.union([z.boolean(),z.lazy(() => StepArgsSchema)]).optional(),
 }).strict()
 
 export const LocationResponseArgsSchema: z.ZodType<Prisma.LocationResponseDefaultArgs> = z.object({
@@ -743,8 +773,10 @@ export const LocationResponseSelectSchema: z.ZodType<Prisma.LocationResponseSele
   blockNoteId: z.boolean().optional(),
   locationId: z.boolean().optional(),
   formSubmissionId: z.boolean().optional(),
+  stepId: z.boolean().optional(),
   location: z.union([z.boolean(),z.lazy(() => LocationArgsSchema)]).optional(),
   formSubmission: z.union([z.boolean(),z.lazy(() => FormSubmissionArgsSchema)]).optional(),
+  step: z.union([z.boolean(),z.lazy(() => StepArgsSchema)]).optional(),
 }).strict()
 
 // LOCATION
@@ -1251,6 +1283,8 @@ export const StepWhereInputSchema: z.ZodType<Prisma.StepWhereInput> = z.object({
   updatedAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   form: z.union([ z.lazy(() => FormNullableRelationFilterSchema),z.lazy(() => FormWhereInputSchema) ]).optional().nullable(),
   location: z.union([ z.lazy(() => LocationRelationFilterSchema),z.lazy(() => LocationWhereInputSchema) ]).optional(),
+  inputResponses: z.lazy(() => InputResponseListRelationFilterSchema).optional(),
+  locationResponses: z.lazy(() => LocationResponseListRelationFilterSchema).optional()
 }).strict();
 
 export const StepOrderByWithRelationInputSchema: z.ZodType<Prisma.StepOrderByWithRelationInput> = z.object({
@@ -1265,7 +1299,9 @@ export const StepOrderByWithRelationInputSchema: z.ZodType<Prisma.StepOrderByWit
   createdAt: z.lazy(() => SortOrderSchema).optional(),
   updatedAt: z.lazy(() => SortOrderSchema).optional(),
   form: z.lazy(() => FormOrderByWithRelationInputSchema).optional(),
-  location: z.lazy(() => LocationOrderByWithRelationInputSchema).optional()
+  location: z.lazy(() => LocationOrderByWithRelationInputSchema).optional(),
+  inputResponses: z.lazy(() => InputResponseOrderByRelationAggregateInputSchema).optional(),
+  locationResponses: z.lazy(() => LocationResponseOrderByRelationAggregateInputSchema).optional()
 }).strict();
 
 export const StepWhereUniqueInputSchema: z.ZodType<Prisma.StepWhereUniqueInput> = z.union([
@@ -1296,6 +1332,8 @@ export const StepWhereUniqueInputSchema: z.ZodType<Prisma.StepWhereUniqueInput> 
   updatedAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   form: z.union([ z.lazy(() => FormNullableRelationFilterSchema),z.lazy(() => FormWhereInputSchema) ]).optional().nullable(),
   location: z.union([ z.lazy(() => LocationRelationFilterSchema),z.lazy(() => LocationWhereInputSchema) ]).optional(),
+  inputResponses: z.lazy(() => InputResponseListRelationFilterSchema).optional(),
+  locationResponses: z.lazy(() => LocationResponseListRelationFilterSchema).optional()
 }).strict());
 
 export const StepOrderByWithAggregationInputSchema: z.ZodType<Prisma.StepOrderByWithAggregationInput> = z.object({
@@ -1397,19 +1435,21 @@ export const InputResponseWhereInputSchema: z.ZodType<Prisma.InputResponseWhereI
   NOT: z.union([ z.lazy(() => InputResponseWhereInputSchema),z.lazy(() => InputResponseWhereInputSchema).array() ]).optional(),
   id: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   blockNoteId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
-  title: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   value: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   formSubmissionId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  stepId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   formSubmission: z.union([ z.lazy(() => FormSubmissionRelationFilterSchema),z.lazy(() => FormSubmissionWhereInputSchema) ]).optional(),
+  step: z.union([ z.lazy(() => StepRelationFilterSchema),z.lazy(() => StepWhereInputSchema) ]).optional(),
 }).strict();
 
 export const InputResponseOrderByWithRelationInputSchema: z.ZodType<Prisma.InputResponseOrderByWithRelationInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
   blockNoteId: z.lazy(() => SortOrderSchema).optional(),
-  title: z.lazy(() => SortOrderSchema).optional(),
   value: z.lazy(() => SortOrderSchema).optional(),
   formSubmissionId: z.lazy(() => SortOrderSchema).optional(),
-  formSubmission: z.lazy(() => FormSubmissionOrderByWithRelationInputSchema).optional()
+  stepId: z.lazy(() => SortOrderSchema).optional(),
+  formSubmission: z.lazy(() => FormSubmissionOrderByWithRelationInputSchema).optional(),
+  step: z.lazy(() => StepOrderByWithRelationInputSchema).optional()
 }).strict();
 
 export const InputResponseWhereUniqueInputSchema: z.ZodType<Prisma.InputResponseWhereUniqueInput> = z.union([
@@ -1431,18 +1471,19 @@ export const InputResponseWhereUniqueInputSchema: z.ZodType<Prisma.InputResponse
   OR: z.lazy(() => InputResponseWhereInputSchema).array().optional(),
   NOT: z.union([ z.lazy(() => InputResponseWhereInputSchema),z.lazy(() => InputResponseWhereInputSchema).array() ]).optional(),
   blockNoteId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
-  title: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   value: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   formSubmissionId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  stepId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   formSubmission: z.union([ z.lazy(() => FormSubmissionRelationFilterSchema),z.lazy(() => FormSubmissionWhereInputSchema) ]).optional(),
+  step: z.union([ z.lazy(() => StepRelationFilterSchema),z.lazy(() => StepWhereInputSchema) ]).optional(),
 }).strict());
 
 export const InputResponseOrderByWithAggregationInputSchema: z.ZodType<Prisma.InputResponseOrderByWithAggregationInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
   blockNoteId: z.lazy(() => SortOrderSchema).optional(),
-  title: z.lazy(() => SortOrderSchema).optional(),
   value: z.lazy(() => SortOrderSchema).optional(),
   formSubmissionId: z.lazy(() => SortOrderSchema).optional(),
+  stepId: z.lazy(() => SortOrderSchema).optional(),
   _count: z.lazy(() => InputResponseCountOrderByAggregateInputSchema).optional(),
   _max: z.lazy(() => InputResponseMaxOrderByAggregateInputSchema).optional(),
   _min: z.lazy(() => InputResponseMinOrderByAggregateInputSchema).optional()
@@ -1454,9 +1495,9 @@ export const InputResponseScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma
   NOT: z.union([ z.lazy(() => InputResponseScalarWhereWithAggregatesInputSchema),z.lazy(() => InputResponseScalarWhereWithAggregatesInputSchema).array() ]).optional(),
   id: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
   blockNoteId: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
-  title: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
   value: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
   formSubmissionId: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
+  stepId: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
 }).strict();
 
 export const LocationResponseWhereInputSchema: z.ZodType<Prisma.LocationResponseWhereInput> = z.object({
@@ -1467,8 +1508,10 @@ export const LocationResponseWhereInputSchema: z.ZodType<Prisma.LocationResponse
   blockNoteId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   locationId: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
   formSubmissionId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  stepId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   location: z.union([ z.lazy(() => LocationRelationFilterSchema),z.lazy(() => LocationWhereInputSchema) ]).optional(),
   formSubmission: z.union([ z.lazy(() => FormSubmissionRelationFilterSchema),z.lazy(() => FormSubmissionWhereInputSchema) ]).optional(),
+  step: z.union([ z.lazy(() => StepRelationFilterSchema),z.lazy(() => StepWhereInputSchema) ]).optional(),
 }).strict();
 
 export const LocationResponseOrderByWithRelationInputSchema: z.ZodType<Prisma.LocationResponseOrderByWithRelationInput> = z.object({
@@ -1476,8 +1519,10 @@ export const LocationResponseOrderByWithRelationInputSchema: z.ZodType<Prisma.Lo
   blockNoteId: z.lazy(() => SortOrderSchema).optional(),
   locationId: z.lazy(() => SortOrderSchema).optional(),
   formSubmissionId: z.lazy(() => SortOrderSchema).optional(),
+  stepId: z.lazy(() => SortOrderSchema).optional(),
   location: z.lazy(() => LocationOrderByWithRelationInputSchema).optional(),
-  formSubmission: z.lazy(() => FormSubmissionOrderByWithRelationInputSchema).optional()
+  formSubmission: z.lazy(() => FormSubmissionOrderByWithRelationInputSchema).optional(),
+  step: z.lazy(() => StepOrderByWithRelationInputSchema).optional()
 }).strict();
 
 export const LocationResponseWhereUniqueInputSchema: z.ZodType<Prisma.LocationResponseWhereUniqueInput> = z.union([
@@ -1517,8 +1562,10 @@ export const LocationResponseWhereUniqueInputSchema: z.ZodType<Prisma.LocationRe
   NOT: z.union([ z.lazy(() => LocationResponseWhereInputSchema),z.lazy(() => LocationResponseWhereInputSchema).array() ]).optional(),
   blockNoteId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   formSubmissionId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  stepId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   location: z.union([ z.lazy(() => LocationRelationFilterSchema),z.lazy(() => LocationWhereInputSchema) ]).optional(),
   formSubmission: z.union([ z.lazy(() => FormSubmissionRelationFilterSchema),z.lazy(() => FormSubmissionWhereInputSchema) ]).optional(),
+  step: z.union([ z.lazy(() => StepRelationFilterSchema),z.lazy(() => StepWhereInputSchema) ]).optional(),
 }).strict());
 
 export const LocationResponseOrderByWithAggregationInputSchema: z.ZodType<Prisma.LocationResponseOrderByWithAggregationInput> = z.object({
@@ -1526,6 +1573,7 @@ export const LocationResponseOrderByWithAggregationInputSchema: z.ZodType<Prisma
   blockNoteId: z.lazy(() => SortOrderSchema).optional(),
   locationId: z.lazy(() => SortOrderSchema).optional(),
   formSubmissionId: z.lazy(() => SortOrderSchema).optional(),
+  stepId: z.lazy(() => SortOrderSchema).optional(),
   _count: z.lazy(() => LocationResponseCountOrderByAggregateInputSchema).optional(),
   _avg: z.lazy(() => LocationResponseAvgOrderByAggregateInputSchema).optional(),
   _max: z.lazy(() => LocationResponseMaxOrderByAggregateInputSchema).optional(),
@@ -1541,6 +1589,7 @@ export const LocationResponseScalarWhereWithAggregatesInputSchema: z.ZodType<Pri
   blockNoteId: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
   locationId: z.union([ z.lazy(() => IntWithAggregatesFilterSchema),z.number() ]).optional(),
   formSubmissionId: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
+  stepId: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
 }).strict();
 
 export const LocationWhereInputSchema: z.ZodType<Prisma.LocationWhereInput> = z.object({
@@ -2038,7 +2087,9 @@ export const StepCreateInputSchema: z.ZodType<Prisma.StepCreateInput> = z.object
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
   form: z.lazy(() => FormCreateNestedOneWithoutStepsInputSchema).optional(),
-  location: z.lazy(() => LocationCreateNestedOneWithoutStepInputSchema)
+  location: z.lazy(() => LocationCreateNestedOneWithoutStepInputSchema),
+  inputResponses: z.lazy(() => InputResponseCreateNestedManyWithoutStepInputSchema).optional(),
+  locationResponses: z.lazy(() => LocationResponseCreateNestedManyWithoutStepInputSchema).optional()
 }).strict();
 
 export const StepUncheckedCreateInputSchema: z.ZodType<Prisma.StepUncheckedCreateInput> = z.object({
@@ -2051,7 +2102,9 @@ export const StepUncheckedCreateInputSchema: z.ZodType<Prisma.StepUncheckedCreat
   formId: z.string().optional().nullable(),
   locationId: z.number().int(),
   createdAt: z.coerce.date().optional(),
-  updatedAt: z.coerce.date().optional()
+  updatedAt: z.coerce.date().optional(),
+  inputResponses: z.lazy(() => InputResponseUncheckedCreateNestedManyWithoutStepInputSchema).optional(),
+  locationResponses: z.lazy(() => LocationResponseUncheckedCreateNestedManyWithoutStepInputSchema).optional()
 }).strict();
 
 export const StepUpdateInputSchema: z.ZodType<Prisma.StepUpdateInput> = z.object({
@@ -2064,7 +2117,9 @@ export const StepUpdateInputSchema: z.ZodType<Prisma.StepUpdateInput> = z.object
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   form: z.lazy(() => FormUpdateOneWithoutStepsNestedInputSchema).optional(),
-  location: z.lazy(() => LocationUpdateOneRequiredWithoutStepNestedInputSchema).optional()
+  location: z.lazy(() => LocationUpdateOneRequiredWithoutStepNestedInputSchema).optional(),
+  inputResponses: z.lazy(() => InputResponseUpdateManyWithoutStepNestedInputSchema).optional(),
+  locationResponses: z.lazy(() => LocationResponseUpdateManyWithoutStepNestedInputSchema).optional()
 }).strict();
 
 export const StepUncheckedUpdateInputSchema: z.ZodType<Prisma.StepUncheckedUpdateInput> = z.object({
@@ -2078,6 +2133,8 @@ export const StepUncheckedUpdateInputSchema: z.ZodType<Prisma.StepUncheckedUpdat
   locationId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  inputResponses: z.lazy(() => InputResponseUncheckedUpdateManyWithoutStepNestedInputSchema).optional(),
+  locationResponses: z.lazy(() => LocationResponseUncheckedUpdateManyWithoutStepNestedInputSchema).optional()
 }).strict();
 
 export const StepCreateManyInputSchema: z.ZodType<Prisma.StepCreateManyInput> = z.object({
@@ -2176,77 +2233,79 @@ export const FormSubmissionUncheckedUpdateManyInputSchema: z.ZodType<Prisma.Form
 export const InputResponseCreateInputSchema: z.ZodType<Prisma.InputResponseCreateInput> = z.object({
   id: z.string().uuid().optional(),
   blockNoteId: z.string(),
-  title: z.string(),
   value: z.string(),
-  formSubmission: z.lazy(() => FormSubmissionCreateNestedOneWithoutInputResponsesInputSchema)
+  formSubmission: z.lazy(() => FormSubmissionCreateNestedOneWithoutInputResponsesInputSchema),
+  step: z.lazy(() => StepCreateNestedOneWithoutInputResponsesInputSchema)
 }).strict();
 
 export const InputResponseUncheckedCreateInputSchema: z.ZodType<Prisma.InputResponseUncheckedCreateInput> = z.object({
   id: z.string().uuid().optional(),
   blockNoteId: z.string(),
-  title: z.string(),
   value: z.string(),
-  formSubmissionId: z.string()
+  formSubmissionId: z.string(),
+  stepId: z.string()
 }).strict();
 
 export const InputResponseUpdateInputSchema: z.ZodType<Prisma.InputResponseUpdateInput> = z.object({
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   blockNoteId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  title: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   value: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  formSubmission: z.lazy(() => FormSubmissionUpdateOneRequiredWithoutInputResponsesNestedInputSchema).optional()
+  formSubmission: z.lazy(() => FormSubmissionUpdateOneRequiredWithoutInputResponsesNestedInputSchema).optional(),
+  step: z.lazy(() => StepUpdateOneRequiredWithoutInputResponsesNestedInputSchema).optional()
 }).strict();
 
 export const InputResponseUncheckedUpdateInputSchema: z.ZodType<Prisma.InputResponseUncheckedUpdateInput> = z.object({
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   blockNoteId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  title: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   value: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   formSubmissionId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  stepId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const InputResponseCreateManyInputSchema: z.ZodType<Prisma.InputResponseCreateManyInput> = z.object({
   id: z.string().uuid().optional(),
   blockNoteId: z.string(),
-  title: z.string(),
   value: z.string(),
-  formSubmissionId: z.string()
+  formSubmissionId: z.string(),
+  stepId: z.string()
 }).strict();
 
 export const InputResponseUpdateManyMutationInputSchema: z.ZodType<Prisma.InputResponseUpdateManyMutationInput> = z.object({
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   blockNoteId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  title: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   value: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const InputResponseUncheckedUpdateManyInputSchema: z.ZodType<Prisma.InputResponseUncheckedUpdateManyInput> = z.object({
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   blockNoteId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  title: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   value: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   formSubmissionId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  stepId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const LocationResponseCreateInputSchema: z.ZodType<Prisma.LocationResponseCreateInput> = z.object({
   id: z.string().uuid().optional(),
   blockNoteId: z.string(),
   location: z.lazy(() => LocationCreateNestedOneWithoutLocationResponseInputSchema),
-  formSubmission: z.lazy(() => FormSubmissionCreateNestedOneWithoutLocationResponsesInputSchema)
+  formSubmission: z.lazy(() => FormSubmissionCreateNestedOneWithoutLocationResponsesInputSchema),
+  step: z.lazy(() => StepCreateNestedOneWithoutLocationResponsesInputSchema)
 }).strict();
 
 export const LocationResponseUncheckedCreateInputSchema: z.ZodType<Prisma.LocationResponseUncheckedCreateInput> = z.object({
   id: z.string().uuid().optional(),
   blockNoteId: z.string(),
   locationId: z.number().int(),
-  formSubmissionId: z.string()
+  formSubmissionId: z.string(),
+  stepId: z.string()
 }).strict();
 
 export const LocationResponseUpdateInputSchema: z.ZodType<Prisma.LocationResponseUpdateInput> = z.object({
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   blockNoteId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   location: z.lazy(() => LocationUpdateOneRequiredWithoutLocationResponseNestedInputSchema).optional(),
-  formSubmission: z.lazy(() => FormSubmissionUpdateOneRequiredWithoutLocationResponsesNestedInputSchema).optional()
+  formSubmission: z.lazy(() => FormSubmissionUpdateOneRequiredWithoutLocationResponsesNestedInputSchema).optional(),
+  step: z.lazy(() => StepUpdateOneRequiredWithoutLocationResponsesNestedInputSchema).optional()
 }).strict();
 
 export const LocationResponseUncheckedUpdateInputSchema: z.ZodType<Prisma.LocationResponseUncheckedUpdateInput> = z.object({
@@ -2254,13 +2313,15 @@ export const LocationResponseUncheckedUpdateInputSchema: z.ZodType<Prisma.Locati
   blockNoteId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   locationId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   formSubmissionId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  stepId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const LocationResponseCreateManyInputSchema: z.ZodType<Prisma.LocationResponseCreateManyInput> = z.object({
   id: z.string().uuid().optional(),
   blockNoteId: z.string(),
   locationId: z.number().int(),
-  formSubmissionId: z.string()
+  formSubmissionId: z.string(),
+  stepId: z.string()
 }).strict();
 
 export const LocationResponseUpdateManyMutationInputSchema: z.ZodType<Prisma.LocationResponseUpdateManyMutationInput> = z.object({
@@ -2273,6 +2334,7 @@ export const LocationResponseUncheckedUpdateManyInputSchema: z.ZodType<Prisma.Lo
   blockNoteId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   locationId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   formSubmissionId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  stepId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const LocationUpdateInputSchema: z.ZodType<Prisma.LocationUpdateInput> = z.object({
@@ -2760,6 +2822,26 @@ export const LocationRelationFilterSchema: z.ZodType<Prisma.LocationRelationFilt
   isNot: z.lazy(() => LocationWhereInputSchema).optional()
 }).strict();
 
+export const InputResponseListRelationFilterSchema: z.ZodType<Prisma.InputResponseListRelationFilter> = z.object({
+  every: z.lazy(() => InputResponseWhereInputSchema).optional(),
+  some: z.lazy(() => InputResponseWhereInputSchema).optional(),
+  none: z.lazy(() => InputResponseWhereInputSchema).optional()
+}).strict();
+
+export const LocationResponseListRelationFilterSchema: z.ZodType<Prisma.LocationResponseListRelationFilter> = z.object({
+  every: z.lazy(() => LocationResponseWhereInputSchema).optional(),
+  some: z.lazy(() => LocationResponseWhereInputSchema).optional(),
+  none: z.lazy(() => LocationResponseWhereInputSchema).optional()
+}).strict();
+
+export const InputResponseOrderByRelationAggregateInputSchema: z.ZodType<Prisma.InputResponseOrderByRelationAggregateInput> = z.object({
+  _count: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const LocationResponseOrderByRelationAggregateInputSchema: z.ZodType<Prisma.LocationResponseOrderByRelationAggregateInput> = z.object({
+  _count: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
 export const StepCountOrderByAggregateInputSchema: z.ZodType<Prisma.StepCountOrderByAggregateInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
   title: z.lazy(() => SortOrderSchema).optional(),
@@ -2851,26 +2933,6 @@ export const FormRelationFilterSchema: z.ZodType<Prisma.FormRelationFilter> = z.
   isNot: z.lazy(() => FormWhereInputSchema).optional()
 }).strict();
 
-export const InputResponseListRelationFilterSchema: z.ZodType<Prisma.InputResponseListRelationFilter> = z.object({
-  every: z.lazy(() => InputResponseWhereInputSchema).optional(),
-  some: z.lazy(() => InputResponseWhereInputSchema).optional(),
-  none: z.lazy(() => InputResponseWhereInputSchema).optional()
-}).strict();
-
-export const LocationResponseListRelationFilterSchema: z.ZodType<Prisma.LocationResponseListRelationFilter> = z.object({
-  every: z.lazy(() => LocationResponseWhereInputSchema).optional(),
-  some: z.lazy(() => LocationResponseWhereInputSchema).optional(),
-  none: z.lazy(() => LocationResponseWhereInputSchema).optional()
-}).strict();
-
-export const InputResponseOrderByRelationAggregateInputSchema: z.ZodType<Prisma.InputResponseOrderByRelationAggregateInput> = z.object({
-  _count: z.lazy(() => SortOrderSchema).optional()
-}).strict();
-
-export const LocationResponseOrderByRelationAggregateInputSchema: z.ZodType<Prisma.LocationResponseOrderByRelationAggregateInput> = z.object({
-  _count: z.lazy(() => SortOrderSchema).optional()
-}).strict();
-
 export const FormSubmissionCountOrderByAggregateInputSchema: z.ZodType<Prisma.FormSubmissionCountOrderByAggregateInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
   formId: z.lazy(() => SortOrderSchema).optional(),
@@ -2897,6 +2959,11 @@ export const FormSubmissionRelationFilterSchema: z.ZodType<Prisma.FormSubmission
   isNot: z.lazy(() => FormSubmissionWhereInputSchema).optional()
 }).strict();
 
+export const StepRelationFilterSchema: z.ZodType<Prisma.StepRelationFilter> = z.object({
+  is: z.lazy(() => StepWhereInputSchema).optional(),
+  isNot: z.lazy(() => StepWhereInputSchema).optional()
+}).strict();
+
 export const InputResponseBlockNoteIdFormSubmissionIdCompoundUniqueInputSchema: z.ZodType<Prisma.InputResponseBlockNoteIdFormSubmissionIdCompoundUniqueInput> = z.object({
   blockNoteId: z.string(),
   formSubmissionId: z.string()
@@ -2905,25 +2972,25 @@ export const InputResponseBlockNoteIdFormSubmissionIdCompoundUniqueInputSchema: 
 export const InputResponseCountOrderByAggregateInputSchema: z.ZodType<Prisma.InputResponseCountOrderByAggregateInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
   blockNoteId: z.lazy(() => SortOrderSchema).optional(),
-  title: z.lazy(() => SortOrderSchema).optional(),
   value: z.lazy(() => SortOrderSchema).optional(),
-  formSubmissionId: z.lazy(() => SortOrderSchema).optional()
+  formSubmissionId: z.lazy(() => SortOrderSchema).optional(),
+  stepId: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const InputResponseMaxOrderByAggregateInputSchema: z.ZodType<Prisma.InputResponseMaxOrderByAggregateInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
   blockNoteId: z.lazy(() => SortOrderSchema).optional(),
-  title: z.lazy(() => SortOrderSchema).optional(),
   value: z.lazy(() => SortOrderSchema).optional(),
-  formSubmissionId: z.lazy(() => SortOrderSchema).optional()
+  formSubmissionId: z.lazy(() => SortOrderSchema).optional(),
+  stepId: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const InputResponseMinOrderByAggregateInputSchema: z.ZodType<Prisma.InputResponseMinOrderByAggregateInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
   blockNoteId: z.lazy(() => SortOrderSchema).optional(),
-  title: z.lazy(() => SortOrderSchema).optional(),
   value: z.lazy(() => SortOrderSchema).optional(),
-  formSubmissionId: z.lazy(() => SortOrderSchema).optional()
+  formSubmissionId: z.lazy(() => SortOrderSchema).optional(),
+  stepId: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const LocationResponseBlockNoteIdFormSubmissionIdCompoundUniqueInputSchema: z.ZodType<Prisma.LocationResponseBlockNoteIdFormSubmissionIdCompoundUniqueInput> = z.object({
@@ -2935,7 +3002,8 @@ export const LocationResponseCountOrderByAggregateInputSchema: z.ZodType<Prisma.
   id: z.lazy(() => SortOrderSchema).optional(),
   blockNoteId: z.lazy(() => SortOrderSchema).optional(),
   locationId: z.lazy(() => SortOrderSchema).optional(),
-  formSubmissionId: z.lazy(() => SortOrderSchema).optional()
+  formSubmissionId: z.lazy(() => SortOrderSchema).optional(),
+  stepId: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const LocationResponseAvgOrderByAggregateInputSchema: z.ZodType<Prisma.LocationResponseAvgOrderByAggregateInput> = z.object({
@@ -2946,14 +3014,16 @@ export const LocationResponseMaxOrderByAggregateInputSchema: z.ZodType<Prisma.Lo
   id: z.lazy(() => SortOrderSchema).optional(),
   blockNoteId: z.lazy(() => SortOrderSchema).optional(),
   locationId: z.lazy(() => SortOrderSchema).optional(),
-  formSubmissionId: z.lazy(() => SortOrderSchema).optional()
+  formSubmissionId: z.lazy(() => SortOrderSchema).optional(),
+  stepId: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const LocationResponseMinOrderByAggregateInputSchema: z.ZodType<Prisma.LocationResponseMinOrderByAggregateInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
   blockNoteId: z.lazy(() => SortOrderSchema).optional(),
   locationId: z.lazy(() => SortOrderSchema).optional(),
-  formSubmissionId: z.lazy(() => SortOrderSchema).optional()
+  formSubmissionId: z.lazy(() => SortOrderSchema).optional(),
+  stepId: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const LocationResponseSumOrderByAggregateInputSchema: z.ZodType<Prisma.LocationResponseSumOrderByAggregateInput> = z.object({
@@ -3515,6 +3585,34 @@ export const LocationCreateNestedOneWithoutStepInputSchema: z.ZodType<Prisma.Loc
   connect: z.lazy(() => LocationWhereUniqueInputSchema).optional()
 }).strict();
 
+export const InputResponseCreateNestedManyWithoutStepInputSchema: z.ZodType<Prisma.InputResponseCreateNestedManyWithoutStepInput> = z.object({
+  create: z.union([ z.lazy(() => InputResponseCreateWithoutStepInputSchema),z.lazy(() => InputResponseCreateWithoutStepInputSchema).array(),z.lazy(() => InputResponseUncheckedCreateWithoutStepInputSchema),z.lazy(() => InputResponseUncheckedCreateWithoutStepInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => InputResponseCreateOrConnectWithoutStepInputSchema),z.lazy(() => InputResponseCreateOrConnectWithoutStepInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => InputResponseCreateManyStepInputEnvelopeSchema).optional(),
+  connect: z.union([ z.lazy(() => InputResponseWhereUniqueInputSchema),z.lazy(() => InputResponseWhereUniqueInputSchema).array() ]).optional(),
+}).strict();
+
+export const LocationResponseCreateNestedManyWithoutStepInputSchema: z.ZodType<Prisma.LocationResponseCreateNestedManyWithoutStepInput> = z.object({
+  create: z.union([ z.lazy(() => LocationResponseCreateWithoutStepInputSchema),z.lazy(() => LocationResponseCreateWithoutStepInputSchema).array(),z.lazy(() => LocationResponseUncheckedCreateWithoutStepInputSchema),z.lazy(() => LocationResponseUncheckedCreateWithoutStepInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => LocationResponseCreateOrConnectWithoutStepInputSchema),z.lazy(() => LocationResponseCreateOrConnectWithoutStepInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => LocationResponseCreateManyStepInputEnvelopeSchema).optional(),
+  connect: z.union([ z.lazy(() => LocationResponseWhereUniqueInputSchema),z.lazy(() => LocationResponseWhereUniqueInputSchema).array() ]).optional(),
+}).strict();
+
+export const InputResponseUncheckedCreateNestedManyWithoutStepInputSchema: z.ZodType<Prisma.InputResponseUncheckedCreateNestedManyWithoutStepInput> = z.object({
+  create: z.union([ z.lazy(() => InputResponseCreateWithoutStepInputSchema),z.lazy(() => InputResponseCreateWithoutStepInputSchema).array(),z.lazy(() => InputResponseUncheckedCreateWithoutStepInputSchema),z.lazy(() => InputResponseUncheckedCreateWithoutStepInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => InputResponseCreateOrConnectWithoutStepInputSchema),z.lazy(() => InputResponseCreateOrConnectWithoutStepInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => InputResponseCreateManyStepInputEnvelopeSchema).optional(),
+  connect: z.union([ z.lazy(() => InputResponseWhereUniqueInputSchema),z.lazy(() => InputResponseWhereUniqueInputSchema).array() ]).optional(),
+}).strict();
+
+export const LocationResponseUncheckedCreateNestedManyWithoutStepInputSchema: z.ZodType<Prisma.LocationResponseUncheckedCreateNestedManyWithoutStepInput> = z.object({
+  create: z.union([ z.lazy(() => LocationResponseCreateWithoutStepInputSchema),z.lazy(() => LocationResponseCreateWithoutStepInputSchema).array(),z.lazy(() => LocationResponseUncheckedCreateWithoutStepInputSchema),z.lazy(() => LocationResponseUncheckedCreateWithoutStepInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => LocationResponseCreateOrConnectWithoutStepInputSchema),z.lazy(() => LocationResponseCreateOrConnectWithoutStepInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => LocationResponseCreateManyStepInputEnvelopeSchema).optional(),
+  connect: z.union([ z.lazy(() => LocationResponseWhereUniqueInputSchema),z.lazy(() => LocationResponseWhereUniqueInputSchema).array() ]).optional(),
+}).strict();
+
 export const IntFieldUpdateOperationsInputSchema: z.ZodType<Prisma.IntFieldUpdateOperationsInput> = z.object({
   set: z.number().optional(),
   increment: z.number().optional(),
@@ -3536,6 +3634,62 @@ export const FormUpdateOneWithoutStepsNestedInputSchema: z.ZodType<Prisma.FormUp
 export const LocationUpdateOneRequiredWithoutStepNestedInputSchema: z.ZodType<Prisma.LocationUpdateOneRequiredWithoutStepNestedInput> = z.object({
   connect: z.lazy(() => LocationWhereUniqueInputSchema).optional(),
   update: z.union([ z.lazy(() => LocationUpdateToOneWithWhereWithoutStepInputSchema),z.lazy(() => LocationUpdateWithoutStepInputSchema),z.lazy(() => LocationUncheckedUpdateWithoutStepInputSchema) ]).optional(),
+}).strict();
+
+export const InputResponseUpdateManyWithoutStepNestedInputSchema: z.ZodType<Prisma.InputResponseUpdateManyWithoutStepNestedInput> = z.object({
+  create: z.union([ z.lazy(() => InputResponseCreateWithoutStepInputSchema),z.lazy(() => InputResponseCreateWithoutStepInputSchema).array(),z.lazy(() => InputResponseUncheckedCreateWithoutStepInputSchema),z.lazy(() => InputResponseUncheckedCreateWithoutStepInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => InputResponseCreateOrConnectWithoutStepInputSchema),z.lazy(() => InputResponseCreateOrConnectWithoutStepInputSchema).array() ]).optional(),
+  upsert: z.union([ z.lazy(() => InputResponseUpsertWithWhereUniqueWithoutStepInputSchema),z.lazy(() => InputResponseUpsertWithWhereUniqueWithoutStepInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => InputResponseCreateManyStepInputEnvelopeSchema).optional(),
+  set: z.union([ z.lazy(() => InputResponseWhereUniqueInputSchema),z.lazy(() => InputResponseWhereUniqueInputSchema).array() ]).optional(),
+  disconnect: z.union([ z.lazy(() => InputResponseWhereUniqueInputSchema),z.lazy(() => InputResponseWhereUniqueInputSchema).array() ]).optional(),
+  delete: z.union([ z.lazy(() => InputResponseWhereUniqueInputSchema),z.lazy(() => InputResponseWhereUniqueInputSchema).array() ]).optional(),
+  connect: z.union([ z.lazy(() => InputResponseWhereUniqueInputSchema),z.lazy(() => InputResponseWhereUniqueInputSchema).array() ]).optional(),
+  update: z.union([ z.lazy(() => InputResponseUpdateWithWhereUniqueWithoutStepInputSchema),z.lazy(() => InputResponseUpdateWithWhereUniqueWithoutStepInputSchema).array() ]).optional(),
+  updateMany: z.union([ z.lazy(() => InputResponseUpdateManyWithWhereWithoutStepInputSchema),z.lazy(() => InputResponseUpdateManyWithWhereWithoutStepInputSchema).array() ]).optional(),
+  deleteMany: z.union([ z.lazy(() => InputResponseScalarWhereInputSchema),z.lazy(() => InputResponseScalarWhereInputSchema).array() ]).optional(),
+}).strict();
+
+export const LocationResponseUpdateManyWithoutStepNestedInputSchema: z.ZodType<Prisma.LocationResponseUpdateManyWithoutStepNestedInput> = z.object({
+  create: z.union([ z.lazy(() => LocationResponseCreateWithoutStepInputSchema),z.lazy(() => LocationResponseCreateWithoutStepInputSchema).array(),z.lazy(() => LocationResponseUncheckedCreateWithoutStepInputSchema),z.lazy(() => LocationResponseUncheckedCreateWithoutStepInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => LocationResponseCreateOrConnectWithoutStepInputSchema),z.lazy(() => LocationResponseCreateOrConnectWithoutStepInputSchema).array() ]).optional(),
+  upsert: z.union([ z.lazy(() => LocationResponseUpsertWithWhereUniqueWithoutStepInputSchema),z.lazy(() => LocationResponseUpsertWithWhereUniqueWithoutStepInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => LocationResponseCreateManyStepInputEnvelopeSchema).optional(),
+  set: z.union([ z.lazy(() => LocationResponseWhereUniqueInputSchema),z.lazy(() => LocationResponseWhereUniqueInputSchema).array() ]).optional(),
+  disconnect: z.union([ z.lazy(() => LocationResponseWhereUniqueInputSchema),z.lazy(() => LocationResponseWhereUniqueInputSchema).array() ]).optional(),
+  delete: z.union([ z.lazy(() => LocationResponseWhereUniqueInputSchema),z.lazy(() => LocationResponseWhereUniqueInputSchema).array() ]).optional(),
+  connect: z.union([ z.lazy(() => LocationResponseWhereUniqueInputSchema),z.lazy(() => LocationResponseWhereUniqueInputSchema).array() ]).optional(),
+  update: z.union([ z.lazy(() => LocationResponseUpdateWithWhereUniqueWithoutStepInputSchema),z.lazy(() => LocationResponseUpdateWithWhereUniqueWithoutStepInputSchema).array() ]).optional(),
+  updateMany: z.union([ z.lazy(() => LocationResponseUpdateManyWithWhereWithoutStepInputSchema),z.lazy(() => LocationResponseUpdateManyWithWhereWithoutStepInputSchema).array() ]).optional(),
+  deleteMany: z.union([ z.lazy(() => LocationResponseScalarWhereInputSchema),z.lazy(() => LocationResponseScalarWhereInputSchema).array() ]).optional(),
+}).strict();
+
+export const InputResponseUncheckedUpdateManyWithoutStepNestedInputSchema: z.ZodType<Prisma.InputResponseUncheckedUpdateManyWithoutStepNestedInput> = z.object({
+  create: z.union([ z.lazy(() => InputResponseCreateWithoutStepInputSchema),z.lazy(() => InputResponseCreateWithoutStepInputSchema).array(),z.lazy(() => InputResponseUncheckedCreateWithoutStepInputSchema),z.lazy(() => InputResponseUncheckedCreateWithoutStepInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => InputResponseCreateOrConnectWithoutStepInputSchema),z.lazy(() => InputResponseCreateOrConnectWithoutStepInputSchema).array() ]).optional(),
+  upsert: z.union([ z.lazy(() => InputResponseUpsertWithWhereUniqueWithoutStepInputSchema),z.lazy(() => InputResponseUpsertWithWhereUniqueWithoutStepInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => InputResponseCreateManyStepInputEnvelopeSchema).optional(),
+  set: z.union([ z.lazy(() => InputResponseWhereUniqueInputSchema),z.lazy(() => InputResponseWhereUniqueInputSchema).array() ]).optional(),
+  disconnect: z.union([ z.lazy(() => InputResponseWhereUniqueInputSchema),z.lazy(() => InputResponseWhereUniqueInputSchema).array() ]).optional(),
+  delete: z.union([ z.lazy(() => InputResponseWhereUniqueInputSchema),z.lazy(() => InputResponseWhereUniqueInputSchema).array() ]).optional(),
+  connect: z.union([ z.lazy(() => InputResponseWhereUniqueInputSchema),z.lazy(() => InputResponseWhereUniqueInputSchema).array() ]).optional(),
+  update: z.union([ z.lazy(() => InputResponseUpdateWithWhereUniqueWithoutStepInputSchema),z.lazy(() => InputResponseUpdateWithWhereUniqueWithoutStepInputSchema).array() ]).optional(),
+  updateMany: z.union([ z.lazy(() => InputResponseUpdateManyWithWhereWithoutStepInputSchema),z.lazy(() => InputResponseUpdateManyWithWhereWithoutStepInputSchema).array() ]).optional(),
+  deleteMany: z.union([ z.lazy(() => InputResponseScalarWhereInputSchema),z.lazy(() => InputResponseScalarWhereInputSchema).array() ]).optional(),
+}).strict();
+
+export const LocationResponseUncheckedUpdateManyWithoutStepNestedInputSchema: z.ZodType<Prisma.LocationResponseUncheckedUpdateManyWithoutStepNestedInput> = z.object({
+  create: z.union([ z.lazy(() => LocationResponseCreateWithoutStepInputSchema),z.lazy(() => LocationResponseCreateWithoutStepInputSchema).array(),z.lazy(() => LocationResponseUncheckedCreateWithoutStepInputSchema),z.lazy(() => LocationResponseUncheckedCreateWithoutStepInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => LocationResponseCreateOrConnectWithoutStepInputSchema),z.lazy(() => LocationResponseCreateOrConnectWithoutStepInputSchema).array() ]).optional(),
+  upsert: z.union([ z.lazy(() => LocationResponseUpsertWithWhereUniqueWithoutStepInputSchema),z.lazy(() => LocationResponseUpsertWithWhereUniqueWithoutStepInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => LocationResponseCreateManyStepInputEnvelopeSchema).optional(),
+  set: z.union([ z.lazy(() => LocationResponseWhereUniqueInputSchema),z.lazy(() => LocationResponseWhereUniqueInputSchema).array() ]).optional(),
+  disconnect: z.union([ z.lazy(() => LocationResponseWhereUniqueInputSchema),z.lazy(() => LocationResponseWhereUniqueInputSchema).array() ]).optional(),
+  delete: z.union([ z.lazy(() => LocationResponseWhereUniqueInputSchema),z.lazy(() => LocationResponseWhereUniqueInputSchema).array() ]).optional(),
+  connect: z.union([ z.lazy(() => LocationResponseWhereUniqueInputSchema),z.lazy(() => LocationResponseWhereUniqueInputSchema).array() ]).optional(),
+  update: z.union([ z.lazy(() => LocationResponseUpdateWithWhereUniqueWithoutStepInputSchema),z.lazy(() => LocationResponseUpdateWithWhereUniqueWithoutStepInputSchema).array() ]).optional(),
+  updateMany: z.union([ z.lazy(() => LocationResponseUpdateManyWithWhereWithoutStepInputSchema),z.lazy(() => LocationResponseUpdateManyWithWhereWithoutStepInputSchema).array() ]).optional(),
+  deleteMany: z.union([ z.lazy(() => LocationResponseScalarWhereInputSchema),z.lazy(() => LocationResponseScalarWhereInputSchema).array() ]).optional(),
 }).strict();
 
 export const FormCreateNestedOneWithoutFormSubmissionInputSchema: z.ZodType<Prisma.FormCreateNestedOneWithoutFormSubmissionInput> = z.object({
@@ -3642,12 +3796,26 @@ export const FormSubmissionCreateNestedOneWithoutInputResponsesInputSchema: z.Zo
   connect: z.lazy(() => FormSubmissionWhereUniqueInputSchema).optional()
 }).strict();
 
+export const StepCreateNestedOneWithoutInputResponsesInputSchema: z.ZodType<Prisma.StepCreateNestedOneWithoutInputResponsesInput> = z.object({
+  create: z.union([ z.lazy(() => StepCreateWithoutInputResponsesInputSchema),z.lazy(() => StepUncheckedCreateWithoutInputResponsesInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => StepCreateOrConnectWithoutInputResponsesInputSchema).optional(),
+  connect: z.lazy(() => StepWhereUniqueInputSchema).optional()
+}).strict();
+
 export const FormSubmissionUpdateOneRequiredWithoutInputResponsesNestedInputSchema: z.ZodType<Prisma.FormSubmissionUpdateOneRequiredWithoutInputResponsesNestedInput> = z.object({
   create: z.union([ z.lazy(() => FormSubmissionCreateWithoutInputResponsesInputSchema),z.lazy(() => FormSubmissionUncheckedCreateWithoutInputResponsesInputSchema) ]).optional(),
   connectOrCreate: z.lazy(() => FormSubmissionCreateOrConnectWithoutInputResponsesInputSchema).optional(),
   upsert: z.lazy(() => FormSubmissionUpsertWithoutInputResponsesInputSchema).optional(),
   connect: z.lazy(() => FormSubmissionWhereUniqueInputSchema).optional(),
   update: z.union([ z.lazy(() => FormSubmissionUpdateToOneWithWhereWithoutInputResponsesInputSchema),z.lazy(() => FormSubmissionUpdateWithoutInputResponsesInputSchema),z.lazy(() => FormSubmissionUncheckedUpdateWithoutInputResponsesInputSchema) ]).optional(),
+}).strict();
+
+export const StepUpdateOneRequiredWithoutInputResponsesNestedInputSchema: z.ZodType<Prisma.StepUpdateOneRequiredWithoutInputResponsesNestedInput> = z.object({
+  create: z.union([ z.lazy(() => StepCreateWithoutInputResponsesInputSchema),z.lazy(() => StepUncheckedCreateWithoutInputResponsesInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => StepCreateOrConnectWithoutInputResponsesInputSchema).optional(),
+  upsert: z.lazy(() => StepUpsertWithoutInputResponsesInputSchema).optional(),
+  connect: z.lazy(() => StepWhereUniqueInputSchema).optional(),
+  update: z.union([ z.lazy(() => StepUpdateToOneWithWhereWithoutInputResponsesInputSchema),z.lazy(() => StepUpdateWithoutInputResponsesInputSchema),z.lazy(() => StepUncheckedUpdateWithoutInputResponsesInputSchema) ]).optional(),
 }).strict();
 
 export const LocationCreateNestedOneWithoutLocationResponseInputSchema: z.ZodType<Prisma.LocationCreateNestedOneWithoutLocationResponseInput> = z.object({
@@ -3658,6 +3826,12 @@ export const FormSubmissionCreateNestedOneWithoutLocationResponsesInputSchema: z
   create: z.union([ z.lazy(() => FormSubmissionCreateWithoutLocationResponsesInputSchema),z.lazy(() => FormSubmissionUncheckedCreateWithoutLocationResponsesInputSchema) ]).optional(),
   connectOrCreate: z.lazy(() => FormSubmissionCreateOrConnectWithoutLocationResponsesInputSchema).optional(),
   connect: z.lazy(() => FormSubmissionWhereUniqueInputSchema).optional()
+}).strict();
+
+export const StepCreateNestedOneWithoutLocationResponsesInputSchema: z.ZodType<Prisma.StepCreateNestedOneWithoutLocationResponsesInput> = z.object({
+  create: z.union([ z.lazy(() => StepCreateWithoutLocationResponsesInputSchema),z.lazy(() => StepUncheckedCreateWithoutLocationResponsesInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => StepCreateOrConnectWithoutLocationResponsesInputSchema).optional(),
+  connect: z.lazy(() => StepWhereUniqueInputSchema).optional()
 }).strict();
 
 export const LocationUpdateOneRequiredWithoutLocationResponseNestedInputSchema: z.ZodType<Prisma.LocationUpdateOneRequiredWithoutLocationResponseNestedInput> = z.object({
@@ -3671,6 +3845,14 @@ export const FormSubmissionUpdateOneRequiredWithoutLocationResponsesNestedInputS
   upsert: z.lazy(() => FormSubmissionUpsertWithoutLocationResponsesInputSchema).optional(),
   connect: z.lazy(() => FormSubmissionWhereUniqueInputSchema).optional(),
   update: z.union([ z.lazy(() => FormSubmissionUpdateToOneWithWhereWithoutLocationResponsesInputSchema),z.lazy(() => FormSubmissionUpdateWithoutLocationResponsesInputSchema),z.lazy(() => FormSubmissionUncheckedUpdateWithoutLocationResponsesInputSchema) ]).optional(),
+}).strict();
+
+export const StepUpdateOneRequiredWithoutLocationResponsesNestedInputSchema: z.ZodType<Prisma.StepUpdateOneRequiredWithoutLocationResponsesNestedInput> = z.object({
+  create: z.union([ z.lazy(() => StepCreateWithoutLocationResponsesInputSchema),z.lazy(() => StepUncheckedCreateWithoutLocationResponsesInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => StepCreateOrConnectWithoutLocationResponsesInputSchema).optional(),
+  upsert: z.lazy(() => StepUpsertWithoutLocationResponsesInputSchema).optional(),
+  connect: z.lazy(() => StepWhereUniqueInputSchema).optional(),
+  update: z.union([ z.lazy(() => StepUpdateToOneWithWhereWithoutLocationResponsesInputSchema),z.lazy(() => StepUpdateWithoutLocationResponsesInputSchema),z.lazy(() => StepUncheckedUpdateWithoutLocationResponsesInputSchema) ]).optional(),
 }).strict();
 
 export const StepUpdateOneWithoutLocationNestedInputSchema: z.ZodType<Prisma.StepUpdateOneWithoutLocationNestedInput> = z.object({
@@ -4537,7 +4719,9 @@ export const StepCreateWithoutFormInputSchema: z.ZodType<Prisma.StepCreateWithou
   bearing: z.number().int(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
-  location: z.lazy(() => LocationCreateNestedOneWithoutStepInputSchema)
+  location: z.lazy(() => LocationCreateNestedOneWithoutStepInputSchema),
+  inputResponses: z.lazy(() => InputResponseCreateNestedManyWithoutStepInputSchema).optional(),
+  locationResponses: z.lazy(() => LocationResponseCreateNestedManyWithoutStepInputSchema).optional()
 }).strict();
 
 export const StepUncheckedCreateWithoutFormInputSchema: z.ZodType<Prisma.StepUncheckedCreateWithoutFormInput> = z.object({
@@ -4549,7 +4733,9 @@ export const StepUncheckedCreateWithoutFormInputSchema: z.ZodType<Prisma.StepUnc
   bearing: z.number().int(),
   locationId: z.number().int(),
   createdAt: z.coerce.date().optional(),
-  updatedAt: z.coerce.date().optional()
+  updatedAt: z.coerce.date().optional(),
+  inputResponses: z.lazy(() => InputResponseUncheckedCreateNestedManyWithoutStepInputSchema).optional(),
+  locationResponses: z.lazy(() => LocationResponseUncheckedCreateNestedManyWithoutStepInputSchema).optional()
 }).strict();
 
 export const StepCreateOrConnectWithoutFormInputSchema: z.ZodType<Prisma.StepCreateOrConnectWithoutFormInput> = z.object({
@@ -4885,6 +5071,54 @@ export const FormCreateOrConnectWithoutStepsInputSchema: z.ZodType<Prisma.FormCr
   create: z.union([ z.lazy(() => FormCreateWithoutStepsInputSchema),z.lazy(() => FormUncheckedCreateWithoutStepsInputSchema) ]),
 }).strict();
 
+export const InputResponseCreateWithoutStepInputSchema: z.ZodType<Prisma.InputResponseCreateWithoutStepInput> = z.object({
+  id: z.string().uuid().optional(),
+  blockNoteId: z.string(),
+  value: z.string(),
+  formSubmission: z.lazy(() => FormSubmissionCreateNestedOneWithoutInputResponsesInputSchema)
+}).strict();
+
+export const InputResponseUncheckedCreateWithoutStepInputSchema: z.ZodType<Prisma.InputResponseUncheckedCreateWithoutStepInput> = z.object({
+  id: z.string().uuid().optional(),
+  blockNoteId: z.string(),
+  value: z.string(),
+  formSubmissionId: z.string()
+}).strict();
+
+export const InputResponseCreateOrConnectWithoutStepInputSchema: z.ZodType<Prisma.InputResponseCreateOrConnectWithoutStepInput> = z.object({
+  where: z.lazy(() => InputResponseWhereUniqueInputSchema),
+  create: z.union([ z.lazy(() => InputResponseCreateWithoutStepInputSchema),z.lazy(() => InputResponseUncheckedCreateWithoutStepInputSchema) ]),
+}).strict();
+
+export const InputResponseCreateManyStepInputEnvelopeSchema: z.ZodType<Prisma.InputResponseCreateManyStepInputEnvelope> = z.object({
+  data: z.union([ z.lazy(() => InputResponseCreateManyStepInputSchema),z.lazy(() => InputResponseCreateManyStepInputSchema).array() ]),
+  skipDuplicates: z.boolean().optional()
+}).strict();
+
+export const LocationResponseCreateWithoutStepInputSchema: z.ZodType<Prisma.LocationResponseCreateWithoutStepInput> = z.object({
+  id: z.string().uuid().optional(),
+  blockNoteId: z.string(),
+  location: z.lazy(() => LocationCreateNestedOneWithoutLocationResponseInputSchema),
+  formSubmission: z.lazy(() => FormSubmissionCreateNestedOneWithoutLocationResponsesInputSchema)
+}).strict();
+
+export const LocationResponseUncheckedCreateWithoutStepInputSchema: z.ZodType<Prisma.LocationResponseUncheckedCreateWithoutStepInput> = z.object({
+  id: z.string().uuid().optional(),
+  blockNoteId: z.string(),
+  locationId: z.number().int(),
+  formSubmissionId: z.string()
+}).strict();
+
+export const LocationResponseCreateOrConnectWithoutStepInputSchema: z.ZodType<Prisma.LocationResponseCreateOrConnectWithoutStepInput> = z.object({
+  where: z.lazy(() => LocationResponseWhereUniqueInputSchema),
+  create: z.union([ z.lazy(() => LocationResponseCreateWithoutStepInputSchema),z.lazy(() => LocationResponseUncheckedCreateWithoutStepInputSchema) ]),
+}).strict();
+
+export const LocationResponseCreateManyStepInputEnvelopeSchema: z.ZodType<Prisma.LocationResponseCreateManyStepInputEnvelope> = z.object({
+  data: z.union([ z.lazy(() => LocationResponseCreateManyStepInputSchema),z.lazy(() => LocationResponseCreateManyStepInputSchema).array() ]),
+  skipDuplicates: z.boolean().optional()
+}).strict();
+
 export const FormUpsertWithoutStepsInputSchema: z.ZodType<Prisma.FormUpsertWithoutStepsInput> = z.object({
   update: z.union([ z.lazy(() => FormUpdateWithoutStepsInputSchema),z.lazy(() => FormUncheckedUpdateWithoutStepsInputSchema) ]),
   create: z.union([ z.lazy(() => FormCreateWithoutStepsInputSchema),z.lazy(() => FormUncheckedCreateWithoutStepsInputSchema) ]),
@@ -4944,6 +5178,60 @@ export const LocationUncheckedUpdateWithoutStepInputSchema: z.ZodType<Prisma.Loc
   locationResponse: z.lazy(() => LocationResponseUncheckedUpdateOneWithoutLocationNestedInputSchema).optional()
 }).strict();
 
+export const InputResponseUpsertWithWhereUniqueWithoutStepInputSchema: z.ZodType<Prisma.InputResponseUpsertWithWhereUniqueWithoutStepInput> = z.object({
+  where: z.lazy(() => InputResponseWhereUniqueInputSchema),
+  update: z.union([ z.lazy(() => InputResponseUpdateWithoutStepInputSchema),z.lazy(() => InputResponseUncheckedUpdateWithoutStepInputSchema) ]),
+  create: z.union([ z.lazy(() => InputResponseCreateWithoutStepInputSchema),z.lazy(() => InputResponseUncheckedCreateWithoutStepInputSchema) ]),
+}).strict();
+
+export const InputResponseUpdateWithWhereUniqueWithoutStepInputSchema: z.ZodType<Prisma.InputResponseUpdateWithWhereUniqueWithoutStepInput> = z.object({
+  where: z.lazy(() => InputResponseWhereUniqueInputSchema),
+  data: z.union([ z.lazy(() => InputResponseUpdateWithoutStepInputSchema),z.lazy(() => InputResponseUncheckedUpdateWithoutStepInputSchema) ]),
+}).strict();
+
+export const InputResponseUpdateManyWithWhereWithoutStepInputSchema: z.ZodType<Prisma.InputResponseUpdateManyWithWhereWithoutStepInput> = z.object({
+  where: z.lazy(() => InputResponseScalarWhereInputSchema),
+  data: z.union([ z.lazy(() => InputResponseUpdateManyMutationInputSchema),z.lazy(() => InputResponseUncheckedUpdateManyWithoutStepInputSchema) ]),
+}).strict();
+
+export const InputResponseScalarWhereInputSchema: z.ZodType<Prisma.InputResponseScalarWhereInput> = z.object({
+  AND: z.union([ z.lazy(() => InputResponseScalarWhereInputSchema),z.lazy(() => InputResponseScalarWhereInputSchema).array() ]).optional(),
+  OR: z.lazy(() => InputResponseScalarWhereInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => InputResponseScalarWhereInputSchema),z.lazy(() => InputResponseScalarWhereInputSchema).array() ]).optional(),
+  id: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  blockNoteId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  value: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  formSubmissionId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  stepId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+}).strict();
+
+export const LocationResponseUpsertWithWhereUniqueWithoutStepInputSchema: z.ZodType<Prisma.LocationResponseUpsertWithWhereUniqueWithoutStepInput> = z.object({
+  where: z.lazy(() => LocationResponseWhereUniqueInputSchema),
+  update: z.union([ z.lazy(() => LocationResponseUpdateWithoutStepInputSchema),z.lazy(() => LocationResponseUncheckedUpdateWithoutStepInputSchema) ]),
+  create: z.union([ z.lazy(() => LocationResponseCreateWithoutStepInputSchema),z.lazy(() => LocationResponseUncheckedCreateWithoutStepInputSchema) ]),
+}).strict();
+
+export const LocationResponseUpdateWithWhereUniqueWithoutStepInputSchema: z.ZodType<Prisma.LocationResponseUpdateWithWhereUniqueWithoutStepInput> = z.object({
+  where: z.lazy(() => LocationResponseWhereUniqueInputSchema),
+  data: z.union([ z.lazy(() => LocationResponseUpdateWithoutStepInputSchema),z.lazy(() => LocationResponseUncheckedUpdateWithoutStepInputSchema) ]),
+}).strict();
+
+export const LocationResponseUpdateManyWithWhereWithoutStepInputSchema: z.ZodType<Prisma.LocationResponseUpdateManyWithWhereWithoutStepInput> = z.object({
+  where: z.lazy(() => LocationResponseScalarWhereInputSchema),
+  data: z.union([ z.lazy(() => LocationResponseUpdateManyMutationInputSchema),z.lazy(() => LocationResponseUncheckedUpdateManyWithoutStepInputSchema) ]),
+}).strict();
+
+export const LocationResponseScalarWhereInputSchema: z.ZodType<Prisma.LocationResponseScalarWhereInput> = z.object({
+  AND: z.union([ z.lazy(() => LocationResponseScalarWhereInputSchema),z.lazy(() => LocationResponseScalarWhereInputSchema).array() ]).optional(),
+  OR: z.lazy(() => LocationResponseScalarWhereInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => LocationResponseScalarWhereInputSchema),z.lazy(() => LocationResponseScalarWhereInputSchema).array() ]).optional(),
+  id: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  blockNoteId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  locationId: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
+  formSubmissionId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  stepId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+}).strict();
+
 export const FormCreateWithoutFormSubmissionInputSchema: z.ZodType<Prisma.FormCreateWithoutFormSubmissionInput> = z.object({
   id: z.string().uuid().optional(),
   name: z.string(),
@@ -4986,15 +5274,15 @@ export const FormCreateOrConnectWithoutFormSubmissionInputSchema: z.ZodType<Pris
 export const InputResponseCreateWithoutFormSubmissionInputSchema: z.ZodType<Prisma.InputResponseCreateWithoutFormSubmissionInput> = z.object({
   id: z.string().uuid().optional(),
   blockNoteId: z.string(),
-  title: z.string(),
-  value: z.string()
+  value: z.string(),
+  step: z.lazy(() => StepCreateNestedOneWithoutInputResponsesInputSchema)
 }).strict();
 
 export const InputResponseUncheckedCreateWithoutFormSubmissionInputSchema: z.ZodType<Prisma.InputResponseUncheckedCreateWithoutFormSubmissionInput> = z.object({
   id: z.string().uuid().optional(),
   blockNoteId: z.string(),
-  title: z.string(),
-  value: z.string()
+  value: z.string(),
+  stepId: z.string()
 }).strict();
 
 export const InputResponseCreateOrConnectWithoutFormSubmissionInputSchema: z.ZodType<Prisma.InputResponseCreateOrConnectWithoutFormSubmissionInput> = z.object({
@@ -5010,13 +5298,15 @@ export const InputResponseCreateManyFormSubmissionInputEnvelopeSchema: z.ZodType
 export const LocationResponseCreateWithoutFormSubmissionInputSchema: z.ZodType<Prisma.LocationResponseCreateWithoutFormSubmissionInput> = z.object({
   id: z.string().uuid().optional(),
   blockNoteId: z.string(),
-  location: z.lazy(() => LocationCreateNestedOneWithoutLocationResponseInputSchema)
+  location: z.lazy(() => LocationCreateNestedOneWithoutLocationResponseInputSchema),
+  step: z.lazy(() => StepCreateNestedOneWithoutLocationResponsesInputSchema)
 }).strict();
 
 export const LocationResponseUncheckedCreateWithoutFormSubmissionInputSchema: z.ZodType<Prisma.LocationResponseUncheckedCreateWithoutFormSubmissionInput> = z.object({
   id: z.string().uuid().optional(),
   blockNoteId: z.string(),
-  locationId: z.number().int()
+  locationId: z.number().int(),
+  stepId: z.string()
 }).strict();
 
 export const LocationResponseCreateOrConnectWithoutFormSubmissionInputSchema: z.ZodType<Prisma.LocationResponseCreateOrConnectWithoutFormSubmissionInput> = z.object({
@@ -5090,17 +5380,6 @@ export const InputResponseUpdateManyWithWhereWithoutFormSubmissionInputSchema: z
   data: z.union([ z.lazy(() => InputResponseUpdateManyMutationInputSchema),z.lazy(() => InputResponseUncheckedUpdateManyWithoutFormSubmissionInputSchema) ]),
 }).strict();
 
-export const InputResponseScalarWhereInputSchema: z.ZodType<Prisma.InputResponseScalarWhereInput> = z.object({
-  AND: z.union([ z.lazy(() => InputResponseScalarWhereInputSchema),z.lazy(() => InputResponseScalarWhereInputSchema).array() ]).optional(),
-  OR: z.lazy(() => InputResponseScalarWhereInputSchema).array().optional(),
-  NOT: z.union([ z.lazy(() => InputResponseScalarWhereInputSchema),z.lazy(() => InputResponseScalarWhereInputSchema).array() ]).optional(),
-  id: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
-  blockNoteId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
-  title: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
-  value: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
-  formSubmissionId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
-}).strict();
-
 export const LocationResponseUpsertWithWhereUniqueWithoutFormSubmissionInputSchema: z.ZodType<Prisma.LocationResponseUpsertWithWhereUniqueWithoutFormSubmissionInput> = z.object({
   where: z.lazy(() => LocationResponseWhereUniqueInputSchema),
   update: z.union([ z.lazy(() => LocationResponseUpdateWithoutFormSubmissionInputSchema),z.lazy(() => LocationResponseUncheckedUpdateWithoutFormSubmissionInputSchema) ]),
@@ -5115,16 +5394,6 @@ export const LocationResponseUpdateWithWhereUniqueWithoutFormSubmissionInputSche
 export const LocationResponseUpdateManyWithWhereWithoutFormSubmissionInputSchema: z.ZodType<Prisma.LocationResponseUpdateManyWithWhereWithoutFormSubmissionInput> = z.object({
   where: z.lazy(() => LocationResponseScalarWhereInputSchema),
   data: z.union([ z.lazy(() => LocationResponseUpdateManyMutationInputSchema),z.lazy(() => LocationResponseUncheckedUpdateManyWithoutFormSubmissionInputSchema) ]),
-}).strict();
-
-export const LocationResponseScalarWhereInputSchema: z.ZodType<Prisma.LocationResponseScalarWhereInput> = z.object({
-  AND: z.union([ z.lazy(() => LocationResponseScalarWhereInputSchema),z.lazy(() => LocationResponseScalarWhereInputSchema).array() ]).optional(),
-  OR: z.lazy(() => LocationResponseScalarWhereInputSchema).array().optional(),
-  NOT: z.union([ z.lazy(() => LocationResponseScalarWhereInputSchema),z.lazy(() => LocationResponseScalarWhereInputSchema).array() ]).optional(),
-  id: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
-  blockNoteId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
-  locationId: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
-  formSubmissionId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
 }).strict();
 
 export const FormSubmissionCreateWithoutInputResponsesInputSchema: z.ZodType<Prisma.FormSubmissionCreateWithoutInputResponsesInput> = z.object({
@@ -5146,6 +5415,39 @@ export const FormSubmissionUncheckedCreateWithoutInputResponsesInputSchema: z.Zo
 export const FormSubmissionCreateOrConnectWithoutInputResponsesInputSchema: z.ZodType<Prisma.FormSubmissionCreateOrConnectWithoutInputResponsesInput> = z.object({
   where: z.lazy(() => FormSubmissionWhereUniqueInputSchema),
   create: z.union([ z.lazy(() => FormSubmissionCreateWithoutInputResponsesInputSchema),z.lazy(() => FormSubmissionUncheckedCreateWithoutInputResponsesInputSchema) ]),
+}).strict();
+
+export const StepCreateWithoutInputResponsesInputSchema: z.ZodType<Prisma.StepCreateWithoutInputResponsesInput> = z.object({
+  id: z.string().uuid().optional(),
+  title: z.string().optional().nullable(),
+  description: z.union([ z.lazy(() => NullableJsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  zoom: z.number().int(),
+  pitch: z.number().int(),
+  bearing: z.number().int(),
+  createdAt: z.coerce.date().optional(),
+  updatedAt: z.coerce.date().optional(),
+  form: z.lazy(() => FormCreateNestedOneWithoutStepsInputSchema).optional(),
+  location: z.lazy(() => LocationCreateNestedOneWithoutStepInputSchema),
+  locationResponses: z.lazy(() => LocationResponseCreateNestedManyWithoutStepInputSchema).optional()
+}).strict();
+
+export const StepUncheckedCreateWithoutInputResponsesInputSchema: z.ZodType<Prisma.StepUncheckedCreateWithoutInputResponsesInput> = z.object({
+  id: z.string().uuid().optional(),
+  title: z.string().optional().nullable(),
+  description: z.union([ z.lazy(() => NullableJsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  zoom: z.number().int(),
+  pitch: z.number().int(),
+  bearing: z.number().int(),
+  formId: z.string().optional().nullable(),
+  locationId: z.number().int(),
+  createdAt: z.coerce.date().optional(),
+  updatedAt: z.coerce.date().optional(),
+  locationResponses: z.lazy(() => LocationResponseUncheckedCreateNestedManyWithoutStepInputSchema).optional()
+}).strict();
+
+export const StepCreateOrConnectWithoutInputResponsesInputSchema: z.ZodType<Prisma.StepCreateOrConnectWithoutInputResponsesInput> = z.object({
+  where: z.lazy(() => StepWhereUniqueInputSchema),
+  create: z.union([ z.lazy(() => StepCreateWithoutInputResponsesInputSchema),z.lazy(() => StepUncheckedCreateWithoutInputResponsesInputSchema) ]),
 }).strict();
 
 export const FormSubmissionUpsertWithoutInputResponsesInputSchema: z.ZodType<Prisma.FormSubmissionUpsertWithoutInputResponsesInput> = z.object({
@@ -5175,6 +5477,45 @@ export const FormSubmissionUncheckedUpdateWithoutInputResponsesInputSchema: z.Zo
   locationResponses: z.lazy(() => LocationResponseUncheckedUpdateManyWithoutFormSubmissionNestedInputSchema).optional()
 }).strict();
 
+export const StepUpsertWithoutInputResponsesInputSchema: z.ZodType<Prisma.StepUpsertWithoutInputResponsesInput> = z.object({
+  update: z.union([ z.lazy(() => StepUpdateWithoutInputResponsesInputSchema),z.lazy(() => StepUncheckedUpdateWithoutInputResponsesInputSchema) ]),
+  create: z.union([ z.lazy(() => StepCreateWithoutInputResponsesInputSchema),z.lazy(() => StepUncheckedCreateWithoutInputResponsesInputSchema) ]),
+  where: z.lazy(() => StepWhereInputSchema).optional()
+}).strict();
+
+export const StepUpdateToOneWithWhereWithoutInputResponsesInputSchema: z.ZodType<Prisma.StepUpdateToOneWithWhereWithoutInputResponsesInput> = z.object({
+  where: z.lazy(() => StepWhereInputSchema).optional(),
+  data: z.union([ z.lazy(() => StepUpdateWithoutInputResponsesInputSchema),z.lazy(() => StepUncheckedUpdateWithoutInputResponsesInputSchema) ]),
+}).strict();
+
+export const StepUpdateWithoutInputResponsesInputSchema: z.ZodType<Prisma.StepUpdateWithoutInputResponsesInput> = z.object({
+  id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  title: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  description: z.union([ z.lazy(() => NullableJsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  zoom: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  pitch: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  bearing: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  form: z.lazy(() => FormUpdateOneWithoutStepsNestedInputSchema).optional(),
+  location: z.lazy(() => LocationUpdateOneRequiredWithoutStepNestedInputSchema).optional(),
+  locationResponses: z.lazy(() => LocationResponseUpdateManyWithoutStepNestedInputSchema).optional()
+}).strict();
+
+export const StepUncheckedUpdateWithoutInputResponsesInputSchema: z.ZodType<Prisma.StepUncheckedUpdateWithoutInputResponsesInput> = z.object({
+  id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  title: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  description: z.union([ z.lazy(() => NullableJsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  zoom: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  pitch: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  bearing: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  formId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  locationId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  locationResponses: z.lazy(() => LocationResponseUncheckedUpdateManyWithoutStepNestedInputSchema).optional()
+}).strict();
+
 export const FormSubmissionCreateWithoutLocationResponsesInputSchema: z.ZodType<Prisma.FormSubmissionCreateWithoutLocationResponsesInput> = z.object({
   id: z.string().uuid().optional(),
   createdAt: z.coerce.date().optional(),
@@ -5194,6 +5535,39 @@ export const FormSubmissionUncheckedCreateWithoutLocationResponsesInputSchema: z
 export const FormSubmissionCreateOrConnectWithoutLocationResponsesInputSchema: z.ZodType<Prisma.FormSubmissionCreateOrConnectWithoutLocationResponsesInput> = z.object({
   where: z.lazy(() => FormSubmissionWhereUniqueInputSchema),
   create: z.union([ z.lazy(() => FormSubmissionCreateWithoutLocationResponsesInputSchema),z.lazy(() => FormSubmissionUncheckedCreateWithoutLocationResponsesInputSchema) ]),
+}).strict();
+
+export const StepCreateWithoutLocationResponsesInputSchema: z.ZodType<Prisma.StepCreateWithoutLocationResponsesInput> = z.object({
+  id: z.string().uuid().optional(),
+  title: z.string().optional().nullable(),
+  description: z.union([ z.lazy(() => NullableJsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  zoom: z.number().int(),
+  pitch: z.number().int(),
+  bearing: z.number().int(),
+  createdAt: z.coerce.date().optional(),
+  updatedAt: z.coerce.date().optional(),
+  form: z.lazy(() => FormCreateNestedOneWithoutStepsInputSchema).optional(),
+  location: z.lazy(() => LocationCreateNestedOneWithoutStepInputSchema),
+  inputResponses: z.lazy(() => InputResponseCreateNestedManyWithoutStepInputSchema).optional()
+}).strict();
+
+export const StepUncheckedCreateWithoutLocationResponsesInputSchema: z.ZodType<Prisma.StepUncheckedCreateWithoutLocationResponsesInput> = z.object({
+  id: z.string().uuid().optional(),
+  title: z.string().optional().nullable(),
+  description: z.union([ z.lazy(() => NullableJsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  zoom: z.number().int(),
+  pitch: z.number().int(),
+  bearing: z.number().int(),
+  formId: z.string().optional().nullable(),
+  locationId: z.number().int(),
+  createdAt: z.coerce.date().optional(),
+  updatedAt: z.coerce.date().optional(),
+  inputResponses: z.lazy(() => InputResponseUncheckedCreateNestedManyWithoutStepInputSchema).optional()
+}).strict();
+
+export const StepCreateOrConnectWithoutLocationResponsesInputSchema: z.ZodType<Prisma.StepCreateOrConnectWithoutLocationResponsesInput> = z.object({
+  where: z.lazy(() => StepWhereUniqueInputSchema),
+  create: z.union([ z.lazy(() => StepCreateWithoutLocationResponsesInputSchema),z.lazy(() => StepUncheckedCreateWithoutLocationResponsesInputSchema) ]),
 }).strict();
 
 export const LocationUpdateToOneWithWhereWithoutLocationResponseInputSchema: z.ZodType<Prisma.LocationUpdateToOneWithWhereWithoutLocationResponseInput> = z.object({
@@ -5237,6 +5611,45 @@ export const FormSubmissionUncheckedUpdateWithoutLocationResponsesInputSchema: z
   inputResponses: z.lazy(() => InputResponseUncheckedUpdateManyWithoutFormSubmissionNestedInputSchema).optional()
 }).strict();
 
+export const StepUpsertWithoutLocationResponsesInputSchema: z.ZodType<Prisma.StepUpsertWithoutLocationResponsesInput> = z.object({
+  update: z.union([ z.lazy(() => StepUpdateWithoutLocationResponsesInputSchema),z.lazy(() => StepUncheckedUpdateWithoutLocationResponsesInputSchema) ]),
+  create: z.union([ z.lazy(() => StepCreateWithoutLocationResponsesInputSchema),z.lazy(() => StepUncheckedCreateWithoutLocationResponsesInputSchema) ]),
+  where: z.lazy(() => StepWhereInputSchema).optional()
+}).strict();
+
+export const StepUpdateToOneWithWhereWithoutLocationResponsesInputSchema: z.ZodType<Prisma.StepUpdateToOneWithWhereWithoutLocationResponsesInput> = z.object({
+  where: z.lazy(() => StepWhereInputSchema).optional(),
+  data: z.union([ z.lazy(() => StepUpdateWithoutLocationResponsesInputSchema),z.lazy(() => StepUncheckedUpdateWithoutLocationResponsesInputSchema) ]),
+}).strict();
+
+export const StepUpdateWithoutLocationResponsesInputSchema: z.ZodType<Prisma.StepUpdateWithoutLocationResponsesInput> = z.object({
+  id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  title: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  description: z.union([ z.lazy(() => NullableJsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  zoom: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  pitch: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  bearing: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  form: z.lazy(() => FormUpdateOneWithoutStepsNestedInputSchema).optional(),
+  location: z.lazy(() => LocationUpdateOneRequiredWithoutStepNestedInputSchema).optional(),
+  inputResponses: z.lazy(() => InputResponseUpdateManyWithoutStepNestedInputSchema).optional()
+}).strict();
+
+export const StepUncheckedUpdateWithoutLocationResponsesInputSchema: z.ZodType<Prisma.StepUncheckedUpdateWithoutLocationResponsesInput> = z.object({
+  id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  title: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  description: z.union([ z.lazy(() => NullableJsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  zoom: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  pitch: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  bearing: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  formId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  locationId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  inputResponses: z.lazy(() => InputResponseUncheckedUpdateManyWithoutStepNestedInputSchema).optional()
+}).strict();
+
 export const StepCreateWithoutLocationInputSchema: z.ZodType<Prisma.StepCreateWithoutLocationInput> = z.object({
   id: z.string().uuid().optional(),
   title: z.string().optional().nullable(),
@@ -5246,7 +5659,9 @@ export const StepCreateWithoutLocationInputSchema: z.ZodType<Prisma.StepCreateWi
   bearing: z.number().int(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
-  form: z.lazy(() => FormCreateNestedOneWithoutStepsInputSchema).optional()
+  form: z.lazy(() => FormCreateNestedOneWithoutStepsInputSchema).optional(),
+  inputResponses: z.lazy(() => InputResponseCreateNestedManyWithoutStepInputSchema).optional(),
+  locationResponses: z.lazy(() => LocationResponseCreateNestedManyWithoutStepInputSchema).optional()
 }).strict();
 
 export const StepUncheckedCreateWithoutLocationInputSchema: z.ZodType<Prisma.StepUncheckedCreateWithoutLocationInput> = z.object({
@@ -5258,7 +5673,9 @@ export const StepUncheckedCreateWithoutLocationInputSchema: z.ZodType<Prisma.Ste
   bearing: z.number().int(),
   formId: z.string().optional().nullable(),
   createdAt: z.coerce.date().optional(),
-  updatedAt: z.coerce.date().optional()
+  updatedAt: z.coerce.date().optional(),
+  inputResponses: z.lazy(() => InputResponseUncheckedCreateNestedManyWithoutStepInputSchema).optional(),
+  locationResponses: z.lazy(() => LocationResponseUncheckedCreateNestedManyWithoutStepInputSchema).optional()
 }).strict();
 
 export const StepCreateOrConnectWithoutLocationInputSchema: z.ZodType<Prisma.StepCreateOrConnectWithoutLocationInput> = z.object({
@@ -5286,7 +5703,9 @@ export const StepUpdateWithoutLocationInputSchema: z.ZodType<Prisma.StepUpdateWi
   bearing: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
-  form: z.lazy(() => FormUpdateOneWithoutStepsNestedInputSchema).optional()
+  form: z.lazy(() => FormUpdateOneWithoutStepsNestedInputSchema).optional(),
+  inputResponses: z.lazy(() => InputResponseUpdateManyWithoutStepNestedInputSchema).optional(),
+  locationResponses: z.lazy(() => LocationResponseUpdateManyWithoutStepNestedInputSchema).optional()
 }).strict();
 
 export const StepUncheckedUpdateWithoutLocationInputSchema: z.ZodType<Prisma.StepUncheckedUpdateWithoutLocationInput> = z.object({
@@ -5299,18 +5718,22 @@ export const StepUncheckedUpdateWithoutLocationInputSchema: z.ZodType<Prisma.Ste
   formId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  inputResponses: z.lazy(() => InputResponseUncheckedUpdateManyWithoutStepNestedInputSchema).optional(),
+  locationResponses: z.lazy(() => LocationResponseUncheckedUpdateManyWithoutStepNestedInputSchema).optional()
 }).strict();
 
 export const LocationResponseCreateWithoutLocationInputSchema: z.ZodType<Prisma.LocationResponseCreateWithoutLocationInput> = z.object({
   id: z.string().uuid().optional(),
   blockNoteId: z.string(),
-  formSubmission: z.lazy(() => FormSubmissionCreateNestedOneWithoutLocationResponsesInputSchema)
+  formSubmission: z.lazy(() => FormSubmissionCreateNestedOneWithoutLocationResponsesInputSchema),
+  step: z.lazy(() => StepCreateNestedOneWithoutLocationResponsesInputSchema)
 }).strict();
 
 export const LocationResponseUncheckedCreateWithoutLocationInputSchema: z.ZodType<Prisma.LocationResponseUncheckedCreateWithoutLocationInput> = z.object({
   id: z.string().uuid().optional(),
   blockNoteId: z.string(),
-  formSubmissionId: z.string()
+  formSubmissionId: z.string(),
+  stepId: z.string()
 }).strict();
 
 export const LocationResponseCreateOrConnectWithoutLocationInputSchema: z.ZodType<Prisma.LocationResponseCreateOrConnectWithoutLocationInput> = z.object({
@@ -5332,13 +5755,15 @@ export const LocationResponseUpdateToOneWithWhereWithoutLocationInputSchema: z.Z
 export const LocationResponseUpdateWithoutLocationInputSchema: z.ZodType<Prisma.LocationResponseUpdateWithoutLocationInput> = z.object({
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   blockNoteId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  formSubmission: z.lazy(() => FormSubmissionUpdateOneRequiredWithoutLocationResponsesNestedInputSchema).optional()
+  formSubmission: z.lazy(() => FormSubmissionUpdateOneRequiredWithoutLocationResponsesNestedInputSchema).optional(),
+  step: z.lazy(() => StepUpdateOneRequiredWithoutLocationResponsesNestedInputSchema).optional()
 }).strict();
 
 export const LocationResponseUncheckedUpdateWithoutLocationInputSchema: z.ZodType<Prisma.LocationResponseUncheckedUpdateWithoutLocationInput> = z.object({
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   blockNoteId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   formSubmissionId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  stepId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const OrganizationMembershipCreateManyUserInputSchema: z.ZodType<Prisma.OrganizationMembershipCreateManyUserInput> = z.object({
@@ -5592,7 +6017,9 @@ export const StepUpdateWithoutFormInputSchema: z.ZodType<Prisma.StepUpdateWithou
   bearing: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
-  location: z.lazy(() => LocationUpdateOneRequiredWithoutStepNestedInputSchema).optional()
+  location: z.lazy(() => LocationUpdateOneRequiredWithoutStepNestedInputSchema).optional(),
+  inputResponses: z.lazy(() => InputResponseUpdateManyWithoutStepNestedInputSchema).optional(),
+  locationResponses: z.lazy(() => LocationResponseUpdateManyWithoutStepNestedInputSchema).optional()
 }).strict();
 
 export const StepUncheckedUpdateWithoutFormInputSchema: z.ZodType<Prisma.StepUncheckedUpdateWithoutFormInput> = z.object({
@@ -5605,6 +6032,8 @@ export const StepUncheckedUpdateWithoutFormInputSchema: z.ZodType<Prisma.StepUnc
   locationId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  inputResponses: z.lazy(() => InputResponseUncheckedUpdateManyWithoutStepNestedInputSchema).optional(),
+  locationResponses: z.lazy(() => LocationResponseUncheckedUpdateManyWithoutStepNestedInputSchema).optional()
 }).strict();
 
 export const StepUncheckedUpdateManyWithoutFormInputSchema: z.ZodType<Prisma.StepUncheckedUpdateManyWithoutFormInput> = z.object({
@@ -5689,56 +6118,116 @@ export const FormUncheckedUpdateManyWithoutDraftFormInputSchema: z.ZodType<Prism
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
+export const InputResponseCreateManyStepInputSchema: z.ZodType<Prisma.InputResponseCreateManyStepInput> = z.object({
+  id: z.string().uuid().optional(),
+  blockNoteId: z.string(),
+  value: z.string(),
+  formSubmissionId: z.string()
+}).strict();
+
+export const LocationResponseCreateManyStepInputSchema: z.ZodType<Prisma.LocationResponseCreateManyStepInput> = z.object({
+  id: z.string().uuid().optional(),
+  blockNoteId: z.string(),
+  locationId: z.number().int(),
+  formSubmissionId: z.string()
+}).strict();
+
+export const InputResponseUpdateWithoutStepInputSchema: z.ZodType<Prisma.InputResponseUpdateWithoutStepInput> = z.object({
+  id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  blockNoteId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  value: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  formSubmission: z.lazy(() => FormSubmissionUpdateOneRequiredWithoutInputResponsesNestedInputSchema).optional()
+}).strict();
+
+export const InputResponseUncheckedUpdateWithoutStepInputSchema: z.ZodType<Prisma.InputResponseUncheckedUpdateWithoutStepInput> = z.object({
+  id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  blockNoteId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  value: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  formSubmissionId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const InputResponseUncheckedUpdateManyWithoutStepInputSchema: z.ZodType<Prisma.InputResponseUncheckedUpdateManyWithoutStepInput> = z.object({
+  id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  blockNoteId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  value: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  formSubmissionId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const LocationResponseUpdateWithoutStepInputSchema: z.ZodType<Prisma.LocationResponseUpdateWithoutStepInput> = z.object({
+  id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  blockNoteId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  location: z.lazy(() => LocationUpdateOneRequiredWithoutLocationResponseNestedInputSchema).optional(),
+  formSubmission: z.lazy(() => FormSubmissionUpdateOneRequiredWithoutLocationResponsesNestedInputSchema).optional()
+}).strict();
+
+export const LocationResponseUncheckedUpdateWithoutStepInputSchema: z.ZodType<Prisma.LocationResponseUncheckedUpdateWithoutStepInput> = z.object({
+  id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  blockNoteId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  locationId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  formSubmissionId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const LocationResponseUncheckedUpdateManyWithoutStepInputSchema: z.ZodType<Prisma.LocationResponseUncheckedUpdateManyWithoutStepInput> = z.object({
+  id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  blockNoteId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  locationId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  formSubmissionId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
 export const InputResponseCreateManyFormSubmissionInputSchema: z.ZodType<Prisma.InputResponseCreateManyFormSubmissionInput> = z.object({
   id: z.string().uuid().optional(),
   blockNoteId: z.string(),
-  title: z.string(),
-  value: z.string()
+  value: z.string(),
+  stepId: z.string()
 }).strict();
 
 export const LocationResponseCreateManyFormSubmissionInputSchema: z.ZodType<Prisma.LocationResponseCreateManyFormSubmissionInput> = z.object({
   id: z.string().uuid().optional(),
   blockNoteId: z.string(),
-  locationId: z.number().int()
+  locationId: z.number().int(),
+  stepId: z.string()
 }).strict();
 
 export const InputResponseUpdateWithoutFormSubmissionInputSchema: z.ZodType<Prisma.InputResponseUpdateWithoutFormSubmissionInput> = z.object({
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   blockNoteId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  title: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   value: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  step: z.lazy(() => StepUpdateOneRequiredWithoutInputResponsesNestedInputSchema).optional()
 }).strict();
 
 export const InputResponseUncheckedUpdateWithoutFormSubmissionInputSchema: z.ZodType<Prisma.InputResponseUncheckedUpdateWithoutFormSubmissionInput> = z.object({
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   blockNoteId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  title: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   value: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  stepId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const InputResponseUncheckedUpdateManyWithoutFormSubmissionInputSchema: z.ZodType<Prisma.InputResponseUncheckedUpdateManyWithoutFormSubmissionInput> = z.object({
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   blockNoteId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  title: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   value: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  stepId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const LocationResponseUpdateWithoutFormSubmissionInputSchema: z.ZodType<Prisma.LocationResponseUpdateWithoutFormSubmissionInput> = z.object({
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   blockNoteId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  location: z.lazy(() => LocationUpdateOneRequiredWithoutLocationResponseNestedInputSchema).optional()
+  location: z.lazy(() => LocationUpdateOneRequiredWithoutLocationResponseNestedInputSchema).optional(),
+  step: z.lazy(() => StepUpdateOneRequiredWithoutLocationResponsesNestedInputSchema).optional()
 }).strict();
 
 export const LocationResponseUncheckedUpdateWithoutFormSubmissionInputSchema: z.ZodType<Prisma.LocationResponseUncheckedUpdateWithoutFormSubmissionInput> = z.object({
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   blockNoteId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   locationId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  stepId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const LocationResponseUncheckedUpdateManyWithoutFormSubmissionInputSchema: z.ZodType<Prisma.LocationResponseUncheckedUpdateManyWithoutFormSubmissionInput> = z.object({
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   blockNoteId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   locationId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  stepId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 /////////////////////////////////////////

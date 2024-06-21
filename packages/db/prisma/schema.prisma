@@ -15,6 +15,10 @@ generator zod {
     createRelationValuesTypes = true
 }
 
+generator json {
+    provider = "prisma-json-types-generator"
+}
+
 datasource db {
     provider   = "postgresql"
     url        = env("DATABASE_URL")
@@ -120,14 +124,18 @@ model Form {
 model Step {
     id          String   @id @default(uuid())
     title       String?
+    /// [DocumentType]
     description Json?
     zoom        Int
     pitch       Int
     bearing     Int
     formId      String?
-    form        Form?    @relation(name: "Steps", fields: [formId], references: [id])
+    form        Form?    @relation(name: "Steps", fields: [formId], references: [id], onDelete: Cascade)
     locationId  Int      @unique
-    location    Location @relation(fields: [locationId], references: [id])
+    location    Location @relation(fields: [locationId], references: [id], onDelete: Cascade)
+
+    inputResponses    InputResponse[]
+    locationResponses LocationResponse[]
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
@@ -136,7 +144,7 @@ model Step {
 model FormSubmission {
     id                String             @id @default(uuid())
     formId            String
-    form              Form               @relation(fields: [formId], references: [id])
+    form              Form               @relation(fields: [formId], references: [id], onDelete: Cascade)
     inputResponses    InputResponse[]
     locationResponses LocationResponse[]
 
@@ -147,11 +155,12 @@ model FormSubmission {
 model InputResponse {
     id               String @id @default(uuid())
     blockNoteId      String
-    title            String
     value            String
     formSubmissionId String
 
-    formSubmission FormSubmission @relation(fields: [formSubmissionId], references: [id])
+    formSubmission FormSubmission @relation(fields: [formSubmissionId], references: [id], onDelete: Cascade)
+    step           Step           @relation(fields: [stepId], references: [id], onDelete: Cascade)
+    stepId         String
 
     @@unique([blockNoteId, formSubmissionId])
 }
@@ -163,7 +172,9 @@ model LocationResponse {
     formSubmissionId String
 
     location       Location       @relation(fields: [locationId], references: [id])
-    formSubmission FormSubmission @relation(fields: [formSubmissionId], references: [id])
+    formSubmission FormSubmission @relation(fields: [formSubmissionId], references: [id], onDelete: Cascade)
+    step           Step           @relation(fields: [stepId], references: [id], onDelete: Cascade)
+    stepId         String
 
     @@unique([blockNoteId, formSubmissionId])
 }
