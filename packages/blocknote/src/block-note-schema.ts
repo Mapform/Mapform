@@ -1,10 +1,10 @@
 "use client";
 
 import { BlockNoteSchema, defaultBlockSpecs } from "@blocknote/core";
-import type { BlockFromConfig, Block } from "@blocknote/core";
-import { Pin } from "./custom-blocks/pin";
-import { Image } from "./custom-blocks/image";
-import { TextInput } from "./custom-blocks/text-input";
+import type { Block } from "@blocknote/core";
+import { Pin } from "./custom-blocks/pin/block";
+import { Image } from "./custom-blocks/image/block";
+import { TextInput } from "./custom-blocks/text-input/block";
 
 export const customBlockSpecs = {
   pin: Pin,
@@ -32,22 +32,9 @@ export type CustomBlock = Block<
   typeof schema.inlineContentSchema,
   typeof schema.styleSchema
 >;
+
 export type DocumentContent = CustomBlock[];
 
-export type TextInputBlock = BlockFromConfig<
-  typeof TextInput.config,
-  typeof schema.inlineContentSchema,
-  typeof schema.styleSchema
->;
-
-export type PinBlock = BlockFromConfig<
-  typeof Pin.config,
-  typeof schema.inlineContentSchema,
-  typeof schema.styleSchema
->;
-
-export type ImageBlock = BlockFromConfig<
-  typeof Image.config,
-  typeof schema.inlineContentSchema,
-  typeof schema.styleSchema
->;
+export * from "./custom-blocks/text-input";
+export * from "./custom-blocks/pin";
+export * from "./custom-blocks/image";

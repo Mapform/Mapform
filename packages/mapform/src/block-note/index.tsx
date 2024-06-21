@@ -4,9 +4,6 @@ import { useState } from "react";
 import "@blocknote/core/fonts/inter.css";
 import { filterSuggestionItems, insertOrUpdateBlock } from "@blocknote/core";
 import {
-  DragHandleMenu,
-  RemoveBlockItem,
-  SideMenu,
   SideMenuController,
   SuggestionMenuController,
   getDefaultReactSlashMenuItems,
@@ -19,6 +16,7 @@ import { Button } from "@mapform/ui/components/button";
 import { schema, type CustomBlock } from "@mapform/blocknote";
 import "./style.css";
 import { AutoSizeTextArea } from "./autosize-text-area";
+import { CustomSideMenu } from "./side-menu";
 
 interface BlocknoteProps {
   editable: boolean;
@@ -174,18 +172,5 @@ export function Blocknote({
         </Button>
       </div>
     </div>
-  );
-}
-
-function CustomSideMenu(props: any) {
-  return <SideMenu {...props} dragHandleMenu={CustomDragMenu} />;
-}
-
-function CustomDragMenu(props: any) {
-  return (
-    <DragHandleMenu {...props}>
-      <RemoveBlockItem {...props}>Delete</RemoveBlockItem>
-      Test
-    </DragHandleMenu>
   );
 }

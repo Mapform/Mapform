@@ -9,7 +9,7 @@ import {
 import { useState } from "react";
 import { Button } from "@mapform/ui/components/button";
 import { Input } from "@mapform/ui/components/input";
-import { useCustomBlockContext } from "../context";
+import { useCustomBlockContext } from "../../context";
 
 export const Pin = createReactBlockSpec(
   {
