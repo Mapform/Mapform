@@ -21,10 +21,12 @@ import { Form, useForm, zodResolver } from "@mapform/ui/components/form";
 import type { z } from "zod";
 import { cn } from "@mapform/lib/classnames";
 import type { FormSchema } from "@mapform/lib/schemas/form-step-schema";
-import { getFormSchemaFromBlockNote } from "./lib/zod-schema-from-blocknote";
-import { type CustomBlock } from "./lib/block-note-schema";
+import { CustomBlockContext } from "@mapform/blocknote";
+import {
+  type CustomBlock,
+  getFormSchemaFromBlockNote,
+} from "@mapform/blocknote";
 import { Blocknote } from "./block-note";
-import { MapFormContext } from "./context";
 
 type ExtendedStep = Step & { latitude: number; longitude: number };
 
@@ -89,7 +91,7 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
           className="flex w-full h-full"
           onSubmit={form.handleSubmit(onSubmit)}
         >
-          <MapFormContext.Provider
+          <CustomBlockContext.Provider
             value={{
               editable,
               viewState,
@@ -174,7 +176,7 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
                 })
               )}
             </Map>
-          </MapFormContext.Provider>
+          </CustomBlockContext.Provider>
         </form>
       </Form>
     );

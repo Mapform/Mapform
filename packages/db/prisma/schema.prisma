@@ -15,6 +15,10 @@ generator zod {
     createRelationValuesTypes = true
 }
 
+generator json {
+    provider = "prisma-json-types-generator"
+}
+
 datasource db {
     provider   = "postgresql"
     url        = env("DATABASE_URL")
@@ -120,6 +124,7 @@ model Form {
 model Step {
     id          String   @id @default(uuid())
     title       String?
+    /// [DocumentType]
     description Json?
     zoom        Int
     pitch       Int

@@ -1,3 +1,6 @@
+"use client";
+
+/* eslint-disable react-hooks/rules-of-hooks -- Valid */
 import { createReactBlockSpec } from "@blocknote/react";
 import {
   FormField,
@@ -16,7 +19,7 @@ import { Input } from "@mapform/ui/components/input";
 import { Switch } from "@mapform/ui/components/switch";
 import { EllipsisIcon } from "lucide-react";
 import { Label } from "@mapform/ui/components/label";
-import { useMapFormContext } from "../../context";
+import { useCustomBlockContext } from "../context";
 
 export const TextInput = createReactBlockSpec(
   {
@@ -40,7 +43,7 @@ export const TextInput = createReactBlockSpec(
   {
     render: ({ block, editor }) => {
       const form = useFormContext();
-      const { editable } = useMapFormContext();
+      const { editable } = useCustomBlockContext();
 
       return (
         <FormField

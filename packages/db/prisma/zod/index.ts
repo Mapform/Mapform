@@ -296,6 +296,9 @@ export const FormWithRelationsSchema: z.ZodType<FormWithRelations> = FormSchema.
 export const StepSchema = z.object({
   id: z.string().uuid(),
   title: z.string().nullable(),
+  /**
+   * [DocumentType]
+   */
   description: JsonValueSchema,
   zoom: z.number().int(),
   pitch: z.number().int(),

@@ -1,3 +1,6 @@
+"use client";
+
+/* eslint-disable react-hooks/rules-of-hooks -- Valid */
 import { useState } from "react";
 import { createReactBlockSpec } from "@blocknote/react";
 import {
@@ -8,7 +11,7 @@ import {
 import { Input } from "@mapform/ui/components/input";
 import NextImage from "next/image";
 import { ImageIcon, ImageOffIcon } from "lucide-react";
-import { useMapFormContext } from "../../context";
+import { useCustomBlockContext } from "../context";
 
 export const Image = createReactBlockSpec(
   {
@@ -24,7 +27,7 @@ export const Image = createReactBlockSpec(
   {
     render: ({ block, editor }) => {
       const [isUploading, setIsUploading] = useState(false);
-      const { editable, onImageUpload } = useMapFormContext();
+      const { editable, onImageUpload } = useCustomBlockContext();
 
       const renderImage = () => (
         <NextImage

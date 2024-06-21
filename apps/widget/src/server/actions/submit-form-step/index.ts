@@ -2,8 +2,10 @@
 
 import { prisma } from "@mapform/db";
 import { revalidatePath } from "next/cache";
-import { type DocumentContent } from "@mapform/mapform/lib/block-note-schema";
-import { getFormSchemaFromBlockNote } from "@mapform/mapform/lib/zod-schema-from-blocknote";
+import {
+  type DocumentContent,
+  getFormSchemaFromBlockNote,
+} from "@mapform/blocknote";
 import { action } from "~/lib/safe-action";
 import { submitFormStepSchema } from "./schema";
 
