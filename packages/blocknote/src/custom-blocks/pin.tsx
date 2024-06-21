@@ -59,7 +59,7 @@ export const Pin = createReactBlockSpec(
       const currentLongitude = form.watch(`${block.id}.longitude`);
 
       return (
-        <>
+        <div className="fiex flex-col w-full">
           {isSelectingPinLocationFor === block.id ? (
             <div className="flex flex-col gap-2">
               <Button
@@ -148,7 +148,7 @@ export const Pin = createReactBlockSpec(
               </FormItem>
             )}
           />
-        </>
+        </div>
       );
     },
   }
