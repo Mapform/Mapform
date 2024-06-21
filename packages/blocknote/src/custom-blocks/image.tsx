@@ -1,5 +1,3 @@
-"use client";
-
 /* eslint-disable react-hooks/rules-of-hooks -- Valid */
 import { useState } from "react";
 import { createReactBlockSpec } from "@blocknote/react";

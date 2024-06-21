@@ -1,3 +1,5 @@
+"use client";
+
 import { BlockNoteSchema, defaultBlockSpecs } from "@blocknote/core";
 import type { BlockFromConfig, Block } from "@blocknote/core";
 import { Pin } from "./custom-blocks/pin";

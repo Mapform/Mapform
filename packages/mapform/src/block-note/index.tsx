@@ -1,21 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import "@blocknote/mantine/style.css";
 import "@blocknote/core/fonts/inter.css";
+import { filterSuggestionItems, insertOrUpdateBlock } from "@blocknote/core";
 import {
-  filterSuggestionItems,
-  insertOrUpdateBlock,
   SuggestionMenuController,
   getDefaultReactSlashMenuItems,
   useCreateBlockNote,
-  BlockNoteView,
-  schema,
-  type CustomBlock,
-  type DocumentContent,
-} from "@mapform/blocknote";
+} from "@blocknote/react";
+import "@blocknote/mantine/style.css";
+import { BlockNoteView } from "@blocknote/mantine";
 import { TextIcon, ChevronLeftIcon, ImageIcon, MapPinIcon } from "lucide-react";
 import { Button } from "@mapform/ui/components/button";
+import { schema, type CustomBlock } from "@mapform/blocknote";
 import "./style.css";
 import { AutoSizeTextArea } from "./autosize-text-area";
 
@@ -23,7 +20,7 @@ interface BlocknoteProps {
   editable: boolean;
   title?: string | null;
   description?: {
-    content: DocumentContent;
+    content: CustomBlock[];
   };
   defaultFormValues?: Record<string, string>;
   onNext?: () => void;

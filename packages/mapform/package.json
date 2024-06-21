@@ -13,6 +13,7 @@
   "dependencies": {
     "@blocknote/core": "0.14.1",
     "@blocknote/mantine": "0.14.1",
+    "@blocknote/react": "0.14.1",
     "@mapform/blocknote": "workspace:*",
     "@mapform/db": "workspace:*",
     "@mapform/lib": "workspace:*",
