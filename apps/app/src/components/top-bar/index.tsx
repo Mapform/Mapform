@@ -2,7 +2,7 @@
 
 import { Fragment } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
-import { MenuIcon, XIcon } from "lucide-react";
+import { MenuIcon, XIcon, MapIcon } from "lucide-react";
 import { cn } from "@mapform/lib/classnames";
 import { useClerk } from "@clerk/nextjs";
 import Link from "next/link";
@@ -24,7 +24,9 @@ export function TopBar({ children }: { children?: React.ReactNode }) {
                 <div className="flex">
                   <div className="flex flex-shrink-0 items-center mr-6">
                     <Link href="/">
-                      <span className="text-xl font-semibold">MapForm</span>
+                      <div className="w-[44px] h-[44px] flex justify-center items-center">
+                        <MapIcon />
+                      </div>
                     </Link>
                   </div>
                 </div>
