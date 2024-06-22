@@ -4,6 +4,7 @@ import { useState } from "react";
 import "@blocknote/core/fonts/inter.css";
 import { filterSuggestionItems, insertOrUpdateBlock } from "@blocknote/core";
 import {
+  SideMenuController,
   SuggestionMenuController,
   getDefaultReactSlashMenuItems,
   useCreateBlockNote,
@@ -15,6 +16,7 @@ import { Button } from "@mapform/ui/components/button";
 import { schema, type CustomBlock } from "@mapform/blocknote";
 import "./style.css";
 import { AutoSizeTextArea } from "./autosize-text-area";
+import { CustomSideMenu } from "./side-menu";
 
 interface BlocknoteProps {
   editable: boolean;
@@ -123,6 +125,7 @@ export function Blocknote({
                   content: editor.document,
                 });
             }}
+            sideMenu={false}
             slashMenu={false}
           >
             <SuggestionMenuController
@@ -141,6 +144,7 @@ export function Blocknote({
               }}
               triggerCharacter="/"
             />
+            <SideMenuController sideMenu={CustomSideMenu} />
           </BlockNoteView>
         </div>
         {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions -- Disable a11y checks here */}

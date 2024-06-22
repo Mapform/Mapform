@@ -9,7 +9,8 @@ import {
 import { useState } from "react";
 import { Button } from "@mapform/ui/components/button";
 import { Input } from "@mapform/ui/components/input";
-import { useCustomBlockContext } from "../context";
+import { AsteriskIcon } from "lucide-react";
+import { useCustomBlockContext } from "../../context";
 
 export const Pin = createReactBlockSpec(
   {
@@ -40,7 +41,10 @@ export const Pin = createReactBlockSpec(
 
       if (editable) {
         return (
-          <Button className="w-full cursor-default" variant="secondary">
+          <Button
+            className="w-full cursor-default relative"
+            variant="secondary"
+          >
             <input
               className="w-full bg-transparent text-center text-sm font-medium border-0 p-0 outline-none border-transparent focus:border-transparent focus:ring-0"
               onChange={(e) => {
@@ -51,6 +55,13 @@ export const Pin = createReactBlockSpec(
               }}
               value={block.props.text}
             />
+            {block.props.required ? (
+              <AsteriskIcon
+                className="absolute right-2"
+                height={14}
+                width={14}
+              />
+            ) : null}
           </Button>
         );
       }
@@ -100,7 +111,7 @@ export const Pin = createReactBlockSpec(
             </div>
           ) : (
             <Button
-              className="w-full"
+              className="w-full relative"
               onClick={() => {
                 setIsSelectingPinLocationFor(block.id);
 
@@ -120,6 +131,13 @@ export const Pin = createReactBlockSpec(
               variant="secondary"
             >
               {block.props.text}
+              {block.props.required ? (
+                <AsteriskIcon
+                  className="absolute right-2"
+                  height={14}
+                  width={14}
+                />
+              ) : null}
             </Button>
           )}
           <FormField

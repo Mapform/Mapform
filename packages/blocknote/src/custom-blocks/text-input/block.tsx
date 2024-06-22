@@ -8,16 +8,9 @@ import {
   FormMessage,
   useFormContext,
 } from "@mapform/ui/components/form";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@mapform/ui/components/popover";
 import { Input } from "@mapform/ui/components/input";
-import { Switch } from "@mapform/ui/components/switch";
-import { EllipsisIcon } from "lucide-react";
-import { Label } from "@mapform/ui/components/label";
-import { useCustomBlockContext } from "../context";
+import { AsteriskIcon } from "lucide-react";
+import { useCustomBlockContext } from "../../context";
 
 export const TextInput = createReactBlockSpec(
   {
@@ -54,7 +47,7 @@ export const TextInput = createReactBlockSpec(
               {editable ? (
                 <div className="flex justify-between">
                   <input
-                    className="text-sm font-medium border-0 w-full p-0 outline-none border-transparent focus:border-transparent focus:ring-0 placeholder-gray-300"
+                    className="text-sm font-medium border-0 p-0 outline-none border-transparent focus:border-transparent focus:ring-0 placeholder-gray-300"
                     onChange={(e) => {
                       editor.updateBlock(block, {
                         type: "textInput",
@@ -64,31 +57,17 @@ export const TextInput = createReactBlockSpec(
                     placeholder="Label"
                     value={block.props.label}
                   />
-                  <Popover>
-                    <PopoverTrigger>
-                      <EllipsisIcon className="h-4 w-4" />
-                    </PopoverTrigger>
-                    <PopoverContent>
-                      <div className="text-xs font-semibold leading-6 text-gray-400 mb-2">
-                        Settings
-                      </div>
-                      <Label className="flex justify-between items-center">
-                        Required
-                        <Switch
-                          checked={block.props.required}
-                          onCheckedChange={(e) => {
-                            editor.updateBlock(block, {
-                              type: "textInput",
-                              props: { required: e },
-                            });
-                          }}
-                        />
-                      </Label>
-                    </PopoverContent>
-                  </Popover>
+                  {block.props.required ? (
+                    <AsteriskIcon height={14} width={14} />
+                  ) : null}
                 </div>
               ) : (
-                <FormLabel>{block.props.label}</FormLabel>
+                <FormLabel className="flex justify-between">
+                  {block.props.label}
+                  {block.props.required ? (
+                    <AsteriskIcon height={14} width={14} />
+                  ) : null}
+                </FormLabel>
               )}
               <FormControl>
                 {editable ? (
