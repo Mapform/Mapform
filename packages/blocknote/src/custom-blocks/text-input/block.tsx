@@ -9,6 +9,7 @@ import {
   useFormContext,
 } from "@mapform/ui/components/form";
 import { Input } from "@mapform/ui/components/input";
+import { AsteriskIcon } from "lucide-react";
 import { useCustomBlockContext } from "../../context";
 
 export const TextInput = createReactBlockSpec(
@@ -46,7 +47,7 @@ export const TextInput = createReactBlockSpec(
               {editable ? (
                 <div className="flex justify-between">
                   <input
-                    className="text-sm font-medium border-0 w-full p-0 outline-none border-transparent focus:border-transparent focus:ring-0 placeholder-gray-300"
+                    className="text-sm font-medium border-0 p-0 outline-none border-transparent focus:border-transparent focus:ring-0 placeholder-gray-300"
                     onChange={(e) => {
                       editor.updateBlock(block, {
                         type: "textInput",
@@ -56,9 +57,17 @@ export const TextInput = createReactBlockSpec(
                     placeholder="Label"
                     value={block.props.label}
                   />
+                  {block.props.required ? (
+                    <AsteriskIcon height={14} width={14} />
+                  ) : null}
                 </div>
               ) : (
-                <FormLabel>{block.props.label}</FormLabel>
+                <FormLabel className="flex justify-between">
+                  {block.props.label}
+                  {block.props.required ? (
+                    <AsteriskIcon height={14} width={14} />
+                  ) : null}
+                </FormLabel>
               )}
               <FormControl>
                 {editable ? (
