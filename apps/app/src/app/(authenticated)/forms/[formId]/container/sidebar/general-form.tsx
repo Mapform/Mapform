@@ -20,6 +20,7 @@ import {
 } from "@mapform/ui/components/select";
 import { toast } from "@mapform/ui/components/toaster";
 import { useAction } from "next-safe-action/hooks";
+import { useDebounce } from "@mapform/lib/use-debounce";
 import type { StepWithLocation } from "@mapform/db/extentsions/steps";
 import { useCallback, useEffect } from "react";
 import {
@@ -37,12 +38,15 @@ export function GeneralForm({ currentStep }: GeneralFormProps) {
     resolver: zodResolver(updateStepSchema),
     defaultValues: {
       stepId: currentStep.id,
-
       data: {
         contentViewType: currentStep.contentViewType,
       },
     },
   });
+  const updateFormState = (step: StepWithLocation) => {
+    form.setValue("data", step);
+  };
+  const debouncedUpdateFormState = useDebounce(updateFormState, 500);
 
   const { execute, status } = useAction(updateStep, {
     onSuccess: () => {
@@ -72,6 +76,10 @@ export function GeneralForm({ currentStep }: GeneralFormProps) {
       subscription.unsubscribe();
     };
   }, [form, form.handleSubmit, form.watch, onSubmit]);
+
+  useEffect(() => {
+    // debouncedUpdateFormState(currentStep);
+  }, [currentStep, debouncedUpdateFormState]);
 
   return (
     <Form {...form}>

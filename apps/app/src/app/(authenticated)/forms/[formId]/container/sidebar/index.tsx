@@ -17,7 +17,10 @@ export function Sidebar() {
   }
 
   return (
-    <div className="flex flex-col overflow-y-auto bg-white w-[400px] border-l">
+    <div
+      className="flex flex-col overflow-y-auto bg-white w-[400px] border-l"
+      key={currentStep.id}
+    >
       <h2 className="text-base font-semibold leading-6 text-gray-900 p-4 mb-0 border-b">
         {currentStep.title || "Untitled"}
       </h2>
