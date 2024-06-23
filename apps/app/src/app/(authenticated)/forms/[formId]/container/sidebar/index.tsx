@@ -29,7 +29,7 @@ export function Sidebar() {
             </h3>
           </AccordionTrigger>
           <AccordionContent className="px-4">
-            <GeneralForm stepId={currentStep.id} />
+            <GeneralForm currentStep={currentStep} />
           </AccordionContent>
         </AccordionItem>
         <AccordionItem className="border-b" value="item-2">

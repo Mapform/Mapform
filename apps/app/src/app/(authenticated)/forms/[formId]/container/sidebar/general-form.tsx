@@ -19,8 +19,9 @@ import {
   SelectValue,
 } from "@mapform/ui/components/select";
 import { toast } from "@mapform/ui/components/toaster";
-import { Button } from "@mapform/ui/components/button";
 import { useAction } from "next-safe-action/hooks";
+import type { StepWithLocation } from "@mapform/db/extentsions/steps";
+import { useCallback, useEffect } from "react";
 import {
   type UpdateStepSchema,
   updateStepSchema,
@@ -28,32 +29,49 @@ import {
 import { updateStep } from "~/server/actions/steps/update";
 
 interface GeneralFormProps {
-  stepId: string;
+  currentStep: StepWithLocation;
 }
 
-export function GeneralForm({ stepId }: GeneralFormProps) {
+export function GeneralForm({ currentStep }: GeneralFormProps) {
   const form = useForm<UpdateStepSchema>({
     resolver: zodResolver(updateStepSchema),
     defaultValues: {
-      stepId,
+      stepId: currentStep.id,
+
+      data: {
+        contentViewType: currentStep.contentViewType,
+      },
     },
   });
 
   const { execute, status } = useAction(updateStep, {
     onSuccess: () => {
-      toast("Location updated ✅");
+      toast("Step settings updated ✅");
     },
     onError: () => {
-      toast("There was an issue updating the location");
+      toast("There was an issue updating the step settings.");
     },
   });
 
-  const onSubmit = (data: UpdateStepSchema) => {
-    execute({
-      stepId,
-      data: data.data,
-    });
-  };
+  const onSubmit = useCallback(
+    (data: UpdateStepSchema) => {
+      execute({
+        stepId: currentStep.id,
+        data: {
+          contentViewType: data.data.contentViewType,
+          formId: currentStep.formId,
+        },
+      });
+    },
+    [currentStep, execute]
+  );
+
+  useEffect(() => {
+    const subscription = form.watch(() => form.handleSubmit(onSubmit)());
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [form, form.handleSubmit, form.watch, onSubmit]);
 
   return (
     <Form {...form}>
@@ -69,6 +87,7 @@ export function GeneralForm({ stepId }: GeneralFormProps) {
                 </FormLabel>
                 <FormControl>
                   <Select
+                    disabled={status === "executing"}
                     name={field.name}
                     onValueChange={field.onChange}
                     value={field.value}
@@ -77,13 +96,13 @@ export function GeneralForm({ stepId }: GeneralFormProps) {
                       <SelectValue placeholder="Select a content view type" />
                     </SelectTrigger>
                     <SelectContent ref={field.ref}>
-                      <SelectItem className="capitalize" value="Full">
+                      <SelectItem className="capitalize" value="FULL">
                         Full
                       </SelectItem>
                       <SelectItem className="capitalize" value="PARTIAL">
                         Partial
                       </SelectItem>
-                      <SelectItem className="capitalize" value="HIDDEM">
+                      <SelectItem className="capitalize" value="HIDDEN">
                         Hidden
                       </SelectItem>
                     </SelectContent>
