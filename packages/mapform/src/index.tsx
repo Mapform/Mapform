@@ -26,6 +26,7 @@ import {
   type CustomBlock,
   getFormSchemaFromBlockNote,
 } from "@mapform/blocknote";
+import { useMeasure } from "@mapform/lib/hooks/use-measure";
 import { Blocknote } from "./block-note";
 
 type ExtendedStep = Step & { latitude: number; longitude: number };
@@ -37,6 +38,7 @@ interface MapFormProps {
   viewState: ViewState;
   defaultFormValues?: Record<string, string>;
   setViewState: Dispatch<SetStateAction<ViewState>>;
+  contentViewType?: "full" | "partial" | "closed";
   onPrev?: () => void;
   onLoad?: () => void;
   onTitleChange?: (content: string) => void;
@@ -73,6 +75,7 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
     const [isSelectingPinLocationFor, setIsSelectingPinLocationFor] = useState<
       string | null
     >(null);
+    const { ref: drawerRef, bounds } = useMeasure<HTMLDivElement>();
 
     const onSubmit = (data: FormSchema) => {
       onStepSubmit && onStepSubmit(data);
@@ -85,13 +88,21 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
     return (
       <Form {...form}>
         <form
-          className="flex w-full h-full"
+          className="relative w-full h-full"
           onSubmit={form.handleSubmit(onSubmit)}
         >
           <CustomBlockContext.Provider
             value={{
               editable,
-              viewState,
+              viewState: {
+                ...viewState,
+                padding: {
+                  left: bounds.width || 0,
+                  right: 0,
+                  top: 0,
+                  bottom: 0,
+                },
+              },
               setViewState,
               onImageUpload,
               isSelectingPinLocationFor,
@@ -99,9 +110,18 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
             }}
           >
             <div
-              className={cn("w-full flex-shrink-0 bg-background shadow z-10", {
-                "max-w-[320px] lg:max-w-[400px]": true,
-              })}
+              className={cn(
+                "absolute top-0 left-0 bottom-0 w-full flex-shrink-0 backdrop-blur-md bg-white/85 shadow z-10 transition-[width,transform]",
+                currentStep?.contentViewType === "FULL"
+                  ? "w-full"
+                  : "w-[320px] lg:w-[400px]"
+              )}
+              ref={drawerRef}
+              style={{
+                transform: `translateX(${
+                  currentStep?.contentViewType === "HIDDEN" ? -bounds.width : 0
+                }px)`,
+              }}
             >
               {currentStep ? (
                 <Blocknote

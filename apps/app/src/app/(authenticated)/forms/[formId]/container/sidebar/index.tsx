@@ -7,6 +7,7 @@ import {
 import { useContainerContext } from "../context";
 import { LocationForm } from "./location-form";
 import { DeleteButton } from "./delete-button";
+import { GeneralForm } from "./general-form";
 
 export function Sidebar() {
   const { currentStep, setViewState, viewState } = useContainerContext();
@@ -21,13 +22,23 @@ export function Sidebar() {
         {currentStep.title || "Untitled"}
       </h2>
       <Accordion defaultValue={["item-1"]} type="multiple">
-        <AccordionItem className="border-b px-4" value="item-1">
-          <AccordionTrigger>
+        <AccordionItem className="border-b" value="item-1">
+          <AccordionTrigger className="px-4">
+            <h3 className="text-xs font-semibold leading-6 text-gray-400 mb-0">
+              General
+            </h3>
+          </AccordionTrigger>
+          <AccordionContent className="px-4">
+            <GeneralForm currentStep={currentStep} />
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem className="border-b" value="item-2">
+          <AccordionTrigger className="px-4">
             <h3 className="text-xs font-semibold leading-6 text-gray-400 mb-0">
               Location
             </h3>
           </AccordionTrigger>
-          <AccordionContent>
+          <AccordionContent className="px-4">
             <LocationForm
               setViewState={setViewState}
               stepId={currentStep.id}
@@ -35,13 +46,13 @@ export function Sidebar() {
             />
           </AccordionContent>
         </AccordionItem>
-        <AccordionItem className="border-b px-4" value="item-2">
-          <AccordionTrigger>
+        <AccordionItem className="border-b" value="item-3">
+          <AccordionTrigger className="px-4">
             <h3 className="text-xs font-semibold leading-6 text-gray-400 mb-0">
               Danger Zone
             </h3>
           </AccordionTrigger>
-          <AccordionContent>
+          <AccordionContent className="px-4">
             <DeleteButton stepId={currentStep.id} />
           </AccordionContent>
         </AccordionItem>

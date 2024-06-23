@@ -47,7 +47,7 @@ export const TextInput = createReactBlockSpec(
               {editable ? (
                 <div className="flex justify-between">
                   <input
-                    className="text-sm font-medium border-0 p-0 outline-none border-transparent focus:border-transparent focus:ring-0 placeholder-gray-300"
+                    className="text-sm font-medium border-0 p-0 outline-none border-transparent focus:border-transparent focus:ring-0 placeholder-gray-300 bg-transparent"
                     onChange={(e) => {
                       editor.updateBlock(block, {
                         type: "textInput",
@@ -72,7 +72,7 @@ export const TextInput = createReactBlockSpec(
               <FormControl>
                 {editable ? (
                   <Input
-                    className="text-muted-foreground"
+                    className="text-muted-foreground bg-white"
                     onChange={(e) => {
                       editor.updateBlock(block, {
                         type: "textInput",
@@ -83,7 +83,11 @@ export const TextInput = createReactBlockSpec(
                     value={block.props.placeholder}
                   />
                 ) : (
-                  <Input {...field} placeholder={block.props.placeholder} />
+                  <Input
+                    className="bg-white"
+                    {...field}
+                    placeholder={block.props.placeholder}
+                  />
                 )}
               </FormControl>
               <FormMessage />

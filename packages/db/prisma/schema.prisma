@@ -121,18 +121,25 @@ model Form {
     @@unique([workspaceId, slug, version])
 }
 
+enum ContentViewType {
+    FULL
+    PARTIAL
+    HIDDEN
+}
+
 model Step {
-    id          String   @id @default(uuid())
-    title       String?
+    id              String          @id @default(uuid())
+    title           String?
     /// [DocumentType]
-    description Json?
-    zoom        Int
-    pitch       Int
-    bearing     Int
-    formId      String?
-    form        Form?    @relation(name: "Steps", fields: [formId], references: [id], onDelete: Cascade)
-    locationId  Int      @unique
-    location    Location @relation(fields: [locationId], references: [id], onDelete: Cascade)
+    description     Json?
+    zoom            Int
+    pitch           Int
+    bearing         Int
+    formId          String?
+    form            Form?           @relation(name: "Steps", fields: [formId], references: [id], onDelete: Cascade)
+    locationId      Int             @unique
+    location        Location        @relation(fields: [locationId], references: [id], onDelete: Cascade)
+    contentViewType ContentViewType @default(PARTIAL)
 
     inputResponses    InputResponse[]
     locationResponses LocationResponse[]
