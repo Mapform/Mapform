@@ -95,7 +95,7 @@ export const Pin = createReactBlockSpec(
                     setViewState(prevViewState);
                     setIsSelectingPinLocationFor(null);
                   }}
-                  variant="secondary"
+                  variant="outline"
                 >
                   Clear Selection
                 </Button>
@@ -107,7 +107,7 @@ export const Pin = createReactBlockSpec(
                   setIsSelectingPinLocationFor(null);
                 }}
                 size="sm"
-                variant="secondary"
+                variant="outline"
               >
                 Cancel
               </Button>
@@ -132,7 +132,7 @@ export const Pin = createReactBlockSpec(
                 });
               }}
               size="sm"
-              variant="secondary"
+              variant="outline"
             >
               {block.props.text}
               {block.props.required ? (
