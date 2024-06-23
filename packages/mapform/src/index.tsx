@@ -111,12 +111,17 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
           >
             <div
               className={cn(
-                "absolute top-0 left-0 bottom-0 w-full flex-shrink-0 backdrop-blur-md bg-white/85 shadow z-10",
-                {
-                  "max-w-[320px] lg:max-w-[400px]": true,
-                }
+                "absolute top-0 left-0 bottom-0 w-full flex-shrink-0 backdrop-blur-md bg-white/85 shadow z-10 transition-[width,transform]",
+                currentStep?.contentViewType === "FULL"
+                  ? "w-full"
+                  : "w-[320px] lg:w-[400px]"
               )}
               ref={drawerRef}
+              style={{
+                transform: `translateX(${
+                  currentStep?.contentViewType === "HIDDEN" ? -bounds.width : 0
+                }px)`,
+              }}
             >
               {currentStep ? (
                 <Blocknote
