@@ -26,6 +26,7 @@ import {
   type CustomBlock,
   getFormSchemaFromBlockNote,
 } from "@mapform/blocknote";
+import { useMeasure } from "@mapform/lib/hooks/use-measure";
 import { Blocknote } from "./block-note";
 
 type ExtendedStep = Step & { latitude: number; longitude: number };
@@ -37,7 +38,7 @@ interface MapFormProps {
   viewState: ViewState;
   defaultFormValues?: Record<string, string>;
   setViewState: Dispatch<SetStateAction<ViewState>>;
-  contentViewState?: "full" | "partial" | "closed";
+  contentViewType?: "full" | "partial" | "closed";
   onPrev?: () => void;
   onLoad?: () => void;
   onTitleChange?: (content: string) => void;
@@ -74,6 +75,7 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
     const [isSelectingPinLocationFor, setIsSelectingPinLocationFor] = useState<
       string | null
     >(null);
+    const { ref: drawerRef, bounds } = useMeasure<HTMLDivElement>();
 
     const onSubmit = (data: FormSchema) => {
       onStepSubmit && onStepSubmit(data);
@@ -92,7 +94,15 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
           <CustomBlockContext.Provider
             value={{
               editable,
-              viewState,
+              viewState: {
+                ...viewState,
+                padding: {
+                  left: bounds.width || 0,
+                  right: 0,
+                  top: 0,
+                  bottom: 0,
+                },
+              },
               setViewState,
               onImageUpload,
               isSelectingPinLocationFor,
@@ -106,6 +116,7 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
                   "max-w-[320px] lg:max-w-[400px]": true,
                 }
               )}
+              ref={drawerRef}
             >
               {currentStep ? (
                 <Blocknote

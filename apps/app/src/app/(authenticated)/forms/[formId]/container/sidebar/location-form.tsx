@@ -190,8 +190,9 @@ export function LocationForm({
         </div>
         <Button
           disabled={status === "executing"}
+          size="sm"
           type="submit"
-          variant="outline"
+          variant="secondary"
         >
           {status === "executing" ? "Updating..." : "Update"}
         </Button>
