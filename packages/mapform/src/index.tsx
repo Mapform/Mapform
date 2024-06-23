@@ -37,6 +37,7 @@ interface MapFormProps {
   viewState: ViewState;
   defaultFormValues?: Record<string, string>;
   setViewState: Dispatch<SetStateAction<ViewState>>;
+  contentViewState?: "full" | "partial" | "closed";
   onPrev?: () => void;
   onLoad?: () => void;
   onTitleChange?: (content: string) => void;
@@ -85,7 +86,7 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
     return (
       <Form {...form}>
         <form
-          className="flex w-full h-full"
+          className="relative w-full h-full"
           onSubmit={form.handleSubmit(onSubmit)}
         >
           <CustomBlockContext.Provider
@@ -99,9 +100,12 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
             }}
           >
             <div
-              className={cn("w-full flex-shrink-0 bg-background shadow z-10", {
-                "max-w-[320px] lg:max-w-[400px]": true,
-              })}
+              className={cn(
+                "absolute top-0 left-0 bottom-0 w-full flex-shrink-0 backdrop-blur-md bg-white/85 shadow z-10",
+                {
+                  "max-w-[320px] lg:max-w-[400px]": true,
+                }
+              )}
             >
               {currentStep ? (
                 <Blocknote

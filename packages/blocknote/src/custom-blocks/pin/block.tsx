@@ -43,7 +43,8 @@ export const Pin = createReactBlockSpec(
         return (
           <Button
             className="w-full cursor-default relative"
-            variant="secondary"
+            size="sm"
+            variant="outline"
           >
             <input
               className="w-full bg-transparent text-center text-sm font-medium border-0 p-0 outline-none border-transparent focus:border-transparent focus:ring-0"
@@ -81,6 +82,7 @@ export const Pin = createReactBlockSpec(
                   setViewState(prevViewState);
                   setIsSelectingPinLocationFor(null);
                 }}
+                size="sm"
               >
                 Done
               </Button>
@@ -104,6 +106,7 @@ export const Pin = createReactBlockSpec(
                   setViewState(prevViewState);
                   setIsSelectingPinLocationFor(null);
                 }}
+                size="sm"
                 variant="secondary"
               >
                 Cancel
@@ -128,6 +131,7 @@ export const Pin = createReactBlockSpec(
                     : viewState.longitude,
                 });
               }}
+              size="sm"
               variant="secondary"
             >
               {block.props.text}
