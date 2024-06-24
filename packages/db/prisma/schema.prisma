@@ -91,6 +91,7 @@ model Workspace {
     organizationId String
     organization   Organization          @relation(fields: [organizationId], references: [id], onDelete: Cascade)
     forms          Form[]
+    datasets       Dataset[]
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
@@ -193,4 +194,44 @@ model Location {
     locationResponse LocationResponse?
 
     @@index([geom], name: "location_idx", type: Gist)
+}
+
+model Dataset {
+    id          String    @id @default(uuid())
+    name        String
+    columns     Column[]  @relation("DatasetColumns")
+    rows        Row[]     @relation("DatasetRows")
+    workspaceId String
+    workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+}
+
+model Column {
+    id         Int         @id @default(autoincrement())
+    datasetId  String
+    name       String
+    dataType   ColumnType
+    dataset    Dataset     @relation("DatasetColumns", fields: [datasetId], references: [id])
+    cellValues CellValue[] @relation("ColumnCellValues")
+}
+
+model Row {
+    id         Int         @id @default(autoincrement())
+    datasetId  String
+    dataset    Dataset     @relation("DatasetRows", fields: [datasetId], references: [id])
+    cellValues CellValue[] @relation("RowCellValues")
+}
+
+model CellValue {
+    id       Int    @id @default(autoincrement())
+    rowId    Int
+    columnId Int
+    value    String
+    column   Column @relation("ColumnCellValues", fields: [columnId], references: [id])
+    row      Row    @relation("RowCellValues", fields: [rowId], references: [id])
+}
+
+enum ColumnType {
+    STRING
+    NUMBER
+    BOOLEAN
 }

@@ -78,6 +78,14 @@ export const LocationResponseScalarFieldEnumSchema = z.enum(['id','blockNoteId',
 
 export const LocationScalarFieldEnumSchema = z.enum(['id']);
 
+export const DatasetScalarFieldEnumSchema = z.enum(['id','name','workspaceId']);
+
+export const ColumnScalarFieldEnumSchema = z.enum(['id','datasetId','name','dataType']);
+
+export const RowScalarFieldEnumSchema = z.enum(['id','datasetId']);
+
+export const CellValueScalarFieldEnumSchema = z.enum(['id','rowId','columnId','value']);
+
 export const SortOrderSchema = z.enum(['asc','desc']);
 
 export const NullableJsonNullValueInputSchema = z.enum(['DbNull','JsonNull',]).transform((value) => value === 'JsonNull' ? Prisma.JsonNull : value === 'DbNull' ? Prisma.DbNull : value);
@@ -95,6 +103,10 @@ export type WorkspaceMembershipRoleType = `${z.infer<typeof WorkspaceMembershipR
 export const ContentViewTypeSchema = z.enum(['FULL','PARTIAL','HIDDEN']);
 
 export type ContentViewTypeType = `${z.infer<typeof ContentViewTypeSchema>}`
+
+export const ColumnTypeSchema = z.enum(['STRING','NUMBER','BOOLEAN']);
+
+export type ColumnTypeType = `${z.infer<typeof ColumnTypeSchema>}`
 
 /////////////////////////////////////////
 // MODELS
@@ -241,6 +253,7 @@ export type WorkspaceRelations = {
   members: WorkspaceMembershipWithRelations[];
   organization: OrganizationWithRelations;
   forms: FormWithRelations[];
+  datasets: DatasetWithRelations[];
 };
 
 export type WorkspaceWithRelations = z.infer<typeof WorkspaceSchema> & WorkspaceRelations
@@ -249,6 +262,7 @@ export const WorkspaceWithRelationsSchema: z.ZodType<WorkspaceWithRelations> = W
   members: z.lazy(() => WorkspaceMembershipWithRelationsSchema).array(),
   organization: z.lazy(() => OrganizationWithRelationsSchema),
   forms: z.lazy(() => FormWithRelationsSchema).array(),
+  datasets: z.lazy(() => DatasetWithRelationsSchema).array(),
 }))
 
 /////////////////////////////////////////
@@ -453,6 +467,117 @@ export const LocationWithRelationsSchema: z.ZodType<LocationWithRelations> = Loc
 }))
 
 /////////////////////////////////////////
+// DATASET SCHEMA
+/////////////////////////////////////////
+
+export const DatasetSchema = z.object({
+  id: z.string().uuid(),
+  name: z.string(),
+  workspaceId: z.string(),
+})
+
+export type Dataset = z.infer<typeof DatasetSchema>
+
+// DATASET RELATION SCHEMA
+//------------------------------------------------------
+
+export type DatasetRelations = {
+  columns: ColumnWithRelations[];
+  rows: RowWithRelations[];
+  workspace: WorkspaceWithRelations;
+};
+
+export type DatasetWithRelations = z.infer<typeof DatasetSchema> & DatasetRelations
+
+export const DatasetWithRelationsSchema: z.ZodType<DatasetWithRelations> = DatasetSchema.merge(z.object({
+  columns: z.lazy(() => ColumnWithRelationsSchema).array(),
+  rows: z.lazy(() => RowWithRelationsSchema).array(),
+  workspace: z.lazy(() => WorkspaceWithRelationsSchema),
+}))
+
+/////////////////////////////////////////
+// COLUMN SCHEMA
+/////////////////////////////////////////
+
+export const ColumnSchema = z.object({
+  dataType: ColumnTypeSchema,
+  id: z.number().int(),
+  datasetId: z.string(),
+  name: z.string(),
+})
+
+export type Column = z.infer<typeof ColumnSchema>
+
+// COLUMN RELATION SCHEMA
+//------------------------------------------------------
+
+export type ColumnRelations = {
+  dataset: DatasetWithRelations;
+  cellValues: CellValueWithRelations[];
+};
+
+export type ColumnWithRelations = z.infer<typeof ColumnSchema> & ColumnRelations
+
+export const ColumnWithRelationsSchema: z.ZodType<ColumnWithRelations> = ColumnSchema.merge(z.object({
+  dataset: z.lazy(() => DatasetWithRelationsSchema),
+  cellValues: z.lazy(() => CellValueWithRelationsSchema).array(),
+}))
+
+/////////////////////////////////////////
+// ROW SCHEMA
+/////////////////////////////////////////
+
+export const RowSchema = z.object({
+  id: z.number().int(),
+  datasetId: z.string(),
+})
+
+export type Row = z.infer<typeof RowSchema>
+
+// ROW RELATION SCHEMA
+//------------------------------------------------------
+
+export type RowRelations = {
+  dataset: DatasetWithRelations;
+  cellValues: CellValueWithRelations[];
+};
+
+export type RowWithRelations = z.infer<typeof RowSchema> & RowRelations
+
+export const RowWithRelationsSchema: z.ZodType<RowWithRelations> = RowSchema.merge(z.object({
+  dataset: z.lazy(() => DatasetWithRelationsSchema),
+  cellValues: z.lazy(() => CellValueWithRelationsSchema).array(),
+}))
+
+/////////////////////////////////////////
+// CELL VALUE SCHEMA
+/////////////////////////////////////////
+
+export const CellValueSchema = z.object({
+  id: z.number().int(),
+  rowId: z.number().int(),
+  columnId: z.number().int(),
+  value: z.string(),
+})
+
+export type CellValue = z.infer<typeof CellValueSchema>
+
+// CELL VALUE RELATION SCHEMA
+//------------------------------------------------------
+
+export type CellValueRelations = {
+  column: ColumnWithRelations;
+  row: RowWithRelations;
+};
+
+export type CellValueWithRelations = z.infer<typeof CellValueSchema> & CellValueRelations
+
+export const CellValueWithRelationsSchema: z.ZodType<CellValueWithRelations> = CellValueSchema.merge(z.object({
+  column: z.lazy(() => ColumnWithRelationsSchema),
+  row: z.lazy(() => RowWithRelationsSchema),
+}))
+
+/////////////////////////////////////////
 // SELECT & INCLUDE
 /////////////////////////////////////////
 
@@ -580,6 +705,7 @@ export const WorkspaceIncludeSchema: z.ZodType<Prisma.WorkspaceInclude> = z.obje
   members: z.union([z.boolean(),z.lazy(() => WorkspaceMembershipFindManyArgsSchema)]).optional(),
   organization: z.union([z.boolean(),z.lazy(() => OrganizationArgsSchema)]).optional(),
   forms: z.union([z.boolean(),z.lazy(() => FormFindManyArgsSchema)]).optional(),
+  datasets: z.union([z.boolean(),z.lazy(() => DatasetFindManyArgsSchema)]).optional(),
   _count: z.union([z.boolean(),z.lazy(() => WorkspaceCountOutputTypeArgsSchema)]).optional(),
 }).strict()
 
@@ -595,6 +721,7 @@ export const WorkspaceCountOutputTypeArgsSchema: z.ZodType<Prisma.WorkspaceCount
 export const WorkspaceCountOutputTypeSelectSchema: z.ZodType<Prisma.WorkspaceCountOutputTypeSelect> = z.object({
   members: z.boolean().optional(),
   forms: z.boolean().optional(),
+  datasets: z.boolean().optional(),
 }).strict();
 
 export const WorkspaceSelectSchema: z.ZodType<Prisma.WorkspaceSelect> = z.object({
@@ -607,6 +734,7 @@ export const WorkspaceSelectSchema: z.ZodType<Prisma.WorkspaceSelect> = z.object
   members: z.union([z.boolean(),z.lazy(() => WorkspaceMembershipFindManyArgsSchema)]).optional(),
   organization: z.union([z.boolean(),z.lazy(() => OrganizationArgsSchema)]).optional(),
   forms: z.union([z.boolean(),z.lazy(() => FormFindManyArgsSchema)]).optional(),
+  datasets: z.union([z.boolean(),z.lazy(() => DatasetFindManyArgsSchema)]).optional(),
   _count: z.union([z.boolean(),z.lazy(() => WorkspaceCountOutputTypeArgsSchema)]).optional(),
 }).strict()
 
@@ -802,6 +930,124 @@ export const LocationSelectSchema: z.ZodType<Prisma.LocationSelect> = z.object({
   id: z.boolean().optional(),
   step: z.union([z.boolean(),z.lazy(() => StepArgsSchema)]).optional(),
   locationResponse: z.union([z.boolean(),z.lazy(() => LocationResponseArgsSchema)]).optional(),
+}).strict()
+
+// DATASET
+//------------------------------------------------------
+
+export const DatasetIncludeSchema: z.ZodType<Prisma.DatasetInclude> = z.object({
+  columns: z.union([z.boolean(),z.lazy(() => ColumnFindManyArgsSchema)]).optional(),
+  rows: z.union([z.boolean(),z.lazy(() => RowFindManyArgsSchema)]).optional(),
+  workspace: z.union([z.boolean(),z.lazy(() => WorkspaceArgsSchema)]).optional(),
+  _count: z.union([z.boolean(),z.lazy(() => DatasetCountOutputTypeArgsSchema)]).optional(),
+}).strict()
+
+export const DatasetArgsSchema: z.ZodType<Prisma.DatasetDefaultArgs> = z.object({
+  select: z.lazy(() => DatasetSelectSchema).optional(),
+  include: z.lazy(() => DatasetIncludeSchema).optional(),
+}).strict();
+
+export const DatasetCountOutputTypeArgsSchema: z.ZodType<Prisma.DatasetCountOutputTypeDefaultArgs> = z.object({
+  select: z.lazy(() => DatasetCountOutputTypeSelectSchema).nullish(),
+}).strict();
+
+export const DatasetCountOutputTypeSelectSchema: z.ZodType<Prisma.DatasetCountOutputTypeSelect> = z.object({
+  columns: z.boolean().optional(),
+  rows: z.boolean().optional(),
+}).strict();
+
+export const DatasetSelectSchema: z.ZodType<Prisma.DatasetSelect> = z.object({
+  id: z.boolean().optional(),
+  name: z.boolean().optional(),
+  workspaceId: z.boolean().optional(),
+  columns: z.union([z.boolean(),z.lazy(() => ColumnFindManyArgsSchema)]).optional(),
+  rows: z.union([z.boolean(),z.lazy(() => RowFindManyArgsSchema)]).optional(),
+  workspace: z.union([z.boolean(),z.lazy(() => WorkspaceArgsSchema)]).optional(),
+  _count: z.union([z.boolean(),z.lazy(() => DatasetCountOutputTypeArgsSchema)]).optional(),
+}).strict()
+
+// COLUMN
+//------------------------------------------------------
+
+export const ColumnIncludeSchema: z.ZodType<Prisma.ColumnInclude> = z.object({
+  dataset: z.union([z.boolean(),z.lazy(() => DatasetArgsSchema)]).optional(),
+  cellValues: z.union([z.boolean(),z.lazy(() => CellValueFindManyArgsSchema)]).optional(),
+  _count: z.union([z.boolean(),z.lazy(() => ColumnCountOutputTypeArgsSchema)]).optional(),
+}).strict()
+
+export const ColumnArgsSchema: z.ZodType<Prisma.ColumnDefaultArgs> = z.object({
+  select: z.lazy(() => ColumnSelectSchema).optional(),
+  include: z.lazy(() => ColumnIncludeSchema).optional(),
+}).strict();
+
+export const ColumnCountOutputTypeArgsSchema: z.ZodType<Prisma.ColumnCountOutputTypeDefaultArgs> = z.object({
+  select: z.lazy(() => ColumnCountOutputTypeSelectSchema).nullish(),
+}).strict();
+
+export const ColumnCountOutputTypeSelectSchema: z.ZodType<Prisma.ColumnCountOutputTypeSelect> = z.object({
+  cellValues: z.boolean().optional(),
+}).strict();
+
+export const ColumnSelectSchema: z.ZodType<Prisma.ColumnSelect> = z.object({
+  id: z.boolean().optional(),
+  datasetId: z.boolean().optional(),
+  name: z.boolean().optional(),
+  dataType: z.boolean().optional(),
+  dataset: z.union([z.boolean(),z.lazy(() => DatasetArgsSchema)]).optional(),
+  cellValues: z.union([z.boolean(),z.lazy(() => CellValueFindManyArgsSchema)]).optional(),
+  _count: z.union([z.boolean(),z.lazy(() => ColumnCountOutputTypeArgsSchema)]).optional(),
+}).strict()
+
+// ROW
+//------------------------------------------------------
+
+export const RowIncludeSchema: z.ZodType<Prisma.RowInclude> = z.object({
+  dataset: z.union([z.boolean(),z.lazy(() => DatasetArgsSchema)]).optional(),
+  cellValues: z.union([z.boolean(),z.lazy(() => CellValueFindManyArgsSchema)]).optional(),
+  _count: z.union([z.boolean(),z.lazy(() => RowCountOutputTypeArgsSchema)]).optional(),
+}).strict()
+
+export const RowArgsSchema: z.ZodType<Prisma.RowDefaultArgs> = z.object({
+  select: z.lazy(() => RowSelectSchema).optional(),
+  include: z.lazy(() => RowIncludeSchema).optional(),
+}).strict();
+
+export const RowCountOutputTypeArgsSchema: z.ZodType<Prisma.RowCountOutputTypeDefaultArgs> = z.object({
+  select: z.lazy(() => RowCountOutputTypeSelectSchema).nullish(),
+}).strict();
+
+export const RowCountOutputTypeSelectSchema: z.ZodType<Prisma.RowCountOutputTypeSelect> = z.object({
+  cellValues: z.boolean().optional(),
+}).strict();
+
+export const RowSelectSchema: z.ZodType<Prisma.RowSelect> = z.object({
+  id: z.boolean().optional(),
+  datasetId: z.boolean().optional(),
+  dataset: z.union([z.boolean(),z.lazy(() => DatasetArgsSchema)]).optional(),
+  cellValues: z.union([z.boolean(),z.lazy(() => CellValueFindManyArgsSchema)]).optional(),
+  _count: z.union([z.boolean(),z.lazy(() => RowCountOutputTypeArgsSchema)]).optional(),
+}).strict()
+
+// CELL VALUE
+//------------------------------------------------------
+
+export const CellValueIncludeSchema: z.ZodType<Prisma.CellValueInclude> = z.object({
+  column: z.union([z.boolean(),z.lazy(() => ColumnArgsSchema)]).optional(),
+  row: z.union([z.boolean(),z.lazy(() => RowArgsSchema)]).optional(),
+}).strict()
+
+export const CellValueArgsSchema: z.ZodType<Prisma.CellValueDefaultArgs> = z.object({
+  select: z.lazy(() => CellValueSelectSchema).optional(),
+  include: z.lazy(() => CellValueIncludeSchema).optional(),
+}).strict();
+
+export const CellValueSelectSchema: z.ZodType<Prisma.CellValueSelect> = z.object({
+  id: z.boolean().optional(),
+  rowId: z.boolean().optional(),
+  columnId: z.boolean().optional(),
+  value: z.boolean().optional(),
+  column: z.union([z.boolean(),z.lazy(() => ColumnArgsSchema)]).optional(),
+  row: z.union([z.boolean(),z.lazy(() => RowArgsSchema)]).optional(),
 }).strict()
 
 
@@ -1089,7 +1335,8 @@ export const WorkspaceWhereInputSchema: z.ZodType<Prisma.WorkspaceWhereInput> = 
   updatedAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   members: z.lazy(() => WorkspaceMembershipListRelationFilterSchema).optional(),
   organization: z.union([ z.lazy(() => OrganizationRelationFilterSchema),z.lazy(() => OrganizationWhereInputSchema) ]).optional(),
-  forms: z.lazy(() => FormListRelationFilterSchema).optional()
+  forms: z.lazy(() => FormListRelationFilterSchema).optional(),
+  datasets: z.lazy(() => DatasetListRelationFilterSchema).optional()
 }).strict();
 
 export const WorkspaceOrderByWithRelationInputSchema: z.ZodType<Prisma.WorkspaceOrderByWithRelationInput> = z.object({
@@ -1101,7 +1348,8 @@ export const WorkspaceOrderByWithRelationInputSchema: z.ZodType<Prisma.Workspace
   updatedAt: z.lazy(() => SortOrderSchema).optional(),
   members: z.lazy(() => WorkspaceMembershipOrderByRelationAggregateInputSchema).optional(),
   organization: z.lazy(() => OrganizationOrderByWithRelationInputSchema).optional(),
-  forms: z.lazy(() => FormOrderByRelationAggregateInputSchema).optional()
+  forms: z.lazy(() => FormOrderByRelationAggregateInputSchema).optional(),
+  datasets: z.lazy(() => DatasetOrderByRelationAggregateInputSchema).optional()
 }).strict();
 
 export const WorkspaceWhereUniqueInputSchema: z.ZodType<Prisma.WorkspaceWhereUniqueInput> = z.union([
@@ -1129,7 +1377,8 @@ export const WorkspaceWhereUniqueInputSchema: z.ZodType<Prisma.WorkspaceWhereUni
   updatedAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   members: z.lazy(() => WorkspaceMembershipListRelationFilterSchema).optional(),
   organization: z.union([ z.lazy(() => OrganizationRelationFilterSchema),z.lazy(() => OrganizationWhereInputSchema) ]).optional(),
-  forms: z.lazy(() => FormListRelationFilterSchema).optional()
+  forms: z.lazy(() => FormListRelationFilterSchema).optional(),
+  datasets: z.lazy(() => DatasetListRelationFilterSchema).optional()
 }).strict());
 
 export const WorkspaceOrderByWithAggregationInputSchema: z.ZodType<Prisma.WorkspaceOrderByWithAggregationInput> = z.object({
@@ -1646,6 +1895,224 @@ export const LocationScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.Loca
   id: z.union([ z.lazy(() => IntWithAggregatesFilterSchema),z.number() ]).optional(),
 }).strict();
 
+export const DatasetWhereInputSchema: z.ZodType<Prisma.DatasetWhereInput> = z.object({
+  AND: z.union([ z.lazy(() => DatasetWhereInputSchema),z.lazy(() => DatasetWhereInputSchema).array() ]).optional(),
+  OR: z.lazy(() => DatasetWhereInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => DatasetWhereInputSchema),z.lazy(() => DatasetWhereInputSchema).array() ]).optional(),
+  id: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  name: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  workspaceId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  columns: z.lazy(() => ColumnListRelationFilterSchema).optional(),
+  rows: z.lazy(() => RowListRelationFilterSchema).optional(),
+  workspace: z.union([ z.lazy(() => WorkspaceRelationFilterSchema),z.lazy(() => WorkspaceWhereInputSchema) ]).optional(),
+}).strict();
+
+export const DatasetOrderByWithRelationInputSchema: z.ZodType<Prisma.DatasetOrderByWithRelationInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  name: z.lazy(() => SortOrderSchema).optional(),
+  workspaceId: z.lazy(() => SortOrderSchema).optional(),
+  columns: z.lazy(() => ColumnOrderByRelationAggregateInputSchema).optional(),
+  rows: z.lazy(() => RowOrderByRelationAggregateInputSchema).optional(),
+  workspace: z.lazy(() => WorkspaceOrderByWithRelationInputSchema).optional()
+}).strict();
+
+export const DatasetWhereUniqueInputSchema: z.ZodType<Prisma.DatasetWhereUniqueInput> = z.object({
+  id: z.string().uuid()
+})
+.and(z.object({
+  id: z.string().uuid().optional(),
+  AND: z.union([ z.lazy(() => DatasetWhereInputSchema),z.lazy(() => DatasetWhereInputSchema).array() ]).optional(),
+  OR: z.lazy(() => DatasetWhereInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => DatasetWhereInputSchema),z.lazy(() => DatasetWhereInputSchema).array() ]).optional(),
+  name: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  workspaceId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  columns: z.lazy(() => ColumnListRelationFilterSchema).optional(),
+  rows: z.lazy(() => RowListRelationFilterSchema).optional(),
+  workspace: z.union([ z.lazy(() => WorkspaceRelationFilterSchema),z.lazy(() => WorkspaceWhereInputSchema) ]).optional(),
+}).strict());
+
+export const DatasetOrderByWithAggregationInputSchema: z.ZodType<Prisma.DatasetOrderByWithAggregationInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  name: z.lazy(() => SortOrderSchema).optional(),
+  workspaceId: z.lazy(() => SortOrderSchema).optional(),
+  _count: z.lazy(() => DatasetCountOrderByAggregateInputSchema).optional(),
+  _max: z.lazy(() => DatasetMaxOrderByAggregateInputSchema).optional(),
+  _min: z.lazy(() => DatasetMinOrderByAggregateInputSchema).optional()
+}).strict();
+
+export const DatasetScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.DatasetScalarWhereWithAggregatesInput> = z.object({
+  AND: z.union([ z.lazy(() => DatasetScalarWhereWithAggregatesInputSchema),z.lazy(() => DatasetScalarWhereWithAggregatesInputSchema).array() ]).optional(),
+  OR: z.lazy(() => DatasetScalarWhereWithAggregatesInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => DatasetScalarWhereWithAggregatesInputSchema),z.lazy(() => DatasetScalarWhereWithAggregatesInputSchema).array() ]).optional(),
+  id: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
+  name: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
+  workspaceId: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
+}).strict();
+
+export const ColumnWhereInputSchema: z.ZodType<Prisma.ColumnWhereInput> = z.object({
+  AND: z.union([ z.lazy(() => ColumnWhereInputSchema),z.lazy(() => ColumnWhereInputSchema).array() ]).optional(),
+  OR: z.lazy(() => ColumnWhereInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => ColumnWhereInputSchema),z.lazy(() => ColumnWhereInputSchema).array() ]).optional(),
+  id: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
+  datasetId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  name: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  dataType: z.union([ z.lazy(() => EnumColumnTypeFilterSchema),z.lazy(() => ColumnTypeSchema) ]).optional(),
+  dataset: z.union([ z.lazy(() => DatasetRelationFilterSchema),z.lazy(() => DatasetWhereInputSchema) ]).optional(),
+  cellValues: z.lazy(() => CellValueListRelationFilterSchema).optional()
+}).strict();
+
+export const ColumnOrderByWithRelationInputSchema: z.ZodType<Prisma.ColumnOrderByWithRelationInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  datasetId: z.lazy(() => SortOrderSchema).optional(),
+  name: z.lazy(() => SortOrderSchema).optional(),
+  dataType: z.lazy(() => SortOrderSchema).optional(),
+  dataset: z.lazy(() => DatasetOrderByWithRelationInputSchema).optional(),
+  cellValues: z.lazy(() => CellValueOrderByRelationAggregateInputSchema).optional()
+}).strict();
+
+export const ColumnWhereUniqueInputSchema: z.ZodType<Prisma.ColumnWhereUniqueInput> = z.object({
+  id: z.number().int()
+})
+.and(z.object({
+  id: z.number().int().optional(),
+  AND: z.union([ z.lazy(() => ColumnWhereInputSchema),z.lazy(() => ColumnWhereInputSchema).array() ]).optional(),
+  OR: z.lazy(() => ColumnWhereInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => ColumnWhereInputSchema),z.lazy(() => ColumnWhereInputSchema).array() ]).optional(),
+  datasetId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  name: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  dataType: z.union([ z.lazy(() => EnumColumnTypeFilterSchema),z.lazy(() => ColumnTypeSchema) ]).optional(),
+  dataset: z.union([ z.lazy(() => DatasetRelationFilterSchema),z.lazy(() => DatasetWhereInputSchema) ]).optional(),
+  cellValues: z.lazy(() => CellValueListRelationFilterSchema).optional()
+}).strict());
+
+export const ColumnOrderByWithAggregationInputSchema: z.ZodType<Prisma.ColumnOrderByWithAggregationInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  datasetId: z.lazy(() => SortOrderSchema).optional(),
+  name: z.lazy(() => SortOrderSchema).optional(),
+  dataType: z.lazy(() => SortOrderSchema).optional(),
+  _count: z.lazy(() => ColumnCountOrderByAggregateInputSchema).optional(),
+  _avg: z.lazy(() => ColumnAvgOrderByAggregateInputSchema).optional(),
+  _max: z.lazy(() => ColumnMaxOrderByAggregateInputSchema).optional(),
+  _min: z.lazy(() => ColumnMinOrderByAggregateInputSchema).optional(),
+  _sum: z.lazy(() => ColumnSumOrderByAggregateInputSchema).optional()
+}).strict();
+
+export const ColumnScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.ColumnScalarWhereWithAggregatesInput> = z.object({
+  AND: z.union([ z.lazy(() => ColumnScalarWhereWithAggregatesInputSchema),z.lazy(() => ColumnScalarWhereWithAggregatesInputSchema).array() ]).optional(),
+  OR: z.lazy(() => ColumnScalarWhereWithAggregatesInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => ColumnScalarWhereWithAggregatesInputSchema),z.lazy(() => ColumnScalarWhereWithAggregatesInputSchema).array() ]).optional(),
+  id: z.union([ z.lazy(() => IntWithAggregatesFilterSchema),z.number() ]).optional(),
+  datasetId: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
+  name: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
+  dataType: z.union([ z.lazy(() => EnumColumnTypeWithAggregatesFilterSchema),z.lazy(() => ColumnTypeSchema) ]).optional(),
+}).strict();
+
+export const RowWhereInputSchema: z.ZodType<Prisma.RowWhereInput> = z.object({
+  AND: z.union([ z.lazy(() => RowWhereInputSchema),z.lazy(() => RowWhereInputSchema).array() ]).optional(),
+  OR: z.lazy(() => RowWhereInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => RowWhereInputSchema),z.lazy(() => RowWhereInputSchema).array() ]).optional(),
+  id: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
+  datasetId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  dataset: z.union([ z.lazy(() => DatasetRelationFilterSchema),z.lazy(() => DatasetWhereInputSchema) ]).optional(),
+  cellValues: z.lazy(() => CellValueListRelationFilterSchema).optional()
+}).strict();
+
+export const RowOrderByWithRelationInputSchema: z.ZodType<Prisma.RowOrderByWithRelationInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  datasetId: z.lazy(() => SortOrderSchema).optional(),
+  dataset: z.lazy(() => DatasetOrderByWithRelationInputSchema).optional(),
+  cellValues: z.lazy(() => CellValueOrderByRelationAggregateInputSchema).optional()
+}).strict();
+
+export const RowWhereUniqueInputSchema: z.ZodType<Prisma.RowWhereUniqueInput> = z.object({
+  id: z.number().int()
+})
+.and(z.object({
+  id: z.number().int().optional(),
+  AND: z.union([ z.lazy(() => RowWhereInputSchema),z.lazy(() => RowWhereInputSchema).array() ]).optional(),
+  OR: z.lazy(() => RowWhereInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => RowWhereInputSchema),z.lazy(() => RowWhereInputSchema).array() ]).optional(),
+  datasetId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  dataset: z.union([ z.lazy(() => DatasetRelationFilterSchema),z.lazy(() => DatasetWhereInputSchema) ]).optional(),
+  cellValues: z.lazy(() => CellValueListRelationFilterSchema).optional()
+}).strict());
+
+export const RowOrderByWithAggregationInputSchema: z.ZodType<Prisma.RowOrderByWithAggregationInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  datasetId: z.lazy(() => SortOrderSchema).optional(),
+  _count: z.lazy(() => RowCountOrderByAggregateInputSchema).optional(),
+  _avg: z.lazy(() => RowAvgOrderByAggregateInputSchema).optional(),
+  _max: z.lazy(() => RowMaxOrderByAggregateInputSchema).optional(),
+  _min: z.lazy(() => RowMinOrderByAggregateInputSchema).optional(),
+  _sum: z.lazy(() => RowSumOrderByAggregateInputSchema).optional()
+}).strict();
+
+export const RowScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.RowScalarWhereWithAggregatesInput> = z.object({
+  AND: z.union([ z.lazy(() => RowScalarWhereWithAggregatesInputSchema),z.lazy(() => RowScalarWhereWithAggregatesInputSchema).array() ]).optional(),
+  OR: z.lazy(() => RowScalarWhereWithAggregatesInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => RowScalarWhereWithAggregatesInputSchema),z.lazy(() => RowScalarWhereWithAggregatesInputSchema).array() ]).optional(),
+  id: z.union([ z.lazy(() => IntWithAggregatesFilterSchema),z.number() ]).optional(),
+  datasetId: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
+}).strict();
+
+export const CellValueWhereInputSchema: z.ZodType<Prisma.CellValueWhereInput> = z.object({
+  AND: z.union([ z.lazy(() => CellValueWhereInputSchema),z.lazy(() => CellValueWhereInputSchema).array() ]).optional(),
+  OR: z.lazy(() => CellValueWhereInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => CellValueWhereInputSchema),z.lazy(() => CellValueWhereInputSchema).array() ]).optional(),
+  id: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
+  rowId: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
+  columnId: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
+  value: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  column: z.union([ z.lazy(() => ColumnRelationFilterSchema),z.lazy(() => ColumnWhereInputSchema) ]).optional(),
+  row: z.union([ z.lazy(() => RowRelationFilterSchema),z.lazy(() => RowWhereInputSchema) ]).optional(),
+}).strict();
+
+export const CellValueOrderByWithRelationInputSchema: z.ZodType<Prisma.CellValueOrderByWithRelationInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  rowId: z.lazy(() => SortOrderSchema).optional(),
+  columnId: z.lazy(() => SortOrderSchema).optional(),
+  value: z.lazy(() => SortOrderSchema).optional(),
+  column: z.lazy(() => ColumnOrderByWithRelationInputSchema).optional(),
+  row: z.lazy(() => RowOrderByWithRelationInputSchema).optional()
+}).strict();
+
+export const CellValueWhereUniqueInputSchema: z.ZodType<Prisma.CellValueWhereUniqueInput> = z.object({
+  id: z.number().int()
+})
+.and(z.object({
+  id: z.number().int().optional(),
+  AND: z.union([ z.lazy(() => CellValueWhereInputSchema),z.lazy(() => CellValueWhereInputSchema).array() ]).optional(),
+  OR: z.lazy(() => CellValueWhereInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => CellValueWhereInputSchema),z.lazy(() => CellValueWhereInputSchema).array() ]).optional(),
+  rowId: z.union([ z.lazy(() => IntFilterSchema),z.number().int() ]).optional(),
+  columnId: z.union([ z.lazy(() => IntFilterSchema),z.number().int() ]).optional(),
+  value: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  column: z.union([ z.lazy(() => ColumnRelationFilterSchema),z.lazy(() => ColumnWhereInputSchema) ]).optional(),
+  row: z.union([ z.lazy(() => RowRelationFilterSchema),z.lazy(() => RowWhereInputSchema) ]).optional(),
+}).strict());
+
+export const CellValueOrderByWithAggregationInputSchema: z.ZodType<Prisma.CellValueOrderByWithAggregationInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  rowId: z.lazy(() => SortOrderSchema).optional(),
+  columnId: z.lazy(() => SortOrderSchema).optional(),
+  value: z.lazy(() => SortOrderSchema).optional(),
+  _count: z.lazy(() => CellValueCountOrderByAggregateInputSchema).optional(),
+  _avg: z.lazy(() => CellValueAvgOrderByAggregateInputSchema).optional(),
+  _max: z.lazy(() => CellValueMaxOrderByAggregateInputSchema).optional(),
+  _min: z.lazy(() => CellValueMinOrderByAggregateInputSchema).optional(),
+  _sum: z.lazy(() => CellValueSumOrderByAggregateInputSchema).optional()
+}).strict();
+
+export const CellValueScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.CellValueScalarWhereWithAggregatesInput> = z.object({
+  AND: z.union([ z.lazy(() => CellValueScalarWhereWithAggregatesInputSchema),z.lazy(() => CellValueScalarWhereWithAggregatesInputSchema).array() ]).optional(),
+  OR: z.lazy(() => CellValueScalarWhereWithAggregatesInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => CellValueScalarWhereWithAggregatesInputSchema),z.lazy(() => CellValueScalarWhereWithAggregatesInputSchema).array() ]).optional(),
+  id: z.union([ z.lazy(() => IntWithAggregatesFilterSchema),z.number() ]).optional(),
+  rowId: z.union([ z.lazy(() => IntWithAggregatesFilterSchema),z.number() ]).optional(),
+  columnId: z.union([ z.lazy(() => IntWithAggregatesFilterSchema),z.number() ]).optional(),
+  value: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
+}).strict();
+
 export const UserCreateInputSchema: z.ZodType<Prisma.UserCreateInput> = z.object({
   id: z.string(),
   firstName: z.string(),
@@ -1911,7 +2378,8 @@ export const WorkspaceCreateInputSchema: z.ZodType<Prisma.WorkspaceCreateInput> 
   updatedAt: z.coerce.date().optional(),
   members: z.lazy(() => WorkspaceMembershipCreateNestedManyWithoutWorkspaceInputSchema).optional(),
   organization: z.lazy(() => OrganizationCreateNestedOneWithoutWorkspacesInputSchema),
-  forms: z.lazy(() => FormCreateNestedManyWithoutWorkspaceInputSchema).optional()
+  forms: z.lazy(() => FormCreateNestedManyWithoutWorkspaceInputSchema).optional(),
+  datasets: z.lazy(() => DatasetCreateNestedManyWithoutWorkspaceInputSchema).optional()
 }).strict();
 
 export const WorkspaceUncheckedCreateInputSchema: z.ZodType<Prisma.WorkspaceUncheckedCreateInput> = z.object({
@@ -1922,7 +2390,8 @@ export const WorkspaceUncheckedCreateInputSchema: z.ZodType<Prisma.WorkspaceUnch
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
   members: z.lazy(() => WorkspaceMembershipUncheckedCreateNestedManyWithoutWorkspaceInputSchema).optional(),
-  forms: z.lazy(() => FormUncheckedCreateNestedManyWithoutWorkspaceInputSchema).optional()
+  forms: z.lazy(() => FormUncheckedCreateNestedManyWithoutWorkspaceInputSchema).optional(),
+  datasets: z.lazy(() => DatasetUncheckedCreateNestedManyWithoutWorkspaceInputSchema).optional()
 }).strict();
 
 export const WorkspaceUpdateInputSchema: z.ZodType<Prisma.WorkspaceUpdateInput> = z.object({
@@ -1933,7 +2402,8 @@ export const WorkspaceUpdateInputSchema: z.ZodType<Prisma.WorkspaceUpdateInput> 
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   members: z.lazy(() => WorkspaceMembershipUpdateManyWithoutWorkspaceNestedInputSchema).optional(),
   organization: z.lazy(() => OrganizationUpdateOneRequiredWithoutWorkspacesNestedInputSchema).optional(),
-  forms: z.lazy(() => FormUpdateManyWithoutWorkspaceNestedInputSchema).optional()
+  forms: z.lazy(() => FormUpdateManyWithoutWorkspaceNestedInputSchema).optional(),
+  datasets: z.lazy(() => DatasetUpdateManyWithoutWorkspaceNestedInputSchema).optional()
 }).strict();
 
 export const WorkspaceUncheckedUpdateInputSchema: z.ZodType<Prisma.WorkspaceUncheckedUpdateInput> = z.object({
@@ -1944,7 +2414,8 @@ export const WorkspaceUncheckedUpdateInputSchema: z.ZodType<Prisma.WorkspaceUnch
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   members: z.lazy(() => WorkspaceMembershipUncheckedUpdateManyWithoutWorkspaceNestedInputSchema).optional(),
-  forms: z.lazy(() => FormUncheckedUpdateManyWithoutWorkspaceNestedInputSchema).optional()
+  forms: z.lazy(() => FormUncheckedUpdateManyWithoutWorkspaceNestedInputSchema).optional(),
+  datasets: z.lazy(() => DatasetUncheckedUpdateManyWithoutWorkspaceNestedInputSchema).optional()
 }).strict();
 
 export const WorkspaceCreateManyInputSchema: z.ZodType<Prisma.WorkspaceCreateManyInput> = z.object({
@@ -2373,6 +2844,183 @@ export const LocationUncheckedUpdateManyInputSchema: z.ZodType<Prisma.LocationUn
   id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
+export const DatasetCreateInputSchema: z.ZodType<Prisma.DatasetCreateInput> = z.object({
+  id: z.string().uuid().optional(),
+  name: z.string(),
+  columns: z.lazy(() => ColumnCreateNestedManyWithoutDatasetInputSchema).optional(),
+  rows: z.lazy(() => RowCreateNestedManyWithoutDatasetInputSchema).optional(),
+  workspace: z.lazy(() => WorkspaceCreateNestedOneWithoutDatasetsInputSchema)
+}).strict();
+
+export const DatasetUncheckedCreateInputSchema: z.ZodType<Prisma.DatasetUncheckedCreateInput> = z.object({
+  id: z.string().uuid().optional(),
+  name: z.string(),
+  workspaceId: z.string(),
+  columns: z.lazy(() => ColumnUncheckedCreateNestedManyWithoutDatasetInputSchema).optional(),
+  rows: z.lazy(() => RowUncheckedCreateNestedManyWithoutDatasetInputSchema).optional()
+}).strict();
+
+export const DatasetUpdateInputSchema: z.ZodType<Prisma.DatasetUpdateInput> = z.object({
+  id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  columns: z.lazy(() => ColumnUpdateManyWithoutDatasetNestedInputSchema).optional(),
+  rows: z.lazy(() => RowUpdateManyWithoutDatasetNestedInputSchema).optional(),
+  workspace: z.lazy(() => WorkspaceUpdateOneRequiredWithoutDatasetsNestedInputSchema).optional()
+}).strict();
+
+export const DatasetUncheckedUpdateInputSchema: z.ZodType<Prisma.DatasetUncheckedUpdateInput> = z.object({
+  id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  workspaceId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  columns: z.lazy(() => ColumnUncheckedUpdateManyWithoutDatasetNestedInputSchema).optional(),
+  rows: z.lazy(() => RowUncheckedUpdateManyWithoutDatasetNestedInputSchema).optional()
+}).strict();
+
+export const DatasetCreateManyInputSchema: z.ZodType<Prisma.DatasetCreateManyInput> = z.object({
+  id: z.string().uuid().optional(),
+  name: z.string(),
+  workspaceId: z.string()
+}).strict();
+
+export const DatasetUpdateManyMutationInputSchema: z.ZodType<Prisma.DatasetUpdateManyMutationInput> = z.object({
+  id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const DatasetUncheckedUpdateManyInputSchema: z.ZodType<Prisma.DatasetUncheckedUpdateManyInput> = z.object({
+  id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  workspaceId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const ColumnCreateInputSchema: z.ZodType<Prisma.ColumnCreateInput> = z.object({
+  name: z.string(),
+  dataType: z.lazy(() => ColumnTypeSchema),
+  dataset: z.lazy(() => DatasetCreateNestedOneWithoutColumnsInputSchema),
+  cellValues: z.lazy(() => CellValueCreateNestedManyWithoutColumnInputSchema).optional()
+}).strict();
+
+export const ColumnUncheckedCreateInputSchema: z.ZodType<Prisma.ColumnUncheckedCreateInput> = z.object({
+  id: z.number().int().optional(),
+  datasetId: z.string(),
+  name: z.string(),
+  dataType: z.lazy(() => ColumnTypeSchema),
+  cellValues: z.lazy(() => CellValueUncheckedCreateNestedManyWithoutColumnInputSchema).optional()
+}).strict();
+
+export const ColumnUpdateInputSchema: z.ZodType<Prisma.ColumnUpdateInput> = z.object({
+  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  dataType: z.union([ z.lazy(() => ColumnTypeSchema),z.lazy(() => EnumColumnTypeFieldUpdateOperationsInputSchema) ]).optional(),
+  dataset: z.lazy(() => DatasetUpdateOneRequiredWithoutColumnsNestedInputSchema).optional(),
+  cellValues: z.lazy(() => CellValueUpdateManyWithoutColumnNestedInputSchema).optional()
+}).strict();
+
+export const ColumnUncheckedUpdateInputSchema: z.ZodType<Prisma.ColumnUncheckedUpdateInput> = z.object({
+  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  datasetId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  dataType: z.union([ z.lazy(() => ColumnTypeSchema),z.lazy(() => EnumColumnTypeFieldUpdateOperationsInputSchema) ]).optional(),
+  cellValues: z.lazy(() => CellValueUncheckedUpdateManyWithoutColumnNestedInputSchema).optional()
+}).strict();
+
+export const ColumnCreateManyInputSchema: z.ZodType<Prisma.ColumnCreateManyInput> = z.object({
+  id: z.number().int().optional(),
+  datasetId: z.string(),
+  name: z.string(),
+  dataType: z.lazy(() => ColumnTypeSchema)
+}).strict();
+
+export const ColumnUpdateManyMutationInputSchema: z.ZodType<Prisma.ColumnUpdateManyMutationInput> = z.object({
+  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  dataType: z.union([ z.lazy(() => ColumnTypeSchema),z.lazy(() => EnumColumnTypeFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const ColumnUncheckedUpdateManyInputSchema: z.ZodType<Prisma.ColumnUncheckedUpdateManyInput> = z.object({
+  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  datasetId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  dataType: z.union([ z.lazy(() => ColumnTypeSchema),z.lazy(() => EnumColumnTypeFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const RowCreateInputSchema: z.ZodType<Prisma.RowCreateInput> = z.object({
+  dataset: z.lazy(() => DatasetCreateNestedOneWithoutRowsInputSchema),
+  cellValues: z.lazy(() => CellValueCreateNestedManyWithoutRowInputSchema).optional()
+}).strict();
+
+export const RowUncheckedCreateInputSchema: z.ZodType<Prisma.RowUncheckedCreateInput> = z.object({
+  id: z.number().int().optional(),
+  datasetId: z.string(),
+  cellValues: z.lazy(() => CellValueUncheckedCreateNestedManyWithoutRowInputSchema).optional()
+}).strict();
+
+export const RowUpdateInputSchema: z.ZodType<Prisma.RowUpdateInput> = z.object({
+  dataset: z.lazy(() => DatasetUpdateOneRequiredWithoutRowsNestedInputSchema).optional(),
+  cellValues: z.lazy(() => CellValueUpdateManyWithoutRowNestedInputSchema).optional()
+}).strict();
+
+export const RowUncheckedUpdateInputSchema: z.ZodType<Prisma.RowUncheckedUpdateInput> = z.object({
+  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  datasetId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  cellValues: z.lazy(() => CellValueUncheckedUpdateManyWithoutRowNestedInputSchema).optional()
+}).strict();
+
+export const RowCreateManyInputSchema: z.ZodType<Prisma.RowCreateManyInput> = z.object({
+  id: z.number().int().optional(),
+  datasetId: z.string()
+}).strict();
+
+export const RowUpdateManyMutationInputSchema: z.ZodType<Prisma.RowUpdateManyMutationInput> = z.object({
+}).strict();
+
+export const RowUncheckedUpdateManyInputSchema: z.ZodType<Prisma.RowUncheckedUpdateManyInput> = z.object({
+  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  datasetId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const CellValueCreateInputSchema: z.ZodType<Prisma.CellValueCreateInput> = z.object({
+  value: z.string(),
+  column: z.lazy(() => ColumnCreateNestedOneWithoutCellValuesInputSchema),
+  row: z.lazy(() => RowCreateNestedOneWithoutCellValuesInputSchema)
+}).strict();
+
+export const CellValueUncheckedCreateInputSchema: z.ZodType<Prisma.CellValueUncheckedCreateInput> = z.object({
+  id: z.number().int().optional(),
+  rowId: z.number().int(),
+  columnId: z.number().int(),
+  value: z.string()
+}).strict();
+
+export const CellValueUpdateInputSchema: z.ZodType<Prisma.CellValueUpdateInput> = z.object({
+  value: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  column: z.lazy(() => ColumnUpdateOneRequiredWithoutCellValuesNestedInputSchema).optional(),
+  row: z.lazy(() => RowUpdateOneRequiredWithoutCellValuesNestedInputSchema).optional()
+}).strict();
+
+export const CellValueUncheckedUpdateInputSchema: z.ZodType<Prisma.CellValueUncheckedUpdateInput> = z.object({
+  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  rowId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  columnId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  value: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const CellValueCreateManyInputSchema: z.ZodType<Prisma.CellValueCreateManyInput> = z.object({
+  id: z.number().int().optional(),
+  rowId: z.number().int(),
+  columnId: z.number().int(),
+  value: z.string()
+}).strict();
+
+export const CellValueUpdateManyMutationInputSchema: z.ZodType<Prisma.CellValueUpdateManyMutationInput> = z.object({
+  value: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const CellValueUncheckedUpdateManyInputSchema: z.ZodType<Prisma.CellValueUncheckedUpdateManyInput> = z.object({
+  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  rowId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  columnId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  value: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
 export const StringFilterSchema: z.ZodType<Prisma.StringFilter> = z.object({
   equals: z.string().optional(),
   in: z.string().array().optional(),
@@ -2642,7 +3290,17 @@ export const FormListRelationFilterSchema: z.ZodType<Prisma.FormListRelationFilt
   none: z.lazy(() => FormWhereInputSchema).optional()
 }).strict();
 
+export const DatasetListRelationFilterSchema: z.ZodType<Prisma.DatasetListRelationFilter> = z.object({
+  every: z.lazy(() => DatasetWhereInputSchema).optional(),
+  some: z.lazy(() => DatasetWhereInputSchema).optional(),
+  none: z.lazy(() => DatasetWhereInputSchema).optional()
+}).strict();
+
 export const FormOrderByRelationAggregateInputSchema: z.ZodType<Prisma.FormOrderByRelationAggregateInput> = z.object({
+  _count: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const DatasetOrderByRelationAggregateInputSchema: z.ZodType<Prisma.DatasetOrderByRelationAggregateInput> = z.object({
   _count: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
@@ -3098,6 +3756,171 @@ export const LocationSumOrderByAggregateInputSchema: z.ZodType<Prisma.LocationSu
   id: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
+export const ColumnListRelationFilterSchema: z.ZodType<Prisma.ColumnListRelationFilter> = z.object({
+  every: z.lazy(() => ColumnWhereInputSchema).optional(),
+  some: z.lazy(() => ColumnWhereInputSchema).optional(),
+  none: z.lazy(() => ColumnWhereInputSchema).optional()
+}).strict();
+
+export const RowListRelationFilterSchema: z.ZodType<Prisma.RowListRelationFilter> = z.object({
+  every: z.lazy(() => RowWhereInputSchema).optional(),
+  some: z.lazy(() => RowWhereInputSchema).optional(),
+  none: z.lazy(() => RowWhereInputSchema).optional()
+}).strict();
+
+export const ColumnOrderByRelationAggregateInputSchema: z.ZodType<Prisma.ColumnOrderByRelationAggregateInput> = z.object({
+  _count: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const RowOrderByRelationAggregateInputSchema: z.ZodType<Prisma.RowOrderByRelationAggregateInput> = z.object({
+  _count: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const DatasetCountOrderByAggregateInputSchema: z.ZodType<Prisma.DatasetCountOrderByAggregateInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  name: z.lazy(() => SortOrderSchema).optional(),
+  workspaceId: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const DatasetMaxOrderByAggregateInputSchema: z.ZodType<Prisma.DatasetMaxOrderByAggregateInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  name: z.lazy(() => SortOrderSchema).optional(),
+  workspaceId: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const DatasetMinOrderByAggregateInputSchema: z.ZodType<Prisma.DatasetMinOrderByAggregateInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  name: z.lazy(() => SortOrderSchema).optional(),
+  workspaceId: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const EnumColumnTypeFilterSchema: z.ZodType<Prisma.EnumColumnTypeFilter> = z.object({
+  equals: z.lazy(() => ColumnTypeSchema).optional(),
+  in: z.lazy(() => ColumnTypeSchema).array().optional(),
+  notIn: z.lazy(() => ColumnTypeSchema).array().optional(),
+  not: z.union([ z.lazy(() => ColumnTypeSchema),z.lazy(() => NestedEnumColumnTypeFilterSchema) ]).optional(),
+}).strict();
+
+export const DatasetRelationFilterSchema: z.ZodType<Prisma.DatasetRelationFilter> = z.object({
+  is: z.lazy(() => DatasetWhereInputSchema).optional(),
+  isNot: z.lazy(() => DatasetWhereInputSchema).optional()
+}).strict();
+
+export const CellValueListRelationFilterSchema: z.ZodType<Prisma.CellValueListRelationFilter> = z.object({
+  every: z.lazy(() => CellValueWhereInputSchema).optional(),
+  some: z.lazy(() => CellValueWhereInputSchema).optional(),
+  none: z.lazy(() => CellValueWhereInputSchema).optional()
+}).strict();
+
+export const CellValueOrderByRelationAggregateInputSchema: z.ZodType<Prisma.CellValueOrderByRelationAggregateInput> = z.object({
+  _count: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const ColumnCountOrderByAggregateInputSchema: z.ZodType<Prisma.ColumnCountOrderByAggregateInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  datasetId: z.lazy(() => SortOrderSchema).optional(),
+  name: z.lazy(() => SortOrderSchema).optional(),
+  dataType: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const ColumnAvgOrderByAggregateInputSchema: z.ZodType<Prisma.ColumnAvgOrderByAggregateInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const ColumnMaxOrderByAggregateInputSchema: z.ZodType<Prisma.ColumnMaxOrderByAggregateInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  datasetId: z.lazy(() => SortOrderSchema).optional(),
+  name: z.lazy(() => SortOrderSchema).optional(),
+  dataType: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const ColumnMinOrderByAggregateInputSchema: z.ZodType<Prisma.ColumnMinOrderByAggregateInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  datasetId: z.lazy(() => SortOrderSchema).optional(),
+  name: z.lazy(() => SortOrderSchema).optional(),
+  dataType: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const ColumnSumOrderByAggregateInputSchema: z.ZodType<Prisma.ColumnSumOrderByAggregateInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const EnumColumnTypeWithAggregatesFilterSchema: z.ZodType<Prisma.EnumColumnTypeWithAggregatesFilter> = z.object({
+  equals: z.lazy(() => ColumnTypeSchema).optional(),
+  in: z.lazy(() => ColumnTypeSchema).array().optional(),
+  notIn: z.lazy(() => ColumnTypeSchema).array().optional(),
+  not: z.union([ z.lazy(() => ColumnTypeSchema),z.lazy(() => NestedEnumColumnTypeWithAggregatesFilterSchema) ]).optional(),
+  _count: z.lazy(() => NestedIntFilterSchema).optional(),
+  _min: z.lazy(() => NestedEnumColumnTypeFilterSchema).optional(),
+  _max: z.lazy(() => NestedEnumColumnTypeFilterSchema).optional()
+}).strict();
+
+export const RowCountOrderByAggregateInputSchema: z.ZodType<Prisma.RowCountOrderByAggregateInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  datasetId: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const RowAvgOrderByAggregateInputSchema: z.ZodType<Prisma.RowAvgOrderByAggregateInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const RowMaxOrderByAggregateInputSchema: z.ZodType<Prisma.RowMaxOrderByAggregateInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  datasetId: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const RowMinOrderByAggregateInputSchema: z.ZodType<Prisma.RowMinOrderByAggregateInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  datasetId: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const RowSumOrderByAggregateInputSchema: z.ZodType<Prisma.RowSumOrderByAggregateInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const ColumnRelationFilterSchema: z.ZodType<Prisma.ColumnRelationFilter> = z.object({
+  is: z.lazy(() => ColumnWhereInputSchema).optional(),
+  isNot: z.lazy(() => ColumnWhereInputSchema).optional()
+}).strict();
+
+export const RowRelationFilterSchema: z.ZodType<Prisma.RowRelationFilter> = z.object({
+  is: z.lazy(() => RowWhereInputSchema).optional(),
+  isNot: z.lazy(() => RowWhereInputSchema).optional()
+}).strict();
+
+export const CellValueCountOrderByAggregateInputSchema: z.ZodType<Prisma.CellValueCountOrderByAggregateInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  rowId: z.lazy(() => SortOrderSchema).optional(),
+  columnId: z.lazy(() => SortOrderSchema).optional(),
+  value: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const CellValueAvgOrderByAggregateInputSchema: z.ZodType<Prisma.CellValueAvgOrderByAggregateInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  rowId: z.lazy(() => SortOrderSchema).optional(),
+  columnId: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const CellValueMaxOrderByAggregateInputSchema: z.ZodType<Prisma.CellValueMaxOrderByAggregateInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  rowId: z.lazy(() => SortOrderSchema).optional(),
+  columnId: z.lazy(() => SortOrderSchema).optional(),
+  value: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const CellValueMinOrderByAggregateInputSchema: z.ZodType<Prisma.CellValueMinOrderByAggregateInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  rowId: z.lazy(() => SortOrderSchema).optional(),
+  columnId: z.lazy(() => SortOrderSchema).optional(),
+  value: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const CellValueSumOrderByAggregateInputSchema: z.ZodType<Prisma.CellValueSumOrderByAggregateInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  rowId: z.lazy(() => SortOrderSchema).optional(),
+  columnId: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
 export const OrganizationMembershipCreateNestedManyWithoutUserInputSchema: z.ZodType<Prisma.OrganizationMembershipCreateNestedManyWithoutUserInput> = z.object({
   create: z.union([ z.lazy(() => OrganizationMembershipCreateWithoutUserInputSchema),z.lazy(() => OrganizationMembershipCreateWithoutUserInputSchema).array(),z.lazy(() => OrganizationMembershipUncheckedCreateWithoutUserInputSchema),z.lazy(() => OrganizationMembershipUncheckedCreateWithoutUserInputSchema).array() ]).optional(),
   connectOrCreate: z.union([ z.lazy(() => OrganizationMembershipCreateOrConnectWithoutUserInputSchema),z.lazy(() => OrganizationMembershipCreateOrConnectWithoutUserInputSchema).array() ]).optional(),
@@ -3358,6 +4181,13 @@ export const FormCreateNestedManyWithoutWorkspaceInputSchema: z.ZodType<Prisma.F
   connect: z.union([ z.lazy(() => FormWhereUniqueInputSchema),z.lazy(() => FormWhereUniqueInputSchema).array() ]).optional(),
 }).strict();
 
+export const DatasetCreateNestedManyWithoutWorkspaceInputSchema: z.ZodType<Prisma.DatasetCreateNestedManyWithoutWorkspaceInput> = z.object({
+  create: z.union([ z.lazy(() => DatasetCreateWithoutWorkspaceInputSchema),z.lazy(() => DatasetCreateWithoutWorkspaceInputSchema).array(),z.lazy(() => DatasetUncheckedCreateWithoutWorkspaceInputSchema),z.lazy(() => DatasetUncheckedCreateWithoutWorkspaceInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => DatasetCreateOrConnectWithoutWorkspaceInputSchema),z.lazy(() => DatasetCreateOrConnectWithoutWorkspaceInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => DatasetCreateManyWorkspaceInputEnvelopeSchema).optional(),
+  connect: z.union([ z.lazy(() => DatasetWhereUniqueInputSchema),z.lazy(() => DatasetWhereUniqueInputSchema).array() ]).optional(),
+}).strict();
+
 export const WorkspaceMembershipUncheckedCreateNestedManyWithoutWorkspaceInputSchema: z.ZodType<Prisma.WorkspaceMembershipUncheckedCreateNestedManyWithoutWorkspaceInput> = z.object({
   create: z.union([ z.lazy(() => WorkspaceMembershipCreateWithoutWorkspaceInputSchema),z.lazy(() => WorkspaceMembershipCreateWithoutWorkspaceInputSchema).array(),z.lazy(() => WorkspaceMembershipUncheckedCreateWithoutWorkspaceInputSchema),z.lazy(() => WorkspaceMembershipUncheckedCreateWithoutWorkspaceInputSchema).array() ]).optional(),
   connectOrCreate: z.union([ z.lazy(() => WorkspaceMembershipCreateOrConnectWithoutWorkspaceInputSchema),z.lazy(() => WorkspaceMembershipCreateOrConnectWithoutWorkspaceInputSchema).array() ]).optional(),
@@ -3370,6 +4200,13 @@ export const FormUncheckedCreateNestedManyWithoutWorkspaceInputSchema: z.ZodType
   connectOrCreate: z.union([ z.lazy(() => FormCreateOrConnectWithoutWorkspaceInputSchema),z.lazy(() => FormCreateOrConnectWithoutWorkspaceInputSchema).array() ]).optional(),
   createMany: z.lazy(() => FormCreateManyWorkspaceInputEnvelopeSchema).optional(),
   connect: z.union([ z.lazy(() => FormWhereUniqueInputSchema),z.lazy(() => FormWhereUniqueInputSchema).array() ]).optional(),
+}).strict();
+
+export const DatasetUncheckedCreateNestedManyWithoutWorkspaceInputSchema: z.ZodType<Prisma.DatasetUncheckedCreateNestedManyWithoutWorkspaceInput> = z.object({
+  create: z.union([ z.lazy(() => DatasetCreateWithoutWorkspaceInputSchema),z.lazy(() => DatasetCreateWithoutWorkspaceInputSchema).array(),z.lazy(() => DatasetUncheckedCreateWithoutWorkspaceInputSchema),z.lazy(() => DatasetUncheckedCreateWithoutWorkspaceInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => DatasetCreateOrConnectWithoutWorkspaceInputSchema),z.lazy(() => DatasetCreateOrConnectWithoutWorkspaceInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => DatasetCreateManyWorkspaceInputEnvelopeSchema).optional(),
+  connect: z.union([ z.lazy(() => DatasetWhereUniqueInputSchema),z.lazy(() => DatasetWhereUniqueInputSchema).array() ]).optional(),
 }).strict();
 
 export const WorkspaceMembershipUpdateManyWithoutWorkspaceNestedInputSchema: z.ZodType<Prisma.WorkspaceMembershipUpdateManyWithoutWorkspaceNestedInput> = z.object({
@@ -3408,6 +4245,20 @@ export const FormUpdateManyWithoutWorkspaceNestedInputSchema: z.ZodType<Prisma.F
   deleteMany: z.union([ z.lazy(() => FormScalarWhereInputSchema),z.lazy(() => FormScalarWhereInputSchema).array() ]).optional(),
 }).strict();
 
+export const DatasetUpdateManyWithoutWorkspaceNestedInputSchema: z.ZodType<Prisma.DatasetUpdateManyWithoutWorkspaceNestedInput> = z.object({
+  create: z.union([ z.lazy(() => DatasetCreateWithoutWorkspaceInputSchema),z.lazy(() => DatasetCreateWithoutWorkspaceInputSchema).array(),z.lazy(() => DatasetUncheckedCreateWithoutWorkspaceInputSchema),z.lazy(() => DatasetUncheckedCreateWithoutWorkspaceInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => DatasetCreateOrConnectWithoutWorkspaceInputSchema),z.lazy(() => DatasetCreateOrConnectWithoutWorkspaceInputSchema).array() ]).optional(),
+  upsert: z.union([ z.lazy(() => DatasetUpsertWithWhereUniqueWithoutWorkspaceInputSchema),z.lazy(() => DatasetUpsertWithWhereUniqueWithoutWorkspaceInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => DatasetCreateManyWorkspaceInputEnvelopeSchema).optional(),
+  set: z.union([ z.lazy(() => DatasetWhereUniqueInputSchema),z.lazy(() => DatasetWhereUniqueInputSchema).array() ]).optional(),
+  disconnect: z.union([ z.lazy(() => DatasetWhereUniqueInputSchema),z.lazy(() => DatasetWhereUniqueInputSchema).array() ]).optional(),
+  delete: z.union([ z.lazy(() => DatasetWhereUniqueInputSchema),z.lazy(() => DatasetWhereUniqueInputSchema).array() ]).optional(),
+  connect: z.union([ z.lazy(() => DatasetWhereUniqueInputSchema),z.lazy(() => DatasetWhereUniqueInputSchema).array() ]).optional(),
+  update: z.union([ z.lazy(() => DatasetUpdateWithWhereUniqueWithoutWorkspaceInputSchema),z.lazy(() => DatasetUpdateWithWhereUniqueWithoutWorkspaceInputSchema).array() ]).optional(),
+  updateMany: z.union([ z.lazy(() => DatasetUpdateManyWithWhereWithoutWorkspaceInputSchema),z.lazy(() => DatasetUpdateManyWithWhereWithoutWorkspaceInputSchema).array() ]).optional(),
+  deleteMany: z.union([ z.lazy(() => DatasetScalarWhereInputSchema),z.lazy(() => DatasetScalarWhereInputSchema).array() ]).optional(),
+}).strict();
+
 export const WorkspaceMembershipUncheckedUpdateManyWithoutWorkspaceNestedInputSchema: z.ZodType<Prisma.WorkspaceMembershipUncheckedUpdateManyWithoutWorkspaceNestedInput> = z.object({
   create: z.union([ z.lazy(() => WorkspaceMembershipCreateWithoutWorkspaceInputSchema),z.lazy(() => WorkspaceMembershipCreateWithoutWorkspaceInputSchema).array(),z.lazy(() => WorkspaceMembershipUncheckedCreateWithoutWorkspaceInputSchema),z.lazy(() => WorkspaceMembershipUncheckedCreateWithoutWorkspaceInputSchema).array() ]).optional(),
   connectOrCreate: z.union([ z.lazy(() => WorkspaceMembershipCreateOrConnectWithoutWorkspaceInputSchema),z.lazy(() => WorkspaceMembershipCreateOrConnectWithoutWorkspaceInputSchema).array() ]).optional(),
@@ -3434,6 +4285,20 @@ export const FormUncheckedUpdateManyWithoutWorkspaceNestedInputSchema: z.ZodType
   update: z.union([ z.lazy(() => FormUpdateWithWhereUniqueWithoutWorkspaceInputSchema),z.lazy(() => FormUpdateWithWhereUniqueWithoutWorkspaceInputSchema).array() ]).optional(),
   updateMany: z.union([ z.lazy(() => FormUpdateManyWithWhereWithoutWorkspaceInputSchema),z.lazy(() => FormUpdateManyWithWhereWithoutWorkspaceInputSchema).array() ]).optional(),
   deleteMany: z.union([ z.lazy(() => FormScalarWhereInputSchema),z.lazy(() => FormScalarWhereInputSchema).array() ]).optional(),
+}).strict();
+
+export const DatasetUncheckedUpdateManyWithoutWorkspaceNestedInputSchema: z.ZodType<Prisma.DatasetUncheckedUpdateManyWithoutWorkspaceNestedInput> = z.object({
+  create: z.union([ z.lazy(() => DatasetCreateWithoutWorkspaceInputSchema),z.lazy(() => DatasetCreateWithoutWorkspaceInputSchema).array(),z.lazy(() => DatasetUncheckedCreateWithoutWorkspaceInputSchema),z.lazy(() => DatasetUncheckedCreateWithoutWorkspaceInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => DatasetCreateOrConnectWithoutWorkspaceInputSchema),z.lazy(() => DatasetCreateOrConnectWithoutWorkspaceInputSchema).array() ]).optional(),
+  upsert: z.union([ z.lazy(() => DatasetUpsertWithWhereUniqueWithoutWorkspaceInputSchema),z.lazy(() => DatasetUpsertWithWhereUniqueWithoutWorkspaceInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => DatasetCreateManyWorkspaceInputEnvelopeSchema).optional(),
+  set: z.union([ z.lazy(() => DatasetWhereUniqueInputSchema),z.lazy(() => DatasetWhereUniqueInputSchema).array() ]).optional(),
+  disconnect: z.union([ z.lazy(() => DatasetWhereUniqueInputSchema),z.lazy(() => DatasetWhereUniqueInputSchema).array() ]).optional(),
+  delete: z.union([ z.lazy(() => DatasetWhereUniqueInputSchema),z.lazy(() => DatasetWhereUniqueInputSchema).array() ]).optional(),
+  connect: z.union([ z.lazy(() => DatasetWhereUniqueInputSchema),z.lazy(() => DatasetWhereUniqueInputSchema).array() ]).optional(),
+  update: z.union([ z.lazy(() => DatasetUpdateWithWhereUniqueWithoutWorkspaceInputSchema),z.lazy(() => DatasetUpdateWithWhereUniqueWithoutWorkspaceInputSchema).array() ]).optional(),
+  updateMany: z.union([ z.lazy(() => DatasetUpdateManyWithWhereWithoutWorkspaceInputSchema),z.lazy(() => DatasetUpdateManyWithWhereWithoutWorkspaceInputSchema).array() ]).optional(),
+  deleteMany: z.union([ z.lazy(() => DatasetScalarWhereInputSchema),z.lazy(() => DatasetScalarWhereInputSchema).array() ]).optional(),
 }).strict();
 
 export const FormCreatestepOrderInputSchema: z.ZodType<Prisma.FormCreatestepOrderInput> = z.object({
@@ -3937,6 +4802,248 @@ export const LocationResponseUncheckedUpdateOneWithoutLocationNestedInputSchema:
   update: z.union([ z.lazy(() => LocationResponseUpdateToOneWithWhereWithoutLocationInputSchema),z.lazy(() => LocationResponseUpdateWithoutLocationInputSchema),z.lazy(() => LocationResponseUncheckedUpdateWithoutLocationInputSchema) ]).optional(),
 }).strict();
 
+export const ColumnCreateNestedManyWithoutDatasetInputSchema: z.ZodType<Prisma.ColumnCreateNestedManyWithoutDatasetInput> = z.object({
+  create: z.union([ z.lazy(() => ColumnCreateWithoutDatasetInputSchema),z.lazy(() => ColumnCreateWithoutDatasetInputSchema).array(),z.lazy(() => ColumnUncheckedCreateWithoutDatasetInputSchema),z.lazy(() => ColumnUncheckedCreateWithoutDatasetInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => ColumnCreateOrConnectWithoutDatasetInputSchema),z.lazy(() => ColumnCreateOrConnectWithoutDatasetInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => ColumnCreateManyDatasetInputEnvelopeSchema).optional(),
+  connect: z.union([ z.lazy(() => ColumnWhereUniqueInputSchema),z.lazy(() => ColumnWhereUniqueInputSchema).array() ]).optional(),
+}).strict();
+
+export const RowCreateNestedManyWithoutDatasetInputSchema: z.ZodType<Prisma.RowCreateNestedManyWithoutDatasetInput> = z.object({
+  create: z.union([ z.lazy(() => RowCreateWithoutDatasetInputSchema),z.lazy(() => RowCreateWithoutDatasetInputSchema).array(),z.lazy(() => RowUncheckedCreateWithoutDatasetInputSchema),z.lazy(() => RowUncheckedCreateWithoutDatasetInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => RowCreateOrConnectWithoutDatasetInputSchema),z.lazy(() => RowCreateOrConnectWithoutDatasetInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => RowCreateManyDatasetInputEnvelopeSchema).optional(),
+  connect: z.union([ z.lazy(() => RowWhereUniqueInputSchema),z.lazy(() => RowWhereUniqueInputSchema).array() ]).optional(),
+}).strict();
+
+export const WorkspaceCreateNestedOneWithoutDatasetsInputSchema: z.ZodType<Prisma.WorkspaceCreateNestedOneWithoutDatasetsInput> = z.object({
+  create: z.union([ z.lazy(() => WorkspaceCreateWithoutDatasetsInputSchema),z.lazy(() => WorkspaceUncheckedCreateWithoutDatasetsInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => WorkspaceCreateOrConnectWithoutDatasetsInputSchema).optional(),
+  connect: z.lazy(() => WorkspaceWhereUniqueInputSchema).optional()
+}).strict();
+
+export const ColumnUncheckedCreateNestedManyWithoutDatasetInputSchema: z.ZodType<Prisma.ColumnUncheckedCreateNestedManyWithoutDatasetInput> = z.object({
+  create: z.union([ z.lazy(() => ColumnCreateWithoutDatasetInputSchema),z.lazy(() => ColumnCreateWithoutDatasetInputSchema).array(),z.lazy(() => ColumnUncheckedCreateWithoutDatasetInputSchema),z.lazy(() => ColumnUncheckedCreateWithoutDatasetInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => ColumnCreateOrConnectWithoutDatasetInputSchema),z.lazy(() => ColumnCreateOrConnectWithoutDatasetInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => ColumnCreateManyDatasetInputEnvelopeSchema).optional(),
+  connect: z.union([ z.lazy(() => ColumnWhereUniqueInputSchema),z.lazy(() => ColumnWhereUniqueInputSchema).array() ]).optional(),
+}).strict();
+
+export const RowUncheckedCreateNestedManyWithoutDatasetInputSchema: z.ZodType<Prisma.RowUncheckedCreateNestedManyWithoutDatasetInput> = z.object({
+  create: z.union([ z.lazy(() => RowCreateWithoutDatasetInputSchema),z.lazy(() => RowCreateWithoutDatasetInputSchema).array(),z.lazy(() => RowUncheckedCreateWithoutDatasetInputSchema),z.lazy(() => RowUncheckedCreateWithoutDatasetInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => RowCreateOrConnectWithoutDatasetInputSchema),z.lazy(() => RowCreateOrConnectWithoutDatasetInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => RowCreateManyDatasetInputEnvelopeSchema).optional(),
+  connect: z.union([ z.lazy(() => RowWhereUniqueInputSchema),z.lazy(() => RowWhereUniqueInputSchema).array() ]).optional(),
+}).strict();
+
+export const ColumnUpdateManyWithoutDatasetNestedInputSchema: z.ZodType<Prisma.ColumnUpdateManyWithoutDatasetNestedInput> = z.object({
+  create: z.union([ z.lazy(() => ColumnCreateWithoutDatasetInputSchema),z.lazy(() => ColumnCreateWithoutDatasetInputSchema).array(),z.lazy(() => ColumnUncheckedCreateWithoutDatasetInputSchema),z.lazy(() => ColumnUncheckedCreateWithoutDatasetInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => ColumnCreateOrConnectWithoutDatasetInputSchema),z.lazy(() => ColumnCreateOrConnectWithoutDatasetInputSchema).array() ]).optional(),
+  upsert: z.union([ z.lazy(() => ColumnUpsertWithWhereUniqueWithoutDatasetInputSchema),z.lazy(() => ColumnUpsertWithWhereUniqueWithoutDatasetInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => ColumnCreateManyDatasetInputEnvelopeSchema).optional(),
+  set: z.union([ z.lazy(() => ColumnWhereUniqueInputSchema),z.lazy(() => ColumnWhereUniqueInputSchema).array() ]).optional(),
+  disconnect: z.union([ z.lazy(() => ColumnWhereUniqueInputSchema),z.lazy(() => ColumnWhereUniqueInputSchema).array() ]).optional(),
+  delete: z.union([ z.lazy(() => ColumnWhereUniqueInputSchema),z.lazy(() => ColumnWhereUniqueInputSchema).array() ]).optional(),
+  connect: z.union([ z.lazy(() => ColumnWhereUniqueInputSchema),z.lazy(() => ColumnWhereUniqueInputSchema).array() ]).optional(),
+  update: z.union([ z.lazy(() => ColumnUpdateWithWhereUniqueWithoutDatasetInputSchema),z.lazy(() => ColumnUpdateWithWhereUniqueWithoutDatasetInputSchema).array() ]).optional(),
+  updateMany: z.union([ z.lazy(() => ColumnUpdateManyWithWhereWithoutDatasetInputSchema),z.lazy(() => ColumnUpdateManyWithWhereWithoutDatasetInputSchema).array() ]).optional(),
+  deleteMany: z.union([ z.lazy(() => ColumnScalarWhereInputSchema),z.lazy(() => ColumnScalarWhereInputSchema).array() ]).optional(),
+}).strict();
+
+export const RowUpdateManyWithoutDatasetNestedInputSchema: z.ZodType<Prisma.RowUpdateManyWithoutDatasetNestedInput> = z.object({
+  create: z.union([ z.lazy(() => RowCreateWithoutDatasetInputSchema),z.lazy(() => RowCreateWithoutDatasetInputSchema).array(),z.lazy(() => RowUncheckedCreateWithoutDatasetInputSchema),z.lazy(() => RowUncheckedCreateWithoutDatasetInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => RowCreateOrConnectWithoutDatasetInputSchema),z.lazy(() => RowCreateOrConnectWithoutDatasetInputSchema).array() ]).optional(),
+  upsert: z.union([ z.lazy(() => RowUpsertWithWhereUniqueWithoutDatasetInputSchema),z.lazy(() => RowUpsertWithWhereUniqueWithoutDatasetInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => RowCreateManyDatasetInputEnvelopeSchema).optional(),
+  set: z.union([ z.lazy(() => RowWhereUniqueInputSchema),z.lazy(() => RowWhereUniqueInputSchema).array() ]).optional(),
+  disconnect: z.union([ z.lazy(() => RowWhereUniqueInputSchema),z.lazy(() => RowWhereUniqueInputSchema).array() ]).optional(),
+  delete: z.union([ z.lazy(() => RowWhereUniqueInputSchema),z.lazy(() => RowWhereUniqueInputSchema).array() ]).optional(),
+  connect: z.union([ z.lazy(() => RowWhereUniqueInputSchema),z.lazy(() => RowWhereUniqueInputSchema).array() ]).optional(),
+  update: z.union([ z.lazy(() => RowUpdateWithWhereUniqueWithoutDatasetInputSchema),z.lazy(() => RowUpdateWithWhereUniqueWithoutDatasetInputSchema).array() ]).optional(),
+  updateMany: z.union([ z.lazy(() => RowUpdateManyWithWhereWithoutDatasetInputSchema),z.lazy(() => RowUpdateManyWithWhereWithoutDatasetInputSchema).array() ]).optional(),
+  deleteMany: z.union([ z.lazy(() => RowScalarWhereInputSchema),z.lazy(() => RowScalarWhereInputSchema).array() ]).optional(),
+}).strict();
+
+export const WorkspaceUpdateOneRequiredWithoutDatasetsNestedInputSchema: z.ZodType<Prisma.WorkspaceUpdateOneRequiredWithoutDatasetsNestedInput> = z.object({
+  create: z.union([ z.lazy(() => WorkspaceCreateWithoutDatasetsInputSchema),z.lazy(() => WorkspaceUncheckedCreateWithoutDatasetsInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => WorkspaceCreateOrConnectWithoutDatasetsInputSchema).optional(),
+  upsert: z.lazy(() => WorkspaceUpsertWithoutDatasetsInputSchema).optional(),
+  connect: z.lazy(() => WorkspaceWhereUniqueInputSchema).optional(),
+  update: z.union([ z.lazy(() => WorkspaceUpdateToOneWithWhereWithoutDatasetsInputSchema),z.lazy(() => WorkspaceUpdateWithoutDatasetsInputSchema),z.lazy(() => WorkspaceUncheckedUpdateWithoutDatasetsInputSchema) ]).optional(),
+}).strict();
+
+export const ColumnUncheckedUpdateManyWithoutDatasetNestedInputSchema: z.ZodType<Prisma.ColumnUncheckedUpdateManyWithoutDatasetNestedInput> = z.object({
+  create: z.union([ z.lazy(() => ColumnCreateWithoutDatasetInputSchema),z.lazy(() => ColumnCreateWithoutDatasetInputSchema).array(),z.lazy(() => ColumnUncheckedCreateWithoutDatasetInputSchema),z.lazy(() => ColumnUncheckedCreateWithoutDatasetInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => ColumnCreateOrConnectWithoutDatasetInputSchema),z.lazy(() => ColumnCreateOrConnectWithoutDatasetInputSchema).array() ]).optional(),
+  upsert: z.union([ z.lazy(() => ColumnUpsertWithWhereUniqueWithoutDatasetInputSchema),z.lazy(() => ColumnUpsertWithWhereUniqueWithoutDatasetInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => ColumnCreateManyDatasetInputEnvelopeSchema).optional(),
+  set: z.union([ z.lazy(() => ColumnWhereUniqueInputSchema),z.lazy(() => ColumnWhereUniqueInputSchema).array() ]).optional(),
+  disconnect: z.union([ z.lazy(() => ColumnWhereUniqueInputSchema),z.lazy(() => ColumnWhereUniqueInputSchema).array() ]).optional(),
+  delete: z.union([ z.lazy(() => ColumnWhereUniqueInputSchema),z.lazy(() => ColumnWhereUniqueInputSchema).array() ]).optional(),
+  connect: z.union([ z.lazy(() => ColumnWhereUniqueInputSchema),z.lazy(() => ColumnWhereUniqueInputSchema).array() ]).optional(),
+  update: z.union([ z.lazy(() => ColumnUpdateWithWhereUniqueWithoutDatasetInputSchema),z.lazy(() => ColumnUpdateWithWhereUniqueWithoutDatasetInputSchema).array() ]).optional(),
+  updateMany: z.union([ z.lazy(() => ColumnUpdateManyWithWhereWithoutDatasetInputSchema),z.lazy(() => ColumnUpdateManyWithWhereWithoutDatasetInputSchema).array() ]).optional(),
+  deleteMany: z.union([ z.lazy(() => ColumnScalarWhereInputSchema),z.lazy(() => ColumnScalarWhereInputSchema).array() ]).optional(),
+}).strict();
+
+export const RowUncheckedUpdateManyWithoutDatasetNestedInputSchema: z.ZodType<Prisma.RowUncheckedUpdateManyWithoutDatasetNestedInput> = z.object({
+  create: z.union([ z.lazy(() => RowCreateWithoutDatasetInputSchema),z.lazy(() => RowCreateWithoutDatasetInputSchema).array(),z.lazy(() => RowUncheckedCreateWithoutDatasetInputSchema),z.lazy(() => RowUncheckedCreateWithoutDatasetInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => RowCreateOrConnectWithoutDatasetInputSchema),z.lazy(() => RowCreateOrConnectWithoutDatasetInputSchema).array() ]).optional(),
+  upsert: z.union([ z.lazy(() => RowUpsertWithWhereUniqueWithoutDatasetInputSchema),z.lazy(() => RowUpsertWithWhereUniqueWithoutDatasetInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => RowCreateManyDatasetInputEnvelopeSchema).optional(),
+  set: z.union([ z.lazy(() => RowWhereUniqueInputSchema),z.lazy(() => RowWhereUniqueInputSchema).array() ]).optional(),
+  disconnect: z.union([ z.lazy(() => RowWhereUniqueInputSchema),z.lazy(() => RowWhereUniqueInputSchema).array() ]).optional(),
+  delete: z.union([ z.lazy(() => RowWhereUniqueInputSchema),z.lazy(() => RowWhereUniqueInputSchema).array() ]).optional(),
+  connect: z.union([ z.lazy(() => RowWhereUniqueInputSchema),z.lazy(() => RowWhereUniqueInputSchema).array() ]).optional(),
+  update: z.union([ z.lazy(() => RowUpdateWithWhereUniqueWithoutDatasetInputSchema),z.lazy(() => RowUpdateWithWhereUniqueWithoutDatasetInputSchema).array() ]).optional(),
+  updateMany: z.union([ z.lazy(() => RowUpdateManyWithWhereWithoutDatasetInputSchema),z.lazy(() => RowUpdateManyWithWhereWithoutDatasetInputSchema).array() ]).optional(),
+  deleteMany: z.union([ z.lazy(() => RowScalarWhereInputSchema),z.lazy(() => RowScalarWhereInputSchema).array() ]).optional(),
+}).strict();
+
+export const DatasetCreateNestedOneWithoutColumnsInputSchema: z.ZodType<Prisma.DatasetCreateNestedOneWithoutColumnsInput> = z.object({
+  create: z.union([ z.lazy(() => DatasetCreateWithoutColumnsInputSchema),z.lazy(() => DatasetUncheckedCreateWithoutColumnsInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => DatasetCreateOrConnectWithoutColumnsInputSchema).optional(),
+  connect: z.lazy(() => DatasetWhereUniqueInputSchema).optional()
+}).strict();
+
+export const CellValueCreateNestedManyWithoutColumnInputSchema: z.ZodType<Prisma.CellValueCreateNestedManyWithoutColumnInput> = z.object({
+  create: z.union([ z.lazy(() => CellValueCreateWithoutColumnInputSchema),z.lazy(() => CellValueCreateWithoutColumnInputSchema).array(),z.lazy(() => CellValueUncheckedCreateWithoutColumnInputSchema),z.lazy(() => CellValueUncheckedCreateWithoutColumnInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => CellValueCreateOrConnectWithoutColumnInputSchema),z.lazy(() => CellValueCreateOrConnectWithoutColumnInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => CellValueCreateManyColumnInputEnvelopeSchema).optional(),
+  connect: z.union([ z.lazy(() => CellValueWhereUniqueInputSchema),z.lazy(() => CellValueWhereUniqueInputSchema).array() ]).optional(),
+}).strict();
+
+export const CellValueUncheckedCreateNestedManyWithoutColumnInputSchema: z.ZodType<Prisma.CellValueUncheckedCreateNestedManyWithoutColumnInput> = z.object({
+  create: z.union([ z.lazy(() => CellValueCreateWithoutColumnInputSchema),z.lazy(() => CellValueCreateWithoutColumnInputSchema).array(),z.lazy(() => CellValueUncheckedCreateWithoutColumnInputSchema),z.lazy(() => CellValueUncheckedCreateWithoutColumnInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => CellValueCreateOrConnectWithoutColumnInputSchema),z.lazy(() => CellValueCreateOrConnectWithoutColumnInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => CellValueCreateManyColumnInputEnvelopeSchema).optional(),
+  connect: z.union([ z.lazy(() => CellValueWhereUniqueInputSchema),z.lazy(() => CellValueWhereUniqueInputSchema).array() ]).optional(),
+}).strict();
+
+export const EnumColumnTypeFieldUpdateOperationsInputSchema: z.ZodType<Prisma.EnumColumnTypeFieldUpdateOperationsInput> = z.object({
+  set: z.lazy(() => ColumnTypeSchema).optional()
+}).strict();
+
+export const DatasetUpdateOneRequiredWithoutColumnsNestedInputSchema: z.ZodType<Prisma.DatasetUpdateOneRequiredWithoutColumnsNestedInput> = z.object({
+  create: z.union([ z.lazy(() => DatasetCreateWithoutColumnsInputSchema),z.lazy(() => DatasetUncheckedCreateWithoutColumnsInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => DatasetCreateOrConnectWithoutColumnsInputSchema).optional(),
+  upsert: z.lazy(() => DatasetUpsertWithoutColumnsInputSchema).optional(),
+  connect: z.lazy(() => DatasetWhereUniqueInputSchema).optional(),
+  update: z.union([ z.lazy(() => DatasetUpdateToOneWithWhereWithoutColumnsInputSchema),z.lazy(() => DatasetUpdateWithoutColumnsInputSchema),z.lazy(() => DatasetUncheckedUpdateWithoutColumnsInputSchema) ]).optional(),
+}).strict();
+
+export const CellValueUpdateManyWithoutColumnNestedInputSchema: z.ZodType<Prisma.CellValueUpdateManyWithoutColumnNestedInput> = z.object({
+  create: z.union([ z.lazy(() => CellValueCreateWithoutColumnInputSchema),z.lazy(() => CellValueCreateWithoutColumnInputSchema).array(),z.lazy(() => CellValueUncheckedCreateWithoutColumnInputSchema),z.lazy(() => CellValueUncheckedCreateWithoutColumnInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => CellValueCreateOrConnectWithoutColumnInputSchema),z.lazy(() => CellValueCreateOrConnectWithoutColumnInputSchema).array() ]).optional(),
+  upsert: z.union([ z.lazy(() => CellValueUpsertWithWhereUniqueWithoutColumnInputSchema),z.lazy(() => CellValueUpsertWithWhereUniqueWithoutColumnInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => CellValueCreateManyColumnInputEnvelopeSchema).optional(),
+  set: z.union([ z.lazy(() => CellValueWhereUniqueInputSchema),z.lazy(() => CellValueWhereUniqueInputSchema).array() ]).optional(),
+  disconnect: z.union([ z.lazy(() => CellValueWhereUniqueInputSchema),z.lazy(() => CellValueWhereUniqueInputSchema).array() ]).optional(),
+  delete: z.union([ z.lazy(() => CellValueWhereUniqueInputSchema),z.lazy(() => CellValueWhereUniqueInputSchema).array() ]).optional(),
+  connect: z.union([ z.lazy(() => CellValueWhereUniqueInputSchema),z.lazy(() => CellValueWhereUniqueInputSchema).array() ]).optional(),
+  update: z.union([ z.lazy(() => CellValueUpdateWithWhereUniqueWithoutColumnInputSchema),z.lazy(() => CellValueUpdateWithWhereUniqueWithoutColumnInputSchema).array() ]).optional(),
+  updateMany: z.union([ z.lazy(() => CellValueUpdateManyWithWhereWithoutColumnInputSchema),z.lazy(() => CellValueUpdateManyWithWhereWithoutColumnInputSchema).array() ]).optional(),
+  deleteMany: z.union([ z.lazy(() => CellValueScalarWhereInputSchema),z.lazy(() => CellValueScalarWhereInputSchema).array() ]).optional(),
+}).strict();
+
+export const CellValueUncheckedUpdateManyWithoutColumnNestedInputSchema: z.ZodType<Prisma.CellValueUncheckedUpdateManyWithoutColumnNestedInput> = z.object({
+  create: z.union([ z.lazy(() => CellValueCreateWithoutColumnInputSchema),z.lazy(() => CellValueCreateWithoutColumnInputSchema).array(),z.lazy(() => CellValueUncheckedCreateWithoutColumnInputSchema),z.lazy(() => CellValueUncheckedCreateWithoutColumnInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => CellValueCreateOrConnectWithoutColumnInputSchema),z.lazy(() => CellValueCreateOrConnectWithoutColumnInputSchema).array() ]).optional(),
+  upsert: z.union([ z.lazy(() => CellValueUpsertWithWhereUniqueWithoutColumnInputSchema),z.lazy(() => CellValueUpsertWithWhereUniqueWithoutColumnInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => CellValueCreateManyColumnInputEnvelopeSchema).optional(),
+  set: z.union([ z.lazy(() => CellValueWhereUniqueInputSchema),z.lazy(() => CellValueWhereUniqueInputSchema).array() ]).optional(),
+  disconnect: z.union([ z.lazy(() => CellValueWhereUniqueInputSchema),z.lazy(() => CellValueWhereUniqueInputSchema).array() ]).optional(),
+  delete: z.union([ z.lazy(() => CellValueWhereUniqueInputSchema),z.lazy(() => CellValueWhereUniqueInputSchema).array() ]).optional(),
+  connect: z.union([ z.lazy(() => CellValueWhereUniqueInputSchema),z.lazy(() => CellValueWhereUniqueInputSchema).array() ]).optional(),
+  update: z.union([ z.lazy(() => CellValueUpdateWithWhereUniqueWithoutColumnInputSchema),z.lazy(() => CellValueUpdateWithWhereUniqueWithoutColumnInputSchema).array() ]).optional(),
+  updateMany: z.union([ z.lazy(() => CellValueUpdateManyWithWhereWithoutColumnInputSchema),z.lazy(() => CellValueUpdateManyWithWhereWithoutColumnInputSchema).array() ]).optional(),
+  deleteMany: z.union([ z.lazy(() => CellValueScalarWhereInputSchema),z.lazy(() => CellValueScalarWhereInputSchema).array() ]).optional(),
+}).strict();
+
+export const DatasetCreateNestedOneWithoutRowsInputSchema: z.ZodType<Prisma.DatasetCreateNestedOneWithoutRowsInput> = z.object({
+  create: z.union([ z.lazy(() => DatasetCreateWithoutRowsInputSchema),z.lazy(() => DatasetUncheckedCreateWithoutRowsInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => DatasetCreateOrConnectWithoutRowsInputSchema).optional(),
+  connect: z.lazy(() => DatasetWhereUniqueInputSchema).optional()
+}).strict();
+
+export const CellValueCreateNestedManyWithoutRowInputSchema: z.ZodType<Prisma.CellValueCreateNestedManyWithoutRowInput> = z.object({
+  create: z.union([ z.lazy(() => CellValueCreateWithoutRowInputSchema),z.lazy(() => CellValueCreateWithoutRowInputSchema).array(),z.lazy(() => CellValueUncheckedCreateWithoutRowInputSchema),z.lazy(() => CellValueUncheckedCreateWithoutRowInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => CellValueCreateOrConnectWithoutRowInputSchema),z.lazy(() => CellValueCreateOrConnectWithoutRowInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => CellValueCreateManyRowInputEnvelopeSchema).optional(),
+  connect: z.union([ z.lazy(() => CellValueWhereUniqueInputSchema),z.lazy(() => CellValueWhereUniqueInputSchema).array() ]).optional(),
+}).strict();
+
+export const CellValueUncheckedCreateNestedManyWithoutRowInputSchema: z.ZodType<Prisma.CellValueUncheckedCreateNestedManyWithoutRowInput> = z.object({
+  create: z.union([ z.lazy(() => CellValueCreateWithoutRowInputSchema),z.lazy(() => CellValueCreateWithoutRowInputSchema).array(),z.lazy(() => CellValueUncheckedCreateWithoutRowInputSchema),z.lazy(() => CellValueUncheckedCreateWithoutRowInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => CellValueCreateOrConnectWithoutRowInputSchema),z.lazy(() => CellValueCreateOrConnectWithoutRowInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => CellValueCreateManyRowInputEnvelopeSchema).optional(),
+  connect: z.union([ z.lazy(() => CellValueWhereUniqueInputSchema),z.lazy(() => CellValueWhereUniqueInputSchema).array() ]).optional(),
+}).strict();
+
+export const DatasetUpdateOneRequiredWithoutRowsNestedInputSchema: z.ZodType<Prisma.DatasetUpdateOneRequiredWithoutRowsNestedInput> = z.object({
+  create: z.union([ z.lazy(() => DatasetCreateWithoutRowsInputSchema),z.lazy(() => DatasetUncheckedCreateWithoutRowsInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => DatasetCreateOrConnectWithoutRowsInputSchema).optional(),
+  upsert: z.lazy(() => DatasetUpsertWithoutRowsInputSchema).optional(),
+  connect: z.lazy(() => DatasetWhereUniqueInputSchema).optional(),
+  update: z.union([ z.lazy(() => DatasetUpdateToOneWithWhereWithoutRowsInputSchema),z.lazy(() => DatasetUpdateWithoutRowsInputSchema),z.lazy(() => DatasetUncheckedUpdateWithoutRowsInputSchema) ]).optional(),
+}).strict();
+
+export const CellValueUpdateManyWithoutRowNestedInputSchema: z.ZodType<Prisma.CellValueUpdateManyWithoutRowNestedInput> = z.object({
+  create: z.union([ z.lazy(() => CellValueCreateWithoutRowInputSchema),z.lazy(() => CellValueCreateWithoutRowInputSchema).array(),z.lazy(() => CellValueUncheckedCreateWithoutRowInputSchema),z.lazy(() => CellValueUncheckedCreateWithoutRowInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => CellValueCreateOrConnectWithoutRowInputSchema),z.lazy(() => CellValueCreateOrConnectWithoutRowInputSchema).array() ]).optional(),
+  upsert: z.union([ z.lazy(() => CellValueUpsertWithWhereUniqueWithoutRowInputSchema),z.lazy(() => CellValueUpsertWithWhereUniqueWithoutRowInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => CellValueCreateManyRowInputEnvelopeSchema).optional(),
+  set: z.union([ z.lazy(() => CellValueWhereUniqueInputSchema),z.lazy(() => CellValueWhereUniqueInputSchema).array() ]).optional(),
+  disconnect: z.union([ z.lazy(() => CellValueWhereUniqueInputSchema),z.lazy(() => CellValueWhereUniqueInputSchema).array() ]).optional(),
+  delete: z.union([ z.lazy(() => CellValueWhereUniqueInputSchema),z.lazy(() => CellValueWhereUniqueInputSchema).array() ]).optional(),
+  connect: z.union([ z.lazy(() => CellValueWhereUniqueInputSchema),z.lazy(() => CellValueWhereUniqueInputSchema).array() ]).optional(),
+  update: z.union([ z.lazy(() => CellValueUpdateWithWhereUniqueWithoutRowInputSchema),z.lazy(() => CellValueUpdateWithWhereUniqueWithoutRowInputSchema).array() ]).optional(),
+  updateMany: z.union([ z.lazy(() => CellValueUpdateManyWithWhereWithoutRowInputSchema),z.lazy(() => CellValueUpdateManyWithWhereWithoutRowInputSchema).array() ]).optional(),
+  deleteMany: z.union([ z.lazy(() => CellValueScalarWhereInputSchema),z.lazy(() => CellValueScalarWhereInputSchema).array() ]).optional(),
+}).strict();
+
+export const CellValueUncheckedUpdateManyWithoutRowNestedInputSchema: z.ZodType<Prisma.CellValueUncheckedUpdateManyWithoutRowNestedInput> = z.object({
+  create: z.union([ z.lazy(() => CellValueCreateWithoutRowInputSchema),z.lazy(() => CellValueCreateWithoutRowInputSchema).array(),z.lazy(() => CellValueUncheckedCreateWithoutRowInputSchema),z.lazy(() => CellValueUncheckedCreateWithoutRowInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => CellValueCreateOrConnectWithoutRowInputSchema),z.lazy(() => CellValueCreateOrConnectWithoutRowInputSchema).array() ]).optional(),
+  upsert: z.union([ z.lazy(() => CellValueUpsertWithWhereUniqueWithoutRowInputSchema),z.lazy(() => CellValueUpsertWithWhereUniqueWithoutRowInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => CellValueCreateManyRowInputEnvelopeSchema).optional(),
+  set: z.union([ z.lazy(() => CellValueWhereUniqueInputSchema),z.lazy(() => CellValueWhereUniqueInputSchema).array() ]).optional(),
+  disconnect: z.union([ z.lazy(() => CellValueWhereUniqueInputSchema),z.lazy(() => CellValueWhereUniqueInputSchema).array() ]).optional(),
+  delete: z.union([ z.lazy(() => CellValueWhereUniqueInputSchema),z.lazy(() => CellValueWhereUniqueInputSchema).array() ]).optional(),
+  connect: z.union([ z.lazy(() => CellValueWhereUniqueInputSchema),z.lazy(() => CellValueWhereUniqueInputSchema).array() ]).optional(),
+  update: z.union([ z.lazy(() => CellValueUpdateWithWhereUniqueWithoutRowInputSchema),z.lazy(() => CellValueUpdateWithWhereUniqueWithoutRowInputSchema).array() ]).optional(),
+  updateMany: z.union([ z.lazy(() => CellValueUpdateManyWithWhereWithoutRowInputSchema),z.lazy(() => CellValueUpdateManyWithWhereWithoutRowInputSchema).array() ]).optional(),
+  deleteMany: z.union([ z.lazy(() => CellValueScalarWhereInputSchema),z.lazy(() => CellValueScalarWhereInputSchema).array() ]).optional(),
+}).strict();
+
+export const ColumnCreateNestedOneWithoutCellValuesInputSchema: z.ZodType<Prisma.ColumnCreateNestedOneWithoutCellValuesInput> = z.object({
+  create: z.union([ z.lazy(() => ColumnCreateWithoutCellValuesInputSchema),z.lazy(() => ColumnUncheckedCreateWithoutCellValuesInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => ColumnCreateOrConnectWithoutCellValuesInputSchema).optional(),
+  connect: z.lazy(() => ColumnWhereUniqueInputSchema).optional()
+}).strict();
+
+export const RowCreateNestedOneWithoutCellValuesInputSchema: z.ZodType<Prisma.RowCreateNestedOneWithoutCellValuesInput> = z.object({
+  create: z.union([ z.lazy(() => RowCreateWithoutCellValuesInputSchema),z.lazy(() => RowUncheckedCreateWithoutCellValuesInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => RowCreateOrConnectWithoutCellValuesInputSchema).optional(),
+  connect: z.lazy(() => RowWhereUniqueInputSchema).optional()
+}).strict();
+
+export const ColumnUpdateOneRequiredWithoutCellValuesNestedInputSchema: z.ZodType<Prisma.ColumnUpdateOneRequiredWithoutCellValuesNestedInput> = z.object({
+  create: z.union([ z.lazy(() => ColumnCreateWithoutCellValuesInputSchema),z.lazy(() => ColumnUncheckedCreateWithoutCellValuesInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => ColumnCreateOrConnectWithoutCellValuesInputSchema).optional(),
+  upsert: z.lazy(() => ColumnUpsertWithoutCellValuesInputSchema).optional(),
+  connect: z.lazy(() => ColumnWhereUniqueInputSchema).optional(),
+  update: z.union([ z.lazy(() => ColumnUpdateToOneWithWhereWithoutCellValuesInputSchema),z.lazy(() => ColumnUpdateWithoutCellValuesInputSchema),z.lazy(() => ColumnUncheckedUpdateWithoutCellValuesInputSchema) ]).optional(),
+}).strict();
+
+export const RowUpdateOneRequiredWithoutCellValuesNestedInputSchema: z.ZodType<Prisma.RowUpdateOneRequiredWithoutCellValuesNestedInput> = z.object({
+  create: z.union([ z.lazy(() => RowCreateWithoutCellValuesInputSchema),z.lazy(() => RowUncheckedCreateWithoutCellValuesInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => RowCreateOrConnectWithoutCellValuesInputSchema).optional(),
+  upsert: z.lazy(() => RowUpsertWithoutCellValuesInputSchema).optional(),
+  connect: z.lazy(() => RowWhereUniqueInputSchema).optional(),
+  update: z.union([ z.lazy(() => RowUpdateToOneWithWhereWithoutCellValuesInputSchema),z.lazy(() => RowUpdateWithoutCellValuesInputSchema),z.lazy(() => RowUncheckedUpdateWithoutCellValuesInputSchema) ]).optional(),
+}).strict();
+
 export const NestedStringFilterSchema: z.ZodType<Prisma.NestedStringFilter> = z.object({
   equals: z.string().optional(),
   in: z.string().array().optional(),
@@ -4163,6 +5270,23 @@ export const NestedEnumContentViewTypeWithAggregatesFilterSchema: z.ZodType<Pris
   _max: z.lazy(() => NestedEnumContentViewTypeFilterSchema).optional()
 }).strict();
 
+export const NestedEnumColumnTypeFilterSchema: z.ZodType<Prisma.NestedEnumColumnTypeFilter> = z.object({
+  equals: z.lazy(() => ColumnTypeSchema).optional(),
+  in: z.lazy(() => ColumnTypeSchema).array().optional(),
+  notIn: z.lazy(() => ColumnTypeSchema).array().optional(),
+  not: z.union([ z.lazy(() => ColumnTypeSchema),z.lazy(() => NestedEnumColumnTypeFilterSchema) ]).optional(),
+}).strict();
+
+export const NestedEnumColumnTypeWithAggregatesFilterSchema: z.ZodType<Prisma.NestedEnumColumnTypeWithAggregatesFilter> = z.object({
+  equals: z.lazy(() => ColumnTypeSchema).optional(),
+  in: z.lazy(() => ColumnTypeSchema).array().optional(),
+  notIn: z.lazy(() => ColumnTypeSchema).array().optional(),
+  not: z.union([ z.lazy(() => ColumnTypeSchema),z.lazy(() => NestedEnumColumnTypeWithAggregatesFilterSchema) ]).optional(),
+  _count: z.lazy(() => NestedIntFilterSchema).optional(),
+  _min: z.lazy(() => NestedEnumColumnTypeFilterSchema).optional(),
+  _max: z.lazy(() => NestedEnumColumnTypeFilterSchema).optional()
+}).strict();
+
 export const OrganizationMembershipCreateWithoutUserInputSchema: z.ZodType<Prisma.OrganizationMembershipCreateWithoutUserInput> = z.object({
   id: z.string(),
   role: z.string(),
@@ -4298,7 +5422,8 @@ export const WorkspaceCreateWithoutOrganizationInputSchema: z.ZodType<Prisma.Wor
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
   members: z.lazy(() => WorkspaceMembershipCreateNestedManyWithoutWorkspaceInputSchema).optional(),
-  forms: z.lazy(() => FormCreateNestedManyWithoutWorkspaceInputSchema).optional()
+  forms: z.lazy(() => FormCreateNestedManyWithoutWorkspaceInputSchema).optional(),
+  datasets: z.lazy(() => DatasetCreateNestedManyWithoutWorkspaceInputSchema).optional()
 }).strict();
 
 export const WorkspaceUncheckedCreateWithoutOrganizationInputSchema: z.ZodType<Prisma.WorkspaceUncheckedCreateWithoutOrganizationInput> = z.object({
@@ -4308,7 +5433,8 @@ export const WorkspaceUncheckedCreateWithoutOrganizationInputSchema: z.ZodType<P
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
   members: z.lazy(() => WorkspaceMembershipUncheckedCreateNestedManyWithoutWorkspaceInputSchema).optional(),
-  forms: z.lazy(() => FormUncheckedCreateNestedManyWithoutWorkspaceInputSchema).optional()
+  forms: z.lazy(() => FormUncheckedCreateNestedManyWithoutWorkspaceInputSchema).optional(),
+  datasets: z.lazy(() => DatasetUncheckedCreateNestedManyWithoutWorkspaceInputSchema).optional()
 }).strict();
 
 export const WorkspaceCreateOrConnectWithoutOrganizationInputSchema: z.ZodType<Prisma.WorkspaceCreateOrConnectWithoutOrganizationInput> = z.object({
@@ -4515,7 +5641,8 @@ export const WorkspaceCreateWithoutMembersInputSchema: z.ZodType<Prisma.Workspac
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
   organization: z.lazy(() => OrganizationCreateNestedOneWithoutWorkspacesInputSchema),
-  forms: z.lazy(() => FormCreateNestedManyWithoutWorkspaceInputSchema).optional()
+  forms: z.lazy(() => FormCreateNestedManyWithoutWorkspaceInputSchema).optional(),
+  datasets: z.lazy(() => DatasetCreateNestedManyWithoutWorkspaceInputSchema).optional()
 }).strict();
 
 export const WorkspaceUncheckedCreateWithoutMembersInputSchema: z.ZodType<Prisma.WorkspaceUncheckedCreateWithoutMembersInput> = z.object({
@@ -4525,7 +5652,8 @@ export const WorkspaceUncheckedCreateWithoutMembersInputSchema: z.ZodType<Prisma
   organizationId: z.string(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
-  forms: z.lazy(() => FormUncheckedCreateNestedManyWithoutWorkspaceInputSchema).optional()
+  forms: z.lazy(() => FormUncheckedCreateNestedManyWithoutWorkspaceInputSchema).optional(),
+  datasets: z.lazy(() => DatasetUncheckedCreateNestedManyWithoutWorkspaceInputSchema).optional()
 }).strict();
 
 export const WorkspaceCreateOrConnectWithoutMembersInputSchema: z.ZodType<Prisma.WorkspaceCreateOrConnectWithoutMembersInput> = z.object({
@@ -4584,7 +5712,8 @@ export const WorkspaceUpdateWithoutMembersInputSchema: z.ZodType<Prisma.Workspac
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   organization: z.lazy(() => OrganizationUpdateOneRequiredWithoutWorkspacesNestedInputSchema).optional(),
-  forms: z.lazy(() => FormUpdateManyWithoutWorkspaceNestedInputSchema).optional()
+  forms: z.lazy(() => FormUpdateManyWithoutWorkspaceNestedInputSchema).optional(),
+  datasets: z.lazy(() => DatasetUpdateManyWithoutWorkspaceNestedInputSchema).optional()
 }).strict();
 
 export const WorkspaceUncheckedUpdateWithoutMembersInputSchema: z.ZodType<Prisma.WorkspaceUncheckedUpdateWithoutMembersInput> = z.object({
@@ -4594,7 +5723,8 @@ export const WorkspaceUncheckedUpdateWithoutMembersInputSchema: z.ZodType<Prisma
   organizationId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
-  forms: z.lazy(() => FormUncheckedUpdateManyWithoutWorkspaceNestedInputSchema).optional()
+  forms: z.lazy(() => FormUncheckedUpdateManyWithoutWorkspaceNestedInputSchema).optional(),
+  datasets: z.lazy(() => DatasetUncheckedUpdateManyWithoutWorkspaceNestedInputSchema).optional()
 }).strict();
 
 export const WorkspaceMembershipCreateWithoutWorkspaceInputSchema: z.ZodType<Prisma.WorkspaceMembershipCreateWithoutWorkspaceInput> = z.object({
@@ -4688,6 +5818,30 @@ export const FormCreateManyWorkspaceInputEnvelopeSchema: z.ZodType<Prisma.FormCr
   skipDuplicates: z.boolean().optional()
 }).strict();
 
+export const DatasetCreateWithoutWorkspaceInputSchema: z.ZodType<Prisma.DatasetCreateWithoutWorkspaceInput> = z.object({
+  id: z.string().uuid().optional(),
+  name: z.string(),
+  columns: z.lazy(() => ColumnCreateNestedManyWithoutDatasetInputSchema).optional(),
+  rows: z.lazy(() => RowCreateNestedManyWithoutDatasetInputSchema).optional()
+}).strict();
+
+export const DatasetUncheckedCreateWithoutWorkspaceInputSchema: z.ZodType<Prisma.DatasetUncheckedCreateWithoutWorkspaceInput> = z.object({
+  id: z.string().uuid().optional(),
+  name: z.string(),
+  columns: z.lazy(() => ColumnUncheckedCreateNestedManyWithoutDatasetInputSchema).optional(),
+  rows: z.lazy(() => RowUncheckedCreateNestedManyWithoutDatasetInputSchema).optional()
+}).strict();
+
+export const DatasetCreateOrConnectWithoutWorkspaceInputSchema: z.ZodType<Prisma.DatasetCreateOrConnectWithoutWorkspaceInput> = z.object({
+  where: z.lazy(() => DatasetWhereUniqueInputSchema),
+  create: z.union([ z.lazy(() => DatasetCreateWithoutWorkspaceInputSchema),z.lazy(() => DatasetUncheckedCreateWithoutWorkspaceInputSchema) ]),
+}).strict();
+
+export const DatasetCreateManyWorkspaceInputEnvelopeSchema: z.ZodType<Prisma.DatasetCreateManyWorkspaceInputEnvelope> = z.object({
+  data: z.union([ z.lazy(() => DatasetCreateManyWorkspaceInputSchema),z.lazy(() => DatasetCreateManyWorkspaceInputSchema).array() ]),
+  skipDuplicates: z.boolean().optional()
+}).strict();
+
 export const WorkspaceMembershipUpsertWithWhereUniqueWithoutWorkspaceInputSchema: z.ZodType<Prisma.WorkspaceMembershipUpsertWithWhereUniqueWithoutWorkspaceInput> = z.object({
   where: z.lazy(() => WorkspaceMembershipWhereUniqueInputSchema),
   update: z.union([ z.lazy(() => WorkspaceMembershipUpdateWithoutWorkspaceInputSchema),z.lazy(() => WorkspaceMembershipUncheckedUpdateWithoutWorkspaceInputSchema) ]),
@@ -4769,6 +5923,31 @@ export const FormScalarWhereInputSchema: z.ZodType<Prisma.FormScalarWhereInput> 
   updatedAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
 }).strict();
 
+export const DatasetUpsertWithWhereUniqueWithoutWorkspaceInputSchema: z.ZodType<Prisma.DatasetUpsertWithWhereUniqueWithoutWorkspaceInput> = z.object({
+  where: z.lazy(() => DatasetWhereUniqueInputSchema),
+  update: z.union([ z.lazy(() => DatasetUpdateWithoutWorkspaceInputSchema),z.lazy(() => DatasetUncheckedUpdateWithoutWorkspaceInputSchema) ]),
+  create: z.union([ z.lazy(() => DatasetCreateWithoutWorkspaceInputSchema),z.lazy(() => DatasetUncheckedCreateWithoutWorkspaceInputSchema) ]),
+}).strict();
+
+export const DatasetUpdateWithWhereUniqueWithoutWorkspaceInputSchema: z.ZodType<Prisma.DatasetUpdateWithWhereUniqueWithoutWorkspaceInput> = z.object({
+  where: z.lazy(() => DatasetWhereUniqueInputSchema),
+  data: z.union([ z.lazy(() => DatasetUpdateWithoutWorkspaceInputSchema),z.lazy(() => DatasetUncheckedUpdateWithoutWorkspaceInputSchema) ]),
+}).strict();
+
+export const DatasetUpdateManyWithWhereWithoutWorkspaceInputSchema: z.ZodType<Prisma.DatasetUpdateManyWithWhereWithoutWorkspaceInput> = z.object({
+  where: z.lazy(() => DatasetScalarWhereInputSchema),
+  data: z.union([ z.lazy(() => DatasetUpdateManyMutationInputSchema),z.lazy(() => DatasetUncheckedUpdateManyWithoutWorkspaceInputSchema) ]),
+}).strict();
+
+export const DatasetScalarWhereInputSchema: z.ZodType<Prisma.DatasetScalarWhereInput> = z.object({
+  AND: z.union([ z.lazy(() => DatasetScalarWhereInputSchema),z.lazy(() => DatasetScalarWhereInputSchema).array() ]).optional(),
+  OR: z.lazy(() => DatasetScalarWhereInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => DatasetScalarWhereInputSchema),z.lazy(() => DatasetScalarWhereInputSchema).array() ]).optional(),
+  id: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  name: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  workspaceId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+}).strict();
+
 export const StepCreateWithoutFormInputSchema: z.ZodType<Prisma.StepCreateWithoutFormInput> = z.object({
   id: z.string().uuid().optional(),
   title: z.string().optional().nullable(),
@@ -4816,7 +5995,8 @@ export const WorkspaceCreateWithoutFormsInputSchema: z.ZodType<Prisma.WorkspaceC
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
   members: z.lazy(() => WorkspaceMembershipCreateNestedManyWithoutWorkspaceInputSchema).optional(),
-  organization: z.lazy(() => OrganizationCreateNestedOneWithoutWorkspacesInputSchema)
+  organization: z.lazy(() => OrganizationCreateNestedOneWithoutWorkspacesInputSchema),
+  datasets: z.lazy(() => DatasetCreateNestedManyWithoutWorkspaceInputSchema).optional()
 }).strict();
 
 export const WorkspaceUncheckedCreateWithoutFormsInputSchema: z.ZodType<Prisma.WorkspaceUncheckedCreateWithoutFormsInput> = z.object({
@@ -4826,7 +6006,8 @@ export const WorkspaceUncheckedCreateWithoutFormsInputSchema: z.ZodType<Prisma.W
   organizationId: z.string(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
-  members: z.lazy(() => WorkspaceMembershipUncheckedCreateNestedManyWithoutWorkspaceInputSchema).optional()
+  members: z.lazy(() => WorkspaceMembershipUncheckedCreateNestedManyWithoutWorkspaceInputSchema).optional(),
+  datasets: z.lazy(() => DatasetUncheckedCreateNestedManyWithoutWorkspaceInputSchema).optional()
 }).strict();
 
 export const WorkspaceCreateOrConnectWithoutFormsInputSchema: z.ZodType<Prisma.WorkspaceCreateOrConnectWithoutFormsInput> = z.object({
@@ -4994,7 +6175,8 @@ export const WorkspaceUpdateWithoutFormsInputSchema: z.ZodType<Prisma.WorkspaceU
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   members: z.lazy(() => WorkspaceMembershipUpdateManyWithoutWorkspaceNestedInputSchema).optional(),
-  organization: z.lazy(() => OrganizationUpdateOneRequiredWithoutWorkspacesNestedInputSchema).optional()
+  organization: z.lazy(() => OrganizationUpdateOneRequiredWithoutWorkspacesNestedInputSchema).optional(),
+  datasets: z.lazy(() => DatasetUpdateManyWithoutWorkspaceNestedInputSchema).optional()
 }).strict();
 
 export const WorkspaceUncheckedUpdateWithoutFormsInputSchema: z.ZodType<Prisma.WorkspaceUncheckedUpdateWithoutFormsInput> = z.object({
@@ -5004,7 +6186,8 @@ export const WorkspaceUncheckedUpdateWithoutFormsInputSchema: z.ZodType<Prisma.W
   organizationId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
-  members: z.lazy(() => WorkspaceMembershipUncheckedUpdateManyWithoutWorkspaceNestedInputSchema).optional()
+  members: z.lazy(() => WorkspaceMembershipUncheckedUpdateManyWithoutWorkspaceNestedInputSchema).optional(),
+  datasets: z.lazy(() => DatasetUncheckedUpdateManyWithoutWorkspaceNestedInputSchema).optional()
 }).strict();
 
 export const FormSubmissionUpsertWithWhereUniqueWithoutFormInputSchema: z.ZodType<Prisma.FormSubmissionUpsertWithWhereUniqueWithoutFormInput> = z.object({
@@ -5840,6 +7023,406 @@ export const LocationResponseUncheckedUpdateWithoutLocationInputSchema: z.ZodTyp
   stepId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
+export const ColumnCreateWithoutDatasetInputSchema: z.ZodType<Prisma.ColumnCreateWithoutDatasetInput> = z.object({
+  name: z.string(),
+  dataType: z.lazy(() => ColumnTypeSchema),
+  cellValues: z.lazy(() => CellValueCreateNestedManyWithoutColumnInputSchema).optional()
+}).strict();
+
+export const ColumnUncheckedCreateWithoutDatasetInputSchema: z.ZodType<Prisma.ColumnUncheckedCreateWithoutDatasetInput> = z.object({
+  id: z.number().int().optional(),
+  name: z.string(),
+  dataType: z.lazy(() => ColumnTypeSchema),
+  cellValues: z.lazy(() => CellValueUncheckedCreateNestedManyWithoutColumnInputSchema).optional()
+}).strict();
+
+export const ColumnCreateOrConnectWithoutDatasetInputSchema: z.ZodType<Prisma.ColumnCreateOrConnectWithoutDatasetInput> = z.object({
+  where: z.lazy(() => ColumnWhereUniqueInputSchema),
+  create: z.union([ z.lazy(() => ColumnCreateWithoutDatasetInputSchema),z.lazy(() => ColumnUncheckedCreateWithoutDatasetInputSchema) ]),
+}).strict();
+
+export const ColumnCreateManyDatasetInputEnvelopeSchema: z.ZodType<Prisma.ColumnCreateManyDatasetInputEnvelope> = z.object({
+  data: z.union([ z.lazy(() => ColumnCreateManyDatasetInputSchema),z.lazy(() => ColumnCreateManyDatasetInputSchema).array() ]),
+  skipDuplicates: z.boolean().optional()
+}).strict();
+
+export const RowCreateWithoutDatasetInputSchema: z.ZodType<Prisma.RowCreateWithoutDatasetInput> = z.object({
+  cellValues: z.lazy(() => CellValueCreateNestedManyWithoutRowInputSchema).optional()
+}).strict();
+
+export const RowUncheckedCreateWithoutDatasetInputSchema: z.ZodType<Prisma.RowUncheckedCreateWithoutDatasetInput> = z.object({
+  id: z.number().int().optional(),
+  cellValues: z.lazy(() => CellValueUncheckedCreateNestedManyWithoutRowInputSchema).optional()
+}).strict();
+
+export const RowCreateOrConnectWithoutDatasetInputSchema: z.ZodType<Prisma.RowCreateOrConnectWithoutDatasetInput> = z.object({
+  where: z.lazy(() => RowWhereUniqueInputSchema),
+  create: z.union([ z.lazy(() => RowCreateWithoutDatasetInputSchema),z.lazy(() => RowUncheckedCreateWithoutDatasetInputSchema) ]),
+}).strict();
+
+export const RowCreateManyDatasetInputEnvelopeSchema: z.ZodType<Prisma.RowCreateManyDatasetInputEnvelope> = z.object({
+  data: z.union([ z.lazy(() => RowCreateManyDatasetInputSchema),z.lazy(() => RowCreateManyDatasetInputSchema).array() ]),
+  skipDuplicates: z.boolean().optional()
+}).strict();
+
+export const WorkspaceCreateWithoutDatasetsInputSchema: z.ZodType<Prisma.WorkspaceCreateWithoutDatasetsInput> = z.object({
+  id: z.string().uuid().optional(),
+  name: z.string(),
+  slug: z.string(),
+  createdAt: z.coerce.date().optional(),
+  updatedAt: z.coerce.date().optional(),
+  members: z.lazy(() => WorkspaceMembershipCreateNestedManyWithoutWorkspaceInputSchema).optional(),
+  organization: z.lazy(() => OrganizationCreateNestedOneWithoutWorkspacesInputSchema),
+  forms: z.lazy(() => FormCreateNestedManyWithoutWorkspaceInputSchema).optional()
+}).strict();
+
+export const WorkspaceUncheckedCreateWithoutDatasetsInputSchema: z.ZodType<Prisma.WorkspaceUncheckedCreateWithoutDatasetsInput> = z.object({
+  id: z.string().uuid().optional(),
+  name: z.string(),
+  slug: z.string(),
+  organizationId: z.string(),
+  createdAt: z.coerce.date().optional(),
+  updatedAt: z.coerce.date().optional(),
+  members: z.lazy(() => WorkspaceMembershipUncheckedCreateNestedManyWithoutWorkspaceInputSchema).optional(),
+  forms: z.lazy(() => FormUncheckedCreateNestedManyWithoutWorkspaceInputSchema).optional()
+}).strict();
+
+export const WorkspaceCreateOrConnectWithoutDatasetsInputSchema: z.ZodType<Prisma.WorkspaceCreateOrConnectWithoutDatasetsInput> = z.object({
+  where: z.lazy(() => WorkspaceWhereUniqueInputSchema),
+  create: z.union([ z.lazy(() => WorkspaceCreateWithoutDatasetsInputSchema),z.lazy(() => WorkspaceUncheckedCreateWithoutDatasetsInputSchema) ]),
+}).strict();
+
+export const ColumnUpsertWithWhereUniqueWithoutDatasetInputSchema: z.ZodType<Prisma.ColumnUpsertWithWhereUniqueWithoutDatasetInput> = z.object({
+  where: z.lazy(() => ColumnWhereUniqueInputSchema),
+  update: z.union([ z.lazy(() => ColumnUpdateWithoutDatasetInputSchema),z.lazy(() => ColumnUncheckedUpdateWithoutDatasetInputSchema) ]),
+  create: z.union([ z.lazy(() => ColumnCreateWithoutDatasetInputSchema),z.lazy(() => ColumnUncheckedCreateWithoutDatasetInputSchema) ]),
+}).strict();
+
+export const ColumnUpdateWithWhereUniqueWithoutDatasetInputSchema: z.ZodType<Prisma.ColumnUpdateWithWhereUniqueWithoutDatasetInput> = z.object({
+  where: z.lazy(() => ColumnWhereUniqueInputSchema),
+  data: z.union([ z.lazy(() => ColumnUpdateWithoutDatasetInputSchema),z.lazy(() => ColumnUncheckedUpdateWithoutDatasetInputSchema) ]),
+}).strict();
+
+export const ColumnUpdateManyWithWhereWithoutDatasetInputSchema: z.ZodType<Prisma.ColumnUpdateManyWithWhereWithoutDatasetInput> = z.object({
+  where: z.lazy(() => ColumnScalarWhereInputSchema),
+  data: z.union([ z.lazy(() => ColumnUpdateManyMutationInputSchema),z.lazy(() => ColumnUncheckedUpdateManyWithoutDatasetInputSchema) ]),
+}).strict();
+
+export const ColumnScalarWhereInputSchema: z.ZodType<Prisma.ColumnScalarWhereInput> = z.object({
+  AND: z.union([ z.lazy(() => ColumnScalarWhereInputSchema),z.lazy(() => ColumnScalarWhereInputSchema).array() ]).optional(),
+  OR: z.lazy(() => ColumnScalarWhereInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => ColumnScalarWhereInputSchema),z.lazy(() => ColumnScalarWhereInputSchema).array() ]).optional(),
+  id: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
+  datasetId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  name: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  dataType: z.union([ z.lazy(() => EnumColumnTypeFilterSchema),z.lazy(() => ColumnTypeSchema) ]).optional(),
+}).strict();
+
+export const RowUpsertWithWhereUniqueWithoutDatasetInputSchema: z.ZodType<Prisma.RowUpsertWithWhereUniqueWithoutDatasetInput> = z.object({
+  where: z.lazy(() => RowWhereUniqueInputSchema),
+  update: z.union([ z.lazy(() => RowUpdateWithoutDatasetInputSchema),z.lazy(() => RowUncheckedUpdateWithoutDatasetInputSchema) ]),
+  create: z.union([ z.lazy(() => RowCreateWithoutDatasetInputSchema),z.lazy(() => RowUncheckedCreateWithoutDatasetInputSchema) ]),
+}).strict();
+
+export const RowUpdateWithWhereUniqueWithoutDatasetInputSchema: z.ZodType<Prisma.RowUpdateWithWhereUniqueWithoutDatasetInput> = z.object({
+  where: z.lazy(() => RowWhereUniqueInputSchema),
+  data: z.union([ z.lazy(() => RowUpdateWithoutDatasetInputSchema),z.lazy(() => RowUncheckedUpdateWithoutDatasetInputSchema) ]),
+}).strict();
+
+export const RowUpdateManyWithWhereWithoutDatasetInputSchema: z.ZodType<Prisma.RowUpdateManyWithWhereWithoutDatasetInput> = z.object({
+  where: z.lazy(() => RowScalarWhereInputSchema),
+  data: z.union([ z.lazy(() => RowUpdateManyMutationInputSchema),z.lazy(() => RowUncheckedUpdateManyWithoutDatasetInputSchema) ]),
+}).strict();
+
+export const RowScalarWhereInputSchema: z.ZodType<Prisma.RowScalarWhereInput> = z.object({
+  AND: z.union([ z.lazy(() => RowScalarWhereInputSchema),z.lazy(() => RowScalarWhereInputSchema).array() ]).optional(),
+  OR: z.lazy(() => RowScalarWhereInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => RowScalarWhereInputSchema),z.lazy(() => RowScalarWhereInputSchema).array() ]).optional(),
+  id: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
+  datasetId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+}).strict();
+
+export const WorkspaceUpsertWithoutDatasetsInputSchema: z.ZodType<Prisma.WorkspaceUpsertWithoutDatasetsInput> = z.object({
+  update: z.union([ z.lazy(() => WorkspaceUpdateWithoutDatasetsInputSchema),z.lazy(() => WorkspaceUncheckedUpdateWithoutDatasetsInputSchema) ]),
+  create: z.union([ z.lazy(() => WorkspaceCreateWithoutDatasetsInputSchema),z.lazy(() => WorkspaceUncheckedCreateWithoutDatasetsInputSchema) ]),
+  where: z.lazy(() => WorkspaceWhereInputSchema).optional()
+}).strict();
+
+export const WorkspaceUpdateToOneWithWhereWithoutDatasetsInputSchema: z.ZodType<Prisma.WorkspaceUpdateToOneWithWhereWithoutDatasetsInput> = z.object({
+  where: z.lazy(() => WorkspaceWhereInputSchema).optional(),
+  data: z.union([ z.lazy(() => WorkspaceUpdateWithoutDatasetsInputSchema),z.lazy(() => WorkspaceUncheckedUpdateWithoutDatasetsInputSchema) ]),
+}).strict();
+
+export const WorkspaceUpdateWithoutDatasetsInputSchema: z.ZodType<Prisma.WorkspaceUpdateWithoutDatasetsInput> = z.object({
+  id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  slug: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  members: z.lazy(() => WorkspaceMembershipUpdateManyWithoutWorkspaceNestedInputSchema).optional(),
+  organization: z.lazy(() => OrganizationUpdateOneRequiredWithoutWorkspacesNestedInputSchema).optional(),
+  forms: z.lazy(() => FormUpdateManyWithoutWorkspaceNestedInputSchema).optional()
+}).strict();
+
+export const WorkspaceUncheckedUpdateWithoutDatasetsInputSchema: z.ZodType<Prisma.WorkspaceUncheckedUpdateWithoutDatasetsInput> = z.object({
+  id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  slug: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  organizationId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  members: z.lazy(() => WorkspaceMembershipUncheckedUpdateManyWithoutWorkspaceNestedInputSchema).optional(),
+  forms: z.lazy(() => FormUncheckedUpdateManyWithoutWorkspaceNestedInputSchema).optional()
+}).strict();
+
+export const DatasetCreateWithoutColumnsInputSchema: z.ZodType<Prisma.DatasetCreateWithoutColumnsInput> = z.object({
+  id: z.string().uuid().optional(),
+  name: z.string(),
+  rows: z.lazy(() => RowCreateNestedManyWithoutDatasetInputSchema).optional(),
+  workspace: z.lazy(() => WorkspaceCreateNestedOneWithoutDatasetsInputSchema)
+}).strict();
+
+export const DatasetUncheckedCreateWithoutColumnsInputSchema: z.ZodType<Prisma.DatasetUncheckedCreateWithoutColumnsInput> = z.object({
+  id: z.string().uuid().optional(),
+  name: z.string(),
+  workspaceId: z.string(),
+  rows: z.lazy(() => RowUncheckedCreateNestedManyWithoutDatasetInputSchema).optional()
+}).strict();
+
+export const DatasetCreateOrConnectWithoutColumnsInputSchema: z.ZodType<Prisma.DatasetCreateOrConnectWithoutColumnsInput> = z.object({
+  where: z.lazy(() => DatasetWhereUniqueInputSchema),
+  create: z.union([ z.lazy(() => DatasetCreateWithoutColumnsInputSchema),z.lazy(() => DatasetUncheckedCreateWithoutColumnsInputSchema) ]),
+}).strict();
+
+export const CellValueCreateWithoutColumnInputSchema: z.ZodType<Prisma.CellValueCreateWithoutColumnInput> = z.object({
+  value: z.string(),
+  row: z.lazy(() => RowCreateNestedOneWithoutCellValuesInputSchema)
+}).strict();
+
+export const CellValueUncheckedCreateWithoutColumnInputSchema: z.ZodType<Prisma.CellValueUncheckedCreateWithoutColumnInput> = z.object({
+  id: z.number().int().optional(),
+  rowId: z.number().int(),
+  value: z.string()
+}).strict();
+
+export const CellValueCreateOrConnectWithoutColumnInputSchema: z.ZodType<Prisma.CellValueCreateOrConnectWithoutColumnInput> = z.object({
+  where: z.lazy(() => CellValueWhereUniqueInputSchema),
+  create: z.union([ z.lazy(() => CellValueCreateWithoutColumnInputSchema),z.lazy(() => CellValueUncheckedCreateWithoutColumnInputSchema) ]),
+}).strict();
+
+export const CellValueCreateManyColumnInputEnvelopeSchema: z.ZodType<Prisma.CellValueCreateManyColumnInputEnvelope> = z.object({
+  data: z.union([ z.lazy(() => CellValueCreateManyColumnInputSchema),z.lazy(() => CellValueCreateManyColumnInputSchema).array() ]),
+  skipDuplicates: z.boolean().optional()
+}).strict();
+
+export const DatasetUpsertWithoutColumnsInputSchema: z.ZodType<Prisma.DatasetUpsertWithoutColumnsInput> = z.object({
+  update: z.union([ z.lazy(() => DatasetUpdateWithoutColumnsInputSchema),z.lazy(() => DatasetUncheckedUpdateWithoutColumnsInputSchema) ]),
+  create: z.union([ z.lazy(() => DatasetCreateWithoutColumnsInputSchema),z.lazy(() => DatasetUncheckedCreateWithoutColumnsInputSchema) ]),
+  where: z.lazy(() => DatasetWhereInputSchema).optional()
+}).strict();
+
+export const DatasetUpdateToOneWithWhereWithoutColumnsInputSchema: z.ZodType<Prisma.DatasetUpdateToOneWithWhereWithoutColumnsInput> = z.object({
+  where: z.lazy(() => DatasetWhereInputSchema).optional(),
+  data: z.union([ z.lazy(() => DatasetUpdateWithoutColumnsInputSchema),z.lazy(() => DatasetUncheckedUpdateWithoutColumnsInputSchema) ]),
+}).strict();
+
+export const DatasetUpdateWithoutColumnsInputSchema: z.ZodType<Prisma.DatasetUpdateWithoutColumnsInput> = z.object({
+  id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  rows: z.lazy(() => RowUpdateManyWithoutDatasetNestedInputSchema).optional(),
+  workspace: z.lazy(() => WorkspaceUpdateOneRequiredWithoutDatasetsNestedInputSchema).optional()
+}).strict();
+
+export const DatasetUncheckedUpdateWithoutColumnsInputSchema: z.ZodType<Prisma.DatasetUncheckedUpdateWithoutColumnsInput> = z.object({
+  id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  workspaceId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  rows: z.lazy(() => RowUncheckedUpdateManyWithoutDatasetNestedInputSchema).optional()
+}).strict();
+
+export const CellValueUpsertWithWhereUniqueWithoutColumnInputSchema: z.ZodType<Prisma.CellValueUpsertWithWhereUniqueWithoutColumnInput> = z.object({
+  where: z.lazy(() => CellValueWhereUniqueInputSchema),
+  update: z.union([ z.lazy(() => CellValueUpdateWithoutColumnInputSchema),z.lazy(() => CellValueUncheckedUpdateWithoutColumnInputSchema) ]),
+  create: z.union([ z.lazy(() => CellValueCreateWithoutColumnInputSchema),z.lazy(() => CellValueUncheckedCreateWithoutColumnInputSchema) ]),
+}).strict();
+
+export const CellValueUpdateWithWhereUniqueWithoutColumnInputSchema: z.ZodType<Prisma.CellValueUpdateWithWhereUniqueWithoutColumnInput> = z.object({
+  where: z.lazy(() => CellValueWhereUniqueInputSchema),
+  data: z.union([ z.lazy(() => CellValueUpdateWithoutColumnInputSchema),z.lazy(() => CellValueUncheckedUpdateWithoutColumnInputSchema) ]),
+}).strict();
+
+export const CellValueUpdateManyWithWhereWithoutColumnInputSchema: z.ZodType<Prisma.CellValueUpdateManyWithWhereWithoutColumnInput> = z.object({
+  where: z.lazy(() => CellValueScalarWhereInputSchema),
+  data: z.union([ z.lazy(() => CellValueUpdateManyMutationInputSchema),z.lazy(() => CellValueUncheckedUpdateManyWithoutColumnInputSchema) ]),
+}).strict();
+
+export const CellValueScalarWhereInputSchema: z.ZodType<Prisma.CellValueScalarWhereInput> = z.object({
+  AND: z.union([ z.lazy(() => CellValueScalarWhereInputSchema),z.lazy(() => CellValueScalarWhereInputSchema).array() ]).optional(),
+  OR: z.lazy(() => CellValueScalarWhereInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => CellValueScalarWhereInputSchema),z.lazy(() => CellValueScalarWhereInputSchema).array() ]).optional(),
+  id: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
+  rowId: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
+  columnId: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
+  value: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+}).strict();
+
+export const DatasetCreateWithoutRowsInputSchema: z.ZodType<Prisma.DatasetCreateWithoutRowsInput> = z.object({
+  id: z.string().uuid().optional(),
+  name: z.string(),
+  columns: z.lazy(() => ColumnCreateNestedManyWithoutDatasetInputSchema).optional(),
+  workspace: z.lazy(() => WorkspaceCreateNestedOneWithoutDatasetsInputSchema)
+}).strict();
+
+export const DatasetUncheckedCreateWithoutRowsInputSchema: z.ZodType<Prisma.DatasetUncheckedCreateWithoutRowsInput> = z.object({
+  id: z.string().uuid().optional(),
+  name: z.string(),
+  workspaceId: z.string(),
+  columns: z.lazy(() => ColumnUncheckedCreateNestedManyWithoutDatasetInputSchema).optional()
+}).strict();
+
+export const DatasetCreateOrConnectWithoutRowsInputSchema: z.ZodType<Prisma.DatasetCreateOrConnectWithoutRowsInput> = z.object({
+  where: z.lazy(() => DatasetWhereUniqueInputSchema),
+  create: z.union([ z.lazy(() => DatasetCreateWithoutRowsInputSchema),z.lazy(() => DatasetUncheckedCreateWithoutRowsInputSchema) ]),
+}).strict();
+
+export const CellValueCreateWithoutRowInputSchema: z.ZodType<Prisma.CellValueCreateWithoutRowInput> = z.object({
+  value: z.string(),
+  column: z.lazy(() => ColumnCreateNestedOneWithoutCellValuesInputSchema)
+}).strict();
+
+export const CellValueUncheckedCreateWithoutRowInputSchema: z.ZodType<Prisma.CellValueUncheckedCreateWithoutRowInput> = z.object({
+  id: z.number().int().optional(),
+  columnId: z.number().int(),
+  value: z.string()
+}).strict();
+
+export const CellValueCreateOrConnectWithoutRowInputSchema: z.ZodType<Prisma.CellValueCreateOrConnectWithoutRowInput> = z.object({
+  where: z.lazy(() => CellValueWhereUniqueInputSchema),
+  create: z.union([ z.lazy(() => CellValueCreateWithoutRowInputSchema),z.lazy(() => CellValueUncheckedCreateWithoutRowInputSchema) ]),
+}).strict();
+
+export const CellValueCreateManyRowInputEnvelopeSchema: z.ZodType<Prisma.CellValueCreateManyRowInputEnvelope> = z.object({
+  data: z.union([ z.lazy(() => CellValueCreateManyRowInputSchema),z.lazy(() => CellValueCreateManyRowInputSchema).array() ]),
+  skipDuplicates: z.boolean().optional()
+}).strict();
+
+export const DatasetUpsertWithoutRowsInputSchema: z.ZodType<Prisma.DatasetUpsertWithoutRowsInput> = z.object({
+  update: z.union([ z.lazy(() => DatasetUpdateWithoutRowsInputSchema),z.lazy(() => DatasetUncheckedUpdateWithoutRowsInputSchema) ]),
+  create: z.union([ z.lazy(() => DatasetCreateWithoutRowsInputSchema),z.lazy(() => DatasetUncheckedCreateWithoutRowsInputSchema) ]),
+  where: z.lazy(() => DatasetWhereInputSchema).optional()
+}).strict();
+
+export const DatasetUpdateToOneWithWhereWithoutRowsInputSchema: z.ZodType<Prisma.DatasetUpdateToOneWithWhereWithoutRowsInput> = z.object({
+  where: z.lazy(() => DatasetWhereInputSchema).optional(),
+  data: z.union([ z.lazy(() => DatasetUpdateWithoutRowsInputSchema),z.lazy(() => DatasetUncheckedUpdateWithoutRowsInputSchema) ]),
+}).strict();
+
+export const DatasetUpdateWithoutRowsInputSchema: z.ZodType<Prisma.DatasetUpdateWithoutRowsInput> = z.object({
+  id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  columns: z.lazy(() => ColumnUpdateManyWithoutDatasetNestedInputSchema).optional(),
+  workspace: z.lazy(() => WorkspaceUpdateOneRequiredWithoutDatasetsNestedInputSchema).optional()
+}).strict();
+
+export const DatasetUncheckedUpdateWithoutRowsInputSchema: z.ZodType<Prisma.DatasetUncheckedUpdateWithoutRowsInput> = z.object({
+  id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  workspaceId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  columns: z.lazy(() => ColumnUncheckedUpdateManyWithoutDatasetNestedInputSchema).optional()
+}).strict();
+
+export const CellValueUpsertWithWhereUniqueWithoutRowInputSchema: z.ZodType<Prisma.CellValueUpsertWithWhereUniqueWithoutRowInput> = z.object({
+  where: z.lazy(() => CellValueWhereUniqueInputSchema),
+  update: z.union([ z.lazy(() => CellValueUpdateWithoutRowInputSchema),z.lazy(() => CellValueUncheckedUpdateWithoutRowInputSchema) ]),
+  create: z.union([ z.lazy(() => CellValueCreateWithoutRowInputSchema),z.lazy(() => CellValueUncheckedCreateWithoutRowInputSchema) ]),
+}).strict();
+
+export const CellValueUpdateWithWhereUniqueWithoutRowInputSchema: z.ZodType<Prisma.CellValueUpdateWithWhereUniqueWithoutRowInput> = z.object({
+  where: z.lazy(() => CellValueWhereUniqueInputSchema),
+  data: z.union([ z.lazy(() => CellValueUpdateWithoutRowInputSchema),z.lazy(() => CellValueUncheckedUpdateWithoutRowInputSchema) ]),
+}).strict();
+
+export const CellValueUpdateManyWithWhereWithoutRowInputSchema: z.ZodType<Prisma.CellValueUpdateManyWithWhereWithoutRowInput> = z.object({
+  where: z.lazy(() => CellValueScalarWhereInputSchema),
+  data: z.union([ z.lazy(() => CellValueUpdateManyMutationInputSchema),z.lazy(() => CellValueUncheckedUpdateManyWithoutRowInputSchema) ]),
+}).strict();
+
+export const ColumnCreateWithoutCellValuesInputSchema: z.ZodType<Prisma.ColumnCreateWithoutCellValuesInput> = z.object({
+  name: z.string(),
+  dataType: z.lazy(() => ColumnTypeSchema),
+  dataset: z.lazy(() => DatasetCreateNestedOneWithoutColumnsInputSchema)
+}).strict();
+
+export const ColumnUncheckedCreateWithoutCellValuesInputSchema: z.ZodType<Prisma.ColumnUncheckedCreateWithoutCellValuesInput> = z.object({
+  id: z.number().int().optional(),
+  datasetId: z.string(),
+  name: z.string(),
+  dataType: z.lazy(() => ColumnTypeSchema)
+}).strict();
+
+export const ColumnCreateOrConnectWithoutCellValuesInputSchema: z.ZodType<Prisma.ColumnCreateOrConnectWithoutCellValuesInput> = z.object({
+  where: z.lazy(() => ColumnWhereUniqueInputSchema),
+  create: z.union([ z.lazy(() => ColumnCreateWithoutCellValuesInputSchema),z.lazy(() => ColumnUncheckedCreateWithoutCellValuesInputSchema) ]),
+}).strict();
+
+export const RowCreateWithoutCellValuesInputSchema: z.ZodType<Prisma.RowCreateWithoutCellValuesInput> = z.object({
+  dataset: z.lazy(() => DatasetCreateNestedOneWithoutRowsInputSchema)
+}).strict();
+
+export const RowUncheckedCreateWithoutCellValuesInputSchema: z.ZodType<Prisma.RowUncheckedCreateWithoutCellValuesInput> = z.object({
+  id: z.number().int().optional(),
+  datasetId: z.string()
+}).strict();
+
+export const RowCreateOrConnectWithoutCellValuesInputSchema: z.ZodType<Prisma.RowCreateOrConnectWithoutCellValuesInput> = z.object({
+  where: z.lazy(() => RowWhereUniqueInputSchema),
+  create: z.union([ z.lazy(() => RowCreateWithoutCellValuesInputSchema),z.lazy(() => RowUncheckedCreateWithoutCellValuesInputSchema) ]),
+}).strict();
+
+export const ColumnUpsertWithoutCellValuesInputSchema: z.ZodType<Prisma.ColumnUpsertWithoutCellValuesInput> = z.object({
+  update: z.union([ z.lazy(() => ColumnUpdateWithoutCellValuesInputSchema),z.lazy(() => ColumnUncheckedUpdateWithoutCellValuesInputSchema) ]),
+  create: z.union([ z.lazy(() => ColumnCreateWithoutCellValuesInputSchema),z.lazy(() => ColumnUncheckedCreateWithoutCellValuesInputSchema) ]),
+  where: z.lazy(() => ColumnWhereInputSchema).optional()
+}).strict();
+
+export const ColumnUpdateToOneWithWhereWithoutCellValuesInputSchema: z.ZodType<Prisma.ColumnUpdateToOneWithWhereWithoutCellValuesInput> = z.object({
+  where: z.lazy(() => ColumnWhereInputSchema).optional(),
+  data: z.union([ z.lazy(() => ColumnUpdateWithoutCellValuesInputSchema),z.lazy(() => ColumnUncheckedUpdateWithoutCellValuesInputSchema) ]),
+}).strict();
+
+export const ColumnUpdateWithoutCellValuesInputSchema: z.ZodType<Prisma.ColumnUpdateWithoutCellValuesInput> = z.object({
+  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  dataType: z.union([ z.lazy(() => ColumnTypeSchema),z.lazy(() => EnumColumnTypeFieldUpdateOperationsInputSchema) ]).optional(),
+  dataset: z.lazy(() => DatasetUpdateOneRequiredWithoutColumnsNestedInputSchema).optional()
+}).strict();
+
+export const ColumnUncheckedUpdateWithoutCellValuesInputSchema: z.ZodType<Prisma.ColumnUncheckedUpdateWithoutCellValuesInput> = z.object({
+  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  datasetId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  dataType: z.union([ z.lazy(() => ColumnTypeSchema),z.lazy(() => EnumColumnTypeFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const RowUpsertWithoutCellValuesInputSchema: z.ZodType<Prisma.RowUpsertWithoutCellValuesInput> = z.object({
+  update: z.union([ z.lazy(() => RowUpdateWithoutCellValuesInputSchema),z.lazy(() => RowUncheckedUpdateWithoutCellValuesInputSchema) ]),
+  create: z.union([ z.lazy(() => RowCreateWithoutCellValuesInputSchema),z.lazy(() => RowUncheckedCreateWithoutCellValuesInputSchema) ]),
+  where: z.lazy(() => RowWhereInputSchema).optional()
+}).strict();
+
+export const RowUpdateToOneWithWhereWithoutCellValuesInputSchema: z.ZodType<Prisma.RowUpdateToOneWithWhereWithoutCellValuesInput> = z.object({
+  where: z.lazy(() => RowWhereInputSchema).optional(),
+  data: z.union([ z.lazy(() => RowUpdateWithoutCellValuesInputSchema),z.lazy(() => RowUncheckedUpdateWithoutCellValuesInputSchema) ]),
+}).strict();
+
+export const RowUpdateWithoutCellValuesInputSchema: z.ZodType<Prisma.RowUpdateWithoutCellValuesInput> = z.object({
+  dataset: z.lazy(() => DatasetUpdateOneRequiredWithoutRowsNestedInputSchema).optional()
+}).strict();
+
+export const RowUncheckedUpdateWithoutCellValuesInputSchema: z.ZodType<Prisma.RowUncheckedUpdateWithoutCellValuesInput> = z.object({
+  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  datasetId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
 export const OrganizationMembershipCreateManyUserInputSchema: z.ZodType<Prisma.OrganizationMembershipCreateManyUserInput> = z.object({
   id: z.string(),
   organizationId: z.string(),
@@ -5943,7 +7526,8 @@ export const WorkspaceUpdateWithoutOrganizationInputSchema: z.ZodType<Prisma.Wor
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   members: z.lazy(() => WorkspaceMembershipUpdateManyWithoutWorkspaceNestedInputSchema).optional(),
-  forms: z.lazy(() => FormUpdateManyWithoutWorkspaceNestedInputSchema).optional()
+  forms: z.lazy(() => FormUpdateManyWithoutWorkspaceNestedInputSchema).optional(),
+  datasets: z.lazy(() => DatasetUpdateManyWithoutWorkspaceNestedInputSchema).optional()
 }).strict();
 
 export const WorkspaceUncheckedUpdateWithoutOrganizationInputSchema: z.ZodType<Prisma.WorkspaceUncheckedUpdateWithoutOrganizationInput> = z.object({
@@ -5953,7 +7537,8 @@ export const WorkspaceUncheckedUpdateWithoutOrganizationInputSchema: z.ZodType<P
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   members: z.lazy(() => WorkspaceMembershipUncheckedUpdateManyWithoutWorkspaceNestedInputSchema).optional(),
-  forms: z.lazy(() => FormUncheckedUpdateManyWithoutWorkspaceNestedInputSchema).optional()
+  forms: z.lazy(() => FormUncheckedUpdateManyWithoutWorkspaceNestedInputSchema).optional(),
+  datasets: z.lazy(() => DatasetUncheckedUpdateManyWithoutWorkspaceNestedInputSchema).optional()
 }).strict();
 
 export const WorkspaceUncheckedUpdateManyWithoutOrganizationInputSchema: z.ZodType<Prisma.WorkspaceUncheckedUpdateManyWithoutOrganizationInput> = z.object({
@@ -5982,6 +7567,11 @@ export const FormCreateManyWorkspaceInputSchema: z.ZodType<Prisma.FormCreateMany
   version: z.number().int().optional().nullable(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional()
+}).strict();
+
+export const DatasetCreateManyWorkspaceInputSchema: z.ZodType<Prisma.DatasetCreateManyWorkspaceInput> = z.object({
+  id: z.string().uuid().optional(),
+  name: z.string()
 }).strict();
 
 export const WorkspaceMembershipUpdateWithoutWorkspaceInputSchema: z.ZodType<Prisma.WorkspaceMembershipUpdateWithoutWorkspaceInput> = z.object({
@@ -6048,6 +7638,25 @@ export const FormUncheckedUpdateManyWithoutWorkspaceInputSchema: z.ZodType<Prism
   version: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const DatasetUpdateWithoutWorkspaceInputSchema: z.ZodType<Prisma.DatasetUpdateWithoutWorkspaceInput> = z.object({
+  id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  columns: z.lazy(() => ColumnUpdateManyWithoutDatasetNestedInputSchema).optional(),
+  rows: z.lazy(() => RowUpdateManyWithoutDatasetNestedInputSchema).optional()
+}).strict();
+
+export const DatasetUncheckedUpdateWithoutWorkspaceInputSchema: z.ZodType<Prisma.DatasetUncheckedUpdateWithoutWorkspaceInput> = z.object({
+  id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  columns: z.lazy(() => ColumnUncheckedUpdateManyWithoutDatasetNestedInputSchema).optional(),
+  rows: z.lazy(() => RowUncheckedUpdateManyWithoutDatasetNestedInputSchema).optional()
+}).strict();
+
+export const DatasetUncheckedUpdateManyWithoutWorkspaceInputSchema: z.ZodType<Prisma.DatasetUncheckedUpdateManyWithoutWorkspaceInput> = z.object({
+  id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const StepCreateManyFormInputSchema: z.ZodType<Prisma.StepCreateManyFormInput> = z.object({
@@ -6306,6 +7915,94 @@ export const LocationResponseUncheckedUpdateManyWithoutFormSubmissionInputSchema
   blockNoteId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   locationId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   stepId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const ColumnCreateManyDatasetInputSchema: z.ZodType<Prisma.ColumnCreateManyDatasetInput> = z.object({
+  id: z.number().int().optional(),
+  name: z.string(),
+  dataType: z.lazy(() => ColumnTypeSchema)
+}).strict();
+
+export const RowCreateManyDatasetInputSchema: z.ZodType<Prisma.RowCreateManyDatasetInput> = z.object({
+  id: z.number().int().optional()
+}).strict();
+
+export const ColumnUpdateWithoutDatasetInputSchema: z.ZodType<Prisma.ColumnUpdateWithoutDatasetInput> = z.object({
+  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  dataType: z.union([ z.lazy(() => ColumnTypeSchema),z.lazy(() => EnumColumnTypeFieldUpdateOperationsInputSchema) ]).optional(),
+  cellValues: z.lazy(() => CellValueUpdateManyWithoutColumnNestedInputSchema).optional()
+}).strict();
+
+export const ColumnUncheckedUpdateWithoutDatasetInputSchema: z.ZodType<Prisma.ColumnUncheckedUpdateWithoutDatasetInput> = z.object({
+  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  dataType: z.union([ z.lazy(() => ColumnTypeSchema),z.lazy(() => EnumColumnTypeFieldUpdateOperationsInputSchema) ]).optional(),
+  cellValues: z.lazy(() => CellValueUncheckedUpdateManyWithoutColumnNestedInputSchema).optional()
+}).strict();
+
+export const ColumnUncheckedUpdateManyWithoutDatasetInputSchema: z.ZodType<Prisma.ColumnUncheckedUpdateManyWithoutDatasetInput> = z.object({
+  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  dataType: z.union([ z.lazy(() => ColumnTypeSchema),z.lazy(() => EnumColumnTypeFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const RowUpdateWithoutDatasetInputSchema: z.ZodType<Prisma.RowUpdateWithoutDatasetInput> = z.object({
+  cellValues: z.lazy(() => CellValueUpdateManyWithoutRowNestedInputSchema).optional()
+}).strict();
+
+export const RowUncheckedUpdateWithoutDatasetInputSchema: z.ZodType<Prisma.RowUncheckedUpdateWithoutDatasetInput> = z.object({
+  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  cellValues: z.lazy(() => CellValueUncheckedUpdateManyWithoutRowNestedInputSchema).optional()
+}).strict();
+
+export const RowUncheckedUpdateManyWithoutDatasetInputSchema: z.ZodType<Prisma.RowUncheckedUpdateManyWithoutDatasetInput> = z.object({
+  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const CellValueCreateManyColumnInputSchema: z.ZodType<Prisma.CellValueCreateManyColumnInput> = z.object({
+  id: z.number().int().optional(),
+  rowId: z.number().int(),
+  value: z.string()
+}).strict();
+
+export const CellValueUpdateWithoutColumnInputSchema: z.ZodType<Prisma.CellValueUpdateWithoutColumnInput> = z.object({
+  value: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  row: z.lazy(() => RowUpdateOneRequiredWithoutCellValuesNestedInputSchema).optional()
+}).strict();
+
+export const CellValueUncheckedUpdateWithoutColumnInputSchema: z.ZodType<Prisma.CellValueUncheckedUpdateWithoutColumnInput> = z.object({
+  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  rowId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  value: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const CellValueUncheckedUpdateManyWithoutColumnInputSchema: z.ZodType<Prisma.CellValueUncheckedUpdateManyWithoutColumnInput> = z.object({
+  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  rowId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  value: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const CellValueCreateManyRowInputSchema: z.ZodType<Prisma.CellValueCreateManyRowInput> = z.object({
+  id: z.number().int().optional(),
+  columnId: z.number().int(),
+  value: z.string()
+}).strict();
+
+export const CellValueUpdateWithoutRowInputSchema: z.ZodType<Prisma.CellValueUpdateWithoutRowInput> = z.object({
+  value: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  column: z.lazy(() => ColumnUpdateOneRequiredWithoutCellValuesNestedInputSchema).optional()
+}).strict();
+
+export const CellValueUncheckedUpdateWithoutRowInputSchema: z.ZodType<Prisma.CellValueUncheckedUpdateWithoutRowInput> = z.object({
+  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  columnId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  value: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const CellValueUncheckedUpdateManyWithoutRowInputSchema: z.ZodType<Prisma.CellValueUncheckedUpdateManyWithoutRowInput> = z.object({
+  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  columnId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  value: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 /////////////////////////////////////////
@@ -6994,6 +8691,254 @@ export const LocationFindUniqueOrThrowArgsSchema: z.ZodType<Prisma.LocationFindU
   where: LocationWhereUniqueInputSchema,
 }).strict() ;
 
+export const DatasetFindFirstArgsSchema: z.ZodType<Prisma.DatasetFindFirstArgs> = z.object({
+  select: DatasetSelectSchema.optional(),
+  include: DatasetIncludeSchema.optional(),
+  where: DatasetWhereInputSchema.optional(),
+  orderBy: z.union([ DatasetOrderByWithRelationInputSchema.array(),DatasetOrderByWithRelationInputSchema ]).optional(),
+  cursor: DatasetWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+  distinct: z.union([ DatasetScalarFieldEnumSchema,DatasetScalarFieldEnumSchema.array() ]).optional(),
+}).strict() ;
+
+export const DatasetFindFirstOrThrowArgsSchema: z.ZodType<Prisma.DatasetFindFirstOrThrowArgs> = z.object({
+  select: DatasetSelectSchema.optional(),
+  include: DatasetIncludeSchema.optional(),
+  where: DatasetWhereInputSchema.optional(),
+  orderBy: z.union([ DatasetOrderByWithRelationInputSchema.array(),DatasetOrderByWithRelationInputSchema ]).optional(),
+  cursor: DatasetWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+  distinct: z.union([ DatasetScalarFieldEnumSchema,DatasetScalarFieldEnumSchema.array() ]).optional(),
+}).strict() ;
+
+export const DatasetFindManyArgsSchema: z.ZodType<Prisma.DatasetFindManyArgs> = z.object({
+  select: DatasetSelectSchema.optional(),
+  include: DatasetIncludeSchema.optional(),
+  where: DatasetWhereInputSchema.optional(),
+  orderBy: z.union([ DatasetOrderByWithRelationInputSchema.array(),DatasetOrderByWithRelationInputSchema ]).optional(),
+  cursor: DatasetWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+  distinct: z.union([ DatasetScalarFieldEnumSchema,DatasetScalarFieldEnumSchema.array() ]).optional(),
+}).strict() ;
+
+export const DatasetAggregateArgsSchema: z.ZodType<Prisma.DatasetAggregateArgs> = z.object({
+  where: DatasetWhereInputSchema.optional(),
+  orderBy: z.union([ DatasetOrderByWithRelationInputSchema.array(),DatasetOrderByWithRelationInputSchema ]).optional(),
+  cursor: DatasetWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+}).strict() ;
+
+export const DatasetGroupByArgsSchema: z.ZodType<Prisma.DatasetGroupByArgs> = z.object({
+  where: DatasetWhereInputSchema.optional(),
+  orderBy: z.union([ DatasetOrderByWithAggregationInputSchema.array(),DatasetOrderByWithAggregationInputSchema ]).optional(),
+  by: DatasetScalarFieldEnumSchema.array(),
+  having: DatasetScalarWhereWithAggregatesInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+}).strict() ;
+
+export const DatasetFindUniqueArgsSchema: z.ZodType<Prisma.DatasetFindUniqueArgs> = z.object({
+  select: DatasetSelectSchema.optional(),
+  include: DatasetIncludeSchema.optional(),
+  where: DatasetWhereUniqueInputSchema,
+}).strict() ;
+
+export const DatasetFindUniqueOrThrowArgsSchema: z.ZodType<Prisma.DatasetFindUniqueOrThrowArgs> = z.object({
+  select: DatasetSelectSchema.optional(),
+  include: DatasetIncludeSchema.optional(),
+  where: DatasetWhereUniqueInputSchema,
+}).strict() ;
+
+export const ColumnFindFirstArgsSchema: z.ZodType<Prisma.ColumnFindFirstArgs> = z.object({
+  select: ColumnSelectSchema.optional(),
+  include: ColumnIncludeSchema.optional(),
+  where: ColumnWhereInputSchema.optional(),
+  orderBy: z.union([ ColumnOrderByWithRelationInputSchema.array(),ColumnOrderByWithRelationInputSchema ]).optional(),
+  cursor: ColumnWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+  distinct: z.union([ ColumnScalarFieldEnumSchema,ColumnScalarFieldEnumSchema.array() ]).optional(),
+}).strict() ;
+
+export const ColumnFindFirstOrThrowArgsSchema: z.ZodType<Prisma.ColumnFindFirstOrThrowArgs> = z.object({
+  select: ColumnSelectSchema.optional(),
+  include: ColumnIncludeSchema.optional(),
+  where: ColumnWhereInputSchema.optional(),
+  orderBy: z.union([ ColumnOrderByWithRelationInputSchema.array(),ColumnOrderByWithRelationInputSchema ]).optional(),
+  cursor: ColumnWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+  distinct: z.union([ ColumnScalarFieldEnumSchema,ColumnScalarFieldEnumSchema.array() ]).optional(),
+}).strict() ;
+
+export const ColumnFindManyArgsSchema: z.ZodType<Prisma.ColumnFindManyArgs> = z.object({
+  select: ColumnSelectSchema.optional(),
+  include: ColumnIncludeSchema.optional(),
+  where: ColumnWhereInputSchema.optional(),
+  orderBy: z.union([ ColumnOrderByWithRelationInputSchema.array(),ColumnOrderByWithRelationInputSchema ]).optional(),
+  cursor: ColumnWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+  distinct: z.union([ ColumnScalarFieldEnumSchema,ColumnScalarFieldEnumSchema.array() ]).optional(),
+}).strict() ;
+
+export const ColumnAggregateArgsSchema: z.ZodType<Prisma.ColumnAggregateArgs> = z.object({
+  where: ColumnWhereInputSchema.optional(),
+  orderBy: z.union([ ColumnOrderByWithRelationInputSchema.array(),ColumnOrderByWithRelationInputSchema ]).optional(),
+  cursor: ColumnWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+}).strict() ;
+
+export const ColumnGroupByArgsSchema: z.ZodType<Prisma.ColumnGroupByArgs> = z.object({
+  where: ColumnWhereInputSchema.optional(),
+  orderBy: z.union([ ColumnOrderByWithAggregationInputSchema.array(),ColumnOrderByWithAggregationInputSchema ]).optional(),
+  by: ColumnScalarFieldEnumSchema.array(),
+  having: ColumnScalarWhereWithAggregatesInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+}).strict() ;
+
+export const ColumnFindUniqueArgsSchema: z.ZodType<Prisma.ColumnFindUniqueArgs> = z.object({
+  select: ColumnSelectSchema.optional(),
+  include: ColumnIncludeSchema.optional(),
+  where: ColumnWhereUniqueInputSchema,
+}).strict() ;
+
+export const ColumnFindUniqueOrThrowArgsSchema: z.ZodType<Prisma.ColumnFindUniqueOrThrowArgs> = z.object({
+  select: ColumnSelectSchema.optional(),
+  include: ColumnIncludeSchema.optional(),
+  where: ColumnWhereUniqueInputSchema,
+}).strict() ;
+
+export const RowFindFirstArgsSchema: z.ZodType<Prisma.RowFindFirstArgs> = z.object({
+  select: RowSelectSchema.optional(),
+  include: RowIncludeSchema.optional(),
+  where: RowWhereInputSchema.optional(),
+  orderBy: z.union([ RowOrderByWithRelationInputSchema.array(),RowOrderByWithRelationInputSchema ]).optional(),
+  cursor: RowWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+  distinct: z.union([ RowScalarFieldEnumSchema,RowScalarFieldEnumSchema.array() ]).optional(),
+}).strict() ;
+
+export const RowFindFirstOrThrowArgsSchema: z.ZodType<Prisma.RowFindFirstOrThrowArgs> = z.object({
+  select: RowSelectSchema.optional(),
+  include: RowIncludeSchema.optional(),
+  where: RowWhereInputSchema.optional(),
+  orderBy: z.union([ RowOrderByWithRelationInputSchema.array(),RowOrderByWithRelationInputSchema ]).optional(),
+  cursor: RowWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+  distinct: z.union([ RowScalarFieldEnumSchema,RowScalarFieldEnumSchema.array() ]).optional(),
+}).strict() ;
+
+export const RowFindManyArgsSchema: z.ZodType<Prisma.RowFindManyArgs> = z.object({
+  select: RowSelectSchema.optional(),
+  include: RowIncludeSchema.optional(),
+  where: RowWhereInputSchema.optional(),
+  orderBy: z.union([ RowOrderByWithRelationInputSchema.array(),RowOrderByWithRelationInputSchema ]).optional(),
+  cursor: RowWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+  distinct: z.union([ RowScalarFieldEnumSchema,RowScalarFieldEnumSchema.array() ]).optional(),
+}).strict() ;
+
+export const RowAggregateArgsSchema: z.ZodType<Prisma.RowAggregateArgs> = z.object({
+  where: RowWhereInputSchema.optional(),
+  orderBy: z.union([ RowOrderByWithRelationInputSchema.array(),RowOrderByWithRelationInputSchema ]).optional(),
+  cursor: RowWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+}).strict() ;
+
+export const RowGroupByArgsSchema: z.ZodType<Prisma.RowGroupByArgs> = z.object({
+  where: RowWhereInputSchema.optional(),
+  orderBy: z.union([ RowOrderByWithAggregationInputSchema.array(),RowOrderByWithAggregationInputSchema ]).optional(),
+  by: RowScalarFieldEnumSchema.array(),
+  having: RowScalarWhereWithAggregatesInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+}).strict() ;
+
+export const RowFindUniqueArgsSchema: z.ZodType<Prisma.RowFindUniqueArgs> = z.object({
+  select: RowSelectSchema.optional(),
+  include: RowIncludeSchema.optional(),
+  where: RowWhereUniqueInputSchema,
+}).strict() ;
+
+export const RowFindUniqueOrThrowArgsSchema: z.ZodType<Prisma.RowFindUniqueOrThrowArgs> = z.object({
+  select: RowSelectSchema.optional(),
+  include: RowIncludeSchema.optional(),
+  where: RowWhereUniqueInputSchema,
+}).strict() ;
+
+export const CellValueFindFirstArgsSchema: z.ZodType<Prisma.CellValueFindFirstArgs> = z.object({
+  select: CellValueSelectSchema.optional(),
+  include: CellValueIncludeSchema.optional(),
+  where: CellValueWhereInputSchema.optional(),
+  orderBy: z.union([ CellValueOrderByWithRelationInputSchema.array(),CellValueOrderByWithRelationInputSchema ]).optional(),
+  cursor: CellValueWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+  distinct: z.union([ CellValueScalarFieldEnumSchema,CellValueScalarFieldEnumSchema.array() ]).optional(),
+}).strict() ;
+
+export const CellValueFindFirstOrThrowArgsSchema: z.ZodType<Prisma.CellValueFindFirstOrThrowArgs> = z.object({
+  select: CellValueSelectSchema.optional(),
+  include: CellValueIncludeSchema.optional(),
+  where: CellValueWhereInputSchema.optional(),
+  orderBy: z.union([ CellValueOrderByWithRelationInputSchema.array(),CellValueOrderByWithRelationInputSchema ]).optional(),
+  cursor: CellValueWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+  distinct: z.union([ CellValueScalarFieldEnumSchema,CellValueScalarFieldEnumSchema.array() ]).optional(),
+}).strict() ;
+
+export const CellValueFindManyArgsSchema: z.ZodType<Prisma.CellValueFindManyArgs> = z.object({
+  select: CellValueSelectSchema.optional(),
+  include: CellValueIncludeSchema.optional(),
+  where: CellValueWhereInputSchema.optional(),
+  orderBy: z.union([ CellValueOrderByWithRelationInputSchema.array(),CellValueOrderByWithRelationInputSchema ]).optional(),
+  cursor: CellValueWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+  distinct: z.union([ CellValueScalarFieldEnumSchema,CellValueScalarFieldEnumSchema.array() ]).optional(),
+}).strict() ;
+
+export const CellValueAggregateArgsSchema: z.ZodType<Prisma.CellValueAggregateArgs> = z.object({
+  where: CellValueWhereInputSchema.optional(),
+  orderBy: z.union([ CellValueOrderByWithRelationInputSchema.array(),CellValueOrderByWithRelationInputSchema ]).optional(),
+  cursor: CellValueWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+}).strict() ;
+
+export const CellValueGroupByArgsSchema: z.ZodType<Prisma.CellValueGroupByArgs> = z.object({
+  where: CellValueWhereInputSchema.optional(),
+  orderBy: z.union([ CellValueOrderByWithAggregationInputSchema.array(),CellValueOrderByWithAggregationInputSchema ]).optional(),
+  by: CellValueScalarFieldEnumSchema.array(),
+  having: CellValueScalarWhereWithAggregatesInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+}).strict() ;
+
+export const CellValueFindUniqueArgsSchema: z.ZodType<Prisma.CellValueFindUniqueArgs> = z.object({
+  select: CellValueSelectSchema.optional(),
+  include: CellValueIncludeSchema.optional(),
+  where: CellValueWhereUniqueInputSchema,
+}).strict() ;
+
+export const CellValueFindUniqueOrThrowArgsSchema: z.ZodType<Prisma.CellValueFindUniqueOrThrowArgs> = z.object({
+  select: CellValueSelectSchema.optional(),
+  include: CellValueIncludeSchema.optional(),
+  where: CellValueWhereUniqueInputSchema,
+}).strict() ;
+
 export const UserCreateArgsSchema: z.ZodType<Prisma.UserCreateArgs> = z.object({
   select: UserSelectSchema.optional(),
   include: UserIncludeSchema.optional(),
@@ -7424,4 +9369,168 @@ export const LocationUpdateManyArgsSchema: z.ZodType<Prisma.LocationUpdateManyAr
 
 export const LocationDeleteManyArgsSchema: z.ZodType<Prisma.LocationDeleteManyArgs> = z.object({
   where: LocationWhereInputSchema.optional(),
+}).strict() ;
+
+export const DatasetCreateArgsSchema: z.ZodType<Prisma.DatasetCreateArgs> = z.object({
+  select: DatasetSelectSchema.optional(),
+  include: DatasetIncludeSchema.optional(),
+  data: z.union([ DatasetCreateInputSchema,DatasetUncheckedCreateInputSchema ]),
+}).strict() ;
+
+export const DatasetUpsertArgsSchema: z.ZodType<Prisma.DatasetUpsertArgs> = z.object({
+  select: DatasetSelectSchema.optional(),
+  include: DatasetIncludeSchema.optional(),
+  where: DatasetWhereUniqueInputSchema,
+  create: z.union([ DatasetCreateInputSchema,DatasetUncheckedCreateInputSchema ]),
+  update: z.union([ DatasetUpdateInputSchema,DatasetUncheckedUpdateInputSchema ]),
+}).strict() ;
+
+export const DatasetCreateManyArgsSchema: z.ZodType<Prisma.DatasetCreateManyArgs> = z.object({
+  data: z.union([ DatasetCreateManyInputSchema,DatasetCreateManyInputSchema.array() ]),
+  skipDuplicates: z.boolean().optional(),
+}).strict() ;
+
+export const DatasetDeleteArgsSchema: z.ZodType<Prisma.DatasetDeleteArgs> = z.object({
+  select: DatasetSelectSchema.optional(),
+  include: DatasetIncludeSchema.optional(),
+  where: DatasetWhereUniqueInputSchema,
+}).strict() ;
+
+export const DatasetUpdateArgsSchema: z.ZodType<Prisma.DatasetUpdateArgs> = z.object({
+  select: DatasetSelectSchema.optional(),
+  include: DatasetIncludeSchema.optional(),
+  data: z.union([ DatasetUpdateInputSchema,DatasetUncheckedUpdateInputSchema ]),
+  where: DatasetWhereUniqueInputSchema,
+}).strict() ;
+
+export const DatasetUpdateManyArgsSchema: z.ZodType<Prisma.DatasetUpdateManyArgs> = z.object({
+  data: z.union([ DatasetUpdateManyMutationInputSchema,DatasetUncheckedUpdateManyInputSchema ]),
+  where: DatasetWhereInputSchema.optional(),
+}).strict() ;
+
+export const DatasetDeleteManyArgsSchema: z.ZodType<Prisma.DatasetDeleteManyArgs> = z.object({
+  where: DatasetWhereInputSchema.optional(),
+}).strict() ;
+
+export const ColumnCreateArgsSchema: z.ZodType<Prisma.ColumnCreateArgs> = z.object({
+  select: ColumnSelectSchema.optional(),
+  include: ColumnIncludeSchema.optional(),
+  data: z.union([ ColumnCreateInputSchema,ColumnUncheckedCreateInputSchema ]),
+}).strict() ;
+
+export const ColumnUpsertArgsSchema: z.ZodType<Prisma.ColumnUpsertArgs> = z.object({
+  select: ColumnSelectSchema.optional(),
+  include: ColumnIncludeSchema.optional(),
+  where: ColumnWhereUniqueInputSchema,
+  create: z.union([ ColumnCreateInputSchema,ColumnUncheckedCreateInputSchema ]),
+  update: z.union([ ColumnUpdateInputSchema,ColumnUncheckedUpdateInputSchema ]),
+}).strict() ;
+
+export const ColumnCreateManyArgsSchema: z.ZodType<Prisma.ColumnCreateManyArgs> = z.object({
+  data: z.union([ ColumnCreateManyInputSchema,ColumnCreateManyInputSchema.array() ]),
+  skipDuplicates: z.boolean().optional(),
+}).strict() ;
+
+export const ColumnDeleteArgsSchema: z.ZodType<Prisma.ColumnDeleteArgs> = z.object({
+  select: ColumnSelectSchema.optional(),
+  include: ColumnIncludeSchema.optional(),
+  where: ColumnWhereUniqueInputSchema,
+}).strict() ;
+
+export const ColumnUpdateArgsSchema: z.ZodType<Prisma.ColumnUpdateArgs> = z.object({
+  select: ColumnSelectSchema.optional(),
+  include: ColumnIncludeSchema.optional(),
+  data: z.union([ ColumnUpdateInputSchema,ColumnUncheckedUpdateInputSchema ]),
+  where: ColumnWhereUniqueInputSchema,
+}).strict() ;
+
+export const ColumnUpdateManyArgsSchema: z.ZodType<Prisma.ColumnUpdateManyArgs> = z.object({
+  data: z.union([ ColumnUpdateManyMutationInputSchema,ColumnUncheckedUpdateManyInputSchema ]),
+  where: ColumnWhereInputSchema.optional(),
+}).strict() ;
+
+export const ColumnDeleteManyArgsSchema: z.ZodType<Prisma.ColumnDeleteManyArgs> = z.object({
+  where: ColumnWhereInputSchema.optional(),
+}).strict() ;
+
+export const RowCreateArgsSchema: z.ZodType<Prisma.RowCreateArgs> = z.object({
+  select: RowSelectSchema.optional(),
+  include: RowIncludeSchema.optional(),
+  data: z.union([ RowCreateInputSchema,RowUncheckedCreateInputSchema ]),
+}).strict() ;
+
+export const RowUpsertArgsSchema: z.ZodType<Prisma.RowUpsertArgs> = z.object({
+  select: RowSelectSchema.optional(),
+  include: RowIncludeSchema.optional(),
+  where: RowWhereUniqueInputSchema,
+  create: z.union([ RowCreateInputSchema,RowUncheckedCreateInputSchema ]),
+  update: z.union([ RowUpdateInputSchema,RowUncheckedUpdateInputSchema ]),
+}).strict() ;
+
+export const RowCreateManyArgsSchema: z.ZodType<Prisma.RowCreateManyArgs> = z.object({
+  data: z.union([ RowCreateManyInputSchema,RowCreateManyInputSchema.array() ]),
+  skipDuplicates: z.boolean().optional(),
+}).strict() ;
+
+export const RowDeleteArgsSchema: z.ZodType<Prisma.RowDeleteArgs> = z.object({
+  select: RowSelectSchema.optional(),
+  include: RowIncludeSchema.optional(),
+  where: RowWhereUniqueInputSchema,
+}).strict() ;
+
+export const RowUpdateArgsSchema: z.ZodType<Prisma.RowUpdateArgs> = z.object({
+  select: RowSelectSchema.optional(),
+  include: RowIncludeSchema.optional(),
+  data: z.union([ RowUpdateInputSchema,RowUncheckedUpdateInputSchema ]),
+  where: RowWhereUniqueInputSchema,
+}).strict() ;
+
+export const RowUpdateManyArgsSchema: z.ZodType<Prisma.RowUpdateManyArgs> = z.object({
+  data: z.union([ RowUpdateManyMutationInputSchema,RowUncheckedUpdateManyInputSchema ]),
+  where: RowWhereInputSchema.optional(),
+}).strict() ;
+
+export const RowDeleteManyArgsSchema: z.ZodType<Prisma.RowDeleteManyArgs> = z.object({
+  where: RowWhereInputSchema.optional(),
+}).strict() ;
+
+export const CellValueCreateArgsSchema: z.ZodType<Prisma.CellValueCreateArgs> = z.object({
+  select: CellValueSelectSchema.optional(),
+  include: CellValueIncludeSchema.optional(),
+  data: z.union([ CellValueCreateInputSchema,CellValueUncheckedCreateInputSchema ]),
+}).strict() ;
+
+export const CellValueUpsertArgsSchema: z.ZodType<Prisma.CellValueUpsertArgs> = z.object({
+  select: CellValueSelectSchema.optional(),
+  include: CellValueIncludeSchema.optional(),
+  where: CellValueWhereUniqueInputSchema,
+  create: z.union([ CellValueCreateInputSchema,CellValueUncheckedCreateInputSchema ]),
+  update: z.union([ CellValueUpdateInputSchema,CellValueUncheckedUpdateInputSchema ]),
+}).strict() ;
+
+export const CellValueCreateManyArgsSchema: z.ZodType<Prisma.CellValueCreateManyArgs> = z.object({
+  data: z.union([ CellValueCreateManyInputSchema,CellValueCreateManyInputSchema.array() ]),
+  skipDuplicates: z.boolean().optional(),
+}).strict() ;
+
+export const CellValueDeleteArgsSchema: z.ZodType<Prisma.CellValueDeleteArgs> = z.object({
+  select: CellValueSelectSchema.optional(),
+  include: CellValueIncludeSchema.optional(),
+  where: CellValueWhereUniqueInputSchema,
+}).strict() ;
+
+export const CellValueUpdateArgsSchema: z.ZodType<Prisma.CellValueUpdateArgs> = z.object({
+  select: CellValueSelectSchema.optional(),
+  include: CellValueIncludeSchema.optional(),
+  data: z.union([ CellValueUpdateInputSchema,CellValueUncheckedUpdateInputSchema ]),
+  where: CellValueWhereUniqueInputSchema,
+}).strict() ;
+
+export const CellValueUpdateManyArgsSchema: z.ZodType<Prisma.CellValueUpdateManyArgs> = z.object({
+  data: z.union([ CellValueUpdateManyMutationInputSchema,CellValueUncheckedUpdateManyInputSchema ]),
+  where: CellValueWhereInputSchema.optional(),
+}).strict() ;
+
+export const CellValueDeleteManyArgsSchema: z.ZodType<Prisma.CellValueDeleteManyArgs> = z.object({
+  where: CellValueWhereInputSchema.optional(),
 }).strict() ;
