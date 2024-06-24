@@ -225,13 +225,14 @@ model CellValue {
     id       Int    @id @default(autoincrement())
     rowId    Int
     columnId Int
-    value    String
+    value    Json
     column   Column @relation("ColumnCellValues", fields: [columnId], references: [id])
     row      Row    @relation("RowCellValues", fields: [rowId], references: [id])
 }
 
 enum ColumnType {
     STRING
-    NUMBER
+    INT
+    FLOAT
     BOOLEAN
 }
