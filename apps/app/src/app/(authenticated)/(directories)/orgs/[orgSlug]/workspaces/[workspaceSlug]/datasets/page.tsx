@@ -1,9 +1,8 @@
 import Link from "next/link";
-import { format } from "date-fns";
 import { prisma } from "@mapform/db";
-import WorkspaceLayout from "./workspace-layout";
+import WorkspaceLayout from "../workspace-layout";
 
-export default async function WorkspaceForms({
+export default async function WorkspaceDatasets({
   params,
 }: {
   params: { orgSlug: string; workspaceSlug: string };
@@ -16,13 +15,12 @@ export default async function WorkspaceForms({
       },
     },
     include: {
-      forms: {
-        where: {
-          isDraft: true,
-        },
-        include: {
+      datasets: {
+        select: {
+          id: true,
+          name: true,
           _count: {
-            select: { formSubmission: true },
+            select: { rows: true, columns: true },
           },
         },
       },
@@ -41,26 +39,23 @@ export default async function WorkspaceForms({
       workspaceSlug={params.workspaceSlug}
     >
       <ul className="flex flex-wrap gap-4">
-        {workspace.forms.map((form) => (
-          <li className="overflow-hidden rounded-xl border w-72" key={form.id}>
-            <Link href={`/forms/${form.id}`}>
+        {workspace.datasets.map((dataset) => (
+          <li
+            className="overflow-hidden rounded-xl border w-72"
+            key={dataset.id}
+          >
+            <Link href={`/forms/${dataset.id}`}>
               <div className="flex items-center gap-x-4 border-b border-gray-900/5 bg-white p-6">
-                {form.name}
+                {dataset.name}
               </div>
               <dl className="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
                 <div className="flex justify-between gap-x-4 py-3">
-                  <dt className="text-gray-500">Form Submissions</dt>
-                  <dd className="text-gray-700">
-                    {form._count.formSubmission}
-                  </dd>
+                  <dt className="text-gray-500">Columns</dt>
+                  <dd className="text-gray-700">{dataset._count.columns}</dd>
                 </div>
                 <div className="flex justify-between gap-x-4 py-3">
-                  <dt className="text-gray-500">Created</dt>
-                  <dd className="text-gray-700">
-                    <time dateTime={workspace.createdAt.toDateString()}>
-                      {format(form.createdAt, "MMMM do, yyyy")}
-                    </time>
-                  </dd>
+                  <dt className="text-gray-500">Rows</dt>
+                  <dd className="text-gray-700">{dataset._count.rows}</dd>
                 </div>
               </dl>
             </Link>

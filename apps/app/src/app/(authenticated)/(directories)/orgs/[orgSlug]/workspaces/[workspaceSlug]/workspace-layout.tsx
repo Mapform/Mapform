@@ -22,6 +22,10 @@ export default function WorkspaceLayout({
   const tabs = [
     { name: "Forms", href: `/orgs/${orgSlug}/workspaces/${workspaceSlug}` },
     {
+      name: "Datasets",
+      href: `/orgs/${orgSlug}/workspaces/${workspaceSlug}/datasets`,
+    },
+    {
       name: "Settings",
       href: `/orgs/${orgSlug}/workspaces/${workspaceSlug}/settings`,
     },
