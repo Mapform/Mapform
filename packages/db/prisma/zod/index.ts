@@ -1972,11 +1972,21 @@ export const ColumnOrderByWithRelationInputSchema: z.ZodType<Prisma.ColumnOrderB
   cellValues: z.lazy(() => CellValueOrderByRelationAggregateInputSchema).optional()
 }).strict();
 
-export const ColumnWhereUniqueInputSchema: z.ZodType<Prisma.ColumnWhereUniqueInput> = z.object({
-  id: z.number().int()
-})
+export const ColumnWhereUniqueInputSchema: z.ZodType<Prisma.ColumnWhereUniqueInput> = z.union([
+  z.object({
+    id: z.number().int(),
+    datasetId_name: z.lazy(() => ColumnDatasetIdNameCompoundUniqueInputSchema)
+  }),
+  z.object({
+    id: z.number().int(),
+  }),
+  z.object({
+    datasetId_name: z.lazy(() => ColumnDatasetIdNameCompoundUniqueInputSchema),
+  }),
+])
 .and(z.object({
   id: z.number().int().optional(),
+  datasetId_name: z.lazy(() => ColumnDatasetIdNameCompoundUniqueInputSchema).optional(),
   AND: z.union([ z.lazy(() => ColumnWhereInputSchema),z.lazy(() => ColumnWhereInputSchema).array() ]).optional(),
   OR: z.lazy(() => ColumnWhereInputSchema).array().optional(),
   NOT: z.union([ z.lazy(() => ColumnWhereInputSchema),z.lazy(() => ColumnWhereInputSchema).array() ]).optional(),
@@ -3816,6 +3826,11 @@ export const CellValueListRelationFilterSchema: z.ZodType<Prisma.CellValueListRe
 
 export const CellValueOrderByRelationAggregateInputSchema: z.ZodType<Prisma.CellValueOrderByRelationAggregateInput> = z.object({
   _count: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const ColumnDatasetIdNameCompoundUniqueInputSchema: z.ZodType<Prisma.ColumnDatasetIdNameCompoundUniqueInput> = z.object({
+  datasetId: z.string(),
+  name: z.string()
 }).strict();
 
 export const ColumnCountOrderByAggregateInputSchema: z.ZodType<Prisma.ColumnCountOrderByAggregateInput> = z.object({

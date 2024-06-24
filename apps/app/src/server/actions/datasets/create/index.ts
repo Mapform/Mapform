@@ -7,7 +7,16 @@ import { createDatasetSchema } from "./schema";
 
 export const createDataset = authAction(
   createDatasetSchema,
-  async ({ name, workspaceId }) => {
+  async ({ name, workspaceId, data }) => {
+    // Validate field types are consistent
+    if (!validateFieldTypes(data)) {
+      throw new Error("Field types are inconsistent");
+    }
+
+    if (data.length === 0) {
+      throw new Error("Dataset is empty");
+    }
+
     await prisma.$transaction(async (tx) => {
       const datasetWithCols = await tx.dataset.create({
         data: {
@@ -19,9 +28,11 @@ export const createDataset = authAction(
           },
           columns: {
             create: [
-              { name: "ID", dataType: "STRING" },
-              { name: "Latitude", dataType: "FLOAT" },
-              { name: "Longitude", dataType: "FLOAT" },
+              ...Object.entries(data[0]!).map(([key, value]) => ({
+                name: key,
+                // TODO: Map types to Prisma types
+                dataType: "FLOAT" as const,
+              })),
             ],
           },
         },
@@ -34,11 +45,21 @@ export const createDataset = authAction(
         data: {
           rows: {
             create: [
-              {
+              ...data.map((row) => ({
                 cellValues: {
-                  create: [{ value: "" }],
+                  create: Object.entries(row).map(([key, value]) => ({
+                    value,
+                    column: {
+                      connect: {
+                        datasetId_name: {
+                          datasetId: datasetWithCols.id,
+                          name: key,
+                        },
+                      },
+                    },
+                  })),
                 },
-              },
+              })),
             ],
           },
         },
@@ -50,3 +71,40 @@ export const createDataset = authAction(
     revalidatePath("/");
   }
 );
+
+function validateFieldTypes(array: Record<string, any>[]) {
+  if (array.length === 0) {
+    return true; // Empty array is considered valid
+  }
+
+  const fieldTypes: Record<string, any> = {};
+
+  // Initialize field types based on the first object
+  for (const key in array[0]) {
+    fieldTypes[key] = typeof array[0][key];
+  }
+
+  // Compare the types of the rest of the objects
+  for (let i = 1; i < array.length; i++) {
+    for (const key in array[i]) {
+      if (typeof array[i]![key] !== fieldTypes[key]) {
+        return false;
+      }
+    }
+  }
+
+  return true;
+}
+
+function mapTypesToPrismaTypes(type: string) {
+  switch (type) {
+    case "string":
+      return "String";
+    case "number":
+      return "Int";
+    case "boolean":
+      return "Boolean";
+    default:
+      return "String";
+  }
+}

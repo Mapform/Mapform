@@ -212,6 +212,8 @@ model Column {
     dataType   ColumnType
     dataset    Dataset     @relation("DatasetColumns", fields: [datasetId], references: [id])
     cellValues CellValue[] @relation("ColumnCellValues")
+
+    @@unique([datasetId, name])
 }
 
 model Row {
