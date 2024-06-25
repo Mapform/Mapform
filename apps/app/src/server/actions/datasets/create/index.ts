@@ -31,7 +31,7 @@ export const createDataset = authAction(
               ...Object.entries(data[0]!).map(([key, value]) => ({
                 name: key,
                 // TODO: Map types to Prisma types
-                dataType: "FLOAT" as const,
+                dataType: "STRING" as const,
               })),
             ],
           },
@@ -48,7 +48,11 @@ export const createDataset = authAction(
               ...data.map((row) => ({
                 cellValues: {
                   create: Object.entries(row).map(([key, value]) => ({
-                    value,
+                    stringCell: {
+                      create: {
+                        value: value as string,
+                      },
+                    },
                     column: {
                       connect: {
                         datasetId_name: {

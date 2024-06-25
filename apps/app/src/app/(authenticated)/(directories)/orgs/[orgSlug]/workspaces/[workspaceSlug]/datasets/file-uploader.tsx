@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { type FormEvent, useState } from "react";
 import { parse } from "papaparse";
 import { useAction } from "next-safe-action/hooks";
 import { Input } from "@mapform/ui/components/input";

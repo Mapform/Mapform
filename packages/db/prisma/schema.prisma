@@ -227,14 +227,39 @@ model CellValue {
     id       Int    @id @default(autoincrement())
     rowId    Int
     columnId Int
-    value    Json
     column   Column @relation("ColumnCellValues", fields: [columnId], references: [id])
     row      Row    @relation("RowCellValues", fields: [rowId], references: [id])
+
+    boolCell   BoolCell?
+    stringCell StringCell?
+    pointCell  PointCell?
+}
+
+model BoolCell {
+    id          Int       @id @default(autoincrement())
+    cellValueId Int       @unique
+    value       Boolean
+    cellValue   CellValue @relation(fields: [cellValueId], references: [id])
+}
+
+model StringCell {
+    id          Int       @id @default(autoincrement())
+    cellValueId Int       @unique
+    value       String
+    cellValue   CellValue @relation(fields: [cellValueId], references: [id])
+}
+
+model PointCell {
+    id          Int                                  @id @default(autoincrement())
+    cellValueId Int                                  @unique
+    value       Unsupported("geometry(Point, 4326)")
+    cellValue   CellValue                            @relation(fields: [cellValueId], references: [id])
+
+    @@index([value], name: "point_idx", type: Gist)
 }
 
 enum ColumnType {
     STRING
-    INT
-    FLOAT
-    BOOLEAN
+    BOOL
+    POINT
 }
