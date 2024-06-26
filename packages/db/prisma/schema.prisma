@@ -251,9 +251,10 @@ model StringCell {
 
 model PointCell {
     id          Int                                  @id @default(autoincrement())
-    cellValueId String                               @unique
+    // This needs to be lowercase for Prisma executeRaw to work
+    cellvalueid String                               @unique
     value       Unsupported("geometry(Point, 4326)")
-    cellValue   CellValue                            @relation(fields: [cellValueId], references: [id])
+    cellValue   CellValue                            @relation(fields: [cellvalueid], references: [id])
 
     @@index([value], name: "point_idx", type: Gist)
 }

@@ -90,7 +90,7 @@ export const BoolCellScalarFieldEnumSchema = z.enum(['id','cellValueId','value']
 
 export const StringCellScalarFieldEnumSchema = z.enum(['id','cellValueId','value']);
 
-export const PointCellScalarFieldEnumSchema = z.enum(['id','cellValueId']);
+export const PointCellScalarFieldEnumSchema = z.enum(['id','cellvalueid']);
 
 export const SortOrderSchema = z.enum(['asc','desc']);
 
@@ -644,7 +644,7 @@ export const StringCellWithRelationsSchema: z.ZodType<StringCellWithRelations> =
 
 export const PointCellSchema = z.object({
   id: z.number().int(),
-  cellValueId: z.string(),
+  cellvalueid: z.string(),
 })
 
 export type PointCell = z.infer<typeof PointCellSchema>
@@ -1192,7 +1192,7 @@ export const PointCellArgsSchema: z.ZodType<Prisma.PointCellDefaultArgs> = z.obj
 
 export const PointCellSelectSchema: z.ZodType<Prisma.PointCellSelect> = z.object({
   id: z.boolean().optional(),
-  cellValueId: z.boolean().optional(),
+  cellvalueid: z.boolean().optional(),
   cellValue: z.union([z.boolean(),z.lazy(() => CellValueArgsSchema)]).optional(),
 }).strict()
 
@@ -2396,31 +2396,31 @@ export const PointCellWhereInputSchema: z.ZodType<Prisma.PointCellWhereInput> = 
   OR: z.lazy(() => PointCellWhereInputSchema).array().optional(),
   NOT: z.union([ z.lazy(() => PointCellWhereInputSchema),z.lazy(() => PointCellWhereInputSchema).array() ]).optional(),
   id: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
-  cellValueId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  cellvalueid: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   cellValue: z.union([ z.lazy(() => CellValueRelationFilterSchema),z.lazy(() => CellValueWhereInputSchema) ]).optional(),
 }).strict();
 
 export const PointCellOrderByWithRelationInputSchema: z.ZodType<Prisma.PointCellOrderByWithRelationInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
-  cellValueId: z.lazy(() => SortOrderSchema).optional(),
+  cellvalueid: z.lazy(() => SortOrderSchema).optional(),
   cellValue: z.lazy(() => CellValueOrderByWithRelationInputSchema).optional()
 }).strict();
 
 export const PointCellWhereUniqueInputSchema: z.ZodType<Prisma.PointCellWhereUniqueInput> = z.union([
   z.object({
     id: z.number().int(),
-    cellValueId: z.string()
+    cellvalueid: z.string()
   }),
   z.object({
     id: z.number().int(),
   }),
   z.object({
-    cellValueId: z.string(),
+    cellvalueid: z.string(),
   }),
 ])
 .and(z.object({
   id: z.number().int().optional(),
-  cellValueId: z.string().optional(),
+  cellvalueid: z.string().optional(),
   AND: z.union([ z.lazy(() => PointCellWhereInputSchema),z.lazy(() => PointCellWhereInputSchema).array() ]).optional(),
   OR: z.lazy(() => PointCellWhereInputSchema).array().optional(),
   NOT: z.union([ z.lazy(() => PointCellWhereInputSchema),z.lazy(() => PointCellWhereInputSchema).array() ]).optional(),
@@ -2429,7 +2429,7 @@ export const PointCellWhereUniqueInputSchema: z.ZodType<Prisma.PointCellWhereUni
 
 export const PointCellOrderByWithAggregationInputSchema: z.ZodType<Prisma.PointCellOrderByWithAggregationInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
-  cellValueId: z.lazy(() => SortOrderSchema).optional(),
+  cellvalueid: z.lazy(() => SortOrderSchema).optional(),
   _count: z.lazy(() => PointCellCountOrderByAggregateInputSchema).optional(),
   _avg: z.lazy(() => PointCellAvgOrderByAggregateInputSchema).optional(),
   _max: z.lazy(() => PointCellMaxOrderByAggregateInputSchema).optional(),
@@ -2442,7 +2442,7 @@ export const PointCellScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.Poi
   OR: z.lazy(() => PointCellScalarWhereWithAggregatesInputSchema).array().optional(),
   NOT: z.union([ z.lazy(() => PointCellScalarWhereWithAggregatesInputSchema),z.lazy(() => PointCellScalarWhereWithAggregatesInputSchema).array() ]).optional(),
   id: z.union([ z.lazy(() => IntWithAggregatesFilterSchema),z.number() ]).optional(),
-  cellValueId: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
+  cellvalueid: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
 }).strict();
 
 export const UserCreateInputSchema: z.ZodType<Prisma.UserCreateInput> = z.object({
@@ -3443,7 +3443,7 @@ export const PointCellUpdateInputSchema: z.ZodType<Prisma.PointCellUpdateInput> 
 
 export const PointCellUncheckedUpdateInputSchema: z.ZodType<Prisma.PointCellUncheckedUpdateInput> = z.object({
   id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  cellValueId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  cellvalueid: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const PointCellUpdateManyMutationInputSchema: z.ZodType<Prisma.PointCellUpdateManyMutationInput> = z.object({
@@ -3451,7 +3451,7 @@ export const PointCellUpdateManyMutationInputSchema: z.ZodType<Prisma.PointCellU
 
 export const PointCellUncheckedUpdateManyInputSchema: z.ZodType<Prisma.PointCellUncheckedUpdateManyInput> = z.object({
   id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  cellValueId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  cellvalueid: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const StringFilterSchema: z.ZodType<Prisma.StringFilter> = z.object({
@@ -4428,7 +4428,7 @@ export const StringCellSumOrderByAggregateInputSchema: z.ZodType<Prisma.StringCe
 
 export const PointCellCountOrderByAggregateInputSchema: z.ZodType<Prisma.PointCellCountOrderByAggregateInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
-  cellValueId: z.lazy(() => SortOrderSchema).optional()
+  cellvalueid: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const PointCellAvgOrderByAggregateInputSchema: z.ZodType<Prisma.PointCellAvgOrderByAggregateInput> = z.object({
@@ -4437,12 +4437,12 @@ export const PointCellAvgOrderByAggregateInputSchema: z.ZodType<Prisma.PointCell
 
 export const PointCellMaxOrderByAggregateInputSchema: z.ZodType<Prisma.PointCellMaxOrderByAggregateInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
-  cellValueId: z.lazy(() => SortOrderSchema).optional()
+  cellvalueid: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const PointCellMinOrderByAggregateInputSchema: z.ZodType<Prisma.PointCellMinOrderByAggregateInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
-  cellValueId: z.lazy(() => SortOrderSchema).optional()
+  cellvalueid: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const PointCellSumOrderByAggregateInputSchema: z.ZodType<Prisma.PointCellSumOrderByAggregateInput> = z.object({

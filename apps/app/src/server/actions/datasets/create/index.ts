@@ -1,7 +1,7 @@
 "use server";
 
 import { v4 as uuidv4 } from "uuid";
-import { prisma } from "@mapform/db";
+import { ColumnType, Prisma, prisma } from "@mapform/db";
 import { revalidatePath } from "next/cache";
 import { authAction } from "~/lib/safe-action";
 import { createDatasetSchema } from "./schema";
@@ -22,13 +22,14 @@ export const createDataset = authAction(
      * Generate UUIDs for each CellValue. This will allow us the match them later on
      */
     const dataWithModifiedCells = data.map((row) => {
-      return Object.entries(row).map(([key, value]) => {
+      return Object.entries(row).map(([key, val]) => {
+        const { type, value } = parseType(val);
+
         return {
           id: uuidv4(),
           key,
+          type,
           value,
-          // TODO: Gen type here
-          type: "STRING",
         };
       });
     });
@@ -86,20 +87,49 @@ export const createDataset = authAction(
         },
       });
 
-      console.log(2222, dateset);
-
       const cells = dataWithModifiedCells.flatMap((row) => row);
 
       /**
        * Insert StringCells
        */
       const stringCells = cells.filter((cell) => cell.type === "STRING");
-      await tx.stringCell.createMany({
-        data: stringCells.map((cell) => ({
-          cellValueId: cell.id,
-          value: cell.value as string,
-        })),
-      });
+      const boolCells = cells.filter((cell) => cell.type === "BOOL");
+      const pointCells = cells
+        .filter((cell) => cell.type === "POINT")
+        .map(
+          (cell) =>
+            Prisma.sql`(${cell.id}, ST_SetSRID(ST_MakePoint(${cell.value.coordinates[0]}, ${cell.value.coordinates[1]}), 4326))`
+        );
+
+      await Promise.all([
+        /**
+         * Insert StringCells
+         */
+        tx.stringCell.createMany({
+          data: stringCells.map((cell) => ({
+            cellValueId: cell.id,
+            value: cell.value as string,
+          })),
+        }),
+
+        /**
+         * Insert BoolCells
+         */
+        tx.boolCell.createMany({
+          data: boolCells.map((cell) => ({
+            cellValueId: cell.id,
+            value: cell.value as boolean,
+          })),
+        }),
+
+        /**
+         * Insert PointCells. Need to INSERT using raw SQL because Prisma does not support PostGIS
+         */
+        tx.$executeRaw`
+          INSERT INTO "PointCell" (cellvalueid, value)
+          VALUES ${Prisma.join(pointCells)};
+        `,
+      ]);
 
       return dateset;
     });
@@ -132,15 +162,39 @@ function validateFieldTypes(array: Record<string, any>[]) {
   return true;
 }
 
-function mapTypesToPrismaTypes(type: string) {
-  switch (type) {
-    case "string":
-      return "String";
-    case "number":
-      return "Int";
-    case "boolean":
-      return "Boolean";
-    default:
-      return "String";
+function parseType(val: string) {
+  // Parse booleans
+  if (val === "true" || val === "false") {
+    return {
+      type: ColumnType.BOOL,
+      value: val === "true",
+    };
   }
+
+  // Parse GeoJSON Point
+  try {
+    const parsed = JSON.parse(val);
+    if (
+      parsed.type === "Point" &&
+      Array.isArray(parsed.coordinates) &&
+      parsed.coordinates.length === 2 &&
+      typeof parsed.coordinates[0] === "number" &&
+      typeof parsed.coordinates[1] === "number"
+    ) {
+      return {
+        type: ColumnType.POINT,
+        value: parsed,
+      };
+    }
+  } catch (e) {
+    // Ignore
+  }
+
+  /**
+   * Treat all other values as strings
+   */
+  return {
+    type: ColumnType.STRING,
+    value: val,
+  };
 }
