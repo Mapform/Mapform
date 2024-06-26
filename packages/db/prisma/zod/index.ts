@@ -560,7 +560,7 @@ export const RowWithRelationsSchema: z.ZodType<RowWithRelations> = RowSchema.mer
 /////////////////////////////////////////
 
 export const CellValueSchema = z.object({
-  id: z.number().int(),
+  id: z.string(),
   rowId: z.number().int(),
   columnId: z.number().int(),
 })
@@ -594,7 +594,7 @@ export const CellValueWithRelationsSchema: z.ZodType<CellValueWithRelations> = C
 
 export const BoolCellSchema = z.object({
   id: z.number().int(),
-  cellValueId: z.number().int(),
+  cellValueId: z.string(),
   value: z.boolean(),
 })
 
@@ -619,7 +619,7 @@ export const BoolCellWithRelationsSchema: z.ZodType<BoolCellWithRelations> = Boo
 
 export const StringCellSchema = z.object({
   id: z.number().int(),
-  cellValueId: z.number().int(),
+  cellValueId: z.string(),
   value: z.string(),
 })
 
@@ -644,7 +644,7 @@ export const StringCellWithRelationsSchema: z.ZodType<StringCellWithRelations> =
 
 export const PointCellSchema = z.object({
   id: z.number().int(),
-  cellValueId: z.number().int(),
+  cellValueId: z.string(),
 })
 
 export type PointCell = z.infer<typeof PointCellSchema>
@@ -2215,7 +2215,7 @@ export const CellValueWhereInputSchema: z.ZodType<Prisma.CellValueWhereInput> = 
   AND: z.union([ z.lazy(() => CellValueWhereInputSchema),z.lazy(() => CellValueWhereInputSchema).array() ]).optional(),
   OR: z.lazy(() => CellValueWhereInputSchema).array().optional(),
   NOT: z.union([ z.lazy(() => CellValueWhereInputSchema),z.lazy(() => CellValueWhereInputSchema).array() ]).optional(),
-  id: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
+  id: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   rowId: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
   columnId: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
   column: z.union([ z.lazy(() => ColumnRelationFilterSchema),z.lazy(() => ColumnWhereInputSchema) ]).optional(),
@@ -2237,10 +2237,10 @@ export const CellValueOrderByWithRelationInputSchema: z.ZodType<Prisma.CellValue
 }).strict();
 
 export const CellValueWhereUniqueInputSchema: z.ZodType<Prisma.CellValueWhereUniqueInput> = z.object({
-  id: z.number().int()
+  id: z.string()
 })
 .and(z.object({
-  id: z.number().int().optional(),
+  id: z.string().optional(),
   AND: z.union([ z.lazy(() => CellValueWhereInputSchema),z.lazy(() => CellValueWhereInputSchema).array() ]).optional(),
   OR: z.lazy(() => CellValueWhereInputSchema).array().optional(),
   NOT: z.union([ z.lazy(() => CellValueWhereInputSchema),z.lazy(() => CellValueWhereInputSchema).array() ]).optional(),
@@ -2268,7 +2268,7 @@ export const CellValueScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.Cel
   AND: z.union([ z.lazy(() => CellValueScalarWhereWithAggregatesInputSchema),z.lazy(() => CellValueScalarWhereWithAggregatesInputSchema).array() ]).optional(),
   OR: z.lazy(() => CellValueScalarWhereWithAggregatesInputSchema).array().optional(),
   NOT: z.union([ z.lazy(() => CellValueScalarWhereWithAggregatesInputSchema),z.lazy(() => CellValueScalarWhereWithAggregatesInputSchema).array() ]).optional(),
-  id: z.union([ z.lazy(() => IntWithAggregatesFilterSchema),z.number() ]).optional(),
+  id: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
   rowId: z.union([ z.lazy(() => IntWithAggregatesFilterSchema),z.number() ]).optional(),
   columnId: z.union([ z.lazy(() => IntWithAggregatesFilterSchema),z.number() ]).optional(),
 }).strict();
@@ -2278,7 +2278,7 @@ export const BoolCellWhereInputSchema: z.ZodType<Prisma.BoolCellWhereInput> = z.
   OR: z.lazy(() => BoolCellWhereInputSchema).array().optional(),
   NOT: z.union([ z.lazy(() => BoolCellWhereInputSchema),z.lazy(() => BoolCellWhereInputSchema).array() ]).optional(),
   id: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
-  cellValueId: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
+  cellValueId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   value: z.union([ z.lazy(() => BoolFilterSchema),z.boolean() ]).optional(),
   cellValue: z.union([ z.lazy(() => CellValueRelationFilterSchema),z.lazy(() => CellValueWhereInputSchema) ]).optional(),
 }).strict();
@@ -2293,18 +2293,18 @@ export const BoolCellOrderByWithRelationInputSchema: z.ZodType<Prisma.BoolCellOr
 export const BoolCellWhereUniqueInputSchema: z.ZodType<Prisma.BoolCellWhereUniqueInput> = z.union([
   z.object({
     id: z.number().int(),
-    cellValueId: z.number().int()
+    cellValueId: z.string()
   }),
   z.object({
     id: z.number().int(),
   }),
   z.object({
-    cellValueId: z.number().int(),
+    cellValueId: z.string(),
   }),
 ])
 .and(z.object({
   id: z.number().int().optional(),
-  cellValueId: z.number().int().optional(),
+  cellValueId: z.string().optional(),
   AND: z.union([ z.lazy(() => BoolCellWhereInputSchema),z.lazy(() => BoolCellWhereInputSchema).array() ]).optional(),
   OR: z.lazy(() => BoolCellWhereInputSchema).array().optional(),
   NOT: z.union([ z.lazy(() => BoolCellWhereInputSchema),z.lazy(() => BoolCellWhereInputSchema).array() ]).optional(),
@@ -2328,7 +2328,7 @@ export const BoolCellScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.Bool
   OR: z.lazy(() => BoolCellScalarWhereWithAggregatesInputSchema).array().optional(),
   NOT: z.union([ z.lazy(() => BoolCellScalarWhereWithAggregatesInputSchema),z.lazy(() => BoolCellScalarWhereWithAggregatesInputSchema).array() ]).optional(),
   id: z.union([ z.lazy(() => IntWithAggregatesFilterSchema),z.number() ]).optional(),
-  cellValueId: z.union([ z.lazy(() => IntWithAggregatesFilterSchema),z.number() ]).optional(),
+  cellValueId: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
   value: z.union([ z.lazy(() => BoolWithAggregatesFilterSchema),z.boolean() ]).optional(),
 }).strict();
 
@@ -2337,7 +2337,7 @@ export const StringCellWhereInputSchema: z.ZodType<Prisma.StringCellWhereInput> 
   OR: z.lazy(() => StringCellWhereInputSchema).array().optional(),
   NOT: z.union([ z.lazy(() => StringCellWhereInputSchema),z.lazy(() => StringCellWhereInputSchema).array() ]).optional(),
   id: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
-  cellValueId: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
+  cellValueId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   value: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   cellValue: z.union([ z.lazy(() => CellValueRelationFilterSchema),z.lazy(() => CellValueWhereInputSchema) ]).optional(),
 }).strict();
@@ -2352,18 +2352,18 @@ export const StringCellOrderByWithRelationInputSchema: z.ZodType<Prisma.StringCe
 export const StringCellWhereUniqueInputSchema: z.ZodType<Prisma.StringCellWhereUniqueInput> = z.union([
   z.object({
     id: z.number().int(),
-    cellValueId: z.number().int()
+    cellValueId: z.string()
   }),
   z.object({
     id: z.number().int(),
   }),
   z.object({
-    cellValueId: z.number().int(),
+    cellValueId: z.string(),
   }),
 ])
 .and(z.object({
   id: z.number().int().optional(),
-  cellValueId: z.number().int().optional(),
+  cellValueId: z.string().optional(),
   AND: z.union([ z.lazy(() => StringCellWhereInputSchema),z.lazy(() => StringCellWhereInputSchema).array() ]).optional(),
   OR: z.lazy(() => StringCellWhereInputSchema).array().optional(),
   NOT: z.union([ z.lazy(() => StringCellWhereInputSchema),z.lazy(() => StringCellWhereInputSchema).array() ]).optional(),
@@ -2387,7 +2387,7 @@ export const StringCellScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.St
   OR: z.lazy(() => StringCellScalarWhereWithAggregatesInputSchema).array().optional(),
   NOT: z.union([ z.lazy(() => StringCellScalarWhereWithAggregatesInputSchema),z.lazy(() => StringCellScalarWhereWithAggregatesInputSchema).array() ]).optional(),
   id: z.union([ z.lazy(() => IntWithAggregatesFilterSchema),z.number() ]).optional(),
-  cellValueId: z.union([ z.lazy(() => IntWithAggregatesFilterSchema),z.number() ]).optional(),
+  cellValueId: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
   value: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
 }).strict();
 
@@ -2396,7 +2396,7 @@ export const PointCellWhereInputSchema: z.ZodType<Prisma.PointCellWhereInput> = 
   OR: z.lazy(() => PointCellWhereInputSchema).array().optional(),
   NOT: z.union([ z.lazy(() => PointCellWhereInputSchema),z.lazy(() => PointCellWhereInputSchema).array() ]).optional(),
   id: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
-  cellValueId: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
+  cellValueId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   cellValue: z.union([ z.lazy(() => CellValueRelationFilterSchema),z.lazy(() => CellValueWhereInputSchema) ]).optional(),
 }).strict();
 
@@ -2409,18 +2409,18 @@ export const PointCellOrderByWithRelationInputSchema: z.ZodType<Prisma.PointCell
 export const PointCellWhereUniqueInputSchema: z.ZodType<Prisma.PointCellWhereUniqueInput> = z.union([
   z.object({
     id: z.number().int(),
-    cellValueId: z.number().int()
+    cellValueId: z.string()
   }),
   z.object({
     id: z.number().int(),
   }),
   z.object({
-    cellValueId: z.number().int(),
+    cellValueId: z.string(),
   }),
 ])
 .and(z.object({
   id: z.number().int().optional(),
-  cellValueId: z.number().int().optional(),
+  cellValueId: z.string().optional(),
   AND: z.union([ z.lazy(() => PointCellWhereInputSchema),z.lazy(() => PointCellWhereInputSchema).array() ]).optional(),
   OR: z.lazy(() => PointCellWhereInputSchema).array().optional(),
   NOT: z.union([ z.lazy(() => PointCellWhereInputSchema),z.lazy(() => PointCellWhereInputSchema).array() ]).optional(),
@@ -2442,7 +2442,7 @@ export const PointCellScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.Poi
   OR: z.lazy(() => PointCellScalarWhereWithAggregatesInputSchema).array().optional(),
   NOT: z.union([ z.lazy(() => PointCellScalarWhereWithAggregatesInputSchema),z.lazy(() => PointCellScalarWhereWithAggregatesInputSchema).array() ]).optional(),
   id: z.union([ z.lazy(() => IntWithAggregatesFilterSchema),z.number() ]).optional(),
-  cellValueId: z.union([ z.lazy(() => IntWithAggregatesFilterSchema),z.number() ]).optional(),
+  cellValueId: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
 }).strict();
 
 export const UserCreateInputSchema: z.ZodType<Prisma.UserCreateInput> = z.object({
@@ -3310,6 +3310,7 @@ export const RowUncheckedUpdateManyInputSchema: z.ZodType<Prisma.RowUncheckedUpd
 }).strict();
 
 export const CellValueCreateInputSchema: z.ZodType<Prisma.CellValueCreateInput> = z.object({
+  id: z.string(),
   column: z.lazy(() => ColumnCreateNestedOneWithoutCellValuesInputSchema),
   row: z.lazy(() => RowCreateNestedOneWithoutCellValuesInputSchema),
   boolCell: z.lazy(() => BoolCellCreateNestedOneWithoutCellValueInputSchema).optional(),
@@ -3318,7 +3319,7 @@ export const CellValueCreateInputSchema: z.ZodType<Prisma.CellValueCreateInput> 
 }).strict();
 
 export const CellValueUncheckedCreateInputSchema: z.ZodType<Prisma.CellValueUncheckedCreateInput> = z.object({
-  id: z.number().int().optional(),
+  id: z.string(),
   rowId: z.number().int(),
   columnId: z.number().int(),
   boolCell: z.lazy(() => BoolCellUncheckedCreateNestedOneWithoutCellValueInputSchema).optional(),
@@ -3327,6 +3328,7 @@ export const CellValueUncheckedCreateInputSchema: z.ZodType<Prisma.CellValueUnch
 }).strict();
 
 export const CellValueUpdateInputSchema: z.ZodType<Prisma.CellValueUpdateInput> = z.object({
+  id: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   column: z.lazy(() => ColumnUpdateOneRequiredWithoutCellValuesNestedInputSchema).optional(),
   row: z.lazy(() => RowUpdateOneRequiredWithoutCellValuesNestedInputSchema).optional(),
   boolCell: z.lazy(() => BoolCellUpdateOneWithoutCellValueNestedInputSchema).optional(),
@@ -3335,7 +3337,7 @@ export const CellValueUpdateInputSchema: z.ZodType<Prisma.CellValueUpdateInput> 
 }).strict();
 
 export const CellValueUncheckedUpdateInputSchema: z.ZodType<Prisma.CellValueUncheckedUpdateInput> = z.object({
-  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  id: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   rowId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   columnId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   boolCell: z.lazy(() => BoolCellUncheckedUpdateOneWithoutCellValueNestedInputSchema).optional(),
@@ -3344,16 +3346,17 @@ export const CellValueUncheckedUpdateInputSchema: z.ZodType<Prisma.CellValueUnch
 }).strict();
 
 export const CellValueCreateManyInputSchema: z.ZodType<Prisma.CellValueCreateManyInput> = z.object({
-  id: z.number().int().optional(),
+  id: z.string(),
   rowId: z.number().int(),
   columnId: z.number().int()
 }).strict();
 
 export const CellValueUpdateManyMutationInputSchema: z.ZodType<Prisma.CellValueUpdateManyMutationInput> = z.object({
+  id: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const CellValueUncheckedUpdateManyInputSchema: z.ZodType<Prisma.CellValueUncheckedUpdateManyInput> = z.object({
-  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  id: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   rowId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   columnId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
@@ -3365,7 +3368,7 @@ export const BoolCellCreateInputSchema: z.ZodType<Prisma.BoolCellCreateInput> = 
 
 export const BoolCellUncheckedCreateInputSchema: z.ZodType<Prisma.BoolCellUncheckedCreateInput> = z.object({
   id: z.number().int().optional(),
-  cellValueId: z.number().int(),
+  cellValueId: z.string(),
   value: z.boolean()
 }).strict();
 
@@ -3376,13 +3379,13 @@ export const BoolCellUpdateInputSchema: z.ZodType<Prisma.BoolCellUpdateInput> = 
 
 export const BoolCellUncheckedUpdateInputSchema: z.ZodType<Prisma.BoolCellUncheckedUpdateInput> = z.object({
   id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  cellValueId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  cellValueId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   value: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const BoolCellCreateManyInputSchema: z.ZodType<Prisma.BoolCellCreateManyInput> = z.object({
   id: z.number().int().optional(),
-  cellValueId: z.number().int(),
+  cellValueId: z.string(),
   value: z.boolean()
 }).strict();
 
@@ -3392,7 +3395,7 @@ export const BoolCellUpdateManyMutationInputSchema: z.ZodType<Prisma.BoolCellUpd
 
 export const BoolCellUncheckedUpdateManyInputSchema: z.ZodType<Prisma.BoolCellUncheckedUpdateManyInput> = z.object({
   id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  cellValueId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  cellValueId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   value: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
@@ -3403,7 +3406,7 @@ export const StringCellCreateInputSchema: z.ZodType<Prisma.StringCellCreateInput
 
 export const StringCellUncheckedCreateInputSchema: z.ZodType<Prisma.StringCellUncheckedCreateInput> = z.object({
   id: z.number().int().optional(),
-  cellValueId: z.number().int(),
+  cellValueId: z.string(),
   value: z.string()
 }).strict();
 
@@ -3414,13 +3417,13 @@ export const StringCellUpdateInputSchema: z.ZodType<Prisma.StringCellUpdateInput
 
 export const StringCellUncheckedUpdateInputSchema: z.ZodType<Prisma.StringCellUncheckedUpdateInput> = z.object({
   id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  cellValueId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  cellValueId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   value: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const StringCellCreateManyInputSchema: z.ZodType<Prisma.StringCellCreateManyInput> = z.object({
   id: z.number().int().optional(),
-  cellValueId: z.number().int(),
+  cellValueId: z.string(),
   value: z.string()
 }).strict();
 
@@ -3430,7 +3433,7 @@ export const StringCellUpdateManyMutationInputSchema: z.ZodType<Prisma.StringCel
 
 export const StringCellUncheckedUpdateManyInputSchema: z.ZodType<Prisma.StringCellUncheckedUpdateManyInput> = z.object({
   id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  cellValueId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  cellValueId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   value: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
@@ -3440,7 +3443,7 @@ export const PointCellUpdateInputSchema: z.ZodType<Prisma.PointCellUpdateInput> 
 
 export const PointCellUncheckedUpdateInputSchema: z.ZodType<Prisma.PointCellUncheckedUpdateInput> = z.object({
   id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  cellValueId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  cellValueId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const PointCellUpdateManyMutationInputSchema: z.ZodType<Prisma.PointCellUpdateManyMutationInput> = z.object({
@@ -3448,7 +3451,7 @@ export const PointCellUpdateManyMutationInputSchema: z.ZodType<Prisma.PointCellU
 
 export const PointCellUncheckedUpdateManyInputSchema: z.ZodType<Prisma.PointCellUncheckedUpdateManyInput> = z.object({
   id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  cellValueId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  cellValueId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const StringFilterSchema: z.ZodType<Prisma.StringFilter> = z.object({
@@ -4345,7 +4348,6 @@ export const CellValueCountOrderByAggregateInputSchema: z.ZodType<Prisma.CellVal
 }).strict();
 
 export const CellValueAvgOrderByAggregateInputSchema: z.ZodType<Prisma.CellValueAvgOrderByAggregateInput> = z.object({
-  id: z.lazy(() => SortOrderSchema).optional(),
   rowId: z.lazy(() => SortOrderSchema).optional(),
   columnId: z.lazy(() => SortOrderSchema).optional()
 }).strict();
@@ -4363,7 +4365,6 @@ export const CellValueMinOrderByAggregateInputSchema: z.ZodType<Prisma.CellValue
 }).strict();
 
 export const CellValueSumOrderByAggregateInputSchema: z.ZodType<Prisma.CellValueSumOrderByAggregateInput> = z.object({
-  id: z.lazy(() => SortOrderSchema).optional(),
   rowId: z.lazy(() => SortOrderSchema).optional(),
   columnId: z.lazy(() => SortOrderSchema).optional()
 }).strict();
@@ -4380,8 +4381,7 @@ export const BoolCellCountOrderByAggregateInputSchema: z.ZodType<Prisma.BoolCell
 }).strict();
 
 export const BoolCellAvgOrderByAggregateInputSchema: z.ZodType<Prisma.BoolCellAvgOrderByAggregateInput> = z.object({
-  id: z.lazy(() => SortOrderSchema).optional(),
-  cellValueId: z.lazy(() => SortOrderSchema).optional()
+  id: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const BoolCellMaxOrderByAggregateInputSchema: z.ZodType<Prisma.BoolCellMaxOrderByAggregateInput> = z.object({
@@ -4397,8 +4397,7 @@ export const BoolCellMinOrderByAggregateInputSchema: z.ZodType<Prisma.BoolCellMi
 }).strict();
 
 export const BoolCellSumOrderByAggregateInputSchema: z.ZodType<Prisma.BoolCellSumOrderByAggregateInput> = z.object({
-  id: z.lazy(() => SortOrderSchema).optional(),
-  cellValueId: z.lazy(() => SortOrderSchema).optional()
+  id: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const StringCellCountOrderByAggregateInputSchema: z.ZodType<Prisma.StringCellCountOrderByAggregateInput> = z.object({
@@ -4408,8 +4407,7 @@ export const StringCellCountOrderByAggregateInputSchema: z.ZodType<Prisma.String
 }).strict();
 
 export const StringCellAvgOrderByAggregateInputSchema: z.ZodType<Prisma.StringCellAvgOrderByAggregateInput> = z.object({
-  id: z.lazy(() => SortOrderSchema).optional(),
-  cellValueId: z.lazy(() => SortOrderSchema).optional()
+  id: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const StringCellMaxOrderByAggregateInputSchema: z.ZodType<Prisma.StringCellMaxOrderByAggregateInput> = z.object({
@@ -4425,8 +4423,7 @@ export const StringCellMinOrderByAggregateInputSchema: z.ZodType<Prisma.StringCe
 }).strict();
 
 export const StringCellSumOrderByAggregateInputSchema: z.ZodType<Prisma.StringCellSumOrderByAggregateInput> = z.object({
-  id: z.lazy(() => SortOrderSchema).optional(),
-  cellValueId: z.lazy(() => SortOrderSchema).optional()
+  id: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const PointCellCountOrderByAggregateInputSchema: z.ZodType<Prisma.PointCellCountOrderByAggregateInput> = z.object({
@@ -4435,8 +4432,7 @@ export const PointCellCountOrderByAggregateInputSchema: z.ZodType<Prisma.PointCe
 }).strict();
 
 export const PointCellAvgOrderByAggregateInputSchema: z.ZodType<Prisma.PointCellAvgOrderByAggregateInput> = z.object({
-  id: z.lazy(() => SortOrderSchema).optional(),
-  cellValueId: z.lazy(() => SortOrderSchema).optional()
+  id: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const PointCellMaxOrderByAggregateInputSchema: z.ZodType<Prisma.PointCellMaxOrderByAggregateInput> = z.object({
@@ -4450,8 +4446,7 @@ export const PointCellMinOrderByAggregateInputSchema: z.ZodType<Prisma.PointCell
 }).strict();
 
 export const PointCellSumOrderByAggregateInputSchema: z.ZodType<Prisma.PointCellSumOrderByAggregateInput> = z.object({
-  id: z.lazy(() => SortOrderSchema).optional(),
-  cellValueId: z.lazy(() => SortOrderSchema).optional()
+  id: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const OrganizationMembershipCreateNestedManyWithoutUserInputSchema: z.ZodType<Prisma.OrganizationMembershipCreateNestedManyWithoutUserInput> = z.object({
@@ -7850,6 +7845,7 @@ export const DatasetCreateOrConnectWithoutColumnsInputSchema: z.ZodType<Prisma.D
 }).strict();
 
 export const CellValueCreateWithoutColumnInputSchema: z.ZodType<Prisma.CellValueCreateWithoutColumnInput> = z.object({
+  id: z.string(),
   row: z.lazy(() => RowCreateNestedOneWithoutCellValuesInputSchema),
   boolCell: z.lazy(() => BoolCellCreateNestedOneWithoutCellValueInputSchema).optional(),
   stringCell: z.lazy(() => StringCellCreateNestedOneWithoutCellValueInputSchema).optional(),
@@ -7857,7 +7853,7 @@ export const CellValueCreateWithoutColumnInputSchema: z.ZodType<Prisma.CellValue
 }).strict();
 
 export const CellValueUncheckedCreateWithoutColumnInputSchema: z.ZodType<Prisma.CellValueUncheckedCreateWithoutColumnInput> = z.object({
-  id: z.number().int().optional(),
+  id: z.string(),
   rowId: z.number().int(),
   boolCell: z.lazy(() => BoolCellUncheckedCreateNestedOneWithoutCellValueInputSchema).optional(),
   stringCell: z.lazy(() => StringCellUncheckedCreateNestedOneWithoutCellValueInputSchema).optional(),
@@ -7919,7 +7915,7 @@ export const CellValueScalarWhereInputSchema: z.ZodType<Prisma.CellValueScalarWh
   AND: z.union([ z.lazy(() => CellValueScalarWhereInputSchema),z.lazy(() => CellValueScalarWhereInputSchema).array() ]).optional(),
   OR: z.lazy(() => CellValueScalarWhereInputSchema).array().optional(),
   NOT: z.union([ z.lazy(() => CellValueScalarWhereInputSchema),z.lazy(() => CellValueScalarWhereInputSchema).array() ]).optional(),
-  id: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
+  id: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   rowId: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
   columnId: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
 }).strict();
@@ -7944,6 +7940,7 @@ export const DatasetCreateOrConnectWithoutRowsInputSchema: z.ZodType<Prisma.Data
 }).strict();
 
 export const CellValueCreateWithoutRowInputSchema: z.ZodType<Prisma.CellValueCreateWithoutRowInput> = z.object({
+  id: z.string(),
   column: z.lazy(() => ColumnCreateNestedOneWithoutCellValuesInputSchema),
   boolCell: z.lazy(() => BoolCellCreateNestedOneWithoutCellValueInputSchema).optional(),
   stringCell: z.lazy(() => StringCellCreateNestedOneWithoutCellValueInputSchema).optional(),
@@ -7951,7 +7948,7 @@ export const CellValueCreateWithoutRowInputSchema: z.ZodType<Prisma.CellValueCre
 }).strict();
 
 export const CellValueUncheckedCreateWithoutRowInputSchema: z.ZodType<Prisma.CellValueUncheckedCreateWithoutRowInput> = z.object({
-  id: z.number().int().optional(),
+  id: z.string(),
   columnId: z.number().int(),
   boolCell: z.lazy(() => BoolCellUncheckedCreateNestedOneWithoutCellValueInputSchema).optional(),
   stringCell: z.lazy(() => StringCellUncheckedCreateNestedOneWithoutCellValueInputSchema).optional(),
@@ -8166,6 +8163,7 @@ export const PointCellUncheckedUpdateWithoutCellValueInputSchema: z.ZodType<Pris
 }).strict();
 
 export const CellValueCreateWithoutBoolCellInputSchema: z.ZodType<Prisma.CellValueCreateWithoutBoolCellInput> = z.object({
+  id: z.string(),
   column: z.lazy(() => ColumnCreateNestedOneWithoutCellValuesInputSchema),
   row: z.lazy(() => RowCreateNestedOneWithoutCellValuesInputSchema),
   stringCell: z.lazy(() => StringCellCreateNestedOneWithoutCellValueInputSchema).optional(),
@@ -8173,7 +8171,7 @@ export const CellValueCreateWithoutBoolCellInputSchema: z.ZodType<Prisma.CellVal
 }).strict();
 
 export const CellValueUncheckedCreateWithoutBoolCellInputSchema: z.ZodType<Prisma.CellValueUncheckedCreateWithoutBoolCellInput> = z.object({
-  id: z.number().int().optional(),
+  id: z.string(),
   rowId: z.number().int(),
   columnId: z.number().int(),
   stringCell: z.lazy(() => StringCellUncheckedCreateNestedOneWithoutCellValueInputSchema).optional(),
@@ -8197,6 +8195,7 @@ export const CellValueUpdateToOneWithWhereWithoutBoolCellInputSchema: z.ZodType<
 }).strict();
 
 export const CellValueUpdateWithoutBoolCellInputSchema: z.ZodType<Prisma.CellValueUpdateWithoutBoolCellInput> = z.object({
+  id: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   column: z.lazy(() => ColumnUpdateOneRequiredWithoutCellValuesNestedInputSchema).optional(),
   row: z.lazy(() => RowUpdateOneRequiredWithoutCellValuesNestedInputSchema).optional(),
   stringCell: z.lazy(() => StringCellUpdateOneWithoutCellValueNestedInputSchema).optional(),
@@ -8204,7 +8203,7 @@ export const CellValueUpdateWithoutBoolCellInputSchema: z.ZodType<Prisma.CellVal
 }).strict();
 
 export const CellValueUncheckedUpdateWithoutBoolCellInputSchema: z.ZodType<Prisma.CellValueUncheckedUpdateWithoutBoolCellInput> = z.object({
-  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  id: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   rowId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   columnId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   stringCell: z.lazy(() => StringCellUncheckedUpdateOneWithoutCellValueNestedInputSchema).optional(),
@@ -8212,6 +8211,7 @@ export const CellValueUncheckedUpdateWithoutBoolCellInputSchema: z.ZodType<Prism
 }).strict();
 
 export const CellValueCreateWithoutStringCellInputSchema: z.ZodType<Prisma.CellValueCreateWithoutStringCellInput> = z.object({
+  id: z.string(),
   column: z.lazy(() => ColumnCreateNestedOneWithoutCellValuesInputSchema),
   row: z.lazy(() => RowCreateNestedOneWithoutCellValuesInputSchema),
   boolCell: z.lazy(() => BoolCellCreateNestedOneWithoutCellValueInputSchema).optional(),
@@ -8219,7 +8219,7 @@ export const CellValueCreateWithoutStringCellInputSchema: z.ZodType<Prisma.CellV
 }).strict();
 
 export const CellValueUncheckedCreateWithoutStringCellInputSchema: z.ZodType<Prisma.CellValueUncheckedCreateWithoutStringCellInput> = z.object({
-  id: z.number().int().optional(),
+  id: z.string(),
   rowId: z.number().int(),
   columnId: z.number().int(),
   boolCell: z.lazy(() => BoolCellUncheckedCreateNestedOneWithoutCellValueInputSchema).optional(),
@@ -8243,6 +8243,7 @@ export const CellValueUpdateToOneWithWhereWithoutStringCellInputSchema: z.ZodTyp
 }).strict();
 
 export const CellValueUpdateWithoutStringCellInputSchema: z.ZodType<Prisma.CellValueUpdateWithoutStringCellInput> = z.object({
+  id: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   column: z.lazy(() => ColumnUpdateOneRequiredWithoutCellValuesNestedInputSchema).optional(),
   row: z.lazy(() => RowUpdateOneRequiredWithoutCellValuesNestedInputSchema).optional(),
   boolCell: z.lazy(() => BoolCellUpdateOneWithoutCellValueNestedInputSchema).optional(),
@@ -8250,7 +8251,7 @@ export const CellValueUpdateWithoutStringCellInputSchema: z.ZodType<Prisma.CellV
 }).strict();
 
 export const CellValueUncheckedUpdateWithoutStringCellInputSchema: z.ZodType<Prisma.CellValueUncheckedUpdateWithoutStringCellInput> = z.object({
-  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  id: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   rowId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   columnId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   boolCell: z.lazy(() => BoolCellUncheckedUpdateOneWithoutCellValueNestedInputSchema).optional(),
@@ -8258,6 +8259,7 @@ export const CellValueUncheckedUpdateWithoutStringCellInputSchema: z.ZodType<Pri
 }).strict();
 
 export const CellValueCreateWithoutPointCellInputSchema: z.ZodType<Prisma.CellValueCreateWithoutPointCellInput> = z.object({
+  id: z.string(),
   column: z.lazy(() => ColumnCreateNestedOneWithoutCellValuesInputSchema),
   row: z.lazy(() => RowCreateNestedOneWithoutCellValuesInputSchema),
   boolCell: z.lazy(() => BoolCellCreateNestedOneWithoutCellValueInputSchema).optional(),
@@ -8265,7 +8267,7 @@ export const CellValueCreateWithoutPointCellInputSchema: z.ZodType<Prisma.CellVa
 }).strict();
 
 export const CellValueUncheckedCreateWithoutPointCellInputSchema: z.ZodType<Prisma.CellValueUncheckedCreateWithoutPointCellInput> = z.object({
-  id: z.number().int().optional(),
+  id: z.string(),
   rowId: z.number().int(),
   columnId: z.number().int(),
   boolCell: z.lazy(() => BoolCellUncheckedCreateNestedOneWithoutCellValueInputSchema).optional(),
@@ -8289,6 +8291,7 @@ export const CellValueUpdateToOneWithWhereWithoutPointCellInputSchema: z.ZodType
 }).strict();
 
 export const CellValueUpdateWithoutPointCellInputSchema: z.ZodType<Prisma.CellValueUpdateWithoutPointCellInput> = z.object({
+  id: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   column: z.lazy(() => ColumnUpdateOneRequiredWithoutCellValuesNestedInputSchema).optional(),
   row: z.lazy(() => RowUpdateOneRequiredWithoutCellValuesNestedInputSchema).optional(),
   boolCell: z.lazy(() => BoolCellUpdateOneWithoutCellValueNestedInputSchema).optional(),
@@ -8296,7 +8299,7 @@ export const CellValueUpdateWithoutPointCellInputSchema: z.ZodType<Prisma.CellVa
 }).strict();
 
 export const CellValueUncheckedUpdateWithoutPointCellInputSchema: z.ZodType<Prisma.CellValueUncheckedUpdateWithoutPointCellInput> = z.object({
-  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  id: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   rowId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   columnId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   boolCell: z.lazy(() => BoolCellUncheckedUpdateOneWithoutCellValueNestedInputSchema).optional(),
@@ -8840,11 +8843,12 @@ export const RowUncheckedUpdateManyWithoutDatasetInputSchema: z.ZodType<Prisma.R
 }).strict();
 
 export const CellValueCreateManyColumnInputSchema: z.ZodType<Prisma.CellValueCreateManyColumnInput> = z.object({
-  id: z.number().int().optional(),
+  id: z.string(),
   rowId: z.number().int()
 }).strict();
 
 export const CellValueUpdateWithoutColumnInputSchema: z.ZodType<Prisma.CellValueUpdateWithoutColumnInput> = z.object({
+  id: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   row: z.lazy(() => RowUpdateOneRequiredWithoutCellValuesNestedInputSchema).optional(),
   boolCell: z.lazy(() => BoolCellUpdateOneWithoutCellValueNestedInputSchema).optional(),
   stringCell: z.lazy(() => StringCellUpdateOneWithoutCellValueNestedInputSchema).optional(),
@@ -8852,7 +8856,7 @@ export const CellValueUpdateWithoutColumnInputSchema: z.ZodType<Prisma.CellValue
 }).strict();
 
 export const CellValueUncheckedUpdateWithoutColumnInputSchema: z.ZodType<Prisma.CellValueUncheckedUpdateWithoutColumnInput> = z.object({
-  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  id: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   rowId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   boolCell: z.lazy(() => BoolCellUncheckedUpdateOneWithoutCellValueNestedInputSchema).optional(),
   stringCell: z.lazy(() => StringCellUncheckedUpdateOneWithoutCellValueNestedInputSchema).optional(),
@@ -8860,16 +8864,17 @@ export const CellValueUncheckedUpdateWithoutColumnInputSchema: z.ZodType<Prisma.
 }).strict();
 
 export const CellValueUncheckedUpdateManyWithoutColumnInputSchema: z.ZodType<Prisma.CellValueUncheckedUpdateManyWithoutColumnInput> = z.object({
-  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  id: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   rowId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const CellValueCreateManyRowInputSchema: z.ZodType<Prisma.CellValueCreateManyRowInput> = z.object({
-  id: z.number().int().optional(),
+  id: z.string(),
   columnId: z.number().int()
 }).strict();
 
 export const CellValueUpdateWithoutRowInputSchema: z.ZodType<Prisma.CellValueUpdateWithoutRowInput> = z.object({
+  id: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   column: z.lazy(() => ColumnUpdateOneRequiredWithoutCellValuesNestedInputSchema).optional(),
   boolCell: z.lazy(() => BoolCellUpdateOneWithoutCellValueNestedInputSchema).optional(),
   stringCell: z.lazy(() => StringCellUpdateOneWithoutCellValueNestedInputSchema).optional(),
@@ -8877,7 +8882,7 @@ export const CellValueUpdateWithoutRowInputSchema: z.ZodType<Prisma.CellValueUpd
 }).strict();
 
 export const CellValueUncheckedUpdateWithoutRowInputSchema: z.ZodType<Prisma.CellValueUncheckedUpdateWithoutRowInput> = z.object({
-  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  id: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   columnId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   boolCell: z.lazy(() => BoolCellUncheckedUpdateOneWithoutCellValueNestedInputSchema).optional(),
   stringCell: z.lazy(() => StringCellUncheckedUpdateOneWithoutCellValueNestedInputSchema).optional(),
@@ -8885,7 +8890,7 @@ export const CellValueUncheckedUpdateWithoutRowInputSchema: z.ZodType<Prisma.Cel
 }).strict();
 
 export const CellValueUncheckedUpdateManyWithoutRowInputSchema: z.ZodType<Prisma.CellValueUncheckedUpdateManyWithoutRowInput> = z.object({
-  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  id: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   columnId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 

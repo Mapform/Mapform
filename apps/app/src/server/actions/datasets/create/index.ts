@@ -1,5 +1,6 @@
 "use server";
 
+import { v4 as uuidv4 } from "uuid";
 import { prisma } from "@mapform/db";
 import { revalidatePath } from "next/cache";
 import { authAction } from "~/lib/safe-action";
@@ -17,6 +18,21 @@ export const createDataset = authAction(
       throw new Error("Dataset is empty");
     }
 
+    /**
+     * Generate UUIDs for each CellValue. This will allow us the match them later on
+     */
+    const dataWithModifiedCells = data.map((row) => {
+      return Object.entries(row).map(([key, value]) => {
+        return {
+          id: uuidv4(),
+          key,
+          value,
+          // TODO: Gen type here
+          type: "STRING",
+        };
+      });
+    });
+
     await prisma.$transaction(async (tx) => {
       const datasetWithCols = await tx.dataset.create({
         data: {
@@ -28,13 +44,16 @@ export const createDataset = authAction(
           },
           columns: {
             create: [
-              ...Object.entries(data[0]!).map(([key, value]) => ({
+              ...Object.keys(data[0]!).map((key) => ({
                 name: key,
                 // TODO: Map types to Prisma types
                 dataType: "STRING" as const,
               })),
             ],
           },
+        },
+        include: {
+          columns: true,
         },
       });
 
@@ -45,28 +64,41 @@ export const createDataset = authAction(
         data: {
           rows: {
             create: [
-              ...data.map((row) => ({
+              ...dataWithModifiedCells.map((row) => ({
                 cellValues: {
-                  create: Object.entries(row).map(([key, value]) => ({
-                    stringCell: {
-                      create: {
-                        value: value as string,
-                      },
-                    },
-                    column: {
-                      connect: {
-                        datasetId_name: {
-                          datasetId: datasetWithCols.id,
-                          name: key,
+                  create: Object.values(row).map((cell) => {
+                    return {
+                      id: cell.id,
+                      column: {
+                        connect: {
+                          datasetId_name: {
+                            datasetId: datasetWithCols.id,
+                            name: cell.key,
+                          },
                         },
                       },
-                    },
-                  })),
+                    };
+                  }),
                 },
               })),
             ],
           },
         },
+      });
+
+      console.log(2222, dateset);
+
+      const cells = dataWithModifiedCells.flatMap((row) => row);
+
+      /**
+       * Insert StringCells
+       */
+      const stringCells = cells.filter((cell) => cell.type === "STRING");
+      await tx.stringCell.createMany({
+        data: stringCells.map((cell) => ({
+          cellValueId: cell.id,
+          value: cell.value as string,
+        })),
       });
 
       return dateset;

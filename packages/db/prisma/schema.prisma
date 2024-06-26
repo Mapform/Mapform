@@ -224,7 +224,7 @@ model Row {
 }
 
 model CellValue {
-    id       Int    @id @default(autoincrement())
+    id       String @id
     rowId    Int
     columnId Int
     column   Column @relation("ColumnCellValues", fields: [columnId], references: [id])
@@ -237,21 +237,21 @@ model CellValue {
 
 model BoolCell {
     id          Int       @id @default(autoincrement())
-    cellValueId Int       @unique
+    cellValueId String    @unique
     value       Boolean
     cellValue   CellValue @relation(fields: [cellValueId], references: [id])
 }
 
 model StringCell {
     id          Int       @id @default(autoincrement())
-    cellValueId Int       @unique
+    cellValueId String    @unique
     value       String
     cellValue   CellValue @relation(fields: [cellValueId], references: [id])
 }
 
 model PointCell {
     id          Int                                  @id @default(autoincrement())
-    cellValueId Int                                  @unique
+    cellValueId String                               @unique
     value       Unsupported("geometry(Point, 4326)")
     cellValue   CellValue                            @relation(fields: [cellValueId], references: [id])
 
