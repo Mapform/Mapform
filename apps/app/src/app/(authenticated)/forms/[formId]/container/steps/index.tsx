@@ -19,6 +19,7 @@ import { createStep } from "~/server/actions/steps/create";
 import { updateForm } from "~/server/actions/forms/update";
 import { Draggable } from "../draggable";
 import { useContainerContext } from "../context";
+import { PlusIcon } from "lucide-react";
 
 export function Steps() {
   const {
@@ -86,36 +87,59 @@ export function Steps() {
 
   return (
     <div className="border-t bg-white">
-      <DndContext
-        collisionDetection={closestCenter}
-        onDragEnd={reorderSteps}
-        sensors={sensors}
-      >
-        <div className="flex gap-16 overflow-x-auto p-4">
-          <div className="flex flex-col gap-y-2">
-            <div className="text-sm font-semibold">STEPS</div>
-            <Button
-              disabled={status === "pending"}
-              onClick={onAdd}
-              size="icon"
-              variant="secondary"
-            >
-              {status === "pending" ? <Spinner variant="dark" /> : "+"}
-            </Button>
-          </div>
+      {/* STEP INDICATORS */}
+      <div className="flex overflow-x-auto">
+        <div className="w-32 border-r" />
+        <div className="px-4 pt-2">
           <div
             className="grid gap-2"
             style={{
               gridTemplateColumns: `repeat(${dragSteps.length}, 150px)`,
             }}
           >
-            {/* STEP NUMBERS */}
             {dragSteps.map((stepId) => (
-              <div className="text-sm text-gray-500" key={stepId}>
+              <div className="text-xs text-gray-500" key={stepId}>
                 {dragSteps.indexOf(stepId) + 1}
               </div>
             ))}
+          </div>
+        </div>
+      </div>
 
+      {/* STEPS */}
+      <DndContext
+        collisionDetection={closestCenter}
+        onDragEnd={reorderSteps}
+        sensors={sensors}
+      >
+        <div className="flex overflow-x-auto">
+          <div className="flex justify-between gap-y-2 w-32 px-4 pb-4 pt-2 border-r">
+            <div className="text-xs font-semibold leading-6 text-gray-400 mb-0">
+              Steps
+            </div>
+            <Button
+              disabled={status === "pending"}
+              onClick={onAdd}
+              size="icon"
+              variant="ghost"
+            >
+              {status === "pending" ? (
+                <Spinner variant="dark" />
+              ) : (
+                <PlusIcon
+                  className="text-gray-400 self-start"
+                  height={18}
+                  width={18}
+                />
+              )}
+            </Button>
+          </div>
+          <div
+            className="grid gap-2 px-4 pb-4 pt-2"
+            style={{
+              gridTemplateColumns: `repeat(${dragSteps.length}, 150px)`,
+            }}
+          >
             {/* STEPS */}
             <SortableContext
               items={dragSteps}
@@ -153,6 +177,8 @@ export function Steps() {
           </div>
         </div>
       </DndContext>
+
+      {/* DATA TRACKS */}
     </div>
   );
 }
