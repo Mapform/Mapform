@@ -151,13 +151,12 @@ model Step {
 }
 
 model DataTrack {
-    id             String  @id @default(uuid())
+    id             String    @id @default(uuid())
     startStepIndex Int
     endStepIndex   Int
     formId         String?
-    form           Form?   @relation(name: "DataTracks", fields: [formId], references: [id], onDelete: Cascade)
-    dataSetId      String  @unique
-    dataSet        Dataset @relation(fields: [dataSetId], references: [id], onDelete: Cascade)
+    form           Form?     @relation(name: "DataTracks", fields: [formId], references: [id], onDelete: Cascade)
+    datasets       Dataset[]
 }
 
 model FormSubmission {
@@ -214,7 +213,8 @@ model Dataset {
     rows        Row[]      @relation("DatasetRows")
     workspaceId String
     workspace   Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-    dataTrack   DataTrack?
+    dataTrack   DataTrack? @relation(fields: [dataTrackId], references: [id])
+    dataTrackId String?
 }
 
 model Column {
