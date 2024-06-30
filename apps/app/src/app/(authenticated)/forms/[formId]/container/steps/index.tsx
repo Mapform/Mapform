@@ -16,10 +16,10 @@ import { Button } from "@mapform/ui/components/button";
 import { Spinner } from "@mapform/ui/components/spinner";
 import { PlusIcon } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
+import { useAction } from "next-safe-action/hooks";
 import { createStep } from "~/server/actions/steps/create";
 import { updateForm } from "~/server/actions/forms/update";
 import { createDataTrack } from "~/server/actions/datatracks/create";
-import { useAction } from "next-safe-action/hooks";
 import { Draggable } from "../draggable";
 import { useContainerContext } from "../context";
 
@@ -72,6 +72,36 @@ export function Steps() {
           stepOrder: newStepList,
         },
       });
+    }
+  };
+
+  const reorderDataTracks = async (e: DragEndEvent) => {
+    if (!e.over) return;
+
+    if (e.active.id !== e.over.id) {
+      const activeDataTrackIndex = formWithSteps.dataTracks.findIndex(
+        (track) => track.id === e.active.id
+      );
+      const overDataTrackIndex = formWithSteps.dataTracks.findIndex(
+        (track) => track.id === e.over?.id
+      );
+
+      if (activeDataTrackIndex < 0 || overDataTrackIndex < 0) return;
+
+      console.log(111111, activeDataTrackIndex, overDataTrackIndex);
+
+      // const newStepList = arrayMove(
+      //   formWithSteps.dataTracks,
+      //   activeStepIndex,
+      //   overStepIndex
+      // );
+
+      // await updateFormMutation({
+      //   formId: formWithSteps.id,
+      //   data: {
+      //     dataTracks: newStepList,
+      //   },
+      // });
     }
   };
 
@@ -203,7 +233,7 @@ export function Steps() {
       {/* DATA TRACKS */}
       <DndContext
         collisionDetection={closestCenter}
-        onDragEnd={reorderSteps}
+        onDragEnd={reorderDataTracks}
         sensors={sensors}
       >
         <div className="flex">
@@ -234,7 +264,7 @@ export function Steps() {
             }}
           >
             <SortableContext
-              items={dragSteps}
+              items={formWithSteps.dataTracks}
               strategy={horizontalListSortingStrategy}
             >
               {formWithSteps.dataTracks.map((dataTrack) => {
