@@ -89,13 +89,13 @@ export function Steps() {
     setCurrentStep(newStepId);
   };
 
-  const onAddDataTrack = () => {
-    const lastDataTrackStepIndex =
-      formWithSteps.dataTracks
-        .map((dataTrack) => dataTrack.endStepIndex)
-        .sort((a, b) => a - b)
-        .pop() || 0;
+  const lastDataTrackStepIndex =
+    formWithSteps.dataTracks
+      .map((dataTrack) => dataTrack.endStepIndex)
+      .sort((a, b) => a - b)
+      .pop() || 0;
 
+  const onAddDataTrack = () => {
     execute({
       data: {
         formId: formWithSteps.id,
@@ -104,6 +104,10 @@ export function Steps() {
       },
     });
   };
+
+  const trackSlots = new Array(
+    Math.max(dragSteps.length, lastDataTrackStepIndex, 1)
+  ).fill(null);
 
   return (
     <div className="border-t bg-white overflow-x-auto">
@@ -114,12 +118,12 @@ export function Steps() {
           <div
             className="grid gap-2"
             style={{
-              gridTemplateColumns: `repeat(${dragSteps.length}, 150px)`,
+              gridTemplateColumns: `repeat(${trackSlots.length}, 150px)`,
             }}
           >
-            {dragSteps.map((stepId) => (
-              <div className="text-xs text-gray-500" key={stepId}>
-                {dragSteps.indexOf(stepId) + 1}
+            {trackSlots.map((_, index) => (
+              <div className="text-xs text-gray-500" key={index}>
+                {index + 1}
               </div>
             ))}
           </div>
@@ -156,10 +160,9 @@ export function Steps() {
           <div
             className="grid gap-2 px-4 pb-4 pt-2"
             style={{
-              gridTemplateColumns: `repeat(${dragSteps.length}, 150px)`,
+              gridTemplateColumns: `repeat(${trackSlots.length}, 150px)`,
             }}
           >
-            {/* STEPS */}
             <SortableContext
               items={dragSteps}
               strategy={horizontalListSortingStrategy}
@@ -227,10 +230,9 @@ export function Steps() {
           <div
             className="grid gap-2 px-4 pb-4"
             style={{
-              gridTemplateColumns: `repeat(${dragSteps.length}, 150px)`,
+              gridTemplateColumns: `repeat(${trackSlots.length}, 150px)`,
             }}
           >
-            {/* STEPS */}
             <SortableContext
               items={dragSteps}
               strategy={horizontalListSortingStrategy}
