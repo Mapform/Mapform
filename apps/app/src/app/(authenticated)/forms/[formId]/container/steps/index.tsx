@@ -18,6 +18,8 @@ import { PlusIcon } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { createStep } from "~/server/actions/steps/create";
 import { updateForm } from "~/server/actions/forms/update";
+import { createDataTrack } from "~/server/actions/datatracks/create";
+import { useAction } from "next-safe-action/hooks";
 import { Draggable } from "../draggable";
 import { useContainerContext } from "../context";
 
@@ -30,12 +32,14 @@ export function Steps() {
     viewState,
     currentStep,
   } = useContainerContext();
+  // TODO: Get rid of react-query?
   const { mutateAsync: updateFormMutation } = useMutation({
     mutationFn: updateForm,
   });
   const { mutateAsync: createStepMutation, status } = useMutation({
     mutationFn: createStep,
   });
+  const { execute, status: createTrackStatus } = useAction(createDataTrack);
 
   /**
    * Needed to support click events on DND items
@@ -83,6 +87,22 @@ export function Steps() {
 
     setDragSteps((prev) => [...prev, newStepId]);
     setCurrentStep(newStepId);
+  };
+
+  const onAddDataTrack = () => {
+    const lastDataTrackStepIndex =
+      formWithSteps.dataTracks
+        .map((dataTrack) => dataTrack.endStepIndex)
+        .sort((a, b) => a - b)
+        .pop() || 0;
+
+    execute({
+      data: {
+        formId: formWithSteps.id,
+        startStepIndex: lastDataTrackStepIndex,
+        endStepIndex: lastDataTrackStepIndex + 1,
+      },
+    });
   };
 
   return (
@@ -192,7 +212,7 @@ export function Steps() {
               <Button
                 className="-mr-1.5"
                 disabled={status === "pending"}
-                onClick={onAdd}
+                onClick={onAddDataTrack}
                 size="icon"
                 variant="ghost"
               >
@@ -215,28 +235,24 @@ export function Steps() {
               items={dragSteps}
               strategy={horizontalListSortingStrategy}
             >
-              {dragSteps.map((stepId) => {
-                const step = formWithSteps.steps.find((s) => s.id === stepId);
-
-                if (!step) return null;
-
+              {formWithSteps.dataTracks.map((dataTrack) => {
                 return (
-                  <Draggable id={stepId} key={stepId}>
+                  <Draggable id={dataTrack.id} key={dataTrack.id}>
                     <button
                       className={cn(
-                        "flex relative px-3 rounded-md text-md h-16 w-full bg-blue-200",
-                        {
-                          "ring-4 ring-blue-500": currentStep?.id === stepId,
-                        }
+                        "flex relative px-3 rounded-md text-md h-16 w-full bg-blue-200"
+                        // {
+                        //   "ring-4 ring-blue-500": currentStep?.id === stepId,
+                        // }
                       )}
                       onClick={() => {
-                        setCurrentStep(step.id);
+                        // setCurrentStep(step.id);
                       }}
                       type="button"
                     >
                       <div className="flex-1 h-full flex justify-center items-center bg-blue-300">
                         <span className="line-clamp-2 break-words px-1">
-                          {step.title || "Untitled"}
+                          {dataTrack.id}
                         </span>
                       </div>
                     </button>

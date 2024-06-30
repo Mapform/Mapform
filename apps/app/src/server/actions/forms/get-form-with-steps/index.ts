@@ -14,6 +14,9 @@ export const getFormWithSteps = authAction(
           organizationId: orgId,
         },
       },
+      include: {
+        dataTracks: true,
+      },
     });
 
     if (!form) {
