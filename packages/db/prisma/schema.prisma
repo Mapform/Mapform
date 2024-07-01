@@ -157,6 +157,7 @@ model DataTrack {
     formId         String?
     form           Form?     @relation(name: "DataTracks", fields: [formId], references: [id], onDelete: Cascade)
     datasets       Dataset[]
+    layers         Layer[]
 }
 
 model FormSubmission {
@@ -218,12 +219,13 @@ model Dataset {
 }
 
 model Column {
-    id         Int         @id @default(autoincrement())
-    datasetId  String
-    name       String
-    dataType   ColumnType
-    dataset    Dataset     @relation("DatasetColumns", fields: [datasetId], references: [id])
-    cellValues CellValue[] @relation("ColumnCellValues")
+    id          Int          @id @default(autoincrement())
+    datasetId   String
+    name        String
+    dataType    ColumnType
+    dataset     Dataset      @relation("DatasetColumns", fields: [datasetId], references: [id])
+    cellValues  CellValue[]  @relation("ColumnCellValues")
+    pointLayers PointLayer[]
 
     @@unique([datasetId, name])
 }
@@ -275,4 +277,22 @@ enum ColumnType {
     STRING
     BOOL
     POINT
+}
+
+model Layer {
+    id String @id @default(uuid())
+
+    pointLayer  PointLayer?
+    dataTrackId String      @unique
+    dataTrack   DataTrack?  @relation(fields: [dataTrackId], references: [id], onDelete: Cascade)
+}
+
+model PointLayer {
+    id      String @id @default(uuid())
+    layerId String @unique
+    layer   Layer  @relation(fields: [layerId], references: [id], onDelete: Cascade)
+
+    // Needed for identifying PointCells
+    pointColumnId Int
+    pointColumn   Column @relation(fields: [pointColumnId], references: [id], onDelete: Cascade)
 }
