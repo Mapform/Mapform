@@ -4,6 +4,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@mapform/ui/components/accordion";
+import { ArrowLeftIcon } from "lucide-react";
 import { Button } from "@mapform/ui/components/button";
 import { useContainerContext } from "../../context";
 
@@ -18,9 +19,9 @@ export function DataSidebar() {
             setCurrentDataTrack(undefined);
           }}
           size="sm"
-          variant="outline"
+          variant="secondary"
         >
-          Close
+          <ArrowLeftIcon className="h-4 w-4 mr-1" /> Close
         </Button>
       </div>
       <Accordion defaultValue={["item-1"]} type="multiple">

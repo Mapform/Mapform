@@ -6,6 +6,7 @@ import {
 } from "@tanstack/react-query";
 import { getFormWithSteps } from "~/server/actions/forms/get-form-with-steps";
 import { Container } from "./container";
+import { getNearbyPoints } from "./requests";
 
 export default async function Workspace({
   params,
@@ -22,6 +23,8 @@ export default async function Workspace({
         })
       ).data,
   });
+
+  await getNearbyPoints();
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
