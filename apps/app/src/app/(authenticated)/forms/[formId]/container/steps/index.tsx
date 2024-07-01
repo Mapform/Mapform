@@ -22,6 +22,7 @@ import { updateForm } from "~/server/actions/forms/update";
 import { createDataTrack } from "~/server/actions/datatracks/create";
 import { Draggable } from "../draggable";
 import { useContainerContext } from "../context";
+import { set } from "date-fns";
 
 export function Steps() {
   const {
@@ -31,6 +32,8 @@ export function Steps() {
     formWithSteps,
     viewState,
     currentStep,
+    currentDataTrack,
+    setCurrentDataTrack,
   } = useContainerContext();
   // TODO: Get rid of react-query?
   const { mutateAsync: updateFormMutation } = useMutation({
@@ -272,13 +275,18 @@ export function Steps() {
                   <Draggable id={dataTrack.id} key={dataTrack.id}>
                     <button
                       className={cn(
-                        "flex relative px-3 rounded-md text-md h-16 w-full bg-blue-200"
-                        // {
-                        //   "ring-4 ring-blue-500": currentStep?.id === stepId,
-                        // }
+                        "flex relative px-3 rounded-md text-md h-16 w-full bg-blue-200",
+                        {
+                          "ring-4 ring-blue-500":
+                            currentDataTrack?.id === dataTrack.id,
+                        }
                       )}
                       onClick={() => {
-                        // setCurrentStep(step.id);
+                        if (currentDataTrack?.id === dataTrack.id) {
+                          setCurrentDataTrack();
+                          return;
+                        }
+                        setCurrentDataTrack(dataTrack.id);
                       }}
                       type="button"
                     >

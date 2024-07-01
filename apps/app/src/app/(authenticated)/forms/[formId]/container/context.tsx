@@ -1,3 +1,4 @@
+import { DataTrack } from "@mapform/db";
 import { type StepWithLocation } from "@mapform/db/extentsions/steps";
 import { useDebounce } from "@mapform/lib/use-debounce";
 import type { ViewState, MapRef } from "@mapform/mapform";
@@ -26,6 +27,8 @@ export interface ContainerContextProps {
   setDragSteps: Dispatch<SetStateAction<string[]>>;
   setCurrentStep: (stepId: string) => void;
   debouncedUpdateStep: typeof updateStep;
+  currentDataTrack: DataTrack | undefined;
+  setCurrentDataTrack: (dataTrackId?: string) => void;
 }
 
 export const ContainerContext = createContext<ContainerContextProps>(
@@ -61,19 +64,25 @@ export function ContainerProvider({
   const searchParams = useSearchParams();
   const createQueryString = useCreateQueryString();
   const s = searchParams.get("s");
+  const d = searchParams.get("d");
   const map = useRef<MapRef>(null);
 
   const { mutateAsync: updateStepMutation } = useMutation({
     mutationFn: updateStep,
-    onMutate: async ({ stepId, data: d }) => {
-      const queryKey = ["forms", d.formId];
+    onMutate: async ({ stepId, data }) => {
+      const queryKey = ["forms", data.formId];
       await queryClient.cancelQueries({ queryKey });
 
-      const prevForm: FormWithSteps = queryClient.getQueryData(queryKey)!;
+      const prevForm: FormWithSteps | undefined =
+        queryClient.getQueryData(queryKey);
+
+      // This should never happen
+      if (!prevForm) return;
+
       const newForm = {
         ...prevForm,
         steps: prevForm.steps.map((step) =>
-          step.id === stepId ? { ...step, ...d } : step
+          step.id === stepId ? { ...step, ...data } : step
         ),
       };
 
@@ -94,7 +103,7 @@ export function ContainerProvider({
 
   const setCurrentStep = (stepId: string) => {
     router.replace(`${pathname}?${createQueryString("s", stepId)}`);
-    const step = formWithSteps.steps.find((s) => s.id === stepId);
+    const step = formWithSteps.steps.find((s2) => s2.id === stepId);
 
     if (!step) return;
 
@@ -121,6 +130,22 @@ export function ContainerProvider({
     padding: initialViewState.padding,
   });
 
+  const setCurrentDataTrack = (dataTrackId?: string) => {
+    if (dataTrackId) {
+      router.replace(`${pathname}?${createQueryString("d", dataTrackId)}`);
+
+      return;
+    }
+
+    const nextSearchParams = new URLSearchParams(searchParams.toString());
+    nextSearchParams.delete("d");
+    router.replace(`${pathname}?${nextSearchParams.toString()}`);
+  };
+
+  const currentDataTrack = formWithSteps.dataTracks.find(
+    (track) => track.id === d
+  );
+
   return (
     <ContainerContext.Provider
       value={{
@@ -133,6 +158,8 @@ export function ContainerProvider({
         setViewState,
         formWithSteps,
         debouncedUpdateStep,
+        currentDataTrack,
+        setCurrentDataTrack,
       }}
     >
       {children}
