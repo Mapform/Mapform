@@ -280,8 +280,8 @@ enum ColumnType {
 }
 
 model Layer {
-    id String @id @default(uuid())
-
+    id          String      @id @default(uuid())
+    type        LayerType
     pointLayer  PointLayer?
     dataTrackId String      @unique
     dataTrack   DataTrack?  @relation(fields: [dataTrackId], references: [id], onDelete: Cascade)
@@ -295,4 +295,8 @@ model PointLayer {
     // Needed for identifying PointCells
     pointColumnId Int
     pointColumn   Column @relation(fields: [pointColumnId], references: [id], onDelete: Cascade)
+}
+
+enum LayerType {
+    POINT
 }
