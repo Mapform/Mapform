@@ -20,6 +20,7 @@ function MapFormContainer({
     viewState,
     map,
     debouncedUpdateStep,
+    onMoveEnd,
   } = useContainerContext();
 
   return (
@@ -58,6 +59,7 @@ function MapFormContainer({
           onLoad={() => {
             setMapformLoaded(true);
           }}
+          onMoveEnd={onMoveEnd}
           onTitleChange={async (content: string) => {
             if (!currentStep) {
               return;

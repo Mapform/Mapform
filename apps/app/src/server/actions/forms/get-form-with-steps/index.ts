@@ -15,7 +15,15 @@ export const getFormWithSteps = authAction(
         },
       },
       include: {
-        dataTracks: true,
+        dataTracks: {
+          include: {
+            layers: {
+              include: {
+                pointLayer: true,
+              },
+            },
+          },
+        },
       },
     });
 

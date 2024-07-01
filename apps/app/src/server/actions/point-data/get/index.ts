@@ -29,12 +29,11 @@ export const getPointData = authAction(
       FROM "PointCell"
       JOIN "CellValue" ON "PointCell"."cellvalueid" = "CellValue".id
       JOIN "Column" ON "CellValue"."columnId" = "Column".id
-      WHERE "Column".id = ${pointLayer.pointColumn.id}
-      AND ST_Within(
+      WHERE ST_Within(
         value,
-        -- minLng, maxLng, minLat, maxLat
-        ST_MakeEnvelope(${bounds.minLng}, ${bounds.maxLng}, ${bounds.minLat}, ${bounds.maxLat}, 4326)
-      );
+        ST_MakeEnvelope(${bounds.minLng}, ${bounds.minLat}, ${bounds.maxLng}, ${bounds.maxLat}, 4326)
+      )
+      AND "Column".id = ${pointLayer.pointColumn.id};
     `;
 
     return points;

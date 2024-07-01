@@ -45,6 +45,7 @@ interface MapFormProps {
   onDescriptionChange?: (content: { content: CustomBlock[] }) => void;
   onStepSubmit?: (data: Record<string, string>) => void;
   onImageUpload?: (file: File) => Promise<string | null>;
+  onMoveEnd?: ((e: ViewStateChangeEvent) => void) | undefined;
 }
 
 export const MapForm = forwardRef<MapRef, MapFormProps>(
@@ -62,6 +63,7 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
       onStepSubmit,
       defaultFormValues,
       onImageUpload,
+      onMoveEnd,
     },
     ref
   ) => {
@@ -149,6 +151,7 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
                   ...event.viewState,
                 }));
               }}
+              onMoveEnd={onMoveEnd}
               ref={ref}
               style={{ flex: 1 }}
             >

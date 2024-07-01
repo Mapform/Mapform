@@ -1,7 +1,7 @@
-import { DataTrack } from "@mapform/db";
+import { type DataTrack } from "@mapform/db";
 import { type StepWithLocation } from "@mapform/db/extentsions/steps";
 import { useDebounce } from "@mapform/lib/use-debounce";
-import type { ViewState, MapRef } from "@mapform/mapform";
+import type { ViewState, MapRef, ViewStateChangeEvent } from "@mapform/mapform";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import {
@@ -15,6 +15,7 @@ import {
 } from "react";
 import { useCreateQueryString } from "~/lib/create-query-string";
 import { type FormWithSteps } from "~/server/actions/forms/get-form-with-steps";
+import { getPointData } from "~/server/actions/point-data/get";
 import { updateStep } from "~/server/actions/steps/update";
 
 export interface ContainerContextProps {
@@ -29,6 +30,7 @@ export interface ContainerContextProps {
   debouncedUpdateStep: typeof updateStep;
   currentDataTrack: DataTrack | undefined;
   setCurrentDataTrack: (dataTrackId?: string) => void;
+  onMoveEnd?: ((e: ViewStateChangeEvent) => void) | undefined;
 }
 
 export const ContainerContext = createContext<ContainerContextProps>(
@@ -146,6 +148,23 @@ export function ContainerProvider({
     (track) => track.id === d
   );
 
+  const onMoveEnd = async () => {
+    const bounds = map.current?.getBounds();
+    if (!bounds) return;
+
+    const x = await getPointData({
+      pointLayerId: "9b4c24f0-b155-4bbf-8ddc-b4e61278c5a9",
+      bounds: {
+        minLng: bounds._sw.lng,
+        minLat: bounds._sw.lat,
+        maxLng: bounds._ne.lng,
+        maxLat: bounds._ne.lat,
+      },
+    });
+
+    console.log(123, x);
+  };
+
   return (
     <ContainerContext.Provider
       value={{
@@ -160,6 +179,7 @@ export function ContainerProvider({
         debouncedUpdateStep,
         currentDataTrack,
         setCurrentDataTrack,
+        onMoveEnd,
       }}
     >
       {children}
