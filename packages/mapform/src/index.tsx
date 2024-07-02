@@ -8,6 +8,7 @@ import Map, {
   MapProvider,
   useMap,
   NavigationControl,
+  type LngLatBounds,
 } from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import {
@@ -204,4 +205,4 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
 MapForm.displayName = "MapForm";
 
 export { MapProvider, useMap };
-export type { ViewState, ViewStateChangeEvent, MapRef };
+export type { ViewState, ViewStateChangeEvent, MapRef, LngLatBounds };

@@ -1,8 +1,13 @@
 import { type DataTrack } from "@mapform/db";
 import { type StepWithLocation } from "@mapform/db/extentsions/steps";
 import { useDebounce } from "@mapform/lib/use-debounce";
-import type { ViewState, MapRef, ViewStateChangeEvent } from "@mapform/mapform";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import type {
+  ViewState,
+  MapRef,
+  ViewStateChangeEvent,
+  LngLatBounds,
+} from "@mapform/mapform";
+import { useQueries, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import {
   type Dispatch,
@@ -67,7 +72,29 @@ export function ContainerProvider({
   const createQueryString = useCreateQueryString();
   const s = searchParams.get("s");
   const d = searchParams.get("d");
+
+  const currentDataTrack = formWithSteps.dataTracks.find(
+    (track) => track.id === d
+  );
+
+  const currentStepIndex = formWithSteps.steps.findIndex(
+    (step) => step.id === s
+  );
+
+  const dataTrackForActiveStep = formWithSteps.dataTracks.find((track) => {
+    return (
+      currentStepIndex >= track.startStepIndex &&
+      currentStepIndex < track.endStepIndex
+    );
+  });
+
+  const pointLayers = dataTrackForActiveStep?.layers
+    .map((layer) => layer.pointLayer?.id)
+    .filter(Boolean) as string[];
+
   const map = useRef<MapRef>(null);
+  const initialBounds = map.current?.getBounds();
+  const [bounds, setBounds] = useState<LngLatBounds | undefined>(initialBounds);
 
   const { mutateAsync: updateStepMutation } = useMutation({
     mutationFn: updateStep,
@@ -93,7 +120,27 @@ export function ContainerProvider({
       return { prevForm, newForm };
     },
   });
+  const results = useQueries({
+    queries: bounds
+      ? pointLayers.map((pointLayerId) => ({
+          queryKey: ["pointData", pointLayerId, bounds],
+          queryFn: () =>
+            getPointData({
+              pointLayerId,
+              bounds: {
+                minLng: bounds._sw.lng,
+                minLat: bounds._sw.lat,
+                maxLng: bounds._ne.lng,
+                maxLat: bounds._ne.lat,
+              },
+            }),
+          staleTime: Infinity,
+        }))
+      : [],
+  });
   const debouncedUpdateStep = useDebounce(updateStepMutation, 500);
+
+  console.log(999999, results);
 
   useEffect(() => {
     if (formWithSteps.steps[0] && !s) {
@@ -144,54 +191,11 @@ export function ContainerProvider({
     router.replace(`${pathname}?${nextSearchParams.toString()}`);
   };
 
-  const currentDataTrack = formWithSteps.dataTracks.find(
-    (track) => track.id === d
-  );
-  const currentStepIndex = formWithSteps.steps.findIndex(
-    (step) => step.id === s
-  );
-  const dataTrackForActiveStep = formWithSteps.dataTracks.find((track) => {
-    return (
-      currentStepIndex >= track.startStepIndex &&
-      currentStepIndex < track.endStepIndex
-    );
-  });
+  const onMoveEnd = () => {
+    const newBounds = map.current?.getBounds();
+    if (!newBounds) return;
 
-  const onMoveEnd = async () => {
-    const bounds = map.current?.getBounds();
-    if (!bounds || !dataTrackForActiveStep) return;
-
-    const pointLayers = dataTrackForActiveStep.layers
-      .map((layer) => layer.pointLayer?.id)
-      .filter(Boolean) as string[];
-
-    const y = await Promise.all(
-      pointLayers.map((pointLayerId) => {
-        return getPointData({
-          pointLayerId,
-          bounds: {
-            minLng: bounds._sw.lng,
-            minLat: bounds._sw.lat,
-            maxLng: bounds._ne.lng,
-            maxLat: bounds._ne.lat,
-          },
-        });
-      })
-    );
-
-    console.log(9999, y);
-
-    // const x = await getPointData({
-    //   pointLayerId: "9b4c24f0-b155-4bbf-8ddc-b4e61278c5a9",
-    //   bounds: {
-    //     minLng: bounds._sw.lng,
-    //     minLat: bounds._sw.lat,
-    //     maxLng: bounds._ne.lng,
-    //     maxLat: bounds._ne.lat,
-    //   },
-    // });
-
-    // console.log(123, x);
+    setBounds(newBounds);
   };
 
   return (
