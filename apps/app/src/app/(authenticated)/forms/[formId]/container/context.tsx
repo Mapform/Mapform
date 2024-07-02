@@ -147,22 +147,51 @@ export function ContainerProvider({
   const currentDataTrack = formWithSteps.dataTracks.find(
     (track) => track.id === d
   );
+  const currentStepIndex = formWithSteps.steps.findIndex(
+    (step) => step.id === s
+  );
+  const dataTrackForActiveStep = formWithSteps.dataTracks.find((track) => {
+    return (
+      currentStepIndex >= track.startStepIndex &&
+      currentStepIndex < track.endStepIndex
+    );
+  });
 
   const onMoveEnd = async () => {
     const bounds = map.current?.getBounds();
-    if (!bounds) return;
+    if (!bounds || !dataTrackForActiveStep) return;
 
-    const x = await getPointData({
-      pointLayerId: "9b4c24f0-b155-4bbf-8ddc-b4e61278c5a9",
-      bounds: {
-        minLng: bounds._sw.lng,
-        minLat: bounds._sw.lat,
-        maxLng: bounds._ne.lng,
-        maxLat: bounds._ne.lat,
-      },
-    });
+    const pointLayers = dataTrackForActiveStep.layers
+      .map((layer) => layer.pointLayer?.id)
+      .filter(Boolean) as string[];
 
-    console.log(123, x);
+    const y = await Promise.all(
+      pointLayers.map((pointLayerId) => {
+        return getPointData({
+          pointLayerId,
+          bounds: {
+            minLng: bounds._sw.lng,
+            minLat: bounds._sw.lat,
+            maxLng: bounds._ne.lng,
+            maxLat: bounds._ne.lat,
+          },
+        });
+      })
+    );
+
+    console.log(9999, y);
+
+    // const x = await getPointData({
+    //   pointLayerId: "9b4c24f0-b155-4bbf-8ddc-b4e61278c5a9",
+    //   bounds: {
+    //     minLng: bounds._sw.lng,
+    //     minLat: bounds._sw.lat,
+    //     maxLng: bounds._ne.lng,
+    //     maxLat: bounds._ne.lat,
+    //   },
+    // });
+
+    // console.log(123, x);
   };
 
   return (
