@@ -21,6 +21,7 @@ function MapFormContainer({
     map,
     debouncedUpdateStep,
     onMoveEnd,
+    points,
   } = useContainerContext();
 
   return (
@@ -73,6 +74,7 @@ function MapFormContainer({
               },
             });
           }}
+          points={points}
           ref={map}
           setViewState={setViewState}
           viewState={viewState}

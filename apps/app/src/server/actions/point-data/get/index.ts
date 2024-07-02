@@ -4,6 +4,8 @@ import { prisma } from "@mapform/db";
 import { authAction } from "~/lib/safe-action";
 import { getPointDataSchema } from "./schema";
 
+export type Points = { id: number; longitude: number; latitude: number }[];
+
 export const getPointData = authAction(
   getPointDataSchema,
   async ({ pointLayerId, bounds }) => {
@@ -21,10 +23,10 @@ export const getPointData = authAction(
     });
 
     if (!pointLayer) {
-      return [];
+      return undefined;
     }
 
-    const points = await prisma.$queryRaw`
+    const points: Points = await prisma.$queryRaw`
       SELECT "Column".id, "PointCell".id, ST_X("PointCell".value) AS longitude, ST_Y("PointCell".value) AS latitude
       FROM "PointCell"
       JOIN "CellValue" ON "PointCell"."cellvalueid" = "CellValue".id
@@ -36,6 +38,10 @@ export const getPointData = authAction(
       AND "Column".id = ${pointLayer.pointColumn.id};
     `;
 
-    return points;
+    return {
+      pointLayerId,
+      layerName: pointLayer.layerId,
+      points,
+    };
   }
 );

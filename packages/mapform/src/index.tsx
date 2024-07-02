@@ -29,6 +29,7 @@ import {
 } from "@mapform/blocknote";
 import { useMeasure } from "@mapform/lib/hooks/use-measure";
 import { Blocknote } from "./block-note";
+import { Points } from "./points";
 
 type ExtendedStep = Step & { latitude: number; longitude: number };
 
@@ -47,6 +48,7 @@ interface MapFormProps {
   onStepSubmit?: (data: Record<string, string>) => void;
   onImageUpload?: (file: File) => Promise<string | null>;
   onMoveEnd?: ((e: ViewStateChangeEvent) => void) | undefined;
+  points?: { id: number; latitude: number; longitude: number }[];
 }
 
 export const MapForm = forwardRef<MapRef, MapFormProps>(
@@ -65,6 +67,7 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
       defaultFormValues,
       onImageUpload,
       onMoveEnd,
+      points,
     },
     ref
   ) => {
@@ -194,6 +197,9 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
                   );
                 })
               )}
+
+              {/* Render active data points */}
+              {points ? <Points points={points} /> : null}
             </Map>
           </CustomBlockContext.Provider>
         </form>

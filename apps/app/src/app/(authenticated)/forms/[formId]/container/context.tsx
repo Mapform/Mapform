@@ -20,7 +20,7 @@ import {
 } from "react";
 import { useCreateQueryString } from "~/lib/create-query-string";
 import { type FormWithSteps } from "~/server/actions/forms/get-form-with-steps";
-import { getPointData } from "~/server/actions/point-data/get";
+import { getPointData, type Points } from "~/server/actions/point-data/get";
 import { updateStep } from "~/server/actions/steps/update";
 
 export interface ContainerContextProps {
@@ -36,6 +36,7 @@ export interface ContainerContextProps {
   currentDataTrack: DataTrack | undefined;
   setCurrentDataTrack: (dataTrackId?: string) => void;
   onMoveEnd?: ((e: ViewStateChangeEvent) => void) | undefined;
+  points: Points;
 }
 
 export const ContainerContext = createContext<ContainerContextProps>(
@@ -138,9 +139,11 @@ export function ContainerProvider({
         }))
       : [],
   });
+  const points = results
+    .map((result) => result.data?.data?.points)
+    .flat()
+    .filter(notEmpty);
   const debouncedUpdateStep = useDebounce(updateStepMutation, 500);
-
-  console.log(999999, results);
 
   useEffect(() => {
     if (formWithSteps.steps[0] && !s) {
@@ -213,9 +216,14 @@ export function ContainerProvider({
         currentDataTrack,
         setCurrentDataTrack,
         onMoveEnd,
+        points,
       }}
     >
       {children}
     </ContainerContext.Provider>
   );
+}
+
+function notEmpty<TValue>(value: TValue | null | undefined): value is TValue {
+  return value !== null && value !== undefined;
 }
