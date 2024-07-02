@@ -89,9 +89,10 @@ export function ContainerProvider({
     );
   });
 
-  const pointLayers = dataTrackForActiveStep?.layers
-    .map((layer) => layer.pointLayer?.id)
-    .filter(Boolean) as string[];
+  const pointLayers =
+    (dataTrackForActiveStep?.layers
+      .map((layer) => layer.pointLayer?.id)
+      .filter(Boolean) as string[] | undefined) || [];
 
   const map = useRef<MapRef>(null);
   const initialBounds = map.current?.getBounds();
