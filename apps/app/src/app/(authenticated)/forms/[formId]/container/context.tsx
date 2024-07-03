@@ -7,7 +7,7 @@ import type {
   ViewStateChangeEvent,
   LngLatBounds,
 } from "@mapform/mapform";
-import { useQueries, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import {
   type Dispatch,
@@ -20,7 +20,10 @@ import {
 } from "react";
 import { useCreateQueryString } from "~/lib/create-query-string";
 import { type FormWithSteps } from "~/server/actions/forms/get-form-with-steps";
-import { getPointData, type Points } from "~/server/actions/point-data/get";
+import {
+  type Points,
+  getLayerData,
+} from "~/server/actions/datatracks/get-layer-data";
 import { updateStep } from "~/server/actions/steps/update";
 
 export interface ContainerContextProps {
@@ -89,11 +92,6 @@ export function ContainerProvider({
     );
   });
 
-  const pointLayers =
-    (dataTrackForActiveStep?.layers
-      .map((layer) => layer.pointLayer?.id)
-      .filter(Boolean) as string[] | undefined) || [];
-
   const map = useRef<MapRef>(null);
   const initialBounds = map.current?.getBounds();
   const [bounds, setBounds] = useState<LngLatBounds | undefined>(initialBounds);
@@ -122,29 +120,50 @@ export function ContainerProvider({
       return { prevForm, newForm };
     },
   });
-  const results = useQueries({
-    queries: bounds
-      ? pointLayers.map((pointLayerId) => ({
-          queryKey: ["pointData", pointLayerId, bounds],
-          queryFn: () =>
-            getPointData({
-              pointLayerId,
-              bounds: {
-                minLng: bounds._sw.lng,
-                minLat: bounds._sw.lat,
-                maxLng: bounds._ne.lng,
-                maxLat: bounds._ne.lat,
-              },
-            }),
-          staleTime: Infinity,
-        }))
-      : [],
+  // const results = useQueries({
+  //   queries: bounds
+  //     ? pointLayers.map((pointLayerId) => ({
+  //         queryKey: ["pointData", pointLayerId, bounds],
+  //         queryFn: () =>
+  //           getPointData({
+  //             pointLayerId,
+  //             bounds: {
+  //               minLng: bounds._sw.lng,
+  //               minLat: bounds._sw.lat,
+  //               maxLng: bounds._ne.lng,
+  //               maxLat: bounds._ne.lat,
+  //             },
+  //           }),
+  //         staleTime: Infinity,
+  //       }))
+  //     : [],
+  // });
+  const { data } = useQuery({
+    placeholderData: (prevData) => prevData ?? { data: { points: [] } },
+    queryKey: ["pointData", dataTrackForActiveStep?.id, bounds],
+    queryFn: () =>
+      getLayerData({
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Handled via enabled
+        dataTrackId: dataTrackForActiveStep!.id,
+        bounds: {
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Handled via enabled
+          minLng: bounds!._sw.lng,
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Handled via enabled
+          minLat: bounds!._sw.lat,
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Handled via enabled
+          maxLng: bounds!._ne.lng,
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Handled via enabled
+          maxLat: bounds!._ne.lat,
+        },
+      }),
+    enabled: Boolean(bounds) && Boolean(dataTrackForActiveStep),
+    staleTime: Infinity,
   });
-  const points = results
-    .map((result) => result.data?.data?.points)
-    .flat()
-    .filter(notEmpty);
+
+  const points = data?.data?.points.filter(notEmpty) || [];
   const debouncedUpdateStep = useDebounce(updateStepMutation, 500);
+
+  console.log(11111, points);
 
   useEffect(() => {
     if (formWithSteps.steps[0] && !s) {
