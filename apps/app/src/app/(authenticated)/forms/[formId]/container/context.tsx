@@ -120,24 +120,7 @@ export function ContainerProvider({
       return { prevForm, newForm };
     },
   });
-  // const results = useQueries({
-  //   queries: bounds
-  //     ? pointLayers.map((pointLayerId) => ({
-  //         queryKey: ["pointData", pointLayerId, bounds],
-  //         queryFn: () =>
-  //           getPointData({
-  //             pointLayerId,
-  //             bounds: {
-  //               minLng: bounds._sw.lng,
-  //               minLat: bounds._sw.lat,
-  //               maxLng: bounds._ne.lng,
-  //               maxLat: bounds._ne.lat,
-  //             },
-  //           }),
-  //         staleTime: Infinity,
-  //       }))
-  //     : [],
-  // });
+
   const { data } = useQuery({
     placeholderData: (prevData) => prevData ?? { data: { points: [] } },
     queryKey: ["pointData", dataTrackForActiveStep?.id, bounds],
@@ -162,8 +145,6 @@ export function ContainerProvider({
 
   const points = data?.data?.points.filter(notEmpty) || [];
   const debouncedUpdateStep = useDebounce(updateStepMutation, 500);
-
-  console.log(11111, points);
 
   useEffect(() => {
     if (formWithSteps.steps[0] && !s) {
