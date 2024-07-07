@@ -29,7 +29,7 @@ import {
 } from "@mapform/blocknote";
 import { useMeasure } from "@mapform/lib/hooks/use-measure";
 import { Blocknote } from "./block-note";
-import { Points } from "./points";
+import { Data } from "./data";
 
 type ExtendedStep = Step & { latitude: number; longitude: number };
 
@@ -202,7 +202,7 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
               )}
 
               {/* Render active data points */}
-              {points ? <Points points={points} /> : null}
+              {points ? <Data points={points} /> : null}
             </Map>
           </CustomBlockContext.Provider>
         </form>

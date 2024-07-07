@@ -443,6 +443,9 @@ importers:
       '@types/mapbox-gl':
         specifier: ^3.1.0
         version: 3.1.0
+      geojson:
+        specifier: ^0.5.0
+        version: 0.5.0
       lucide-react:
         specifier: ^0.354.0
         version: 0.354.0(react@18.2.0)
@@ -468,6 +471,9 @@ importers:
       '@types/eslint':
         specifier: ^8.56.5
         version: 8.56.5
+      '@types/geojson':
+        specifier: ^7946.0.14
+        version: 7946.0.14
       '@types/node':
         specifier: ^20.11.24
         version: 20.11.25
@@ -4895,6 +4901,11 @@ packages:
 
   /geojson-vt@3.2.1:
     resolution: {integrity: sha512-EvGQQi/zPrDA6zr6BnJD/YhwAkBP8nnJ9emh3EnHQKVMfg/MRVtPbMYdgVy/IaEmn4UfagD2a6fafPDL5hbtwg==}
+
+  /geojson@0.5.0:
+    resolution: {integrity: sha512-/Bx5lEn+qRF4TfQ5aLu6NH+UKtvIv7Lhc487y/c8BdludrCTpiWf9wyI0RTyqg49MFefIAvFDuEi5Dfd/zgNxQ==}
+    engines: {node: '>= 0.10'}
+    dev: false
 
   /get-intrinsic@1.2.2:
     resolution: {integrity: sha512-0gSo4ml/0j98Y3lngkFEot/zhiCeWsbYIlZ+uZOVgzLyLaUw7wxUL+nCTP0XJvJg1AXulJRI3UJi8GsbDuxdGA==}
