@@ -25,21 +25,6 @@ export function DataSidebar() {
         </Button>
       </div>
       <Accordion defaultValue={["item-1"]} type="multiple">
-        <AccordionItem className="border-b" value="item-1">
-          <AccordionTrigger className="px-4">
-            <h3 className="text-xs font-semibold leading-6 text-gray-400 mb-0">
-              Data
-            </h3>
-          </AccordionTrigger>
-          <AccordionContent className="px-4">
-            <Button size="sm" variant="secondary">
-              Add
-            </Button>
-            {currentDataTrack?.datasets.map((dataset) => (
-              <div key={dataset.id}>{dataset.name}</div>
-            ))}
-          </AccordionContent>
-        </AccordionItem>
         <AccordionItem className="border-b" value="item-2">
           <AccordionTrigger className="px-4">
             <h3 className="text-xs font-semibold leading-6 text-gray-400 mb-0">

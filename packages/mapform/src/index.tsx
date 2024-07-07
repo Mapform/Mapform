@@ -67,7 +67,7 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
       defaultFormValues,
       onImageUpload,
       onMoveEnd,
-      points,
+      points = [],
     },
     ref
   ) => {
