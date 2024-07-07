@@ -281,6 +281,7 @@ enum ColumnType {
 
 model Layer {
     id          String      @id @default(uuid())
+    name        String?
     type        LayerType
     pointLayer  PointLayer?
     dataTrackId String      @unique

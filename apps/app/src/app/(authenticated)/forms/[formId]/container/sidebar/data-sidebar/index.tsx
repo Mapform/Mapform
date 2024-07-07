@@ -9,7 +9,7 @@ import { Button } from "@mapform/ui/components/button";
 import { useContainerContext } from "../../context";
 
 export function DataSidebar() {
-  const { setCurrentDataTrack } = useContainerContext();
+  const { currentDataTrack, setCurrentDataTrack } = useContainerContext();
 
   return (
     <div className="absolute inset-0 bg-white z-10">
@@ -31,7 +31,14 @@ export function DataSidebar() {
               Data
             </h3>
           </AccordionTrigger>
-          <AccordionContent className="px-4">Data</AccordionContent>
+          <AccordionContent className="px-4">
+            <Button size="sm" variant="secondary">
+              Add
+            </Button>
+            {currentDataTrack?.datasets.map((dataset) => (
+              <div key={dataset.id}>{dataset.name}</div>
+            ))}
+          </AccordionContent>
         </AccordionItem>
         <AccordionItem className="border-b" value="item-2">
           <AccordionTrigger className="px-4">
@@ -39,7 +46,14 @@ export function DataSidebar() {
               Layers
             </h3>
           </AccordionTrigger>
-          <AccordionContent className="px-4">Layers</AccordionContent>
+          <AccordionContent className="px-4">
+            <Button size="sm" variant="secondary">
+              Add
+            </Button>
+            {currentDataTrack?.layers.map((layer) => (
+              <div key={layer.id}>Layer {layer.id}</div>
+            ))}
+          </AccordionContent>
         </AccordionItem>
       </Accordion>
     </div>

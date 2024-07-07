@@ -94,7 +94,7 @@ export const StringCellScalarFieldEnumSchema = z.enum(['id','cellValueId','value
 
 export const PointCellScalarFieldEnumSchema = z.enum(['id','cellvalueid']);
 
-export const LayerScalarFieldEnumSchema = z.enum(['id','type','dataTrackId']);
+export const LayerScalarFieldEnumSchema = z.enum(['id','name','type','dataTrackId']);
 
 export const PointLayerScalarFieldEnumSchema = z.enum(['id','layerId','pointColumnId']);
 
@@ -716,6 +716,7 @@ export const PointCellWithRelationsSchema: z.ZodType<PointCellWithRelations> = P
 export const LayerSchema = z.object({
   type: LayerTypeSchema,
   id: z.string().uuid(),
+  name: z.string().nullable(),
   dataTrackId: z.string(),
 })
 
@@ -1356,6 +1357,7 @@ export const LayerArgsSchema: z.ZodType<Prisma.LayerDefaultArgs> = z.object({
 
 export const LayerSelectSchema: z.ZodType<Prisma.LayerSelect> = z.object({
   id: z.boolean().optional(),
+  name: z.boolean().optional(),
   type: z.boolean().optional(),
   dataTrackId: z.boolean().optional(),
   pointLayer: z.union([z.boolean(),z.lazy(() => PointLayerArgsSchema)]).optional(),
@@ -2712,6 +2714,7 @@ export const LayerWhereInputSchema: z.ZodType<Prisma.LayerWhereInput> = z.object
   OR: z.lazy(() => LayerWhereInputSchema).array().optional(),
   NOT: z.union([ z.lazy(() => LayerWhereInputSchema),z.lazy(() => LayerWhereInputSchema).array() ]).optional(),
   id: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  name: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
   type: z.union([ z.lazy(() => EnumLayerTypeFilterSchema),z.lazy(() => LayerTypeSchema) ]).optional(),
   dataTrackId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   pointLayer: z.union([ z.lazy(() => PointLayerNullableRelationFilterSchema),z.lazy(() => PointLayerWhereInputSchema) ]).optional().nullable(),
@@ -2720,6 +2723,7 @@ export const LayerWhereInputSchema: z.ZodType<Prisma.LayerWhereInput> = z.object
 
 export const LayerOrderByWithRelationInputSchema: z.ZodType<Prisma.LayerOrderByWithRelationInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
+  name: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   type: z.lazy(() => SortOrderSchema).optional(),
   dataTrackId: z.lazy(() => SortOrderSchema).optional(),
   pointLayer: z.lazy(() => PointLayerOrderByWithRelationInputSchema).optional(),
@@ -2744,6 +2748,7 @@ export const LayerWhereUniqueInputSchema: z.ZodType<Prisma.LayerWhereUniqueInput
   AND: z.union([ z.lazy(() => LayerWhereInputSchema),z.lazy(() => LayerWhereInputSchema).array() ]).optional(),
   OR: z.lazy(() => LayerWhereInputSchema).array().optional(),
   NOT: z.union([ z.lazy(() => LayerWhereInputSchema),z.lazy(() => LayerWhereInputSchema).array() ]).optional(),
+  name: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
   type: z.union([ z.lazy(() => EnumLayerTypeFilterSchema),z.lazy(() => LayerTypeSchema) ]).optional(),
   pointLayer: z.union([ z.lazy(() => PointLayerNullableRelationFilterSchema),z.lazy(() => PointLayerWhereInputSchema) ]).optional().nullable(),
   dataTrack: z.union([ z.lazy(() => DataTrackNullableRelationFilterSchema),z.lazy(() => DataTrackWhereInputSchema) ]).optional().nullable(),
@@ -2751,6 +2756,7 @@ export const LayerWhereUniqueInputSchema: z.ZodType<Prisma.LayerWhereUniqueInput
 
 export const LayerOrderByWithAggregationInputSchema: z.ZodType<Prisma.LayerOrderByWithAggregationInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
+  name: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   type: z.lazy(() => SortOrderSchema).optional(),
   dataTrackId: z.lazy(() => SortOrderSchema).optional(),
   _count: z.lazy(() => LayerCountOrderByAggregateInputSchema).optional(),
@@ -2763,6 +2769,7 @@ export const LayerScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.LayerSc
   OR: z.lazy(() => LayerScalarWhereWithAggregatesInputSchema).array().optional(),
   NOT: z.union([ z.lazy(() => LayerScalarWhereWithAggregatesInputSchema),z.lazy(() => LayerScalarWhereWithAggregatesInputSchema).array() ]).optional(),
   id: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
+  name: z.union([ z.lazy(() => StringNullableWithAggregatesFilterSchema),z.string() ]).optional().nullable(),
   type: z.union([ z.lazy(() => EnumLayerTypeWithAggregatesFilterSchema),z.lazy(() => LayerTypeSchema) ]).optional(),
   dataTrackId: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
 }).strict();
@@ -3910,6 +3917,7 @@ export const PointCellUncheckedUpdateManyInputSchema: z.ZodType<Prisma.PointCell
 
 export const LayerCreateInputSchema: z.ZodType<Prisma.LayerCreateInput> = z.object({
   id: z.string().uuid().optional(),
+  name: z.string().optional().nullable(),
   type: z.lazy(() => LayerTypeSchema),
   pointLayer: z.lazy(() => PointLayerCreateNestedOneWithoutLayerInputSchema).optional(),
   dataTrack: z.lazy(() => DataTrackCreateNestedOneWithoutLayersInputSchema).optional()
@@ -3917,6 +3925,7 @@ export const LayerCreateInputSchema: z.ZodType<Prisma.LayerCreateInput> = z.obje
 
 export const LayerUncheckedCreateInputSchema: z.ZodType<Prisma.LayerUncheckedCreateInput> = z.object({
   id: z.string().uuid().optional(),
+  name: z.string().optional().nullable(),
   type: z.lazy(() => LayerTypeSchema),
   dataTrackId: z.string(),
   pointLayer: z.lazy(() => PointLayerUncheckedCreateNestedOneWithoutLayerInputSchema).optional()
@@ -3924,6 +3933,7 @@ export const LayerUncheckedCreateInputSchema: z.ZodType<Prisma.LayerUncheckedCre
 
 export const LayerUpdateInputSchema: z.ZodType<Prisma.LayerUpdateInput> = z.object({
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   type: z.union([ z.lazy(() => LayerTypeSchema),z.lazy(() => EnumLayerTypeFieldUpdateOperationsInputSchema) ]).optional(),
   pointLayer: z.lazy(() => PointLayerUpdateOneWithoutLayerNestedInputSchema).optional(),
   dataTrack: z.lazy(() => DataTrackUpdateOneWithoutLayersNestedInputSchema).optional()
@@ -3931,6 +3941,7 @@ export const LayerUpdateInputSchema: z.ZodType<Prisma.LayerUpdateInput> = z.obje
 
 export const LayerUncheckedUpdateInputSchema: z.ZodType<Prisma.LayerUncheckedUpdateInput> = z.object({
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   type: z.union([ z.lazy(() => LayerTypeSchema),z.lazy(() => EnumLayerTypeFieldUpdateOperationsInputSchema) ]).optional(),
   dataTrackId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   pointLayer: z.lazy(() => PointLayerUncheckedUpdateOneWithoutLayerNestedInputSchema).optional()
@@ -3938,17 +3949,20 @@ export const LayerUncheckedUpdateInputSchema: z.ZodType<Prisma.LayerUncheckedUpd
 
 export const LayerCreateManyInputSchema: z.ZodType<Prisma.LayerCreateManyInput> = z.object({
   id: z.string().uuid().optional(),
+  name: z.string().optional().nullable(),
   type: z.lazy(() => LayerTypeSchema),
   dataTrackId: z.string()
 }).strict();
 
 export const LayerUpdateManyMutationInputSchema: z.ZodType<Prisma.LayerUpdateManyMutationInput> = z.object({
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   type: z.union([ z.lazy(() => LayerTypeSchema),z.lazy(() => EnumLayerTypeFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const LayerUncheckedUpdateManyInputSchema: z.ZodType<Prisma.LayerUncheckedUpdateManyInput> = z.object({
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   type: z.union([ z.lazy(() => LayerTypeSchema),z.lazy(() => EnumLayerTypeFieldUpdateOperationsInputSchema) ]).optional(),
   dataTrackId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
@@ -5071,18 +5085,21 @@ export const PointLayerNullableRelationFilterSchema: z.ZodType<Prisma.PointLayer
 
 export const LayerCountOrderByAggregateInputSchema: z.ZodType<Prisma.LayerCountOrderByAggregateInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
+  name: z.lazy(() => SortOrderSchema).optional(),
   type: z.lazy(() => SortOrderSchema).optional(),
   dataTrackId: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const LayerMaxOrderByAggregateInputSchema: z.ZodType<Prisma.LayerMaxOrderByAggregateInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
+  name: z.lazy(() => SortOrderSchema).optional(),
   type: z.lazy(() => SortOrderSchema).optional(),
   dataTrackId: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const LayerMinOrderByAggregateInputSchema: z.ZodType<Prisma.LayerMinOrderByAggregateInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
+  name: z.lazy(() => SortOrderSchema).optional(),
   type: z.lazy(() => SortOrderSchema).optional(),
   dataTrackId: z.lazy(() => SortOrderSchema).optional()
 }).strict();
@@ -8239,12 +8256,14 @@ export const DatasetCreateManyDataTrackInputEnvelopeSchema: z.ZodType<Prisma.Dat
 
 export const LayerCreateWithoutDataTrackInputSchema: z.ZodType<Prisma.LayerCreateWithoutDataTrackInput> = z.object({
   id: z.string().uuid().optional(),
+  name: z.string().optional().nullable(),
   type: z.lazy(() => LayerTypeSchema),
   pointLayer: z.lazy(() => PointLayerCreateNestedOneWithoutLayerInputSchema).optional()
 }).strict();
 
 export const LayerUncheckedCreateWithoutDataTrackInputSchema: z.ZodType<Prisma.LayerUncheckedCreateWithoutDataTrackInput> = z.object({
   id: z.string().uuid().optional(),
+  name: z.string().optional().nullable(),
   type: z.lazy(() => LayerTypeSchema),
   pointLayer: z.lazy(() => PointLayerUncheckedCreateNestedOneWithoutLayerInputSchema).optional()
 }).strict();
@@ -8343,6 +8362,7 @@ export const LayerScalarWhereInputSchema: z.ZodType<Prisma.LayerScalarWhereInput
   OR: z.lazy(() => LayerScalarWhereInputSchema).array().optional(),
   NOT: z.union([ z.lazy(() => LayerScalarWhereInputSchema),z.lazy(() => LayerScalarWhereInputSchema).array() ]).optional(),
   id: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  name: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
   type: z.union([ z.lazy(() => EnumLayerTypeFilterSchema),z.lazy(() => LayerTypeSchema) ]).optional(),
   dataTrackId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
 }).strict();
@@ -9723,12 +9743,14 @@ export const DataTrackUncheckedUpdateWithoutLayersInputSchema: z.ZodType<Prisma.
 
 export const LayerCreateWithoutPointLayerInputSchema: z.ZodType<Prisma.LayerCreateWithoutPointLayerInput> = z.object({
   id: z.string().uuid().optional(),
+  name: z.string().optional().nullable(),
   type: z.lazy(() => LayerTypeSchema),
   dataTrack: z.lazy(() => DataTrackCreateNestedOneWithoutLayersInputSchema).optional()
 }).strict();
 
 export const LayerUncheckedCreateWithoutPointLayerInputSchema: z.ZodType<Prisma.LayerUncheckedCreateWithoutPointLayerInput> = z.object({
   id: z.string().uuid().optional(),
+  name: z.string().optional().nullable(),
   type: z.lazy(() => LayerTypeSchema),
   dataTrackId: z.string()
 }).strict();
@@ -9771,12 +9793,14 @@ export const LayerUpdateToOneWithWhereWithoutPointLayerInputSchema: z.ZodType<Pr
 
 export const LayerUpdateWithoutPointLayerInputSchema: z.ZodType<Prisma.LayerUpdateWithoutPointLayerInput> = z.object({
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   type: z.union([ z.lazy(() => LayerTypeSchema),z.lazy(() => EnumLayerTypeFieldUpdateOperationsInputSchema) ]).optional(),
   dataTrack: z.lazy(() => DataTrackUpdateOneWithoutLayersNestedInputSchema).optional()
 }).strict();
 
 export const LayerUncheckedUpdateWithoutPointLayerInputSchema: z.ZodType<Prisma.LayerUncheckedUpdateWithoutPointLayerInput> = z.object({
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   type: z.union([ z.lazy(() => LayerTypeSchema),z.lazy(() => EnumLayerTypeFieldUpdateOperationsInputSchema) ]).optional(),
   dataTrackId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
@@ -10289,6 +10313,7 @@ export const DatasetCreateManyDataTrackInputSchema: z.ZodType<Prisma.DatasetCrea
 
 export const LayerCreateManyDataTrackInputSchema: z.ZodType<Prisma.LayerCreateManyDataTrackInput> = z.object({
   id: z.string().uuid().optional(),
+  name: z.string().optional().nullable(),
   type: z.lazy(() => LayerTypeSchema)
 }).strict();
 
@@ -10316,18 +10341,21 @@ export const DatasetUncheckedUpdateManyWithoutDataTrackInputSchema: z.ZodType<Pr
 
 export const LayerUpdateWithoutDataTrackInputSchema: z.ZodType<Prisma.LayerUpdateWithoutDataTrackInput> = z.object({
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   type: z.union([ z.lazy(() => LayerTypeSchema),z.lazy(() => EnumLayerTypeFieldUpdateOperationsInputSchema) ]).optional(),
   pointLayer: z.lazy(() => PointLayerUpdateOneWithoutLayerNestedInputSchema).optional()
 }).strict();
 
 export const LayerUncheckedUpdateWithoutDataTrackInputSchema: z.ZodType<Prisma.LayerUncheckedUpdateWithoutDataTrackInput> = z.object({
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   type: z.union([ z.lazy(() => LayerTypeSchema),z.lazy(() => EnumLayerTypeFieldUpdateOperationsInputSchema) ]).optional(),
   pointLayer: z.lazy(() => PointLayerUncheckedUpdateOneWithoutLayerNestedInputSchema).optional()
 }).strict();
 
 export const LayerUncheckedUpdateManyWithoutDataTrackInputSchema: z.ZodType<Prisma.LayerUncheckedUpdateManyWithoutDataTrackInput> = z.object({
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   type: z.union([ z.lazy(() => LayerTypeSchema),z.lazy(() => EnumLayerTypeFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 

@@ -156,6 +156,9 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
                 }));
               }}
               onMoveEnd={onMoveEnd}
+              projection={{
+                name: "globe",
+              }}
               ref={ref}
               style={{ flex: 1 }}
             >

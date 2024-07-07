@@ -1,4 +1,3 @@
-import { type DataTrack } from "@mapform/db";
 import { type StepWithLocation } from "@mapform/db/extentsions/steps";
 import { useDebounce } from "@mapform/lib/use-debounce";
 import type {
@@ -36,7 +35,7 @@ export interface ContainerContextProps {
   setDragSteps: Dispatch<SetStateAction<string[]>>;
   setCurrentStep: (stepId: string) => void;
   debouncedUpdateStep: typeof updateStep;
-  currentDataTrack: DataTrack | undefined;
+  currentDataTrack: FormWithSteps["dataTracks"][number] | undefined;
   setCurrentDataTrack: (dataTrackId?: string) => void;
   onMoveEnd?: ((e: ViewStateChangeEvent) => void) | undefined;
   points: Points;
