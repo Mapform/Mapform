@@ -151,12 +151,11 @@ model Step {
 }
 
 model DataTrack {
-    id             String    @id @default(uuid())
+    id             String  @id @default(uuid())
     startStepIndex Int
     endStepIndex   Int
     formId         String?
-    form           Form?     @relation(name: "DataTracks", fields: [formId], references: [id], onDelete: Cascade)
-    datasets       Dataset[]
+    form           Form?   @relation(name: "DataTracks", fields: [formId], references: [id], onDelete: Cascade)
     layers         Layer[]
 }
 
@@ -208,14 +207,13 @@ model Location {
 }
 
 model Dataset {
-    id          String     @id @default(uuid())
+    id          String    @id @default(uuid())
     name        String
-    columns     Column[]   @relation("DatasetColumns")
-    rows        Row[]      @relation("DatasetRows")
+    columns     Column[]  @relation("DatasetColumns")
+    rows        Row[]     @relation("DatasetRows")
     workspaceId String
-    workspace   Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-    dataTrack   DataTrack? @relation(fields: [dataTrackId], references: [id])
-    dataTrackId String?
+    workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+    layers      Layer[]
 }
 
 model Column {
@@ -286,6 +284,8 @@ model Layer {
     pointLayer  PointLayer?
     dataTrackId String      @unique
     dataTrack   DataTrack?  @relation(fields: [dataTrackId], references: [id], onDelete: Cascade)
+    datasetId   String
+    dataset     Dataset     @relation(fields: [datasetId], references: [id], onDelete: Cascade)
 }
 
 model PointLayer {
