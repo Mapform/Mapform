@@ -1,3 +1,5 @@
+"use server";
+
 import { prisma } from "@mapform/db";
 import { revalidatePath } from "next/cache";
 import { authAction } from "~/lib/safe-action";

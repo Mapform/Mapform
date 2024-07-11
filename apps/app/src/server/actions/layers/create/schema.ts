@@ -1,3 +1,5 @@
+"use server";
+
 import { LayerType } from "@mapform/db";
 import { z } from "zod";
 

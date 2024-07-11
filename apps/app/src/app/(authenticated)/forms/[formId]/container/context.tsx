@@ -28,14 +28,16 @@ import { updateStep } from "~/server/actions/steps/update";
 export interface ContainerContextProps {
   map: React.RefObject<MapRef>;
   dragSteps: string[];
-  formWithSteps: FormWithSteps;
+  formWithSteps: NonNullable<FormWithSteps["data"]>;
   currentStep: StepWithLocation | undefined;
   viewState: ViewState;
   setViewState: Dispatch<SetStateAction<ViewState>>;
   setDragSteps: Dispatch<SetStateAction<string[]>>;
   setCurrentStep: (stepId: string) => void;
   debouncedUpdateStep: typeof updateStep;
-  currentDataTrack: FormWithSteps["dataTracks"][number] | undefined;
+  currentDataTrack:
+    | NonNullable<FormWithSteps["data"]>["dataTracks"][number]
+    | undefined;
   setCurrentDataTrack: (dataTrackId?: string) => void;
   onMoveEnd?: ((e: ViewStateChangeEvent) => void) | undefined;
   points: Points;
@@ -65,7 +67,7 @@ export function ContainerProvider({
   formWithSteps,
   children,
 }: {
-  formWithSteps: FormWithSteps;
+  formWithSteps: NonNullable<FormWithSteps["data"]>;
   children: React.ReactNode;
 }) {
   const router = useRouter();
@@ -101,7 +103,7 @@ export function ContainerProvider({
       const queryKey = ["forms", data.formId];
       await queryClient.cancelQueries({ queryKey });
 
-      const prevForm: FormWithSteps | undefined =
+      const prevForm: FormWithSteps["data"] | undefined =
         queryClient.getQueryData(queryKey);
 
       // This should never happen
