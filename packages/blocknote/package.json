@@ -17,7 +17,7 @@
     "@mapform/ui": "workspace:*",
     "lucide-react": "^0.354.0",
     "next": "14.1.3",
-    "zod": "^3.23.8"
+    "zod": "3.23.8"
   },
   "devDependencies": {
     "@mapform/eslint-config": "workspace:*",
@@ -30,6 +30,6 @@
     "react": "^18.2.0",
     "react-map-gl": "^7.1.7",
     "tailwindcss": "^3.3.0",
-    "typescript": "^5.3.3"
+    "typescript": "^5.5.2"
   }
 }

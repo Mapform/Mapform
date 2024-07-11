@@ -5,7 +5,7 @@
     "clsx": "^2.1.0",
     "lucide-react": "^0.354.0",
     "tailwind-merge": "^2.2.1",
-    "zod": "^3.23.8"
+    "zod": "3.23.8"
   },
   "devDependencies": {
     "@mapform/eslint-config": "workspace:*",
@@ -15,6 +15,6 @@
     "@types/react-dom": "^18.2.23",
     "eslint": "^8.57.0",
     "react": "^18.2.0",
-    "typescript": "^5.3.3"
+    "typescript": "^5.5.2"
   }
 }

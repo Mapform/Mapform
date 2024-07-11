@@ -6,9 +6,9 @@ import { revalidatePath } from "next/cache";
 import { authAction } from "~/lib/safe-action";
 import { createDatasetSchema } from "./schema";
 
-export const createDataset = authAction(
-  createDatasetSchema,
-  async ({ name, workspaceId, data }) => {
+export const createDataset = authAction
+  .schema(createDatasetSchema)
+  .action(async ({ parsedInput: { name, workspaceId, data } }) => {
     // Validate field types are consistent
     if (!validateFieldTypes(data)) {
       throw new Error("Field types are inconsistent");
@@ -135,8 +135,7 @@ export const createDataset = authAction(
     });
 
     revalidatePath("/");
-  }
-);
+  });
 
 function validateFieldTypes(array: Record<string, any>[]) {
   if (array.length === 0) {

@@ -6,9 +6,9 @@ import { getLayerDataSchema } from "./schema";
 
 export type Points = { id: number; longitude: number; latitude: number }[];
 
-export const getLayerData = authAction(
-  getLayerDataSchema,
-  async ({ dataTrackId, bounds }) => {
+export const getLayerData = authAction
+  .schema(getLayerDataSchema)
+  .action(async ({ parsedInput: { dataTrackId, bounds } }) => {
     const dataTrack = await prisma.dataTrack.findUnique({
       where: {
         id: dataTrackId,
@@ -51,5 +51,4 @@ export const getLayerData = authAction(
     return {
       points,
     };
-  }
-);
+  });

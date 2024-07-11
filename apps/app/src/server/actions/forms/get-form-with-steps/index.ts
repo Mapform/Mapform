@@ -4,9 +4,9 @@ import { prisma } from "@mapform/db";
 import { authAction } from "~/lib/safe-action";
 import { getFormWithStepsSchema } from "./schema";
 
-export const getFormWithSteps = authAction(
-  getFormWithStepsSchema,
-  async ({ formId }, { orgId }) => {
+export const getFormWithSteps = authAction
+  .schema(getFormWithStepsSchema)
+  .action(async ({ parsedInput: { formId }, ctx: { orgId } }) => {
     const form = await prisma.form.findUnique({
       where: {
         id: formId,
@@ -39,9 +39,8 @@ export const getFormWithSteps = authAction(
       ...form,
       steps,
     };
-  }
-);
+  });
 
 export type FormWithSteps = NonNullable<
-  Awaited<ReturnType<typeof getFormWithSteps>>["data"]
+  Awaited<ReturnType<typeof getFormWithSteps>>
 >;

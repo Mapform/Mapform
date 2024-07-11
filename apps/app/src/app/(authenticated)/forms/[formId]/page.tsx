@@ -21,7 +21,7 @@ export default async function Workspace({
         await getFormWithSteps({
           formId: params.formId,
         })
-      ).data,
+      )?.data,
   });
 
   await getNearbyPoints();

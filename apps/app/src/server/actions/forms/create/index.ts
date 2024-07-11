@@ -6,9 +6,9 @@ import { revalidatePath } from "next/cache";
 import { authAction } from "~/lib/safe-action";
 import { createFormSchema } from "./schema";
 
-export const createForm = authAction(
-  createFormSchema,
-  async ({ name, workspaceId }) => {
+export const createForm = authAction
+  .schema(createFormSchema)
+  .action(async ({ parsedInput: { name, workspaceId } }) => {
     const slug = slugify(name, {
       lower: true,
       strict: true,
@@ -30,5 +30,4 @@ export const createForm = authAction(
     });
 
     revalidatePath("/");
-  }
-);
+  });

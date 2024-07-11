@@ -17,7 +17,7 @@ export function Container({ formId }: { formId: string }) {
     queryFn: async () => {
       const formWithSteps = await getFormWithSteps({ formId });
 
-      return formWithSteps.data;
+      return formWithSteps?.data;
     },
   });
 
