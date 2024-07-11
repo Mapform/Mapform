@@ -5,9 +5,9 @@ import { revalidatePath } from "next/cache";
 import { authAction } from "~/lib/safe-action";
 import { deleteStepSchema } from "./schema";
 
-export const deleteStep = authAction(
-  deleteStepSchema,
-  async ({ stepId }, { orgId }) => {
+export const deleteStep = authAction
+  .schema(deleteStepSchema)
+  .action(async ({ parsedInput: { stepId }, ctx: { orgId } }) => {
     const userStep = await prisma.step.findUnique({
       where: {
         id: stepId,
@@ -40,5 +40,4 @@ export const deleteStep = authAction(
     });
 
     revalidatePath(`/forms/${userStep.formId}`);
-  }
-);
+  });

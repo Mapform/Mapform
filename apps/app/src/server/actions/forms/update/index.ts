@@ -5,9 +5,9 @@ import { revalidatePath } from "next/cache";
 import { authAction } from "~/lib/safe-action";
 import { updateFormSchema } from "./schema";
 
-export const updateForm = authAction(
-  updateFormSchema,
-  async ({ formId, data }, { orgId }) => {
+export const updateForm = authAction
+  .schema(updateFormSchema)
+  .action(async ({ parsedInput: { formId, data }, ctx: { orgId } }) => {
     const userForm = await prisma.form.findUnique({
       where: {
         id: formId,
@@ -32,5 +32,4 @@ export const updateForm = authAction(
     });
 
     revalidatePath("/");
-  }
-);
+  });

@@ -5,9 +5,9 @@ import { revalidatePath } from "next/cache";
 import { authAction } from "~/lib/safe-action";
 import { updateStepSchema } from "./schema";
 
-export const updateStep = authAction(
-  updateStepSchema,
-  async ({ stepId, data }, { orgId }) => {
+export const updateStep = authAction
+  .schema(updateStepSchema)
+  .action(async ({ parsedInput: { stepId, data }, ctx: { orgId } }) => {
     if (!data.formId) {
       throw new Error("Form ID is required.");
     }
@@ -42,5 +42,4 @@ export const updateStep = authAction(
     });
 
     revalidatePath("/");
-  }
-);
+  });

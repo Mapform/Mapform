@@ -7,9 +7,9 @@ import { clerkClient } from "@clerk/nextjs";
 import { authAction } from "~/lib/safe-action";
 import { createOrgSchema } from "./schema";
 
-export const createOrg = authAction(
-  createOrgSchema,
-  async ({ name }, { userId }) => {
+export const createOrg = authAction
+  .schema(createOrgSchema)
+  .action(async ({ parsedInput: { name }, ctx: { userId } }) => {
     const slug = slugify(name, {
       lower: true,
       strict: true,
@@ -44,5 +44,4 @@ export const createOrg = authAction(
     });
 
     revalidatePath("/");
-  }
-);
+  });

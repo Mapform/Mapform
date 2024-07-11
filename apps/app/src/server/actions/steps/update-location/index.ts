@@ -5,9 +5,9 @@ import { revalidatePath } from "next/cache";
 import { authAction } from "~/lib/safe-action";
 import { updateStepLocationSchema } from "./schema";
 
-export const updateStepWithLocation = authAction(
-  updateStepLocationSchema,
-  async ({ stepId, data }, { orgId }) => {
+export const updateStepWithLocation = authAction
+  .schema(updateStepLocationSchema)
+  .action(async ({ parsedInput: { stepId, data }, ctx: { orgId } }) => {
     const stepOfOrg = await prisma.step.findUnique({
       where: {
         id: stepId,
@@ -47,5 +47,4 @@ export const updateStepWithLocation = authAction(
     });
 
     revalidatePath("/");
-  }
-);
+  });

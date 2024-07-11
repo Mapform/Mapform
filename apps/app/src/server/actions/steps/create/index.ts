@@ -5,9 +5,9 @@ import { revalidatePath } from "next/cache";
 import { authAction } from "~/lib/safe-action";
 import { createStepSchema } from "./schema";
 
-export const createStep = authAction(
-  createStepSchema,
-  async ({ formId, location }) => {
+export const createStep = authAction
+  .schema(createStepSchema)
+  .action(async ({ parsedInput: { formId, location } }) => {
     // TODO: Check if form belongs to the user
 
     /**
@@ -36,5 +36,4 @@ export const createStep = authAction(
 
       return newStep;
     });
-  }
-);
+  });
