@@ -202,7 +202,7 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
               )}
 
               {/* Render active data points */}
-              {points ? <Data points={points} /> : null}
+              <Data points={points} />
             </Map>
           </CustomBlockContext.Provider>
         </form>
