@@ -28,7 +28,7 @@ import { updateStep } from "~/server/actions/steps/update";
 export interface ContainerContextProps {
   map: React.RefObject<MapRef>;
   dragSteps: string[];
-  formWithSteps: NonNullable<FormWithSteps["data"]>;
+  formWithSteps: FormWithSteps;
   currentStep: StepWithLocation | undefined;
   viewState: ViewState;
   setViewState: Dispatch<SetStateAction<ViewState>>;

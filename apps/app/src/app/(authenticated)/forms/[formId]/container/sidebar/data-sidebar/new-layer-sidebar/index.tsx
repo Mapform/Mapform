@@ -1,4 +1,7 @@
+"use client";
+
 import { Button } from "@mapform/ui/components/button";
+import { Skeleton } from "@mapform/ui/components/skeleton";
 import {
   Form,
   FormControl,
@@ -10,6 +13,7 @@ import {
   useForm,
   zodResolver,
 } from "@mapform/ui/components/form";
+import { useParams } from "next/navigation";
 import {
   Select,
   SelectTrigger,
@@ -18,10 +22,13 @@ import {
   SelectItem,
 } from "@mapform/ui/components/select";
 import { ArrowLeftIcon } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 import {
   type CreateLayerSchema,
   createLayerSchema,
 } from "~/server/actions/layers/create/schema";
+import { listAvailableDatasets } from "~/server/actions/datasets/list-available";
+import { useContainerContext } from "../../../context";
 
 interface NewLayerSidebarProps {
   setShowNewLayerSidebar: (show: boolean) => void;
@@ -30,15 +37,21 @@ interface NewLayerSidebarProps {
 export function NewLayerSidebar({
   setShowNewLayerSidebar,
 }: NewLayerSidebarProps) {
+  const { currentDataTrack } = useContainerContext();
   const form = useForm<CreateLayerSchema>({
     defaultValues: {
-      name: "",
+      dataTrackId: currentDataTrack?.id,
     },
-    mode: "onChange",
     resolver: zodResolver(createLayerSchema),
+  });
+  const params = useParams<{ formId: string }>();
+  const { data, isLoading } = useQuery({
+    queryKey: ["datasets", params.formId],
+    queryFn: () => listAvailableDatasets({ formId: params.formId }),
   });
 
   const onSubmit = async (values: CreateLayerSchema) => {
+    console.log(11111, values);
     // const { serverError, validationErrors } = await createOrg(values);
     // if (serverError) {
     //   toast(serverError);
@@ -52,8 +65,16 @@ export function NewLayerSidebar({
     // toast("Your organization has been created.");
   };
 
+  if (isLoading) {
+    return (
+      <div className="absolute inset-0 bg-white z-10 p-4">
+        <Skeleton className="w-full h-8" />
+      </div>
+    );
+  }
+
   return (
-    <div className="absolute inset-0 bg-white z-10">
+    <div className="absolute inset-0 bg-white z-10 flex flex-col">
       <div className="p-4 border-b">
         <Button
           onClick={() => {
@@ -65,69 +86,78 @@ export function NewLayerSidebar({
           <ArrowLeftIcon className="h-4 w-4 mr-1" /> Close
         </Button>
       </div>
-      <div className="p-4">
+      <div className="p-4 flex flex-col flex-1">
         <Form {...form}>
-          <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
-            {/* DATASET */}
-            <FormField
-              control={form.control}
-              name="type"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel htmlFor="layerType">Dataset</FormLabel>
-                  <FormControl>
-                    <Select
-                      disabled={status === "executing"}
-                      name={field.name}
-                      onValueChange={field.onChange}
-                      value={field.value}
-                    >
-                      <SelectTrigger className="mt-1.5" id="layerType">
-                        <SelectValue placeholder="Select a dataset" />
-                      </SelectTrigger>
-                      <SelectContent ref={field.ref}>
-                        <SelectItem className="capitalize" value="POINT">
-                          Point
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+          <form
+            className="flex flex-col flex-1"
+            onSubmit={form.handleSubmit(onSubmit)}
+          >
+            <div className="space-y-6">
+              {/* DATASET */}
+              <FormField
+                control={form.control}
+                name="dataSetId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel htmlFor="dataset">Dataset</FormLabel>
+                    <FormControl>
+                      <Select
+                        name={field.name}
+                        onValueChange={field.onChange}
+                        value={field.value}
+                      >
+                        <SelectTrigger className="mt-1.5" id="dataset">
+                          <SelectValue placeholder="Select a dataset" />
+                        </SelectTrigger>
+                        <SelectContent ref={field.ref}>
+                          {data?.data?.map((dataset) => (
+                            <SelectItem key={dataset.id} value={dataset.id}>
+                              {dataset.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            {/* TYPE */}
-            <FormField
-              control={form.control}
-              name="type"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel htmlFor="layerType">Layer Type</FormLabel>
-                  <FormControl>
-                    <Select
-                      disabled={status === "executing"}
-                      name={field.name}
-                      onValueChange={field.onChange}
-                      value={field.value}
-                    >
-                      <SelectTrigger className="mt-1.5" id="layerType">
-                        <SelectValue placeholder="Select a layer type" />
-                      </SelectTrigger>
-                      <SelectContent ref={field.ref}>
-                        <SelectItem className="capitalize" value="POINT">
-                          Point
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </FormControl>
-                  <FormMessage />
-                  <FormDescription>
-                    Choose how the data should be represented.
-                  </FormDescription>
-                </FormItem>
-              )}
-            />
+              {/* TYPE */}
+              <FormField
+                control={form.control}
+                name="type"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel htmlFor="layerType">Layer Type</FormLabel>
+                    <FormControl>
+                      <Select
+                        name={field.name}
+                        onValueChange={field.onChange}
+                        value={field.value}
+                      >
+                        <SelectTrigger className="mt-1.5" id="layerType">
+                          <SelectValue placeholder="Select a layer type" />
+                        </SelectTrigger>
+                        <SelectContent ref={field.ref}>
+                          <SelectItem className="capitalize" value="POINT">
+                            Point
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                    <FormDescription>
+                      Choose how the data should be represented.
+                    </FormDescription>
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <Button className="mt-auto" type="submit">
+              Create
+            </Button>
           </form>
         </Form>
       </div>
