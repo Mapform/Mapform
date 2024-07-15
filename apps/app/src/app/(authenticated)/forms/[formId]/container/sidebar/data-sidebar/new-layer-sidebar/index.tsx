@@ -23,6 +23,7 @@ import {
 } from "@mapform/ui/components/select";
 import { ArrowLeftIcon } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import { useMemo } from "react";
 import {
   type CreateLayerSchema,
   createLayerSchema,
@@ -65,6 +66,22 @@ export function NewLayerSidebar({
     // toast("Your organization has been created.");
   };
 
+  // If Dataset and Type are selected, get the columns for the dataset
+  const availableColumns = useMemo(() => {
+    const type = form.watch("type");
+    const datasetId = form.watch("datasetId");
+    const dataset = data?.data?.find((ds) => ds.id === datasetId);
+
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- This won't be an issue when more types are added
+    if (!dataset || !type) {
+      return null;
+    }
+
+    return dataset.columns.filter((column) => {
+      return column.dataType === type;
+    });
+  }, [data?.data, form]);
+
   if (isLoading) {
     return (
       <div className="absolute inset-0 bg-white z-10 p-4">
@@ -96,7 +113,7 @@ export function NewLayerSidebar({
               {/* DATASET */}
               <FormField
                 control={form.control}
-                name="dataSetId"
+                name="datasetId"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel htmlFor="dataset">Dataset</FormLabel>
@@ -153,6 +170,39 @@ export function NewLayerSidebar({
                   </FormItem>
                 )}
               />
+
+              {form.watch("type") === "POINT" && availableColumns ? (
+                <FormField
+                  control={form.control}
+                  name="pointColumnId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel htmlFor="latitudeColumn">
+                        Point Column
+                      </FormLabel>
+                      <FormControl>
+                        <Select
+                          name={field.name}
+                          onValueChange={field.onChange}
+                          value={field.value}
+                        >
+                          <SelectTrigger className="mt-1.5" id="latitudeColumn">
+                            <SelectValue placeholder="Select a column" />
+                          </SelectTrigger>
+                          <SelectContent ref={field.ref}>
+                            {availableColumns.map((column) => (
+                              <SelectItem key={column.id} value={column.id}>
+                                {column.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              ) : null}
             </div>
 
             <Button className="mt-auto" type="submit">

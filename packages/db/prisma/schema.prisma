@@ -217,7 +217,7 @@ model Dataset {
 }
 
 model Column {
-    id          Int          @id @default(autoincrement())
+    id          String       @id @default(uuid())
     datasetId   String
     name        String
     dataType    ColumnType
@@ -229,7 +229,7 @@ model Column {
 }
 
 model Row {
-    id         Int         @id @default(autoincrement())
+    id         String      @id @default(uuid())
     datasetId  String
     dataset    Dataset     @relation("DatasetRows", fields: [datasetId], references: [id])
     cellValues CellValue[] @relation("RowCellValues")
@@ -237,8 +237,8 @@ model Row {
 
 model CellValue {
     id       String @id
-    rowId    Int
-    columnId Int
+    rowId    String
+    columnId String
     column   Column @relation("ColumnCellValues", fields: [columnId], references: [id])
     row      Row    @relation("RowCellValues", fields: [rowId], references: [id])
 
@@ -248,21 +248,21 @@ model CellValue {
 }
 
 model BoolCell {
-    id          Int       @id @default(autoincrement())
+    id          String    @id @default(uuid())
     cellValueId String    @unique
     value       Boolean
     cellValue   CellValue @relation(fields: [cellValueId], references: [id])
 }
 
 model StringCell {
-    id          Int       @id @default(autoincrement())
+    id          String    @id @default(uuid())
     cellValueId String    @unique
     value       String
     cellValue   CellValue @relation(fields: [cellValueId], references: [id])
 }
 
 model PointCell {
-    id          Int                                  @id @default(autoincrement())
+    id          String                               @id @default(uuid())
     // This needs to be lowercase for Prisma executeRaw to work
     cellvalueid String                               @unique
     value       Unsupported("geometry(Point, 4326)")
@@ -294,7 +294,7 @@ model PointLayer {
     layer   Layer  @relation(fields: [layerId], references: [id], onDelete: Cascade)
 
     // Needed for identifying PointCells
-    pointColumnId Int
+    pointColumnId String
     pointColumn   Column @relation(fields: [pointColumnId], references: [id], onDelete: Cascade)
 }
 

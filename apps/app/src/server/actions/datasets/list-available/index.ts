@@ -24,5 +24,8 @@ export const listAvailableDatasets = authAction
       where: {
         workspaceId: form.workspaceId,
       },
+      include: {
+        columns: true,
+      },
     });
   });

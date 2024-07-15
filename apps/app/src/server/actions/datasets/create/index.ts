@@ -48,7 +48,7 @@ export const createDataset = authAction
               ...Object.keys(data[0]!).map((key) => ({
                 name: key,
                 // TODO: Map types to Prisma types
-                dataType: "STRING" as const,
+                dataType: "POINT" as const,
               })),
             ],
           },
@@ -58,7 +58,7 @@ export const createDataset = authAction
         },
       });
 
-      const dateset = await tx.dataset.update({
+      const dataset = await tx.dataset.update({
         where: {
           id: datasetWithCols.id,
         },
@@ -85,6 +85,14 @@ export const createDataset = authAction
             ],
           },
         },
+        include: {
+          rows: {
+            include: {
+              cellValues: true,
+            },
+          },
+          columns: true,
+        },
       });
 
       const cells = dataWithModifiedCells.flatMap((row) => row);
@@ -98,7 +106,7 @@ export const createDataset = authAction
         .filter((cell) => cell.type === "POINT")
         .map(
           (cell) =>
-            Prisma.sql`(${cell.id}, ST_SetSRID(ST_MakePoint(${cell.value.coordinates[0]}, ${cell.value.coordinates[1]}), 4326))`
+            Prisma.sql`(${uuidv4()}, ${cell.id}, ST_SetSRID(ST_MakePoint(${cell.value.coordinates[0]}, ${cell.value.coordinates[1]}), 4326))`
         );
 
       await Promise.all([
@@ -126,12 +134,12 @@ export const createDataset = authAction
          * Insert PointCells. Need to INSERT using raw SQL because Prisma does not support PostGIS
          */
         tx.$executeRaw`
-          INSERT INTO "PointCell" (cellvalueid, value)
+          INSERT INTO "PointCell" (id, cellvalueid, value)
           VALUES ${Prisma.join(pointCells)};
         `,
       ]);
 
-      return dateset;
+      return dataset;
     });
 
     revalidatePath("/");
