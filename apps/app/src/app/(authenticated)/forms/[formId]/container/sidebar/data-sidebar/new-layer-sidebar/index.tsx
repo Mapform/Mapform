@@ -67,7 +67,7 @@ export function NewLayerSidebar({
   };
 
   // If Dataset and Type are selected, get the columns for the dataset
-  const availableColumns = useMemo(() => {
+  const getAvailableColumns = () => {
     const type = form.watch("type");
     const datasetId = form.watch("datasetId");
     const dataset = data?.data?.find((ds) => ds.id === datasetId);
@@ -80,7 +80,7 @@ export function NewLayerSidebar({
     return dataset.columns.filter((column) => {
       return column.dataType === type;
     });
-  }, [data?.data, form]);
+  };
 
   if (isLoading) {
     return (
@@ -171,7 +171,7 @@ export function NewLayerSidebar({
                 )}
               />
 
-              {form.watch("type") === "POINT" && availableColumns ? (
+              {form.watch("type") === "POINT" && getAvailableColumns() ? (
                 <FormField
                   control={form.control}
                   name="pointColumnId"
@@ -190,7 +190,7 @@ export function NewLayerSidebar({
                             <SelectValue placeholder="Select a column" />
                           </SelectTrigger>
                           <SelectContent ref={field.ref}>
-                            {availableColumns.map((column) => (
+                            {getAvailableColumns().map((column) => (
                               <SelectItem key={column.id} value={column.id}>
                                 {column.name}
                               </SelectItem>

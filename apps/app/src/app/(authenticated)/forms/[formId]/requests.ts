@@ -29,7 +29,7 @@ export async function getNearbyPoints() {
     FROM "PointCell"
     JOIN "CellValue" ON "PointCell"."cellvalueid" = "CellValue".id
     JOIN "Column" ON "CellValue"."columnId" = "Column".id
-    -- WHERE "Column".id = "9af5d58b-64fe-451a-b972-5de6b9447b80";
+    WHERE "Column".id = '9af5d58b-64fe-451a-b972-5de6b9447b80';
     -- WHERE ST_Within(
     --   value,
     --   -- minLng, maxLng, minLat, maxLat
