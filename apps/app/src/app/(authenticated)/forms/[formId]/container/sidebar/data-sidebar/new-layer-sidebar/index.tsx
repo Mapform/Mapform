@@ -23,13 +23,14 @@ import {
 } from "@mapform/ui/components/select";
 import { ArrowLeftIcon } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { useMemo } from "react";
 import {
   type CreateLayerSchema,
   createLayerSchema,
 } from "~/server/actions/layers/create/schema";
 import { listAvailableDatasets } from "~/server/actions/datasets/list-available";
 import { useContainerContext } from "../../../context";
+import { createLayerAction } from "~/server/actions/layers/create";
+import { toast } from "@mapform/ui/components/toaster";
 
 interface NewLayerSidebarProps {
   setShowNewLayerSidebar: (show: boolean) => void;
@@ -54,10 +55,12 @@ export function NewLayerSidebar({
   const onSubmit = async (values: CreateLayerSchema) => {
     console.log(11111, values);
     // const { serverError, validationErrors } = await createOrg(values);
-    // if (serverError) {
-    //   toast(serverError);
-    //   return;
-    // }
+    const response = await createLayerAction(values);
+    if (response?.serverError) {
+      toast(response.serverError);
+    }
+
+    toast("Created");
     // if (validationErrors) {
     //   toast("There was an error creating the organization");
     //   return;
