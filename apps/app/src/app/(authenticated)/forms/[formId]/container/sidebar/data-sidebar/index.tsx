@@ -5,7 +5,7 @@ import {
   AccordionTrigger,
 } from "@mapform/ui/components/accordion";
 import { useState } from "react";
-import { ArrowLeftIcon } from "lucide-react";
+import { ArrowLeftIcon, PlusIcon } from "lucide-react";
 import { Button } from "@mapform/ui/components/button";
 import { useContainerContext } from "../../context";
 import { NewLayerSidebar } from "./new-layer-sidebar";
@@ -31,22 +31,23 @@ export function DataSidebar() {
         </Button>
       </div>
       <Accordion defaultValue={["item-1"]} type="multiple">
-        <AccordionItem className="border-b" value="item-2">
+        <AccordionItem className="border-b" value="item-1">
           <AccordionTrigger className="px-4">
-            <h3 className="text-xs font-semibold leading-6 text-gray-400 mb-0">
-              Layers
-            </h3>
+            <div className="flex flex-1 justify-between">
+              <h3 className="text-xs font-semibold leading-6 mb-0">Layers</h3>
+              <Button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowNewLayerSidebar(true);
+                }}
+                size="icon"
+                variant="ghost"
+              >
+                <PlusIcon className="h-4 w-4" />
+              </Button>
+            </div>
           </AccordionTrigger>
           <AccordionContent className="px-4">
-            <Button
-              onClick={() => {
-                setShowNewLayerSidebar(true);
-              }}
-              size="sm"
-              variant="secondary"
-            >
-              Add
-            </Button>
             {currentDataTrack?.layers.map((layer) => (
               <div className="capitalize" key={layer.id}>
                 {layer.name ?? `${layer.type.toLocaleLowerCase()} layer`}
