@@ -10,7 +10,7 @@ export const createLayerSchema = z
   })
   .refine((input) => {
     // Schema is invalid when type is POINT and pointColumnId is not provided
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- This error will go away once I add more types
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- This error will go away once I add more typesl
     if (input.type === "POINT" && input.pointColumnId === undefined) {
       return false;
     }

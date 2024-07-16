@@ -16,13 +16,13 @@ import { Button } from "@mapform/ui/components/button";
 import { Spinner } from "@mapform/ui/components/spinner";
 import { PlusIcon } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
+import { pluralize } from "@mapform/lib/pluralize";
 import { useAction } from "next-safe-action/hooks";
 import { createStep } from "~/server/actions/steps/create";
 import { updateForm } from "~/server/actions/forms/update";
 import { createDataTrack } from "~/server/actions/datatracks/create";
 import { Draggable } from "../draggable";
 import { useContainerContext } from "../context";
-import { set } from "date-fns";
 
 export function Steps() {
   const {
@@ -114,7 +114,7 @@ export function Steps() {
       location: viewState,
     });
 
-    const newStepId = newStep.data?.id;
+    const newStepId = newStep?.data?.id;
 
     if (!newStepId || !newStep.data) return;
 
@@ -292,7 +292,12 @@ export function Steps() {
                     >
                       <div className="flex-1 h-full flex justify-center items-center bg-blue-300">
                         <span className="line-clamp-2 break-words px-1">
-                          {dataTrack.id}
+                          {dataTrack.layers.length}{" "}
+                          {pluralize(
+                            "layer",
+                            "layers",
+                            dataTrack.layers.length
+                          )}
                         </span>
                       </div>
                     </button>
