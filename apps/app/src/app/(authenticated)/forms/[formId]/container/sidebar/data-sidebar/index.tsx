@@ -48,7 +48,9 @@ export function DataSidebar() {
               Add
             </Button>
             {currentDataTrack?.layers.map((layer) => (
-              <div key={layer.id}>Layer {layer.id}</div>
+              <div className="capitalize" key={layer.id}>
+                {layer.name ?? `${layer.type.toLocaleLowerCase()} layer`}
+              </div>
             ))}
           </AccordionContent>
         </AccordionItem>

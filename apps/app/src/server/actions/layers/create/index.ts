@@ -9,11 +9,12 @@ export const createLayerAction = authAction
   .schema(createLayerSchema)
   .action(
     async ({
-      parsedInput: { type, datasetId, dataTrackId, pointColumnId },
+      parsedInput: { name, type, datasetId, dataTrackId, pointColumnId },
     }) => {
       await prisma.layer.create({
         data: {
           type,
+          name,
           datasetId,
           dataTrackId,
           // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- This error will go away once I add more types

@@ -32,6 +32,7 @@ import {
 import { listAvailableDatasets } from "~/server/actions/datasets/list-available";
 import { createLayerAction } from "~/server/actions/layers/create";
 import { useContainerContext } from "../../../context";
+import { Input } from "@mapform/ui/components/input";
 
 interface NewLayerSidebarProps {
   setShowNewLayerSidebar: (show: boolean) => void;
@@ -52,7 +53,7 @@ export function NewLayerSidebar({
     queryKey: ["datasets", params.formId],
     queryFn: () => listAvailableDatasets({ formId: params.formId }),
   });
-  const { execute } = useAction(createLayerAction, {
+  const { execute, status } = useAction(createLayerAction, {
     onError: ({ error }) => {
       if (error.serverError) {
         toast(error.serverError);
@@ -113,6 +114,27 @@ export function NewLayerSidebar({
             onSubmit={form.handleSubmit(onSubmit)}
           >
             <div className="space-y-6">
+              {/* NAME */}
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem className="flex-1">
+                    <FormLabel>Name</FormLabel>
+                    <FormControl>
+                      <Input
+                        disabled={field.disabled}
+                        name={field.name}
+                        onChange={field.onChange}
+                        ref={field.ref}
+                        value={field.value}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
               {/* DATASET */}
               <FormField
                 control={form.control}
@@ -209,7 +231,11 @@ export function NewLayerSidebar({
               ) : null}
             </div>
 
-            <Button className="mt-auto" type="submit">
+            <Button
+              className="mt-auto"
+              disabled={!form.formState.isValid || status === "executing"}
+              type="submit"
+            >
               Create
             </Button>
           </form>

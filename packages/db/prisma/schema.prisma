@@ -106,6 +106,7 @@ model Form {
     isDraft        Boolean          @default(false)
     isDirty        Boolean          @default(false)
     isClosed       Boolean          @default(false)
+    // Array of step IDs
     stepOrder      String[]
     steps          Step[]           @relation(name: "Steps")
     dataTracks     DataTrack[]      @relation(name: "DataTracks")
@@ -151,11 +152,13 @@ model Step {
 }
 
 model DataTrack {
-    id             String  @id @default(uuid())
+    id             String   @id @default(uuid())
     startStepIndex Int
     endStepIndex   Int
     formId         String?
-    form           Form?   @relation(name: "DataTracks", fields: [formId], references: [id], onDelete: Cascade)
+    form           Form?    @relation(name: "DataTracks", fields: [formId], references: [id], onDelete: Cascade)
+    // Array of layer IDs
+    layerOrder     String[]
     layers         Layer[]
 }
 
