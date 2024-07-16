@@ -2714,26 +2714,17 @@ export const LayerOrderByWithRelationInputSchema: z.ZodType<Prisma.LayerOrderByW
   dataset: z.lazy(() => DatasetOrderByWithRelationInputSchema).optional()
 }).strict();
 
-export const LayerWhereUniqueInputSchema: z.ZodType<Prisma.LayerWhereUniqueInput> = z.union([
-  z.object({
-    id: z.string().uuid(),
-    dataTrackId: z.string()
-  }),
-  z.object({
-    id: z.string().uuid(),
-  }),
-  z.object({
-    dataTrackId: z.string(),
-  }),
-])
+export const LayerWhereUniqueInputSchema: z.ZodType<Prisma.LayerWhereUniqueInput> = z.object({
+  id: z.string().uuid()
+})
 .and(z.object({
   id: z.string().uuid().optional(),
-  dataTrackId: z.string().optional(),
   AND: z.union([ z.lazy(() => LayerWhereInputSchema),z.lazy(() => LayerWhereInputSchema).array() ]).optional(),
   OR: z.lazy(() => LayerWhereInputSchema).array().optional(),
   NOT: z.union([ z.lazy(() => LayerWhereInputSchema),z.lazy(() => LayerWhereInputSchema).array() ]).optional(),
   name: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
   type: z.union([ z.lazy(() => EnumLayerTypeFilterSchema),z.lazy(() => LayerTypeSchema) ]).optional(),
+  dataTrackId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   datasetId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   pointLayer: z.union([ z.lazy(() => PointLayerNullableRelationFilterSchema),z.lazy(() => PointLayerWhereInputSchema) ]).optional().nullable(),
   dataTrack: z.union([ z.lazy(() => DataTrackNullableRelationFilterSchema),z.lazy(() => DataTrackWhereInputSchema) ]).optional().nullable(),

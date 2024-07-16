@@ -282,7 +282,7 @@ model Layer {
     name        String?
     type        LayerType
     pointLayer  PointLayer?
-    dataTrackId String      @unique
+    dataTrackId String
     dataTrack   DataTrack?  @relation(fields: [dataTrackId], references: [id], onDelete: Cascade)
     datasetId   String
     dataset     Dataset     @relation(fields: [datasetId], references: [id], onDelete: Cascade)
