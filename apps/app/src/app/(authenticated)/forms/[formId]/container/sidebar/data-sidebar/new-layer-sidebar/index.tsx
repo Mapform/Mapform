@@ -23,14 +23,15 @@ import {
 } from "@mapform/ui/components/select";
 import { ArrowLeftIcon } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import { toast } from "@mapform/ui/components/toaster";
+import { useAction } from "next-safe-action/hooks";
 import {
   type CreateLayerSchema,
   createLayerSchema,
 } from "~/server/actions/layers/create/schema";
 import { listAvailableDatasets } from "~/server/actions/datasets/list-available";
-import { useContainerContext } from "../../../context";
 import { createLayerAction } from "~/server/actions/layers/create";
-import { toast } from "@mapform/ui/components/toaster";
+import { useContainerContext } from "../../../context";
 
 interface NewLayerSidebarProps {
   setShowNewLayerSidebar: (show: boolean) => void;
@@ -51,22 +52,19 @@ export function NewLayerSidebar({
     queryKey: ["datasets", params.formId],
     queryFn: () => listAvailableDatasets({ formId: params.formId }),
   });
+  const { execute } = useAction(createLayerAction, {
+    onError: ({ error }) => {
+      if (error.serverError) {
+        toast(error.serverError);
+        return;
+      }
 
-  const onSubmit = async (values: CreateLayerSchema) => {
-    console.log(11111, values);
-    // const { serverError, validationErrors } = await createOrg(values);
-    const response = await createLayerAction(values);
-    if (response?.serverError) {
-      toast(response.serverError);
-    }
+      toast("There was an error creating the layer.");
+    },
+  });
 
-    toast("Created");
-    // if (validationErrors) {
-    //   toast("There was an error creating the organization");
-    //   return;
-    // }
-    // form.reset();
-    // toast("Your organization has been created.");
+  const onSubmit = (values: CreateLayerSchema) => {
+    execute(values);
   };
 
   // If Dataset and Type are selected, get the columns for the dataset
