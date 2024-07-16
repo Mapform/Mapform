@@ -1,5 +1,6 @@
 "use server";
 
+// eslint-disable-next-line import/named -- This is found. Not sure why it's being flagged
 import { v4 as uuidv4 } from "uuid";
 import { ColumnType, Prisma, prisma } from "@mapform/db";
 import { revalidatePath } from "next/cache";
@@ -14,7 +15,9 @@ export const createDataset = authAction
       throw new Error("Field types are inconsistent");
     }
 
-    if (data.length === 0) {
+    const firstRow = data[0];
+
+    if (!firstRow) {
       throw new Error("Dataset is empty");
     }
 
@@ -45,10 +48,9 @@ export const createDataset = authAction
           },
           columns: {
             create: [
-              ...Object.keys(data[0]!).map((key) => ({
+              ...Object.entries(firstRow).map(([key, val]) => ({
                 name: key,
-                // TODO: Map types to Prisma types
-                dataType: "POINT" as const,
+                dataType: parseType(val).type,
               })),
             ],
           },

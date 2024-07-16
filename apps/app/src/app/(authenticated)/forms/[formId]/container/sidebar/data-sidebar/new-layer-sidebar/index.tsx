@@ -83,6 +83,8 @@ export function NewLayerSidebar({
     });
   };
 
+  const availableCols = getAvailableColumns();
+
   if (isLoading) {
     return (
       <div className="absolute inset-0 bg-white z-10 p-4">
@@ -172,7 +174,8 @@ export function NewLayerSidebar({
                 )}
               />
 
-              {form.watch("type") === "POINT" && getAvailableColumns() ? (
+              {/* eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- This will not be needed once we add more types */}
+              {form.watch("type") === "POINT" && availableCols ? (
                 <FormField
                   control={form.control}
                   name="pointColumnId"
@@ -191,7 +194,7 @@ export function NewLayerSidebar({
                             <SelectValue placeholder="Select a column" />
                           </SelectTrigger>
                           <SelectContent ref={field.ref}>
-                            {getAvailableColumns().map((column) => (
+                            {availableCols.map((column) => (
                               <SelectItem key={column.id} value={column.id}>
                                 {column.name}
                               </SelectItem>
