@@ -22,8 +22,6 @@ export function FileUploader({ workspaceId }: { workspaceId: string }) {
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    console.log(1111111, data);
-
     execute({
       data,
       name: "My Dataset",

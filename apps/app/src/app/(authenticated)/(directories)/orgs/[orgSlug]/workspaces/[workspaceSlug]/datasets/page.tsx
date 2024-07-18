@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@mapform/db";
 import WorkspaceLayout from "../workspace-layout";
-import { FileUploader } from "./file-uploader";
+import { CreateDialog } from "./create-dialog";
 
 export default async function WorkspaceDatasets({
   params,
@@ -34,13 +34,13 @@ export default async function WorkspaceDatasets({
 
   return (
     <WorkspaceLayout
+      action={<CreateDialog workspaceId={workspace.id} />}
       name={workspace.name}
       orgSlug={params.orgSlug}
       workspaceId={workspace.id}
       workspaceSlug={params.workspaceSlug}
     >
       <div>
-        <FileUploader workspaceId={workspace.id} />
         <ul className="flex flex-wrap gap-4">
           {workspace.datasets.map((dataset) => (
             <li
