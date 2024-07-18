@@ -22,6 +22,7 @@ import {
 } from "@mapform/ui/components/form";
 import { Input } from "@mapform/ui/components/input";
 import { toast } from "@mapform/ui/components/toaster";
+import { useAction } from "next-safe-action/hooks";
 import { createForm } from "~/server/actions/forms/create";
 import {
   createFormSchema,
@@ -33,7 +34,7 @@ export function CreateDialog({
   disabled,
 }: {
   workspaceId: string;
-  disabled: boolean;
+  disabled?: boolean;
 }) {
   const form = useForm<CreateFormSchema>({
     defaultValues: {
@@ -43,25 +44,27 @@ export function CreateDialog({
     mode: "onChange",
     resolver: zodResolver(createFormSchema),
   });
+  const { execute } = useAction(createForm, {
+    onError: ({ error }) => {
+      if (error.serverError) {
+        toast(error.serverError);
+        return;
+      }
 
-  const onSubmit = async (values: CreateFormSchema) => {
+      if (error.validationErrors) {
+        toast("There was an error creating the form");
+      }
+    },
+    onSuccess: () => {
+      form.reset();
+      toast("Your form has been created.");
+    },
+  });
+
+  const onSubmit = (values: CreateFormSchema) => {
     if (disabled) return;
 
-    const { serverError, validationErrors } = await createForm(values);
-
-    if (serverError) {
-      toast(serverError);
-      return;
-    }
-
-    if (validationErrors) {
-      toast("There was an error creating the form");
-      return;
-    }
-
-    form.reset();
-
-    toast("Your form has been created.");
+    execute(values);
   };
 
   return (
@@ -75,10 +78,12 @@ export function CreateDialog({
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <DialogHeader>
-              <DialogTitle>Create Form</DialogTitle>
-              <DialogDescription>Create a new form</DialogDescription>
+              <DialogTitle>Create MapForm</DialogTitle>
+              <DialogDescription>
+                Make your new map-based experience.
+              </DialogDescription>
             </DialogHeader>
-            <div className="flex items-center space-x-2">
+            <div className="space-y-4 py-6">
               <FormField
                 control={form.control}
                 name="name"
@@ -90,6 +95,7 @@ export function CreateDialog({
                         disabled={field.disabled}
                         name={field.name}
                         onChange={field.onChange}
+                        placeholder="My MapForm"
                         ref={field.ref}
                         value={field.value}
                       />
@@ -99,7 +105,7 @@ export function CreateDialog({
                 )}
               />
             </div>
-            <DialogFooter className="sm:justify-start">
+            <DialogFooter>
               <Button
                 disabled={
                   form.formState.isSubmitting || !form.formState.isValid

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { format } from "date-fns";
 import { prisma } from "@mapform/db";
+import { CreateDialog } from "./dialog";
 import WorkspaceLayout from "./workspace-layout";
 
 export default async function WorkspaceForms({
@@ -35,6 +36,7 @@ export default async function WorkspaceForms({
 
   return (
     <WorkspaceLayout
+      action={<CreateDialog workspaceId={workspace.id} />}
       name={workspace.name}
       orgSlug={params.orgSlug}
       workspaceId={workspace.id}

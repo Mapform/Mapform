@@ -126,6 +126,7 @@ export function NewLayerSidebar({
                         disabled={field.disabled}
                         name={field.name}
                         onChange={field.onChange}
+                        placeholder="New Layer"
                         ref={field.ref}
                         value={field.value}
                       />
