@@ -1,5 +1,6 @@
 "use client";
 
+import { parse } from "papaparse";
 import { Button } from "@mapform/ui/components/button";
 import {
   Dialog,
@@ -20,15 +21,13 @@ import {
   useForm,
   zodResolver,
 } from "@mapform/ui/components/form";
+import { useState } from "react";
 import { Input } from "@mapform/ui/components/input";
 import { toast } from "@mapform/ui/components/toaster";
 import { useAction } from "next-safe-action/hooks";
-import { createForm } from "~/server/actions/forms/create";
-import {
-  createFormSchema,
-  type CreateFormSchema,
-} from "~/server/actions/forms/create/schema";
-import { FileUploader } from "./file-uploader";
+import type { CreateDatasetSchema } from "~/server/actions/datasets/create/schema";
+import { createDatasetSchema } from "~/server/actions/datasets/create/schema";
+import { createDataset } from "~/server/actions/datasets/create";
 
 export function CreateDialog({
   workspaceId,
@@ -37,15 +36,16 @@ export function CreateDialog({
   workspaceId: string;
   disabled?: boolean;
 }) {
-  const form = useForm<CreateFormSchema>({
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const form = useForm<CreateDatasetSchema>({
     defaultValues: {
       name: "",
       workspaceId,
     },
     mode: "onChange",
-    resolver: zodResolver(createFormSchema),
+    resolver: zodResolver(createDatasetSchema),
   });
-  const { execute } = useAction(createForm, {
+  const { execute, status } = useAction(createDataset, {
     onError: ({ error }) => {
       if (error.serverError) {
         toast(error.serverError);
@@ -59,17 +59,35 @@ export function CreateDialog({
     onSuccess: () => {
       form.reset();
       toast("Your form has been created.");
+      setIsDrawerOpen(false);
     },
   });
 
-  const onSubmit = (values: CreateFormSchema) => {
+  const onSubmit = (values: CreateDatasetSchema) => {
     if (disabled) return;
 
     execute(values);
   };
 
+  const onFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+
+    if (!file) {
+      toast("There was an error uploading the file.");
+      return;
+    }
+    parse(file, {
+      header: true,
+      skipEmptyLines: true,
+      complete(results) {
+        form.setValue("data", results.data as Record<string, string>[]);
+        void form.trigger("data");
+      },
+    });
+  };
+
   return (
-    <Dialog>
+    <Dialog onOpenChange={setIsDrawerOpen} open={isDrawerOpen}>
       <DialogTrigger asChild>
         <Button disabled={disabled} variant="outline">
           Create Dataset
@@ -85,7 +103,6 @@ export function CreateDialog({
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4 py-6">
-              <FileUploader workspaceId={workspaceId} />
               <FormField
                 control={form.control}
                 name="name"
@@ -106,15 +123,31 @@ export function CreateDialog({
                   </FormItem>
                 )}
               />
+              <FormField
+                control={form.control}
+                name="data"
+                render={() => (
+                  <FormItem className="flex-1">
+                    <FormLabel>File</FormLabel>
+                    <FormControl>
+                      <Input
+                        accept=".csv"
+                        className="bg-white"
+                        onChange={onFileChange}
+                        type="file"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
             <DialogFooter>
               <Button
-                disabled={
-                  form.formState.isSubmitting || !form.formState.isValid
-                }
+                disabled={status === "executing" || !form.formState.isValid}
                 type="submit"
               >
-                Create
+                {status === "executing" ? "Creating..." : "Create"}
               </Button>
             </DialogFooter>
           </form>
