@@ -6,9 +6,9 @@ import { getFormSchemaFromBlockNote } from "@mapform/blocknote";
 import { action } from "~/lib/safe-action";
 import { submitFormStepSchema } from "./schema";
 
-export const submitFormStep = action(
-  submitFormStepSchema,
-  async ({ stepId, formSubmissionId, payload }) => {
+export const submitFormStep = action
+  .schema(submitFormStepSchema)
+  .action(async ({ parsedInput: { stepId, formSubmissionId, payload } }) => {
     const step = await prisma.step.findUnique({
       where: {
         id: stepId,
@@ -115,5 +115,4 @@ export const submitFormStep = action(
     );
 
     revalidatePath(`/${step.formId}`);
-  }
-);
+  });

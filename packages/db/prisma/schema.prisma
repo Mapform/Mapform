@@ -114,6 +114,9 @@ model Form {
     draftForm      Form?            @relation("FormVersions", fields: [draftFormId], references: [id])
     formVersions   Form[]           @relation("FormVersions")
     version        Int?
+    // Each form has its own dataset, representing the form submissions
+    datasetId      String           @unique
+    dataset        Dataset          @relation(fields: [datasetId], references: [id])
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
@@ -211,6 +214,7 @@ model Dataset {
     name        String
     columns     Column[]  @relation("DatasetColumns")
     rows        Row[]     @relation("DatasetRows")
+    form        Form?
     workspaceId String
     workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
     layers      Layer[]

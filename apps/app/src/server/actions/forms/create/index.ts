@@ -26,6 +26,12 @@ export const createForm = authAction
             id: workspaceId,
           },
         },
+        dataset: {
+          create: {
+            name: `${name} dataset`,
+            workspaceId,
+          },
+        },
       },
     });
 
