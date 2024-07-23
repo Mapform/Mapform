@@ -32,20 +32,21 @@ export const updateStep = authAction
       throw new Error("User does not have access to this organization.");
     }
 
-    const inputBlocksToCreate = data.description?.content
-      .flatMap((block) => {
-        if (block.type === "pin" || block.type === "textInput") {
-          return block;
-        }
+    const inputBlocksToCreate =
+      data.description?.content
+        .flatMap((block) => {
+          if (block.type === "pin" || block.type === "textInput") {
+            return block;
+          }
 
-        return undefined;
-      })
-      .filter((block) => {
-        return (
-          block !== undefined &&
-          !userForm.dataset?.columns.find((col) => col.name === block.id)
-        );
-      });
+          return undefined;
+        })
+        .filter((block) => {
+          return (
+            block !== undefined &&
+            !userForm.dataset?.columns.find((col) => col.name === block.id)
+          );
+        }) ?? [];
 
     console.log(11111, inputBlocksToCreate);
 
