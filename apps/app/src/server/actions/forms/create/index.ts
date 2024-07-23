@@ -20,7 +20,7 @@ export const createForm = authAction
       data: {
         slug,
         name,
-        isDraft: true,
+        isRoot: true,
         workspace: {
           connect: {
             id: workspaceId,

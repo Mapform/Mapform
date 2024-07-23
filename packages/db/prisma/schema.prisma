@@ -100,7 +100,7 @@ model Form {
     id             String           @id @default(uuid())
     name           String
     slug           String
-    isDraft        Boolean          @default(false)
+    isRoot         Boolean          @default(false)
     isDirty        Boolean          @default(false)
     isClosed       Boolean          @default(false)
     // Array of step IDs
@@ -110,13 +110,13 @@ model Form {
     workspaceId    String
     workspace      Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
     formSubmission FormSubmission[]
-    draftFormId    String?
-    draftForm      Form?            @relation("FormVersions", fields: [draftFormId], references: [id])
+    rootFormId     String?
+    rootForm       Form?            @relation("FormVersions", fields: [rootFormId], references: [id])
     formVersions   Form[]           @relation("FormVersions")
     version        Int?
-    // Each form has its own dataset, representing the form submissions
-    datasetId      String           @unique
-    dataset        Dataset          @relation(fields: [datasetId], references: [id])
+    // Each draft form has its own dataset, representing the form submissions
+    datasetId      String?          @unique
+    dataset        Dataset?         @relation(fields: [datasetId], references: [id])
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt

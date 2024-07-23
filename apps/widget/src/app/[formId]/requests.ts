@@ -10,7 +10,7 @@ export type LocationResponseWithLocation = LocationResponse & {
 export async function getFormWithSteps(formId: string) {
   const form = (
     await prisma.form.findMany({
-      where: { draftFormId: formId },
+      where: { rootFormId: formId },
       orderBy: {
         createdAt: "desc",
       },

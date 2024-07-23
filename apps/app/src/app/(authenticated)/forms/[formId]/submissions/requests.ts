@@ -4,7 +4,7 @@ export async function getFormSubmissions({ formId }: { formId: string }) {
   const submissions = await prisma.formSubmission.findMany({
     where: {
       form: {
-        draftForm: {
+        rootForm: {
           id: formId,
         },
       },

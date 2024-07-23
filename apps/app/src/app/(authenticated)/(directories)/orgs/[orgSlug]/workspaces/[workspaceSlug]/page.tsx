@@ -19,7 +19,7 @@ export default async function WorkspaceForms({
     include: {
       forms: {
         where: {
-          isDraft: true,
+          isRoot: true,
         },
         include: {
           _count: {

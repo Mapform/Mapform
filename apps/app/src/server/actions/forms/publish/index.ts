@@ -13,10 +13,10 @@ import { publishFormSchema } from "./schema";
 export const publishForm = authAction
   .schema(publishFormSchema)
   .action(async ({ parsedInput: { formId } }) => {
-    const draftForm = await prisma.form.findUnique({
+    const rootForm = await prisma.form.findUnique({
       where: {
         id: formId,
-        isDraft: true,
+        isRoot: true,
       },
       include: {
         _count: {
@@ -25,12 +25,12 @@ export const publishForm = authAction
       },
     });
 
-    if (!draftForm) {
+    if (!rootForm) {
       throw new Error("Form not found");
     }
 
     const steps = await prisma.step.findManyWithLocation({
-      formId: draftForm.id,
+      formId: rootForm.id,
     });
 
     /**
@@ -42,13 +42,13 @@ export const publishForm = authAction
      */
     const newPublishedForm = await prisma.form.create({
       data: {
-        name: draftForm.name,
-        slug: draftForm.slug,
+        name: rootForm.name,
+        slug: rootForm.slug,
         stepOrder: [],
-        workspaceId: draftForm.workspaceId,
-        isDraft: false,
-        draftFormId: draftForm.id,
-        version: draftForm._count.formVersions + 1,
+        workspaceId: rootForm.workspaceId,
+        isRoot: false,
+        rootFormId: rootForm.id,
+        version: rootForm._count.formVersions + 1,
       },
     });
 
@@ -69,7 +69,7 @@ export const publishForm = authAction
 
     await prisma.form.update({
       where: {
-        id: draftForm.id,
+        id: rootForm.id,
       },
       data: {
         isDirty: false,
