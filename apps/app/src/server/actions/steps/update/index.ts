@@ -36,10 +36,21 @@ export const updateStep = authAction
       },
     });
 
+    const step = await prisma.step.findUnique({
+      where: {
+        id: stepId,
+      },
+      select: {
+        id: true,
+        description: true,
+      },
+    });
+
     if (!userForm) {
       throw new Error("User does not have access to this organization.");
     }
 
+    // TODO: Need to do this recursively
     const inputBlocksToCreate =
       data.description?.content
         .flatMap((block) => {
@@ -56,7 +67,10 @@ export const updateStep = authAction
           );
         }) ?? [];
 
-    console.log(11111, inputBlocksToCreate);
+    // Delete blocks which are not present in the new description, and which have no cells (submissions)
+    const inputBlocksToDelete = step?.description?.content.flatMap(
+      (block) => {}
+    );
 
     await prisma.$transaction(async (tx) => {
       await tx.step.update({
