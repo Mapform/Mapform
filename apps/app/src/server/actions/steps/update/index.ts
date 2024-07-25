@@ -22,7 +22,15 @@ export const updateStep = authAction
       include: {
         dataset: {
           include: {
-            columns: true,
+            columns: {
+              include: {
+                _count: {
+                  select: {
+                    cellValues: true,
+                  },
+                },
+              },
+            },
           },
         },
       },

@@ -82,9 +82,9 @@ export const LocationScalarFieldEnumSchema = z.enum(['id']);
 
 export const DatasetScalarFieldEnumSchema = z.enum(['id','name','workspaceId']);
 
-export const ColumnScalarFieldEnumSchema = z.enum(['id','datasetId','name','dataType']);
+export const ColumnScalarFieldEnumSchema = z.enum(['id','name','dataType','blockNoteId','datasetId','stepId']);
 
-export const RowScalarFieldEnumSchema = z.enum(['id','datasetId']);
+export const RowScalarFieldEnumSchema = z.enum(['id','datasetId','publishedFormId']);
 
 export const CellValueScalarFieldEnumSchema = z.enum(['id','rowId','columnId']);
 
@@ -311,6 +311,7 @@ export type FormRelations = {
   dataTracks: DataTrackWithRelations[];
   workspace: WorkspaceWithRelations;
   formSubmission: FormSubmissionWithRelations[];
+  formSubmissionRows: RowWithRelations[];
   rootForm?: FormWithRelations | null;
   formVersions: FormWithRelations[];
   dataset?: DatasetWithRelations | null;
@@ -323,6 +324,7 @@ export const FormWithRelationsSchema: z.ZodType<FormWithRelations> = FormSchema.
   dataTracks: z.lazy(() => DataTrackWithRelationsSchema).array(),
   workspace: z.lazy(() => WorkspaceWithRelationsSchema),
   formSubmission: z.lazy(() => FormSubmissionWithRelationsSchema).array(),
+  formSubmissionRows: z.lazy(() => RowWithRelationsSchema).array(),
   rootForm: z.lazy(() => FormWithRelationsSchema).nullable(),
   formVersions: z.lazy(() => FormWithRelationsSchema).array(),
   dataset: z.lazy(() => DatasetWithRelationsSchema).nullable(),
@@ -357,6 +359,7 @@ export type Step = z.infer<typeof StepSchema>
 export type StepRelations = {
   form?: FormWithRelations | null;
   location: LocationWithRelations;
+  datasetColumns: ColumnWithRelations[];
   inputResponses: InputResponseWithRelations[];
   locationResponses: LocationResponseWithRelations[];
 };
@@ -368,6 +371,7 @@ export type StepWithRelations = Omit<z.infer<typeof StepSchema>, "description"> 
 export const StepWithRelationsSchema: z.ZodType<StepWithRelations> = StepSchema.merge(z.object({
   form: z.lazy(() => FormWithRelationsSchema).nullable(),
   location: z.lazy(() => LocationWithRelationsSchema),
+  datasetColumns: z.lazy(() => ColumnWithRelationsSchema).array(),
   inputResponses: z.lazy(() => InputResponseWithRelationsSchema).array(),
   locationResponses: z.lazy(() => LocationResponseWithRelationsSchema).array(),
 }))
@@ -556,8 +560,10 @@ export const DatasetWithRelationsSchema: z.ZodType<DatasetWithRelations> = Datas
 export const ColumnSchema = z.object({
   dataType: ColumnTypeSchema,
   id: z.string().uuid(),
-  datasetId: z.string(),
   name: z.string(),
+  blockNoteId: z.string().nullable(),
+  datasetId: z.string(),
+  stepId: z.string().nullable(),
 })
 
 export type Column = z.infer<typeof ColumnSchema>
@@ -567,6 +573,7 @@ export type Column = z.infer<typeof ColumnSchema>
 
 export type ColumnRelations = {
   dataset: DatasetWithRelations;
+  step?: StepWithRelations | null;
   cellValues: CellValueWithRelations[];
   pointLayers: PointLayerWithRelations[];
 };
@@ -575,6 +582,7 @@ export type ColumnWithRelations = z.infer<typeof ColumnSchema> & ColumnRelations
 
 export const ColumnWithRelationsSchema: z.ZodType<ColumnWithRelations> = ColumnSchema.merge(z.object({
   dataset: z.lazy(() => DatasetWithRelationsSchema),
+  step: z.lazy(() => StepWithRelationsSchema).nullable(),
   cellValues: z.lazy(() => CellValueWithRelationsSchema).array(),
   pointLayers: z.lazy(() => PointLayerWithRelationsSchema).array(),
 }))
@@ -586,6 +594,7 @@ export const ColumnWithRelationsSchema: z.ZodType<ColumnWithRelations> = ColumnS
 export const RowSchema = z.object({
   id: z.string().uuid(),
   datasetId: z.string(),
+  publishedFormId: z.string().nullable(),
 })
 
 export type Row = z.infer<typeof RowSchema>
@@ -595,6 +604,7 @@ export type Row = z.infer<typeof RowSchema>
 
 export type RowRelations = {
   dataset: DatasetWithRelations;
+  publishedForm?: FormWithRelations | null;
   cellValues: CellValueWithRelations[];
 };
 
@@ -602,6 +612,7 @@ export type RowWithRelations = z.infer<typeof RowSchema> & RowRelations
 
 export const RowWithRelationsSchema: z.ZodType<RowWithRelations> = RowSchema.merge(z.object({
   dataset: z.lazy(() => DatasetWithRelationsSchema),
+  publishedForm: z.lazy(() => FormWithRelationsSchema).nullable(),
   cellValues: z.lazy(() => CellValueWithRelationsSchema).array(),
 }))
 
@@ -939,6 +950,7 @@ export const FormIncludeSchema: z.ZodType<Prisma.FormInclude> = z.object({
   dataTracks: z.union([z.boolean(),z.lazy(() => DataTrackFindManyArgsSchema)]).optional(),
   workspace: z.union([z.boolean(),z.lazy(() => WorkspaceArgsSchema)]).optional(),
   formSubmission: z.union([z.boolean(),z.lazy(() => FormSubmissionFindManyArgsSchema)]).optional(),
+  formSubmissionRows: z.union([z.boolean(),z.lazy(() => RowFindManyArgsSchema)]).optional(),
   rootForm: z.union([z.boolean(),z.lazy(() => FormArgsSchema)]).optional(),
   formVersions: z.union([z.boolean(),z.lazy(() => FormFindManyArgsSchema)]).optional(),
   dataset: z.union([z.boolean(),z.lazy(() => DatasetArgsSchema)]).optional(),
@@ -958,6 +970,7 @@ export const FormCountOutputTypeSelectSchema: z.ZodType<Prisma.FormCountOutputTy
   steps: z.boolean().optional(),
   dataTracks: z.boolean().optional(),
   formSubmission: z.boolean().optional(),
+  formSubmissionRows: z.boolean().optional(),
   formVersions: z.boolean().optional(),
 }).strict();
 
@@ -979,6 +992,7 @@ export const FormSelectSchema: z.ZodType<Prisma.FormSelect> = z.object({
   dataTracks: z.union([z.boolean(),z.lazy(() => DataTrackFindManyArgsSchema)]).optional(),
   workspace: z.union([z.boolean(),z.lazy(() => WorkspaceArgsSchema)]).optional(),
   formSubmission: z.union([z.boolean(),z.lazy(() => FormSubmissionFindManyArgsSchema)]).optional(),
+  formSubmissionRows: z.union([z.boolean(),z.lazy(() => RowFindManyArgsSchema)]).optional(),
   rootForm: z.union([z.boolean(),z.lazy(() => FormArgsSchema)]).optional(),
   formVersions: z.union([z.boolean(),z.lazy(() => FormFindManyArgsSchema)]).optional(),
   dataset: z.union([z.boolean(),z.lazy(() => DatasetArgsSchema)]).optional(),
@@ -991,6 +1005,7 @@ export const FormSelectSchema: z.ZodType<Prisma.FormSelect> = z.object({
 export const StepIncludeSchema: z.ZodType<Prisma.StepInclude> = z.object({
   form: z.union([z.boolean(),z.lazy(() => FormArgsSchema)]).optional(),
   location: z.union([z.boolean(),z.lazy(() => LocationArgsSchema)]).optional(),
+  datasetColumns: z.union([z.boolean(),z.lazy(() => ColumnFindManyArgsSchema)]).optional(),
   inputResponses: z.union([z.boolean(),z.lazy(() => InputResponseFindManyArgsSchema)]).optional(),
   locationResponses: z.union([z.boolean(),z.lazy(() => LocationResponseFindManyArgsSchema)]).optional(),
   _count: z.union([z.boolean(),z.lazy(() => StepCountOutputTypeArgsSchema)]).optional(),
@@ -1006,6 +1021,7 @@ export const StepCountOutputTypeArgsSchema: z.ZodType<Prisma.StepCountOutputType
 }).strict();
 
 export const StepCountOutputTypeSelectSchema: z.ZodType<Prisma.StepCountOutputTypeSelect> = z.object({
+  datasetColumns: z.boolean().optional(),
   inputResponses: z.boolean().optional(),
   locationResponses: z.boolean().optional(),
 }).strict();
@@ -1024,6 +1040,7 @@ export const StepSelectSchema: z.ZodType<Prisma.StepSelect> = z.object({
   updatedAt: z.boolean().optional(),
   form: z.union([z.boolean(),z.lazy(() => FormArgsSchema)]).optional(),
   location: z.union([z.boolean(),z.lazy(() => LocationArgsSchema)]).optional(),
+  datasetColumns: z.union([z.boolean(),z.lazy(() => ColumnFindManyArgsSchema)]).optional(),
   inputResponses: z.union([z.boolean(),z.lazy(() => InputResponseFindManyArgsSchema)]).optional(),
   locationResponses: z.union([z.boolean(),z.lazy(() => LocationResponseFindManyArgsSchema)]).optional(),
   _count: z.union([z.boolean(),z.lazy(() => StepCountOutputTypeArgsSchema)]).optional(),
@@ -1208,6 +1225,7 @@ export const DatasetSelectSchema: z.ZodType<Prisma.DatasetSelect> = z.object({
 
 export const ColumnIncludeSchema: z.ZodType<Prisma.ColumnInclude> = z.object({
   dataset: z.union([z.boolean(),z.lazy(() => DatasetArgsSchema)]).optional(),
+  step: z.union([z.boolean(),z.lazy(() => StepArgsSchema)]).optional(),
   cellValues: z.union([z.boolean(),z.lazy(() => CellValueFindManyArgsSchema)]).optional(),
   pointLayers: z.union([z.boolean(),z.lazy(() => PointLayerFindManyArgsSchema)]).optional(),
   _count: z.union([z.boolean(),z.lazy(() => ColumnCountOutputTypeArgsSchema)]).optional(),
@@ -1229,10 +1247,13 @@ export const ColumnCountOutputTypeSelectSchema: z.ZodType<Prisma.ColumnCountOutp
 
 export const ColumnSelectSchema: z.ZodType<Prisma.ColumnSelect> = z.object({
   id: z.boolean().optional(),
-  datasetId: z.boolean().optional(),
   name: z.boolean().optional(),
   dataType: z.boolean().optional(),
+  blockNoteId: z.boolean().optional(),
+  datasetId: z.boolean().optional(),
+  stepId: z.boolean().optional(),
   dataset: z.union([z.boolean(),z.lazy(() => DatasetArgsSchema)]).optional(),
+  step: z.union([z.boolean(),z.lazy(() => StepArgsSchema)]).optional(),
   cellValues: z.union([z.boolean(),z.lazy(() => CellValueFindManyArgsSchema)]).optional(),
   pointLayers: z.union([z.boolean(),z.lazy(() => PointLayerFindManyArgsSchema)]).optional(),
   _count: z.union([z.boolean(),z.lazy(() => ColumnCountOutputTypeArgsSchema)]).optional(),
@@ -1243,6 +1264,7 @@ export const ColumnSelectSchema: z.ZodType<Prisma.ColumnSelect> = z.object({
 
 export const RowIncludeSchema: z.ZodType<Prisma.RowInclude> = z.object({
   dataset: z.union([z.boolean(),z.lazy(() => DatasetArgsSchema)]).optional(),
+  publishedForm: z.union([z.boolean(),z.lazy(() => FormArgsSchema)]).optional(),
   cellValues: z.union([z.boolean(),z.lazy(() => CellValueFindManyArgsSchema)]).optional(),
   _count: z.union([z.boolean(),z.lazy(() => RowCountOutputTypeArgsSchema)]).optional(),
 }).strict()
@@ -1263,7 +1285,9 @@ export const RowCountOutputTypeSelectSchema: z.ZodType<Prisma.RowCountOutputType
 export const RowSelectSchema: z.ZodType<Prisma.RowSelect> = z.object({
   id: z.boolean().optional(),
   datasetId: z.boolean().optional(),
+  publishedFormId: z.boolean().optional(),
   dataset: z.union([z.boolean(),z.lazy(() => DatasetArgsSchema)]).optional(),
+  publishedForm: z.union([z.boolean(),z.lazy(() => FormArgsSchema)]).optional(),
   cellValues: z.union([z.boolean(),z.lazy(() => CellValueFindManyArgsSchema)]).optional(),
   _count: z.union([z.boolean(),z.lazy(() => RowCountOutputTypeArgsSchema)]).optional(),
 }).strict()
@@ -1773,6 +1797,7 @@ export const FormWhereInputSchema: z.ZodType<Prisma.FormWhereInput> = z.object({
   dataTracks: z.lazy(() => DataTrackListRelationFilterSchema).optional(),
   workspace: z.union([ z.lazy(() => WorkspaceRelationFilterSchema),z.lazy(() => WorkspaceWhereInputSchema) ]).optional(),
   formSubmission: z.lazy(() => FormSubmissionListRelationFilterSchema).optional(),
+  formSubmissionRows: z.lazy(() => RowListRelationFilterSchema).optional(),
   rootForm: z.union([ z.lazy(() => FormNullableRelationFilterSchema),z.lazy(() => FormWhereInputSchema) ]).optional().nullable(),
   formVersions: z.lazy(() => FormListRelationFilterSchema).optional(),
   dataset: z.union([ z.lazy(() => DatasetNullableRelationFilterSchema),z.lazy(() => DatasetWhereInputSchema) ]).optional().nullable(),
@@ -1796,6 +1821,7 @@ export const FormOrderByWithRelationInputSchema: z.ZodType<Prisma.FormOrderByWit
   dataTracks: z.lazy(() => DataTrackOrderByRelationAggregateInputSchema).optional(),
   workspace: z.lazy(() => WorkspaceOrderByWithRelationInputSchema).optional(),
   formSubmission: z.lazy(() => FormSubmissionOrderByRelationAggregateInputSchema).optional(),
+  formSubmissionRows: z.lazy(() => RowOrderByRelationAggregateInputSchema).optional(),
   rootForm: z.lazy(() => FormOrderByWithRelationInputSchema).optional(),
   formVersions: z.lazy(() => FormOrderByRelationAggregateInputSchema).optional(),
   dataset: z.lazy(() => DatasetOrderByWithRelationInputSchema).optional()
@@ -1851,6 +1877,7 @@ export const FormWhereUniqueInputSchema: z.ZodType<Prisma.FormWhereUniqueInput> 
   dataTracks: z.lazy(() => DataTrackListRelationFilterSchema).optional(),
   workspace: z.union([ z.lazy(() => WorkspaceRelationFilterSchema),z.lazy(() => WorkspaceWhereInputSchema) ]).optional(),
   formSubmission: z.lazy(() => FormSubmissionListRelationFilterSchema).optional(),
+  formSubmissionRows: z.lazy(() => RowListRelationFilterSchema).optional(),
   rootForm: z.union([ z.lazy(() => FormNullableRelationFilterSchema),z.lazy(() => FormWhereInputSchema) ]).optional().nullable(),
   formVersions: z.lazy(() => FormListRelationFilterSchema).optional(),
   dataset: z.union([ z.lazy(() => DatasetNullableRelationFilterSchema),z.lazy(() => DatasetWhereInputSchema) ]).optional().nullable(),
@@ -1913,6 +1940,7 @@ export const StepWhereInputSchema: z.ZodType<Prisma.StepWhereInput> = z.object({
   updatedAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   form: z.union([ z.lazy(() => FormNullableRelationFilterSchema),z.lazy(() => FormWhereInputSchema) ]).optional().nullable(),
   location: z.union([ z.lazy(() => LocationRelationFilterSchema),z.lazy(() => LocationWhereInputSchema) ]).optional(),
+  datasetColumns: z.lazy(() => ColumnListRelationFilterSchema).optional(),
   inputResponses: z.lazy(() => InputResponseListRelationFilterSchema).optional(),
   locationResponses: z.lazy(() => LocationResponseListRelationFilterSchema).optional()
 }).strict();
@@ -1931,6 +1959,7 @@ export const StepOrderByWithRelationInputSchema: z.ZodType<Prisma.StepOrderByWit
   updatedAt: z.lazy(() => SortOrderSchema).optional(),
   form: z.lazy(() => FormOrderByWithRelationInputSchema).optional(),
   location: z.lazy(() => LocationOrderByWithRelationInputSchema).optional(),
+  datasetColumns: z.lazy(() => ColumnOrderByRelationAggregateInputSchema).optional(),
   inputResponses: z.lazy(() => InputResponseOrderByRelationAggregateInputSchema).optional(),
   locationResponses: z.lazy(() => LocationResponseOrderByRelationAggregateInputSchema).optional()
 }).strict();
@@ -1964,6 +1993,7 @@ export const StepWhereUniqueInputSchema: z.ZodType<Prisma.StepWhereUniqueInput> 
   updatedAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   form: z.union([ z.lazy(() => FormNullableRelationFilterSchema),z.lazy(() => FormWhereInputSchema) ]).optional().nullable(),
   location: z.union([ z.lazy(() => LocationRelationFilterSchema),z.lazy(() => LocationWhereInputSchema) ]).optional(),
+  datasetColumns: z.lazy(() => ColumnListRelationFilterSchema).optional(),
   inputResponses: z.lazy(() => InputResponseListRelationFilterSchema).optional(),
   locationResponses: z.lazy(() => LocationResponseListRelationFilterSchema).optional()
 }).strict());
@@ -2397,20 +2427,26 @@ export const ColumnWhereInputSchema: z.ZodType<Prisma.ColumnWhereInput> = z.obje
   OR: z.lazy(() => ColumnWhereInputSchema).array().optional(),
   NOT: z.union([ z.lazy(() => ColumnWhereInputSchema),z.lazy(() => ColumnWhereInputSchema).array() ]).optional(),
   id: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
-  datasetId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   name: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   dataType: z.union([ z.lazy(() => EnumColumnTypeFilterSchema),z.lazy(() => ColumnTypeSchema) ]).optional(),
+  blockNoteId: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
+  datasetId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  stepId: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
   dataset: z.union([ z.lazy(() => DatasetRelationFilterSchema),z.lazy(() => DatasetWhereInputSchema) ]).optional(),
+  step: z.union([ z.lazy(() => StepNullableRelationFilterSchema),z.lazy(() => StepWhereInputSchema) ]).optional().nullable(),
   cellValues: z.lazy(() => CellValueListRelationFilterSchema).optional(),
   pointLayers: z.lazy(() => PointLayerListRelationFilterSchema).optional()
 }).strict();
 
 export const ColumnOrderByWithRelationInputSchema: z.ZodType<Prisma.ColumnOrderByWithRelationInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
-  datasetId: z.lazy(() => SortOrderSchema).optional(),
   name: z.lazy(() => SortOrderSchema).optional(),
   dataType: z.lazy(() => SortOrderSchema).optional(),
+  blockNoteId: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
+  datasetId: z.lazy(() => SortOrderSchema).optional(),
+  stepId: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   dataset: z.lazy(() => DatasetOrderByWithRelationInputSchema).optional(),
+  step: z.lazy(() => StepOrderByWithRelationInputSchema).optional(),
   cellValues: z.lazy(() => CellValueOrderByRelationAggregateInputSchema).optional(),
   pointLayers: z.lazy(() => PointLayerOrderByRelationAggregateInputSchema).optional()
 }).strict();
@@ -2418,10 +2454,26 @@ export const ColumnOrderByWithRelationInputSchema: z.ZodType<Prisma.ColumnOrderB
 export const ColumnWhereUniqueInputSchema: z.ZodType<Prisma.ColumnWhereUniqueInput> = z.union([
   z.object({
     id: z.string().uuid(),
+    blockNoteId: z.string(),
     datasetId_name: z.lazy(() => ColumnDatasetIdNameCompoundUniqueInputSchema)
   }),
   z.object({
     id: z.string().uuid(),
+    blockNoteId: z.string(),
+  }),
+  z.object({
+    id: z.string().uuid(),
+    datasetId_name: z.lazy(() => ColumnDatasetIdNameCompoundUniqueInputSchema),
+  }),
+  z.object({
+    id: z.string().uuid(),
+  }),
+  z.object({
+    blockNoteId: z.string(),
+    datasetId_name: z.lazy(() => ColumnDatasetIdNameCompoundUniqueInputSchema),
+  }),
+  z.object({
+    blockNoteId: z.string(),
   }),
   z.object({
     datasetId_name: z.lazy(() => ColumnDatasetIdNameCompoundUniqueInputSchema),
@@ -2429,23 +2481,28 @@ export const ColumnWhereUniqueInputSchema: z.ZodType<Prisma.ColumnWhereUniqueInp
 ])
 .and(z.object({
   id: z.string().uuid().optional(),
+  blockNoteId: z.string().optional(),
   datasetId_name: z.lazy(() => ColumnDatasetIdNameCompoundUniqueInputSchema).optional(),
   AND: z.union([ z.lazy(() => ColumnWhereInputSchema),z.lazy(() => ColumnWhereInputSchema).array() ]).optional(),
   OR: z.lazy(() => ColumnWhereInputSchema).array().optional(),
   NOT: z.union([ z.lazy(() => ColumnWhereInputSchema),z.lazy(() => ColumnWhereInputSchema).array() ]).optional(),
-  datasetId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   name: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   dataType: z.union([ z.lazy(() => EnumColumnTypeFilterSchema),z.lazy(() => ColumnTypeSchema) ]).optional(),
+  datasetId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  stepId: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
   dataset: z.union([ z.lazy(() => DatasetRelationFilterSchema),z.lazy(() => DatasetWhereInputSchema) ]).optional(),
+  step: z.union([ z.lazy(() => StepNullableRelationFilterSchema),z.lazy(() => StepWhereInputSchema) ]).optional().nullable(),
   cellValues: z.lazy(() => CellValueListRelationFilterSchema).optional(),
   pointLayers: z.lazy(() => PointLayerListRelationFilterSchema).optional()
 }).strict());
 
 export const ColumnOrderByWithAggregationInputSchema: z.ZodType<Prisma.ColumnOrderByWithAggregationInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
-  datasetId: z.lazy(() => SortOrderSchema).optional(),
   name: z.lazy(() => SortOrderSchema).optional(),
   dataType: z.lazy(() => SortOrderSchema).optional(),
+  blockNoteId: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
+  datasetId: z.lazy(() => SortOrderSchema).optional(),
+  stepId: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   _count: z.lazy(() => ColumnCountOrderByAggregateInputSchema).optional(),
   _max: z.lazy(() => ColumnMaxOrderByAggregateInputSchema).optional(),
   _min: z.lazy(() => ColumnMinOrderByAggregateInputSchema).optional()
@@ -2456,9 +2513,11 @@ export const ColumnScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.Column
   OR: z.lazy(() => ColumnScalarWhereWithAggregatesInputSchema).array().optional(),
   NOT: z.union([ z.lazy(() => ColumnScalarWhereWithAggregatesInputSchema),z.lazy(() => ColumnScalarWhereWithAggregatesInputSchema).array() ]).optional(),
   id: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
-  datasetId: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
   name: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
   dataType: z.union([ z.lazy(() => EnumColumnTypeWithAggregatesFilterSchema),z.lazy(() => ColumnTypeSchema) ]).optional(),
+  blockNoteId: z.union([ z.lazy(() => StringNullableWithAggregatesFilterSchema),z.string() ]).optional().nullable(),
+  datasetId: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
+  stepId: z.union([ z.lazy(() => StringNullableWithAggregatesFilterSchema),z.string() ]).optional().nullable(),
 }).strict();
 
 export const RowWhereInputSchema: z.ZodType<Prisma.RowWhereInput> = z.object({
@@ -2467,14 +2526,18 @@ export const RowWhereInputSchema: z.ZodType<Prisma.RowWhereInput> = z.object({
   NOT: z.union([ z.lazy(() => RowWhereInputSchema),z.lazy(() => RowWhereInputSchema).array() ]).optional(),
   id: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   datasetId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  publishedFormId: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
   dataset: z.union([ z.lazy(() => DatasetRelationFilterSchema),z.lazy(() => DatasetWhereInputSchema) ]).optional(),
+  publishedForm: z.union([ z.lazy(() => FormNullableRelationFilterSchema),z.lazy(() => FormWhereInputSchema) ]).optional().nullable(),
   cellValues: z.lazy(() => CellValueListRelationFilterSchema).optional()
 }).strict();
 
 export const RowOrderByWithRelationInputSchema: z.ZodType<Prisma.RowOrderByWithRelationInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
   datasetId: z.lazy(() => SortOrderSchema).optional(),
+  publishedFormId: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   dataset: z.lazy(() => DatasetOrderByWithRelationInputSchema).optional(),
+  publishedForm: z.lazy(() => FormOrderByWithRelationInputSchema).optional(),
   cellValues: z.lazy(() => CellValueOrderByRelationAggregateInputSchema).optional()
 }).strict();
 
@@ -2487,13 +2550,16 @@ export const RowWhereUniqueInputSchema: z.ZodType<Prisma.RowWhereUniqueInput> = 
   OR: z.lazy(() => RowWhereInputSchema).array().optional(),
   NOT: z.union([ z.lazy(() => RowWhereInputSchema),z.lazy(() => RowWhereInputSchema).array() ]).optional(),
   datasetId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  publishedFormId: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
   dataset: z.union([ z.lazy(() => DatasetRelationFilterSchema),z.lazy(() => DatasetWhereInputSchema) ]).optional(),
+  publishedForm: z.union([ z.lazy(() => FormNullableRelationFilterSchema),z.lazy(() => FormWhereInputSchema) ]).optional().nullable(),
   cellValues: z.lazy(() => CellValueListRelationFilterSchema).optional()
 }).strict());
 
 export const RowOrderByWithAggregationInputSchema: z.ZodType<Prisma.RowOrderByWithAggregationInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
   datasetId: z.lazy(() => SortOrderSchema).optional(),
+  publishedFormId: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   _count: z.lazy(() => RowCountOrderByAggregateInputSchema).optional(),
   _max: z.lazy(() => RowMaxOrderByAggregateInputSchema).optional(),
   _min: z.lazy(() => RowMinOrderByAggregateInputSchema).optional()
@@ -2505,6 +2571,7 @@ export const RowScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.RowScalar
   NOT: z.union([ z.lazy(() => RowScalarWhereWithAggregatesInputSchema),z.lazy(() => RowScalarWhereWithAggregatesInputSchema).array() ]).optional(),
   id: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
   datasetId: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
+  publishedFormId: z.union([ z.lazy(() => StringNullableWithAggregatesFilterSchema),z.string() ]).optional().nullable(),
 }).strict();
 
 export const CellValueWhereInputSchema: z.ZodType<Prisma.CellValueWhereInput> = z.object({
@@ -3203,6 +3270,7 @@ export const FormCreateInputSchema: z.ZodType<Prisma.FormCreateInput> = z.object
   dataTracks: z.lazy(() => DataTrackCreateNestedManyWithoutFormInputSchema).optional(),
   workspace: z.lazy(() => WorkspaceCreateNestedOneWithoutFormsInputSchema),
   formSubmission: z.lazy(() => FormSubmissionCreateNestedManyWithoutFormInputSchema).optional(),
+  formSubmissionRows: z.lazy(() => RowCreateNestedManyWithoutPublishedFormInputSchema).optional(),
   rootForm: z.lazy(() => FormCreateNestedOneWithoutFormVersionsInputSchema).optional(),
   formVersions: z.lazy(() => FormCreateNestedManyWithoutRootFormInputSchema).optional(),
   dataset: z.lazy(() => DatasetCreateNestedOneWithoutFormInputSchema).optional()
@@ -3225,6 +3293,7 @@ export const FormUncheckedCreateInputSchema: z.ZodType<Prisma.FormUncheckedCreat
   steps: z.lazy(() => StepUncheckedCreateNestedManyWithoutFormInputSchema).optional(),
   dataTracks: z.lazy(() => DataTrackUncheckedCreateNestedManyWithoutFormInputSchema).optional(),
   formSubmission: z.lazy(() => FormSubmissionUncheckedCreateNestedManyWithoutFormInputSchema).optional(),
+  formSubmissionRows: z.lazy(() => RowUncheckedCreateNestedManyWithoutPublishedFormInputSchema).optional(),
   formVersions: z.lazy(() => FormUncheckedCreateNestedManyWithoutRootFormInputSchema).optional()
 }).strict();
 
@@ -3243,6 +3312,7 @@ export const FormUpdateInputSchema: z.ZodType<Prisma.FormUpdateInput> = z.object
   dataTracks: z.lazy(() => DataTrackUpdateManyWithoutFormNestedInputSchema).optional(),
   workspace: z.lazy(() => WorkspaceUpdateOneRequiredWithoutFormsNestedInputSchema).optional(),
   formSubmission: z.lazy(() => FormSubmissionUpdateManyWithoutFormNestedInputSchema).optional(),
+  formSubmissionRows: z.lazy(() => RowUpdateManyWithoutPublishedFormNestedInputSchema).optional(),
   rootForm: z.lazy(() => FormUpdateOneWithoutFormVersionsNestedInputSchema).optional(),
   formVersions: z.lazy(() => FormUpdateManyWithoutRootFormNestedInputSchema).optional(),
   dataset: z.lazy(() => DatasetUpdateOneWithoutFormNestedInputSchema).optional()
@@ -3265,6 +3335,7 @@ export const FormUncheckedUpdateInputSchema: z.ZodType<Prisma.FormUncheckedUpdat
   steps: z.lazy(() => StepUncheckedUpdateManyWithoutFormNestedInputSchema).optional(),
   dataTracks: z.lazy(() => DataTrackUncheckedUpdateManyWithoutFormNestedInputSchema).optional(),
   formSubmission: z.lazy(() => FormSubmissionUncheckedUpdateManyWithoutFormNestedInputSchema).optional(),
+  formSubmissionRows: z.lazy(() => RowUncheckedUpdateManyWithoutPublishedFormNestedInputSchema).optional(),
   formVersions: z.lazy(() => FormUncheckedUpdateManyWithoutRootFormNestedInputSchema).optional()
 }).strict();
 
@@ -3325,6 +3396,7 @@ export const StepCreateInputSchema: z.ZodType<Prisma.StepCreateInput> = z.object
   updatedAt: z.coerce.date().optional(),
   form: z.lazy(() => FormCreateNestedOneWithoutStepsInputSchema).optional(),
   location: z.lazy(() => LocationCreateNestedOneWithoutStepInputSchema),
+  datasetColumns: z.lazy(() => ColumnCreateNestedManyWithoutStepInputSchema).optional(),
   inputResponses: z.lazy(() => InputResponseCreateNestedManyWithoutStepInputSchema).optional(),
   locationResponses: z.lazy(() => LocationResponseCreateNestedManyWithoutStepInputSchema).optional()
 }).strict();
@@ -3341,6 +3413,7 @@ export const StepUncheckedCreateInputSchema: z.ZodType<Prisma.StepUncheckedCreat
   contentViewType: z.lazy(() => ContentViewTypeSchema).optional(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
+  datasetColumns: z.lazy(() => ColumnUncheckedCreateNestedManyWithoutStepInputSchema).optional(),
   inputResponses: z.lazy(() => InputResponseUncheckedCreateNestedManyWithoutStepInputSchema).optional(),
   locationResponses: z.lazy(() => LocationResponseUncheckedCreateNestedManyWithoutStepInputSchema).optional()
 }).strict();
@@ -3357,6 +3430,7 @@ export const StepUpdateInputSchema: z.ZodType<Prisma.StepUpdateInput> = z.object
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   form: z.lazy(() => FormUpdateOneWithoutStepsNestedInputSchema).optional(),
   location: z.lazy(() => LocationUpdateOneRequiredWithoutStepNestedInputSchema).optional(),
+  datasetColumns: z.lazy(() => ColumnUpdateManyWithoutStepNestedInputSchema).optional(),
   inputResponses: z.lazy(() => InputResponseUpdateManyWithoutStepNestedInputSchema).optional(),
   locationResponses: z.lazy(() => LocationResponseUpdateManyWithoutStepNestedInputSchema).optional()
 }).strict();
@@ -3373,6 +3447,7 @@ export const StepUncheckedUpdateInputSchema: z.ZodType<Prisma.StepUncheckedUpdat
   contentViewType: z.union([ z.lazy(() => ContentViewTypeSchema),z.lazy(() => EnumContentViewTypeFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  datasetColumns: z.lazy(() => ColumnUncheckedUpdateManyWithoutStepNestedInputSchema).optional(),
   inputResponses: z.lazy(() => InputResponseUncheckedUpdateManyWithoutStepNestedInputSchema).optional(),
   locationResponses: z.lazy(() => LocationResponseUncheckedUpdateManyWithoutStepNestedInputSchema).optional()
 }).strict();
@@ -3718,16 +3793,20 @@ export const ColumnCreateInputSchema: z.ZodType<Prisma.ColumnCreateInput> = z.ob
   id: z.string().uuid().optional(),
   name: z.string(),
   dataType: z.lazy(() => ColumnTypeSchema),
+  blockNoteId: z.string().optional().nullable(),
   dataset: z.lazy(() => DatasetCreateNestedOneWithoutColumnsInputSchema),
+  step: z.lazy(() => StepCreateNestedOneWithoutDatasetColumnsInputSchema).optional(),
   cellValues: z.lazy(() => CellValueCreateNestedManyWithoutColumnInputSchema).optional(),
   pointLayers: z.lazy(() => PointLayerCreateNestedManyWithoutPointColumnInputSchema).optional()
 }).strict();
 
 export const ColumnUncheckedCreateInputSchema: z.ZodType<Prisma.ColumnUncheckedCreateInput> = z.object({
   id: z.string().uuid().optional(),
-  datasetId: z.string(),
   name: z.string(),
   dataType: z.lazy(() => ColumnTypeSchema),
+  blockNoteId: z.string().optional().nullable(),
+  datasetId: z.string(),
+  stepId: z.string().optional().nullable(),
   cellValues: z.lazy(() => CellValueUncheckedCreateNestedManyWithoutColumnInputSchema).optional(),
   pointLayers: z.lazy(() => PointLayerUncheckedCreateNestedManyWithoutPointColumnInputSchema).optional()
 }).strict();
@@ -3736,67 +3815,81 @@ export const ColumnUpdateInputSchema: z.ZodType<Prisma.ColumnUpdateInput> = z.ob
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   dataType: z.union([ z.lazy(() => ColumnTypeSchema),z.lazy(() => EnumColumnTypeFieldUpdateOperationsInputSchema) ]).optional(),
+  blockNoteId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   dataset: z.lazy(() => DatasetUpdateOneRequiredWithoutColumnsNestedInputSchema).optional(),
+  step: z.lazy(() => StepUpdateOneWithoutDatasetColumnsNestedInputSchema).optional(),
   cellValues: z.lazy(() => CellValueUpdateManyWithoutColumnNestedInputSchema).optional(),
   pointLayers: z.lazy(() => PointLayerUpdateManyWithoutPointColumnNestedInputSchema).optional()
 }).strict();
 
 export const ColumnUncheckedUpdateInputSchema: z.ZodType<Prisma.ColumnUncheckedUpdateInput> = z.object({
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  datasetId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   dataType: z.union([ z.lazy(() => ColumnTypeSchema),z.lazy(() => EnumColumnTypeFieldUpdateOperationsInputSchema) ]).optional(),
+  blockNoteId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  datasetId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  stepId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   cellValues: z.lazy(() => CellValueUncheckedUpdateManyWithoutColumnNestedInputSchema).optional(),
   pointLayers: z.lazy(() => PointLayerUncheckedUpdateManyWithoutPointColumnNestedInputSchema).optional()
 }).strict();
 
 export const ColumnCreateManyInputSchema: z.ZodType<Prisma.ColumnCreateManyInput> = z.object({
   id: z.string().uuid().optional(),
-  datasetId: z.string(),
   name: z.string(),
-  dataType: z.lazy(() => ColumnTypeSchema)
+  dataType: z.lazy(() => ColumnTypeSchema),
+  blockNoteId: z.string().optional().nullable(),
+  datasetId: z.string(),
+  stepId: z.string().optional().nullable()
 }).strict();
 
 export const ColumnUpdateManyMutationInputSchema: z.ZodType<Prisma.ColumnUpdateManyMutationInput> = z.object({
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   dataType: z.union([ z.lazy(() => ColumnTypeSchema),z.lazy(() => EnumColumnTypeFieldUpdateOperationsInputSchema) ]).optional(),
+  blockNoteId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
 }).strict();
 
 export const ColumnUncheckedUpdateManyInputSchema: z.ZodType<Prisma.ColumnUncheckedUpdateManyInput> = z.object({
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  datasetId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   dataType: z.union([ z.lazy(() => ColumnTypeSchema),z.lazy(() => EnumColumnTypeFieldUpdateOperationsInputSchema) ]).optional(),
+  blockNoteId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  datasetId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  stepId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
 }).strict();
 
 export const RowCreateInputSchema: z.ZodType<Prisma.RowCreateInput> = z.object({
   id: z.string().uuid().optional(),
   dataset: z.lazy(() => DatasetCreateNestedOneWithoutRowsInputSchema),
+  publishedForm: z.lazy(() => FormCreateNestedOneWithoutFormSubmissionRowsInputSchema).optional(),
   cellValues: z.lazy(() => CellValueCreateNestedManyWithoutRowInputSchema).optional()
 }).strict();
 
 export const RowUncheckedCreateInputSchema: z.ZodType<Prisma.RowUncheckedCreateInput> = z.object({
   id: z.string().uuid().optional(),
   datasetId: z.string(),
+  publishedFormId: z.string().optional().nullable(),
   cellValues: z.lazy(() => CellValueUncheckedCreateNestedManyWithoutRowInputSchema).optional()
 }).strict();
 
 export const RowUpdateInputSchema: z.ZodType<Prisma.RowUpdateInput> = z.object({
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   dataset: z.lazy(() => DatasetUpdateOneRequiredWithoutRowsNestedInputSchema).optional(),
+  publishedForm: z.lazy(() => FormUpdateOneWithoutFormSubmissionRowsNestedInputSchema).optional(),
   cellValues: z.lazy(() => CellValueUpdateManyWithoutRowNestedInputSchema).optional()
 }).strict();
 
 export const RowUncheckedUpdateInputSchema: z.ZodType<Prisma.RowUncheckedUpdateInput> = z.object({
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   datasetId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  publishedFormId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   cellValues: z.lazy(() => CellValueUncheckedUpdateManyWithoutRowNestedInputSchema).optional()
 }).strict();
 
 export const RowCreateManyInputSchema: z.ZodType<Prisma.RowCreateManyInput> = z.object({
   id: z.string().uuid().optional(),
-  datasetId: z.string()
+  datasetId: z.string(),
+  publishedFormId: z.string().optional().nullable()
 }).strict();
 
 export const RowUpdateManyMutationInputSchema: z.ZodType<Prisma.RowUpdateManyMutationInput> = z.object({
@@ -3806,6 +3899,7 @@ export const RowUpdateManyMutationInputSchema: z.ZodType<Prisma.RowUpdateManyMut
 export const RowUncheckedUpdateManyInputSchema: z.ZodType<Prisma.RowUncheckedUpdateManyInput> = z.object({
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   datasetId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  publishedFormId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
 }).strict();
 
 export const CellValueCreateInputSchema: z.ZodType<Prisma.CellValueCreateInput> = z.object({
@@ -4416,6 +4510,12 @@ export const FormSubmissionListRelationFilterSchema: z.ZodType<Prisma.FormSubmis
   none: z.lazy(() => FormSubmissionWhereInputSchema).optional()
 }).strict();
 
+export const RowListRelationFilterSchema: z.ZodType<Prisma.RowListRelationFilter> = z.object({
+  every: z.lazy(() => RowWhereInputSchema).optional(),
+  some: z.lazy(() => RowWhereInputSchema).optional(),
+  none: z.lazy(() => RowWhereInputSchema).optional()
+}).strict();
+
 export const FormNullableRelationFilterSchema: z.ZodType<Prisma.FormNullableRelationFilter> = z.object({
   is: z.lazy(() => FormWhereInputSchema).optional().nullable(),
   isNot: z.lazy(() => FormWhereInputSchema).optional().nullable()
@@ -4435,6 +4535,10 @@ export const DataTrackOrderByRelationAggregateInputSchema: z.ZodType<Prisma.Data
 }).strict();
 
 export const FormSubmissionOrderByRelationAggregateInputSchema: z.ZodType<Prisma.FormSubmissionOrderByRelationAggregateInput> = z.object({
+  _count: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const RowOrderByRelationAggregateInputSchema: z.ZodType<Prisma.RowOrderByRelationAggregateInput> = z.object({
   _count: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
@@ -4561,6 +4665,12 @@ export const LocationRelationFilterSchema: z.ZodType<Prisma.LocationRelationFilt
   isNot: z.lazy(() => LocationWhereInputSchema).optional()
 }).strict();
 
+export const ColumnListRelationFilterSchema: z.ZodType<Prisma.ColumnListRelationFilter> = z.object({
+  every: z.lazy(() => ColumnWhereInputSchema).optional(),
+  some: z.lazy(() => ColumnWhereInputSchema).optional(),
+  none: z.lazy(() => ColumnWhereInputSchema).optional()
+}).strict();
+
 export const InputResponseListRelationFilterSchema: z.ZodType<Prisma.InputResponseListRelationFilter> = z.object({
   every: z.lazy(() => InputResponseWhereInputSchema).optional(),
   some: z.lazy(() => InputResponseWhereInputSchema).optional(),
@@ -4571,6 +4681,10 @@ export const LocationResponseListRelationFilterSchema: z.ZodType<Prisma.Location
   every: z.lazy(() => LocationResponseWhereInputSchema).optional(),
   some: z.lazy(() => LocationResponseWhereInputSchema).optional(),
   none: z.lazy(() => LocationResponseWhereInputSchema).optional()
+}).strict();
+
+export const ColumnOrderByRelationAggregateInputSchema: z.ZodType<Prisma.ColumnOrderByRelationAggregateInput> = z.object({
+  _count: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const InputResponseOrderByRelationAggregateInputSchema: z.ZodType<Prisma.InputResponseOrderByRelationAggregateInput> = z.object({
@@ -4854,26 +4968,6 @@ export const LocationSumOrderByAggregateInputSchema: z.ZodType<Prisma.LocationSu
   id: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
-export const ColumnListRelationFilterSchema: z.ZodType<Prisma.ColumnListRelationFilter> = z.object({
-  every: z.lazy(() => ColumnWhereInputSchema).optional(),
-  some: z.lazy(() => ColumnWhereInputSchema).optional(),
-  none: z.lazy(() => ColumnWhereInputSchema).optional()
-}).strict();
-
-export const RowListRelationFilterSchema: z.ZodType<Prisma.RowListRelationFilter> = z.object({
-  every: z.lazy(() => RowWhereInputSchema).optional(),
-  some: z.lazy(() => RowWhereInputSchema).optional(),
-  none: z.lazy(() => RowWhereInputSchema).optional()
-}).strict();
-
-export const ColumnOrderByRelationAggregateInputSchema: z.ZodType<Prisma.ColumnOrderByRelationAggregateInput> = z.object({
-  _count: z.lazy(() => SortOrderSchema).optional()
-}).strict();
-
-export const RowOrderByRelationAggregateInputSchema: z.ZodType<Prisma.RowOrderByRelationAggregateInput> = z.object({
-  _count: z.lazy(() => SortOrderSchema).optional()
-}).strict();
-
 export const DatasetCountOrderByAggregateInputSchema: z.ZodType<Prisma.DatasetCountOrderByAggregateInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
   name: z.lazy(() => SortOrderSchema).optional(),
@@ -4931,23 +5025,29 @@ export const ColumnDatasetIdNameCompoundUniqueInputSchema: z.ZodType<Prisma.Colu
 
 export const ColumnCountOrderByAggregateInputSchema: z.ZodType<Prisma.ColumnCountOrderByAggregateInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
-  datasetId: z.lazy(() => SortOrderSchema).optional(),
   name: z.lazy(() => SortOrderSchema).optional(),
-  dataType: z.lazy(() => SortOrderSchema).optional()
+  dataType: z.lazy(() => SortOrderSchema).optional(),
+  blockNoteId: z.lazy(() => SortOrderSchema).optional(),
+  datasetId: z.lazy(() => SortOrderSchema).optional(),
+  stepId: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const ColumnMaxOrderByAggregateInputSchema: z.ZodType<Prisma.ColumnMaxOrderByAggregateInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
-  datasetId: z.lazy(() => SortOrderSchema).optional(),
   name: z.lazy(() => SortOrderSchema).optional(),
-  dataType: z.lazy(() => SortOrderSchema).optional()
+  dataType: z.lazy(() => SortOrderSchema).optional(),
+  blockNoteId: z.lazy(() => SortOrderSchema).optional(),
+  datasetId: z.lazy(() => SortOrderSchema).optional(),
+  stepId: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const ColumnMinOrderByAggregateInputSchema: z.ZodType<Prisma.ColumnMinOrderByAggregateInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
-  datasetId: z.lazy(() => SortOrderSchema).optional(),
   name: z.lazy(() => SortOrderSchema).optional(),
-  dataType: z.lazy(() => SortOrderSchema).optional()
+  dataType: z.lazy(() => SortOrderSchema).optional(),
+  blockNoteId: z.lazy(() => SortOrderSchema).optional(),
+  datasetId: z.lazy(() => SortOrderSchema).optional(),
+  stepId: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const EnumColumnTypeWithAggregatesFilterSchema: z.ZodType<Prisma.EnumColumnTypeWithAggregatesFilter> = z.object({
@@ -4962,17 +5062,20 @@ export const EnumColumnTypeWithAggregatesFilterSchema: z.ZodType<Prisma.EnumColu
 
 export const RowCountOrderByAggregateInputSchema: z.ZodType<Prisma.RowCountOrderByAggregateInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
-  datasetId: z.lazy(() => SortOrderSchema).optional()
+  datasetId: z.lazy(() => SortOrderSchema).optional(),
+  publishedFormId: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const RowMaxOrderByAggregateInputSchema: z.ZodType<Prisma.RowMaxOrderByAggregateInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
-  datasetId: z.lazy(() => SortOrderSchema).optional()
+  datasetId: z.lazy(() => SortOrderSchema).optional(),
+  publishedFormId: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const RowMinOrderByAggregateInputSchema: z.ZodType<Prisma.RowMinOrderByAggregateInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
-  datasetId: z.lazy(() => SortOrderSchema).optional()
+  datasetId: z.lazy(() => SortOrderSchema).optional(),
+  publishedFormId: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const ColumnRelationFilterSchema: z.ZodType<Prisma.ColumnRelationFilter> = z.object({
@@ -5559,6 +5662,13 @@ export const FormSubmissionCreateNestedManyWithoutFormInputSchema: z.ZodType<Pri
   connect: z.union([ z.lazy(() => FormSubmissionWhereUniqueInputSchema),z.lazy(() => FormSubmissionWhereUniqueInputSchema).array() ]).optional(),
 }).strict();
 
+export const RowCreateNestedManyWithoutPublishedFormInputSchema: z.ZodType<Prisma.RowCreateNestedManyWithoutPublishedFormInput> = z.object({
+  create: z.union([ z.lazy(() => RowCreateWithoutPublishedFormInputSchema),z.lazy(() => RowCreateWithoutPublishedFormInputSchema).array(),z.lazy(() => RowUncheckedCreateWithoutPublishedFormInputSchema),z.lazy(() => RowUncheckedCreateWithoutPublishedFormInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => RowCreateOrConnectWithoutPublishedFormInputSchema),z.lazy(() => RowCreateOrConnectWithoutPublishedFormInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => RowCreateManyPublishedFormInputEnvelopeSchema).optional(),
+  connect: z.union([ z.lazy(() => RowWhereUniqueInputSchema),z.lazy(() => RowWhereUniqueInputSchema).array() ]).optional(),
+}).strict();
+
 export const FormCreateNestedOneWithoutFormVersionsInputSchema: z.ZodType<Prisma.FormCreateNestedOneWithoutFormVersionsInput> = z.object({
   create: z.union([ z.lazy(() => FormCreateWithoutFormVersionsInputSchema),z.lazy(() => FormUncheckedCreateWithoutFormVersionsInputSchema) ]).optional(),
   connectOrCreate: z.lazy(() => FormCreateOrConnectWithoutFormVersionsInputSchema).optional(),
@@ -5597,6 +5707,13 @@ export const FormSubmissionUncheckedCreateNestedManyWithoutFormInputSchema: z.Zo
   connectOrCreate: z.union([ z.lazy(() => FormSubmissionCreateOrConnectWithoutFormInputSchema),z.lazy(() => FormSubmissionCreateOrConnectWithoutFormInputSchema).array() ]).optional(),
   createMany: z.lazy(() => FormSubmissionCreateManyFormInputEnvelopeSchema).optional(),
   connect: z.union([ z.lazy(() => FormSubmissionWhereUniqueInputSchema),z.lazy(() => FormSubmissionWhereUniqueInputSchema).array() ]).optional(),
+}).strict();
+
+export const RowUncheckedCreateNestedManyWithoutPublishedFormInputSchema: z.ZodType<Prisma.RowUncheckedCreateNestedManyWithoutPublishedFormInput> = z.object({
+  create: z.union([ z.lazy(() => RowCreateWithoutPublishedFormInputSchema),z.lazy(() => RowCreateWithoutPublishedFormInputSchema).array(),z.lazy(() => RowUncheckedCreateWithoutPublishedFormInputSchema),z.lazy(() => RowUncheckedCreateWithoutPublishedFormInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => RowCreateOrConnectWithoutPublishedFormInputSchema),z.lazy(() => RowCreateOrConnectWithoutPublishedFormInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => RowCreateManyPublishedFormInputEnvelopeSchema).optional(),
+  connect: z.union([ z.lazy(() => RowWhereUniqueInputSchema),z.lazy(() => RowWhereUniqueInputSchema).array() ]).optional(),
 }).strict();
 
 export const FormUncheckedCreateNestedManyWithoutRootFormInputSchema: z.ZodType<Prisma.FormUncheckedCreateNestedManyWithoutRootFormInput> = z.object({
@@ -5671,6 +5788,20 @@ export const FormSubmissionUpdateManyWithoutFormNestedInputSchema: z.ZodType<Pri
   update: z.union([ z.lazy(() => FormSubmissionUpdateWithWhereUniqueWithoutFormInputSchema),z.lazy(() => FormSubmissionUpdateWithWhereUniqueWithoutFormInputSchema).array() ]).optional(),
   updateMany: z.union([ z.lazy(() => FormSubmissionUpdateManyWithWhereWithoutFormInputSchema),z.lazy(() => FormSubmissionUpdateManyWithWhereWithoutFormInputSchema).array() ]).optional(),
   deleteMany: z.union([ z.lazy(() => FormSubmissionScalarWhereInputSchema),z.lazy(() => FormSubmissionScalarWhereInputSchema).array() ]).optional(),
+}).strict();
+
+export const RowUpdateManyWithoutPublishedFormNestedInputSchema: z.ZodType<Prisma.RowUpdateManyWithoutPublishedFormNestedInput> = z.object({
+  create: z.union([ z.lazy(() => RowCreateWithoutPublishedFormInputSchema),z.lazy(() => RowCreateWithoutPublishedFormInputSchema).array(),z.lazy(() => RowUncheckedCreateWithoutPublishedFormInputSchema),z.lazy(() => RowUncheckedCreateWithoutPublishedFormInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => RowCreateOrConnectWithoutPublishedFormInputSchema),z.lazy(() => RowCreateOrConnectWithoutPublishedFormInputSchema).array() ]).optional(),
+  upsert: z.union([ z.lazy(() => RowUpsertWithWhereUniqueWithoutPublishedFormInputSchema),z.lazy(() => RowUpsertWithWhereUniqueWithoutPublishedFormInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => RowCreateManyPublishedFormInputEnvelopeSchema).optional(),
+  set: z.union([ z.lazy(() => RowWhereUniqueInputSchema),z.lazy(() => RowWhereUniqueInputSchema).array() ]).optional(),
+  disconnect: z.union([ z.lazy(() => RowWhereUniqueInputSchema),z.lazy(() => RowWhereUniqueInputSchema).array() ]).optional(),
+  delete: z.union([ z.lazy(() => RowWhereUniqueInputSchema),z.lazy(() => RowWhereUniqueInputSchema).array() ]).optional(),
+  connect: z.union([ z.lazy(() => RowWhereUniqueInputSchema),z.lazy(() => RowWhereUniqueInputSchema).array() ]).optional(),
+  update: z.union([ z.lazy(() => RowUpdateWithWhereUniqueWithoutPublishedFormInputSchema),z.lazy(() => RowUpdateWithWhereUniqueWithoutPublishedFormInputSchema).array() ]).optional(),
+  updateMany: z.union([ z.lazy(() => RowUpdateManyWithWhereWithoutPublishedFormInputSchema),z.lazy(() => RowUpdateManyWithWhereWithoutPublishedFormInputSchema).array() ]).optional(),
+  deleteMany: z.union([ z.lazy(() => RowScalarWhereInputSchema),z.lazy(() => RowScalarWhereInputSchema).array() ]).optional(),
 }).strict();
 
 export const FormUpdateOneWithoutFormVersionsNestedInputSchema: z.ZodType<Prisma.FormUpdateOneWithoutFormVersionsNestedInput> = z.object({
@@ -5749,6 +5880,20 @@ export const FormSubmissionUncheckedUpdateManyWithoutFormNestedInputSchema: z.Zo
   deleteMany: z.union([ z.lazy(() => FormSubmissionScalarWhereInputSchema),z.lazy(() => FormSubmissionScalarWhereInputSchema).array() ]).optional(),
 }).strict();
 
+export const RowUncheckedUpdateManyWithoutPublishedFormNestedInputSchema: z.ZodType<Prisma.RowUncheckedUpdateManyWithoutPublishedFormNestedInput> = z.object({
+  create: z.union([ z.lazy(() => RowCreateWithoutPublishedFormInputSchema),z.lazy(() => RowCreateWithoutPublishedFormInputSchema).array(),z.lazy(() => RowUncheckedCreateWithoutPublishedFormInputSchema),z.lazy(() => RowUncheckedCreateWithoutPublishedFormInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => RowCreateOrConnectWithoutPublishedFormInputSchema),z.lazy(() => RowCreateOrConnectWithoutPublishedFormInputSchema).array() ]).optional(),
+  upsert: z.union([ z.lazy(() => RowUpsertWithWhereUniqueWithoutPublishedFormInputSchema),z.lazy(() => RowUpsertWithWhereUniqueWithoutPublishedFormInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => RowCreateManyPublishedFormInputEnvelopeSchema).optional(),
+  set: z.union([ z.lazy(() => RowWhereUniqueInputSchema),z.lazy(() => RowWhereUniqueInputSchema).array() ]).optional(),
+  disconnect: z.union([ z.lazy(() => RowWhereUniqueInputSchema),z.lazy(() => RowWhereUniqueInputSchema).array() ]).optional(),
+  delete: z.union([ z.lazy(() => RowWhereUniqueInputSchema),z.lazy(() => RowWhereUniqueInputSchema).array() ]).optional(),
+  connect: z.union([ z.lazy(() => RowWhereUniqueInputSchema),z.lazy(() => RowWhereUniqueInputSchema).array() ]).optional(),
+  update: z.union([ z.lazy(() => RowUpdateWithWhereUniqueWithoutPublishedFormInputSchema),z.lazy(() => RowUpdateWithWhereUniqueWithoutPublishedFormInputSchema).array() ]).optional(),
+  updateMany: z.union([ z.lazy(() => RowUpdateManyWithWhereWithoutPublishedFormInputSchema),z.lazy(() => RowUpdateManyWithWhereWithoutPublishedFormInputSchema).array() ]).optional(),
+  deleteMany: z.union([ z.lazy(() => RowScalarWhereInputSchema),z.lazy(() => RowScalarWhereInputSchema).array() ]).optional(),
+}).strict();
+
 export const FormUncheckedUpdateManyWithoutRootFormNestedInputSchema: z.ZodType<Prisma.FormUncheckedUpdateManyWithoutRootFormNestedInput> = z.object({
   create: z.union([ z.lazy(() => FormCreateWithoutRootFormInputSchema),z.lazy(() => FormCreateWithoutRootFormInputSchema).array(),z.lazy(() => FormUncheckedCreateWithoutRootFormInputSchema),z.lazy(() => FormUncheckedCreateWithoutRootFormInputSchema).array() ]).optional(),
   connectOrCreate: z.union([ z.lazy(() => FormCreateOrConnectWithoutRootFormInputSchema),z.lazy(() => FormCreateOrConnectWithoutRootFormInputSchema).array() ]).optional(),
@@ -5773,6 +5918,13 @@ export const LocationCreateNestedOneWithoutStepInputSchema: z.ZodType<Prisma.Loc
   connect: z.lazy(() => LocationWhereUniqueInputSchema).optional()
 }).strict();
 
+export const ColumnCreateNestedManyWithoutStepInputSchema: z.ZodType<Prisma.ColumnCreateNestedManyWithoutStepInput> = z.object({
+  create: z.union([ z.lazy(() => ColumnCreateWithoutStepInputSchema),z.lazy(() => ColumnCreateWithoutStepInputSchema).array(),z.lazy(() => ColumnUncheckedCreateWithoutStepInputSchema),z.lazy(() => ColumnUncheckedCreateWithoutStepInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => ColumnCreateOrConnectWithoutStepInputSchema),z.lazy(() => ColumnCreateOrConnectWithoutStepInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => ColumnCreateManyStepInputEnvelopeSchema).optional(),
+  connect: z.union([ z.lazy(() => ColumnWhereUniqueInputSchema),z.lazy(() => ColumnWhereUniqueInputSchema).array() ]).optional(),
+}).strict();
+
 export const InputResponseCreateNestedManyWithoutStepInputSchema: z.ZodType<Prisma.InputResponseCreateNestedManyWithoutStepInput> = z.object({
   create: z.union([ z.lazy(() => InputResponseCreateWithoutStepInputSchema),z.lazy(() => InputResponseCreateWithoutStepInputSchema).array(),z.lazy(() => InputResponseUncheckedCreateWithoutStepInputSchema),z.lazy(() => InputResponseUncheckedCreateWithoutStepInputSchema).array() ]).optional(),
   connectOrCreate: z.union([ z.lazy(() => InputResponseCreateOrConnectWithoutStepInputSchema),z.lazy(() => InputResponseCreateOrConnectWithoutStepInputSchema).array() ]).optional(),
@@ -5785,6 +5937,13 @@ export const LocationResponseCreateNestedManyWithoutStepInputSchema: z.ZodType<P
   connectOrCreate: z.union([ z.lazy(() => LocationResponseCreateOrConnectWithoutStepInputSchema),z.lazy(() => LocationResponseCreateOrConnectWithoutStepInputSchema).array() ]).optional(),
   createMany: z.lazy(() => LocationResponseCreateManyStepInputEnvelopeSchema).optional(),
   connect: z.union([ z.lazy(() => LocationResponseWhereUniqueInputSchema),z.lazy(() => LocationResponseWhereUniqueInputSchema).array() ]).optional(),
+}).strict();
+
+export const ColumnUncheckedCreateNestedManyWithoutStepInputSchema: z.ZodType<Prisma.ColumnUncheckedCreateNestedManyWithoutStepInput> = z.object({
+  create: z.union([ z.lazy(() => ColumnCreateWithoutStepInputSchema),z.lazy(() => ColumnCreateWithoutStepInputSchema).array(),z.lazy(() => ColumnUncheckedCreateWithoutStepInputSchema),z.lazy(() => ColumnUncheckedCreateWithoutStepInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => ColumnCreateOrConnectWithoutStepInputSchema),z.lazy(() => ColumnCreateOrConnectWithoutStepInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => ColumnCreateManyStepInputEnvelopeSchema).optional(),
+  connect: z.union([ z.lazy(() => ColumnWhereUniqueInputSchema),z.lazy(() => ColumnWhereUniqueInputSchema).array() ]).optional(),
 }).strict();
 
 export const InputResponseUncheckedCreateNestedManyWithoutStepInputSchema: z.ZodType<Prisma.InputResponseUncheckedCreateNestedManyWithoutStepInput> = z.object({
@@ -5828,6 +5987,20 @@ export const LocationUpdateOneRequiredWithoutStepNestedInputSchema: z.ZodType<Pr
   update: z.union([ z.lazy(() => LocationUpdateToOneWithWhereWithoutStepInputSchema),z.lazy(() => LocationUpdateWithoutStepInputSchema),z.lazy(() => LocationUncheckedUpdateWithoutStepInputSchema) ]).optional(),
 }).strict();
 
+export const ColumnUpdateManyWithoutStepNestedInputSchema: z.ZodType<Prisma.ColumnUpdateManyWithoutStepNestedInput> = z.object({
+  create: z.union([ z.lazy(() => ColumnCreateWithoutStepInputSchema),z.lazy(() => ColumnCreateWithoutStepInputSchema).array(),z.lazy(() => ColumnUncheckedCreateWithoutStepInputSchema),z.lazy(() => ColumnUncheckedCreateWithoutStepInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => ColumnCreateOrConnectWithoutStepInputSchema),z.lazy(() => ColumnCreateOrConnectWithoutStepInputSchema).array() ]).optional(),
+  upsert: z.union([ z.lazy(() => ColumnUpsertWithWhereUniqueWithoutStepInputSchema),z.lazy(() => ColumnUpsertWithWhereUniqueWithoutStepInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => ColumnCreateManyStepInputEnvelopeSchema).optional(),
+  set: z.union([ z.lazy(() => ColumnWhereUniqueInputSchema),z.lazy(() => ColumnWhereUniqueInputSchema).array() ]).optional(),
+  disconnect: z.union([ z.lazy(() => ColumnWhereUniqueInputSchema),z.lazy(() => ColumnWhereUniqueInputSchema).array() ]).optional(),
+  delete: z.union([ z.lazy(() => ColumnWhereUniqueInputSchema),z.lazy(() => ColumnWhereUniqueInputSchema).array() ]).optional(),
+  connect: z.union([ z.lazy(() => ColumnWhereUniqueInputSchema),z.lazy(() => ColumnWhereUniqueInputSchema).array() ]).optional(),
+  update: z.union([ z.lazy(() => ColumnUpdateWithWhereUniqueWithoutStepInputSchema),z.lazy(() => ColumnUpdateWithWhereUniqueWithoutStepInputSchema).array() ]).optional(),
+  updateMany: z.union([ z.lazy(() => ColumnUpdateManyWithWhereWithoutStepInputSchema),z.lazy(() => ColumnUpdateManyWithWhereWithoutStepInputSchema).array() ]).optional(),
+  deleteMany: z.union([ z.lazy(() => ColumnScalarWhereInputSchema),z.lazy(() => ColumnScalarWhereInputSchema).array() ]).optional(),
+}).strict();
+
 export const InputResponseUpdateManyWithoutStepNestedInputSchema: z.ZodType<Prisma.InputResponseUpdateManyWithoutStepNestedInput> = z.object({
   create: z.union([ z.lazy(() => InputResponseCreateWithoutStepInputSchema),z.lazy(() => InputResponseCreateWithoutStepInputSchema).array(),z.lazy(() => InputResponseUncheckedCreateWithoutStepInputSchema),z.lazy(() => InputResponseUncheckedCreateWithoutStepInputSchema).array() ]).optional(),
   connectOrCreate: z.union([ z.lazy(() => InputResponseCreateOrConnectWithoutStepInputSchema),z.lazy(() => InputResponseCreateOrConnectWithoutStepInputSchema).array() ]).optional(),
@@ -5854,6 +6027,20 @@ export const LocationResponseUpdateManyWithoutStepNestedInputSchema: z.ZodType<P
   update: z.union([ z.lazy(() => LocationResponseUpdateWithWhereUniqueWithoutStepInputSchema),z.lazy(() => LocationResponseUpdateWithWhereUniqueWithoutStepInputSchema).array() ]).optional(),
   updateMany: z.union([ z.lazy(() => LocationResponseUpdateManyWithWhereWithoutStepInputSchema),z.lazy(() => LocationResponseUpdateManyWithWhereWithoutStepInputSchema).array() ]).optional(),
   deleteMany: z.union([ z.lazy(() => LocationResponseScalarWhereInputSchema),z.lazy(() => LocationResponseScalarWhereInputSchema).array() ]).optional(),
+}).strict();
+
+export const ColumnUncheckedUpdateManyWithoutStepNestedInputSchema: z.ZodType<Prisma.ColumnUncheckedUpdateManyWithoutStepNestedInput> = z.object({
+  create: z.union([ z.lazy(() => ColumnCreateWithoutStepInputSchema),z.lazy(() => ColumnCreateWithoutStepInputSchema).array(),z.lazy(() => ColumnUncheckedCreateWithoutStepInputSchema),z.lazy(() => ColumnUncheckedCreateWithoutStepInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => ColumnCreateOrConnectWithoutStepInputSchema),z.lazy(() => ColumnCreateOrConnectWithoutStepInputSchema).array() ]).optional(),
+  upsert: z.union([ z.lazy(() => ColumnUpsertWithWhereUniqueWithoutStepInputSchema),z.lazy(() => ColumnUpsertWithWhereUniqueWithoutStepInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => ColumnCreateManyStepInputEnvelopeSchema).optional(),
+  set: z.union([ z.lazy(() => ColumnWhereUniqueInputSchema),z.lazy(() => ColumnWhereUniqueInputSchema).array() ]).optional(),
+  disconnect: z.union([ z.lazy(() => ColumnWhereUniqueInputSchema),z.lazy(() => ColumnWhereUniqueInputSchema).array() ]).optional(),
+  delete: z.union([ z.lazy(() => ColumnWhereUniqueInputSchema),z.lazy(() => ColumnWhereUniqueInputSchema).array() ]).optional(),
+  connect: z.union([ z.lazy(() => ColumnWhereUniqueInputSchema),z.lazy(() => ColumnWhereUniqueInputSchema).array() ]).optional(),
+  update: z.union([ z.lazy(() => ColumnUpdateWithWhereUniqueWithoutStepInputSchema),z.lazy(() => ColumnUpdateWithWhereUniqueWithoutStepInputSchema).array() ]).optional(),
+  updateMany: z.union([ z.lazy(() => ColumnUpdateManyWithWhereWithoutStepInputSchema),z.lazy(() => ColumnUpdateManyWithWhereWithoutStepInputSchema).array() ]).optional(),
+  deleteMany: z.union([ z.lazy(() => ColumnScalarWhereInputSchema),z.lazy(() => ColumnScalarWhereInputSchema).array() ]).optional(),
 }).strict();
 
 export const InputResponseUncheckedUpdateManyWithoutStepNestedInputSchema: z.ZodType<Prisma.InputResponseUncheckedUpdateManyWithoutStepNestedInput> = z.object({
@@ -6332,6 +6519,12 @@ export const DatasetCreateNestedOneWithoutColumnsInputSchema: z.ZodType<Prisma.D
   connect: z.lazy(() => DatasetWhereUniqueInputSchema).optional()
 }).strict();
 
+export const StepCreateNestedOneWithoutDatasetColumnsInputSchema: z.ZodType<Prisma.StepCreateNestedOneWithoutDatasetColumnsInput> = z.object({
+  create: z.union([ z.lazy(() => StepCreateWithoutDatasetColumnsInputSchema),z.lazy(() => StepUncheckedCreateWithoutDatasetColumnsInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => StepCreateOrConnectWithoutDatasetColumnsInputSchema).optional(),
+  connect: z.lazy(() => StepWhereUniqueInputSchema).optional()
+}).strict();
+
 export const CellValueCreateNestedManyWithoutColumnInputSchema: z.ZodType<Prisma.CellValueCreateNestedManyWithoutColumnInput> = z.object({
   create: z.union([ z.lazy(() => CellValueCreateWithoutColumnInputSchema),z.lazy(() => CellValueCreateWithoutColumnInputSchema).array(),z.lazy(() => CellValueUncheckedCreateWithoutColumnInputSchema),z.lazy(() => CellValueUncheckedCreateWithoutColumnInputSchema).array() ]).optional(),
   connectOrCreate: z.union([ z.lazy(() => CellValueCreateOrConnectWithoutColumnInputSchema),z.lazy(() => CellValueCreateOrConnectWithoutColumnInputSchema).array() ]).optional(),
@@ -6370,6 +6563,16 @@ export const DatasetUpdateOneRequiredWithoutColumnsNestedInputSchema: z.ZodType<
   upsert: z.lazy(() => DatasetUpsertWithoutColumnsInputSchema).optional(),
   connect: z.lazy(() => DatasetWhereUniqueInputSchema).optional(),
   update: z.union([ z.lazy(() => DatasetUpdateToOneWithWhereWithoutColumnsInputSchema),z.lazy(() => DatasetUpdateWithoutColumnsInputSchema),z.lazy(() => DatasetUncheckedUpdateWithoutColumnsInputSchema) ]).optional(),
+}).strict();
+
+export const StepUpdateOneWithoutDatasetColumnsNestedInputSchema: z.ZodType<Prisma.StepUpdateOneWithoutDatasetColumnsNestedInput> = z.object({
+  create: z.union([ z.lazy(() => StepCreateWithoutDatasetColumnsInputSchema),z.lazy(() => StepUncheckedCreateWithoutDatasetColumnsInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => StepCreateOrConnectWithoutDatasetColumnsInputSchema).optional(),
+  upsert: z.lazy(() => StepUpsertWithoutDatasetColumnsInputSchema).optional(),
+  disconnect: z.union([ z.boolean(),z.lazy(() => StepWhereInputSchema) ]).optional(),
+  delete: z.union([ z.boolean(),z.lazy(() => StepWhereInputSchema) ]).optional(),
+  connect: z.lazy(() => StepWhereUniqueInputSchema).optional(),
+  update: z.union([ z.lazy(() => StepUpdateToOneWithWhereWithoutDatasetColumnsInputSchema),z.lazy(() => StepUpdateWithoutDatasetColumnsInputSchema),z.lazy(() => StepUncheckedUpdateWithoutDatasetColumnsInputSchema) ]).optional(),
 }).strict();
 
 export const CellValueUpdateManyWithoutColumnNestedInputSchema: z.ZodType<Prisma.CellValueUpdateManyWithoutColumnNestedInput> = z.object({
@@ -6434,6 +6637,12 @@ export const DatasetCreateNestedOneWithoutRowsInputSchema: z.ZodType<Prisma.Data
   connect: z.lazy(() => DatasetWhereUniqueInputSchema).optional()
 }).strict();
 
+export const FormCreateNestedOneWithoutFormSubmissionRowsInputSchema: z.ZodType<Prisma.FormCreateNestedOneWithoutFormSubmissionRowsInput> = z.object({
+  create: z.union([ z.lazy(() => FormCreateWithoutFormSubmissionRowsInputSchema),z.lazy(() => FormUncheckedCreateWithoutFormSubmissionRowsInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => FormCreateOrConnectWithoutFormSubmissionRowsInputSchema).optional(),
+  connect: z.lazy(() => FormWhereUniqueInputSchema).optional()
+}).strict();
+
 export const CellValueCreateNestedManyWithoutRowInputSchema: z.ZodType<Prisma.CellValueCreateNestedManyWithoutRowInput> = z.object({
   create: z.union([ z.lazy(() => CellValueCreateWithoutRowInputSchema),z.lazy(() => CellValueCreateWithoutRowInputSchema).array(),z.lazy(() => CellValueUncheckedCreateWithoutRowInputSchema),z.lazy(() => CellValueUncheckedCreateWithoutRowInputSchema).array() ]).optional(),
   connectOrCreate: z.union([ z.lazy(() => CellValueCreateOrConnectWithoutRowInputSchema),z.lazy(() => CellValueCreateOrConnectWithoutRowInputSchema).array() ]).optional(),
@@ -6454,6 +6663,16 @@ export const DatasetUpdateOneRequiredWithoutRowsNestedInputSchema: z.ZodType<Pri
   upsert: z.lazy(() => DatasetUpsertWithoutRowsInputSchema).optional(),
   connect: z.lazy(() => DatasetWhereUniqueInputSchema).optional(),
   update: z.union([ z.lazy(() => DatasetUpdateToOneWithWhereWithoutRowsInputSchema),z.lazy(() => DatasetUpdateWithoutRowsInputSchema),z.lazy(() => DatasetUncheckedUpdateWithoutRowsInputSchema) ]).optional(),
+}).strict();
+
+export const FormUpdateOneWithoutFormSubmissionRowsNestedInputSchema: z.ZodType<Prisma.FormUpdateOneWithoutFormSubmissionRowsNestedInput> = z.object({
+  create: z.union([ z.lazy(() => FormCreateWithoutFormSubmissionRowsInputSchema),z.lazy(() => FormUncheckedCreateWithoutFormSubmissionRowsInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => FormCreateOrConnectWithoutFormSubmissionRowsInputSchema).optional(),
+  upsert: z.lazy(() => FormUpsertWithoutFormSubmissionRowsInputSchema).optional(),
+  disconnect: z.union([ z.boolean(),z.lazy(() => FormWhereInputSchema) ]).optional(),
+  delete: z.union([ z.boolean(),z.lazy(() => FormWhereInputSchema) ]).optional(),
+  connect: z.lazy(() => FormWhereUniqueInputSchema).optional(),
+  update: z.union([ z.lazy(() => FormUpdateToOneWithWhereWithoutFormSubmissionRowsInputSchema),z.lazy(() => FormUpdateWithoutFormSubmissionRowsInputSchema),z.lazy(() => FormUncheckedUpdateWithoutFormSubmissionRowsInputSchema) ]).optional(),
 }).strict();
 
 export const CellValueUpdateManyWithoutRowNestedInputSchema: z.ZodType<Prisma.CellValueUpdateManyWithoutRowNestedInput> = z.object({
@@ -7489,6 +7708,7 @@ export const FormCreateWithoutWorkspaceInputSchema: z.ZodType<Prisma.FormCreateW
   steps: z.lazy(() => StepCreateNestedManyWithoutFormInputSchema).optional(),
   dataTracks: z.lazy(() => DataTrackCreateNestedManyWithoutFormInputSchema).optional(),
   formSubmission: z.lazy(() => FormSubmissionCreateNestedManyWithoutFormInputSchema).optional(),
+  formSubmissionRows: z.lazy(() => RowCreateNestedManyWithoutPublishedFormInputSchema).optional(),
   rootForm: z.lazy(() => FormCreateNestedOneWithoutFormVersionsInputSchema).optional(),
   formVersions: z.lazy(() => FormCreateNestedManyWithoutRootFormInputSchema).optional(),
   dataset: z.lazy(() => DatasetCreateNestedOneWithoutFormInputSchema).optional()
@@ -7510,6 +7730,7 @@ export const FormUncheckedCreateWithoutWorkspaceInputSchema: z.ZodType<Prisma.Fo
   steps: z.lazy(() => StepUncheckedCreateNestedManyWithoutFormInputSchema).optional(),
   dataTracks: z.lazy(() => DataTrackUncheckedCreateNestedManyWithoutFormInputSchema).optional(),
   formSubmission: z.lazy(() => FormSubmissionUncheckedCreateNestedManyWithoutFormInputSchema).optional(),
+  formSubmissionRows: z.lazy(() => RowUncheckedCreateNestedManyWithoutPublishedFormInputSchema).optional(),
   formVersions: z.lazy(() => FormUncheckedCreateNestedManyWithoutRootFormInputSchema).optional()
 }).strict();
 
@@ -7669,6 +7890,7 @@ export const StepCreateWithoutFormInputSchema: z.ZodType<Prisma.StepCreateWithou
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
   location: z.lazy(() => LocationCreateNestedOneWithoutStepInputSchema),
+  datasetColumns: z.lazy(() => ColumnCreateNestedManyWithoutStepInputSchema).optional(),
   inputResponses: z.lazy(() => InputResponseCreateNestedManyWithoutStepInputSchema).optional(),
   locationResponses: z.lazy(() => LocationResponseCreateNestedManyWithoutStepInputSchema).optional()
 }).strict();
@@ -7684,6 +7906,7 @@ export const StepUncheckedCreateWithoutFormInputSchema: z.ZodType<Prisma.StepUnc
   contentViewType: z.lazy(() => ContentViewTypeSchema).optional(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
+  datasetColumns: z.lazy(() => ColumnUncheckedCreateNestedManyWithoutStepInputSchema).optional(),
   inputResponses: z.lazy(() => InputResponseUncheckedCreateNestedManyWithoutStepInputSchema).optional(),
   locationResponses: z.lazy(() => LocationResponseUncheckedCreateNestedManyWithoutStepInputSchema).optional()
 }).strict();
@@ -7777,6 +8000,28 @@ export const FormSubmissionCreateManyFormInputEnvelopeSchema: z.ZodType<Prisma.F
   skipDuplicates: z.boolean().optional()
 }).strict();
 
+export const RowCreateWithoutPublishedFormInputSchema: z.ZodType<Prisma.RowCreateWithoutPublishedFormInput> = z.object({
+  id: z.string().uuid().optional(),
+  dataset: z.lazy(() => DatasetCreateNestedOneWithoutRowsInputSchema),
+  cellValues: z.lazy(() => CellValueCreateNestedManyWithoutRowInputSchema).optional()
+}).strict();
+
+export const RowUncheckedCreateWithoutPublishedFormInputSchema: z.ZodType<Prisma.RowUncheckedCreateWithoutPublishedFormInput> = z.object({
+  id: z.string().uuid().optional(),
+  datasetId: z.string(),
+  cellValues: z.lazy(() => CellValueUncheckedCreateNestedManyWithoutRowInputSchema).optional()
+}).strict();
+
+export const RowCreateOrConnectWithoutPublishedFormInputSchema: z.ZodType<Prisma.RowCreateOrConnectWithoutPublishedFormInput> = z.object({
+  where: z.lazy(() => RowWhereUniqueInputSchema),
+  create: z.union([ z.lazy(() => RowCreateWithoutPublishedFormInputSchema),z.lazy(() => RowUncheckedCreateWithoutPublishedFormInputSchema) ]),
+}).strict();
+
+export const RowCreateManyPublishedFormInputEnvelopeSchema: z.ZodType<Prisma.RowCreateManyPublishedFormInputEnvelope> = z.object({
+  data: z.union([ z.lazy(() => RowCreateManyPublishedFormInputSchema),z.lazy(() => RowCreateManyPublishedFormInputSchema).array() ]),
+  skipDuplicates: z.boolean().optional()
+}).strict();
+
 export const FormCreateWithoutFormVersionsInputSchema: z.ZodType<Prisma.FormCreateWithoutFormVersionsInput> = z.object({
   id: z.string().uuid().optional(),
   name: z.string(),
@@ -7792,6 +8037,7 @@ export const FormCreateWithoutFormVersionsInputSchema: z.ZodType<Prisma.FormCrea
   dataTracks: z.lazy(() => DataTrackCreateNestedManyWithoutFormInputSchema).optional(),
   workspace: z.lazy(() => WorkspaceCreateNestedOneWithoutFormsInputSchema),
   formSubmission: z.lazy(() => FormSubmissionCreateNestedManyWithoutFormInputSchema).optional(),
+  formSubmissionRows: z.lazy(() => RowCreateNestedManyWithoutPublishedFormInputSchema).optional(),
   rootForm: z.lazy(() => FormCreateNestedOneWithoutFormVersionsInputSchema).optional(),
   dataset: z.lazy(() => DatasetCreateNestedOneWithoutFormInputSchema).optional()
 }).strict();
@@ -7812,7 +8058,8 @@ export const FormUncheckedCreateWithoutFormVersionsInputSchema: z.ZodType<Prisma
   updatedAt: z.coerce.date().optional(),
   steps: z.lazy(() => StepUncheckedCreateNestedManyWithoutFormInputSchema).optional(),
   dataTracks: z.lazy(() => DataTrackUncheckedCreateNestedManyWithoutFormInputSchema).optional(),
-  formSubmission: z.lazy(() => FormSubmissionUncheckedCreateNestedManyWithoutFormInputSchema).optional()
+  formSubmission: z.lazy(() => FormSubmissionUncheckedCreateNestedManyWithoutFormInputSchema).optional(),
+  formSubmissionRows: z.lazy(() => RowUncheckedCreateNestedManyWithoutPublishedFormInputSchema).optional()
 }).strict();
 
 export const FormCreateOrConnectWithoutFormVersionsInputSchema: z.ZodType<Prisma.FormCreateOrConnectWithoutFormVersionsInput> = z.object({
@@ -7835,6 +8082,7 @@ export const FormCreateWithoutRootFormInputSchema: z.ZodType<Prisma.FormCreateWi
   dataTracks: z.lazy(() => DataTrackCreateNestedManyWithoutFormInputSchema).optional(),
   workspace: z.lazy(() => WorkspaceCreateNestedOneWithoutFormsInputSchema),
   formSubmission: z.lazy(() => FormSubmissionCreateNestedManyWithoutFormInputSchema).optional(),
+  formSubmissionRows: z.lazy(() => RowCreateNestedManyWithoutPublishedFormInputSchema).optional(),
   formVersions: z.lazy(() => FormCreateNestedManyWithoutRootFormInputSchema).optional(),
   dataset: z.lazy(() => DatasetCreateNestedOneWithoutFormInputSchema).optional()
 }).strict();
@@ -7855,6 +8103,7 @@ export const FormUncheckedCreateWithoutRootFormInputSchema: z.ZodType<Prisma.For
   steps: z.lazy(() => StepUncheckedCreateNestedManyWithoutFormInputSchema).optional(),
   dataTracks: z.lazy(() => DataTrackUncheckedCreateNestedManyWithoutFormInputSchema).optional(),
   formSubmission: z.lazy(() => FormSubmissionUncheckedCreateNestedManyWithoutFormInputSchema).optional(),
+  formSubmissionRows: z.lazy(() => RowUncheckedCreateNestedManyWithoutPublishedFormInputSchema).optional(),
   formVersions: z.lazy(() => FormUncheckedCreateNestedManyWithoutRootFormInputSchema).optional()
 }).strict();
 
@@ -8010,6 +8259,31 @@ export const FormSubmissionScalarWhereInputSchema: z.ZodType<Prisma.FormSubmissi
   updatedAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
 }).strict();
 
+export const RowUpsertWithWhereUniqueWithoutPublishedFormInputSchema: z.ZodType<Prisma.RowUpsertWithWhereUniqueWithoutPublishedFormInput> = z.object({
+  where: z.lazy(() => RowWhereUniqueInputSchema),
+  update: z.union([ z.lazy(() => RowUpdateWithoutPublishedFormInputSchema),z.lazy(() => RowUncheckedUpdateWithoutPublishedFormInputSchema) ]),
+  create: z.union([ z.lazy(() => RowCreateWithoutPublishedFormInputSchema),z.lazy(() => RowUncheckedCreateWithoutPublishedFormInputSchema) ]),
+}).strict();
+
+export const RowUpdateWithWhereUniqueWithoutPublishedFormInputSchema: z.ZodType<Prisma.RowUpdateWithWhereUniqueWithoutPublishedFormInput> = z.object({
+  where: z.lazy(() => RowWhereUniqueInputSchema),
+  data: z.union([ z.lazy(() => RowUpdateWithoutPublishedFormInputSchema),z.lazy(() => RowUncheckedUpdateWithoutPublishedFormInputSchema) ]),
+}).strict();
+
+export const RowUpdateManyWithWhereWithoutPublishedFormInputSchema: z.ZodType<Prisma.RowUpdateManyWithWhereWithoutPublishedFormInput> = z.object({
+  where: z.lazy(() => RowScalarWhereInputSchema),
+  data: z.union([ z.lazy(() => RowUpdateManyMutationInputSchema),z.lazy(() => RowUncheckedUpdateManyWithoutPublishedFormInputSchema) ]),
+}).strict();
+
+export const RowScalarWhereInputSchema: z.ZodType<Prisma.RowScalarWhereInput> = z.object({
+  AND: z.union([ z.lazy(() => RowScalarWhereInputSchema),z.lazy(() => RowScalarWhereInputSchema).array() ]).optional(),
+  OR: z.lazy(() => RowScalarWhereInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => RowScalarWhereInputSchema),z.lazy(() => RowScalarWhereInputSchema).array() ]).optional(),
+  id: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  datasetId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  publishedFormId: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
+}).strict();
+
 export const FormUpsertWithoutFormVersionsInputSchema: z.ZodType<Prisma.FormUpsertWithoutFormVersionsInput> = z.object({
   update: z.union([ z.lazy(() => FormUpdateWithoutFormVersionsInputSchema),z.lazy(() => FormUncheckedUpdateWithoutFormVersionsInputSchema) ]),
   create: z.union([ z.lazy(() => FormCreateWithoutFormVersionsInputSchema),z.lazy(() => FormUncheckedCreateWithoutFormVersionsInputSchema) ]),
@@ -8036,6 +8310,7 @@ export const FormUpdateWithoutFormVersionsInputSchema: z.ZodType<Prisma.FormUpda
   dataTracks: z.lazy(() => DataTrackUpdateManyWithoutFormNestedInputSchema).optional(),
   workspace: z.lazy(() => WorkspaceUpdateOneRequiredWithoutFormsNestedInputSchema).optional(),
   formSubmission: z.lazy(() => FormSubmissionUpdateManyWithoutFormNestedInputSchema).optional(),
+  formSubmissionRows: z.lazy(() => RowUpdateManyWithoutPublishedFormNestedInputSchema).optional(),
   rootForm: z.lazy(() => FormUpdateOneWithoutFormVersionsNestedInputSchema).optional(),
   dataset: z.lazy(() => DatasetUpdateOneWithoutFormNestedInputSchema).optional()
 }).strict();
@@ -8056,7 +8331,8 @@ export const FormUncheckedUpdateWithoutFormVersionsInputSchema: z.ZodType<Prisma
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   steps: z.lazy(() => StepUncheckedUpdateManyWithoutFormNestedInputSchema).optional(),
   dataTracks: z.lazy(() => DataTrackUncheckedUpdateManyWithoutFormNestedInputSchema).optional(),
-  formSubmission: z.lazy(() => FormSubmissionUncheckedUpdateManyWithoutFormNestedInputSchema).optional()
+  formSubmission: z.lazy(() => FormSubmissionUncheckedUpdateManyWithoutFormNestedInputSchema).optional(),
+  formSubmissionRows: z.lazy(() => RowUncheckedUpdateManyWithoutPublishedFormNestedInputSchema).optional()
 }).strict();
 
 export const FormUpsertWithWhereUniqueWithoutRootFormInputSchema: z.ZodType<Prisma.FormUpsertWithWhereUniqueWithoutRootFormInput> = z.object({
@@ -8118,6 +8394,7 @@ export const FormCreateWithoutStepsInputSchema: z.ZodType<Prisma.FormCreateWitho
   dataTracks: z.lazy(() => DataTrackCreateNestedManyWithoutFormInputSchema).optional(),
   workspace: z.lazy(() => WorkspaceCreateNestedOneWithoutFormsInputSchema),
   formSubmission: z.lazy(() => FormSubmissionCreateNestedManyWithoutFormInputSchema).optional(),
+  formSubmissionRows: z.lazy(() => RowCreateNestedManyWithoutPublishedFormInputSchema).optional(),
   rootForm: z.lazy(() => FormCreateNestedOneWithoutFormVersionsInputSchema).optional(),
   formVersions: z.lazy(() => FormCreateNestedManyWithoutRootFormInputSchema).optional(),
   dataset: z.lazy(() => DatasetCreateNestedOneWithoutFormInputSchema).optional()
@@ -8139,12 +8416,43 @@ export const FormUncheckedCreateWithoutStepsInputSchema: z.ZodType<Prisma.FormUn
   updatedAt: z.coerce.date().optional(),
   dataTracks: z.lazy(() => DataTrackUncheckedCreateNestedManyWithoutFormInputSchema).optional(),
   formSubmission: z.lazy(() => FormSubmissionUncheckedCreateNestedManyWithoutFormInputSchema).optional(),
+  formSubmissionRows: z.lazy(() => RowUncheckedCreateNestedManyWithoutPublishedFormInputSchema).optional(),
   formVersions: z.lazy(() => FormUncheckedCreateNestedManyWithoutRootFormInputSchema).optional()
 }).strict();
 
 export const FormCreateOrConnectWithoutStepsInputSchema: z.ZodType<Prisma.FormCreateOrConnectWithoutStepsInput> = z.object({
   where: z.lazy(() => FormWhereUniqueInputSchema),
   create: z.union([ z.lazy(() => FormCreateWithoutStepsInputSchema),z.lazy(() => FormUncheckedCreateWithoutStepsInputSchema) ]),
+}).strict();
+
+export const ColumnCreateWithoutStepInputSchema: z.ZodType<Prisma.ColumnCreateWithoutStepInput> = z.object({
+  id: z.string().uuid().optional(),
+  name: z.string(),
+  dataType: z.lazy(() => ColumnTypeSchema),
+  blockNoteId: z.string().optional().nullable(),
+  dataset: z.lazy(() => DatasetCreateNestedOneWithoutColumnsInputSchema),
+  cellValues: z.lazy(() => CellValueCreateNestedManyWithoutColumnInputSchema).optional(),
+  pointLayers: z.lazy(() => PointLayerCreateNestedManyWithoutPointColumnInputSchema).optional()
+}).strict();
+
+export const ColumnUncheckedCreateWithoutStepInputSchema: z.ZodType<Prisma.ColumnUncheckedCreateWithoutStepInput> = z.object({
+  id: z.string().uuid().optional(),
+  name: z.string(),
+  dataType: z.lazy(() => ColumnTypeSchema),
+  blockNoteId: z.string().optional().nullable(),
+  datasetId: z.string(),
+  cellValues: z.lazy(() => CellValueUncheckedCreateNestedManyWithoutColumnInputSchema).optional(),
+  pointLayers: z.lazy(() => PointLayerUncheckedCreateNestedManyWithoutPointColumnInputSchema).optional()
+}).strict();
+
+export const ColumnCreateOrConnectWithoutStepInputSchema: z.ZodType<Prisma.ColumnCreateOrConnectWithoutStepInput> = z.object({
+  where: z.lazy(() => ColumnWhereUniqueInputSchema),
+  create: z.union([ z.lazy(() => ColumnCreateWithoutStepInputSchema),z.lazy(() => ColumnUncheckedCreateWithoutStepInputSchema) ]),
+}).strict();
+
+export const ColumnCreateManyStepInputEnvelopeSchema: z.ZodType<Prisma.ColumnCreateManyStepInputEnvelope> = z.object({
+  data: z.union([ z.lazy(() => ColumnCreateManyStepInputSchema),z.lazy(() => ColumnCreateManyStepInputSchema).array() ]),
+  skipDuplicates: z.boolean().optional()
 }).strict();
 
 export const InputResponseCreateWithoutStepInputSchema: z.ZodType<Prisma.InputResponseCreateWithoutStepInput> = z.object({
@@ -8220,6 +8528,7 @@ export const FormUpdateWithoutStepsInputSchema: z.ZodType<Prisma.FormUpdateWitho
   dataTracks: z.lazy(() => DataTrackUpdateManyWithoutFormNestedInputSchema).optional(),
   workspace: z.lazy(() => WorkspaceUpdateOneRequiredWithoutFormsNestedInputSchema).optional(),
   formSubmission: z.lazy(() => FormSubmissionUpdateManyWithoutFormNestedInputSchema).optional(),
+  formSubmissionRows: z.lazy(() => RowUpdateManyWithoutPublishedFormNestedInputSchema).optional(),
   rootForm: z.lazy(() => FormUpdateOneWithoutFormVersionsNestedInputSchema).optional(),
   formVersions: z.lazy(() => FormUpdateManyWithoutRootFormNestedInputSchema).optional(),
   dataset: z.lazy(() => DatasetUpdateOneWithoutFormNestedInputSchema).optional()
@@ -8241,6 +8550,7 @@ export const FormUncheckedUpdateWithoutStepsInputSchema: z.ZodType<Prisma.FormUn
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   dataTracks: z.lazy(() => DataTrackUncheckedUpdateManyWithoutFormNestedInputSchema).optional(),
   formSubmission: z.lazy(() => FormSubmissionUncheckedUpdateManyWithoutFormNestedInputSchema).optional(),
+  formSubmissionRows: z.lazy(() => RowUncheckedUpdateManyWithoutPublishedFormNestedInputSchema).optional(),
   formVersions: z.lazy(() => FormUncheckedUpdateManyWithoutRootFormNestedInputSchema).optional()
 }).strict();
 
@@ -8256,6 +8566,34 @@ export const LocationUpdateWithoutStepInputSchema: z.ZodType<Prisma.LocationUpda
 export const LocationUncheckedUpdateWithoutStepInputSchema: z.ZodType<Prisma.LocationUncheckedUpdateWithoutStepInput> = z.object({
   id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   locationResponse: z.lazy(() => LocationResponseUncheckedUpdateOneWithoutLocationNestedInputSchema).optional()
+}).strict();
+
+export const ColumnUpsertWithWhereUniqueWithoutStepInputSchema: z.ZodType<Prisma.ColumnUpsertWithWhereUniqueWithoutStepInput> = z.object({
+  where: z.lazy(() => ColumnWhereUniqueInputSchema),
+  update: z.union([ z.lazy(() => ColumnUpdateWithoutStepInputSchema),z.lazy(() => ColumnUncheckedUpdateWithoutStepInputSchema) ]),
+  create: z.union([ z.lazy(() => ColumnCreateWithoutStepInputSchema),z.lazy(() => ColumnUncheckedCreateWithoutStepInputSchema) ]),
+}).strict();
+
+export const ColumnUpdateWithWhereUniqueWithoutStepInputSchema: z.ZodType<Prisma.ColumnUpdateWithWhereUniqueWithoutStepInput> = z.object({
+  where: z.lazy(() => ColumnWhereUniqueInputSchema),
+  data: z.union([ z.lazy(() => ColumnUpdateWithoutStepInputSchema),z.lazy(() => ColumnUncheckedUpdateWithoutStepInputSchema) ]),
+}).strict();
+
+export const ColumnUpdateManyWithWhereWithoutStepInputSchema: z.ZodType<Prisma.ColumnUpdateManyWithWhereWithoutStepInput> = z.object({
+  where: z.lazy(() => ColumnScalarWhereInputSchema),
+  data: z.union([ z.lazy(() => ColumnUpdateManyMutationInputSchema),z.lazy(() => ColumnUncheckedUpdateManyWithoutStepInputSchema) ]),
+}).strict();
+
+export const ColumnScalarWhereInputSchema: z.ZodType<Prisma.ColumnScalarWhereInput> = z.object({
+  AND: z.union([ z.lazy(() => ColumnScalarWhereInputSchema),z.lazy(() => ColumnScalarWhereInputSchema).array() ]).optional(),
+  OR: z.lazy(() => ColumnScalarWhereInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => ColumnScalarWhereInputSchema),z.lazy(() => ColumnScalarWhereInputSchema).array() ]).optional(),
+  id: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  name: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  dataType: z.union([ z.lazy(() => EnumColumnTypeFilterSchema),z.lazy(() => ColumnTypeSchema) ]).optional(),
+  blockNoteId: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
+  datasetId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  stepId: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
 }).strict();
 
 export const InputResponseUpsertWithWhereUniqueWithoutStepInputSchema: z.ZodType<Prisma.InputResponseUpsertWithWhereUniqueWithoutStepInput> = z.object({
@@ -8326,6 +8664,7 @@ export const FormCreateWithoutDataTracksInputSchema: z.ZodType<Prisma.FormCreate
   steps: z.lazy(() => StepCreateNestedManyWithoutFormInputSchema).optional(),
   workspace: z.lazy(() => WorkspaceCreateNestedOneWithoutFormsInputSchema),
   formSubmission: z.lazy(() => FormSubmissionCreateNestedManyWithoutFormInputSchema).optional(),
+  formSubmissionRows: z.lazy(() => RowCreateNestedManyWithoutPublishedFormInputSchema).optional(),
   rootForm: z.lazy(() => FormCreateNestedOneWithoutFormVersionsInputSchema).optional(),
   formVersions: z.lazy(() => FormCreateNestedManyWithoutRootFormInputSchema).optional(),
   dataset: z.lazy(() => DatasetCreateNestedOneWithoutFormInputSchema).optional()
@@ -8347,6 +8686,7 @@ export const FormUncheckedCreateWithoutDataTracksInputSchema: z.ZodType<Prisma.F
   updatedAt: z.coerce.date().optional(),
   steps: z.lazy(() => StepUncheckedCreateNestedManyWithoutFormInputSchema).optional(),
   formSubmission: z.lazy(() => FormSubmissionUncheckedCreateNestedManyWithoutFormInputSchema).optional(),
+  formSubmissionRows: z.lazy(() => RowUncheckedCreateNestedManyWithoutPublishedFormInputSchema).optional(),
   formVersions: z.lazy(() => FormUncheckedCreateNestedManyWithoutRootFormInputSchema).optional()
 }).strict();
 
@@ -8406,6 +8746,7 @@ export const FormUpdateWithoutDataTracksInputSchema: z.ZodType<Prisma.FormUpdate
   steps: z.lazy(() => StepUpdateManyWithoutFormNestedInputSchema).optional(),
   workspace: z.lazy(() => WorkspaceUpdateOneRequiredWithoutFormsNestedInputSchema).optional(),
   formSubmission: z.lazy(() => FormSubmissionUpdateManyWithoutFormNestedInputSchema).optional(),
+  formSubmissionRows: z.lazy(() => RowUpdateManyWithoutPublishedFormNestedInputSchema).optional(),
   rootForm: z.lazy(() => FormUpdateOneWithoutFormVersionsNestedInputSchema).optional(),
   formVersions: z.lazy(() => FormUpdateManyWithoutRootFormNestedInputSchema).optional(),
   dataset: z.lazy(() => DatasetUpdateOneWithoutFormNestedInputSchema).optional()
@@ -8427,6 +8768,7 @@ export const FormUncheckedUpdateWithoutDataTracksInputSchema: z.ZodType<Prisma.F
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   steps: z.lazy(() => StepUncheckedUpdateManyWithoutFormNestedInputSchema).optional(),
   formSubmission: z.lazy(() => FormSubmissionUncheckedUpdateManyWithoutFormNestedInputSchema).optional(),
+  formSubmissionRows: z.lazy(() => RowUncheckedUpdateManyWithoutPublishedFormNestedInputSchema).optional(),
   formVersions: z.lazy(() => FormUncheckedUpdateManyWithoutRootFormNestedInputSchema).optional()
 }).strict();
 
@@ -8471,6 +8813,7 @@ export const FormCreateWithoutFormSubmissionInputSchema: z.ZodType<Prisma.FormCr
   steps: z.lazy(() => StepCreateNestedManyWithoutFormInputSchema).optional(),
   dataTracks: z.lazy(() => DataTrackCreateNestedManyWithoutFormInputSchema).optional(),
   workspace: z.lazy(() => WorkspaceCreateNestedOneWithoutFormsInputSchema),
+  formSubmissionRows: z.lazy(() => RowCreateNestedManyWithoutPublishedFormInputSchema).optional(),
   rootForm: z.lazy(() => FormCreateNestedOneWithoutFormVersionsInputSchema).optional(),
   formVersions: z.lazy(() => FormCreateNestedManyWithoutRootFormInputSchema).optional(),
   dataset: z.lazy(() => DatasetCreateNestedOneWithoutFormInputSchema).optional()
@@ -8492,6 +8835,7 @@ export const FormUncheckedCreateWithoutFormSubmissionInputSchema: z.ZodType<Pris
   updatedAt: z.coerce.date().optional(),
   steps: z.lazy(() => StepUncheckedCreateNestedManyWithoutFormInputSchema).optional(),
   dataTracks: z.lazy(() => DataTrackUncheckedCreateNestedManyWithoutFormInputSchema).optional(),
+  formSubmissionRows: z.lazy(() => RowUncheckedCreateNestedManyWithoutPublishedFormInputSchema).optional(),
   formVersions: z.lazy(() => FormUncheckedCreateNestedManyWithoutRootFormInputSchema).optional()
 }).strict();
 
@@ -8573,6 +8917,7 @@ export const FormUpdateWithoutFormSubmissionInputSchema: z.ZodType<Prisma.FormUp
   steps: z.lazy(() => StepUpdateManyWithoutFormNestedInputSchema).optional(),
   dataTracks: z.lazy(() => DataTrackUpdateManyWithoutFormNestedInputSchema).optional(),
   workspace: z.lazy(() => WorkspaceUpdateOneRequiredWithoutFormsNestedInputSchema).optional(),
+  formSubmissionRows: z.lazy(() => RowUpdateManyWithoutPublishedFormNestedInputSchema).optional(),
   rootForm: z.lazy(() => FormUpdateOneWithoutFormVersionsNestedInputSchema).optional(),
   formVersions: z.lazy(() => FormUpdateManyWithoutRootFormNestedInputSchema).optional(),
   dataset: z.lazy(() => DatasetUpdateOneWithoutFormNestedInputSchema).optional()
@@ -8594,6 +8939,7 @@ export const FormUncheckedUpdateWithoutFormSubmissionInputSchema: z.ZodType<Pris
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   steps: z.lazy(() => StepUncheckedUpdateManyWithoutFormNestedInputSchema).optional(),
   dataTracks: z.lazy(() => DataTrackUncheckedUpdateManyWithoutFormNestedInputSchema).optional(),
+  formSubmissionRows: z.lazy(() => RowUncheckedUpdateManyWithoutPublishedFormNestedInputSchema).optional(),
   formVersions: z.lazy(() => FormUncheckedUpdateManyWithoutRootFormNestedInputSchema).optional()
 }).strict();
 
@@ -8662,6 +9008,7 @@ export const StepCreateWithoutInputResponsesInputSchema: z.ZodType<Prisma.StepCr
   updatedAt: z.coerce.date().optional(),
   form: z.lazy(() => FormCreateNestedOneWithoutStepsInputSchema).optional(),
   location: z.lazy(() => LocationCreateNestedOneWithoutStepInputSchema),
+  datasetColumns: z.lazy(() => ColumnCreateNestedManyWithoutStepInputSchema).optional(),
   locationResponses: z.lazy(() => LocationResponseCreateNestedManyWithoutStepInputSchema).optional()
 }).strict();
 
@@ -8677,6 +9024,7 @@ export const StepUncheckedCreateWithoutInputResponsesInputSchema: z.ZodType<Pris
   contentViewType: z.lazy(() => ContentViewTypeSchema).optional(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
+  datasetColumns: z.lazy(() => ColumnUncheckedCreateNestedManyWithoutStepInputSchema).optional(),
   locationResponses: z.lazy(() => LocationResponseUncheckedCreateNestedManyWithoutStepInputSchema).optional()
 }).strict();
 
@@ -8735,6 +9083,7 @@ export const StepUpdateWithoutInputResponsesInputSchema: z.ZodType<Prisma.StepUp
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   form: z.lazy(() => FormUpdateOneWithoutStepsNestedInputSchema).optional(),
   location: z.lazy(() => LocationUpdateOneRequiredWithoutStepNestedInputSchema).optional(),
+  datasetColumns: z.lazy(() => ColumnUpdateManyWithoutStepNestedInputSchema).optional(),
   locationResponses: z.lazy(() => LocationResponseUpdateManyWithoutStepNestedInputSchema).optional()
 }).strict();
 
@@ -8750,6 +9099,7 @@ export const StepUncheckedUpdateWithoutInputResponsesInputSchema: z.ZodType<Pris
   contentViewType: z.union([ z.lazy(() => ContentViewTypeSchema),z.lazy(() => EnumContentViewTypeFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  datasetColumns: z.lazy(() => ColumnUncheckedUpdateManyWithoutStepNestedInputSchema).optional(),
   locationResponses: z.lazy(() => LocationResponseUncheckedUpdateManyWithoutStepNestedInputSchema).optional()
 }).strict();
 
@@ -8786,6 +9136,7 @@ export const StepCreateWithoutLocationResponsesInputSchema: z.ZodType<Prisma.Ste
   updatedAt: z.coerce.date().optional(),
   form: z.lazy(() => FormCreateNestedOneWithoutStepsInputSchema).optional(),
   location: z.lazy(() => LocationCreateNestedOneWithoutStepInputSchema),
+  datasetColumns: z.lazy(() => ColumnCreateNestedManyWithoutStepInputSchema).optional(),
   inputResponses: z.lazy(() => InputResponseCreateNestedManyWithoutStepInputSchema).optional()
 }).strict();
 
@@ -8801,6 +9152,7 @@ export const StepUncheckedCreateWithoutLocationResponsesInputSchema: z.ZodType<P
   contentViewType: z.lazy(() => ContentViewTypeSchema).optional(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
+  datasetColumns: z.lazy(() => ColumnUncheckedCreateNestedManyWithoutStepInputSchema).optional(),
   inputResponses: z.lazy(() => InputResponseUncheckedCreateNestedManyWithoutStepInputSchema).optional()
 }).strict();
 
@@ -8873,6 +9225,7 @@ export const StepUpdateWithoutLocationResponsesInputSchema: z.ZodType<Prisma.Ste
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   form: z.lazy(() => FormUpdateOneWithoutStepsNestedInputSchema).optional(),
   location: z.lazy(() => LocationUpdateOneRequiredWithoutStepNestedInputSchema).optional(),
+  datasetColumns: z.lazy(() => ColumnUpdateManyWithoutStepNestedInputSchema).optional(),
   inputResponses: z.lazy(() => InputResponseUpdateManyWithoutStepNestedInputSchema).optional()
 }).strict();
 
@@ -8888,6 +9241,7 @@ export const StepUncheckedUpdateWithoutLocationResponsesInputSchema: z.ZodType<P
   contentViewType: z.union([ z.lazy(() => ContentViewTypeSchema),z.lazy(() => EnumContentViewTypeFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  datasetColumns: z.lazy(() => ColumnUncheckedUpdateManyWithoutStepNestedInputSchema).optional(),
   inputResponses: z.lazy(() => InputResponseUncheckedUpdateManyWithoutStepNestedInputSchema).optional()
 }).strict();
 
@@ -8902,6 +9256,7 @@ export const StepCreateWithoutLocationInputSchema: z.ZodType<Prisma.StepCreateWi
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
   form: z.lazy(() => FormCreateNestedOneWithoutStepsInputSchema).optional(),
+  datasetColumns: z.lazy(() => ColumnCreateNestedManyWithoutStepInputSchema).optional(),
   inputResponses: z.lazy(() => InputResponseCreateNestedManyWithoutStepInputSchema).optional(),
   locationResponses: z.lazy(() => LocationResponseCreateNestedManyWithoutStepInputSchema).optional()
 }).strict();
@@ -8917,6 +9272,7 @@ export const StepUncheckedCreateWithoutLocationInputSchema: z.ZodType<Prisma.Ste
   contentViewType: z.lazy(() => ContentViewTypeSchema).optional(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
+  datasetColumns: z.lazy(() => ColumnUncheckedCreateNestedManyWithoutStepInputSchema).optional(),
   inputResponses: z.lazy(() => InputResponseUncheckedCreateNestedManyWithoutStepInputSchema).optional(),
   locationResponses: z.lazy(() => LocationResponseUncheckedCreateNestedManyWithoutStepInputSchema).optional()
 }).strict();
@@ -8948,6 +9304,7 @@ export const StepUpdateWithoutLocationInputSchema: z.ZodType<Prisma.StepUpdateWi
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   form: z.lazy(() => FormUpdateOneWithoutStepsNestedInputSchema).optional(),
+  datasetColumns: z.lazy(() => ColumnUpdateManyWithoutStepNestedInputSchema).optional(),
   inputResponses: z.lazy(() => InputResponseUpdateManyWithoutStepNestedInputSchema).optional(),
   locationResponses: z.lazy(() => LocationResponseUpdateManyWithoutStepNestedInputSchema).optional()
 }).strict();
@@ -8963,6 +9320,7 @@ export const StepUncheckedUpdateWithoutLocationInputSchema: z.ZodType<Prisma.Ste
   contentViewType: z.union([ z.lazy(() => ContentViewTypeSchema),z.lazy(() => EnumContentViewTypeFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  datasetColumns: z.lazy(() => ColumnUncheckedUpdateManyWithoutStepNestedInputSchema).optional(),
   inputResponses: z.lazy(() => InputResponseUncheckedUpdateManyWithoutStepNestedInputSchema).optional(),
   locationResponses: z.lazy(() => LocationResponseUncheckedUpdateManyWithoutStepNestedInputSchema).optional()
 }).strict();
@@ -9015,6 +9373,8 @@ export const ColumnCreateWithoutDatasetInputSchema: z.ZodType<Prisma.ColumnCreat
   id: z.string().uuid().optional(),
   name: z.string(),
   dataType: z.lazy(() => ColumnTypeSchema),
+  blockNoteId: z.string().optional().nullable(),
+  step: z.lazy(() => StepCreateNestedOneWithoutDatasetColumnsInputSchema).optional(),
   cellValues: z.lazy(() => CellValueCreateNestedManyWithoutColumnInputSchema).optional(),
   pointLayers: z.lazy(() => PointLayerCreateNestedManyWithoutPointColumnInputSchema).optional()
 }).strict();
@@ -9023,6 +9383,8 @@ export const ColumnUncheckedCreateWithoutDatasetInputSchema: z.ZodType<Prisma.Co
   id: z.string().uuid().optional(),
   name: z.string(),
   dataType: z.lazy(() => ColumnTypeSchema),
+  blockNoteId: z.string().optional().nullable(),
+  stepId: z.string().optional().nullable(),
   cellValues: z.lazy(() => CellValueUncheckedCreateNestedManyWithoutColumnInputSchema).optional(),
   pointLayers: z.lazy(() => PointLayerUncheckedCreateNestedManyWithoutPointColumnInputSchema).optional()
 }).strict();
@@ -9039,11 +9401,13 @@ export const ColumnCreateManyDatasetInputEnvelopeSchema: z.ZodType<Prisma.Column
 
 export const RowCreateWithoutDatasetInputSchema: z.ZodType<Prisma.RowCreateWithoutDatasetInput> = z.object({
   id: z.string().uuid().optional(),
+  publishedForm: z.lazy(() => FormCreateNestedOneWithoutFormSubmissionRowsInputSchema).optional(),
   cellValues: z.lazy(() => CellValueCreateNestedManyWithoutRowInputSchema).optional()
 }).strict();
 
 export const RowUncheckedCreateWithoutDatasetInputSchema: z.ZodType<Prisma.RowUncheckedCreateWithoutDatasetInput> = z.object({
   id: z.string().uuid().optional(),
+  publishedFormId: z.string().optional().nullable(),
   cellValues: z.lazy(() => CellValueUncheckedCreateNestedManyWithoutRowInputSchema).optional()
 }).strict();
 
@@ -9072,6 +9436,7 @@ export const FormCreateWithoutDatasetInputSchema: z.ZodType<Prisma.FormCreateWit
   dataTracks: z.lazy(() => DataTrackCreateNestedManyWithoutFormInputSchema).optional(),
   workspace: z.lazy(() => WorkspaceCreateNestedOneWithoutFormsInputSchema),
   formSubmission: z.lazy(() => FormSubmissionCreateNestedManyWithoutFormInputSchema).optional(),
+  formSubmissionRows: z.lazy(() => RowCreateNestedManyWithoutPublishedFormInputSchema).optional(),
   rootForm: z.lazy(() => FormCreateNestedOneWithoutFormVersionsInputSchema).optional(),
   formVersions: z.lazy(() => FormCreateNestedManyWithoutRootFormInputSchema).optional()
 }).strict();
@@ -9092,6 +9457,7 @@ export const FormUncheckedCreateWithoutDatasetInputSchema: z.ZodType<Prisma.Form
   steps: z.lazy(() => StepUncheckedCreateNestedManyWithoutFormInputSchema).optional(),
   dataTracks: z.lazy(() => DataTrackUncheckedCreateNestedManyWithoutFormInputSchema).optional(),
   formSubmission: z.lazy(() => FormSubmissionUncheckedCreateNestedManyWithoutFormInputSchema).optional(),
+  formSubmissionRows: z.lazy(() => RowUncheckedCreateNestedManyWithoutPublishedFormInputSchema).optional(),
   formVersions: z.lazy(() => FormUncheckedCreateNestedManyWithoutRootFormInputSchema).optional()
 }).strict();
 
@@ -9169,16 +9535,6 @@ export const ColumnUpdateManyWithWhereWithoutDatasetInputSchema: z.ZodType<Prism
   data: z.union([ z.lazy(() => ColumnUpdateManyMutationInputSchema),z.lazy(() => ColumnUncheckedUpdateManyWithoutDatasetInputSchema) ]),
 }).strict();
 
-export const ColumnScalarWhereInputSchema: z.ZodType<Prisma.ColumnScalarWhereInput> = z.object({
-  AND: z.union([ z.lazy(() => ColumnScalarWhereInputSchema),z.lazy(() => ColumnScalarWhereInputSchema).array() ]).optional(),
-  OR: z.lazy(() => ColumnScalarWhereInputSchema).array().optional(),
-  NOT: z.union([ z.lazy(() => ColumnScalarWhereInputSchema),z.lazy(() => ColumnScalarWhereInputSchema).array() ]).optional(),
-  id: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
-  datasetId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
-  name: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
-  dataType: z.union([ z.lazy(() => EnumColumnTypeFilterSchema),z.lazy(() => ColumnTypeSchema) ]).optional(),
-}).strict();
-
 export const RowUpsertWithWhereUniqueWithoutDatasetInputSchema: z.ZodType<Prisma.RowUpsertWithWhereUniqueWithoutDatasetInput> = z.object({
   where: z.lazy(() => RowWhereUniqueInputSchema),
   update: z.union([ z.lazy(() => RowUpdateWithoutDatasetInputSchema),z.lazy(() => RowUncheckedUpdateWithoutDatasetInputSchema) ]),
@@ -9193,14 +9549,6 @@ export const RowUpdateWithWhereUniqueWithoutDatasetInputSchema: z.ZodType<Prisma
 export const RowUpdateManyWithWhereWithoutDatasetInputSchema: z.ZodType<Prisma.RowUpdateManyWithWhereWithoutDatasetInput> = z.object({
   where: z.lazy(() => RowScalarWhereInputSchema),
   data: z.union([ z.lazy(() => RowUpdateManyMutationInputSchema),z.lazy(() => RowUncheckedUpdateManyWithoutDatasetInputSchema) ]),
-}).strict();
-
-export const RowScalarWhereInputSchema: z.ZodType<Prisma.RowScalarWhereInput> = z.object({
-  AND: z.union([ z.lazy(() => RowScalarWhereInputSchema),z.lazy(() => RowScalarWhereInputSchema).array() ]).optional(),
-  OR: z.lazy(() => RowScalarWhereInputSchema).array().optional(),
-  NOT: z.union([ z.lazy(() => RowScalarWhereInputSchema),z.lazy(() => RowScalarWhereInputSchema).array() ]).optional(),
-  id: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
-  datasetId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
 }).strict();
 
 export const FormUpsertWithoutDatasetInputSchema: z.ZodType<Prisma.FormUpsertWithoutDatasetInput> = z.object({
@@ -9229,6 +9577,7 @@ export const FormUpdateWithoutDatasetInputSchema: z.ZodType<Prisma.FormUpdateWit
   dataTracks: z.lazy(() => DataTrackUpdateManyWithoutFormNestedInputSchema).optional(),
   workspace: z.lazy(() => WorkspaceUpdateOneRequiredWithoutFormsNestedInputSchema).optional(),
   formSubmission: z.lazy(() => FormSubmissionUpdateManyWithoutFormNestedInputSchema).optional(),
+  formSubmissionRows: z.lazy(() => RowUpdateManyWithoutPublishedFormNestedInputSchema).optional(),
   rootForm: z.lazy(() => FormUpdateOneWithoutFormVersionsNestedInputSchema).optional(),
   formVersions: z.lazy(() => FormUpdateManyWithoutRootFormNestedInputSchema).optional()
 }).strict();
@@ -9249,6 +9598,7 @@ export const FormUncheckedUpdateWithoutDatasetInputSchema: z.ZodType<Prisma.Form
   steps: z.lazy(() => StepUncheckedUpdateManyWithoutFormNestedInputSchema).optional(),
   dataTracks: z.lazy(() => DataTrackUncheckedUpdateManyWithoutFormNestedInputSchema).optional(),
   formSubmission: z.lazy(() => FormSubmissionUncheckedUpdateManyWithoutFormNestedInputSchema).optional(),
+  formSubmissionRows: z.lazy(() => RowUncheckedUpdateManyWithoutPublishedFormNestedInputSchema).optional(),
   formVersions: z.lazy(() => FormUncheckedUpdateManyWithoutRootFormNestedInputSchema).optional()
 }).strict();
 
@@ -9322,6 +9672,43 @@ export const DatasetUncheckedCreateWithoutColumnsInputSchema: z.ZodType<Prisma.D
 export const DatasetCreateOrConnectWithoutColumnsInputSchema: z.ZodType<Prisma.DatasetCreateOrConnectWithoutColumnsInput> = z.object({
   where: z.lazy(() => DatasetWhereUniqueInputSchema),
   create: z.union([ z.lazy(() => DatasetCreateWithoutColumnsInputSchema),z.lazy(() => DatasetUncheckedCreateWithoutColumnsInputSchema) ]),
+}).strict();
+
+export const StepCreateWithoutDatasetColumnsInputSchema: z.ZodType<Prisma.StepCreateWithoutDatasetColumnsInput> = z.object({
+  id: z.string().uuid().optional(),
+  title: z.string().optional().nullable(),
+  description: z.union([ z.lazy(() => NullableJsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  zoom: z.number().int(),
+  pitch: z.number().int(),
+  bearing: z.number().int(),
+  contentViewType: z.lazy(() => ContentViewTypeSchema).optional(),
+  createdAt: z.coerce.date().optional(),
+  updatedAt: z.coerce.date().optional(),
+  form: z.lazy(() => FormCreateNestedOneWithoutStepsInputSchema).optional(),
+  location: z.lazy(() => LocationCreateNestedOneWithoutStepInputSchema),
+  inputResponses: z.lazy(() => InputResponseCreateNestedManyWithoutStepInputSchema).optional(),
+  locationResponses: z.lazy(() => LocationResponseCreateNestedManyWithoutStepInputSchema).optional()
+}).strict();
+
+export const StepUncheckedCreateWithoutDatasetColumnsInputSchema: z.ZodType<Prisma.StepUncheckedCreateWithoutDatasetColumnsInput> = z.object({
+  id: z.string().uuid().optional(),
+  title: z.string().optional().nullable(),
+  description: z.union([ z.lazy(() => NullableJsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  zoom: z.number().int(),
+  pitch: z.number().int(),
+  bearing: z.number().int(),
+  formId: z.string().optional().nullable(),
+  locationId: z.number().int(),
+  contentViewType: z.lazy(() => ContentViewTypeSchema).optional(),
+  createdAt: z.coerce.date().optional(),
+  updatedAt: z.coerce.date().optional(),
+  inputResponses: z.lazy(() => InputResponseUncheckedCreateNestedManyWithoutStepInputSchema).optional(),
+  locationResponses: z.lazy(() => LocationResponseUncheckedCreateNestedManyWithoutStepInputSchema).optional()
+}).strict();
+
+export const StepCreateOrConnectWithoutDatasetColumnsInputSchema: z.ZodType<Prisma.StepCreateOrConnectWithoutDatasetColumnsInput> = z.object({
+  where: z.lazy(() => StepWhereUniqueInputSchema),
+  create: z.union([ z.lazy(() => StepCreateWithoutDatasetColumnsInputSchema),z.lazy(() => StepUncheckedCreateWithoutDatasetColumnsInputSchema) ]),
 }).strict();
 
 export const CellValueCreateWithoutColumnInputSchema: z.ZodType<Prisma.CellValueCreateWithoutColumnInput> = z.object({
@@ -9399,6 +9786,49 @@ export const DatasetUncheckedUpdateWithoutColumnsInputSchema: z.ZodType<Prisma.D
   layers: z.lazy(() => LayerUncheckedUpdateManyWithoutDatasetNestedInputSchema).optional()
 }).strict();
 
+export const StepUpsertWithoutDatasetColumnsInputSchema: z.ZodType<Prisma.StepUpsertWithoutDatasetColumnsInput> = z.object({
+  update: z.union([ z.lazy(() => StepUpdateWithoutDatasetColumnsInputSchema),z.lazy(() => StepUncheckedUpdateWithoutDatasetColumnsInputSchema) ]),
+  create: z.union([ z.lazy(() => StepCreateWithoutDatasetColumnsInputSchema),z.lazy(() => StepUncheckedCreateWithoutDatasetColumnsInputSchema) ]),
+  where: z.lazy(() => StepWhereInputSchema).optional()
+}).strict();
+
+export const StepUpdateToOneWithWhereWithoutDatasetColumnsInputSchema: z.ZodType<Prisma.StepUpdateToOneWithWhereWithoutDatasetColumnsInput> = z.object({
+  where: z.lazy(() => StepWhereInputSchema).optional(),
+  data: z.union([ z.lazy(() => StepUpdateWithoutDatasetColumnsInputSchema),z.lazy(() => StepUncheckedUpdateWithoutDatasetColumnsInputSchema) ]),
+}).strict();
+
+export const StepUpdateWithoutDatasetColumnsInputSchema: z.ZodType<Prisma.StepUpdateWithoutDatasetColumnsInput> = z.object({
+  id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  title: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  description: z.union([ z.lazy(() => NullableJsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  zoom: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  pitch: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  bearing: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  contentViewType: z.union([ z.lazy(() => ContentViewTypeSchema),z.lazy(() => EnumContentViewTypeFieldUpdateOperationsInputSchema) ]).optional(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  form: z.lazy(() => FormUpdateOneWithoutStepsNestedInputSchema).optional(),
+  location: z.lazy(() => LocationUpdateOneRequiredWithoutStepNestedInputSchema).optional(),
+  inputResponses: z.lazy(() => InputResponseUpdateManyWithoutStepNestedInputSchema).optional(),
+  locationResponses: z.lazy(() => LocationResponseUpdateManyWithoutStepNestedInputSchema).optional()
+}).strict();
+
+export const StepUncheckedUpdateWithoutDatasetColumnsInputSchema: z.ZodType<Prisma.StepUncheckedUpdateWithoutDatasetColumnsInput> = z.object({
+  id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  title: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  description: z.union([ z.lazy(() => NullableJsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
+  zoom: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  pitch: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  bearing: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  formId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  locationId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  contentViewType: z.union([ z.lazy(() => ContentViewTypeSchema),z.lazy(() => EnumContentViewTypeFieldUpdateOperationsInputSchema) ]).optional(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  inputResponses: z.lazy(() => InputResponseUncheckedUpdateManyWithoutStepNestedInputSchema).optional(),
+  locationResponses: z.lazy(() => LocationResponseUncheckedUpdateManyWithoutStepNestedInputSchema).optional()
+}).strict();
+
 export const CellValueUpsertWithWhereUniqueWithoutColumnInputSchema: z.ZodType<Prisma.CellValueUpsertWithWhereUniqueWithoutColumnInput> = z.object({
   where: z.lazy(() => CellValueWhereUniqueInputSchema),
   update: z.union([ z.lazy(() => CellValueUpdateWithoutColumnInputSchema),z.lazy(() => CellValueUncheckedUpdateWithoutColumnInputSchema) ]),
@@ -9472,6 +9902,51 @@ export const DatasetCreateOrConnectWithoutRowsInputSchema: z.ZodType<Prisma.Data
   create: z.union([ z.lazy(() => DatasetCreateWithoutRowsInputSchema),z.lazy(() => DatasetUncheckedCreateWithoutRowsInputSchema) ]),
 }).strict();
 
+export const FormCreateWithoutFormSubmissionRowsInputSchema: z.ZodType<Prisma.FormCreateWithoutFormSubmissionRowsInput> = z.object({
+  id: z.string().uuid().optional(),
+  name: z.string(),
+  slug: z.string(),
+  isRoot: z.boolean().optional(),
+  isDirty: z.boolean().optional(),
+  isClosed: z.boolean().optional(),
+  stepOrder: z.union([ z.lazy(() => FormCreatestepOrderInputSchema),z.string().array() ]).optional(),
+  version: z.number().int().optional().nullable(),
+  createdAt: z.coerce.date().optional(),
+  updatedAt: z.coerce.date().optional(),
+  steps: z.lazy(() => StepCreateNestedManyWithoutFormInputSchema).optional(),
+  dataTracks: z.lazy(() => DataTrackCreateNestedManyWithoutFormInputSchema).optional(),
+  workspace: z.lazy(() => WorkspaceCreateNestedOneWithoutFormsInputSchema),
+  formSubmission: z.lazy(() => FormSubmissionCreateNestedManyWithoutFormInputSchema).optional(),
+  rootForm: z.lazy(() => FormCreateNestedOneWithoutFormVersionsInputSchema).optional(),
+  formVersions: z.lazy(() => FormCreateNestedManyWithoutRootFormInputSchema).optional(),
+  dataset: z.lazy(() => DatasetCreateNestedOneWithoutFormInputSchema).optional()
+}).strict();
+
+export const FormUncheckedCreateWithoutFormSubmissionRowsInputSchema: z.ZodType<Prisma.FormUncheckedCreateWithoutFormSubmissionRowsInput> = z.object({
+  id: z.string().uuid().optional(),
+  name: z.string(),
+  slug: z.string(),
+  isRoot: z.boolean().optional(),
+  isDirty: z.boolean().optional(),
+  isClosed: z.boolean().optional(),
+  stepOrder: z.union([ z.lazy(() => FormCreatestepOrderInputSchema),z.string().array() ]).optional(),
+  workspaceId: z.string(),
+  rootFormId: z.string().optional().nullable(),
+  version: z.number().int().optional().nullable(),
+  datasetId: z.string().optional().nullable(),
+  createdAt: z.coerce.date().optional(),
+  updatedAt: z.coerce.date().optional(),
+  steps: z.lazy(() => StepUncheckedCreateNestedManyWithoutFormInputSchema).optional(),
+  dataTracks: z.lazy(() => DataTrackUncheckedCreateNestedManyWithoutFormInputSchema).optional(),
+  formSubmission: z.lazy(() => FormSubmissionUncheckedCreateNestedManyWithoutFormInputSchema).optional(),
+  formVersions: z.lazy(() => FormUncheckedCreateNestedManyWithoutRootFormInputSchema).optional()
+}).strict();
+
+export const FormCreateOrConnectWithoutFormSubmissionRowsInputSchema: z.ZodType<Prisma.FormCreateOrConnectWithoutFormSubmissionRowsInput> = z.object({
+  where: z.lazy(() => FormWhereUniqueInputSchema),
+  create: z.union([ z.lazy(() => FormCreateWithoutFormSubmissionRowsInputSchema),z.lazy(() => FormUncheckedCreateWithoutFormSubmissionRowsInputSchema) ]),
+}).strict();
+
 export const CellValueCreateWithoutRowInputSchema: z.ZodType<Prisma.CellValueCreateWithoutRowInput> = z.object({
   id: z.string(),
   column: z.lazy(() => ColumnCreateNestedOneWithoutCellValuesInputSchema),
@@ -9527,6 +10002,57 @@ export const DatasetUncheckedUpdateWithoutRowsInputSchema: z.ZodType<Prisma.Data
   layers: z.lazy(() => LayerUncheckedUpdateManyWithoutDatasetNestedInputSchema).optional()
 }).strict();
 
+export const FormUpsertWithoutFormSubmissionRowsInputSchema: z.ZodType<Prisma.FormUpsertWithoutFormSubmissionRowsInput> = z.object({
+  update: z.union([ z.lazy(() => FormUpdateWithoutFormSubmissionRowsInputSchema),z.lazy(() => FormUncheckedUpdateWithoutFormSubmissionRowsInputSchema) ]),
+  create: z.union([ z.lazy(() => FormCreateWithoutFormSubmissionRowsInputSchema),z.lazy(() => FormUncheckedCreateWithoutFormSubmissionRowsInputSchema) ]),
+  where: z.lazy(() => FormWhereInputSchema).optional()
+}).strict();
+
+export const FormUpdateToOneWithWhereWithoutFormSubmissionRowsInputSchema: z.ZodType<Prisma.FormUpdateToOneWithWhereWithoutFormSubmissionRowsInput> = z.object({
+  where: z.lazy(() => FormWhereInputSchema).optional(),
+  data: z.union([ z.lazy(() => FormUpdateWithoutFormSubmissionRowsInputSchema),z.lazy(() => FormUncheckedUpdateWithoutFormSubmissionRowsInputSchema) ]),
+}).strict();
+
+export const FormUpdateWithoutFormSubmissionRowsInputSchema: z.ZodType<Prisma.FormUpdateWithoutFormSubmissionRowsInput> = z.object({
+  id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  slug: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  isRoot: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  isDirty: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  isClosed: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  stepOrder: z.union([ z.lazy(() => FormUpdatestepOrderInputSchema),z.string().array() ]).optional(),
+  version: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  steps: z.lazy(() => StepUpdateManyWithoutFormNestedInputSchema).optional(),
+  dataTracks: z.lazy(() => DataTrackUpdateManyWithoutFormNestedInputSchema).optional(),
+  workspace: z.lazy(() => WorkspaceUpdateOneRequiredWithoutFormsNestedInputSchema).optional(),
+  formSubmission: z.lazy(() => FormSubmissionUpdateManyWithoutFormNestedInputSchema).optional(),
+  rootForm: z.lazy(() => FormUpdateOneWithoutFormVersionsNestedInputSchema).optional(),
+  formVersions: z.lazy(() => FormUpdateManyWithoutRootFormNestedInputSchema).optional(),
+  dataset: z.lazy(() => DatasetUpdateOneWithoutFormNestedInputSchema).optional()
+}).strict();
+
+export const FormUncheckedUpdateWithoutFormSubmissionRowsInputSchema: z.ZodType<Prisma.FormUncheckedUpdateWithoutFormSubmissionRowsInput> = z.object({
+  id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  slug: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  isRoot: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  isDirty: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  isClosed: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+  stepOrder: z.union([ z.lazy(() => FormUpdatestepOrderInputSchema),z.string().array() ]).optional(),
+  workspaceId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  rootFormId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  version: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  datasetId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  steps: z.lazy(() => StepUncheckedUpdateManyWithoutFormNestedInputSchema).optional(),
+  dataTracks: z.lazy(() => DataTrackUncheckedUpdateManyWithoutFormNestedInputSchema).optional(),
+  formSubmission: z.lazy(() => FormSubmissionUncheckedUpdateManyWithoutFormNestedInputSchema).optional(),
+  formVersions: z.lazy(() => FormUncheckedUpdateManyWithoutRootFormNestedInputSchema).optional()
+}).strict();
+
 export const CellValueUpsertWithWhereUniqueWithoutRowInputSchema: z.ZodType<Prisma.CellValueUpsertWithWhereUniqueWithoutRowInput> = z.object({
   where: z.lazy(() => CellValueWhereUniqueInputSchema),
   update: z.union([ z.lazy(() => CellValueUpdateWithoutRowInputSchema),z.lazy(() => CellValueUncheckedUpdateWithoutRowInputSchema) ]),
@@ -9547,15 +10073,19 @@ export const ColumnCreateWithoutCellValuesInputSchema: z.ZodType<Prisma.ColumnCr
   id: z.string().uuid().optional(),
   name: z.string(),
   dataType: z.lazy(() => ColumnTypeSchema),
+  blockNoteId: z.string().optional().nullable(),
   dataset: z.lazy(() => DatasetCreateNestedOneWithoutColumnsInputSchema),
+  step: z.lazy(() => StepCreateNestedOneWithoutDatasetColumnsInputSchema).optional(),
   pointLayers: z.lazy(() => PointLayerCreateNestedManyWithoutPointColumnInputSchema).optional()
 }).strict();
 
 export const ColumnUncheckedCreateWithoutCellValuesInputSchema: z.ZodType<Prisma.ColumnUncheckedCreateWithoutCellValuesInput> = z.object({
   id: z.string().uuid().optional(),
-  datasetId: z.string(),
   name: z.string(),
   dataType: z.lazy(() => ColumnTypeSchema),
+  blockNoteId: z.string().optional().nullable(),
+  datasetId: z.string(),
+  stepId: z.string().optional().nullable(),
   pointLayers: z.lazy(() => PointLayerUncheckedCreateNestedManyWithoutPointColumnInputSchema).optional()
 }).strict();
 
@@ -9566,12 +10096,14 @@ export const ColumnCreateOrConnectWithoutCellValuesInputSchema: z.ZodType<Prisma
 
 export const RowCreateWithoutCellValuesInputSchema: z.ZodType<Prisma.RowCreateWithoutCellValuesInput> = z.object({
   id: z.string().uuid().optional(),
-  dataset: z.lazy(() => DatasetCreateNestedOneWithoutRowsInputSchema)
+  dataset: z.lazy(() => DatasetCreateNestedOneWithoutRowsInputSchema),
+  publishedForm: z.lazy(() => FormCreateNestedOneWithoutFormSubmissionRowsInputSchema).optional()
 }).strict();
 
 export const RowUncheckedCreateWithoutCellValuesInputSchema: z.ZodType<Prisma.RowUncheckedCreateWithoutCellValuesInput> = z.object({
   id: z.string().uuid().optional(),
-  datasetId: z.string()
+  datasetId: z.string(),
+  publishedFormId: z.string().optional().nullable()
 }).strict();
 
 export const RowCreateOrConnectWithoutCellValuesInputSchema: z.ZodType<Prisma.RowCreateOrConnectWithoutCellValuesInput> = z.object({
@@ -9624,15 +10156,19 @@ export const ColumnUpdateWithoutCellValuesInputSchema: z.ZodType<Prisma.ColumnUp
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   dataType: z.union([ z.lazy(() => ColumnTypeSchema),z.lazy(() => EnumColumnTypeFieldUpdateOperationsInputSchema) ]).optional(),
+  blockNoteId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   dataset: z.lazy(() => DatasetUpdateOneRequiredWithoutColumnsNestedInputSchema).optional(),
+  step: z.lazy(() => StepUpdateOneWithoutDatasetColumnsNestedInputSchema).optional(),
   pointLayers: z.lazy(() => PointLayerUpdateManyWithoutPointColumnNestedInputSchema).optional()
 }).strict();
 
 export const ColumnUncheckedUpdateWithoutCellValuesInputSchema: z.ZodType<Prisma.ColumnUncheckedUpdateWithoutCellValuesInput> = z.object({
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  datasetId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   dataType: z.union([ z.lazy(() => ColumnTypeSchema),z.lazy(() => EnumColumnTypeFieldUpdateOperationsInputSchema) ]).optional(),
+  blockNoteId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  datasetId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  stepId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   pointLayers: z.lazy(() => PointLayerUncheckedUpdateManyWithoutPointColumnNestedInputSchema).optional()
 }).strict();
 
@@ -9649,12 +10185,14 @@ export const RowUpdateToOneWithWhereWithoutCellValuesInputSchema: z.ZodType<Pris
 
 export const RowUpdateWithoutCellValuesInputSchema: z.ZodType<Prisma.RowUpdateWithoutCellValuesInput> = z.object({
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  dataset: z.lazy(() => DatasetUpdateOneRequiredWithoutRowsNestedInputSchema).optional()
+  dataset: z.lazy(() => DatasetUpdateOneRequiredWithoutRowsNestedInputSchema).optional(),
+  publishedForm: z.lazy(() => FormUpdateOneWithoutFormSubmissionRowsNestedInputSchema).optional()
 }).strict();
 
 export const RowUncheckedUpdateWithoutCellValuesInputSchema: z.ZodType<Prisma.RowUncheckedUpdateWithoutCellValuesInput> = z.object({
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   datasetId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  publishedFormId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
 }).strict();
 
 export const BoolCellUpsertWithoutCellValueInputSchema: z.ZodType<Prisma.BoolCellUpsertWithoutCellValueInput> = z.object({
@@ -10017,15 +10555,19 @@ export const ColumnCreateWithoutPointLayersInputSchema: z.ZodType<Prisma.ColumnC
   id: z.string().uuid().optional(),
   name: z.string(),
   dataType: z.lazy(() => ColumnTypeSchema),
+  blockNoteId: z.string().optional().nullable(),
   dataset: z.lazy(() => DatasetCreateNestedOneWithoutColumnsInputSchema),
+  step: z.lazy(() => StepCreateNestedOneWithoutDatasetColumnsInputSchema).optional(),
   cellValues: z.lazy(() => CellValueCreateNestedManyWithoutColumnInputSchema).optional()
 }).strict();
 
 export const ColumnUncheckedCreateWithoutPointLayersInputSchema: z.ZodType<Prisma.ColumnUncheckedCreateWithoutPointLayersInput> = z.object({
   id: z.string().uuid().optional(),
-  datasetId: z.string(),
   name: z.string(),
   dataType: z.lazy(() => ColumnTypeSchema),
+  blockNoteId: z.string().optional().nullable(),
+  datasetId: z.string(),
+  stepId: z.string().optional().nullable(),
   cellValues: z.lazy(() => CellValueUncheckedCreateNestedManyWithoutColumnInputSchema).optional()
 }).strict();
 
@@ -10076,15 +10618,19 @@ export const ColumnUpdateWithoutPointLayersInputSchema: z.ZodType<Prisma.ColumnU
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   dataType: z.union([ z.lazy(() => ColumnTypeSchema),z.lazy(() => EnumColumnTypeFieldUpdateOperationsInputSchema) ]).optional(),
+  blockNoteId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   dataset: z.lazy(() => DatasetUpdateOneRequiredWithoutColumnsNestedInputSchema).optional(),
+  step: z.lazy(() => StepUpdateOneWithoutDatasetColumnsNestedInputSchema).optional(),
   cellValues: z.lazy(() => CellValueUpdateManyWithoutColumnNestedInputSchema).optional()
 }).strict();
 
 export const ColumnUncheckedUpdateWithoutPointLayersInputSchema: z.ZodType<Prisma.ColumnUncheckedUpdateWithoutPointLayersInput> = z.object({
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  datasetId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   dataType: z.union([ z.lazy(() => ColumnTypeSchema),z.lazy(() => EnumColumnTypeFieldUpdateOperationsInputSchema) ]).optional(),
+  blockNoteId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  datasetId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  stepId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   cellValues: z.lazy(() => CellValueUncheckedUpdateManyWithoutColumnNestedInputSchema).optional()
 }).strict();
 
@@ -10272,6 +10818,7 @@ export const FormUpdateWithoutWorkspaceInputSchema: z.ZodType<Prisma.FormUpdateW
   steps: z.lazy(() => StepUpdateManyWithoutFormNestedInputSchema).optional(),
   dataTracks: z.lazy(() => DataTrackUpdateManyWithoutFormNestedInputSchema).optional(),
   formSubmission: z.lazy(() => FormSubmissionUpdateManyWithoutFormNestedInputSchema).optional(),
+  formSubmissionRows: z.lazy(() => RowUpdateManyWithoutPublishedFormNestedInputSchema).optional(),
   rootForm: z.lazy(() => FormUpdateOneWithoutFormVersionsNestedInputSchema).optional(),
   formVersions: z.lazy(() => FormUpdateManyWithoutRootFormNestedInputSchema).optional(),
   dataset: z.lazy(() => DatasetUpdateOneWithoutFormNestedInputSchema).optional()
@@ -10293,6 +10840,7 @@ export const FormUncheckedUpdateWithoutWorkspaceInputSchema: z.ZodType<Prisma.Fo
   steps: z.lazy(() => StepUncheckedUpdateManyWithoutFormNestedInputSchema).optional(),
   dataTracks: z.lazy(() => DataTrackUncheckedUpdateManyWithoutFormNestedInputSchema).optional(),
   formSubmission: z.lazy(() => FormSubmissionUncheckedUpdateManyWithoutFormNestedInputSchema).optional(),
+  formSubmissionRows: z.lazy(() => RowUncheckedUpdateManyWithoutPublishedFormNestedInputSchema).optional(),
   formVersions: z.lazy(() => FormUncheckedUpdateManyWithoutRootFormNestedInputSchema).optional()
 }).strict();
 
@@ -10360,6 +10908,11 @@ export const FormSubmissionCreateManyFormInputSchema: z.ZodType<Prisma.FormSubmi
   updatedAt: z.coerce.date().optional()
 }).strict();
 
+export const RowCreateManyPublishedFormInputSchema: z.ZodType<Prisma.RowCreateManyPublishedFormInput> = z.object({
+  id: z.string().uuid().optional(),
+  datasetId: z.string()
+}).strict();
+
 export const FormCreateManyRootFormInputSchema: z.ZodType<Prisma.FormCreateManyRootFormInput> = z.object({
   id: z.string().uuid().optional(),
   name: z.string(),
@@ -10386,6 +10939,7 @@ export const StepUpdateWithoutFormInputSchema: z.ZodType<Prisma.StepUpdateWithou
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   location: z.lazy(() => LocationUpdateOneRequiredWithoutStepNestedInputSchema).optional(),
+  datasetColumns: z.lazy(() => ColumnUpdateManyWithoutStepNestedInputSchema).optional(),
   inputResponses: z.lazy(() => InputResponseUpdateManyWithoutStepNestedInputSchema).optional(),
   locationResponses: z.lazy(() => LocationResponseUpdateManyWithoutStepNestedInputSchema).optional()
 }).strict();
@@ -10401,6 +10955,7 @@ export const StepUncheckedUpdateWithoutFormInputSchema: z.ZodType<Prisma.StepUnc
   contentViewType: z.union([ z.lazy(() => ContentViewTypeSchema),z.lazy(() => EnumContentViewTypeFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  datasetColumns: z.lazy(() => ColumnUncheckedUpdateManyWithoutStepNestedInputSchema).optional(),
   inputResponses: z.lazy(() => InputResponseUncheckedUpdateManyWithoutStepNestedInputSchema).optional(),
   locationResponses: z.lazy(() => LocationResponseUncheckedUpdateManyWithoutStepNestedInputSchema).optional()
 }).strict();
@@ -10463,6 +11018,23 @@ export const FormSubmissionUncheckedUpdateManyWithoutFormInputSchema: z.ZodType<
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
+export const RowUpdateWithoutPublishedFormInputSchema: z.ZodType<Prisma.RowUpdateWithoutPublishedFormInput> = z.object({
+  id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  dataset: z.lazy(() => DatasetUpdateOneRequiredWithoutRowsNestedInputSchema).optional(),
+  cellValues: z.lazy(() => CellValueUpdateManyWithoutRowNestedInputSchema).optional()
+}).strict();
+
+export const RowUncheckedUpdateWithoutPublishedFormInputSchema: z.ZodType<Prisma.RowUncheckedUpdateWithoutPublishedFormInput> = z.object({
+  id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  datasetId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  cellValues: z.lazy(() => CellValueUncheckedUpdateManyWithoutRowNestedInputSchema).optional()
+}).strict();
+
+export const RowUncheckedUpdateManyWithoutPublishedFormInputSchema: z.ZodType<Prisma.RowUncheckedUpdateManyWithoutPublishedFormInput> = z.object({
+  id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  datasetId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
 export const FormUpdateWithoutRootFormInputSchema: z.ZodType<Prisma.FormUpdateWithoutRootFormInput> = z.object({
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
@@ -10478,6 +11050,7 @@ export const FormUpdateWithoutRootFormInputSchema: z.ZodType<Prisma.FormUpdateWi
   dataTracks: z.lazy(() => DataTrackUpdateManyWithoutFormNestedInputSchema).optional(),
   workspace: z.lazy(() => WorkspaceUpdateOneRequiredWithoutFormsNestedInputSchema).optional(),
   formSubmission: z.lazy(() => FormSubmissionUpdateManyWithoutFormNestedInputSchema).optional(),
+  formSubmissionRows: z.lazy(() => RowUpdateManyWithoutPublishedFormNestedInputSchema).optional(),
   formVersions: z.lazy(() => FormUpdateManyWithoutRootFormNestedInputSchema).optional(),
   dataset: z.lazy(() => DatasetUpdateOneWithoutFormNestedInputSchema).optional()
 }).strict();
@@ -10498,6 +11071,7 @@ export const FormUncheckedUpdateWithoutRootFormInputSchema: z.ZodType<Prisma.For
   steps: z.lazy(() => StepUncheckedUpdateManyWithoutFormNestedInputSchema).optional(),
   dataTracks: z.lazy(() => DataTrackUncheckedUpdateManyWithoutFormNestedInputSchema).optional(),
   formSubmission: z.lazy(() => FormSubmissionUncheckedUpdateManyWithoutFormNestedInputSchema).optional(),
+  formSubmissionRows: z.lazy(() => RowUncheckedUpdateManyWithoutPublishedFormNestedInputSchema).optional(),
   formVersions: z.lazy(() => FormUncheckedUpdateManyWithoutRootFormNestedInputSchema).optional()
 }).strict();
 
@@ -10516,6 +11090,14 @@ export const FormUncheckedUpdateManyWithoutRootFormInputSchema: z.ZodType<Prisma
   updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
+export const ColumnCreateManyStepInputSchema: z.ZodType<Prisma.ColumnCreateManyStepInput> = z.object({
+  id: z.string().uuid().optional(),
+  name: z.string(),
+  dataType: z.lazy(() => ColumnTypeSchema),
+  blockNoteId: z.string().optional().nullable(),
+  datasetId: z.string()
+}).strict();
+
 export const InputResponseCreateManyStepInputSchema: z.ZodType<Prisma.InputResponseCreateManyStepInput> = z.object({
   id: z.string().uuid().optional(),
   blockNoteId: z.string(),
@@ -10528,6 +11110,34 @@ export const LocationResponseCreateManyStepInputSchema: z.ZodType<Prisma.Locatio
   blockNoteId: z.string(),
   locationId: z.number().int(),
   formSubmissionId: z.string()
+}).strict();
+
+export const ColumnUpdateWithoutStepInputSchema: z.ZodType<Prisma.ColumnUpdateWithoutStepInput> = z.object({
+  id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  dataType: z.union([ z.lazy(() => ColumnTypeSchema),z.lazy(() => EnumColumnTypeFieldUpdateOperationsInputSchema) ]).optional(),
+  blockNoteId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  dataset: z.lazy(() => DatasetUpdateOneRequiredWithoutColumnsNestedInputSchema).optional(),
+  cellValues: z.lazy(() => CellValueUpdateManyWithoutColumnNestedInputSchema).optional(),
+  pointLayers: z.lazy(() => PointLayerUpdateManyWithoutPointColumnNestedInputSchema).optional()
+}).strict();
+
+export const ColumnUncheckedUpdateWithoutStepInputSchema: z.ZodType<Prisma.ColumnUncheckedUpdateWithoutStepInput> = z.object({
+  id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  dataType: z.union([ z.lazy(() => ColumnTypeSchema),z.lazy(() => EnumColumnTypeFieldUpdateOperationsInputSchema) ]).optional(),
+  blockNoteId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  datasetId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  cellValues: z.lazy(() => CellValueUncheckedUpdateManyWithoutColumnNestedInputSchema).optional(),
+  pointLayers: z.lazy(() => PointLayerUncheckedUpdateManyWithoutPointColumnNestedInputSchema).optional()
+}).strict();
+
+export const ColumnUncheckedUpdateManyWithoutStepInputSchema: z.ZodType<Prisma.ColumnUncheckedUpdateManyWithoutStepInput> = z.object({
+  id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  dataType: z.union([ z.lazy(() => ColumnTypeSchema),z.lazy(() => EnumColumnTypeFieldUpdateOperationsInputSchema) ]).optional(),
+  blockNoteId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  datasetId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const InputResponseUpdateWithoutStepInputSchema: z.ZodType<Prisma.InputResponseUpdateWithoutStepInput> = z.object({
@@ -10661,11 +11271,14 @@ export const LocationResponseUncheckedUpdateManyWithoutFormSubmissionInputSchema
 export const ColumnCreateManyDatasetInputSchema: z.ZodType<Prisma.ColumnCreateManyDatasetInput> = z.object({
   id: z.string().uuid().optional(),
   name: z.string(),
-  dataType: z.lazy(() => ColumnTypeSchema)
+  dataType: z.lazy(() => ColumnTypeSchema),
+  blockNoteId: z.string().optional().nullable(),
+  stepId: z.string().optional().nullable()
 }).strict();
 
 export const RowCreateManyDatasetInputSchema: z.ZodType<Prisma.RowCreateManyDatasetInput> = z.object({
-  id: z.string().uuid().optional()
+  id: z.string().uuid().optional(),
+  publishedFormId: z.string().optional().nullable()
 }).strict();
 
 export const LayerCreateManyDatasetInputSchema: z.ZodType<Prisma.LayerCreateManyDatasetInput> = z.object({
@@ -10679,6 +11292,8 @@ export const ColumnUpdateWithoutDatasetInputSchema: z.ZodType<Prisma.ColumnUpdat
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   dataType: z.union([ z.lazy(() => ColumnTypeSchema),z.lazy(() => EnumColumnTypeFieldUpdateOperationsInputSchema) ]).optional(),
+  blockNoteId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  step: z.lazy(() => StepUpdateOneWithoutDatasetColumnsNestedInputSchema).optional(),
   cellValues: z.lazy(() => CellValueUpdateManyWithoutColumnNestedInputSchema).optional(),
   pointLayers: z.lazy(() => PointLayerUpdateManyWithoutPointColumnNestedInputSchema).optional()
 }).strict();
@@ -10687,6 +11302,8 @@ export const ColumnUncheckedUpdateWithoutDatasetInputSchema: z.ZodType<Prisma.Co
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   dataType: z.union([ z.lazy(() => ColumnTypeSchema),z.lazy(() => EnumColumnTypeFieldUpdateOperationsInputSchema) ]).optional(),
+  blockNoteId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  stepId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   cellValues: z.lazy(() => CellValueUncheckedUpdateManyWithoutColumnNestedInputSchema).optional(),
   pointLayers: z.lazy(() => PointLayerUncheckedUpdateManyWithoutPointColumnNestedInputSchema).optional()
 }).strict();
@@ -10695,20 +11312,25 @@ export const ColumnUncheckedUpdateManyWithoutDatasetInputSchema: z.ZodType<Prism
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   dataType: z.union([ z.lazy(() => ColumnTypeSchema),z.lazy(() => EnumColumnTypeFieldUpdateOperationsInputSchema) ]).optional(),
+  blockNoteId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  stepId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
 }).strict();
 
 export const RowUpdateWithoutDatasetInputSchema: z.ZodType<Prisma.RowUpdateWithoutDatasetInput> = z.object({
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  publishedForm: z.lazy(() => FormUpdateOneWithoutFormSubmissionRowsNestedInputSchema).optional(),
   cellValues: z.lazy(() => CellValueUpdateManyWithoutRowNestedInputSchema).optional()
 }).strict();
 
 export const RowUncheckedUpdateWithoutDatasetInputSchema: z.ZodType<Prisma.RowUncheckedUpdateWithoutDatasetInput> = z.object({
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  publishedFormId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   cellValues: z.lazy(() => CellValueUncheckedUpdateManyWithoutRowNestedInputSchema).optional()
 }).strict();
 
 export const RowUncheckedUpdateManyWithoutDatasetInputSchema: z.ZodType<Prisma.RowUncheckedUpdateManyWithoutDatasetInput> = z.object({
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  publishedFormId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
 }).strict();
 
 export const LayerUpdateWithoutDatasetInputSchema: z.ZodType<Prisma.LayerUpdateWithoutDatasetInput> = z.object({

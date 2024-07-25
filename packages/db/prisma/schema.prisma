@@ -97,26 +97,27 @@ model Workspace {
 }
 
 model Form {
-    id             String           @id @default(uuid())
-    name           String
-    slug           String
-    isRoot         Boolean          @default(false)
-    isDirty        Boolean          @default(false)
-    isClosed       Boolean          @default(false)
+    id                 String           @id @default(uuid())
+    name               String
+    slug               String
+    isRoot             Boolean          @default(false)
+    isDirty            Boolean          @default(false)
+    isClosed           Boolean          @default(false)
     // Array of step IDs
-    stepOrder      String[]
-    steps          Step[]           @relation(name: "Steps")
-    dataTracks     DataTrack[]      @relation(name: "DataTracks")
-    workspaceId    String
-    workspace      Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-    formSubmission FormSubmission[]
-    rootFormId     String?
-    rootForm       Form?            @relation("FormVersions", fields: [rootFormId], references: [id])
-    formVersions   Form[]           @relation("FormVersions")
-    version        Int?
+    stepOrder          String[]
+    steps              Step[]           @relation(name: "Steps")
+    dataTracks         DataTrack[]      @relation(name: "DataTracks")
+    workspaceId        String
+    workspace          Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+    formSubmission     FormSubmission[]
+    formSubmissionRows Row[]
+    rootFormId         String?
+    rootForm           Form?            @relation("FormVersions", fields: [rootFormId], references: [id])
+    formVersions       Form[]           @relation("FormVersions")
+    version            Int?
     // Each draft form has its own dataset, representing the form submissions
-    datasetId      String?          @unique
-    dataset        Dataset?         @relation(fields: [datasetId], references: [id])
+    datasetId          String?          @unique
+    dataset            Dataset?         @relation(fields: [datasetId], references: [id])
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
@@ -143,6 +144,8 @@ model Step {
     locationId      Int             @unique
     location        Location        @relation(fields: [locationId], references: [id], onDelete: Cascade)
     contentViewType ContentViewType @default(PARTIAL)
+
+    datasetColumns Column[]
 
     inputResponses    InputResponse[]
     locationResponses LocationResponse[]
@@ -221,11 +224,20 @@ model Dataset {
 }
 
 model Column {
-    id          String       @id @default(uuid())
-    datasetId   String
-    name        String
-    dataType    ColumnType
-    dataset     Dataset      @relation("DatasetColumns", fields: [datasetId], references: [id])
+    id       String     @id @default(uuid())
+    name     String
+    dataType ColumnType
+
+    // Only for datasets belonging to a form
+    blockNoteId String? @unique
+
+    datasetId String
+    dataset   Dataset @relation("DatasetColumns", fields: [datasetId], references: [id])
+
+    // Step is only for datasets belonging to a form
+    step   Step?   @relation(fields: [stepId], references: [id], onDelete: Cascade)
+    stepId String?
+
     cellValues  CellValue[]  @relation("ColumnCellValues")
     pointLayers PointLayer[]
 
@@ -233,9 +245,14 @@ model Column {
 }
 
 model Row {
-    id         String      @id @default(uuid())
-    datasetId  String
-    dataset    Dataset     @relation("DatasetRows", fields: [datasetId], references: [id])
+    id        String  @id @default(uuid())
+    datasetId String
+    dataset   Dataset @relation("DatasetRows", fields: [datasetId], references: [id])
+
+    // Only for datasets belonging to a form
+    publishedFormId String?
+    publishedForm   Form?   @relation(fields: [publishedFormId], references: [id], onDelete: Cascade)
+
     cellValues CellValue[] @relation("RowCellValues")
 }
 
