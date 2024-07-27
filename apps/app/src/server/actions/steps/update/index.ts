@@ -51,7 +51,7 @@ export const updateStep = authAction
     }
 
     // TODO: Need to do this recursively
-    const inputBlocksToCreate =
+    const stepBlocks =
       data.description?.content
         .flatMap((block) => {
           if (block.type === "pin" || block.type === "textInput") {
@@ -61,16 +61,23 @@ export const updateStep = authAction
           return undefined;
         })
         .filter((block) => {
-          return (
-            block !== undefined &&
-            !userForm.dataset?.columns.find((col) => col.name === block.id)
-          );
+          return block !== undefined;
         }) ?? [];
 
+    const inputBlocksToCreate =
+      stepBlocks.filter((block) => {
+        return !userForm.dataset?.columns.find(
+          (col) => col.blockNoteId === block.id
+        );
+      }) ?? [];
+
     // Delete blocks which are not present in the new description, and which have no cells (submissions)
-    const inputBlocksToDelete = step?.description?.content.flatMap(
-      (block) => {}
-    );
+    const inputBlocksToDelete = userForm.dataset?.columns.filter((col) => {
+      return (
+        !stepBlocks.find((block) => block.id === col.blockNoteId) &&
+        col._count.cellValues === 0
+      );
+    });
 
     await prisma.$transaction(async (tx) => {
       await tx.step.update({
@@ -96,9 +103,18 @@ export const updateStep = authAction
             name: block.id,
             // TODO: Make this dynamic
             dataType: "POINT",
+            blockNoteId: block.id,
             datasetId: userForm.dataset?.id,
           };
         }),
+      });
+
+      await tx.column.deleteMany({
+        where: {
+          id: {
+            in: inputBlocksToDelete?.map((block) => block.id) ?? [],
+          },
+        },
       });
     });
 
