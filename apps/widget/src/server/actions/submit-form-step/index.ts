@@ -94,56 +94,26 @@ export const submitFormStep = action
             });
           }
 
-          // if (block?.type === "pin") {
-          //   // First, create a Location with raw SQL query since Prisma doesn't support Postgis
-          //   await prisma.$transaction(async (tx) => {
-          //     const currentResponse = await tx.locationResponse.findUnique({
-          //       where: {
-          //         blockNoteId_formSubmissionId: {
-          //           blockNoteId: key,
-          //           formSubmissionId,
-          //         },
-          //       },
-          //     });
-          //     const currentLocationId = currentResponse?.locationId;
+          if (block?.type === "pin") {
+            if (cellValue?.pointCell) {
+              return prisma.$executeRaw`
+                UPDATE "PointCell" SET value = ST_SetSRID(ST_MakePoint(${value.longitude}, ${value.latitude}), 4326)
+                WHERE id = ${cellValue.pointCell.id}
+              `;
+            }
 
-          //     const locationId: { id: number }[] = await tx.$queryRaw`
-          //         INSERT INTO "Location" (geom)
-          //         VALUES(ST_SetSRID(ST_MakePoint(${value.longitude}, ${value.latitude}), 4326))
-          //         RETURNING id
-          //       `;
+            const newCellValue = await prisma.cellValue.create({
+              data: {
+                columnId: column.id,
+                rowId: formSubmissionId,
+              },
+            });
 
-          //     if (!locationId[0]?.id) {
-          //       throw new Error("Failed to create location");
-          //     }
-
-          //     await tx.locationResponse.upsert({
-          //       create: {
-          //         formSubmissionId,
-          //         blockNoteId: key,
-          //         locationId: locationId[0].id,
-          //         stepId,
-          //       },
-          //       update: {
-          //         formSubmissionId,
-          //         blockNoteId: key,
-          //         locationId: locationId[0].id,
-          //       },
-          //       where: {
-          //         blockNoteId_formSubmissionId: {
-          //           blockNoteId: key,
-          //           formSubmissionId,
-          //         },
-          //       },
-          //     });
-
-          //     if (currentLocationId) {
-          //       await tx.$queryRaw`
-          //         DELETE FROM "Location" WHERE id = ${currentLocationId}
-          //       `;
-          //     }
-          //   });
-          // }
+            return prisma.$executeRaw`
+              INSERT INTO "PointCell" (id, cellvalueid, value)
+              VALUES (${uuidv4()}, ${newCellValue.id}, ST_SetSRID(ST_MakePoint(${value.longitude}, ${value.latitude}), 4326));
+            `;
+          }
         })
       );
     });

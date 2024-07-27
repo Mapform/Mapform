@@ -7,17 +7,11 @@ import { useAction } from "next-safe-action/hooks";
 import { submitFormStep } from "~/server/actions/submit-form-step";
 import { createFormSubmission } from "~/server/actions/create-form-submission";
 import { env } from "../env.mjs";
-import type { FormWithSteps } from "./requests";
+import type { FormWithSteps, Responses } from "./requests";
 
 interface MapProps {
   formWithSteps: NonNullable<FormWithSteps>;
-  formValues: {
-    id: string;
-    blockNoteId: string;
-    // TODO: Use the correct type
-    value: any;
-    type: "textInput" | "pin";
-  }[];
+  formValues: NonNullable<Responses>;
   sessionId: string | null;
 }
 
@@ -76,7 +70,10 @@ export function Map({ formWithSteps, formValues, sessionId }: MapProps) {
 
   const stepValues = (currentStep?.description?.content ?? []).reduce(
     (acc: Record<string, string>, block) => {
-      const value = formValues.find((v) => v.blockNoteId === block.id)?.value;
+      const cellValue = formValues.find(
+        (v) => v.column.blockNoteId === block.id
+      );
+      const value = cellValue?.stringCell?.value ?? cellValue?.pointCell?.value;
 
       if (value) {
         acc[block.id] = value;

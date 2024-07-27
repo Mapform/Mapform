@@ -1,8 +1,8 @@
 "use server";
 
-import { type LocationResponse, prisma } from "@mapform/db";
+import { type PointCell, prisma } from "@mapform/db";
 
-export type LocationResponseWithLocation = LocationResponse & {
+export type PointCellResponse = PointCell & {
   latitude: number;
   longitude: number;
 };
@@ -35,13 +35,14 @@ export async function getFormWithSteps(formId: string) {
 export type FormWithSteps = Awaited<ReturnType<typeof getFormWithSteps>>;
 
 export async function getResponses(formSubmissionId: string) {
-  return prisma.row.findUnique({
+  const row = await prisma.row.findUnique({
     where: {
       id: formSubmissionId,
     },
     include: {
       cellValues: {
         include: {
+          column: true,
           boolCell: true,
           pointCell: true,
           stringCell: true,
@@ -49,28 +50,48 @@ export async function getResponses(formSubmissionId: string) {
       },
     },
   });
+
+  // Backfill location-based responses since Prisma doesn't support them
+  const responses = await Promise.all(
+    row?.cellValues.map(async (cellValue) => {
+      if (cellValue.pointCell) {
+        const pointCell = await getPointCell(cellValue.pointCell.id);
+
+        return {
+          ...cellValue,
+          pointCell,
+        };
+      }
+
+      return cellValue;
+    }) ?? []
+  );
+
+  return responses;
 }
 
-export async function getInputValues(formSubmissionId: string) {
-  return prisma.inputResponse.findMany({
-    where: {
-      formSubmissionId,
-    },
-  });
-}
-
-export async function getLocationValues(formSubmissionId: string) {
+async function getPointCell(pointCellId: string) {
   // Make raw query to get LocationResponse with Location lat lng
-  const locationResponse: LocationResponseWithLocation[] =
-    await prisma.$queryRaw`
-    SELECT "LocationResponse".*, ST_X("Location".geom) AS longitude, ST_Y("Location".geom) AS latitude
-    FROM "LocationResponse"
-    LEFT JOIN "Location" ON "LocationResponse"."locationId" = "Location".id
-    WHERE "LocationResponse"."formSubmissionId" = ${formSubmissionId};
+  const pointCellResponse: PointCellResponse[] = await prisma.$queryRaw`
+    SELECT DISTINCT "PointCell".*, ST_X("PointCell".value) AS longitude, ST_Y("PointCell".value) AS latitude
+    FROM "PointCell"
+    WHERE "PointCell"."id" = ${pointCellId};
   `;
 
-  return locationResponse;
+  const formattedResponse = pointCellResponse[0]
+    ? {
+        ...pointCellResponse[0],
+        value: {
+          latitude: pointCellResponse[0].latitude,
+          longitude: pointCellResponse[0].longitude,
+        },
+      }
+    : null;
+
+  return formattedResponse;
 }
+
+export type Responses = Awaited<ReturnType<typeof getResponses>>;
 
 export async function getSession(formSubmissionId: string, formId: string) {
   return prisma.row.findUnique({
@@ -79,9 +100,4 @@ export async function getSession(formSubmissionId: string, formId: string) {
       publishedFormId: formId,
     },
   });
-  // return prisma.formSubmission.findUnique({
-  //   where: {
-  //     id: formSubmissionId,
-  //   },
-  // });
 }
