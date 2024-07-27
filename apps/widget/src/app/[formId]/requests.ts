@@ -34,6 +34,23 @@ export async function getFormWithSteps(formId: string) {
 
 export type FormWithSteps = Awaited<ReturnType<typeof getFormWithSteps>>;
 
+export async function getResponses(formSubmissionId: string) {
+  return prisma.row.findUnique({
+    where: {
+      id: formSubmissionId,
+    },
+    include: {
+      cellValues: {
+        include: {
+          boolCell: true,
+          pointCell: true,
+          stringCell: true,
+        },
+      },
+    },
+  });
+}
+
 export async function getInputValues(formSubmissionId: string) {
   return prisma.inputResponse.findMany({
     where: {
@@ -55,10 +72,16 @@ export async function getLocationValues(formSubmissionId: string) {
   return locationResponse;
 }
 
-export async function getSession(formSubmissionId: string) {
-  return prisma.formSubmission.findUnique({
+export async function getSession(formSubmissionId: string, formId: string) {
+  return prisma.row.findUnique({
     where: {
       id: formSubmissionId,
+      publishedFormId: formId,
     },
   });
+  // return prisma.formSubmission.findUnique({
+  //   where: {
+  //     id: formSubmissionId,
+  //   },
+  // });
 }

@@ -257,7 +257,7 @@ model Row {
 }
 
 model CellValue {
-    id       String @id
+    id       String @id @default(uuid())
     rowId    String
     columnId String
     column   Column @relation("ColumnCellValues", fields: [columnId], references: [id])
@@ -266,6 +266,8 @@ model CellValue {
     boolCell   BoolCell?
     stringCell StringCell?
     pointCell  PointCell?
+
+    @@unique([rowId, columnId])
 }
 
 model BoolCell {

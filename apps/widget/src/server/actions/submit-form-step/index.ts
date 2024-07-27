@@ -6,6 +6,7 @@ import { revalidatePath } from "next/cache";
 import { getFormSchemaFromBlockNote } from "@mapform/blocknote";
 import { action } from "~/lib/safe-action";
 import { submitFormStepSchema } from "./schema";
+import { connect } from "http2";
 
 export const submitFormStep = action
   .schema(submitFormStepSchema)
@@ -36,41 +37,62 @@ export const submitFormStep = action
       throw new Error("Invalid payload");
     }
 
-    console.log(1111, data);
-
     await prisma.$transaction(async (tx) => {
       await Promise.all(
         Object.entries(data).map(async ([key, value]) => {
           const block = documentContent.find((b) => b.id === key);
 
-          if (block?.type === "pin" && false) {
-            tx.$executeRaw`
-              INSERT INTO "PointCell" (id, cellvalueid, value)
-              VALUES(${uuidv4()}, ${cell.id}, ST_SetSRID(ST_MakePoint(${value.longitude}, ${value.latitude}), 4326))
-            `;
+          const column = await prisma.column.findUnique({
+            where: {
+              blockNoteId: block?.id,
+            },
+            select: {
+              id: true,
+            },
+          });
+
+          if (!column) {
+            throw new Error("Column not found");
           }
 
-          // if (block?.type === "textInput") {
-          //   return prisma.inputResponse.upsert({
-          //     create: {
-          //       formSubmissionId,
-          //       blockNoteId: key,
-          //       value: value as string,
-          //       stepId,
-          //     },
-          //     update: {
-          //       formSubmissionId,
-          //       blockNoteId: key,
-          //       value: value as string,
-          //     },
-          //     where: {
-          //       blockNoteId_formSubmissionId: {
-          //         blockNoteId: key,
-          //         formSubmissionId,
-          //       },
-          //     },
-          //   });
-          // }
+          const cellValue = await prisma.cellValue.findUnique({
+            where: {
+              rowId_columnId: {
+                columnId: column.id,
+                rowId: formSubmissionId,
+              },
+            },
+            include: {
+              boolCell: true,
+              pointCell: true,
+              stringCell: true,
+            },
+          });
+
+          if (block?.type === "textInput") {
+            if (cellValue?.stringCell) {
+              return prisma.stringCell.update({
+                where: {
+                  id: cellValue.stringCell.id,
+                },
+                data: {
+                  value: value as string,
+                },
+              });
+            }
+
+            return prisma.stringCell.create({
+              data: {
+                value: value as string,
+                cellValue: {
+                  create: {
+                    columnId: column.id,
+                    rowId: formSubmissionId,
+                  },
+                },
+              },
+            });
+          }
 
           // if (block?.type === "pin") {
           //   // First, create a Location with raw SQL query since Prisma doesn't support Postgis
