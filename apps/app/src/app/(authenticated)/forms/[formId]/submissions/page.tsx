@@ -1,42 +1,25 @@
-import { type Step } from "@mapform/db";
-import { ProgressBar } from "@mapform/ui/components/progress-bar";
 import { format } from "date-fns";
-import memoize from "lodash.memoize";
-import { ResultsDialog } from "./results-dialog";
-import { getFormSubmissions } from "./requests";
+import { getFormData } from "./requests";
 
 export default async function Submissions({
   params,
 }: {
   params: { formId: string };
 }) {
-  const formSubmissions = await getFormSubmissions({ formId: params.formId });
+  const formWithData = await getFormData({ formId: params.formId });
+  const columns = formWithData?.dataset?.columns || [];
+  const rowsWithCellValues = (formWithData?.dataset?.rows ?? []).map((row) => {
+    const rowCells = row.cellValues;
 
-  const getTotalFormInputs = memoize((steps: Step[]) => {
-    return steps.reduce((total, step) => {
-      const description = step.description;
+    return {
+      ...row,
+      cells: columns.map((column) => {
+        const cell = rowCells.find((rowCell) => rowCell.columnId === column.id);
 
-      if (!description?.content) {
-        return total;
-      }
-
-      return (
-        total +
-        description.content.filter(
-          (block) => block.type === "textInput" || block.type === "pin"
-        ).length
-      );
-    }, 0);
+        return cell;
+      }),
+    };
   });
-
-  const getTotalSubmissionInputs = memoize(
-    (formSubmission: (typeof formSubmissions)[number]) => {
-      return (
-        formSubmission.inputResponses.filter((r) => r.value !== "").length +
-        formSubmission.locationResponses.length
-      );
-    }
-  );
 
   return (
     <div className="px-4 sm:px-6 lg:px-8 py-8">
@@ -65,66 +48,45 @@ export default async function Submissions({
                     className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
                     scope="col"
                   >
-                    Created On
+                    Submitted at
                   </th>
-                  <th
-                    className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                    scope="col"
-                  >
-                    Form Version
-                  </th>
-                  <th
-                    className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                    scope="col"
-                  >
-                    Completion
-                  </th>
-                  <th
-                    className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                    scope="col"
-                  >
-                    Results
-                  </th>
+                  {columns.map((column) => (
+                    <th
+                      className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
+                      key={column.id}
+                      scope="col"
+                    >
+                      {column.name}
+                    </th>
+                  ))}
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
-                {formSubmissions.map((formSubmission) => {
-                  const totalFormInputs = getTotalFormInputs(
-                    formSubmission.form.steps
-                  );
-                  const totalSubmissionInputs =
-                    getTotalSubmissionInputs(formSubmission);
-
-                  return (
-                    <tr key={formSubmission.id}>
-                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 sm:pl-0">
-                        {format(formSubmission.createdAt, "LLLL do, yyyy")}
-                      </td>
-                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                        {formSubmission.form.version}
-                      </td>
-                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                        {totalFormInputs > 0 ? (
-                          <ProgressBar
-                            className="w-2/3"
-                            value={
-                              (totalSubmissionInputs / totalFormInputs) * 100
-                            }
-                          />
-                        ) : (
-                          "No inputs"
-                        )}
-                      </td>
-                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                        {totalSubmissionInputs > 0 && totalFormInputs > 0 ? (
-                          <ResultsDialog formSubmission={formSubmission} />
-                        ) : (
-                          "No results"
-                        )}
-                      </td>
-                    </tr>
-                  );
-                })}
+                {rowsWithCellValues.map((row) => (
+                  <tr key={row.id}>
+                    {row.formSubmission ? (
+                      <>
+                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 sm:pl-0">
+                          {format(
+                            row.formSubmission.createdAt,
+                            "LLLL do, yyyy"
+                          )}
+                        </td>
+                        {row.cells.map((cell, index) => (
+                          <td
+                            className="whitespace-nowrap px-3 py-4 text-sm text-gray-500"
+                            key={cell?.id}
+                          >
+                            {cell?.stringCell?.value ||
+                              cell?.boolCell?.value?.toString() ||
+                              cell?.pointCell?.value?.toString() ||
+                              "-"}
+                          </td>
+                        ))}
+                      </>
+                    ) : null}
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>

@@ -72,7 +72,7 @@ export const StepScalarFieldEnumSchema = z.enum(['id','title','description','zoo
 
 export const DataTrackScalarFieldEnumSchema = z.enum(['id','startStepIndex','endStepIndex','formId','layerOrder']);
 
-export const FormSubmissionScalarFieldEnumSchema = z.enum(['id','publishedFormId','rowId']);
+export const FormSubmissionScalarFieldEnumSchema = z.enum(['id','publishedFormId','rowId','createdAt','updatedAt']);
 
 export const LocationScalarFieldEnumSchema = z.enum(['id']);
 
@@ -403,6 +403,8 @@ export const FormSubmissionSchema = z.object({
   id: z.string().uuid(),
   publishedFormId: z.string(),
   rowId: z.string(),
+  createdAt: z.coerce.date(),
+  updatedAt: z.coerce.date(),
 })
 
 export type FormSubmission = z.infer<typeof FormSubmissionSchema>
@@ -1011,6 +1013,8 @@ export const FormSubmissionSelectSchema: z.ZodType<Prisma.FormSubmissionSelect> 
   id: z.boolean().optional(),
   publishedFormId: z.boolean().optional(),
   rowId: z.boolean().optional(),
+  createdAt: z.boolean().optional(),
+  updatedAt: z.boolean().optional(),
   publishedForm: z.union([z.boolean(),z.lazy(() => FormArgsSchema)]).optional(),
   row: z.union([z.boolean(),z.lazy(() => RowArgsSchema)]).optional(),
 }).strict()
@@ -1945,6 +1949,8 @@ export const FormSubmissionWhereInputSchema: z.ZodType<Prisma.FormSubmissionWher
   id: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   publishedFormId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   rowId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  createdAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
+  updatedAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   publishedForm: z.union([ z.lazy(() => FormRelationFilterSchema),z.lazy(() => FormWhereInputSchema) ]).optional(),
   row: z.union([ z.lazy(() => RowRelationFilterSchema),z.lazy(() => RowWhereInputSchema) ]).optional(),
 }).strict();
@@ -1953,6 +1959,8 @@ export const FormSubmissionOrderByWithRelationInputSchema: z.ZodType<Prisma.Form
   id: z.lazy(() => SortOrderSchema).optional(),
   publishedFormId: z.lazy(() => SortOrderSchema).optional(),
   rowId: z.lazy(() => SortOrderSchema).optional(),
+  createdAt: z.lazy(() => SortOrderSchema).optional(),
+  updatedAt: z.lazy(() => SortOrderSchema).optional(),
   publishedForm: z.lazy(() => FormOrderByWithRelationInputSchema).optional(),
   row: z.lazy(() => RowOrderByWithRelationInputSchema).optional()
 }).strict();
@@ -1976,6 +1984,8 @@ export const FormSubmissionWhereUniqueInputSchema: z.ZodType<Prisma.FormSubmissi
   OR: z.lazy(() => FormSubmissionWhereInputSchema).array().optional(),
   NOT: z.union([ z.lazy(() => FormSubmissionWhereInputSchema),z.lazy(() => FormSubmissionWhereInputSchema).array() ]).optional(),
   publishedFormId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  createdAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
+  updatedAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   publishedForm: z.union([ z.lazy(() => FormRelationFilterSchema),z.lazy(() => FormWhereInputSchema) ]).optional(),
   row: z.union([ z.lazy(() => RowRelationFilterSchema),z.lazy(() => RowWhereInputSchema) ]).optional(),
 }).strict());
@@ -1984,6 +1994,8 @@ export const FormSubmissionOrderByWithAggregationInputSchema: z.ZodType<Prisma.F
   id: z.lazy(() => SortOrderSchema).optional(),
   publishedFormId: z.lazy(() => SortOrderSchema).optional(),
   rowId: z.lazy(() => SortOrderSchema).optional(),
+  createdAt: z.lazy(() => SortOrderSchema).optional(),
+  updatedAt: z.lazy(() => SortOrderSchema).optional(),
   _count: z.lazy(() => FormSubmissionCountOrderByAggregateInputSchema).optional(),
   _max: z.lazy(() => FormSubmissionMaxOrderByAggregateInputSchema).optional(),
   _min: z.lazy(() => FormSubmissionMinOrderByAggregateInputSchema).optional()
@@ -1996,6 +2008,8 @@ export const FormSubmissionScalarWhereWithAggregatesInputSchema: z.ZodType<Prism
   id: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
   publishedFormId: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
   rowId: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
+  createdAt: z.union([ z.lazy(() => DateTimeWithAggregatesFilterSchema),z.coerce.date() ]).optional(),
+  updatedAt: z.union([ z.lazy(() => DateTimeWithAggregatesFilterSchema),z.coerce.date() ]).optional(),
 }).strict();
 
 export const LocationWhereInputSchema: z.ZodType<Prisma.LocationWhereInput> = z.object({
@@ -3222,6 +3236,8 @@ export const DataTrackUncheckedUpdateManyInputSchema: z.ZodType<Prisma.DataTrack
 
 export const FormSubmissionCreateInputSchema: z.ZodType<Prisma.FormSubmissionCreateInput> = z.object({
   id: z.string().uuid().optional(),
+  createdAt: z.coerce.date().optional(),
+  updatedAt: z.coerce.date().optional(),
   publishedForm: z.lazy(() => FormCreateNestedOneWithoutFormSubmissionInputSchema),
   row: z.lazy(() => RowCreateNestedOneWithoutFormSubmissionInputSchema)
 }).strict();
@@ -3229,11 +3245,15 @@ export const FormSubmissionCreateInputSchema: z.ZodType<Prisma.FormSubmissionCre
 export const FormSubmissionUncheckedCreateInputSchema: z.ZodType<Prisma.FormSubmissionUncheckedCreateInput> = z.object({
   id: z.string().uuid().optional(),
   publishedFormId: z.string(),
-  rowId: z.string()
+  rowId: z.string(),
+  createdAt: z.coerce.date().optional(),
+  updatedAt: z.coerce.date().optional()
 }).strict();
 
 export const FormSubmissionUpdateInputSchema: z.ZodType<Prisma.FormSubmissionUpdateInput> = z.object({
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   publishedForm: z.lazy(() => FormUpdateOneRequiredWithoutFormSubmissionNestedInputSchema).optional(),
   row: z.lazy(() => RowUpdateOneRequiredWithoutFormSubmissionNestedInputSchema).optional()
 }).strict();
@@ -3242,22 +3262,30 @@ export const FormSubmissionUncheckedUpdateInputSchema: z.ZodType<Prisma.FormSubm
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   publishedFormId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   rowId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const FormSubmissionCreateManyInputSchema: z.ZodType<Prisma.FormSubmissionCreateManyInput> = z.object({
   id: z.string().uuid().optional(),
   publishedFormId: z.string(),
-  rowId: z.string()
+  rowId: z.string(),
+  createdAt: z.coerce.date().optional(),
+  updatedAt: z.coerce.date().optional()
 }).strict();
 
 export const FormSubmissionUpdateManyMutationInputSchema: z.ZodType<Prisma.FormSubmissionUpdateManyMutationInput> = z.object({
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const FormSubmissionUncheckedUpdateManyInputSchema: z.ZodType<Prisma.FormSubmissionUncheckedUpdateManyInput> = z.object({
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   publishedFormId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   rowId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const LocationUpdateInputSchema: z.ZodType<Prisma.LocationUpdateInput> = z.object({
@@ -4361,19 +4389,25 @@ export const RowRelationFilterSchema: z.ZodType<Prisma.RowRelationFilter> = z.ob
 export const FormSubmissionCountOrderByAggregateInputSchema: z.ZodType<Prisma.FormSubmissionCountOrderByAggregateInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
   publishedFormId: z.lazy(() => SortOrderSchema).optional(),
-  rowId: z.lazy(() => SortOrderSchema).optional()
+  rowId: z.lazy(() => SortOrderSchema).optional(),
+  createdAt: z.lazy(() => SortOrderSchema).optional(),
+  updatedAt: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const FormSubmissionMaxOrderByAggregateInputSchema: z.ZodType<Prisma.FormSubmissionMaxOrderByAggregateInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
   publishedFormId: z.lazy(() => SortOrderSchema).optional(),
-  rowId: z.lazy(() => SortOrderSchema).optional()
+  rowId: z.lazy(() => SortOrderSchema).optional(),
+  createdAt: z.lazy(() => SortOrderSchema).optional(),
+  updatedAt: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const FormSubmissionMinOrderByAggregateInputSchema: z.ZodType<Prisma.FormSubmissionMinOrderByAggregateInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
   publishedFormId: z.lazy(() => SortOrderSchema).optional(),
-  rowId: z.lazy(() => SortOrderSchema).optional()
+  rowId: z.lazy(() => SortOrderSchema).optional(),
+  createdAt: z.lazy(() => SortOrderSchema).optional(),
+  updatedAt: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const StepNullableRelationFilterSchema: z.ZodType<Prisma.StepNullableRelationFilter> = z.object({
@@ -7150,12 +7184,16 @@ export const WorkspaceCreateOrConnectWithoutFormsInputSchema: z.ZodType<Prisma.W
 
 export const FormSubmissionCreateWithoutPublishedFormInputSchema: z.ZodType<Prisma.FormSubmissionCreateWithoutPublishedFormInput> = z.object({
   id: z.string().uuid().optional(),
+  createdAt: z.coerce.date().optional(),
+  updatedAt: z.coerce.date().optional(),
   row: z.lazy(() => RowCreateNestedOneWithoutFormSubmissionInputSchema)
 }).strict();
 
 export const FormSubmissionUncheckedCreateWithoutPublishedFormInputSchema: z.ZodType<Prisma.FormSubmissionUncheckedCreateWithoutPublishedFormInput> = z.object({
   id: z.string().uuid().optional(),
-  rowId: z.string()
+  rowId: z.string(),
+  createdAt: z.coerce.date().optional(),
+  updatedAt: z.coerce.date().optional()
 }).strict();
 
 export const FormSubmissionCreateOrConnectWithoutPublishedFormInputSchema: z.ZodType<Prisma.FormSubmissionCreateOrConnectWithoutPublishedFormInput> = z.object({
@@ -7398,6 +7436,8 @@ export const FormSubmissionScalarWhereInputSchema: z.ZodType<Prisma.FormSubmissi
   id: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   publishedFormId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   rowId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  createdAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
+  updatedAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
 }).strict();
 
 export const FormUpsertWithoutFormVersionsInputSchema: z.ZodType<Prisma.FormUpsertWithoutFormVersionsInput> = z.object({
@@ -8536,12 +8576,16 @@ export const DatasetCreateOrConnectWithoutRowsInputSchema: z.ZodType<Prisma.Data
 
 export const FormSubmissionCreateWithoutRowInputSchema: z.ZodType<Prisma.FormSubmissionCreateWithoutRowInput> = z.object({
   id: z.string().uuid().optional(),
+  createdAt: z.coerce.date().optional(),
+  updatedAt: z.coerce.date().optional(),
   publishedForm: z.lazy(() => FormCreateNestedOneWithoutFormSubmissionInputSchema)
 }).strict();
 
 export const FormSubmissionUncheckedCreateWithoutRowInputSchema: z.ZodType<Prisma.FormSubmissionUncheckedCreateWithoutRowInput> = z.object({
   id: z.string().uuid().optional(),
-  publishedFormId: z.string()
+  publishedFormId: z.string(),
+  createdAt: z.coerce.date().optional(),
+  updatedAt: z.coerce.date().optional()
 }).strict();
 
 export const FormSubmissionCreateOrConnectWithoutRowInputSchema: z.ZodType<Prisma.FormSubmissionCreateOrConnectWithoutRowInput> = z.object({
@@ -8617,12 +8661,16 @@ export const FormSubmissionUpdateToOneWithWhereWithoutRowInputSchema: z.ZodType<
 
 export const FormSubmissionUpdateWithoutRowInputSchema: z.ZodType<Prisma.FormSubmissionUpdateWithoutRowInput> = z.object({
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   publishedForm: z.lazy(() => FormUpdateOneRequiredWithoutFormSubmissionNestedInputSchema).optional()
 }).strict();
 
 export const FormSubmissionUncheckedUpdateWithoutRowInputSchema: z.ZodType<Prisma.FormSubmissionUncheckedUpdateWithoutRowInput> = z.object({
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   publishedFormId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const CellValueUpsertWithWhereUniqueWithoutRowInputSchema: z.ZodType<Prisma.CellValueUpsertWithWhereUniqueWithoutRowInput> = z.object({
@@ -9474,7 +9522,9 @@ export const DataTrackCreateManyFormInputSchema: z.ZodType<Prisma.DataTrackCreat
 
 export const FormSubmissionCreateManyPublishedFormInputSchema: z.ZodType<Prisma.FormSubmissionCreateManyPublishedFormInput> = z.object({
   id: z.string().uuid().optional(),
-  rowId: z.string()
+  rowId: z.string(),
+  createdAt: z.coerce.date().optional(),
+  updatedAt: z.coerce.date().optional()
 }).strict();
 
 export const FormCreateManyRootFormInputSchema: z.ZodType<Prisma.FormCreateManyRootFormInput> = z.object({
@@ -9558,17 +9608,23 @@ export const DataTrackUncheckedUpdateManyWithoutFormInputSchema: z.ZodType<Prism
 
 export const FormSubmissionUpdateWithoutPublishedFormInputSchema: z.ZodType<Prisma.FormSubmissionUpdateWithoutPublishedFormInput> = z.object({
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   row: z.lazy(() => RowUpdateOneRequiredWithoutFormSubmissionNestedInputSchema).optional()
 }).strict();
 
 export const FormSubmissionUncheckedUpdateWithoutPublishedFormInputSchema: z.ZodType<Prisma.FormSubmissionUncheckedUpdateWithoutPublishedFormInput> = z.object({
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   rowId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const FormSubmissionUncheckedUpdateManyWithoutPublishedFormInputSchema: z.ZodType<Prisma.FormSubmissionUncheckedUpdateManyWithoutPublishedFormInput> = z.object({
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   rowId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const FormUpdateWithoutRootFormInputSchema: z.ZodType<Prisma.FormUpdateWithoutRootFormInput> = z.object({
