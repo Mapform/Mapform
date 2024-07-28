@@ -1,6 +1,6 @@
 import React from "react";
 import { cookies } from "next/headers";
-import { type Row } from "@mapform/db";
+import { type FormSubmission } from "@mapform/db";
 import { Map } from "./map";
 import {
   getFormWithSteps,
@@ -15,7 +15,7 @@ export default async function Page({ params }: { params: { formId: string } }) {
   const cookieStore = cookies();
   const cookie = cookieStore.get("mapform-form-submission");
   const formValues: NonNullable<Responses> = [];
-  let session: Row | null = null;
+  let session: FormSubmission | null = null;
 
   if (!formWithSteps) {
     return <div>Form not found</div>;

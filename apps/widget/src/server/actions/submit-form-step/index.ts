@@ -6,19 +6,29 @@ import { revalidatePath } from "next/cache";
 import { getFormSchemaFromBlockNote } from "@mapform/blocknote";
 import { action } from "~/lib/safe-action";
 import { submitFormStepSchema } from "./schema";
-import { connect } from "http2";
 
 export const submitFormStep = action
   .schema(submitFormStepSchema)
   .action(async ({ parsedInput: { stepId, formSubmissionId, payload } }) => {
-    const step = await prisma.step.findUnique({
-      where: {
-        id: stepId,
-      },
-    });
+    const [step, formSubmission] = await Promise.all([
+      prisma.step.findUnique({
+        where: {
+          id: stepId,
+        },
+      }),
+      prisma.formSubmission.findUnique({
+        where: {
+          id: formSubmissionId,
+        },
+      }),
+    ]);
 
     if (!step) {
       throw new Error("Step not found");
+    }
+
+    if (!formSubmission) {
+      throw new Error("Form submission not found");
     }
 
     const documentContent = step.description?.content;
@@ -59,7 +69,7 @@ export const submitFormStep = action
             where: {
               rowId_columnId: {
                 columnId: column.id,
-                rowId: formSubmissionId,
+                rowId: formSubmission.rowId,
               },
             },
             include: {
@@ -87,7 +97,7 @@ export const submitFormStep = action
                 cellValue: {
                   create: {
                     columnId: column.id,
-                    rowId: formSubmissionId,
+                    rowId: formSubmission.rowId,
                   },
                 },
               },
@@ -105,7 +115,7 @@ export const submitFormStep = action
             const newCellValue = await prisma.cellValue.create({
               data: {
                 columnId: column.id,
-                rowId: formSubmissionId,
+                rowId: formSubmission.rowId,
               },
             });
 

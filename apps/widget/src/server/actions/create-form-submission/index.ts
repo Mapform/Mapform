@@ -15,6 +15,7 @@ export const createFormSubmission = action
       include: {
         rootForm: {
           select: {
+            id: true,
             datasetId: true,
           },
         },
@@ -29,24 +30,25 @@ export const createFormSubmission = action
       throw new Error("Form has no dataset");
     }
 
-    const formSubmission = await prisma.row.create({
+    const row = await prisma.row.create({
       data: {
-        publishedFormId: formId,
         datasetId: form.rootForm.datasetId,
+        formSubmission: {
+          create: {
+            publishedFormId: form.id,
+          },
+        },
+      },
+      include: {
+        formSubmission: true,
       },
     });
 
-    cookies().set("mapform-form-submission", formSubmission.id);
+    if (!row.formSubmission) {
+      throw new Error("Row not created");
+    }
 
-    return formSubmission.id;
+    cookies().set("mapform-form-submission", row.formSubmission.id);
 
-    // const formSubmission = await prisma.formSubmission.create({
-    //   data: {
-    //     formId,
-    //   },
-    // });
-
-    // cookies().set("mapform-form-submission", formSubmission.id);
-
-    // return formSubmission.id;
+    return row.formSubmission.id;
   });

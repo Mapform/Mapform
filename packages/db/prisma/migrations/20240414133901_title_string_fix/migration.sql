@@ -1,2 +1,0 @@
--- AlterTable
-ALTER TABLE "Step" ALTER COLUMN "title" SET DATA TYPE TEXT;

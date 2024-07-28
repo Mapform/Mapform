@@ -35,17 +35,21 @@ export async function getFormWithSteps(formId: string) {
 export type FormWithSteps = Awaited<ReturnType<typeof getFormWithSteps>>;
 
 export async function getResponses(formSubmissionId: string) {
-  const row = await prisma.row.findUnique({
+  const formSubmission = await prisma.formSubmission.findUnique({
     where: {
       id: formSubmissionId,
     },
     include: {
-      cellValues: {
+      row: {
         include: {
-          column: true,
-          boolCell: true,
-          pointCell: true,
-          stringCell: true,
+          cellValues: {
+            include: {
+              column: true,
+              boolCell: true,
+              pointCell: true,
+              stringCell: true,
+            },
+          },
         },
       },
     },
@@ -53,7 +57,7 @@ export async function getResponses(formSubmissionId: string) {
 
   // Backfill location-based responses since Prisma doesn't support them
   const responses = await Promise.all(
-    row?.cellValues.map(async (cellValue) => {
+    formSubmission?.row.cellValues.map(async (cellValue) => {
       if (cellValue.pointCell) {
         const pointCell = await getPointCell(cellValue.pointCell.id);
 
@@ -94,7 +98,7 @@ async function getPointCell(pointCellId: string) {
 export type Responses = Awaited<ReturnType<typeof getResponses>>;
 
 export async function getSession(formSubmissionId: string, formId: string) {
-  return prisma.row.findUnique({
+  return prisma.formSubmission.findUnique({
     where: {
       id: formSubmissionId,
       publishedFormId: formId,
