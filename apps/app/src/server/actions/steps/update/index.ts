@@ -47,11 +47,14 @@ export const updateStep = authAction
     // TODO: Data validation -> Need to check at runtime that data follows valid
     // Blocknote schema. Can write a custiom zod schema for this, or check back
     // with BlockNote to see if they've added this functionality.
-    const documentContent = (
-      data.description as {
-        content: DocumentContent;
-      }
-    ).content;
+    const documentContent =
+      (
+        data.description as
+          | {
+              content: DocumentContent;
+            }
+          | undefined
+      )?.content ?? [];
 
     const userForm = await prisma.form.findUnique({
       where: {
