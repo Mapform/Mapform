@@ -4,8 +4,8 @@ import React, { useEffect, useRef, useState } from "react";
 import type { MapRef, ViewState } from "@mapform/mapform";
 import { MapForm } from "@mapform/mapform";
 import { useAction } from "next-safe-action/hooks";
-import { submitFormStep } from "~/server/actions/submit-form-step";
-import { createFormSubmission } from "~/server/actions/create-form-submission";
+import { submitFormStep } from "~/data/submit-form-step";
+import { createFormSubmission } from "~/data/create-form-submission";
 import { env } from "../env.mjs";
 import type { FormWithSteps, Responses } from "./requests";
 

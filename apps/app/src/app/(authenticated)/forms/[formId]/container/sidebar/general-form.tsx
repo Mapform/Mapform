@@ -26,8 +26,8 @@ import { useCallback, useEffect } from "react";
 import {
   type UpdateStepSchema,
   updateStepSchema,
-} from "~/server/actions/steps/update/schema";
-import { updateStep } from "~/server/actions/steps/update";
+} from "~/data/steps/update/schema";
+import { updateStep } from "~/data/steps/update";
 
 interface GeneralFormProps {
   currentStep: StepWithLocation;

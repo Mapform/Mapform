@@ -22,11 +22,11 @@ import {
 } from "@mapform/ui/components/form";
 import { Input } from "@mapform/ui/components/input";
 import { toast } from "@mapform/ui/components/toaster";
-import { createOrg } from "~/server/actions/orgs/create";
+import { createOrg } from "~/data/orgs/create";
 import {
   createOrgSchema,
   type CreateOrgSchema,
-} from "~/server/actions/orgs/create/schema";
+} from "~/data/orgs/create/schema";
 
 export function CreateDialog() {
   const form = useForm<CreateOrgSchema>({

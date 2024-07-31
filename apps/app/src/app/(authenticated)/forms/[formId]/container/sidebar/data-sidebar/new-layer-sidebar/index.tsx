@@ -28,9 +28,9 @@ import { useAction } from "next-safe-action/hooks";
 import {
   type CreateLayerSchema,
   createLayerSchema,
-} from "~/server/actions/layers/create/schema";
-import { listAvailableDatasets } from "~/server/actions/datasets/list-available";
-import { createLayerAction } from "~/server/actions/layers/create";
+} from "~/data/layers/create/schema";
+import { listAvailableDatasets } from "~/data/datasets/list-available";
+import { createLayerAction } from "~/data/layers/create";
 import { useContainerContext } from "../../../context";
 import { Input } from "@mapform/ui/components/input";
 

@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import { MapForm } from "@mapform/mapform";
 import { toast } from "@mapform/ui/components/toaster";
 import type { CustomBlock } from "@mapform/blocknote";
-import { uploadImage } from "~/server/actions/images";
+import { uploadImage } from "~/data/images";
 import { env } from "~/env.mjs";
 import { useContainerContext } from "../context";
 

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Spinner } from "@mapform/ui/components/spinner";
 import { cn } from "@mapform/lib/classnames";
-import { getFormWithSteps } from "~/server/actions/forms/get-form-with-steps";
+import { getFormWithSteps } from "~/data/forms/get-form-with-steps";
 import { Steps } from "./steps";
 import { Sidebar } from "./sidebar";
 import { ContainerProvider } from "./context";

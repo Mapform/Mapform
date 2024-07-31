@@ -25,9 +25,9 @@ import { useState } from "react";
 import { Input } from "@mapform/ui/components/input";
 import { toast } from "@mapform/ui/components/toaster";
 import { useAction } from "next-safe-action/hooks";
-import type { CreateDatasetSchema } from "~/server/actions/datasets/create/schema";
-import { createDatasetSchema } from "~/server/actions/datasets/create/schema";
-import { createDataset } from "~/server/actions/datasets/create";
+import type { CreateDatasetSchema } from "~/data/datasets/create/schema";
+import { createDatasetSchema } from "~/data/datasets/create/schema";
+import { createDataset } from "~/data/datasets/create";
 
 export function CreateDialog({
   workspaceId,

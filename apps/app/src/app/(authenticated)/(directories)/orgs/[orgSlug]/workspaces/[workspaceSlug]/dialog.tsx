@@ -23,11 +23,11 @@ import {
 import { Input } from "@mapform/ui/components/input";
 import { toast } from "@mapform/ui/components/toaster";
 import { useAction } from "next-safe-action/hooks";
-import { createForm } from "~/server/actions/forms/create";
+import { createForm } from "~/data/forms/create";
 import {
   createFormSchema,
   type CreateFormSchema,
-} from "~/server/actions/forms/create/schema";
+} from "~/data/forms/create/schema";
 
 export function CreateDialog({
   workspaceId,
