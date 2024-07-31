@@ -38,6 +38,8 @@ export interface ContainerContextProps {
   setCurrentDataTrack: (dataTrackId?: string) => void;
   onMoveEnd?: ((e: ViewStateChangeEvent) => void) | undefined;
   points: Points;
+  bounds: LngLatBounds | undefined;
+  setBounds: Dispatch<SetStateAction<LngLatBounds | undefined>>;
 }
 
 export const ContainerContext = createContext<ContainerContextProps>(
@@ -144,6 +146,8 @@ export function ContainerProvider({
   const points = data?.data?.points.filter(notEmpty) || [];
   const debouncedUpdateStep = useDebounce(updateStepMutation, 500);
 
+  console.log("points", points, dataTrackForActiveStep?.id, bounds);
+
   useEffect(() => {
     if (formWithSteps.steps[0] && !s) {
       router.push(
@@ -216,6 +220,8 @@ export function ContainerProvider({
         setCurrentDataTrack,
         onMoveEnd,
         points,
+        bounds,
+        setBounds,
       }}
     >
       {children}

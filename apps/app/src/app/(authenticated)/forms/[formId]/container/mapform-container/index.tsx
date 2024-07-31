@@ -7,6 +7,7 @@ import type { CustomBlock } from "@mapform/blocknote";
 import { uploadImage } from "~/data/images";
 import { env } from "~/env.mjs";
 import { useContainerContext } from "../context";
+import { set } from "date-fns";
 
 function MapFormContainer({
   setMapformLoaded,
@@ -22,6 +23,7 @@ function MapFormContainer({
     debouncedUpdateStep,
     onMoveEnd,
     points,
+    setBounds,
   } = useContainerContext();
 
   return (
@@ -58,6 +60,8 @@ function MapFormContainer({
             return success?.url || null;
           }}
           onLoad={() => {
+            const bounds = map.current?.getBounds();
+            setBounds(bounds);
             setMapformLoaded(true);
           }}
           onMoveEnd={onMoveEnd}
