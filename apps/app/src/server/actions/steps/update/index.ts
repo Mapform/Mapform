@@ -5,6 +5,17 @@ import { revalidatePath } from "next/cache";
 import { authAction } from "~/lib/safe-action";
 import { updateStepSchema } from "./schema";
 
+const mapBlockTypeToDataType = (blockType) => {
+  switch (blockType) {
+    case "textInput":
+      return "STRING";
+    case "pin":
+      return "POINT";
+    default:
+      return "STRING";
+  }
+};
+
 export const updateStep = authAction
   .schema(updateStepSchema)
   .action(async ({ parsedInput: { stepId, data }, ctx: { orgId } }) => {
@@ -101,8 +112,7 @@ export const updateStep = authAction
         data: inputBlocksToCreate.map((block) => {
           return {
             name: block.id,
-            // TODO: Make this dynamic
-            dataType: "POINT",
+            dataType: mapBlockTypeToDataType(block.type),
             blockNoteId: block.id,
             datasetId: userForm.dataset?.id,
           };

@@ -47,7 +47,7 @@ export const TextInput = createReactBlockSpec(
               {editable ? (
                 <div className="flex justify-between">
                   <input
-                    className="text-sm font-medium border-0 p-0 outline-none border-transparent focus:border-transparent focus:ring-0 placeholder-gray-300 bg-transparent"
+                    className="flex-1 text-sm font-medium border-0 p-0 outline-none border-transparent focus:border-transparent focus:ring-0 placeholder-gray-300 bg-transparent"
                     onChange={(e) => {
                       editor.updateBlock(block, {
                         type: "textInput",
