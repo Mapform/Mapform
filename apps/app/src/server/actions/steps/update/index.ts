@@ -77,16 +77,6 @@ export const updateStep = authAction
       },
     });
 
-    const step = await prisma.step.findUnique({
-      where: {
-        id: stepId,
-      },
-      select: {
-        id: true,
-        description: true,
-      },
-    });
-
     if (!userForm) {
       throw new Error("User does not have access to this organization.");
     }
@@ -128,7 +118,7 @@ export const updateStep = authAction
 
       await tx.form.update({
         where: {
-          id: data.formId,
+          id: data.formId as string,
         },
         data: {
           isDirty: true,
@@ -141,7 +131,7 @@ export const updateStep = authAction
             name: block.id,
             dataType: mapBlockTypeToDataType(block.type),
             blockNoteId: block.id,
-            datasetId: userForm.dataset?.id,
+            datasetId: userForm.dataset!.id,
           };
         }),
       });
