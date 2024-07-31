@@ -26,7 +26,7 @@ const schemaMap = {
 /**
  * This is used to generate a Zod schema from a list of custom blocks inputs.
  */
-type InputCustomBlockTypes = PinBlock["type"] | TextInputBlock["type"];
+export type InputCustomBlockTypes = PinBlock["type"] | TextInputBlock["type"];
 const customBlocks = ["textInput", "pin"] as InputCustomBlockTypes[];
 
 export function getFormSchemaFromBlockNote(blocks: DocumentContent) {

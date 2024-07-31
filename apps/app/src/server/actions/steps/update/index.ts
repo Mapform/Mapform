@@ -2,10 +2,15 @@
 
 import { prisma } from "@mapform/db";
 import { revalidatePath } from "next/cache";
+import type {
+  CustomBlock,
+  DocumentContent,
+  InputCustomBlockTypes,
+} from "@mapform/blocknote";
 import { authAction } from "~/lib/safe-action";
 import { updateStepSchema } from "./schema";
 
-const mapBlockTypeToDataType = (blockType) => {
+const mapBlockTypeToDataType = (blockType: InputCustomBlockTypes) => {
   switch (blockType) {
     case "textInput":
       return "STRING";
@@ -16,12 +21,37 @@ const mapBlockTypeToDataType = (blockType) => {
   }
 };
 
+// Recursive function to flatten block note content
+const flattenBlockNoteContent = (
+  content: DocumentContent,
+  flatBlocks: CustomBlock[] = []
+) => {
+  for (const block of content) {
+    flatBlocks.push(block);
+
+    if (block.children.length) {
+      flattenBlockNoteContent(block.children, flatBlocks);
+    }
+  }
+
+  return flatBlocks;
+};
+
 export const updateStep = authAction
   .schema(updateStepSchema)
   .action(async ({ parsedInput: { stepId, data }, ctx: { orgId } }) => {
     if (!data.formId) {
       throw new Error("Form ID is required.");
     }
+
+    // TODO: Data validation -> Need to check at runtime that data follows valid
+    // Blocknote schema. Can write a custiom zod schema for this, or check back
+    // with BlockNote to see if they've added this functionality.
+    const documentContent = (
+      data.description as {
+        content: DocumentContent;
+      }
+    ).content;
 
     const userForm = await prisma.form.findUnique({
       where: {
@@ -61,26 +91,23 @@ export const updateStep = authAction
       throw new Error("User does not have access to this organization.");
     }
 
-    // TODO: Need to do this recursively
-    const stepBlocks =
-      data.description?.content
-        .flatMap((block) => {
-          if (block.type === "pin" || block.type === "textInput") {
-            return block;
-          }
+    const stepBlocks = flattenBlockNoteContent(documentContent)
+      .map((block) => {
+        if (block.type === "pin" || block.type === "textInput") {
+          return block;
+        }
 
-          return undefined;
-        })
-        .filter((block) => {
-          return block !== undefined;
-        }) ?? [];
+        return undefined;
+      })
+      .filter((block) => {
+        return block !== undefined;
+      });
 
-    const inputBlocksToCreate =
-      stepBlocks.filter((block) => {
-        return !userForm.dataset?.columns.find(
-          (col) => col.blockNoteId === block.id
-        );
-      }) ?? [];
+    const inputBlocksToCreate = stepBlocks.filter((block) => {
+      return !userForm.dataset?.columns.find(
+        (col) => col.blockNoteId === block.id
+      );
+    });
 
     // Delete blocks which are not present in the new description, and which have no cells (submissions)
     const inputBlocksToDelete = userForm.dataset?.columns.filter((col) => {
