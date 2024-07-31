@@ -1,4 +1,5 @@
 import { format } from "date-fns";
+import { Badge } from "@mapform/ui/components/badge";
 import { getFormData } from "./requests";
 
 export default async function Submissions({
@@ -56,7 +57,8 @@ export default async function Submissions({
                       key={column.id}
                       scope="col"
                     >
-                      {column.name}
+                      {column.name}{" "}
+                      <Badge variant="secondary">{column.dataType}</Badge>
                     </th>
                   ))}
                 </tr>

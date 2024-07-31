@@ -20,6 +20,8 @@ export const listAvailableDatasets = authAction
       throw new Error("Form not found");
     }
 
+    // TODO: Check that user has access to this form / workspace
+
     return prisma.dataset.findMany({
       where: {
         workspaceId: form.workspaceId,

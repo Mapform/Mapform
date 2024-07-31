@@ -27,6 +27,8 @@ export const getFormWithSteps = authAction
       },
     });
 
+    console.log(22222, form);
+
     if (!form) {
       throw new Error("User does not have access to this form.");
     }
