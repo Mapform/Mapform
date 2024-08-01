@@ -70,7 +70,7 @@ export const FormScalarFieldEnumSchema = z.enum(['id','name','slug','isRoot','is
 
 export const StepScalarFieldEnumSchema = z.enum(['id','title','description','zoom','pitch','bearing','formId','locationId','contentViewType','createdAt','updatedAt']);
 
-export const DataTrackScalarFieldEnumSchema = z.enum(['id','startStepIndex','endStepIndex','formId','layerOrder']);
+export const DataTrackScalarFieldEnumSchema = z.enum(['id','tempId','startStepIndex','endStepIndex','formId','layerOrder']);
 
 export const FormSubmissionScalarFieldEnumSchema = z.enum(['id','publishedFormId','rowId','createdAt','updatedAt']);
 
@@ -372,6 +372,7 @@ export const StepWithRelationsSchema: z.ZodType<StepWithRelations> = StepSchema.
 
 export const DataTrackSchema = z.object({
   id: z.string().uuid(),
+  tempId: z.string().nullable(),
   startStepIndex: z.number().int(),
   endStepIndex: z.number().int(),
   formId: z.string().nullable(),
@@ -987,6 +988,7 @@ export const DataTrackCountOutputTypeSelectSchema: z.ZodType<Prisma.DataTrackCou
 
 export const DataTrackSelectSchema: z.ZodType<Prisma.DataTrackSelect> = z.object({
   id: z.boolean().optional(),
+  tempId: z.boolean().optional(),
   startStepIndex: z.boolean().optional(),
   endStepIndex: z.boolean().optional(),
   formId: z.boolean().optional(),
@@ -1268,6 +1270,370 @@ export const PointLayerArgsSchema: z.ZodType<Prisma.PointLayerDefaultArgs> = z.o
 }).strict();
 
 export const PointLayerSelectSchema: z.ZodType<Prisma.PointLayerSelect> = z.object({
+  id: z.boolean().optional(),
+  layerId: z.boolean().optional(),
+  pointColumnId: z.boolean().optional(),
+  layer: z.union([z.boolean(),z.lazy(() => LayerArgsSchema)]).optional(),
+  pointColumn: z.union([z.boolean(),z.lazy(() => ColumnArgsSchema)]).optional(),
+}).strict()
+
+// CREATE MANY USER AND RETURN OUTPUT TYPE
+//------------------------------------------------------
+
+export const CreateManyUserAndReturnOutputTypeSelectSchema: z.ZodType<Prisma.CreateManyUserAndReturnOutputTypeSelect> = z.object({
+  id: z.boolean().optional(),
+  firstName: z.boolean().optional(),
+  lastName: z.boolean().optional(),
+  email: z.boolean().optional(),
+  imageUrl: z.boolean().optional(),
+  createdAt: z.boolean().optional(),
+  updatedAt: z.boolean().optional(),
+}).strict()
+
+// CREATE MANY ORGANIZATION AND RETURN OUTPUT TYPE
+//------------------------------------------------------
+
+export const CreateManyOrganizationAndReturnOutputTypeSelectSchema: z.ZodType<Prisma.CreateManyOrganizationAndReturnOutputTypeSelect> = z.object({
+  id: z.boolean().optional(),
+  name: z.boolean().optional(),
+  slug: z.boolean().optional(),
+  imageUrl: z.boolean().optional(),
+  createdAt: z.boolean().optional(),
+  updatedAt: z.boolean().optional(),
+}).strict()
+
+// CREATE MANY ORGANIZATION MEMBERSHIP AND RETURN OUTPUT TYPE
+//------------------------------------------------------
+
+export const CreateManyOrganizationMembershipAndReturnOutputTypeIncludeSchema: z.ZodType<Prisma.CreateManyOrganizationMembershipAndReturnOutputTypeInclude> = z.object({
+  user: z.union([z.boolean(),z.lazy(() => UserArgsSchema)]).optional(),
+  organization: z.union([z.boolean(),z.lazy(() => OrganizationArgsSchema)]).optional(),
+}).strict()
+
+export const CreateManyOrganizationMembershipAndReturnOutputTypeArgsSchema: z.ZodType<Prisma.CreateManyOrganizationMembershipAndReturnOutputTypeDefaultArgs> = z.object({
+  select: z.lazy(() => CreateManyOrganizationMembershipAndReturnOutputTypeSelectSchema).optional(),
+  include: z.lazy(() => CreateManyOrganizationMembershipAndReturnOutputTypeIncludeSchema).optional(),
+}).strict();
+
+export const CreateManyOrganizationMembershipAndReturnOutputTypeSelectSchema: z.ZodType<Prisma.CreateManyOrganizationMembershipAndReturnOutputTypeSelect> = z.object({
+  id: z.boolean().optional(),
+  organizationId: z.boolean().optional(),
+  userId: z.boolean().optional(),
+  role: z.boolean().optional(),
+  createdAt: z.boolean().optional(),
+  updatedAt: z.boolean().optional(),
+  user: z.union([z.boolean(),z.lazy(() => UserArgsSchema)]).optional(),
+  organization: z.union([z.boolean(),z.lazy(() => OrganizationArgsSchema)]).optional(),
+}).strict()
+
+// CREATE MANY WORKSPACE MEMBERSHIP AND RETURN OUTPUT TYPE
+//------------------------------------------------------
+
+export const CreateManyWorkspaceMembershipAndReturnOutputTypeIncludeSchema: z.ZodType<Prisma.CreateManyWorkspaceMembershipAndReturnOutputTypeInclude> = z.object({
+  user: z.union([z.boolean(),z.lazy(() => UserArgsSchema)]).optional(),
+  workspace: z.union([z.boolean(),z.lazy(() => WorkspaceArgsSchema)]).optional(),
+}).strict()
+
+export const CreateManyWorkspaceMembershipAndReturnOutputTypeArgsSchema: z.ZodType<Prisma.CreateManyWorkspaceMembershipAndReturnOutputTypeDefaultArgs> = z.object({
+  select: z.lazy(() => CreateManyWorkspaceMembershipAndReturnOutputTypeSelectSchema).optional(),
+  include: z.lazy(() => CreateManyWorkspaceMembershipAndReturnOutputTypeIncludeSchema).optional(),
+}).strict();
+
+export const CreateManyWorkspaceMembershipAndReturnOutputTypeSelectSchema: z.ZodType<Prisma.CreateManyWorkspaceMembershipAndReturnOutputTypeSelect> = z.object({
+  id: z.boolean().optional(),
+  userId: z.boolean().optional(),
+  workspaceId: z.boolean().optional(),
+  role: z.boolean().optional(),
+  user: z.union([z.boolean(),z.lazy(() => UserArgsSchema)]).optional(),
+  workspace: z.union([z.boolean(),z.lazy(() => WorkspaceArgsSchema)]).optional(),
+}).strict()
+
+// CREATE MANY WORKSPACE AND RETURN OUTPUT TYPE
+//------------------------------------------------------
+
+export const CreateManyWorkspaceAndReturnOutputTypeIncludeSchema: z.ZodType<Prisma.CreateManyWorkspaceAndReturnOutputTypeInclude> = z.object({
+  organization: z.union([z.boolean(),z.lazy(() => OrganizationArgsSchema)]).optional(),
+}).strict()
+
+export const CreateManyWorkspaceAndReturnOutputTypeArgsSchema: z.ZodType<Prisma.CreateManyWorkspaceAndReturnOutputTypeDefaultArgs> = z.object({
+  select: z.lazy(() => CreateManyWorkspaceAndReturnOutputTypeSelectSchema).optional(),
+  include: z.lazy(() => CreateManyWorkspaceAndReturnOutputTypeIncludeSchema).optional(),
+}).strict();
+
+export const CreateManyWorkspaceAndReturnOutputTypeSelectSchema: z.ZodType<Prisma.CreateManyWorkspaceAndReturnOutputTypeSelect> = z.object({
+  id: z.boolean().optional(),
+  name: z.boolean().optional(),
+  slug: z.boolean().optional(),
+  organizationId: z.boolean().optional(),
+  createdAt: z.boolean().optional(),
+  updatedAt: z.boolean().optional(),
+  organization: z.union([z.boolean(),z.lazy(() => OrganizationArgsSchema)]).optional(),
+}).strict()
+
+// CREATE MANY FORM AND RETURN OUTPUT TYPE
+//------------------------------------------------------
+
+export const CreateManyFormAndReturnOutputTypeIncludeSchema: z.ZodType<Prisma.CreateManyFormAndReturnOutputTypeInclude> = z.object({
+  workspace: z.union([z.boolean(),z.lazy(() => WorkspaceArgsSchema)]).optional(),
+  rootForm: z.union([z.boolean(),z.lazy(() => FormArgsSchema)]).optional(),
+  dataset: z.union([z.boolean(),z.lazy(() => DatasetArgsSchema)]).optional(),
+}).strict()
+
+export const CreateManyFormAndReturnOutputTypeArgsSchema: z.ZodType<Prisma.CreateManyFormAndReturnOutputTypeDefaultArgs> = z.object({
+  select: z.lazy(() => CreateManyFormAndReturnOutputTypeSelectSchema).optional(),
+  include: z.lazy(() => CreateManyFormAndReturnOutputTypeIncludeSchema).optional(),
+}).strict();
+
+export const CreateManyFormAndReturnOutputTypeSelectSchema: z.ZodType<Prisma.CreateManyFormAndReturnOutputTypeSelect> = z.object({
+  id: z.boolean().optional(),
+  name: z.boolean().optional(),
+  slug: z.boolean().optional(),
+  isRoot: z.boolean().optional(),
+  isDirty: z.boolean().optional(),
+  isClosed: z.boolean().optional(),
+  stepOrder: z.boolean().optional(),
+  workspaceId: z.boolean().optional(),
+  rootFormId: z.boolean().optional(),
+  version: z.boolean().optional(),
+  datasetId: z.boolean().optional(),
+  createdAt: z.boolean().optional(),
+  updatedAt: z.boolean().optional(),
+  workspace: z.union([z.boolean(),z.lazy(() => WorkspaceArgsSchema)]).optional(),
+  rootForm: z.union([z.boolean(),z.lazy(() => FormArgsSchema)]).optional(),
+  dataset: z.union([z.boolean(),z.lazy(() => DatasetArgsSchema)]).optional(),
+}).strict()
+
+// CREATE MANY STEP AND RETURN OUTPUT TYPE
+//------------------------------------------------------
+
+export const CreateManyStepAndReturnOutputTypeIncludeSchema: z.ZodType<Prisma.CreateManyStepAndReturnOutputTypeInclude> = z.object({
+  form: z.union([z.boolean(),z.lazy(() => FormArgsSchema)]).optional(),
+  location: z.union([z.boolean(),z.lazy(() => LocationArgsSchema)]).optional(),
+}).strict()
+
+export const CreateManyStepAndReturnOutputTypeArgsSchema: z.ZodType<Prisma.CreateManyStepAndReturnOutputTypeDefaultArgs> = z.object({
+  select: z.lazy(() => CreateManyStepAndReturnOutputTypeSelectSchema).optional(),
+  include: z.lazy(() => CreateManyStepAndReturnOutputTypeIncludeSchema).optional(),
+}).strict();
+
+export const CreateManyStepAndReturnOutputTypeSelectSchema: z.ZodType<Prisma.CreateManyStepAndReturnOutputTypeSelect> = z.object({
+  id: z.boolean().optional(),
+  title: z.boolean().optional(),
+  description: z.boolean().optional(),
+  zoom: z.boolean().optional(),
+  pitch: z.boolean().optional(),
+  bearing: z.boolean().optional(),
+  formId: z.boolean().optional(),
+  locationId: z.boolean().optional(),
+  contentViewType: z.boolean().optional(),
+  createdAt: z.boolean().optional(),
+  updatedAt: z.boolean().optional(),
+  form: z.union([z.boolean(),z.lazy(() => FormArgsSchema)]).optional(),
+  location: z.union([z.boolean(),z.lazy(() => LocationArgsSchema)]).optional(),
+}).strict()
+
+// CREATE MANY DATA TRACK AND RETURN OUTPUT TYPE
+//------------------------------------------------------
+
+export const CreateManyDataTrackAndReturnOutputTypeIncludeSchema: z.ZodType<Prisma.CreateManyDataTrackAndReturnOutputTypeInclude> = z.object({
+  form: z.union([z.boolean(),z.lazy(() => FormArgsSchema)]).optional(),
+}).strict()
+
+export const CreateManyDataTrackAndReturnOutputTypeArgsSchema: z.ZodType<Prisma.CreateManyDataTrackAndReturnOutputTypeDefaultArgs> = z.object({
+  select: z.lazy(() => CreateManyDataTrackAndReturnOutputTypeSelectSchema).optional(),
+  include: z.lazy(() => CreateManyDataTrackAndReturnOutputTypeIncludeSchema).optional(),
+}).strict();
+
+export const CreateManyDataTrackAndReturnOutputTypeSelectSchema: z.ZodType<Prisma.CreateManyDataTrackAndReturnOutputTypeSelect> = z.object({
+  id: z.boolean().optional(),
+  tempId: z.boolean().optional(),
+  startStepIndex: z.boolean().optional(),
+  endStepIndex: z.boolean().optional(),
+  formId: z.boolean().optional(),
+  layerOrder: z.boolean().optional(),
+  form: z.union([z.boolean(),z.lazy(() => FormArgsSchema)]).optional(),
+}).strict()
+
+// CREATE MANY FORM SUBMISSION AND RETURN OUTPUT TYPE
+//------------------------------------------------------
+
+export const CreateManyFormSubmissionAndReturnOutputTypeIncludeSchema: z.ZodType<Prisma.CreateManyFormSubmissionAndReturnOutputTypeInclude> = z.object({
+  publishedForm: z.union([z.boolean(),z.lazy(() => FormArgsSchema)]).optional(),
+  row: z.union([z.boolean(),z.lazy(() => RowArgsSchema)]).optional(),
+}).strict()
+
+export const CreateManyFormSubmissionAndReturnOutputTypeArgsSchema: z.ZodType<Prisma.CreateManyFormSubmissionAndReturnOutputTypeDefaultArgs> = z.object({
+  select: z.lazy(() => CreateManyFormSubmissionAndReturnOutputTypeSelectSchema).optional(),
+  include: z.lazy(() => CreateManyFormSubmissionAndReturnOutputTypeIncludeSchema).optional(),
+}).strict();
+
+export const CreateManyFormSubmissionAndReturnOutputTypeSelectSchema: z.ZodType<Prisma.CreateManyFormSubmissionAndReturnOutputTypeSelect> = z.object({
+  id: z.boolean().optional(),
+  publishedFormId: z.boolean().optional(),
+  rowId: z.boolean().optional(),
+  createdAt: z.boolean().optional(),
+  updatedAt: z.boolean().optional(),
+  publishedForm: z.union([z.boolean(),z.lazy(() => FormArgsSchema)]).optional(),
+  row: z.union([z.boolean(),z.lazy(() => RowArgsSchema)]).optional(),
+}).strict()
+
+// CREATE MANY DATASET AND RETURN OUTPUT TYPE
+//------------------------------------------------------
+
+export const CreateManyDatasetAndReturnOutputTypeIncludeSchema: z.ZodType<Prisma.CreateManyDatasetAndReturnOutputTypeInclude> = z.object({
+  workspace: z.union([z.boolean(),z.lazy(() => WorkspaceArgsSchema)]).optional(),
+}).strict()
+
+export const CreateManyDatasetAndReturnOutputTypeArgsSchema: z.ZodType<Prisma.CreateManyDatasetAndReturnOutputTypeDefaultArgs> = z.object({
+  select: z.lazy(() => CreateManyDatasetAndReturnOutputTypeSelectSchema).optional(),
+  include: z.lazy(() => CreateManyDatasetAndReturnOutputTypeIncludeSchema).optional(),
+}).strict();
+
+export const CreateManyDatasetAndReturnOutputTypeSelectSchema: z.ZodType<Prisma.CreateManyDatasetAndReturnOutputTypeSelect> = z.object({
+  id: z.boolean().optional(),
+  name: z.boolean().optional(),
+  workspaceId: z.boolean().optional(),
+  workspace: z.union([z.boolean(),z.lazy(() => WorkspaceArgsSchema)]).optional(),
+}).strict()
+
+// CREATE MANY COLUMN AND RETURN OUTPUT TYPE
+//------------------------------------------------------
+
+export const CreateManyColumnAndReturnOutputTypeIncludeSchema: z.ZodType<Prisma.CreateManyColumnAndReturnOutputTypeInclude> = z.object({
+  dataset: z.union([z.boolean(),z.lazy(() => DatasetArgsSchema)]).optional(),
+  step: z.union([z.boolean(),z.lazy(() => StepArgsSchema)]).optional(),
+}).strict()
+
+export const CreateManyColumnAndReturnOutputTypeArgsSchema: z.ZodType<Prisma.CreateManyColumnAndReturnOutputTypeDefaultArgs> = z.object({
+  select: z.lazy(() => CreateManyColumnAndReturnOutputTypeSelectSchema).optional(),
+  include: z.lazy(() => CreateManyColumnAndReturnOutputTypeIncludeSchema).optional(),
+}).strict();
+
+export const CreateManyColumnAndReturnOutputTypeSelectSchema: z.ZodType<Prisma.CreateManyColumnAndReturnOutputTypeSelect> = z.object({
+  id: z.boolean().optional(),
+  name: z.boolean().optional(),
+  dataType: z.boolean().optional(),
+  blockNoteId: z.boolean().optional(),
+  datasetId: z.boolean().optional(),
+  stepId: z.boolean().optional(),
+  dataset: z.union([z.boolean(),z.lazy(() => DatasetArgsSchema)]).optional(),
+  step: z.union([z.boolean(),z.lazy(() => StepArgsSchema)]).optional(),
+}).strict()
+
+// CREATE MANY ROW AND RETURN OUTPUT TYPE
+//------------------------------------------------------
+
+export const CreateManyRowAndReturnOutputTypeIncludeSchema: z.ZodType<Prisma.CreateManyRowAndReturnOutputTypeInclude> = z.object({
+  dataset: z.union([z.boolean(),z.lazy(() => DatasetArgsSchema)]).optional(),
+}).strict()
+
+export const CreateManyRowAndReturnOutputTypeArgsSchema: z.ZodType<Prisma.CreateManyRowAndReturnOutputTypeDefaultArgs> = z.object({
+  select: z.lazy(() => CreateManyRowAndReturnOutputTypeSelectSchema).optional(),
+  include: z.lazy(() => CreateManyRowAndReturnOutputTypeIncludeSchema).optional(),
+}).strict();
+
+export const CreateManyRowAndReturnOutputTypeSelectSchema: z.ZodType<Prisma.CreateManyRowAndReturnOutputTypeSelect> = z.object({
+  id: z.boolean().optional(),
+  datasetId: z.boolean().optional(),
+  dataset: z.union([z.boolean(),z.lazy(() => DatasetArgsSchema)]).optional(),
+}).strict()
+
+// CREATE MANY CELL VALUE AND RETURN OUTPUT TYPE
+//------------------------------------------------------
+
+export const CreateManyCellValueAndReturnOutputTypeIncludeSchema: z.ZodType<Prisma.CreateManyCellValueAndReturnOutputTypeInclude> = z.object({
+  column: z.union([z.boolean(),z.lazy(() => ColumnArgsSchema)]).optional(),
+  row: z.union([z.boolean(),z.lazy(() => RowArgsSchema)]).optional(),
+}).strict()
+
+export const CreateManyCellValueAndReturnOutputTypeArgsSchema: z.ZodType<Prisma.CreateManyCellValueAndReturnOutputTypeDefaultArgs> = z.object({
+  select: z.lazy(() => CreateManyCellValueAndReturnOutputTypeSelectSchema).optional(),
+  include: z.lazy(() => CreateManyCellValueAndReturnOutputTypeIncludeSchema).optional(),
+}).strict();
+
+export const CreateManyCellValueAndReturnOutputTypeSelectSchema: z.ZodType<Prisma.CreateManyCellValueAndReturnOutputTypeSelect> = z.object({
+  id: z.boolean().optional(),
+  rowId: z.boolean().optional(),
+  columnId: z.boolean().optional(),
+  column: z.union([z.boolean(),z.lazy(() => ColumnArgsSchema)]).optional(),
+  row: z.union([z.boolean(),z.lazy(() => RowArgsSchema)]).optional(),
+}).strict()
+
+// CREATE MANY BOOL CELL AND RETURN OUTPUT TYPE
+//------------------------------------------------------
+
+export const CreateManyBoolCellAndReturnOutputTypeIncludeSchema: z.ZodType<Prisma.CreateManyBoolCellAndReturnOutputTypeInclude> = z.object({
+  cellValue: z.union([z.boolean(),z.lazy(() => CellValueArgsSchema)]).optional(),
+}).strict()
+
+export const CreateManyBoolCellAndReturnOutputTypeArgsSchema: z.ZodType<Prisma.CreateManyBoolCellAndReturnOutputTypeDefaultArgs> = z.object({
+  select: z.lazy(() => CreateManyBoolCellAndReturnOutputTypeSelectSchema).optional(),
+  include: z.lazy(() => CreateManyBoolCellAndReturnOutputTypeIncludeSchema).optional(),
+}).strict();
+
+export const CreateManyBoolCellAndReturnOutputTypeSelectSchema: z.ZodType<Prisma.CreateManyBoolCellAndReturnOutputTypeSelect> = z.object({
+  id: z.boolean().optional(),
+  cellValueId: z.boolean().optional(),
+  value: z.boolean().optional(),
+  cellValue: z.union([z.boolean(),z.lazy(() => CellValueArgsSchema)]).optional(),
+}).strict()
+
+// CREATE MANY STRING CELL AND RETURN OUTPUT TYPE
+//------------------------------------------------------
+
+export const CreateManyStringCellAndReturnOutputTypeIncludeSchema: z.ZodType<Prisma.CreateManyStringCellAndReturnOutputTypeInclude> = z.object({
+  cellValue: z.union([z.boolean(),z.lazy(() => CellValueArgsSchema)]).optional(),
+}).strict()
+
+export const CreateManyStringCellAndReturnOutputTypeArgsSchema: z.ZodType<Prisma.CreateManyStringCellAndReturnOutputTypeDefaultArgs> = z.object({
+  select: z.lazy(() => CreateManyStringCellAndReturnOutputTypeSelectSchema).optional(),
+  include: z.lazy(() => CreateManyStringCellAndReturnOutputTypeIncludeSchema).optional(),
+}).strict();
+
+export const CreateManyStringCellAndReturnOutputTypeSelectSchema: z.ZodType<Prisma.CreateManyStringCellAndReturnOutputTypeSelect> = z.object({
+  id: z.boolean().optional(),
+  cellValueId: z.boolean().optional(),
+  value: z.boolean().optional(),
+  cellValue: z.union([z.boolean(),z.lazy(() => CellValueArgsSchema)]).optional(),
+}).strict()
+
+// CREATE MANY LAYER AND RETURN OUTPUT TYPE
+//------------------------------------------------------
+
+export const CreateManyLayerAndReturnOutputTypeIncludeSchema: z.ZodType<Prisma.CreateManyLayerAndReturnOutputTypeInclude> = z.object({
+  dataTrack: z.union([z.boolean(),z.lazy(() => DataTrackArgsSchema)]).optional(),
+  dataset: z.union([z.boolean(),z.lazy(() => DatasetArgsSchema)]).optional(),
+}).strict()
+
+export const CreateManyLayerAndReturnOutputTypeArgsSchema: z.ZodType<Prisma.CreateManyLayerAndReturnOutputTypeDefaultArgs> = z.object({
+  select: z.lazy(() => CreateManyLayerAndReturnOutputTypeSelectSchema).optional(),
+  include: z.lazy(() => CreateManyLayerAndReturnOutputTypeIncludeSchema).optional(),
+}).strict();
+
+export const CreateManyLayerAndReturnOutputTypeSelectSchema: z.ZodType<Prisma.CreateManyLayerAndReturnOutputTypeSelect> = z.object({
+  id: z.boolean().optional(),
+  name: z.boolean().optional(),
+  type: z.boolean().optional(),
+  dataTrackId: z.boolean().optional(),
+  datasetId: z.boolean().optional(),
+  dataTrack: z.union([z.boolean(),z.lazy(() => DataTrackArgsSchema)]).optional(),
+  dataset: z.union([z.boolean(),z.lazy(() => DatasetArgsSchema)]).optional(),
+}).strict()
+
+// CREATE MANY POINT LAYER AND RETURN OUTPUT TYPE
+//------------------------------------------------------
+
+export const CreateManyPointLayerAndReturnOutputTypeIncludeSchema: z.ZodType<Prisma.CreateManyPointLayerAndReturnOutputTypeInclude> = z.object({
+  layer: z.union([z.boolean(),z.lazy(() => LayerArgsSchema)]).optional(),
+  pointColumn: z.union([z.boolean(),z.lazy(() => ColumnArgsSchema)]).optional(),
+}).strict()
+
+export const CreateManyPointLayerAndReturnOutputTypeArgsSchema: z.ZodType<Prisma.CreateManyPointLayerAndReturnOutputTypeDefaultArgs> = z.object({
+  select: z.lazy(() => CreateManyPointLayerAndReturnOutputTypeSelectSchema).optional(),
+  include: z.lazy(() => CreateManyPointLayerAndReturnOutputTypeIncludeSchema).optional(),
+}).strict();
+
+export const CreateManyPointLayerAndReturnOutputTypeSelectSchema: z.ZodType<Prisma.CreateManyPointLayerAndReturnOutputTypeSelect> = z.object({
   id: z.boolean().optional(),
   layerId: z.boolean().optional(),
   pointColumnId: z.boolean().optional(),
@@ -1884,6 +2250,7 @@ export const DataTrackWhereInputSchema: z.ZodType<Prisma.DataTrackWhereInput> = 
   OR: z.lazy(() => DataTrackWhereInputSchema).array().optional(),
   NOT: z.union([ z.lazy(() => DataTrackWhereInputSchema),z.lazy(() => DataTrackWhereInputSchema).array() ]).optional(),
   id: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  tempId: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
   startStepIndex: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
   endStepIndex: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
   formId: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
@@ -1894,6 +2261,7 @@ export const DataTrackWhereInputSchema: z.ZodType<Prisma.DataTrackWhereInput> = 
 
 export const DataTrackOrderByWithRelationInputSchema: z.ZodType<Prisma.DataTrackOrderByWithRelationInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
+  tempId: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   startStepIndex: z.lazy(() => SortOrderSchema).optional(),
   endStepIndex: z.lazy(() => SortOrderSchema).optional(),
   formId: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
@@ -1902,11 +2270,21 @@ export const DataTrackOrderByWithRelationInputSchema: z.ZodType<Prisma.DataTrack
   layers: z.lazy(() => LayerOrderByRelationAggregateInputSchema).optional()
 }).strict();
 
-export const DataTrackWhereUniqueInputSchema: z.ZodType<Prisma.DataTrackWhereUniqueInput> = z.object({
-  id: z.string().uuid()
-})
+export const DataTrackWhereUniqueInputSchema: z.ZodType<Prisma.DataTrackWhereUniqueInput> = z.union([
+  z.object({
+    id: z.string().uuid(),
+    tempId: z.string()
+  }),
+  z.object({
+    id: z.string().uuid(),
+  }),
+  z.object({
+    tempId: z.string(),
+  }),
+])
 .and(z.object({
   id: z.string().uuid().optional(),
+  tempId: z.string().optional(),
   AND: z.union([ z.lazy(() => DataTrackWhereInputSchema),z.lazy(() => DataTrackWhereInputSchema).array() ]).optional(),
   OR: z.lazy(() => DataTrackWhereInputSchema).array().optional(),
   NOT: z.union([ z.lazy(() => DataTrackWhereInputSchema),z.lazy(() => DataTrackWhereInputSchema).array() ]).optional(),
@@ -1920,6 +2298,7 @@ export const DataTrackWhereUniqueInputSchema: z.ZodType<Prisma.DataTrackWhereUni
 
 export const DataTrackOrderByWithAggregationInputSchema: z.ZodType<Prisma.DataTrackOrderByWithAggregationInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
+  tempId: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   startStepIndex: z.lazy(() => SortOrderSchema).optional(),
   endStepIndex: z.lazy(() => SortOrderSchema).optional(),
   formId: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
@@ -1936,6 +2315,7 @@ export const DataTrackScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.Dat
   OR: z.lazy(() => DataTrackScalarWhereWithAggregatesInputSchema).array().optional(),
   NOT: z.union([ z.lazy(() => DataTrackScalarWhereWithAggregatesInputSchema),z.lazy(() => DataTrackScalarWhereWithAggregatesInputSchema).array() ]).optional(),
   id: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
+  tempId: z.union([ z.lazy(() => StringNullableWithAggregatesFilterSchema),z.string() ]).optional().nullable(),
   startStepIndex: z.union([ z.lazy(() => IntWithAggregatesFilterSchema),z.number() ]).optional(),
   endStepIndex: z.union([ z.lazy(() => IntWithAggregatesFilterSchema),z.number() ]).optional(),
   formId: z.union([ z.lazy(() => StringNullableWithAggregatesFilterSchema),z.string() ]).optional().nullable(),
@@ -3177,6 +3557,7 @@ export const StepUncheckedUpdateManyInputSchema: z.ZodType<Prisma.StepUncheckedU
 
 export const DataTrackCreateInputSchema: z.ZodType<Prisma.DataTrackCreateInput> = z.object({
   id: z.string().uuid().optional(),
+  tempId: z.string().optional().nullable(),
   startStepIndex: z.number().int(),
   endStepIndex: z.number().int(),
   layerOrder: z.union([ z.lazy(() => DataTrackCreatelayerOrderInputSchema),z.string().array() ]).optional(),
@@ -3186,6 +3567,7 @@ export const DataTrackCreateInputSchema: z.ZodType<Prisma.DataTrackCreateInput> 
 
 export const DataTrackUncheckedCreateInputSchema: z.ZodType<Prisma.DataTrackUncheckedCreateInput> = z.object({
   id: z.string().uuid().optional(),
+  tempId: z.string().optional().nullable(),
   startStepIndex: z.number().int(),
   endStepIndex: z.number().int(),
   formId: z.string().optional().nullable(),
@@ -3195,6 +3577,7 @@ export const DataTrackUncheckedCreateInputSchema: z.ZodType<Prisma.DataTrackUnch
 
 export const DataTrackUpdateInputSchema: z.ZodType<Prisma.DataTrackUpdateInput> = z.object({
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  tempId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   startStepIndex: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   endStepIndex: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   layerOrder: z.union([ z.lazy(() => DataTrackUpdatelayerOrderInputSchema),z.string().array() ]).optional(),
@@ -3204,6 +3587,7 @@ export const DataTrackUpdateInputSchema: z.ZodType<Prisma.DataTrackUpdateInput> 
 
 export const DataTrackUncheckedUpdateInputSchema: z.ZodType<Prisma.DataTrackUncheckedUpdateInput> = z.object({
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  tempId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   startStepIndex: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   endStepIndex: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   formId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
@@ -3213,6 +3597,7 @@ export const DataTrackUncheckedUpdateInputSchema: z.ZodType<Prisma.DataTrackUnch
 
 export const DataTrackCreateManyInputSchema: z.ZodType<Prisma.DataTrackCreateManyInput> = z.object({
   id: z.string().uuid().optional(),
+  tempId: z.string().optional().nullable(),
   startStepIndex: z.number().int(),
   endStepIndex: z.number().int(),
   formId: z.string().optional().nullable(),
@@ -3221,6 +3606,7 @@ export const DataTrackCreateManyInputSchema: z.ZodType<Prisma.DataTrackCreateMan
 
 export const DataTrackUpdateManyMutationInputSchema: z.ZodType<Prisma.DataTrackUpdateManyMutationInput> = z.object({
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  tempId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   startStepIndex: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   endStepIndex: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   layerOrder: z.union([ z.lazy(() => DataTrackUpdatelayerOrderInputSchema),z.string().array() ]).optional(),
@@ -3228,6 +3614,7 @@ export const DataTrackUpdateManyMutationInputSchema: z.ZodType<Prisma.DataTrackU
 
 export const DataTrackUncheckedUpdateManyInputSchema: z.ZodType<Prisma.DataTrackUncheckedUpdateManyInput> = z.object({
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  tempId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   startStepIndex: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   endStepIndex: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   formId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
@@ -4346,6 +4733,7 @@ export const LayerOrderByRelationAggregateInputSchema: z.ZodType<Prisma.LayerOrd
 
 export const DataTrackCountOrderByAggregateInputSchema: z.ZodType<Prisma.DataTrackCountOrderByAggregateInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
+  tempId: z.lazy(() => SortOrderSchema).optional(),
   startStepIndex: z.lazy(() => SortOrderSchema).optional(),
   endStepIndex: z.lazy(() => SortOrderSchema).optional(),
   formId: z.lazy(() => SortOrderSchema).optional(),
@@ -4359,6 +4747,7 @@ export const DataTrackAvgOrderByAggregateInputSchema: z.ZodType<Prisma.DataTrack
 
 export const DataTrackMaxOrderByAggregateInputSchema: z.ZodType<Prisma.DataTrackMaxOrderByAggregateInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
+  tempId: z.lazy(() => SortOrderSchema).optional(),
   startStepIndex: z.lazy(() => SortOrderSchema).optional(),
   endStepIndex: z.lazy(() => SortOrderSchema).optional(),
   formId: z.lazy(() => SortOrderSchema).optional()
@@ -4366,6 +4755,7 @@ export const DataTrackMaxOrderByAggregateInputSchema: z.ZodType<Prisma.DataTrack
 
 export const DataTrackMinOrderByAggregateInputSchema: z.ZodType<Prisma.DataTrackMinOrderByAggregateInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
+  tempId: z.lazy(() => SortOrderSchema).optional(),
   startStepIndex: z.lazy(() => SortOrderSchema).optional(),
   endStepIndex: z.lazy(() => SortOrderSchema).optional(),
   formId: z.lazy(() => SortOrderSchema).optional()
@@ -7131,6 +7521,7 @@ export const StepCreateManyFormInputEnvelopeSchema: z.ZodType<Prisma.StepCreateM
 
 export const DataTrackCreateWithoutFormInputSchema: z.ZodType<Prisma.DataTrackCreateWithoutFormInput> = z.object({
   id: z.string().uuid().optional(),
+  tempId: z.string().optional().nullable(),
   startStepIndex: z.number().int(),
   endStepIndex: z.number().int(),
   layerOrder: z.union([ z.lazy(() => DataTrackCreatelayerOrderInputSchema),z.string().array() ]).optional(),
@@ -7139,6 +7530,7 @@ export const DataTrackCreateWithoutFormInputSchema: z.ZodType<Prisma.DataTrackCr
 
 export const DataTrackUncheckedCreateWithoutFormInputSchema: z.ZodType<Prisma.DataTrackUncheckedCreateWithoutFormInput> = z.object({
   id: z.string().uuid().optional(),
+  tempId: z.string().optional().nullable(),
   startStepIndex: z.number().int(),
   endStepIndex: z.number().int(),
   layerOrder: z.union([ z.lazy(() => DataTrackCreatelayerOrderInputSchema),z.string().array() ]).optional(),
@@ -7374,6 +7766,7 @@ export const DataTrackScalarWhereInputSchema: z.ZodType<Prisma.DataTrackScalarWh
   OR: z.lazy(() => DataTrackScalarWhereInputSchema).array().optional(),
   NOT: z.union([ z.lazy(() => DataTrackScalarWhereInputSchema),z.lazy(() => DataTrackScalarWhereInputSchema).array() ]).optional(),
   id: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  tempId: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
   startStepIndex: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
   endStepIndex: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
   formId: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
@@ -9031,6 +9424,7 @@ export const PointLayerCreateOrConnectWithoutLayerInputSchema: z.ZodType<Prisma.
 
 export const DataTrackCreateWithoutLayersInputSchema: z.ZodType<Prisma.DataTrackCreateWithoutLayersInput> = z.object({
   id: z.string().uuid().optional(),
+  tempId: z.string().optional().nullable(),
   startStepIndex: z.number().int(),
   endStepIndex: z.number().int(),
   layerOrder: z.union([ z.lazy(() => DataTrackCreatelayerOrderInputSchema),z.string().array() ]).optional(),
@@ -9039,6 +9433,7 @@ export const DataTrackCreateWithoutLayersInputSchema: z.ZodType<Prisma.DataTrack
 
 export const DataTrackUncheckedCreateWithoutLayersInputSchema: z.ZodType<Prisma.DataTrackUncheckedCreateWithoutLayersInput> = z.object({
   id: z.string().uuid().optional(),
+  tempId: z.string().optional().nullable(),
   startStepIndex: z.number().int(),
   endStepIndex: z.number().int(),
   formId: z.string().optional().nullable(),
@@ -9107,6 +9502,7 @@ export const DataTrackUpdateToOneWithWhereWithoutLayersInputSchema: z.ZodType<Pr
 
 export const DataTrackUpdateWithoutLayersInputSchema: z.ZodType<Prisma.DataTrackUpdateWithoutLayersInput> = z.object({
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  tempId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   startStepIndex: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   endStepIndex: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   layerOrder: z.union([ z.lazy(() => DataTrackUpdatelayerOrderInputSchema),z.string().array() ]).optional(),
@@ -9115,6 +9511,7 @@ export const DataTrackUpdateWithoutLayersInputSchema: z.ZodType<Prisma.DataTrack
 
 export const DataTrackUncheckedUpdateWithoutLayersInputSchema: z.ZodType<Prisma.DataTrackUncheckedUpdateWithoutLayersInput> = z.object({
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  tempId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   startStepIndex: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   endStepIndex: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   formId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
@@ -9515,6 +9912,7 @@ export const StepCreateManyFormInputSchema: z.ZodType<Prisma.StepCreateManyFormI
 
 export const DataTrackCreateManyFormInputSchema: z.ZodType<Prisma.DataTrackCreateManyFormInput> = z.object({
   id: z.string().uuid().optional(),
+  tempId: z.string().optional().nullable(),
   startStepIndex: z.number().int(),
   endStepIndex: z.number().int(),
   layerOrder: z.union([ z.lazy(() => DataTrackCreatelayerOrderInputSchema),z.string().array() ]).optional(),
@@ -9585,6 +9983,7 @@ export const StepUncheckedUpdateManyWithoutFormInputSchema: z.ZodType<Prisma.Ste
 
 export const DataTrackUpdateWithoutFormInputSchema: z.ZodType<Prisma.DataTrackUpdateWithoutFormInput> = z.object({
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  tempId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   startStepIndex: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   endStepIndex: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   layerOrder: z.union([ z.lazy(() => DataTrackUpdatelayerOrderInputSchema),z.string().array() ]).optional(),
@@ -9593,6 +9992,7 @@ export const DataTrackUpdateWithoutFormInputSchema: z.ZodType<Prisma.DataTrackUp
 
 export const DataTrackUncheckedUpdateWithoutFormInputSchema: z.ZodType<Prisma.DataTrackUncheckedUpdateWithoutFormInput> = z.object({
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  tempId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   startStepIndex: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   endStepIndex: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   layerOrder: z.union([ z.lazy(() => DataTrackUpdatelayerOrderInputSchema),z.string().array() ]).optional(),
@@ -9601,6 +10001,7 @@ export const DataTrackUncheckedUpdateWithoutFormInputSchema: z.ZodType<Prisma.Da
 
 export const DataTrackUncheckedUpdateManyWithoutFormInputSchema: z.ZodType<Prisma.DataTrackUncheckedUpdateManyWithoutFormInput> = z.object({
   id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  tempId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   startStepIndex: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   endStepIndex: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   layerOrder: z.union([ z.lazy(() => DataTrackUpdatelayerOrderInputSchema),z.string().array() ]).optional(),
@@ -11105,6 +11506,11 @@ export const UserCreateManyArgsSchema: z.ZodType<Prisma.UserCreateManyArgs> = z.
   skipDuplicates: z.boolean().optional(),
 }).strict() ;
 
+export const UserAndReturnCreateManyArgsSchema: z.ZodType<Prisma.UserAndReturnCreateManyArgs> = z.object({
+  data: z.union([ UserCreateManyInputSchema,UserCreateManyInputSchema.array() ]),
+  skipDuplicates: z.boolean().optional(),
+}).strict() ;
+
 export const UserDeleteArgsSchema: z.ZodType<Prisma.UserDeleteArgs> = z.object({
   select: UserSelectSchema.optional(),
   include: UserIncludeSchema.optional(),
@@ -11142,6 +11548,11 @@ export const OrganizationUpsertArgsSchema: z.ZodType<Prisma.OrganizationUpsertAr
 }).strict() ;
 
 export const OrganizationCreateManyArgsSchema: z.ZodType<Prisma.OrganizationCreateManyArgs> = z.object({
+  data: z.union([ OrganizationCreateManyInputSchema,OrganizationCreateManyInputSchema.array() ]),
+  skipDuplicates: z.boolean().optional(),
+}).strict() ;
+
+export const OrganizationAndReturnCreateManyArgsSchema: z.ZodType<Prisma.OrganizationAndReturnCreateManyArgs> = z.object({
   data: z.union([ OrganizationCreateManyInputSchema,OrganizationCreateManyInputSchema.array() ]),
   skipDuplicates: z.boolean().optional(),
 }).strict() ;
@@ -11187,6 +11598,11 @@ export const OrganizationMembershipCreateManyArgsSchema: z.ZodType<Prisma.Organi
   skipDuplicates: z.boolean().optional(),
 }).strict() ;
 
+export const OrganizationMembershipAndReturnCreateManyArgsSchema: z.ZodType<Prisma.OrganizationMembershipAndReturnCreateManyArgs> = z.object({
+  data: z.union([ OrganizationMembershipCreateManyInputSchema,OrganizationMembershipCreateManyInputSchema.array() ]),
+  skipDuplicates: z.boolean().optional(),
+}).strict() ;
+
 export const OrganizationMembershipDeleteArgsSchema: z.ZodType<Prisma.OrganizationMembershipDeleteArgs> = z.object({
   select: OrganizationMembershipSelectSchema.optional(),
   include: OrganizationMembershipIncludeSchema.optional(),
@@ -11224,6 +11640,11 @@ export const WorkspaceMembershipUpsertArgsSchema: z.ZodType<Prisma.WorkspaceMemb
 }).strict() ;
 
 export const WorkspaceMembershipCreateManyArgsSchema: z.ZodType<Prisma.WorkspaceMembershipCreateManyArgs> = z.object({
+  data: z.union([ WorkspaceMembershipCreateManyInputSchema,WorkspaceMembershipCreateManyInputSchema.array() ]),
+  skipDuplicates: z.boolean().optional(),
+}).strict() ;
+
+export const WorkspaceMembershipAndReturnCreateManyArgsSchema: z.ZodType<Prisma.WorkspaceMembershipAndReturnCreateManyArgs> = z.object({
   data: z.union([ WorkspaceMembershipCreateManyInputSchema,WorkspaceMembershipCreateManyInputSchema.array() ]),
   skipDuplicates: z.boolean().optional(),
 }).strict() ;
@@ -11269,6 +11690,11 @@ export const WorkspaceCreateManyArgsSchema: z.ZodType<Prisma.WorkspaceCreateMany
   skipDuplicates: z.boolean().optional(),
 }).strict() ;
 
+export const WorkspaceAndReturnCreateManyArgsSchema: z.ZodType<Prisma.WorkspaceAndReturnCreateManyArgs> = z.object({
+  data: z.union([ WorkspaceCreateManyInputSchema,WorkspaceCreateManyInputSchema.array() ]),
+  skipDuplicates: z.boolean().optional(),
+}).strict() ;
+
 export const WorkspaceDeleteArgsSchema: z.ZodType<Prisma.WorkspaceDeleteArgs> = z.object({
   select: WorkspaceSelectSchema.optional(),
   include: WorkspaceIncludeSchema.optional(),
@@ -11306,6 +11732,11 @@ export const FormUpsertArgsSchema: z.ZodType<Prisma.FormUpsertArgs> = z.object({
 }).strict() ;
 
 export const FormCreateManyArgsSchema: z.ZodType<Prisma.FormCreateManyArgs> = z.object({
+  data: z.union([ FormCreateManyInputSchema,FormCreateManyInputSchema.array() ]),
+  skipDuplicates: z.boolean().optional(),
+}).strict() ;
+
+export const FormAndReturnCreateManyArgsSchema: z.ZodType<Prisma.FormAndReturnCreateManyArgs> = z.object({
   data: z.union([ FormCreateManyInputSchema,FormCreateManyInputSchema.array() ]),
   skipDuplicates: z.boolean().optional(),
 }).strict() ;
@@ -11351,6 +11782,11 @@ export const StepCreateManyArgsSchema: z.ZodType<Prisma.StepCreateManyArgs> = z.
   skipDuplicates: z.boolean().optional(),
 }).strict() ;
 
+export const StepAndReturnCreateManyArgsSchema: z.ZodType<Prisma.StepAndReturnCreateManyArgs> = z.object({
+  data: z.union([ StepCreateManyInputSchema,StepCreateManyInputSchema.array() ]),
+  skipDuplicates: z.boolean().optional(),
+}).strict() ;
+
 export const StepDeleteArgsSchema: z.ZodType<Prisma.StepDeleteArgs> = z.object({
   select: StepSelectSchema.optional(),
   include: StepIncludeSchema.optional(),
@@ -11392,6 +11828,11 @@ export const DataTrackCreateManyArgsSchema: z.ZodType<Prisma.DataTrackCreateMany
   skipDuplicates: z.boolean().optional(),
 }).strict() ;
 
+export const DataTrackAndReturnCreateManyArgsSchema: z.ZodType<Prisma.DataTrackAndReturnCreateManyArgs> = z.object({
+  data: z.union([ DataTrackCreateManyInputSchema,DataTrackCreateManyInputSchema.array() ]),
+  skipDuplicates: z.boolean().optional(),
+}).strict() ;
+
 export const DataTrackDeleteArgsSchema: z.ZodType<Prisma.DataTrackDeleteArgs> = z.object({
   select: DataTrackSelectSchema.optional(),
   include: DataTrackIncludeSchema.optional(),
@@ -11429,6 +11870,11 @@ export const FormSubmissionUpsertArgsSchema: z.ZodType<Prisma.FormSubmissionUpse
 }).strict() ;
 
 export const FormSubmissionCreateManyArgsSchema: z.ZodType<Prisma.FormSubmissionCreateManyArgs> = z.object({
+  data: z.union([ FormSubmissionCreateManyInputSchema,FormSubmissionCreateManyInputSchema.array() ]),
+  skipDuplicates: z.boolean().optional(),
+}).strict() ;
+
+export const FormSubmissionAndReturnCreateManyArgsSchema: z.ZodType<Prisma.FormSubmissionAndReturnCreateManyArgs> = z.object({
   data: z.union([ FormSubmissionCreateManyInputSchema,FormSubmissionCreateManyInputSchema.array() ]),
   skipDuplicates: z.boolean().optional(),
 }).strict() ;
@@ -11496,6 +11942,11 @@ export const DatasetCreateManyArgsSchema: z.ZodType<Prisma.DatasetCreateManyArgs
   skipDuplicates: z.boolean().optional(),
 }).strict() ;
 
+export const DatasetAndReturnCreateManyArgsSchema: z.ZodType<Prisma.DatasetAndReturnCreateManyArgs> = z.object({
+  data: z.union([ DatasetCreateManyInputSchema,DatasetCreateManyInputSchema.array() ]),
+  skipDuplicates: z.boolean().optional(),
+}).strict() ;
+
 export const DatasetDeleteArgsSchema: z.ZodType<Prisma.DatasetDeleteArgs> = z.object({
   select: DatasetSelectSchema.optional(),
   include: DatasetIncludeSchema.optional(),
@@ -11533,6 +11984,11 @@ export const ColumnUpsertArgsSchema: z.ZodType<Prisma.ColumnUpsertArgs> = z.obje
 }).strict() ;
 
 export const ColumnCreateManyArgsSchema: z.ZodType<Prisma.ColumnCreateManyArgs> = z.object({
+  data: z.union([ ColumnCreateManyInputSchema,ColumnCreateManyInputSchema.array() ]),
+  skipDuplicates: z.boolean().optional(),
+}).strict() ;
+
+export const ColumnAndReturnCreateManyArgsSchema: z.ZodType<Prisma.ColumnAndReturnCreateManyArgs> = z.object({
   data: z.union([ ColumnCreateManyInputSchema,ColumnCreateManyInputSchema.array() ]),
   skipDuplicates: z.boolean().optional(),
 }).strict() ;
@@ -11578,6 +12034,11 @@ export const RowCreateManyArgsSchema: z.ZodType<Prisma.RowCreateManyArgs> = z.ob
   skipDuplicates: z.boolean().optional(),
 }).strict() ;
 
+export const RowAndReturnCreateManyArgsSchema: z.ZodType<Prisma.RowAndReturnCreateManyArgs> = z.object({
+  data: z.union([ RowCreateManyInputSchema,RowCreateManyInputSchema.array() ]),
+  skipDuplicates: z.boolean().optional(),
+}).strict() ;
+
 export const RowDeleteArgsSchema: z.ZodType<Prisma.RowDeleteArgs> = z.object({
   select: RowSelectSchema.optional(),
   include: RowIncludeSchema.optional(),
@@ -11615,6 +12076,11 @@ export const CellValueUpsertArgsSchema: z.ZodType<Prisma.CellValueUpsertArgs> = 
 }).strict() ;
 
 export const CellValueCreateManyArgsSchema: z.ZodType<Prisma.CellValueCreateManyArgs> = z.object({
+  data: z.union([ CellValueCreateManyInputSchema,CellValueCreateManyInputSchema.array() ]),
+  skipDuplicates: z.boolean().optional(),
+}).strict() ;
+
+export const CellValueAndReturnCreateManyArgsSchema: z.ZodType<Prisma.CellValueAndReturnCreateManyArgs> = z.object({
   data: z.union([ CellValueCreateManyInputSchema,CellValueCreateManyInputSchema.array() ]),
   skipDuplicates: z.boolean().optional(),
 }).strict() ;
@@ -11660,6 +12126,11 @@ export const BoolCellCreateManyArgsSchema: z.ZodType<Prisma.BoolCellCreateManyAr
   skipDuplicates: z.boolean().optional(),
 }).strict() ;
 
+export const BoolCellAndReturnCreateManyArgsSchema: z.ZodType<Prisma.BoolCellAndReturnCreateManyArgs> = z.object({
+  data: z.union([ BoolCellCreateManyInputSchema,BoolCellCreateManyInputSchema.array() ]),
+  skipDuplicates: z.boolean().optional(),
+}).strict() ;
+
 export const BoolCellDeleteArgsSchema: z.ZodType<Prisma.BoolCellDeleteArgs> = z.object({
   select: BoolCellSelectSchema.optional(),
   include: BoolCellIncludeSchema.optional(),
@@ -11697,6 +12168,11 @@ export const StringCellUpsertArgsSchema: z.ZodType<Prisma.StringCellUpsertArgs> 
 }).strict() ;
 
 export const StringCellCreateManyArgsSchema: z.ZodType<Prisma.StringCellCreateManyArgs> = z.object({
+  data: z.union([ StringCellCreateManyInputSchema,StringCellCreateManyInputSchema.array() ]),
+  skipDuplicates: z.boolean().optional(),
+}).strict() ;
+
+export const StringCellAndReturnCreateManyArgsSchema: z.ZodType<Prisma.StringCellAndReturnCreateManyArgs> = z.object({
   data: z.union([ StringCellCreateManyInputSchema,StringCellCreateManyInputSchema.array() ]),
   skipDuplicates: z.boolean().optional(),
 }).strict() ;
@@ -11764,6 +12240,11 @@ export const LayerCreateManyArgsSchema: z.ZodType<Prisma.LayerCreateManyArgs> = 
   skipDuplicates: z.boolean().optional(),
 }).strict() ;
 
+export const LayerAndReturnCreateManyArgsSchema: z.ZodType<Prisma.LayerAndReturnCreateManyArgs> = z.object({
+  data: z.union([ LayerCreateManyInputSchema,LayerCreateManyInputSchema.array() ]),
+  skipDuplicates: z.boolean().optional(),
+}).strict() ;
+
 export const LayerDeleteArgsSchema: z.ZodType<Prisma.LayerDeleteArgs> = z.object({
   select: LayerSelectSchema.optional(),
   include: LayerIncludeSchema.optional(),
@@ -11801,6 +12282,11 @@ export const PointLayerUpsertArgsSchema: z.ZodType<Prisma.PointLayerUpsertArgs> 
 }).strict() ;
 
 export const PointLayerCreateManyArgsSchema: z.ZodType<Prisma.PointLayerCreateManyArgs> = z.object({
+  data: z.union([ PointLayerCreateManyInputSchema,PointLayerCreateManyInputSchema.array() ]),
+  skipDuplicates: z.boolean().optional(),
+}).strict() ;
+
+export const PointLayerAndReturnCreateManyArgsSchema: z.ZodType<Prisma.PointLayerAndReturnCreateManyArgs> = z.object({
   data: z.union([ PointLayerCreateManyInputSchema,PointLayerCreateManyInputSchema.array() ]),
   skipDuplicates: z.boolean().optional(),
 }).strict() ;

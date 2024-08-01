@@ -152,6 +152,7 @@ model Step {
 
 model DataTrack {
     id             String   @id @default(uuid())
+    tempId         String?  @unique
     startStepIndex Int
     endStepIndex   Int
     formId         String?

@@ -91,8 +91,6 @@ export function Steps() {
 
       if (activeDataTrackIndex < 0 || overDataTrackIndex < 0) return;
 
-      console.log(111111, activeDataTrackIndex, overDataTrackIndex);
-
       // const newStepList = arrayMove(
       //   formWithSteps.dataTracks,
       //   activeStepIndex,

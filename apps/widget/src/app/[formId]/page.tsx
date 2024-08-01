@@ -30,7 +30,6 @@ export default async function Page({ params }: { params: { formId: string } }) {
 
     if (session && session.publishedFormId === formWithSteps.id) {
       const responses = await getResponses(session.id);
-      console.log(11111, responses);
 
       formValues.push(...responses);
     }

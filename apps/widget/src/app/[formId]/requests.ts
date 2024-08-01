@@ -15,8 +15,13 @@ export async function getFormWithSteps(formId: string) {
         createdAt: "desc",
       },
       take: 1,
+      include: {
+        dataTracks: true,
+      },
     })
   )[0];
+
+  console.log(999999, form);
 
   if (!form) {
     return null;

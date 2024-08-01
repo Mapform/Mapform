@@ -19,6 +19,15 @@ export const publishForm = authAction
         isRoot: true,
       },
       include: {
+        dataTracks: {
+          include: {
+            layers: {
+              include: {
+                pointLayer: true,
+              },
+            },
+          },
+        },
         _count: {
           select: { formVersions: true },
         },
@@ -34,46 +43,92 @@ export const publishForm = authAction
     });
 
     /**
-     * TODO: Since step.createWithLocation is custom, Prisma transactions don't
-     * work here. Instead, I should manually handle the case where one of the
-     * steps fails to create.
-     *
      * Note: We create with empty stepOrder since we need to create brand new steps and log those IDs later on.
      */
-    const newPublishedForm = await prisma.form.create({
-      data: {
-        name: rootForm.name,
-        slug: rootForm.slug,
-        stepOrder: [],
-        workspaceId: rootForm.workspaceId,
-        isRoot: false,
-        rootFormId: rootForm.id,
-        version: rootForm._count.formVersions + 1,
-      },
-    });
-
-    // TODO: Improve this. This query is very slow and inefficient.
-    for (const step of steps) {
-      // eslint-disable-next-line no-await-in-loop -- We want to execute sequentially
-      await prisma.step.createWithLocation({
-        formId: newPublishedForm.id,
-        zoom: step.zoom,
-        pitch: step.pitch,
-        bearing: step.bearing,
-        latitude: step.latitude,
-        longitude: step.longitude,
-        title: step.title,
-        description: step.description || undefined,
+    await prisma.$transaction(async (tx) => {
+      const newPublishedForm = await prisma.form.create({
+        data: {
+          name: rootForm.name,
+          slug: rootForm.slug,
+          stepOrder: [],
+          workspaceId: rootForm.workspaceId,
+          isRoot: false,
+          rootFormId: rootForm.id,
+          version: rootForm._count.formVersions + 1,
+        },
       });
-    }
 
-    await prisma.form.update({
-      where: {
-        id: rootForm.id,
-      },
-      data: {
-        isDirty: false,
-      },
+      /**
+       * We duplidate the datatrack, layers, and sub layer types for the new form.
+       * We do NOT duplicate the data itself (dataset).
+       */
+      const newDataTracks = await prisma.dataTrack.createManyAndReturn({
+        data: rootForm.dataTracks.map((dataTrack) => ({
+          formId: newPublishedForm.id,
+          startStepIndex: dataTrack.startStepIndex,
+          endStepIndex: dataTrack.endStepIndex,
+          tempId: dataTrack.id,
+        })),
+      });
+
+      await Promise.all(
+        rootForm.dataTracks.flatMap((dataTrack) =>
+          dataTrack.layers.map((layer) => {
+            const newDataTrack = newDataTracks.find(
+              (ndt) => ndt.tempId === dataTrack.id
+            );
+
+            if (!newDataTrack) {
+              throw new Error("Data track not found");
+            }
+
+            if (!layer.pointLayer) {
+              throw new Error("Point layer not found");
+            }
+
+            return prisma.layer.create({
+              data: {
+                type: layer.type,
+                name: layer.name,
+                dataTrackId: newDataTrack.id,
+                datasetId: layer.datasetId,
+                pointLayer: {
+                  create: {
+                    pointColumnId: layer.pointLayer.pointColumnId,
+                  },
+                },
+              },
+            });
+          })
+        )
+      );
+
+      // TODO: Improve this. This query is very slow and inefficient.Note that
+      // createWithLocation creates a stepOrder on the form. Steps must be created
+      // sequentially and NOT in parallel, otherwise the step order will be
+      // incorrect.
+      for (const step of steps) {
+        // eslint-disable-next-line no-await-in-loop -- We want to execute sequentially
+        await prisma.step.createWithLocation({
+          formId: newPublishedForm.id,
+          zoom: step.zoom,
+          pitch: step.pitch,
+          bearing: step.bearing,
+          latitude: step.latitude,
+          longitude: step.longitude,
+          title: step.title,
+          description: step.description || undefined,
+        });
+      }
+
+      await prisma.form.update({
+        where: {
+          id: rootForm.id,
+        },
+        data: {
+          isDirty: false,
+        },
+      });
     });
 
     revalidatePath("/");
