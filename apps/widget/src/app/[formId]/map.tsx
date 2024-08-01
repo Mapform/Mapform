@@ -56,7 +56,8 @@ export function Map({ formWithSteps, formValues, sessionId }: MapProps) {
   const [bounds, setBounds] = useState<LngLatBounds | undefined>();
 
   const { data } = useQuery({
-    placeholderData: (prevData) => prevData ?? { data: { points: [] } },
+    placeholderData: (prevData) =>
+      dataTrackForActiveStep && prevData ? prevData : { data: { points: [] } },
     queryKey: ["pointData", dataTrackForActiveStep?.id, bounds],
     queryFn: () =>
       getLayerData({
