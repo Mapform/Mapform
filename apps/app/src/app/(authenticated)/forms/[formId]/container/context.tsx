@@ -1,7 +1,12 @@
 import { type StepWithLocation } from "@mapform/db/extentsions/steps";
 import { useDebounce } from "@mapform/lib/use-debounce";
-import type { ViewState, MapRef } from "@mapform/mapform";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import type {
+  ViewState,
+  MapRef,
+  ViewStateChangeEvent,
+  LngLatBounds,
+} from "@mapform/mapform";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import {
   type Dispatch,
@@ -13,19 +18,28 @@ import {
   useRef,
 } from "react";
 import { useCreateQueryString } from "~/lib/create-query-string";
-import { type FormWithSteps } from "~/server/actions/forms/get-form-with-steps";
-import { updateStep } from "~/server/actions/steps/update";
+import { type FormWithSteps } from "~/data/forms/get-form-with-steps";
+import { type Points, getLayerData } from "~/data/datatracks/get-layer-data";
+import { updateStep } from "~/data/steps/update";
 
 export interface ContainerContextProps {
   map: React.RefObject<MapRef>;
   dragSteps: string[];
-  formWithSteps: FormWithSteps;
+  formWithSteps: NonNullable<FormWithSteps["data"]>;
   currentStep: StepWithLocation | undefined;
   viewState: ViewState;
   setViewState: Dispatch<SetStateAction<ViewState>>;
   setDragSteps: Dispatch<SetStateAction<string[]>>;
   setCurrentStep: (stepId: string) => void;
   debouncedUpdateStep: typeof updateStep;
+  currentDataTrack:
+    | NonNullable<FormWithSteps["data"]>["dataTracks"][number]
+    | undefined;
+  setCurrentDataTrack: (dataTrackId?: string) => void;
+  onMoveEnd?: ((e: ViewStateChangeEvent) => void) | undefined;
+  points: Points;
+  bounds: LngLatBounds | undefined;
+  setBounds: Dispatch<SetStateAction<LngLatBounds | undefined>>;
 }
 
 export const ContainerContext = createContext<ContainerContextProps>(
@@ -52,7 +66,7 @@ export function ContainerProvider({
   formWithSteps,
   children,
 }: {
-  formWithSteps: FormWithSteps;
+  formWithSteps: NonNullable<FormWithSteps["data"]>;
   children: React.ReactNode;
 }) {
   const router = useRouter();
@@ -61,19 +75,43 @@ export function ContainerProvider({
   const searchParams = useSearchParams();
   const createQueryString = useCreateQueryString();
   const s = searchParams.get("s");
+  const d = searchParams.get("d");
+
+  const currentDataTrack = formWithSteps.dataTracks.find(
+    (track) => track.id === d
+  );
+
+  const currentStepIndex = formWithSteps.steps.findIndex(
+    (step) => step.id === s
+  );
+
+  const dataTrackForActiveStep = formWithSteps.dataTracks.find((track) => {
+    return (
+      currentStepIndex >= track.startStepIndex &&
+      currentStepIndex < track.endStepIndex
+    );
+  });
+
   const map = useRef<MapRef>(null);
+  const initialBounds = map.current?.getBounds();
+  const [bounds, setBounds] = useState<LngLatBounds | undefined>(initialBounds);
 
   const { mutateAsync: updateStepMutation } = useMutation({
     mutationFn: updateStep,
-    onMutate: async ({ stepId, data: d }) => {
-      const queryKey = ["forms", d.formId];
+    onMutate: async ({ stepId, data }) => {
+      const queryKey = ["forms", data.formId];
       await queryClient.cancelQueries({ queryKey });
 
-      const prevForm: FormWithSteps = queryClient.getQueryData(queryKey)!;
+      const prevForm: FormWithSteps["data"] | undefined =
+        queryClient.getQueryData(queryKey);
+
+      // This should never happen
+      if (!prevForm) return;
+
       const newForm = {
         ...prevForm,
         steps: prevForm.steps.map((step) =>
-          step.id === stepId ? { ...step, ...d } : step
+          step.id === stepId ? { ...step, ...data } : step
         ),
       };
 
@@ -82,7 +120,34 @@ export function ContainerProvider({
       return { prevForm, newForm };
     },
   });
+
+  const { data } = useQuery({
+    placeholderData: (prevData) =>
+      dataTrackForActiveStep && prevData ? prevData : { data: { points: [] } },
+    queryKey: ["pointData", dataTrackForActiveStep?.id, bounds],
+    queryFn: () =>
+      getLayerData({
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Handled via enabled
+        dataTrackId: dataTrackForActiveStep!.id,
+        bounds: {
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Handled via enabled
+          minLng: bounds!._sw.lng,
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Handled via enabled
+          minLat: bounds!._sw.lat,
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Handled via enabled
+          maxLng: bounds!._ne.lng,
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Handled via enabled
+          maxLat: bounds!._ne.lat,
+        },
+      }),
+    enabled: Boolean(bounds) && Boolean(dataTrackForActiveStep),
+    staleTime: Infinity,
+  });
+
+  const points = data?.data?.points.filter(notEmpty) || [];
   const debouncedUpdateStep = useDebounce(updateStepMutation, 500);
+
+  console.log("points", points, dataTrackForActiveStep?.id, bounds);
 
   useEffect(() => {
     if (formWithSteps.steps[0] && !s) {
@@ -94,7 +159,7 @@ export function ContainerProvider({
 
   const setCurrentStep = (stepId: string) => {
     router.replace(`${pathname}?${createQueryString("s", stepId)}`);
-    const step = formWithSteps.steps.find((s) => s.id === stepId);
+    const step = formWithSteps.steps.find((s2) => s2.id === stepId);
 
     if (!step) return;
 
@@ -121,6 +186,25 @@ export function ContainerProvider({
     padding: initialViewState.padding,
   });
 
+  const setCurrentDataTrack = (dataTrackId?: string) => {
+    if (dataTrackId) {
+      router.replace(`${pathname}?${createQueryString("d", dataTrackId)}`);
+
+      return;
+    }
+
+    const nextSearchParams = new URLSearchParams(searchParams.toString());
+    nextSearchParams.delete("d");
+    router.replace(`${pathname}?${nextSearchParams.toString()}`);
+  };
+
+  const onMoveEnd = () => {
+    const newBounds = map.current?.getBounds();
+    if (!newBounds) return;
+
+    setBounds(newBounds);
+  };
+
   return (
     <ContainerContext.Provider
       value={{
@@ -133,9 +217,19 @@ export function ContainerProvider({
         setViewState,
         formWithSteps,
         debouncedUpdateStep,
+        currentDataTrack,
+        setCurrentDataTrack,
+        onMoveEnd,
+        points,
+        bounds,
+        setBounds,
       }}
     >
       {children}
     </ContainerContext.Provider>
   );
+}
+
+function notEmpty<TValue>(value: TValue | null | undefined): value is TValue {
+  return value !== null && value !== undefined;
 }

@@ -1,23 +1,19 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import type { MapRef, ViewState } from "@mapform/mapform";
+import type { LngLatBounds, MapRef, ViewState } from "@mapform/mapform";
 import { MapForm } from "@mapform/mapform";
+import { useQuery } from "@tanstack/react-query";
 import { useAction } from "next-safe-action/hooks";
-import { submitFormStep } from "~/server/actions/submit-form-step";
-import { createFormSubmission } from "~/server/actions/create-form-submission";
+import { submitFormStep } from "~/data/submit-form-step";
+import { getLayerData } from "~/data/datatracks/get-layer-data";
+import { createFormSubmission } from "~/data/create-form-submission";
 import { env } from "../env.mjs";
-import type { FormWithSteps } from "./requests";
+import type { FormWithSteps, Responses } from "./requests";
 
 interface MapProps {
   formWithSteps: NonNullable<FormWithSteps>;
-  formValues: {
-    id: string;
-    blockNoteId: string;
-    // TODO: Use the correct type
-    value: any;
-    type: "textInput" | "pin";
-  }[];
+  formValues: NonNullable<Responses>;
   sessionId: string | null;
 }
 
@@ -45,6 +41,44 @@ export function Map({ formWithSteps, formValues, sessionId }: MapProps) {
     },
   };
   const [viewState, setViewState] = useState<ViewState>(initialViewState);
+
+  const currentStepIndex = formWithSteps.steps.findIndex(
+    (step) => step.id === currentStep?.id
+  );
+
+  const dataTrackForActiveStep = formWithSteps.dataTracks.find((track) => {
+    return (
+      currentStepIndex >= track.startStepIndex &&
+      currentStepIndex < track.endStepIndex
+    );
+  });
+
+  const [bounds, setBounds] = useState<LngLatBounds | undefined>();
+
+  const { data } = useQuery({
+    placeholderData: (prevData) =>
+      dataTrackForActiveStep && prevData ? prevData : { data: { points: [] } },
+    queryKey: ["pointData", dataTrackForActiveStep?.id, bounds],
+    queryFn: () =>
+      getLayerData({
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Handled via enabled
+        dataTrackId: dataTrackForActiveStep!.id,
+        bounds: {
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Handled via enabled
+          minLng: bounds!._sw.lng,
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Handled via enabled
+          minLat: bounds!._sw.lat,
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Handled via enabled
+          maxLng: bounds!._ne.lng,
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Handled via enabled
+          maxLat: bounds!._ne.lat,
+        },
+      }),
+    enabled: Boolean(bounds) && Boolean(dataTrackForActiveStep),
+    staleTime: Infinity,
+  });
+
+  const points = data?.data?.points.filter(notEmpty) || [];
 
   const setCurrentStepAndFly = (step: Step) => {
     setCurrentStep(step);
@@ -76,7 +110,10 @@ export function Map({ formWithSteps, formValues, sessionId }: MapProps) {
 
   const stepValues = (currentStep?.description?.content ?? []).reduce(
     (acc: Record<string, string>, block) => {
-      const value = formValues.find((v) => v.blockNoteId === block.id)?.value;
+      const cellValue = formValues.find(
+        (v) => v.column.blockNoteId === block.id
+      );
+      const value = cellValue?.stringCell?.value ?? cellValue?.pointCell?.value;
 
       if (value) {
         acc[block.id] = value;
@@ -96,6 +133,10 @@ export function Map({ formWithSteps, formValues, sessionId }: MapProps) {
       currentStep={currentStep}
       defaultFormValues={stepValues}
       mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
+      onLoad={() => {
+        const b = map.current?.getBounds();
+        setBounds(b);
+      }}
       onPrev={() => {
         const prevStepIndex =
           formWithSteps.steps.findIndex((step) => step.id === currentStep.id) -
@@ -122,9 +163,14 @@ export function Map({ formWithSteps, formValues, sessionId }: MapProps) {
           setCurrentStepAndFly(nextStep);
         }
       }}
+      points={points}
       ref={map}
       setViewState={setViewState}
       viewState={viewState}
     />
   );
+}
+
+function notEmpty<TValue>(value: TValue | null | undefined): value is TValue {
+  return value !== null && value !== undefined;
 }

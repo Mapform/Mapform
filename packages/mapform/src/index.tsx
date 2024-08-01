@@ -8,6 +8,7 @@ import Map, {
   MapProvider,
   useMap,
   NavigationControl,
+  type LngLatBounds,
 } from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import {
@@ -28,6 +29,7 @@ import {
 } from "@mapform/blocknote";
 import { useMeasure } from "@mapform/lib/hooks/use-measure";
 import { Blocknote } from "./block-note";
+import { Data } from "./data";
 
 type ExtendedStep = Step & { latitude: number; longitude: number };
 
@@ -45,6 +47,8 @@ interface MapFormProps {
   onDescriptionChange?: (content: { content: CustomBlock[] }) => void;
   onStepSubmit?: (data: Record<string, string>) => void;
   onImageUpload?: (file: File) => Promise<string | null>;
+  onMoveEnd?: ((e: ViewStateChangeEvent) => void) | undefined;
+  points?: { id: number; latitude: number; longitude: number }[];
 }
 
 export const MapForm = forwardRef<MapRef, MapFormProps>(
@@ -62,6 +66,8 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
       onStepSubmit,
       defaultFormValues,
       onImageUpload,
+      onMoveEnd,
+      points = [],
     },
     ref
   ) => {
@@ -149,6 +155,10 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
                   ...event.viewState,
                 }));
               }}
+              onMoveEnd={onMoveEnd}
+              projection={{
+                name: "globe",
+              }}
               ref={ref}
               style={{ flex: 1 }}
             >
@@ -190,6 +200,9 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
                   );
                 })
               )}
+
+              {/* Render active data points */}
+              <Data points={points} />
             </Map>
           </CustomBlockContext.Provider>
         </form>
@@ -201,4 +214,4 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
 MapForm.displayName = "MapForm";
 
 export { MapProvider, useMap };
-export type { ViewState, ViewStateChangeEvent, MapRef };
+export type { ViewState, ViewStateChangeEvent, MapRef, LngLatBounds };

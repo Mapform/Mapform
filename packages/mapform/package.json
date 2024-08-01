@@ -19,22 +19,24 @@
     "@mapform/lib": "workspace:*",
     "@mapform/ui": "workspace:*",
     "@types/mapbox-gl": "^3.1.0",
+    "geojson": "^0.5.0",
     "lucide-react": "^0.354.0",
     "mapbox-gl": "^3.2.0",
     "next": "14.1.3",
     "react-map-gl": "^7.1.7",
-    "zod": "^3.23.8"
+    "zod": "3.23.8"
   },
   "devDependencies": {
     "@mapform/eslint-config": "workspace:*",
     "@mapform/typescript-config": "workspace:*",
     "@types/eslint": "^8.56.5",
+    "@types/geojson": "^7946.0.14",
     "@types/node": "^20.11.24",
     "@types/react": "^18.2.61",
     "@types/react-dom": "^18.2.19",
     "eslint": "^8.57.0",
     "react": "^18.2.0",
     "tailwindcss": "^3.3.0",
-    "typescript": "^5.3.3"
+    "typescript": "^5.5.2"
   }
 }

@@ -22,11 +22,12 @@ import {
 } from "@mapform/ui/components/form";
 import { Input } from "@mapform/ui/components/input";
 import { toast } from "@mapform/ui/components/toaster";
-import { createWorkspace } from "~/server/actions/workspaces/create";
+import { useAction } from "next-safe-action/hooks";
+import { createWorkspace } from "~/data/workspaces/create";
 import {
   createWorkspaceSchema,
   type CreateWorkspaceSchema,
-} from "~/server/actions/workspaces/create/schema";
+} from "~/data/workspaces/create/schema";
 
 export function CreateDialog({
   organizationSlug,
@@ -43,25 +44,27 @@ export function CreateDialog({
     mode: "onChange",
     resolver: zodResolver(createWorkspaceSchema),
   });
+  const { execute } = useAction(createWorkspace, {
+    onError: ({ error }) => {
+      if (error.serverError) {
+        toast(error.serverError);
+        return;
+      }
 
-  const onSubmit = async (values: CreateWorkspaceSchema) => {
+      if (error.validationErrors) {
+        toast("There was an error creating the workspace");
+      }
+    },
+    onSuccess: () => {
+      form.reset();
+      toast("Your workspace has been created.");
+    },
+  });
+
+  const onSubmit = (values: CreateWorkspaceSchema) => {
     if (disabled) return;
 
-    const { serverError, validationErrors } = await createWorkspace(values);
-
-    if (serverError) {
-      toast(serverError);
-      return;
-    }
-
-    if (validationErrors) {
-      toast("There was an error creating the workspace");
-      return;
-    }
-
-    form.reset();
-
-    toast("Your workspace has been created.");
+    execute(values);
   };
 
   return (
@@ -76,9 +79,11 @@ export function CreateDialog({
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <DialogHeader>
               <DialogTitle>Create Workspace</DialogTitle>
-              <DialogDescription>Create a new team workspace</DialogDescription>
+              <DialogDescription>
+                Workspaces are where your teams organize forms and datasets.
+              </DialogDescription>
             </DialogHeader>
-            <div className="flex items-center space-x-2">
+            <div className="space-y-4 py-6">
               <FormField
                 control={form.control}
                 name="name"
@@ -90,6 +95,7 @@ export function CreateDialog({
                         disabled={field.disabled}
                         name={field.name}
                         onChange={field.onChange}
+                        placeholder="My Workspace"
                         ref={field.ref}
                         value={field.value}
                       />
@@ -99,7 +105,7 @@ export function CreateDialog({
                 )}
               />
             </div>
-            <DialogFooter className="sm:justify-start">
+            <DialogFooter>
               <Button
                 disabled={
                   form.formState.isSubmitting || !form.formState.isValid

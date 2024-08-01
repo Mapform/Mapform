@@ -8,9 +8,11 @@ import { useContainerContext } from "../context";
 import { LocationForm } from "./location-form";
 import { DeleteButton } from "./delete-button";
 import { GeneralForm } from "./general-form";
+import { DataSidebar } from "./data-sidebar";
 
 export function Sidebar() {
-  const { currentStep, setViewState, viewState } = useContainerContext();
+  const { currentStep, setViewState, viewState, currentDataTrack } =
+    useContainerContext();
 
   if (!currentStep) {
     return <div className="bg-white w-[400px] border-l" />;
@@ -18,9 +20,10 @@ export function Sidebar() {
 
   return (
     <div
-      className="flex flex-col overflow-y-auto bg-white w-[400px] border-l"
+      className="relative flex flex-col overflow-y-auto bg-white w-[400px] border-l"
       key={currentStep.id}
     >
+      {currentDataTrack ? <DataSidebar /> : null}
       <h2 className="text-base font-semibold leading-6 text-gray-900 p-4 mb-0 border-b">
         {currentStep.title || "Untitled"}
       </h2>

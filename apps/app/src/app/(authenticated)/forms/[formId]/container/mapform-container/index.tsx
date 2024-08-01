@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import { MapForm } from "@mapform/mapform";
 import { toast } from "@mapform/ui/components/toaster";
 import type { CustomBlock } from "@mapform/blocknote";
-import { uploadImage } from "~/server/actions/images";
+import { uploadImage } from "~/data/images";
 import { env } from "~/env.mjs";
 import { useContainerContext } from "../context";
 
@@ -20,6 +20,9 @@ function MapFormContainer({
     viewState,
     map,
     debouncedUpdateStep,
+    onMoveEnd,
+    points,
+    setBounds,
   } = useContainerContext();
 
   return (
@@ -56,8 +59,11 @@ function MapFormContainer({
             return success?.url || null;
           }}
           onLoad={() => {
+            const bounds = map.current?.getBounds();
+            setBounds(bounds);
             setMapformLoaded(true);
           }}
+          onMoveEnd={onMoveEnd}
           onTitleChange={async (content: string) => {
             if (!currentStep) {
               return;
@@ -71,6 +77,7 @@ function MapFormContainer({
               },
             });
           }}
+          points={points}
           ref={map}
           setViewState={setViewState}
           viewState={viewState}

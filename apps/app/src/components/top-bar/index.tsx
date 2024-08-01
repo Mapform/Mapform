@@ -28,6 +28,7 @@ export function TopBar({ children }: { children?: React.ReactNode }) {
                         <MapIcon />
                       </div>
                     </Link>
+                    {/* <OrganizationSwitcher /> */}
                   </div>
                 </div>
 

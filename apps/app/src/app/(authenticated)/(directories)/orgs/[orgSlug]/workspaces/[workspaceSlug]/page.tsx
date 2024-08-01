@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { format } from "date-fns";
 import { prisma } from "@mapform/db";
+import { CreateDialog } from "./dialog";
 import WorkspaceLayout from "./workspace-layout";
 
-export default async function Organization({
+export default async function WorkspaceForms({
   params,
 }: {
   params: { orgSlug: string; workspaceSlug: string };
@@ -18,7 +19,7 @@ export default async function Organization({
     include: {
       forms: {
         where: {
-          isDraft: true,
+          isRoot: true,
         },
         include: {
           _count: {
@@ -35,6 +36,7 @@ export default async function Organization({
 
   return (
     <WorkspaceLayout
+      action={<CreateDialog workspaceId={workspace.id} />}
       name={workspace.name}
       orgSlug={params.orgSlug}
       workspaceId={workspace.id}

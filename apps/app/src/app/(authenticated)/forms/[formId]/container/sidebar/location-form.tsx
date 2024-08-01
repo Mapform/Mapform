@@ -19,8 +19,8 @@ import { useEffect, type Dispatch, type SetStateAction } from "react";
 import {
   type UpdateStepLocationSchema,
   updateStepLocationSchema,
-} from "~/server/actions/steps/update-location/schema";
-import { updateStepWithLocation } from "~/server/actions/steps/update-location";
+} from "~/data/steps/update-location/schema";
+import { updateStepWithLocation } from "~/data/steps/update-location";
 
 interface LocationFormProps {
   stepId: string;

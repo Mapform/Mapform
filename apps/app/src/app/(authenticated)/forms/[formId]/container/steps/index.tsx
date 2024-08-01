@@ -14,9 +14,13 @@ import {
 import { cn } from "@mapform/lib/classnames";
 import { Button } from "@mapform/ui/components/button";
 import { Spinner } from "@mapform/ui/components/spinner";
+import { PlusIcon } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
-import { createStep } from "~/server/actions/steps/create";
-import { updateForm } from "~/server/actions/forms/update";
+import { pluralize } from "@mapform/lib/pluralize";
+import { useAction } from "next-safe-action/hooks";
+import { createStep } from "~/data/steps/create";
+import { updateForm } from "~/data/forms/update";
+import { createDataTrack } from "~/data/datatracks/create";
 import { Draggable } from "../draggable";
 import { useContainerContext } from "../context";
 
@@ -28,13 +32,17 @@ export function Steps() {
     formWithSteps,
     viewState,
     currentStep,
+    currentDataTrack,
+    setCurrentDataTrack,
   } = useContainerContext();
+  // TODO: Get rid of react-query?
   const { mutateAsync: updateFormMutation } = useMutation({
     mutationFn: updateForm,
   });
   const { mutateAsync: createStepMutation, status } = useMutation({
     mutationFn: createStep,
   });
+  const { execute, status: createTrackStatus } = useAction(createDataTrack);
 
   /**
    * Needed to support click events on DND items
@@ -70,13 +78,41 @@ export function Steps() {
     }
   };
 
+  const reorderDataTracks = async (e: DragEndEvent) => {
+    if (!e.over) return;
+
+    if (e.active.id !== e.over.id) {
+      const activeDataTrackIndex = formWithSteps.dataTracks.findIndex(
+        (track) => track.id === e.active.id
+      );
+      const overDataTrackIndex = formWithSteps.dataTracks.findIndex(
+        (track) => track.id === e.over?.id
+      );
+
+      if (activeDataTrackIndex < 0 || overDataTrackIndex < 0) return;
+
+      // const newStepList = arrayMove(
+      //   formWithSteps.dataTracks,
+      //   activeStepIndex,
+      //   overStepIndex
+      // );
+
+      // await updateFormMutation({
+      //   formId: formWithSteps.id,
+      //   data: {
+      //     dataTracks: newStepList,
+      //   },
+      // });
+    }
+  };
+
   const onAdd = async () => {
     const newStep = await createStepMutation({
       formId: formWithSteps.id,
       location: viewState,
     });
 
-    const newStepId = newStep.data?.id;
+    const newStepId = newStep?.data?.id;
 
     if (!newStepId || !newStep.data) return;
 
@@ -84,39 +120,80 @@ export function Steps() {
     setCurrentStep(newStepId);
   };
 
+  const lastDataTrackStepIndex =
+    formWithSteps.dataTracks
+      .map((dataTrack) => dataTrack.endStepIndex)
+      .sort((a, b) => a - b)
+      .pop() || 0;
+
+  const onAddDataTrack = () => {
+    execute({
+      data: {
+        formId: formWithSteps.id,
+        startStepIndex: lastDataTrackStepIndex,
+        endStepIndex: lastDataTrackStepIndex + 1,
+      },
+    });
+  };
+
+  const trackSlots = new Array(
+    Math.max(dragSteps.length, lastDataTrackStepIndex, 1)
+  ).fill(null);
+
   return (
-    <div className="border-t bg-white">
+    <div className="border-t bg-white overflow-x-auto">
+      {/* STEP INDICATORS */}
+      <div className="flex">
+        <div className="w-36 border-r" />
+        <div className="px-4 pt-2">
+          <div
+            className="grid gap-2"
+            style={{
+              gridTemplateColumns: `repeat(${trackSlots.length}, 150px)`,
+            }}
+          >
+            {trackSlots.map((_, index) => (
+              <div className="text-xs text-gray-500" key={index}>
+                {index + 1}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* STEPS */}
       <DndContext
         collisionDetection={closestCenter}
         onDragEnd={reorderSteps}
         sensors={sensors}
       >
-        <div className="flex gap-16 overflow-x-auto p-4">
-          <div className="flex flex-col gap-y-2">
-            <div className="text-sm font-semibold">STEPS</div>
-            <Button
-              disabled={status === "pending"}
-              onClick={onAdd}
-              size="icon"
-              variant="secondary"
-            >
-              {status === "pending" ? <Spinner variant="dark" /> : "+"}
-            </Button>
+        <div className="flex">
+          <div className="flex justify-between gap-y-2 w-36 px-4 pb-4 pt-2 border-r">
+            <div className="text-xs font-semibold leading-6 text-gray-400 mb-0">
+              Steps
+            </div>
+            <span>
+              <Button
+                className="-mr-1.5"
+                disabled={status === "pending"}
+                onClick={onAdd}
+                size="icon"
+                variant="ghost"
+              >
+                {status === "pending" ? (
+                  <Spinner variant="dark" />
+                ) : (
+                  <PlusIcon className="h-4 w-4 text-gray-400" />
+                )}
+              </Button>
+            </span>
           </div>
           <div
-            className="grid gap-2"
+            className="grid gap-2 px-4 pb-4 pt-2"
             style={{
-              gridTemplateColumns: `repeat(${dragSteps.length}, 150px)`,
+              gridTemplateColumns: `repeat(${trackSlots.length}, 150px)`,
             }}
           >
-            {/* STEP NUMBERS */}
-            {dragSteps.map((stepId) => (
-              <div className="text-sm text-gray-500" key={stepId}>
-                {dragSteps.indexOf(stepId) + 1}
-              </div>
-            ))}
-
-            {/* STEPS */}
             <SortableContext
               items={dragSteps}
               strategy={horizontalListSortingStrategy}
@@ -143,6 +220,82 @@ export function Steps() {
                       <div className="flex-1 h-full flex justify-center items-center bg-orange-300">
                         <span className="line-clamp-2 break-words px-1">
                           {step.title || "Untitled"}
+                        </span>
+                      </div>
+                    </button>
+                  </Draggable>
+                );
+              })}
+            </SortableContext>
+          </div>
+        </div>
+      </DndContext>
+
+      {/* DATA TRACKS */}
+      <DndContext
+        collisionDetection={closestCenter}
+        onDragEnd={reorderDataTracks}
+        sensors={sensors}
+      >
+        <div className="flex">
+          <div className="flex justify-between gap-y-2 w-36 px-4 pb-4 border-r">
+            <div className="text-xs font-semibold leading-6 text-gray-400 mb-0">
+              Data
+            </div>
+            <span>
+              <Button
+                className="-mr-1.5"
+                disabled={status === "pending"}
+                onClick={onAddDataTrack}
+                size="icon"
+                variant="ghost"
+              >
+                {status === "pending" ? (
+                  <Spinner variant="dark" />
+                ) : (
+                  <PlusIcon className="h-4 w-4 text-gray-400" />
+                )}
+              </Button>
+            </span>
+          </div>
+          <div
+            className="grid gap-2 px-4 pb-4"
+            style={{
+              gridTemplateColumns: `repeat(${trackSlots.length}, 150px)`,
+            }}
+          >
+            <SortableContext
+              items={formWithSteps.dataTracks}
+              strategy={horizontalListSortingStrategy}
+            >
+              {formWithSteps.dataTracks.map((dataTrack) => {
+                return (
+                  <Draggable id={dataTrack.id} key={dataTrack.id}>
+                    <button
+                      className={cn(
+                        "flex relative px-3 rounded-md text-md h-16 w-full bg-blue-200",
+                        {
+                          "ring-4 ring-blue-500":
+                            currentDataTrack?.id === dataTrack.id,
+                        }
+                      )}
+                      onClick={() => {
+                        if (currentDataTrack?.id === dataTrack.id) {
+                          setCurrentDataTrack();
+                          return;
+                        }
+                        setCurrentDataTrack(dataTrack.id);
+                      }}
+                      type="button"
+                    >
+                      <div className="flex-1 h-full flex justify-center items-center bg-blue-300">
+                        <span className="line-clamp-2 break-words px-1">
+                          {dataTrack.layers.length}{" "}
+                          {pluralize(
+                            "layer",
+                            "layers",
+                            dataTrack.layers.length
+                          )}
                         </span>
                       </div>
                     </button>

@@ -9,9 +9,6 @@ generator client {
 generator zod {
     provider                  = "zod-prisma-types"
     output                    = "./zod"
-    // addIncludeType         = false
-    // addSelectType          = false
-    // addInputTypeValidation = false
     createRelationValuesTypes = true
 }
 
@@ -91,6 +88,7 @@ model Workspace {
     organizationId String
     organization   Organization          @relation(fields: [organizationId], references: [id], onDelete: Cascade)
     forms          Form[]
+    datasets       Dataset[]
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
@@ -102,18 +100,23 @@ model Form {
     id             String           @id @default(uuid())
     name           String
     slug           String
-    isDraft        Boolean          @default(false)
+    isRoot         Boolean          @default(false)
     isDirty        Boolean          @default(false)
     isClosed       Boolean          @default(false)
+    // Array of step IDs
     stepOrder      String[]
     steps          Step[]           @relation(name: "Steps")
+    dataTracks     DataTrack[]      @relation(name: "DataTracks")
     workspaceId    String
     workspace      Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
     formSubmission FormSubmission[]
-    draftFormId    String?
-    draftForm      Form?            @relation("FormVersions", fields: [draftFormId], references: [id])
+    rootFormId     String?
+    rootForm       Form?            @relation("FormVersions", fields: [rootFormId], references: [id])
     formVersions   Form[]           @relation("FormVersions")
     version        Int?
+    // Each draft form has its own dataset, representing the form submissions
+    datasetId      String?          @unique
+    dataset        Dataset?         @relation(fields: [datasetId], references: [id])
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
@@ -141,56 +144,150 @@ model Step {
     location        Location        @relation(fields: [locationId], references: [id], onDelete: Cascade)
     contentViewType ContentViewType @default(PARTIAL)
 
-    inputResponses    InputResponse[]
-    locationResponses LocationResponse[]
+    datasetColumns Column[]
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+}
+
+model DataTrack {
+    id             String   @id @default(uuid())
+    startStepIndex Int
+    endStepIndex   Int
+    formId         String?
+    form           Form?    @relation(name: "DataTracks", fields: [formId], references: [id], onDelete: Cascade)
+    // Array of layer IDs
+    layerOrder     String[]
+    layers         Layer[]
 }
 
 model FormSubmission {
-    id                String             @id @default(uuid())
-    formId            String
-    form              Form               @relation(fields: [formId], references: [id], onDelete: Cascade)
-    inputResponses    InputResponse[]
-    locationResponses LocationResponse[]
+    id              String @id @default(uuid())
+    publishedFormId String
+    publishedForm   Form   @relation(fields: [publishedFormId], references: [id], onDelete: Cascade)
+
+    rowId String @unique
+    row   Row    @relation(fields: [rowId], references: [id])
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 }
 
-model InputResponse {
-    id               String @id @default(uuid())
-    blockNoteId      String
-    value            String
-    formSubmissionId String
-
-    formSubmission FormSubmission @relation(fields: [formSubmissionId], references: [id], onDelete: Cascade)
-    step           Step           @relation(fields: [stepId], references: [id], onDelete: Cascade)
-    stepId         String
-
-    @@unique([blockNoteId, formSubmissionId])
-}
-
-model LocationResponse {
-    id               String @id @default(uuid())
-    blockNoteId      String
-    locationId       Int    @unique
-    formSubmissionId String
-
-    location       Location       @relation(fields: [locationId], references: [id])
-    formSubmission FormSubmission @relation(fields: [formSubmissionId], references: [id], onDelete: Cascade)
-    step           Step           @relation(fields: [stepId], references: [id], onDelete: Cascade)
-    stepId         String
-
-    @@unique([blockNoteId, formSubmissionId])
-}
-
 model Location {
-    id               Int                                  @id @default(autoincrement())
-    geom             Unsupported("geometry(Point, 4326)")
-    step             Step?
-    locationResponse LocationResponse?
+    id   Int                                  @id @default(autoincrement())
+    geom Unsupported("geometry(Point, 4326)")
+    step Step?
 
     @@index([geom], name: "location_idx", type: Gist)
+}
+
+model Dataset {
+    id          String    @id @default(uuid())
+    name        String
+    columns     Column[]  @relation("DatasetColumns")
+    rows        Row[]     @relation("DatasetRows")
+    form        Form?
+    workspaceId String
+    workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+    layers      Layer[]
+}
+
+model Column {
+    id       String     @id @default(uuid())
+    name     String
+    dataType ColumnType
+
+    // Only for datasets belonging to a form
+    blockNoteId String? @unique
+
+    datasetId String
+    dataset   Dataset @relation("DatasetColumns", fields: [datasetId], references: [id])
+
+    // Step is only for datasets belonging to a form
+    step   Step?   @relation(fields: [stepId], references: [id], onDelete: Cascade)
+    stepId String?
+
+    cellValues  CellValue[]  @relation("ColumnCellValues")
+    pointLayers PointLayer[]
+
+    @@unique([datasetId, name])
+}
+
+model Row {
+    id        String  @id @default(uuid())
+    datasetId String
+    dataset   Dataset @relation("DatasetRows", fields: [datasetId], references: [id])
+
+    formSubmission FormSubmission?
+
+    cellValues CellValue[] @relation("RowCellValues")
+}
+
+model CellValue {
+    id       String @id @default(uuid())
+    rowId    String
+    columnId String
+    column   Column @relation("ColumnCellValues", fields: [columnId], references: [id])
+    row      Row    @relation("RowCellValues", fields: [rowId], references: [id])
+
+    boolCell   BoolCell?
+    stringCell StringCell?
+    pointCell  PointCell?
+
+    @@unique([rowId, columnId])
+}
+
+model BoolCell {
+    id          String    @id @default(uuid())
+    cellValueId String    @unique
+    value       Boolean
+    cellValue   CellValue @relation(fields: [cellValueId], references: [id])
+}
+
+model StringCell {
+    id          String    @id @default(uuid())
+    cellValueId String    @unique
+    value       String
+    cellValue   CellValue @relation(fields: [cellValueId], references: [id])
+}
+
+model PointCell {
+    id          String                               @id @default(uuid())
+    // This needs to be lowercase for Prisma executeRaw to work
+    cellvalueid String                               @unique
+    value       Unsupported("geometry(Point, 4326)")
+    cellValue   CellValue                            @relation(fields: [cellvalueid], references: [id])
+
+    @@index([value], name: "point_idx", type: Gist)
+}
+
+enum ColumnType {
+    STRING
+    BOOL
+    POINT
+}
+
+model Layer {
+    id          String      @id @default(uuid())
+    name        String?
+    type        LayerType
+    pointLayer  PointLayer?
+    dataTrackId String
+    dataTrack   DataTrack?  @relation(fields: [dataTrackId], references: [id], onDelete: Cascade)
+    datasetId   String
+    dataset     Dataset     @relation(fields: [datasetId], references: [id], onDelete: Cascade)
+}
+
+model PointLayer {
+    id      String @id @default(uuid())
+    layerId String @unique
+    layer   Layer  @relation(fields: [layerId], references: [id], onDelete: Cascade)
+
+    // Needed for identifying PointCells
+    pointColumnId String
+    pointColumn   Column @relation(fields: [pointColumnId], references: [id], onDelete: Cascade)
+}
+
+enum LayerType {
+    POINT
 }

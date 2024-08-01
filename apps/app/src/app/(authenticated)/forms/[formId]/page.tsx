@@ -4,7 +4,7 @@ import {
   HydrationBoundary,
   QueryClient,
 } from "@tanstack/react-query";
-import { getFormWithSteps } from "~/server/actions/forms/get-form-with-steps";
+import { getFormWithSteps } from "~/data/forms/get-form-with-steps";
 import { Container } from "./container";
 
 export default async function Workspace({
@@ -20,7 +20,7 @@ export default async function Workspace({
         await getFormWithSteps({
           formId: params.formId,
         })
-      ).data,
+      )?.data,
   });
 
   return (

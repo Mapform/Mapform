@@ -7,7 +7,7 @@ import { Clipboard } from "@mapform/ui/components/clipboard";
 import { Spinner } from "@mapform/ui/components/spinner";
 import { cn } from "@mapform/lib/classnames";
 import { TopBar } from "~/components/top-bar";
-import { publishForm } from "~/server/actions/forms/publish";
+import { publishForm } from "~/data/forms/publish";
 import { type Form } from "../requests";
 
 export function Nav({ form }: { form: Form }) {
