@@ -1,5 +1,6 @@
 "use server";
 
+import { v4 as uuidv4 } from "uuid";
 import { prisma } from "@mapform/db";
 import { revalidatePath } from "next/cache";
 import { authAction } from "~/lib/safe-action";
@@ -59,24 +60,29 @@ export const publishForm = authAction
         },
       });
 
+      const rootDataTracksWithIds = rootForm.dataTracks.map((dataTrack) => ({
+        ...dataTrack,
+        newId: uuidv4(),
+      }));
+
       /**
        * We duplidate the datatrack, layers, and sub layer types for the new form.
        * We do NOT duplicate the data itself (dataset).
        */
       const newDataTracks = await prisma.dataTrack.createManyAndReturn({
-        data: rootForm.dataTracks.map((dataTrack) => ({
+        data: rootDataTracksWithIds.map((dataTrack) => ({
+          id: dataTrack.newId,
           formId: newPublishedForm.id,
           startStepIndex: dataTrack.startStepIndex,
           endStepIndex: dataTrack.endStepIndex,
-          tempId: dataTrack.id,
         })),
       });
 
       await Promise.all(
-        rootForm.dataTracks.flatMap((dataTrack) =>
+        rootDataTracksWithIds.flatMap((dataTrack) =>
           dataTrack.layers.map((layer) => {
             const newDataTrack = newDataTracks.find(
-              (ndt) => ndt.tempId === dataTrack.id
+              (ndt) => ndt.id === dataTrack.newId
             );
 
             if (!newDataTrack) {
