@@ -44,6 +44,7 @@ export const publishForm = authAction
 
     /**
      * Note: We create with empty stepOrder since we need to create brand new steps and log those IDs later on.
+     * Note 2: Transactions currently don't work due to the createWithLocation extension.
      */
     await prisma.$transaction(async (tx) => {
       const newPublishedForm = await prisma.form.create({
