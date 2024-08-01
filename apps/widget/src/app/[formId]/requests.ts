@@ -21,8 +21,6 @@ export async function getFormWithSteps(formId: string) {
     })
   )[0];
 
-  console.log(999999, form);
-
   if (!form) {
     return null;
   }
