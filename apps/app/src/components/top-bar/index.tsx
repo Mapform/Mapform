@@ -5,6 +5,7 @@ import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { MenuIcon, XIcon, MapIcon } from "lucide-react";
 import { cn } from "@mapform/lib/classnames";
 import Link from "next/link";
+import { signOut } from "next-auth/react";
 
 export function TopBar({ children }: { children?: React.ReactNode }) {
   const userNavigation = [
@@ -12,7 +13,7 @@ export function TopBar({ children }: { children?: React.ReactNode }) {
     {
       name: "Sign out",
       action: () => {
-        console.log("Sign out");
+        signOut();
       },
     },
   ];
