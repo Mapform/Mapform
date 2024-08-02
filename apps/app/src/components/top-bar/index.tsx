@@ -9,10 +9,13 @@ import Link from "next/link";
 export function TopBar({ children }: { children?: React.ReactNode }) {
   const userNavigation = [
     { name: "Settings", href: "#" },
-    { name: "Sign out", action: () => console.log("Sign out") },
+    {
+      name: "Sign out",
+      action: () => {
+        console.log("Sign out");
+      },
+    },
   ];
-
-  return <div>Temp top bar</div>;
 
   return (
     <div>
@@ -42,11 +45,11 @@ export function TopBar({ children }: { children?: React.ReactNode }) {
                       <Menu.Button className="relative flex rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
                         <span className="absolute -inset-1.5" />
                         <span className="sr-only">Open user menu</span>
-                        <img
+                        {/* <img
                           alt=""
                           className="h-8 w-8 rounded-full"
                           src={user?.imageUrl}
-                        />
+                        /> */}
                       </Menu.Button>
                     </div>
                     <Transition
@@ -68,7 +71,9 @@ export function TopBar({ children }: { children?: React.ReactNode }) {
                                     active ? "bg-gray-100" : "",
                                     "block w-full text-left px-4 py-2 text-sm text-gray-700"
                                   )}
-                                  onClick={() => item.action()}
+                                  onClick={() => {
+                                    item.action();
+                                  }}
                                 >
                                   {item.name}
                                 </button>
@@ -109,19 +114,20 @@ export function TopBar({ children }: { children?: React.ReactNode }) {
               <div className="border-t border-gray-200 pb-3 pt-4">
                 <div className="flex items-center px-4">
                   <div className="flex-shrink-0">
-                    <img
+                    {/* <img
                       alt=""
                       className="h-10 w-10 rounded-full"
                       src={user?.imageUrl}
-                    />
+                    /> */}
                   </div>
                   <div className="ml-3">
-                    <div className="text-base font-medium text-gray-800">
+                    User Name
+                    {/* <div className="text-base font-medium text-gray-800">
                       {user?.fullName}
                     </div>
                     <div className="text-sm font-medium text-gray-500">
                       {user?.primaryEmailAddress?.toString()}
-                    </div>
+                    </div> */}
                   </div>
                 </div>
                 <div className="mt-3 space-y-1">
@@ -130,7 +136,9 @@ export function TopBar({ children }: { children?: React.ReactNode }) {
                       <Disclosure.Button
                         className="block px-4 py-2 text-base font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-800"
                         key={item.name}
-                        onClick={() => item.action()}
+                        onClick={() => {
+                          item.action();
+                        }}
                       >
                         {item.name}
                       </Disclosure.Button>
