@@ -39,7 +39,7 @@ const flattenBlockNoteContent = (
 
 export const updateStep = authAction
   .schema(updateStepSchema)
-  .action(async ({ parsedInput: { stepId, data }, ctx: { orgId } }) => {
+  .action(async ({ parsedInput: { stepId, data }, ctx: { userId } }) => {
     if (!data.formId) {
       throw new Error("Form ID is required.");
     }
@@ -60,7 +60,13 @@ export const updateStep = authAction
       where: {
         id: data.formId,
         workspace: {
-          organizationId: orgId,
+          organization: {
+            members: {
+              some: {
+                userId,
+              },
+            },
+          },
         },
       },
       include: {

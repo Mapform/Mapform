@@ -7,13 +7,19 @@ import { deleteStepSchema } from "./schema";
 
 export const deleteStep = authAction
   .schema(deleteStepSchema)
-  .action(async ({ parsedInput: { stepId }, ctx: { orgId } }) => {
+  .action(async ({ parsedInput: { stepId }, ctx: { userId } }) => {
     const userStep = await prisma.step.findUnique({
       where: {
         id: stepId,
         form: {
           workspace: {
-            organizationId: orgId,
+            organization: {
+              members: {
+                some: {
+                  userId,
+                },
+              },
+            },
           },
         },
       },

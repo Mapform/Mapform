@@ -7,13 +7,19 @@ import { updateStepLocationSchema } from "./schema";
 
 export const updateStepWithLocation = authAction
   .schema(updateStepLocationSchema)
-  .action(async ({ parsedInput: { stepId, data }, ctx: { orgId } }) => {
+  .action(async ({ parsedInput: { stepId, data }, ctx: { userId } }) => {
     const stepOfOrg = await prisma.step.findUnique({
       where: {
         id: stepId,
         form: {
           workspace: {
-            organizationId: orgId,
+            organization: {
+              members: {
+                some: {
+                  userId,
+                },
+              },
+            },
           },
         },
       },
