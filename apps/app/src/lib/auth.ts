@@ -3,7 +3,13 @@ import { prisma } from "@mapform/db";
 import Resend from "next-auth/providers/resend";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 
+export const BASE_PATH = "/api/auth";
+
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(prisma),
-  providers: [Resend],
+  providers: [
+    Resend({
+      from: "auth@mapform.co",
+    }),
+  ],
 });

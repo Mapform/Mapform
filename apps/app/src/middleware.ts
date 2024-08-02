@@ -1,25 +1,22 @@
-export { auth as middleware } from "~/lib/auth";
+import { NextResponse } from "next/server";
+import { auth, BASE_PATH } from "~/lib/auth";
 
-// export default authMiddleware({
-//   // Routes that can be accessed while signed out
-//   // publicRoutes: ["/anyone-can-visit-this-route"],
+// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- This shows an ugly TS error otherwise
+export default auth((req) => {
+  const reqUrl = new URL(req.url);
 
-//   // Routes that can always be accessed, and have
-//   // no authentication information
-//   ignoredRoutes: [
-//     "/x/inngest",
-//     "/api/inngest",
-//     "/.redwood/functions/inngest",
-//     "/.netlify/functions/inngest",
-//   ],
-
-//   afterAuth(auth, request) {
-//     if (!auth.userId && !auth.isPublicRoute) {
-//       return redirectToSignIn({ returnBackUrl: request.url });
-//     }
-//   },
-// });
+  if (!req.auth) {
+    return NextResponse.redirect(
+      new URL(
+        `${BASE_PATH}/signin?callbackUrl=${encodeURIComponent(
+          reqUrl.pathname
+        )}`,
+        req.url
+      )
+    );
+  }
+}) as ReturnType<typeof auth>;
 
 export const config = {
-  matcher: ["/((?!.+\\.[\\w]+$|_next).*)", "/", "/(api)(.*)"],
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
 };

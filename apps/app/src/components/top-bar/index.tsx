@@ -4,15 +4,15 @@ import { Fragment } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { MenuIcon, XIcon, MapIcon } from "lucide-react";
 import { cn } from "@mapform/lib/classnames";
-import { useClerk } from "@clerk/nextjs";
 import Link from "next/link";
 
 export function TopBar({ children }: { children?: React.ReactNode }) {
-  const { signOut, user } = useClerk();
   const userNavigation = [
     { name: "Settings", href: "#" },
-    { name: "Sign out", action: signOut },
+    { name: "Sign out", action: () => console.log("Sign out") },
   ];
+
+  return <div>Temp top bar</div>;
 
   return (
     <div>

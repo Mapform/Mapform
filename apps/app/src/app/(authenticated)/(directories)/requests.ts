@@ -1,18 +1,16 @@
 import { prisma } from "@mapform/db";
-import { currentUser } from "@clerk/nextjs";
+import { auth } from "~/lib/auth";
 
 export async function getUserOrgs() {
-  // Need to redirect to the orgs page
-  const clerkUser = await currentUser();
+  const session = await auth();
 
-  // This shouldn't happen, just for type check
-  if (!clerkUser) {
+  if (!session?.user?.id) {
     return null;
   }
 
   return prisma.user.findUnique({
     where: {
-      id: clerkUser.id,
+      id: session.user.id,
     },
     include: {
       organizationMemberships: {
