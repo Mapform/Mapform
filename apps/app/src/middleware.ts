@@ -15,6 +15,20 @@ export default auth((req) => {
       )
     );
   }
+
+  /**
+   * Redirect to onboarding if the user has not onboarded yet
+   */
+  if (reqUrl.pathname !== "/onboarding" && !req.auth.user?.hasOnboarded) {
+    return NextResponse.redirect(new URL(`/onboarding`, req.url));
+  }
+
+  /**
+   * Don't let them go back to onboarding once they've onboarded
+   */
+  if (reqUrl.pathname === "/onboarding" && req.auth.user?.hasOnboarded) {
+    return NextResponse.redirect(new URL(`/`, req.url));
+  }
 }) as ReturnType<typeof auth>;
 
 export const config = {
