@@ -93,11 +93,17 @@ model Organization {
     updatedAt DateTime @updatedAt
 }
 
+enum Role {
+    OWNER
+    ADMIN
+    MEMBER
+}
+
 model OrganizationMembership {
     id             String       @id @default(cuid())
     organizationId String
     userId         String
-    role           String
+    role           Role
     user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
     organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
