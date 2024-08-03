@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { format } from "date-fns";
 import { prisma } from "@mapform/db";
+import { auth } from "~/lib/auth";
 import { CreateDialog } from "./dialog";
 import WorkspaceLayout from "./workspace-layout";
 
@@ -9,11 +10,18 @@ export default async function WorkspaceForms({
 }: {
   params: { orgSlug: string; workspaceSlug: string };
 }) {
+  const session = await auth();
+
   const workspace = await prisma.workspace.findFirst({
     where: {
       slug: params.workspaceSlug,
       organization: {
         slug: params.orgSlug,
+        members: {
+          some: {
+            userId: session?.user?.id,
+          },
+        },
       },
     },
     include: {

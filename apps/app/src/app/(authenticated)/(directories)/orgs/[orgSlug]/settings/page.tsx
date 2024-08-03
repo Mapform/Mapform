@@ -1,4 +1,5 @@
 import { prisma } from "@mapform/db";
+import { auth } from "~/lib/auth";
 import OrgLayout from "../org-layout";
 
 export default async function Settings({
@@ -6,9 +7,16 @@ export default async function Settings({
 }: {
   params: { orgSlug: string };
 }) {
+  const session = await auth();
+
   const currentOrg = await prisma.organization.findUnique({
     where: {
       slug: params.orgSlug,
+      members: {
+        some: {
+          userId: session?.user?.id,
+        },
+      },
     },
     include: {
       workspaces: true,
