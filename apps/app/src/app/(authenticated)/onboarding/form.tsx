@@ -60,6 +60,7 @@ export function OnboardingForm() {
               <FormLabel>What&apos;s your name?</FormLabel>
               <FormControl>
                 <Input
+                  className="bg-white"
                   disabled={field.disabled}
                   name={field.name}
                   onChange={field.onChange}
