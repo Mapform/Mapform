@@ -45,7 +45,7 @@ export default async function Organization({
             key={workspace.id}
           >
             <Link href={`/orgs/${params.orgSlug}/workspaces/${workspace.slug}`}>
-              <div className="flex items-center gap-x-4 border-b border-gray-900/5 bg-white p-6">
+              <div className="flex items-center gap-x-4 border-b border-gray-900/5 bg-stone-50 p-6">
                 {workspace.name}
               </div>
               <dl className="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
