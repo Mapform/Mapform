@@ -29,6 +29,13 @@ export default auth((req) => {
   if (reqUrl.pathname === "/onboarding" && req.auth.user?.hasOnboarded) {
     return NextResponse.redirect(new URL(`/`, req.url));
   }
+
+  /**
+   * Redirect root to account
+   */
+  if (reqUrl.pathname === "/") {
+    return NextResponse.redirect(new URL(`/account`, req.url));
+  }
 }) as ReturnType<typeof auth>;
 
 export const config = {

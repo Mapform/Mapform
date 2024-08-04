@@ -5,7 +5,13 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@mapform/ui/components/popover";
-import { CheckIcon, ChevronDown, LogOutIcon, PlusIcon } from "lucide-react";
+import {
+  CheckIcon,
+  ChevronDown,
+  LogOutIcon,
+  PlusIcon,
+  UserIcon,
+} from "lucide-react";
 import { signOut } from "next-auth/react";
 import Link from "next/link";
 import { type UserOrgs } from "~/data/orgs/get-user-orgs";
@@ -30,13 +36,31 @@ export function SwitcherPopover({
           {/* TODO: Add custom icon support */}
           <div className="text-md">🗺️</div>
           <div className="text-left text-sm font-medium truncate">
-            {currentOrg?.organization.name ?? "Account"}
+            {currentOrg?.organization.name ?? "My Account"}
           </div>
         </div>
         <ChevronDown className="text-stone-500 w-4 h-4 flex-shrink-0" />
       </PopoverTrigger>
       <PopoverContent className="p-0 overflow-hidden">
         <div className="px-3 py-2 border-b">
+          <div className="w-full flex flex-col mb-2">
+            <Link
+              className="flex items-center justify-between hover:bg-stone-100 py-1.5 px-2 -mx-2 transition-colors rounded"
+              href="/account"
+            >
+              <div className="flex items-center gap-2 overflow-hidden">
+                <div className="h-4 w-4 flex items-center justify-center flex-shrink-0">
+                  <UserIcon className="h-4 w-4 flex-shrink-0" />
+                </div>
+                <span className="truncate">My Account</span>
+              </div>
+              {!currentOrg && (
+                <div className="h-4 w-4 flex items-center justify-center">
+                  <CheckIcon className="h-4 w-4 flex-shrink-0" />
+                </div>
+              )}
+            </Link>
+          </div>
           <h3 className="text-xs font-semibold leading-6 text-stone-400 mb-1">
             Organizations
           </h3>
