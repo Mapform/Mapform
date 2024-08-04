@@ -3,9 +3,13 @@ import { Skeleton } from "@mapform/ui/components/skeleton";
 import { Switcher } from "./switcher";
 
 export function StandardLayout({
+  topContent,
+  bottomContent,
   currentOrgSlug,
   children,
 }: {
+  topContent?: React.ReactNode;
+  bottomContent?: React.ReactNode;
   currentOrgSlug?: string;
   children: React.ReactNode;
 }) {
@@ -18,6 +22,8 @@ export function StandardLayout({
             <Suspense fallback={<Skeleton className="h-7 w-full rounded" />}>
               <Switcher currentOrgSlug={currentOrgSlug} />
             </Suspense>
+            {topContent}
+            <div className="mt-auto">{bottomContent}</div>
           </nav>
         </div>
 
