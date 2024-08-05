@@ -89,7 +89,7 @@ export function CreateDialog({
   return (
     <Dialog onOpenChange={setIsDrawerOpen} open={isDrawerOpen}>
       <DialogTrigger asChild>
-        <Button disabled={disabled} variant="outline">
+        <Button disabled={disabled} size="sm" variant="outline">
           Create Dataset
         </Button>
       </DialogTrigger>

@@ -70,7 +70,7 @@ export function CreateDialog({
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button disabled={disabled} variant="outline">
+        <Button disabled={disabled} size="sm" variant="outline">
           Create Workspace
         </Button>
       </DialogTrigger>

@@ -71,9 +71,9 @@ export function TopContent({
                   className={cn(
                     "-mx-3 hover:bg-stone-100 pl-2 pr-3 py-1 rounded transition-colors flex items-center justify-between mb-[2px] cursor-pointer",
                     {
-                      "bg-stone-100": pathname.includes(
-                        `/orgs/${orgSlug}/workspaces/${workspace.slug}`
-                      ),
+                      "bg-stone-100 text-stone-900":
+                        pathname ===
+                        `/orgs/${orgSlug}/workspaces/${workspace.slug}`,
                     }
                   )}
                   // We use an on click event handler instead of a Link so that the nested e.stopPropagation() works
@@ -82,6 +82,15 @@ export function TopContent({
                       `/orgs/${orgSlug}/workspaces/${workspace.slug}`
                     );
                   }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      router.push(
+                        `/orgs/${orgSlug}/workspaces/${workspace.slug}`
+                      );
+                    }
+                  }}
+                  role="button"
+                  tabIndex={0}
                 >
                   <div className="flex items-center gap-2 overflow-hidden">
                     <AccordionPrimitive.Trigger
@@ -96,7 +105,7 @@ export function TopContent({
                 <AccordionPrimitive.Content>
                   {workspace.forms.map((form) => (
                     <NavLink
-                      href={`/forms/${form.id}`}
+                      href={`/orgs/${orgSlug}/workspaces/${workspace.slug}/forms/${form.id}`}
                       icon={MapIcon}
                       key={form.id}
                       label={form.name}
@@ -118,7 +127,7 @@ function NavLink(link: {
   href: string;
   icon: LucideIcon;
   label: string;
-  pathname: string;
+  pathname?: string;
   nested?: boolean;
 }) {
   return (
@@ -126,7 +135,7 @@ function NavLink(link: {
       className={cn(
         "-mx-3 hover:bg-stone-100 px-3 py-1.5 rounded transition-colors flex items-center justify-between mb-[2px]",
         {
-          "bg-stone-100": link.pathname === link.href,
+          "bg-stone-100 text-stone-900": link.pathname === link.href,
         }
       )}
       href={link.href}
