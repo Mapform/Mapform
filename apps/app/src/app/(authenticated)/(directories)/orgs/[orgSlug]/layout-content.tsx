@@ -69,7 +69,7 @@ export function TopContent({
               <AccordionPrimitive.Item key={workspace.id} value={workspace.id}>
                 <div
                   className={cn(
-                    "-mx-3 hover:bg-stone-100 px-3 py-1 rounded transition-colors flex items-center justify-between mb-[2px]",
+                    "-mx-3 hover:bg-stone-100 px-3 py-1 rounded transition-colors flex items-center justify-between mb-[2px] cursor-pointer",
                     {
                       "bg-stone-100":
                         pathname ===
