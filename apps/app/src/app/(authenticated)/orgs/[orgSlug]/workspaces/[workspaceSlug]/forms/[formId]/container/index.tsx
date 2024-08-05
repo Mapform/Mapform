@@ -33,30 +33,30 @@ export function Container({ formId }: { formId: string }) {
     return null;
   }
 
-  // Radial gradient in case I want to add back bg-[radial-gradient(#e5e7eb_1px,transparent_1px)][background-size:16px_16px]"
   return (
     <ContainerProvider formWithSteps={data}>
-      {mapformLoaded ? null : (
+      {/* {mapformLoaded ? null : (
         <div className="absolute inset-0 flex justify-center items-center">
           <Spinner variant="dark" />
         </div>
-      )}
+      )} */}
       <div
+        // Grid: bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]
         className={cn(
-          "flex flex-col flex-1 overflow-hidden transition-all duration-300 ease-in-out",
-          {
-            invisible: !mapformLoaded,
-            opacity: mapformLoaded ? 1 : 0,
-          }
+          "flex flex-col flex-1 bg-white bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px]"
+          // {
+          //   invisible: !mapformLoaded,
+          //   opacity: mapformLoaded ? 1 : 0,
+          // }
         )}
       >
-        <div className="flex flex-1 overflow-hidden">
-          {/* MAP */}
-          <MapFormContainer setMapformLoaded={setMapformLoaded} />
+        {/* <div className="flex flex-1 overflow-hidden"> */}
+        {/* MAP */}
+        <MapFormContainer setMapformLoaded={setMapformLoaded} />
 
-          {/* SIDEBAR */}
-          <Sidebar />
-        </div>
+        {/* SIDEBAR */}
+        {/* <Sidebar /> */}
+        {/* </div> */}
 
         {/* STEPS */}
         <Steps />
