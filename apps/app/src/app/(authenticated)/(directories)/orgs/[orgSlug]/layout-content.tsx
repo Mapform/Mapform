@@ -10,16 +10,9 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@mapform/lib/classnames";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionPrimitive,
-  AccordionTrigger,
-} from "@mapform/ui/components/accordion";
-import { Button } from "@mapform/ui/components/button";
+import { AccordionPrimitive } from "@mapform/ui/components/accordion";
+import { useRouter, usePathname } from "next/navigation";
 import { type UserOrgWorkspaces } from "~/data/workspaces/get-user-org-workspaces";
-import { useRouter } from "next/navigation";
 
 const bottomLinks = [
   { href: "https://todo.com", icon: ListOrderedIcon, label: "Roadmap" },
@@ -48,6 +41,7 @@ export function TopContent({
   userOrgWorkspaces: UserOrgWorkspaces;
 }) {
   const router = useRouter();
+  const pathname = usePathname();
 
   const topLinks = [
     { href: `/orgs/${orgSlug}`, icon: HomeIcon, label: "Home" },
@@ -62,7 +56,7 @@ export function TopContent({
     <div className="text-sm text-stone-700 space-y-4 mt-4">
       <section>
         {topLinks.map((link) => (
-          <NavLink key={link.href} {...link} />
+          <NavLink key={link.href} pathname={pathname} {...link} />
         ))}
       </section>
       <section>
@@ -74,7 +68,14 @@ export function TopContent({
             {userOrgWorkspaces.map((workspace) => (
               <AccordionPrimitive.Item key={workspace.id} value={workspace.id}>
                 <div
-                  className="-mx-3 hover:bg-stone-100 px-3 py-1.5 rounded transition-colors flex items-center justify-between"
+                  className={cn(
+                    "-mx-3 hover:bg-stone-100 px-3 py-1 rounded transition-colors flex items-center justify-between mb-[2px]",
+                    {
+                      "bg-stone-100":
+                        pathname ===
+                        `/orgs/${orgSlug}/workspaces/${workspace.slug}`,
+                    }
+                  )}
                   // We use an on click event handler instead of a Link so that the nested e.stopPropagation() works
                   onClick={() => {
                     router.push(
@@ -100,6 +101,7 @@ export function TopContent({
                       key={form.id}
                       label={form.name}
                       nested
+                      pathname={pathname}
                     />
                   ))}
                 </AccordionPrimitive.Content>
@@ -116,11 +118,17 @@ function NavLink(link: {
   href: string;
   icon: LucideIcon;
   label: string;
+  pathname: string;
   nested?: boolean;
 }) {
   return (
     <Link
-      className="-mx-3 hover:bg-stone-100 px-3 py-1.5 rounded transition-colors flex items-center justify-between"
+      className={cn(
+        "-mx-3 hover:bg-stone-100 px-3 py-1.5 rounded transition-colors flex items-center justify-between mb-[2px]",
+        {
+          "bg-stone-100": link.pathname === link.href,
+        }
+      )}
       href={link.href}
     >
       <div
