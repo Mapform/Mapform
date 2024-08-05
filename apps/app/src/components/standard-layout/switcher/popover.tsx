@@ -31,7 +31,7 @@ export function SwitcherPopover({
 
   return (
     <Popover>
-      <PopoverTrigger className="-mx-3 -mt-1.5 hover:bg-stone-100 px-3 py-1.5 rounded transition-colors flex items-center justify-between">
+      <PopoverTrigger className="-mx-3 hover:bg-stone-100 px-3 py-1.5 rounded transition-colors flex items-center justify-between">
         <div className="flex gap-3 items-center overflow-hidden">
           {/* TODO: Add custom icon support */}
           <div className="text-md">🗺️</div>
@@ -93,7 +93,7 @@ export function SwitcherPopover({
             ))}
             <li className="w-full flex flex-col">
               <button
-                className="appearance-none flex gap-2 items-center text-stone-500 text-left hover:bg-stone-100 py-1.5 px-2 -mx-2 transition-colors rounded"
+                className="appearance-none flex gap-2 items-center text-stone-500 text-left hover:bg-stone-100 py-1.5 px-2 -mx-2 transition-colors rounded cursor-not-allowed"
                 disabled
                 type="button"
               >

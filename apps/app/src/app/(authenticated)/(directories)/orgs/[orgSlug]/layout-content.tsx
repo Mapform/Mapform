@@ -71,9 +71,9 @@ export function TopContent({
                   className={cn(
                     "-mx-3 hover:bg-stone-100 pl-2 pr-3 py-1 rounded transition-colors flex items-center justify-between mb-[2px] cursor-pointer",
                     {
-                      "bg-stone-100":
-                        pathname ===
-                        `/orgs/${orgSlug}/workspaces/${workspace.slug}`,
+                      "bg-stone-100": pathname.includes(
+                        `/orgs/${orgSlug}/workspaces/${workspace.slug}`
+                      ),
                     }
                   )}
                   // We use an on click event handler instead of a Link so that the nested e.stopPropagation() works

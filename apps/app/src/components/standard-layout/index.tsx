@@ -17,7 +17,7 @@ export function StandardLayout({
     <div className="flex flex-col flex-1">
       <div className="flex flex-1">
         {/* NAV */}
-        <div className="flex flex-col gap-y-5 overflow-y-auto bg-stone-50 p-6 w-[300px] border-r">
+        <div className="flex flex-col gap-y-5 overflow-y-auto bg-stone-50 p-6 -my-1.5 w-[300px] border-r">
           <nav className="flex flex-1 flex-col">
             <Suspense fallback={<Skeleton className="h-7 w-full rounded" />}>
               <Switcher currentOrgSlug={currentOrgSlug} />
