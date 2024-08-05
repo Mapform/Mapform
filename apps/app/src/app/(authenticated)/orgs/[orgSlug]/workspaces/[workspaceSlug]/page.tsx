@@ -53,7 +53,9 @@ export default async function WorkspaceForms({
       <ul className="flex flex-wrap gap-4">
         {workspace.forms.map((form) => (
           <li className="overflow-hidden rounded-xl border w-72" key={form.id}>
-            <Link href={`/forms/${form.id}`}>
+            <Link
+              href={`/orgs/${params.orgSlug}/workspaces/${params.workspaceSlug}/forms/${form.id}`}
+            >
               <div className="flex items-center gap-x-4 border-b border-gray-900/5 bg-stone-50 p-6">
                 {form.name}
               </div>
