@@ -2,6 +2,7 @@
 
 import { cn } from "@mapform/lib/classnames";
 import { Skeleton } from "@mapform/ui/components/skeleton";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 interface TabsProps {
@@ -43,7 +44,7 @@ export function Tabs({ name, isLoading, tabs, action, children }: TabsProps) {
         <div className="hidden sm:block">
           <nav className="-mb-px flex space-x-8">
             {tabs.map((tab) => (
-              <a
+              <Link
                 className={cn(
                   tab.href === pathname
                     ? "border-primary text-primary"
@@ -54,7 +55,7 @@ export function Tabs({ name, isLoading, tabs, action, children }: TabsProps) {
                 key={tab.name}
               >
                 {tab.name}
-              </a>
+              </Link>
             ))}
           </nav>
         </div>
