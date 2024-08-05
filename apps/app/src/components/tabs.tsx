@@ -17,8 +17,8 @@ export function Tabs({ name, isLoading, tabs, action, children }: TabsProps) {
   const pathname = usePathname();
 
   return (
-    <div className="relative flex-1 p-6">
-      <div className="md:flex md:items-center md:justify-between relative">
+    <div className="flex flex-col flex-1">
+      <div className="md:flex md:items-center md:justify-between relative pt-6 px-6">
         {isLoading ? (
           <Skeleton className="w-48 h-6" />
         ) : (
@@ -26,9 +26,7 @@ export function Tabs({ name, isLoading, tabs, action, children }: TabsProps) {
             {name}
           </h3>
         )}
-        <div className="mt-3 flex md:absolute md:right-0 md:top-3 md:mt-0">
-          {action}
-        </div>
+        <div className="absolute top-6 right-6">{action}</div>
       </div>
       <div className="mt-4 border-b border-gray-200">
         <div className="sm:hidden">
@@ -42,14 +40,14 @@ export function Tabs({ name, isLoading, tabs, action, children }: TabsProps) {
           </select>
         </div>
         <div className="hidden sm:block">
-          <nav className="-mb-px flex space-x-8">
+          <nav className="-mb-px flex space-x-3 mx-6">
             {tabs.map((tab) => (
               <Link
                 className={cn(
                   tab.href === pathname
                     ? "border-primary text-primary"
                     : "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700",
-                  "whitespace-nowrap border-b-2 px-1 pb-4 text-sm font-medium"
+                  "whitespace-nowrap border-b-2 px-1 pb-3 text-sm font-medium"
                 )}
                 href={tab.href}
                 key={tab.name}
@@ -60,7 +58,7 @@ export function Tabs({ name, isLoading, tabs, action, children }: TabsProps) {
           </nav>
         </div>
       </div>
-      <div className="py-6">{children}</div>
+      <div className="flex flex-col flex-1 p-6">{children}</div>
     </div>
   );
 }

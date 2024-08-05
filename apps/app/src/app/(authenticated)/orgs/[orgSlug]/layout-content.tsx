@@ -69,7 +69,7 @@ export function TopContent({
               <AccordionPrimitive.Item key={workspace.id} value={workspace.id}>
                 <div
                   className={cn(
-                    "-mx-3 hover:bg-stone-100 pl-2 pr-3 py-1 rounded transition-colors flex items-center justify-between mb-[2px] cursor-pointer",
+                    "-mx-3 hover:bg-stone-100 pl-2 pr-2 py-1 rounded transition-colors flex items-center justify-between mb-[2px] cursor-pointer",
                     {
                       "bg-stone-100 text-stone-900":
                         pathname ===
@@ -92,7 +92,7 @@ export function TopContent({
                   role="button"
                   tabIndex={0}
                 >
-                  <div className="flex items-center gap-2 overflow-hidden">
+                  <div className="flex items-center gap-1 overflow-hidden">
                     <AccordionPrimitive.Trigger
                       className="flex rounded items-center justify-center flex-shrink-0 p-1 [&[data-state=closed]>svg]:-rotate-90 [&[data-state=open]>svg]:rotate-0 hover:bg-stone-200"
                       onClick={(e) => e.stopPropagation()}
