@@ -10,6 +10,7 @@ function Drawer({
 }: React.ComponentProps<typeof DrawerPrimitive.Root>) {
   return (
     <DrawerPrimitive.Root
+      direction="left"
       shouldScaleBackground={shouldScaleBackground}
       {...props}
     />
@@ -40,16 +41,15 @@ const DrawerContent = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof DrawerPrimitive.Content>
 >(({ className, children, ...props }, ref) => (
   <DrawerPortal>
-    <DrawerOverlay />
+    {/* <DrawerOverlay /> */}
     <DrawerPrimitive.Content
       className={cn(
-        "fixed inset-x-0 bottom-0 z-50 mt-24 flex h-auto flex-col rounded-t-[10px] border bg-background",
+        "z-50 bg-stone-50 flex flex-col h-full w-[300px] overflow-hidden fixed bottom-0 left-0 border-r shadow-lg",
         className
       )}
       ref={ref}
       {...props}
     >
-      <div className="mx-auto mt-4 h-2 w-[100px] rounded-full bg-muted" />
       {children}
     </DrawerPrimitive.Content>
   </DrawerPortal>
