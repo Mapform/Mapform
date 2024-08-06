@@ -140,172 +140,178 @@ export function Steps() {
     Math.max(dragSteps.length, lastDataTrackStepIndex, 1)
   ).fill(null);
 
+  const currentStepIndex = dragSteps.findIndex(
+    (step) => step === currentStep?.id
+  );
+
   return (
     <div className="border-t bg-white overflow-x-auto">
-      {/* STEP INDICATORS */}
-      <div className="flex">
-        <div className="w-36 border-r" />
-        <div className="px-4 pt-2">
-          <div
-            className="grid gap-2"
-            style={{
-              gridTemplateColumns: `repeat(${trackSlots.length}, 150px)`,
-            }}
-          >
+      <table className="table-fixed min-w-full overflow-hidden">
+        <thead>
+          <tr>
+            <th
+              className="p-1 text-left text-sm font-semibold text-gray-900 w-32"
+              scope="col"
+            />
             {trackSlots.map((_, index) => (
-              <div className="text-xs text-gray-500" key={index}>
+              <th
+                className="p-1 text-left text-sm font-semibold text-gray-900 w-32 relative"
+                key={index}
+                scope="col"
+              >
+                {currentStepIndex === index ? (
+                  <div className="absolute bg-primary w-[2px] h-[200px] z-10" />
+                ) : null}
                 {index + 1}
-              </div>
+              </th>
             ))}
-          </div>
-        </div>
-      </div>
-
-      {/* STEPS */}
-      <DndContext
-        collisionDetection={closestCenter}
-        onDragEnd={reorderSteps}
-        sensors={sensors}
-      >
-        <div className="flex">
-          <div className="flex justify-between gap-y-2 w-36 px-4 pb-4 pt-2 border-r">
-            <div className="text-xs font-semibold leading-6 text-gray-400 mb-0">
-              Steps
-            </div>
-            <span>
-              <Button
-                className="-mr-1.5"
-                disabled={status === "pending"}
-                onClick={onAdd}
-                size="icon"
-                variant="ghost"
-              >
-                {status === "pending" ? (
-                  <Spinner variant="dark" />
-                ) : (
-                  <PlusIcon className="h-4 w-4 text-gray-400" />
-                )}
-              </Button>
-            </span>
-          </div>
-          <div
-            className="grid gap-2 px-4 pb-4 pt-2"
-            style={{
-              gridTemplateColumns: `repeat(${trackSlots.length}, 150px)`,
-            }}
-          >
-            <SortableContext
-              items={dragSteps}
-              strategy={horizontalListSortingStrategy}
+          </tr>
+        </thead>
+        <tbody className="bg-white">
+          {/* STEPS */}
+          <tr>
+            <td className="flex justify-between whitespace-nowrap px-6 text-sm font-medium text-gray-900 w-32">
+              <div className="text-xs font-semibold leading-6 text-gray-400 mb-0">
+                Steps
+              </div>
+              <span>
+                <Button
+                  className="-mr-1.5"
+                  disabled={status === "pending"}
+                  onClick={onAdd}
+                  size="icon"
+                  variant="ghost"
+                >
+                  {status === "pending" ? (
+                    <Spinner variant="dark" />
+                  ) : (
+                    <PlusIcon className="h-4 w-4 text-gray-400" />
+                  )}
+                </Button>
+              </span>
+            </td>
+            <DndContext
+              collisionDetection={closestCenter}
+              onDragEnd={reorderSteps}
+              sensors={sensors}
             >
-              {dragSteps.map((stepId) => {
-                const step = formWithSteps.steps.find((s) => s.id === stepId);
-
-                if (!step) return null;
-
-                return (
-                  <Draggable id={stepId} key={stepId}>
-                    <button
-                      className={cn(
-                        "flex relative px-3 rounded-md text-md h-16 w-full bg-orange-200",
-                        {
-                          "ring-4 ring-orange-500": currentStep?.id === stepId,
-                        }
-                      )}
-                      onClick={() => {
-                        setCurrentStep(step.id);
-                      }}
-                      type="button"
-                    >
-                      <div className="flex-1 h-full flex justify-center items-center bg-orange-300">
-                        <span className="line-clamp-2 break-words px-1">
-                          {step.title || "Untitled"}
-                        </span>
-                      </div>
-                    </button>
-                  </Draggable>
-                );
-              })}
-            </SortableContext>
-          </div>
-        </div>
-      </DndContext>
-
-      {/* DATA TRACKS */}
-      <DndContext
-        collisionDetection={closestCenter}
-        onDragEnd={reorderDataTracks}
-        sensors={sensors}
-      >
-        <div className="flex">
-          <div className="flex justify-between gap-y-2 w-36 px-4 pb-4 border-r">
-            <div className="text-xs font-semibold leading-6 text-gray-400 mb-0">
-              Data
-            </div>
-            <span>
-              <Button
-                className="-mr-1.5"
-                disabled={status === "pending"}
-                onClick={onAddDataTrack}
-                size="icon"
-                variant="ghost"
+              <SortableContext
+                items={dragSteps}
+                strategy={horizontalListSortingStrategy}
               >
-                {status === "pending" ? (
-                  <Spinner variant="dark" />
-                ) : (
-                  <PlusIcon className="h-4 w-4 text-gray-400" />
-                )}
-              </Button>
-            </span>
-          </div>
-          <div
-            className="grid gap-2 px-4 pb-4"
-            style={{
-              gridTemplateColumns: `repeat(${trackSlots.length}, 150px)`,
-            }}
-          >
-            <SortableContext
-              items={formWithSteps.dataTracks}
-              strategy={horizontalListSortingStrategy}
-            >
-              {formWithSteps.dataTracks.map((dataTrack) => {
-                return (
-                  <Draggable id={dataTrack.id} key={dataTrack.id}>
-                    <button
-                      className={cn(
-                        "flex relative px-3 rounded-md text-md h-16 w-full bg-blue-200",
-                        {
-                          "ring-4 ring-blue-500":
-                            currentDataTrack?.id === dataTrack.id,
-                        }
-                      )}
-                      onClick={() => {
-                        if (currentDataTrack?.id === dataTrack.id) {
-                          setCurrentDataTrack();
-                          return;
-                        }
-                        setCurrentDataTrack(dataTrack.id);
-                      }}
-                      type="button"
+                {dragSteps.map((stepId) => {
+                  const step = formWithSteps.steps.find((s) => s.id === stepId);
+
+                  if (!step) return null;
+
+                  return (
+                    <td
+                      className="whitespace-nowrap p-1 text-sm text-gray-500 w-48"
+                      key={stepId}
                     >
-                      <div className="flex-1 h-full flex justify-center items-center bg-blue-300">
-                        <span className="line-clamp-2 break-words px-1">
-                          {dataTrack.layers.length}{" "}
-                          {pluralize(
-                            "layer",
-                            "layers",
-                            dataTrack.layers.length
+                      <Draggable id={stepId}>
+                        <button
+                          className={cn(
+                            "flex relative px-3 rounded-md text-md h-12 w-full bg-orange-200",
+                            {
+                              "ring-4 ring-orange-500":
+                                currentStep?.id === stepId,
+                            }
                           )}
-                        </span>
-                      </div>
-                    </button>
-                  </Draggable>
-                );
-              })}
-            </SortableContext>
-          </div>
-        </div>
-      </DndContext>
+                          onClick={() => {
+                            setCurrentStep(step.id);
+                          }}
+                          type="button"
+                        >
+                          <div className="flex-1 h-full flex justify-center items-center bg-orange-300">
+                            <span className="line-clamp-2 break-words px-1 text-sm">
+                              {step.title || "Untitled"}
+                            </span>
+                          </div>
+                        </button>
+                      </Draggable>
+                    </td>
+                  );
+                })}
+              </SortableContext>
+            </DndContext>
+          </tr>
+
+          {/* DATA */}
+          <tr>
+            <td className="flex justify-between whitespace-nowrap px-6 text-sm font-medium text-gray-900 w-32">
+              <div className="text-xs font-semibold leading-6 text-gray-400 mb-0">
+                Data
+              </div>
+              <span>
+                <Button
+                  className="-mr-1.5"
+                  disabled={status === "pending"}
+                  onClick={onAddDataTrack}
+                  size="icon"
+                  variant="ghost"
+                >
+                  {status === "pending" ? (
+                    <Spinner variant="dark" />
+                  ) : (
+                    <PlusIcon className="h-4 w-4 text-gray-400" />
+                  )}
+                </Button>
+              </span>
+            </td>
+            <DndContext
+              collisionDetection={closestCenter}
+              onDragEnd={reorderDataTracks}
+              sensors={sensors}
+            >
+              <SortableContext
+                items={formWithSteps.dataTracks}
+                strategy={horizontalListSortingStrategy}
+              >
+                {formWithSteps.dataTracks.map((dataTrack) => {
+                  return (
+                    <td
+                      className="whitespace-nowrap p-1 text-sm text-gray-500"
+                      key={dataTrack.id}
+                    >
+                      <Draggable id={dataTrack.id} key={dataTrack.id}>
+                        <button
+                          className={cn(
+                            "flex relative px-3 rounded-md text-md h-12 w-full bg-blue-200",
+                            {
+                              "ring-4 ring-blue-500":
+                                currentDataTrack?.id === dataTrack.id,
+                            }
+                          )}
+                          onClick={() => {
+                            if (currentDataTrack?.id === dataTrack.id) {
+                              setCurrentDataTrack();
+                              return;
+                            }
+                            setCurrentDataTrack(dataTrack.id);
+                          }}
+                          type="button"
+                        >
+                          <div className="flex-1 h-full flex justify-center items-center bg-blue-300">
+                            <span className="line-clamp-2 break-words px-1 text-sm">
+                              {dataTrack.layers.length}{" "}
+                              {pluralize(
+                                "layer",
+                                "layers",
+                                dataTrack.layers.length
+                              )}
+                            </span>
+                          </div>
+                        </button>
+                      </Draggable>
+                    </td>
+                  );
+                })}
+              </SortableContext>
+            </DndContext>
+          </tr>
+        </tbody>
+      </table>
     </div>
   );
 }

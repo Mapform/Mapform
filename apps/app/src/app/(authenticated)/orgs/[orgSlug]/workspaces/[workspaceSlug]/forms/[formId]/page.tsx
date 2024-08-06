@@ -7,6 +7,7 @@ import {
 import { Tabs } from "~/components/tabs";
 import { getFormWithSteps } from "~/data/forms/get-form-with-steps";
 import { Container } from "./container";
+import { TabActions } from "./tab-actions";
 
 export default async function Workspace({
   params,
@@ -36,7 +37,7 @@ export default async function Workspace({
     },
   ];
   return (
-    <Tabs name="Some form" tabs={tabs}>
+    <Tabs action={<TabActions />} name="Some form" tabs={tabs}>
       <div className="-m-6 flex flex-col flex-1">
         <HydrationBoundary state={dehydrate(queryClient)}>
           <MapProvider>
