@@ -150,19 +150,21 @@ export function Steps() {
         <thead>
           <tr>
             <th
-              className="p-1 text-left text-sm font-semibold text-gray-900 w-32"
+              className="p-1.5 text-left text-sm font-semibold text-gray-900 w-32"
               scope="col"
             />
             {trackSlots.map((_, index) => (
               <th
-                className="p-1 text-left text-sm font-semibold text-gray-900 w-32 relative"
+                className="h-12 pl-1.5 pb-0 w-32 text-left relative"
                 key={index}
                 scope="col"
               >
                 {currentStepIndex === index ? (
-                  <div className="absolute bg-primary w-[2px] h-[200px] z-10" />
+                  <div className="absolute bg-primary w-[2px] h-[200px] z-10 -left-[1px] top-0" />
                 ) : null}
-                {index + 1}
+                <span className="ml-3 text-xs font-semibold text-stone-400">
+                  Step {index + 1}
+                </span>
               </th>
             ))}
           </tr>
@@ -206,7 +208,7 @@ export function Steps() {
 
                   return (
                     <td
-                      className="whitespace-nowrap p-1 text-sm text-gray-500 w-48"
+                      className="whitespace-nowrap p-1.5 text-sm text-gray-500 w-48"
                       key={stepId}
                     >
                       <Draggable id={stepId}>
@@ -224,7 +226,7 @@ export function Steps() {
                           type="button"
                         >
                           <div className="flex-1 h-full flex justify-center items-center bg-orange-300">
-                            <span className="line-clamp-2 break-words px-1 text-sm">
+                            <span className="line-clamp-1.5 break-words px-1 text-sm">
                               {step.title || "Untitled"}
                             </span>
                           </div>
@@ -271,7 +273,7 @@ export function Steps() {
                 {formWithSteps.dataTracks.map((dataTrack) => {
                   return (
                     <td
-                      className="whitespace-nowrap p-1 text-sm text-gray-500"
+                      className="whitespace-nowrap p-1.5 text-sm text-gray-500"
                       key={dataTrack.id}
                     >
                       <Draggable id={dataTrack.id} key={dataTrack.id}>
@@ -293,7 +295,7 @@ export function Steps() {
                           type="button"
                         >
                           <div className="flex-1 h-full flex justify-center items-center bg-blue-300">
-                            <span className="line-clamp-2 break-words px-1 text-sm">
+                            <span className="line-clamp-1.5 break-words px-1 text-sm">
                               {dataTrack.layers.length}{" "}
                               {pluralize(
                                 "layer",
