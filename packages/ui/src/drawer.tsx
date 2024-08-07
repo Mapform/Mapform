@@ -11,6 +11,8 @@ function Drawer({
   return (
     <DrawerPrimitive.Root
       direction="left"
+      // Allows interacting with content outside the drawer
+      modal={false}
       shouldScaleBackground={shouldScaleBackground}
       {...props}
     />
