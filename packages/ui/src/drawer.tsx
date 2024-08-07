@@ -20,6 +20,22 @@ function Drawer({
 }
 Drawer.displayName = "Drawer";
 
+function NestedDrawer({
+  shouldScaleBackground = true,
+  ...props
+}: React.ComponentProps<typeof DrawerPrimitive.Root>) {
+  return (
+    <DrawerPrimitive.NestedRoot
+      direction="left"
+      // Allows interacting with content outside the drawer
+      modal={false}
+      shouldScaleBackground={shouldScaleBackground}
+      {...props}
+    />
+  );
+}
+NestedDrawer.displayName = "NestedDrawer";
+
 const DrawerTrigger = DrawerPrimitive.Trigger;
 
 const DrawerPortal = DrawerPrimitive.Portal;
@@ -123,4 +139,5 @@ export {
   DrawerTitle,
   DrawerDescription,
   DrawerPrimitive,
+  NestedDrawer,
 };

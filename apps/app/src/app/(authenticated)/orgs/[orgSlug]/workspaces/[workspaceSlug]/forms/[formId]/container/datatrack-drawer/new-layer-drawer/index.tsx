@@ -1,5 +1,11 @@
 "use client";
 
+import {
+  NestedDrawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTrigger,
+} from "@mapform/ui/components/drawer";
 import { Button } from "@mapform/ui/components/button";
 import { Skeleton } from "@mapform/ui/components/skeleton";
 import {
@@ -21,8 +27,9 @@ import {
   SelectContent,
   SelectItem,
 } from "@mapform/ui/components/select";
-import { ArrowLeftIcon } from "lucide-react";
+import { ChevronsLeftIcon } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import { Input } from "@mapform/ui/components/input";
 import { toast } from "@mapform/ui/components/toaster";
 import { useAction } from "next-safe-action/hooks";
 import {
@@ -31,16 +38,13 @@ import {
 } from "~/data/layers/create/schema";
 import { listAvailableDatasets } from "~/data/datasets/list-available";
 import { createLayerAction } from "~/data/layers/create";
-import { useContainerContext } from "../../../context";
-import { Input } from "@mapform/ui/components/input";
+import { useContainerContext } from "../../context";
 
-interface NewLayerSidebarProps {
-  setShowNewLayerSidebar: (show: boolean) => void;
-}
+export const NewLayerDrawerRoot = NestedDrawer;
 
-export function NewLayerSidebar({
-  setShowNewLayerSidebar,
-}: NewLayerSidebarProps) {
+export const NewLayerDrawerTrigger = DrawerTrigger;
+
+export function NewLayerDrawerContent() {
   const { currentDataTrack } = useContainerContext();
   const form = useForm<CreateLayerSchema>({
     defaultValues: {
@@ -95,18 +99,17 @@ export function NewLayerSidebar({
   }
 
   return (
-    <div className="absolute inset-0 bg-white z-10 flex flex-col">
-      <div className="p-4 border-b">
-        <Button
-          onClick={() => {
-            setShowNewLayerSidebar(false);
-          }}
-          size="sm"
-          variant="secondary"
-        >
-          <ArrowLeftIcon className="h-4 w-4 mr-1" /> Close
-        </Button>
-      </div>
+    <DrawerContent>
+      <DrawerHeader className="flex justify-between items-center py-2">
+        <h2 className="text-base font-medium">Edit Layer</h2>
+        <div className="-mr-2">
+          <DrawerTrigger asChild>
+            <Button size="icon-sm" variant="ghost">
+              <ChevronsLeftIcon className="h-4 w-4" />
+            </Button>
+          </DrawerTrigger>
+        </div>
+      </DrawerHeader>
       <div className="p-4 flex flex-col flex-1">
         <Form {...form}>
           <form
@@ -242,6 +245,6 @@ export function NewLayerSidebar({
           </form>
         </Form>
       </div>
-    </div>
+    </DrawerContent>
   );
 }

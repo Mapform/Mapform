@@ -49,7 +49,7 @@ export function Steps() {
   const { mutateAsync: createStepMutation, status } = useMutation({
     mutationFn: createStep,
   });
-  const { execute, status: createTrackStatus } = useAction(createDataTrack);
+  const { execute } = useAction(createDataTrack);
 
   /**
    * Needed to support click events on DND items
@@ -85,7 +85,7 @@ export function Steps() {
     }
   };
 
-  const reorderDataTracks = async (e: DragEndEvent) => {
+  const reorderDataTracks = (e: DragEndEvent) => {
     if (!e.over) return;
 
     if (e.active.id !== e.over.id) {
