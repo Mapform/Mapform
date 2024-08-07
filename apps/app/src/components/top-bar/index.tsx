@@ -70,7 +70,7 @@ export function TopBar({ children }: { children?: React.ReactNode }) {
                                 <button
                                   className={cn(
                                     active ? "bg-gray-100" : "",
-                                    "block w-full text-left px-4 py-2 text-sm text-gray-700"
+                                    "block w-full text-left px-4 py-2 text-sm text-stone-700"
                                   )}
                                   onClick={() => {
                                     item.action();
@@ -82,7 +82,7 @@ export function TopBar({ children }: { children?: React.ReactNode }) {
                                 <a
                                   className={cn(
                                     active ? "bg-gray-100" : "",
-                                    "block px-4 py-2 text-sm text-gray-700"
+                                    "block px-4 py-2 text-sm text-stone-700"
                                   )}
                                   href={item.href}
                                 >
@@ -98,7 +98,7 @@ export function TopBar({ children }: { children?: React.ReactNode }) {
                 </div>
                 <div className="-mr-2 flex items-center sm:hidden">
                   {/* Mobile menu button */}
-                  <Disclosure.Button className="relative inline-flex items-center justify-center rounded-md bg-white p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
+                  <Disclosure.Button className="relative inline-flex items-center justify-center rounded-md bg-white p-2 text-stone-400 hover:bg-gray-100 hover:text-stone-500 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
                     <span className="absolute -inset-0.5" />
                     <span className="sr-only">Open main menu</span>
                     {open ? (
@@ -123,10 +123,10 @@ export function TopBar({ children }: { children?: React.ReactNode }) {
                   </div>
                   <div className="ml-3">
                     User Name
-                    {/* <div className="text-base font-medium text-gray-800">
+                    {/* <div className="text-base font-medium text-stone-800">
                       {user?.fullName}
                     </div>
-                    <div className="text-sm font-medium text-gray-500">
+                    <div className="text-sm font-medium text-stone-500">
                       {user?.primaryEmailAddress?.toString()}
                     </div> */}
                   </div>
@@ -135,7 +135,7 @@ export function TopBar({ children }: { children?: React.ReactNode }) {
                   {userNavigation.map((item) =>
                     item.action ? (
                       <Disclosure.Button
-                        className="block px-4 py-2 text-base font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-800"
+                        className="block px-4 py-2 text-base font-medium text-stone-500 hover:bg-gray-100 hover:text-stone-800"
                         key={item.name}
                         onClick={() => {
                           item.action();
@@ -146,7 +146,7 @@ export function TopBar({ children }: { children?: React.ReactNode }) {
                     ) : (
                       <Disclosure.Button
                         as="a"
-                        className="block px-4 py-2 text-base font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-800"
+                        className="block px-4 py-2 text-base font-medium text-stone-500 hover:bg-gray-100 hover:text-stone-800"
                         href={item.href}
                         key={item.name}
                       >

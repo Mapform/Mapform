@@ -21,7 +21,7 @@ const bottomLinks = [
 export function BottomContent() {
   return (
     <>
-      <h3 className="text-xs font-semibold leading-6 text-gray-400 mb-1">
+      <h3 className="text-xs font-semibold leading-6 text-stone-400 mb-1">
         Resources
       </h3>
       <div className="text-sm text-stone-700">
@@ -60,7 +60,7 @@ export function TopContent({
         ))}
       </section>
       <section>
-        <h3 className="text-xs font-semibold leading-6 text-gray-400 mb-1">
+        <h3 className="text-xs font-semibold leading-6 text-stone-400 mb-1">
           Workspaces
         </h3>
         <AccordionPrimitive.Root type="multiple">

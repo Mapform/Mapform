@@ -21,7 +21,6 @@ import { useCreateQueryString } from "~/lib/create-query-string";
 import { type FormWithSteps } from "~/data/forms/get-form-with-steps";
 import { type Points, getLayerData } from "~/data/datatracks/get-layer-data";
 import { updateStep } from "~/data/steps/update";
-import { StepDrawerContent, StepDrawerRoot } from "./step-drawer";
 
 export interface ContainerContextProps {
   map: React.RefObject<MapRef>;
@@ -226,10 +225,7 @@ export function ContainerProvider({
         setBounds,
       }}
     >
-      <StepDrawerRoot open>
-        <StepDrawerContent />
-        {children}
-      </StepDrawerRoot>
+      {children}
     </ContainerContext.Provider>
   );
 }

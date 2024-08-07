@@ -33,7 +33,7 @@ export function Nav({ form }: { form: Form }) {
     <TopBar>
       <div className="grid grid-cols-3 items-center">
         {/* LEFT */}
-        <div className="text-sm text-gray-700 font-semibold">{form.name}</div>
+        <div className="text-sm text-stone-700 font-semibold">{form.name}</div>
 
         {/* CENTER */}
         <div className="mt-5 space-x-4 flex justify-center">
@@ -42,7 +42,7 @@ export function Nav({ form }: { form: Form }) {
               className={cn(
                 tab.href === pathname
                   ? "border-primary text-primary"
-                  : "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700",
+                  : "border-transparent text-stone-500 hover:border-gray-300 hover:text-stone-700",
                 "whitespace-nowrap border-b-2 px-1 pb-4 text-sm font-medium"
               )}
               href={tab.href}

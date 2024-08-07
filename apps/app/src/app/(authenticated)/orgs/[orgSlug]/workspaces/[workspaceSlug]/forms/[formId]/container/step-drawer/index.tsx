@@ -5,7 +5,7 @@ import {
   DrawerHeader,
   DrawerTrigger,
 } from "@mapform/ui/components/drawer";
-import { ArrowLeftIcon } from "lucide-react";
+import { ChevronsLeftIcon } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
@@ -30,11 +30,11 @@ export function StepDrawerContent() {
   return (
     <DrawerContent>
       <DrawerHeader className="flex justify-between items-center py-2">
-        <h2>Edit Step</h2>
+        <h2 className="text-base font-medium">Edit Step</h2>
         <div className="-mr-2">
           <DrawerTrigger asChild>
-            <Button size="sm" variant="ghost">
-              <ArrowLeftIcon className="h-4 w-4" />
+            <Button size="icon-sm" variant="ghost">
+              <ChevronsLeftIcon className="h-4 w-4" />
             </Button>
           </DrawerTrigger>
         </div>

@@ -29,7 +29,7 @@ function MapFormContainer({
     <div className="p-6 flex-1 flex justify-center">
       <div className="flex flex-col flex-1 border rounded-md overflow-hidden max-w-[1000px]">
         <div className="flex border-b justify-between bg-white py-1 px-4">
-          <h3 className="text-xs font-semibold leading-6 text-gray-400">
+          <h3 className="text-xs font-semibold leading-6 text-stone-400">
             Preview
           </h3>
         </div>

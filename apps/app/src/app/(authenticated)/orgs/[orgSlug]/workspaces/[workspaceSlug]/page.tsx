@@ -61,14 +61,14 @@ export default async function WorkspaceForms({
               </div>
               <dl className="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
                 <div className="flex justify-between gap-x-4 py-3">
-                  <dt className="text-gray-500">Form Submissions</dt>
-                  <dd className="text-gray-700">
+                  <dt className="text-stone-500">Form Submissions</dt>
+                  <dd className="text-stone-700">
                     {form._count.formSubmission}
                   </dd>
                 </div>
                 <div className="flex justify-between gap-x-4 py-3">
-                  <dt className="text-gray-500">Created</dt>
-                  <dd className="text-gray-700">
+                  <dt className="text-stone-500">Created</dt>
+                  <dd className="text-stone-700">
                     <time dateTime={workspace.createdAt.toDateString()}>
                       {format(form.createdAt, "MMMM do, yyyy")}
                     </time>

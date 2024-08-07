@@ -4,7 +4,6 @@ import * as React from "react";
 import * as AccordionPrimitive from "@radix-ui/react-accordion";
 import { ChevronDownIcon } from "lucide-react";
 import { cn } from "@mapform/lib/classnames";
-import { Button } from "./button";
 
 const Accordion = AccordionPrimitive.Root;
 
@@ -20,7 +19,7 @@ const AccordionTrigger = React.forwardRef<
   React.ElementRef<typeof AccordionPrimitive.Trigger>,
   React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Trigger>
 >(({ className, children, ...props }, ref) => (
-  <AccordionPrimitive.Header className="flex px-4">
+  <AccordionPrimitive.Header className="flex flex-1 px-4">
     <AccordionPrimitive.Trigger
       className={cn(
         "-mx-3 hover:bg-stone-100 flex-1 pl-2 pr-2 py-1 rounded transition-colors flex items-center mb-[2px] cursor-pointer gap-1 text-sm text-stone-700 [&[data-state=closed]>div]:-rotate-90 [&[data-state=open]>div]:rotate-0",
@@ -45,14 +44,14 @@ const AccordionContent = React.forwardRef<
   }
 >(({ className, children, animate, ...props }, ref) => (
   <AccordionPrimitive.Content
-    className={cn("overflow-hidden text-sm pl-4", {
+    className={cn("overflow-hidden text-sm px-4 pb-4 pt-2", {
       "data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down":
         animate,
     })}
     ref={ref}
     {...props}
   >
-    <div className={cn("p-4 pt-2", className)}>{children}</div>
+    <div className={cn(className)}>{children}</div>
   </AccordionPrimitive.Content>
 ));
 AccordionContent.displayName = AccordionPrimitive.Content.displayName;
