@@ -151,7 +151,7 @@ export function Steps() {
         <thead>
           <tr>
             <th
-              className="p-1.5 text-left text-sm font-semibold text-gray-900 w-32"
+              className="p-1.5 text-left text-sm font-semibold text-stone-900 w-32"
               scope="col"
             />
             {trackSlots.map((_, index) => (
@@ -176,8 +176,8 @@ export function Steps() {
         <tbody className="bg-white">
           {/* STEPS */}
           <tr>
-            <td className="flex justify-between whitespace-nowrap px-6 text-sm font-medium text-gray-900 w-32">
-              <div className="text-xs font-semibold leading-6 text-gray-400 mb-0">
+            <td className="flex justify-between whitespace-nowrap px-6 text-sm font-medium text-stone-900 w-32">
+              <div className="text-xs font-semibold leading-6 text-stone-400 mb-0">
                 Steps
               </div>
               <span>
@@ -191,7 +191,7 @@ export function Steps() {
                   {status === "pending" ? (
                     <Spinner variant="dark" />
                   ) : (
-                    <PlusIcon className="h-4 w-4 text-gray-400" />
+                    <PlusIcon className="h-4 w-4 text-stone-400" />
                   )}
                 </Button>
               </span>
@@ -212,7 +212,7 @@ export function Steps() {
 
                   return (
                     <td
-                      className="whitespace-nowrap p-1.5 text-sm text-gray-500 w-48"
+                      className="whitespace-nowrap p-1.5 text-sm text-stone-700 w-48"
                       key={stepId}
                     >
                       <Draggable id={stepId}>
@@ -245,8 +245,8 @@ export function Steps() {
 
           {/* DATA */}
           <tr>
-            <td className="flex justify-between whitespace-nowrap px-6 text-sm font-medium text-gray-900 w-32">
-              <div className="text-xs font-semibold leading-6 text-gray-400 mb-0">
+            <td className="flex justify-between whitespace-nowrap px-6 text-sm font-medium text-stone-900 w-32">
+              <div className="text-xs font-semibold leading-6 text-stone-400 mb-0">
                 Data
               </div>
               <span>
@@ -260,7 +260,7 @@ export function Steps() {
                   {status === "pending" ? (
                     <Spinner variant="dark" />
                   ) : (
-                    <PlusIcon className="h-4 w-4 text-gray-400" />
+                    <PlusIcon className="h-4 w-4 text-stone-400" />
                   )}
                 </Button>
               </span>
@@ -277,7 +277,7 @@ export function Steps() {
                 {formWithSteps.dataTracks.map((dataTrack) => {
                   return (
                     <td
-                      className="whitespace-nowrap p-1.5 text-sm text-gray-500 w-48"
+                      className="whitespace-nowrap p-1.5 text-sm text-stone-700 w-48"
                       key={dataTrack.id}
                     >
                       <Draggable id={dataTrack.id} key={dataTrack.id}>
