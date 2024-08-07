@@ -41,23 +41,15 @@ export function StepDrawerContent() {
       </DrawerHeader>
 
       <Accordion defaultValue={["item-1"]} type="multiple">
-        <AccordionItem className="border-t border-b" value="item-1">
-          <AccordionTrigger className="px-4">
-            <h3 className="text-xs font-semibold leading-6 text-gray-400 mb-0">
-              General
-            </h3>
-          </AccordionTrigger>
-          <AccordionContent className="px-4">
+        <AccordionItem value="item-1">
+          <AccordionTrigger>General</AccordionTrigger>
+          <AccordionContent>
             <GeneralForm currentStep={currentStep} />
           </AccordionContent>
         </AccordionItem>
-        <AccordionItem className="border-b" value="item-2">
-          <AccordionTrigger className="px-4">
-            <h3 className="text-xs font-semibold leading-6 text-gray-400 mb-0">
-              Danger Zone
-            </h3>
-          </AccordionTrigger>
-          <AccordionContent className="px-4">
+        <AccordionItem value="item-2">
+          <AccordionTrigger>Danger Zone</AccordionTrigger>
+          <AccordionContent>
             <DeleteButton stepId={currentStep.id} />
           </AccordionContent>
         </AccordionItem>
