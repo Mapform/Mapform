@@ -34,7 +34,7 @@ export function StepDrawerContent() {
         <div className="-mr-2">
           <DrawerTrigger asChild>
             <Button size="sm" variant="ghost">
-              <ArrowLeftIcon className="h-5 w-5" />
+              <ArrowLeftIcon className="h-4 w-4" />
             </Button>
           </DrawerTrigger>
         </div>

@@ -23,6 +23,7 @@ import { updateForm } from "~/data/forms/update";
 import { createDataTrack } from "~/data/datatracks/create";
 import { Draggable } from "../draggable";
 import { useContainerContext } from "../context";
+import { Badge } from "@mapform/ui/components/badge";
 
 export function Steps() {
   const {
@@ -159,11 +160,14 @@ export function Steps() {
                 key={index}
                 scope="col"
               >
-                {currentStepIndex === index ? (
+                {/* {currentStepIndex === index ? (
                   <div className="absolute bg-primary w-[2px] h-[200px] z-10 -left-[1px] top-0" />
-                ) : null}
-                <span className="ml-3 text-xs font-semibold text-stone-400">
-                  Step {index + 1}
+                ) : null} */}
+                <span className="text-xs font-semibold text-stone-400">
+                  <span className="mr-2">• Step {index + 1}</span>
+                  {currentStepIndex === index ? (
+                    <Badge variant="secondary">Current</Badge>
+                  ) : null}
                 </span>
               </th>
             ))}
@@ -273,7 +277,7 @@ export function Steps() {
                 {formWithSteps.dataTracks.map((dataTrack) => {
                   return (
                     <td
-                      className="whitespace-nowrap p-1.5 text-sm text-gray-500"
+                      className="whitespace-nowrap p-1.5 text-sm text-gray-500 w-48"
                       key={dataTrack.id}
                     >
                       <Draggable id={dataTrack.id} key={dataTrack.id}>
