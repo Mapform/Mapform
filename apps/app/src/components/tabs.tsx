@@ -18,7 +18,7 @@ export function Tabs({ name, isLoading, tabs, action, children }: TabsProps) {
 
   return (
     <div className="flex flex-col flex-1">
-      <div className="md:flex md:items-center md:justify-between relative pt-6 px-6">
+      <div className="md:flex md:items-center md:justify-between relative pt-4 px-4">
         {isLoading ? (
           <Skeleton className="w-48 h-6" />
         ) : (
@@ -26,7 +26,7 @@ export function Tabs({ name, isLoading, tabs, action, children }: TabsProps) {
             {name}
           </h3>
         )}
-        <div className="absolute top-6 right-6">{action}</div>
+        <div className="absolute top-4 right-4">{action}</div>
       </div>
       <div className="mt-4 border-b border-gray-200">
         <div className="sm:hidden">
@@ -40,7 +40,7 @@ export function Tabs({ name, isLoading, tabs, action, children }: TabsProps) {
           </select>
         </div>
         <div className="hidden sm:block">
-          <nav className="-mb-px flex space-x-3 mx-6">
+          <nav className="-mb-px flex space-x-3 mx-4">
             {tabs.map((tab) => (
               <Link
                 className={cn(

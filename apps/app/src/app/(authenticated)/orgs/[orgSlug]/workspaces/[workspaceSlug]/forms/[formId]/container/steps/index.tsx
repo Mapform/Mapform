@@ -176,7 +176,7 @@ export function Steps() {
         <tbody className="bg-white">
           {/* STEPS */}
           <tr>
-            <td className="flex justify-between whitespace-nowrap px-6 text-sm font-medium text-stone-900 w-32">
+            <td className="flex justify-between whitespace-nowrap px-4 text-sm font-medium text-stone-900 w-32">
               <div className="text-xs font-semibold leading-6 text-stone-400 mb-0">
                 Steps
               </div>
@@ -245,7 +245,7 @@ export function Steps() {
 
           {/* DATA */}
           <tr>
-            <td className="flex justify-between whitespace-nowrap px-6 text-sm font-medium text-stone-900 w-32">
+            <td className="flex justify-between whitespace-nowrap px-4 text-sm font-medium text-stone-900 w-32">
               <div className="text-xs font-semibold leading-6 text-stone-400 mb-0">
                 Data
               </div>
