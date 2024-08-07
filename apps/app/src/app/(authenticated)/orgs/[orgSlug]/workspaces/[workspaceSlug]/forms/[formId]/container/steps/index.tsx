@@ -17,18 +17,19 @@ import { Spinner } from "@mapform/ui/components/spinner";
 import { PlusIcon } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { pluralize } from "@mapform/lib/pluralize";
+import { Badge } from "@mapform/ui/components/badge";
 import { useAction } from "next-safe-action/hooks";
 import { createStep } from "~/data/steps/create";
 import { updateForm } from "~/data/forms/update";
 import { createDataTrack } from "~/data/datatracks/create";
 import { Draggable } from "../draggable";
 import { useContainerContext } from "../context";
-import { Badge } from "@mapform/ui/components/badge";
 import {
   StepDrawerContent,
   StepDrawerRoot,
   StepDrawerTrigger,
 } from "../step-drawer";
+import { DatatrackContent, DatatrackDrawerRoot } from "../datatrack-drawer";
 
 export function Steps() {
   const {
@@ -290,36 +291,44 @@ export function Steps() {
                       className="whitespace-nowrap p-1.5 text-sm text-stone-700 w-48"
                       key={dataTrack.id}
                     >
-                      <Draggable id={dataTrack.id} key={dataTrack.id}>
-                        <button
-                          className={cn(
-                            "flex relative px-3 rounded-md text-md h-12 w-full bg-blue-200",
-                            {
-                              "ring-4 ring-blue-500":
-                                currentDataTrack?.id === dataTrack.id,
-                            }
-                          )}
-                          onClick={() => {
-                            if (currentDataTrack?.id === dataTrack.id) {
-                              setCurrentDataTrack();
-                              return;
-                            }
-                            setCurrentDataTrack(dataTrack.id);
-                          }}
-                          type="button"
-                        >
-                          <div className="flex-1 h-full flex justify-center items-center bg-blue-300">
-                            <span className="line-clamp-1.5 break-words px-1 text-sm">
-                              {dataTrack.layers.length}{" "}
-                              {pluralize(
-                                "layer",
-                                "layers",
-                                dataTrack.layers.length
-                              )}
-                            </span>
-                          </div>
-                        </button>
-                      </Draggable>
+                      <DatatrackDrawerRoot
+                        onOpenChange={(isOpen) => {
+                          if (!isOpen) setCurrentDataTrack();
+                        }}
+                        open={currentDataTrack?.id === dataTrack.id}
+                      >
+                        <Draggable id={dataTrack.id} key={dataTrack.id}>
+                          <button
+                            className={cn(
+                              "flex relative px-3 rounded-md text-md h-12 w-full bg-blue-200",
+                              {
+                                "ring-4 ring-blue-500":
+                                  currentDataTrack?.id === dataTrack.id,
+                              }
+                            )}
+                            onClick={() => {
+                              if (currentDataTrack?.id === dataTrack.id) {
+                                setCurrentDataTrack();
+                                return;
+                              }
+                              setCurrentDataTrack(dataTrack.id);
+                            }}
+                            type="button"
+                          >
+                            <div className="flex-1 h-full flex justify-center items-center bg-blue-300">
+                              <span className="line-clamp-1.5 break-words px-1 text-sm">
+                                {dataTrack.layers.length}{" "}
+                                {pluralize(
+                                  "layer",
+                                  "layers",
+                                  dataTrack.layers.length
+                                )}
+                              </span>
+                            </div>
+                          </button>
+                        </Draggable>
+                        <DatatrackContent />
+                      </DatatrackDrawerRoot>
                     </td>
                   );
                 })}

@@ -20,8 +20,7 @@ export const StepDrawerRoot = Drawer;
 export const StepDrawerTrigger = DrawerTrigger;
 
 export function StepDrawerContent() {
-  const { currentStep, setViewState, viewState, currentDataTrack } =
-    useContainerContext();
+  const { currentStep } = useContainerContext();
 
   if (!currentStep) {
     return <div className="bg-white w-[400px] border-l" />;
