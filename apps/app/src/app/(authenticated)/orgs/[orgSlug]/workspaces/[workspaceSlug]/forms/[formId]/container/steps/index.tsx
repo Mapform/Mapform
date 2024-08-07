@@ -24,6 +24,11 @@ import { createDataTrack } from "~/data/datatracks/create";
 import { Draggable } from "../draggable";
 import { useContainerContext } from "../context";
 import { Badge } from "@mapform/ui/components/badge";
+import {
+  StepDrawerContent,
+  StepDrawerRoot,
+  StepDrawerTrigger,
+} from "../step-drawer";
 
 export function Steps() {
   const {
@@ -215,27 +220,32 @@ export function Steps() {
                       className="whitespace-nowrap p-1.5 text-sm text-stone-700 w-48"
                       key={stepId}
                     >
-                      <Draggable id={stepId}>
-                        <button
-                          className={cn(
-                            "flex relative px-3 rounded-md text-md h-12 w-full bg-orange-200",
-                            {
-                              "ring-4 ring-orange-500":
-                                currentStep?.id === stepId,
-                            }
-                          )}
-                          onClick={() => {
-                            setCurrentStep(step.id);
-                          }}
-                          type="button"
-                        >
-                          <div className="flex-1 h-full flex justify-center items-center bg-orange-300">
-                            <span className="line-clamp-1.5 break-words px-1 text-sm">
-                              {step.title || "Untitled"}
-                            </span>
-                          </div>
-                        </button>
-                      </Draggable>
+                      <StepDrawerRoot key={stepId}>
+                        <Draggable id={stepId}>
+                          <StepDrawerTrigger asChild>
+                            <button
+                              className={cn(
+                                "flex relative px-3 rounded-md text-md h-12 w-full bg-orange-200",
+                                {
+                                  "ring-4 ring-orange-500":
+                                    currentStep?.id === stepId,
+                                }
+                              )}
+                              onClick={() => {
+                                setCurrentStep(step.id);
+                              }}
+                              type="button"
+                            >
+                              <div className="flex-1 h-full flex justify-center items-center bg-orange-300">
+                                <span className="line-clamp-1.5 break-words px-1 text-sm">
+                                  {step.title || "Untitled"}
+                                </span>
+                              </div>
+                            </button>
+                          </StepDrawerTrigger>
+                        </Draggable>
+                        <StepDrawerContent />
+                      </StepDrawerRoot>
                     </td>
                   );
                 })}
