@@ -23,7 +23,7 @@ export const DatatrackDrawerRoot = Drawer;
 export const DatatrackTrigger = DrawerTrigger;
 
 export function DatatrackContent() {
-  const { currentDataTrack, setCurrentDataTrack } = useContainerContext();
+  const { currentDataTrack } = useContainerContext();
 
   return (
     <DrawerContent>

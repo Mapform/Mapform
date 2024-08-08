@@ -16,7 +16,7 @@ export function DeleteButton({ stepId }: DeleteButtonProps) {
   const pathname = usePathname();
   const createQueryString = useCreateQueryString();
   const { execute, status } = useAction(deleteStep);
-  const { setDragSteps, setCurrentStep } = useContainerContext();
+  const { setDragSteps, setQueryParamFor } = useContainerContext();
 
   return (
     <Button
@@ -28,7 +28,7 @@ export function DeleteButton({ stepId }: DeleteButtonProps) {
           const lastDragStep = newDragSteps[newDragSteps.length - 1];
 
           if (lastDragStep) {
-            setCurrentStep(lastDragStep);
+            setQueryParamFor("s", lastDragStep);
             router.push(`${pathname}?${createQueryString("s", lastDragStep)}`);
           }
 

@@ -35,12 +35,12 @@ export function Steps() {
   const {
     dragSteps,
     setDragSteps,
-    setCurrentStep,
     formWithSteps,
     viewState,
     currentStep,
     currentDataTrack,
-    setCurrentDataTrack,
+    setQueryParamFor,
+    currentEditableStep,
   } = useContainerContext();
   // TODO: Get rid of react-query?
   const { mutateAsync: updateFormMutation } = useMutation({
@@ -124,7 +124,7 @@ export function Steps() {
     if (!newStepId || !newStep.data) return;
 
     setDragSteps((prev) => [...prev, newStepId]);
-    setCurrentStep(newStepId);
+    setQueryParamFor("s", newStepId);
   };
 
   const lastDataTrackStepIndex =
@@ -164,13 +164,13 @@ export function Steps() {
               <th
                 className="h-12 pl-1.5 pb-0 w-32 text-left relative"
                 key={index}
+                onClick={() => {
+                  setQueryParamFor("s", dragSteps[index]);
+                }}
                 scope="col"
               >
-                {/* {currentStepIndex === index ? (
-                  <div className="absolute bg-primary w-[2px] h-[200px] z-10 -left-[1px] top-0" />
-                ) : null} */}
                 <span className="text-xs font-semibold text-stone-400">
-                  <span className="mr-2">• Step {index + 1}</span>
+                  <span className="mr-2">Step {index + 1}</span>
                   {currentStepIndex === index ? (
                     <Badge variant="secondary">Current</Badge>
                   ) : null}
@@ -221,7 +221,14 @@ export function Steps() {
                       className="whitespace-nowrap p-1.5 text-sm text-stone-700 w-48 min-w-40"
                       key={stepId}
                     >
-                      <StepDrawerRoot key={stepId}>
+                      <StepDrawerRoot
+                        key={stepId}
+                        onOpenChange={(isOpen) => {
+                          if (!isOpen && currentEditableStep?.id === stepId)
+                            setQueryParamFor("e");
+                        }}
+                        open={currentEditableStep?.id === stepId}
+                      >
                         <Draggable id={stepId}>
                           <StepDrawerTrigger asChild>
                             <button
@@ -229,11 +236,15 @@ export function Steps() {
                                 "flex relative px-3 rounded-md text-md h-12 w-full bg-orange-200",
                                 {
                                   "ring-4 ring-orange-500":
-                                    currentStep?.id === stepId,
+                                    currentEditableStep?.id === stepId,
                                 }
                               )}
                               onClick={() => {
-                                setCurrentStep(step.id);
+                                if (currentEditableStep?.id === step.id) {
+                                  setQueryParamFor("e");
+                                  return;
+                                }
+                                setQueryParamFor("e", stepId);
                               }}
                               type="button"
                             >
@@ -293,7 +304,7 @@ export function Steps() {
                     >
                       <DatatrackDrawerRoot
                         onOpenChange={(isOpen) => {
-                          if (!isOpen) setCurrentDataTrack();
+                          if (!isOpen) setQueryParamFor("d");
                         }}
                         open={currentDataTrack?.id === dataTrack.id}
                       >
@@ -308,10 +319,10 @@ export function Steps() {
                             )}
                             onClick={() => {
                               if (currentDataTrack?.id === dataTrack.id) {
-                                setCurrentDataTrack();
+                                setQueryParamFor("d");
                                 return;
                               }
-                              setCurrentDataTrack(dataTrack.id);
+                              setQueryParamFor("d", dataTrack.id);
                             }}
                             type="button"
                           >

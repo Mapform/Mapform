@@ -27,15 +27,15 @@ export interface ContainerContextProps {
   dragSteps: string[];
   formWithSteps: NonNullable<FormWithSteps["data"]>;
   currentStep: StepWithLocation | undefined;
-  viewState: ViewState;
-  setViewState: Dispatch<SetStateAction<ViewState>>;
-  setDragSteps: Dispatch<SetStateAction<string[]>>;
-  setCurrentStep: (stepId: string) => void;
-  debouncedUpdateStep: typeof updateStep;
   currentDataTrack:
     | NonNullable<FormWithSteps["data"]>["dataTracks"][number]
     | undefined;
-  setCurrentDataTrack: (dataTrackId?: string) => void;
+  currentEditableStep: StepWithLocation | undefined;
+  viewState: ViewState;
+  setViewState: Dispatch<SetStateAction<ViewState>>;
+  setDragSteps: Dispatch<SetStateAction<string[]>>;
+  debouncedUpdateStep: typeof updateStep;
+  setQueryParamFor: (param: "d" | "e" | "s", value?: string) => void;
   onMoveEnd?: ((e: ViewStateChangeEvent) => void) | undefined;
   points: Points;
   bounds: LngLatBounds | undefined;
@@ -74,8 +74,12 @@ export function ContainerProvider({
   const queryClient = useQueryClient();
   const searchParams = useSearchParams();
   const createQueryString = useCreateQueryString();
+  // Selected step view
   const s = searchParams.get("s");
+  // Selected data track
   const d = searchParams.get("d");
+  // Selected editable step
+  const e = searchParams.get("e");
 
   const currentDataTrack = formWithSteps.dataTracks.find(
     (track) => track.id === d
@@ -84,6 +88,8 @@ export function ContainerProvider({
   const currentStepIndex = formWithSteps.steps.findIndex(
     (step) => step.id === s
   );
+
+  const currentEditableStep = formWithSteps.steps.find((step) => step.id === e);
 
   const dataTrackForActiveStep = formWithSteps.dataTracks.find((track) => {
     return (
@@ -147,8 +153,6 @@ export function ContainerProvider({
   const points = data?.data?.points.filter(notEmpty) || [];
   const debouncedUpdateStep = useDebounce(updateStepMutation, 500);
 
-  console.log("points", points, dataTrackForActiveStep?.id, bounds);
-
   useEffect(() => {
     if (formWithSteps.steps[0] && !s) {
       router.push(
@@ -157,20 +161,6 @@ export function ContainerProvider({
     }
   }, [s, formWithSteps.steps, pathname, router, createQueryString]);
 
-  const setCurrentStep = (stepId: string) => {
-    router.replace(`${pathname}?${createQueryString("s", stepId)}`);
-    const step = formWithSteps.steps.find((s2) => s2.id === stepId);
-
-    if (!step) return;
-
-    map.current?.flyTo({
-      center: [step.longitude, step.latitude],
-      zoom: step.zoom,
-      pitch: step.pitch,
-      bearing: step.bearing,
-      duration: 1000,
-    });
-  };
   // We hold the steps in its own React state due to this issue: https://github.com/clauderic/dnd-kit/issues/921
   const [dragSteps, setDragSteps] = useState<string[]>(
     formWithSteps.steps.map((step) => step.id)
@@ -186,16 +176,48 @@ export function ContainerProvider({
     padding: initialViewState.padding,
   });
 
-  const setCurrentDataTrack = (dataTrackId?: string) => {
-    if (dataTrackId) {
-      router.replace(`${pathname}?${createQueryString("d", dataTrackId)}`);
+  const setQueryParamFor = (param: "d" | "e" | "s", value?: string) => {
+    // Get current search params
+    const current = new URLSearchParams(Array.from(searchParams.entries()));
 
-      return;
+    // Clear the param if value is not provided
+    if (!value) {
+      current.delete(param);
+    } else {
+      if (param === "e") {
+        current.set("s", value);
+        current.set("e", value);
+        current.delete("d");
+      }
+
+      if (param === "d") {
+        current.set("d", value);
+        current.delete("e");
+      }
+
+      if (param === "s") {
+        current.set("s", value);
+        current.delete("e");
+        current.delete("d");
+
+        const step = formWithSteps.steps.find((s2) => s2.id === value);
+
+        if (!step) return;
+
+        map.current?.flyTo({
+          center: [step.longitude, step.latitude],
+          zoom: step.zoom,
+          pitch: step.pitch,
+          bearing: step.bearing,
+          duration: 1000,
+        });
+      }
     }
 
-    const nextSearchParams = new URLSearchParams(searchParams.toString());
-    nextSearchParams.delete("d");
-    router.replace(`${pathname}?${nextSearchParams.toString()}`);
+    const search = current.toString();
+    const query = search ? `?${search}` : "";
+
+    router.push(`${pathname}${query}`);
   };
 
   const onMoveEnd = () => {
@@ -210,7 +232,6 @@ export function ContainerProvider({
       value={{
         map,
         currentStep,
-        setCurrentStep,
         dragSteps,
         setDragSteps,
         viewState,
@@ -218,7 +239,8 @@ export function ContainerProvider({
         formWithSteps,
         debouncedUpdateStep,
         currentDataTrack,
-        setCurrentDataTrack,
+        currentEditableStep,
+        setQueryParamFor,
         onMoveEnd,
         points,
         bounds,
