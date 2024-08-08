@@ -17,7 +17,7 @@ export function Tabs({ name, isLoading, tabs, action, children }: TabsProps) {
   const pathname = usePathname();
 
   return (
-    <div className="flex flex-col flex-1">
+    <div className="flex flex-col flex-1 overflow-hidden">
       <div className="md:flex md:items-center md:justify-between relative pt-4 px-4">
         {isLoading ? (
           <Skeleton className="w-48 h-6" />
@@ -58,7 +58,7 @@ export function Tabs({ name, isLoading, tabs, action, children }: TabsProps) {
           </nav>
         </div>
       </div>
-      <div className="flex flex-col flex-1 p-6">{children}</div>
+      <div className="flex flex-col flex-1 p-6 overflow-hidden">{children}</div>
     </div>
   );
 }

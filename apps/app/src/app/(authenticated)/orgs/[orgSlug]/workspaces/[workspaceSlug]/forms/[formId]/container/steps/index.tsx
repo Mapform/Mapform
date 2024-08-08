@@ -152,8 +152,8 @@ export function Steps() {
   );
 
   return (
-    <div className="border-t bg-white overflow-x-auto">
-      <table className="table-fixed min-w-full overflow-hidden">
+    <div className="border-t bg-background overflow-x-auto">
+      <table className="table-fixed min-w-full">
         <thead>
           <tr>
             <th
@@ -218,7 +218,7 @@ export function Steps() {
 
                   return (
                     <td
-                      className="whitespace-nowrap p-1.5 text-sm text-stone-700 w-48"
+                      className="whitespace-nowrap p-1.5 text-sm text-stone-700 w-48 min-w-40"
                       key={stepId}
                     >
                       <StepDrawerRoot key={stepId}>
@@ -288,7 +288,7 @@ export function Steps() {
                 {formWithSteps.dataTracks.map((dataTrack) => {
                   return (
                     <td
-                      className="whitespace-nowrap p-1.5 text-sm text-stone-700 w-48"
+                      className="whitespace-nowrap p-1.5 text-sm text-stone-700 w-48 min-w-40"
                       key={dataTrack.id}
                     >
                       <DatatrackDrawerRoot
