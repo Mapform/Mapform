@@ -157,7 +157,8 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
           >
             <div
               className={cn(
-                "absolute top-0 left-0 bottom-0 w-full flex-shrink-0 backdrop-blur-md bg-white/85 shadow z-10 transition-[width,transform]",
+                // white/85 shadow
+                "absolute top-0 left-0 bottom-0 w-full flex-shrink-0 backdrop-blur-md bg-background z-10 transition-[width,transform]",
                 currentStep?.contentViewType === "FULL"
                   ? "w-full"
                   : "w-[320px] lg:w-[400px]"
