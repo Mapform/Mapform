@@ -119,7 +119,7 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
     const [isSelectingPinLocationFor, setIsSelectingPinLocationFor] = useState<
       string | null
     >(null);
-    const { ref: drawerRef, bounds } = useMeasure<HTMLDivElement>();
+    const { ref: drawerRef } = useMeasure<HTMLDivElement>();
 
     const styleLoadedGuardState = useState(false);
 
@@ -134,7 +134,7 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
     return (
       <Form {...form}>
         <form
-          className="relative w-full h-full"
+          className="relative w-full h-full flex"
           onSubmit={form.handleSubmit(onSubmit)}
         >
           <CustomBlockContext.Provider
@@ -143,7 +143,7 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
               viewState: {
                 ...viewState,
                 padding: {
-                  left: bounds.width || 0,
+                  left: 0,
                   right: 0,
                   top: 0,
                   bottom: 0,
@@ -157,18 +157,17 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
           >
             <div
               className={cn(
-                // white/85 shadow
-                "absolute top-0 left-0 bottom-0 w-full flex-shrink-0 backdrop-blur-md bg-background z-10 transition-[width,transform]",
+                "flex-shrink-0 backdrop-blur-md bg-background z-10 transition-[width,transform]",
+                {
+                  "pl-6": editable && currentStep?.contentViewType !== "HIDDEN",
+                },
                 currentStep?.contentViewType === "FULL"
                   ? "w-full"
-                  : "w-[320px] lg:w-[400px]"
+                  : currentStep?.contentViewType === "PARTIAL"
+                    ? "w-[320px] lg:w-[400px]"
+                    : "w-0 overflow-hidden"
               )}
               ref={drawerRef}
-              style={{
-                transform: `translateX(${
-                  currentStep?.contentViewType === "HIDDEN" ? -bounds.width : 0
-                }px)`,
-              }}
             >
               {currentStep ? (
                 <Blocknote
