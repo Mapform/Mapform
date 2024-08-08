@@ -10,7 +10,6 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@mapform/ui/components/accordion";
-import { useState } from "react";
 import { ChevronsLeftIcon, PlusIcon } from "lucide-react";
 import { Button } from "@mapform/ui/components/button";
 import { useContainerContext } from "../context";
@@ -24,7 +23,6 @@ export const DatatrackDrawerRoot = Drawer;
 export const DatatrackTrigger = DrawerTrigger;
 
 export function DatatrackContent() {
-  const [showNewLayerSidebar, setShowNewLayerSidebar] = useState(false);
   const { currentDataTrack, setCurrentDataTrack } = useContainerContext();
 
   return (
@@ -39,41 +37,25 @@ export function DatatrackContent() {
           </DrawerTrigger>
         </div>
       </DrawerHeader>
-      {/* {showNewLayerSidebar ? (
-        <NewLayerSidebar setShowNewLayerSidebar={setShowNewLayerSidebar} />
-      ) : null}
-      <div className="p-4 border-b">
-        <Button
-          onClick={() => {
-            setCurrentDataTrack(undefined);
-          }}
-          size="sm"
-          variant="secondary"
-        >
-          <ArrowLeftIcon className="h-4 w-4 mr-1" /> Close
-        </Button>
-      </div> */}
       <NewLayerDrawerRoot>
         <Accordion defaultValue={["item-1"]} type="multiple">
-          <AccordionItem className="border-b" value="item-1">
-            <AccordionTrigger className="px-4">
-              <div className="flex flex-1 justify-between">
-                <h3 className="text-xs font-semibold leading-6 mb-0">Layers</h3>
-                <NewLayerDrawerTrigger asChild>
-                  <Button
-                    // onClick={(e) => {
-                    //   e.stopPropagation();
-                    //   setShowNewLayerSidebar(true);
-                    // }}
-                    size="icon"
-                    variant="ghost"
-                  >
-                    <PlusIcon className="h-4 w-4" />
-                  </Button>
-                </NewLayerDrawerTrigger>
-              </div>
+          <AccordionItem value="item-1">
+            <AccordionTrigger>
+              Layers
+              <NewLayerDrawerTrigger asChild>
+                <Button
+                  className="ml-auto hover:bg-stone-200"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                  }}
+                  size="icon-xs"
+                  variant="ghost"
+                >
+                  <PlusIcon className="h-4 w-4" />
+                </Button>
+              </NewLayerDrawerTrigger>
             </AccordionTrigger>
-            <AccordionContent className="px-4">
+            <AccordionContent>
               {currentDataTrack?.layers.map((layer) => (
                 <div className="capitalize" key={layer.id}>
                   {layer.name ?? `${layer.type.toLocaleLowerCase()} layer`}
