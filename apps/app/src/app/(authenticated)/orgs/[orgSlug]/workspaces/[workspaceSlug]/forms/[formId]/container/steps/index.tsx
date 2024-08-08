@@ -152,7 +152,7 @@ export function Steps() {
   );
 
   return (
-    <div className="border-t bg-background overflow-x-auto">
+    <div className="border-t overflow-x-auto">
       <table className="table-fixed min-w-full">
         <thead>
           <tr>
@@ -162,17 +162,28 @@ export function Steps() {
             />
             {trackSlots.map((_, index) => (
               <th
-                className="h-12 pl-1.5 pb-0 w-32 text-left relative"
+                className={cn(
+                  "pt-4 pb-2 w-32 text-left relative cursor-pointer",
+                  currentStepIndex === index
+                    ? "text-stone-700"
+                    : "text-stone-500",
+                  {
+                    "before:absolute before:bg-stone-100 before:top-1 before:left-0 before:right-0 before:bottom-0 before:rounded-t-md":
+                      currentStepIndex === index,
+                  }
+                )}
                 key={index}
                 onClick={() => {
                   setQueryParamFor("s", dragSteps[index]);
                 }}
                 scope="col"
               >
-                <span className="text-xs font-semibold text-stone-400">
+                <span className="ml-[18px] text-xs font-semibold  relative">
                   <span className="mr-2">Step {index + 1}</span>
                   {currentStepIndex === index ? (
-                    <Badge variant="secondary">Current</Badge>
+                    <Badge className="bg-stone-200" variant="secondary">
+                      Current
+                    </Badge>
                   ) : null}
                 </span>
               </th>
@@ -211,14 +222,20 @@ export function Steps() {
                 items={dragSteps}
                 strategy={horizontalListSortingStrategy}
               >
-                {dragSteps.map((stepId) => {
+                {dragSteps.map((stepId, index) => {
                   const step = formWithSteps.steps.find((s) => s.id === stepId);
 
                   if (!step) return null;
 
                   return (
                     <td
-                      className="whitespace-nowrap p-1.5 text-sm text-stone-700 w-48 min-w-40"
+                      className={cn(
+                        "whitespace-nowrap p-1.5 text-sm text-stone-700 w-48 min-w-40 relative",
+                        {
+                          "before:absolute before:bg-stone-100 before:inset-0":
+                            currentStepIndex === index,
+                        }
+                      )}
                       key={stepId}
                     >
                       <StepDrawerRoot
@@ -296,10 +313,16 @@ export function Steps() {
                 items={formWithSteps.dataTracks}
                 strategy={horizontalListSortingStrategy}
               >
-                {formWithSteps.dataTracks.map((dataTrack) => {
+                {formWithSteps.dataTracks.map((dataTrack, index) => {
                   return (
                     <td
-                      className="whitespace-nowrap p-1.5 text-sm text-stone-700 w-48 min-w-40"
+                      className={cn(
+                        "whitespace-nowrap p-1.5 pb-2 text-sm text-stone-700 w-48 min-w-40 relative",
+                        {
+                          "before:absolute before:bg-stone-100 before:top-0 before:left-0 before:right-0 before:bottom-1 before:rounded-b-md":
+                            currentStepIndex === index,
+                        }
+                      )}
                       key={dataTrack.id}
                     >
                       <DatatrackDrawerRoot
