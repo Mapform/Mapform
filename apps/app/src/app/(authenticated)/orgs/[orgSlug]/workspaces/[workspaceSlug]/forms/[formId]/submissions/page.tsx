@@ -23,7 +23,7 @@ export default async function Submissions({
   });
 
   return (
-    <div className="px-4 sm:px-6 lg:px-8 py-8">
+    <>
       <div className="sm:flex sm:items-center">
         <div className="sm:flex-auto">
           <h1 className="text-base font-semibold leading-6 text-stone-900">
@@ -94,6 +94,6 @@ export default async function Submissions({
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

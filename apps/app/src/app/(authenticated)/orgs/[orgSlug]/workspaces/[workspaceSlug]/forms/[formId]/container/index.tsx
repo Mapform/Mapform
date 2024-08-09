@@ -38,25 +38,8 @@ export function Container({ formId }: { formId: string }) {
           <Spinner variant="dark" />
         </div>
       )} */}
-      <div
-        // Grid: bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]
-        className={cn(
-          "flex flex-col flex-1 overflow-hidden bg-background"
-          // {
-          //   invisible: !mapformLoaded,
-          //   opacity: mapformLoaded ? 1 : 0,
-          // }
-        )}
-      >
-        {/* <div className="flex flex-1 overflow-hidden"> */}
-        {/* MAP */}
+      <div className={cn("flex flex-col flex-1 overflow-hidden bg-background")}>
         <MapFormContainer setMapformLoaded={setMapformLoaded} />
-
-        {/* SIDEBAR */}
-        {/* <Sidebar /> */}
-        {/* </div> */}
-
-        {/* STEPS */}
         <Steps />
       </div>
     </ContainerProvider>
