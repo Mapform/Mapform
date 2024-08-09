@@ -1,6 +1,5 @@
 import { prisma } from "@mapform/db";
 import { auth } from "~/lib/auth";
-import OrgLayout from "../org-layout";
 
 export default async function Settings({
   params,
@@ -28,8 +27,10 @@ export default async function Settings({
   }
 
   return (
-    <OrgLayout name={currentOrg.name} slug={params.orgSlug}>
-      Settings
-    </OrgLayout>
+    <div className="p-4">
+      <h3 className="text-base font-semibold leading-6 text-stone-900 mb-4">
+        Settings
+      </h3>
+    </div>
   );
 }

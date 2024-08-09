@@ -2,7 +2,6 @@ import Link from "next/link";
 import { prisma } from "@mapform/db";
 import { format } from "date-fns";
 import { auth } from "~/lib/auth";
-import OrgLayout from "./org-layout";
 
 export default async function Organization({
   params,
@@ -37,7 +36,10 @@ export default async function Organization({
   }
 
   return (
-    <OrgLayout name={currentOrg.name} slug={params.orgSlug}>
+    <div className="p-4">
+      <h3 className="text-base font-semibold leading-6 text-stone-900 mb-4">
+        {currentOrg.name}
+      </h3>
       <ul className="flex flex-wrap gap-4">
         {currentOrg.workspaces.map((workspace) => (
           <li
@@ -66,6 +68,6 @@ export default async function Organization({
           </li>
         ))}
       </ul>
-    </OrgLayout>
+    </div>
   );
 }
