@@ -194,7 +194,7 @@ export function Steps() {
           {/* STEPS */}
           <tr>
             <td className="flex justify-between whitespace-nowrap px-4 text-sm font-medium text-stone-900 w-32">
-              <div className="text-xs font-semibold leading-6 text-stone-400 mb-0">
+              <div className="text-xs font-semibold leading-6 text-stone-700 mb-0">
                 Steps
               </div>
               <span>
@@ -202,13 +202,13 @@ export function Steps() {
                   className="-mr-1.5"
                   disabled={status === "pending"}
                   onClick={onAdd}
-                  size="icon"
+                  size="icon-xs"
                   variant="ghost"
                 >
                   {status === "pending" ? (
                     <Spinner variant="dark" />
                   ) : (
-                    <PlusIcon className="h-4 w-4 text-stone-400" />
+                    <PlusIcon className="h-4 w-4 text-stone-700" />
                   )}
                 </Button>
               </span>
@@ -285,7 +285,7 @@ export function Steps() {
           {/* DATA */}
           <tr>
             <td className="flex justify-between whitespace-nowrap px-4 text-sm font-medium text-stone-900 w-32">
-              <div className="text-xs font-semibold leading-6 text-stone-400 mb-0">
+              <div className="text-xs font-semibold leading-6 text-stone-700 mb-0">
                 Data
               </div>
               <span>
@@ -293,13 +293,13 @@ export function Steps() {
                   className="-mr-1.5"
                   disabled={status === "pending"}
                   onClick={onAddDataTrack}
-                  size="icon"
+                  size="icon-xs"
                   variant="ghost"
                 >
                   {status === "pending" ? (
                     <Spinner variant="dark" />
                   ) : (
-                    <PlusIcon className="h-4 w-4 text-stone-400" />
+                    <PlusIcon className="h-4 w-4 text-stone-700" />
                   )}
                 </Button>
               </span>
@@ -366,6 +366,32 @@ export function Steps() {
                     </td>
                   );
                 })}
+                {/* Render placeholder slots */}
+                {[
+                  ...Array(
+                    trackSlots.length - formWithSteps.dataTracks.length
+                  ).keys(),
+                ].map((index) => (
+                  <td
+                    className={cn(
+                      "whitespace-nowrap p-1.5 pb-2 text-sm text-stone-700 w-48 min-w-40 relative",
+                      {
+                        "before:absolute before:bg-stone-100 before:top-0 before:left-0 before:right-0 before:bottom-1 before:rounded-b-md":
+                          currentStepIndex ===
+                          index + formWithSteps.dataTracks.length,
+                      }
+                    )}
+                    key={index}
+                  >
+                    <button
+                      className="w-full h-12 flex justify-center items-center bg-blue-200 rounded-md opacity-0 hover:opacity-100 relative"
+                      disabled={status === "pending"}
+                      onClick={onAddDataTrack}
+                    >
+                      <PlusIcon className="h-6 w-6" />
+                    </button>
+                  </td>
+                ))}
               </SortableContext>
             </DndContext>
           </tr>
