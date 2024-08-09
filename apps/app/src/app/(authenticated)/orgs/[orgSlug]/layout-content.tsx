@@ -70,7 +70,11 @@ export function TopContent({
     <div className="text-sm text-stone-700 space-y-4 mt-4">
       <section>
         {topLinks.map((link) => (
-          <NavLink key={link.href} {...link} />
+          <NavLink
+            isActive={pathname === link.href}
+            key={link.href}
+            {...link}
+          />
         ))}
       </section>
       <section>
