@@ -9,46 +9,38 @@ import {
   FormMessage,
   Form,
   zodResolver,
-  FormDescription,
 } from "@mapform/ui/components/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@mapform/ui/components/select";
 import { toast } from "@mapform/ui/components/toaster";
 import { useAction } from "next-safe-action/hooks";
 import { useDebounce } from "@mapform/lib/use-debounce";
 import type { StepWithLocation } from "@mapform/db/extentsions/steps";
 import { useCallback, useEffect } from "react";
+import { Input } from "@mapform/ui/components/input";
+import { updateDataTrack } from "~/data/datatracks/update-datatrack";
 import {
-  type UpdateStepSchema,
-  updateStepSchema,
-} from "~/data/steps/update/schema";
-import { updateStep } from "~/data/steps/update";
+  updateDataTrackSchema,
+  type UpdateDataTrackSchema,
+} from "~/data/datatracks/update-datatrack/schema";
+import type { FormWithSteps } from "~/data/forms/get-form-with-steps";
 
 interface GeneralFormProps {
-  currentStep: StepWithLocation;
+  currentDataTrack: NonNullable<FormWithSteps["data"]>["dataTracks"][number];
 }
 
-export function GeneralForm({ currentStep }: GeneralFormProps) {
-  const form = useForm<UpdateStepSchema>({
-    resolver: zodResolver(updateStepSchema),
+export function GeneralForm({ currentDataTrack }: GeneralFormProps) {
+  const form = useForm<UpdateDataTrackSchema>({
+    resolver: zodResolver(updateDataTrackSchema),
     defaultValues: {
-      stepId: currentStep.id,
-      data: {
-        contentViewType: currentStep.contentViewType,
-      },
+      datatrackId: currentDataTrack.id,
+      name: currentDataTrack.name ?? "",
     },
   });
-  const updateFormState = (step: StepWithLocation) => {
-    form.setValue("data", step);
-  };
-  const debouncedUpdateFormState = useDebounce(updateFormState, 500);
+  // const updateFormState = (step: StepWithLocation) => {
+  //   form.setValue("data", step);
+  // };
+  // const debouncedUpdateFormState = useDebounce(updateFormState, 500);
 
-  const { execute, status } = useAction(updateStep, {
+  const { execute } = useAction(updateDataTrack, {
     onSuccess: () => {
       toast("Step settings updated ✅");
     },
@@ -58,20 +50,19 @@ export function GeneralForm({ currentStep }: GeneralFormProps) {
   });
 
   const onSubmit = useCallback(
-    (data: UpdateStepSchema) => {
-      if (!currentStep.formId) {
+    (data: UpdateDataTrackSchema) => {
+      if (!currentDataTrack.formId) {
         throw new Error("Form ID is required.");
       }
 
+      console.log(11111, data);
+
       execute({
-        stepId: currentStep.id,
-        data: {
-          contentViewType: data.data.contentViewType,
-          formId: currentStep.formId,
-        },
+        datatrackId: data.datatrackId,
+        name: data.name,
       });
     },
-    [currentStep, execute]
+    [currentDataTrack, execute]
   );
 
   useEffect(() => {
@@ -81,49 +72,27 @@ export function GeneralForm({ currentStep }: GeneralFormProps) {
     };
   }, [form, form.handleSubmit, form.watch, onSubmit]);
 
-  useEffect(() => {
-    // debouncedUpdateFormState(currentStep);
-  }, [currentStep, debouncedUpdateFormState]);
-
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <div>
           <FormField
             control={form.control}
-            name="data.contentViewType"
+            name="name"
             render={({ field }) => (
-              <FormItem>
-                <FormLabel htmlFor="contentViewType">
-                  Content View Type
-                </FormLabel>
+              <FormItem className="flex-1">
+                <FormLabel>Name</FormLabel>
                 <FormControl>
-                  <Select
-                    disabled={status === "executing"}
+                  <Input
+                    disabled={field.disabled}
                     name={field.name}
-                    onValueChange={field.onChange}
-                    value={field.value}
-                  >
-                    <SelectTrigger className="mt-1.5" id="contentViewType">
-                      <SelectValue placeholder="Select a content view type" />
-                    </SelectTrigger>
-                    <SelectContent ref={field.ref}>
-                      <SelectItem className="capitalize" value="FULL">
-                        Full
-                      </SelectItem>
-                      <SelectItem className="capitalize" value="PARTIAL">
-                        Partial
-                      </SelectItem>
-                      <SelectItem className="capitalize" value="HIDDEN">
-                        Hidden
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
+                    onChange={field.onChange}
+                    placeholder="My datatrack"
+                    ref={field.ref}
+                    value={field.value ?? ""}
+                  />
                 </FormControl>
                 <FormMessage />
-                <FormDescription>
-                  Determines how much space the content drawer takes up.
-                </FormDescription>
               </FormItem>
             )}
           />

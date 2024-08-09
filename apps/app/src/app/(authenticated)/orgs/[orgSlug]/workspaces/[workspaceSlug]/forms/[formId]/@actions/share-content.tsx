@@ -37,7 +37,7 @@ export function ShareContent({
         </div>
       ) : (
         <div className="p-4 bg-stone-50 rounded text-sm text-stone-500 text-center">
-          Form not yet been published.
+          Form has not yet been published.
         </div>
       )}
       <Button
@@ -50,9 +50,6 @@ export function ShareContent({
       >
         {status === "executing" ? <Spinner variant="dark" /> : "Publish"}
       </Button>
-      <p className="text-xs text-muted-foreground">
-        Publishing will create a new form version.
-      </p>
     </div>
   );
 }

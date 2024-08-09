@@ -18,12 +18,17 @@ import {
   NewLayerDrawerContent,
   NewLayerDrawerTrigger,
 } from "./new-layer-drawer";
+import { GeneralForm } from "./general-form";
 
 export const DatatrackDrawerRoot = Drawer;
 export const DatatrackTrigger = DrawerTrigger;
 
 export function DatatrackContent() {
   const { currentDataTrack } = useContainerContext();
+
+  if (!currentDataTrack) {
+    return null;
+  }
 
   return (
     <DrawerContent>
@@ -40,6 +45,12 @@ export function DatatrackContent() {
       <NewLayerDrawerRoot>
         <Accordion defaultValue={["item-1"]} type="multiple">
           <AccordionItem value="item-1">
+            <AccordionTrigger>General</AccordionTrigger>
+            <AccordionContent>
+              <GeneralForm currentDataTrack={currentDataTrack} />
+            </AccordionContent>
+          </AccordionItem>
+          <AccordionItem value="item-2">
             <AccordionTrigger>
               Layers
               <NewLayerDrawerTrigger asChild>
@@ -56,7 +67,7 @@ export function DatatrackContent() {
               </NewLayerDrawerTrigger>
             </AccordionTrigger>
             <AccordionContent>
-              {currentDataTrack?.layers.map((layer) => (
+              {currentDataTrack.layers.map((layer) => (
                 <div className="capitalize" key={layer.id}>
                   {layer.name ?? `${layer.type.toLocaleLowerCase()} layer`}
                 </div>

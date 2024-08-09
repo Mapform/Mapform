@@ -7,9 +7,11 @@ import { updateDataTrackSchema } from "./schema";
 
 export const updateDataTrack = authAction
   .schema(updateDataTrackSchema)
-  .action(async ({ parsedInput: { datatrackId }, ctx: { userId } }) => {
+  .action(async ({ parsedInput: { datatrackId, name }, ctx: { userId } }) => {
     const dataTrack = await prisma.dataTrack.update({
-      data: {},
+      data: {
+        name,
+      },
       where: {
         id: datatrackId,
         form: {
