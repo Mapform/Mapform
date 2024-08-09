@@ -3,12 +3,13 @@
 import { prisma } from "@mapform/db";
 import { revalidatePath } from "next/cache";
 import { authAction } from "~/lib/safe-action";
-import { editDataTrackSchema } from "./schema";
+import { updateDataTrackSchema } from "./schema";
 
-export const deleteDatatrack = authAction
-  .schema(editDataTrackSchema)
+export const updateDataTrack = authAction
+  .schema(updateDataTrackSchema)
   .action(async ({ parsedInput: { datatrackId }, ctx: { userId } }) => {
-    const dataTrack = await prisma.dataTrack.delete({
+    const dataTrack = await prisma.dataTrack.update({
+      data: {},
       where: {
         id: datatrackId,
         form: {

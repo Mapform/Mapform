@@ -121,13 +121,12 @@ export const updateStep = authAction
         where: {
           id: stepId,
         },
-        // @ts-expect-error -- This is a valid update
         data,
       });
 
       await tx.form.update({
         where: {
-          id: data.formId as string,
+          id: data.formId,
         },
         data: {
           isDirty: true,

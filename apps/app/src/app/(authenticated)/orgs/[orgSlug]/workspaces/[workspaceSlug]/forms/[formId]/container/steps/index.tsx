@@ -135,11 +135,9 @@ export function Steps() {
 
   const onAddDataTrack = () => {
     execute({
-      data: {
-        formId: formWithSteps.id,
-        startStepIndex: lastDataTrackStepIndex,
-        endStepIndex: lastDataTrackStepIndex + 1,
-      },
+      formId: formWithSteps.id,
+      startStepIndex: lastDataTrackStepIndex,
+      endStepIndex: lastDataTrackStepIndex + 1,
     });
   };
 

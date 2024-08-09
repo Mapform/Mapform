@@ -182,9 +182,9 @@ model Step {
     title           String?
     /// [DocumentType]
     description     Json?
-    zoom            Int
-    pitch           Int
-    bearing         Int
+    zoom            Float
+    pitch           Float
+    bearing         Float
     formId          String?
     form            Form?           @relation(name: "Steps", fields: [formId], references: [id], onDelete: Cascade)
     locationId      Int             @unique

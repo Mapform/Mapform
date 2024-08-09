@@ -15,6 +15,7 @@
     "**/*.cjs",
     "**/*.mjs",
     ".next/types/**/*.ts",
+    "global.d.ts"
   ],
   "exclude": [
     "dist",
