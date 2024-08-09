@@ -52,18 +52,35 @@ export function TopContent({
     },
   ];
 
+  const isFormActive = (workspaceSlug: string, formId: string) => {
+    return pathname.includes(
+      `/orgs/${orgSlug}/workspaces/${workspaceSlug}/forms/${formId}`
+    );
+  };
+
+  const defaultOpenWorkspaces = userOrgWorkspaces
+    .filter((workspace) => {
+      return workspace.forms.some((form) =>
+        isFormActive(workspace.slug, form.id)
+      );
+    })
+    .map((workspace) => workspace.id);
+
   return (
     <div className="text-sm text-stone-700 space-y-4 mt-4">
       <section>
         {topLinks.map((link) => (
-          <NavLink key={link.href} pathname={pathname} {...link} />
+          <NavLink key={link.href} {...link} />
         ))}
       </section>
       <section>
         <h3 className="text-xs font-semibold leading-6 text-stone-400 mb-1">
           Workspaces
         </h3>
-        <AccordionPrimitive.Root type="multiple">
+        <AccordionPrimitive.Root
+          defaultValue={defaultOpenWorkspaces}
+          type="multiple"
+        >
           <ul>
             {userOrgWorkspaces.map((workspace) => (
               <AccordionPrimitive.Item key={workspace.id} value={workspace.id}>
@@ -71,9 +88,9 @@ export function TopContent({
                   className={cn(
                     "-mx-3 hover:bg-stone-100 pl-2 pr-2 py-1 rounded transition-colors flex items-center justify-between mb-[2px] cursor-pointer",
                     {
-                      "bg-stone-100 text-stone-900":
-                        pathname ===
-                        `/orgs/${orgSlug}/workspaces/${workspace.slug}`,
+                      "bg-stone-100 text-stone-900": pathname.includes(
+                        `/orgs/${orgSlug}/workspaces/${workspace.slug}`
+                      ),
                     }
                   )}
                   // We use an on click event handler instead of a Link so that the nested e.stopPropagation() works
@@ -95,7 +112,9 @@ export function TopContent({
                   <div className="flex items-center gap-1 overflow-hidden">
                     <AccordionPrimitive.Trigger
                       className="flex rounded items-center justify-center flex-shrink-0 p-1 [&[data-state=closed]>svg]:-rotate-90 [&[data-state=open]>svg]:rotate-0 hover:bg-stone-200"
-                      onClick={(e) => e.stopPropagation()}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                      }}
                     >
                       <ChevronDownIcon className="h-4 w-4 transition-transform duration-200" />
                     </AccordionPrimitive.Trigger>
@@ -107,10 +126,10 @@ export function TopContent({
                     <NavLink
                       href={`/orgs/${orgSlug}/workspaces/${workspace.slug}/forms/${form.id}`}
                       icon={MapIcon}
+                      isActive={isFormActive(workspace.slug, form.id)}
                       key={form.id}
                       label={form.name}
                       nested
-                      pathname={pathname}
                     />
                   ))}
                 </AccordionPrimitive.Content>
@@ -127,7 +146,7 @@ function NavLink(link: {
   href: string;
   icon: LucideIcon;
   label: string;
-  pathname?: string;
+  isActive?: boolean;
   nested?: boolean;
 }) {
   return (
@@ -135,7 +154,7 @@ function NavLink(link: {
       className={cn(
         "-mx-3 hover:bg-stone-100 px-3 py-1.5 rounded transition-colors flex items-center justify-between mb-[2px]",
         {
-          "bg-stone-100 text-stone-900": link.pathname === link.href,
+          "bg-stone-100 text-stone-900": link.isActive,
         }
       )}
       href={link.href}
