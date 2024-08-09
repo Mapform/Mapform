@@ -76,7 +76,7 @@ export const FormScalarFieldEnumSchema = z.enum(['id','name','slug','isRoot','is
 
 export const StepScalarFieldEnumSchema = z.enum(['id','title','description','zoom','pitch','bearing','formId','locationId','contentViewType','createdAt','updatedAt']);
 
-export const DataTrackScalarFieldEnumSchema = z.enum(['id','startStepIndex','endStepIndex','formId','layerOrder']);
+export const DataTrackScalarFieldEnumSchema = z.enum(['id','startStepIndex','endStepIndex','name','formId','layerOrder']);
 
 export const FormSubmissionScalarFieldEnumSchema = z.enum(['id','publishedFormId','rowId','createdAt','updatedAt']);
 
@@ -459,6 +459,7 @@ export const DataTrackSchema = z.object({
   id: z.string().cuid(),
   startStepIndex: z.number().int(),
   endStepIndex: z.number().int(),
+  name: z.string().nullable(),
   formId: z.string().nullable(),
   layerOrder: z.string().array(),
 })
@@ -1136,6 +1137,7 @@ export const DataTrackSelectSchema: z.ZodType<Prisma.DataTrackSelect> = z.object
   id: z.boolean().optional(),
   startStepIndex: z.boolean().optional(),
   endStepIndex: z.boolean().optional(),
+  name: z.boolean().optional(),
   formId: z.boolean().optional(),
   layerOrder: z.boolean().optional(),
   form: z.union([z.boolean(),z.lazy(() => FormArgsSchema)]).optional(),
@@ -1649,6 +1651,7 @@ export const CreateManyDataTrackAndReturnOutputTypeSelectSchema: z.ZodType<Prism
   id: z.boolean().optional(),
   startStepIndex: z.boolean().optional(),
   endStepIndex: z.boolean().optional(),
+  name: z.boolean().optional(),
   formId: z.boolean().optional(),
   layerOrder: z.boolean().optional(),
   form: z.union([z.boolean(),z.lazy(() => FormArgsSchema)]).optional(),
@@ -2675,6 +2678,7 @@ export const DataTrackWhereInputSchema: z.ZodType<Prisma.DataTrackWhereInput> = 
   id: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   startStepIndex: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
   endStepIndex: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
+  name: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
   formId: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
   layerOrder: z.lazy(() => StringNullableListFilterSchema).optional(),
   form: z.union([ z.lazy(() => FormNullableRelationFilterSchema),z.lazy(() => FormWhereInputSchema) ]).optional().nullable(),
@@ -2685,6 +2689,7 @@ export const DataTrackOrderByWithRelationInputSchema: z.ZodType<Prisma.DataTrack
   id: z.lazy(() => SortOrderSchema).optional(),
   startStepIndex: z.lazy(() => SortOrderSchema).optional(),
   endStepIndex: z.lazy(() => SortOrderSchema).optional(),
+  name: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   formId: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   layerOrder: z.lazy(() => SortOrderSchema).optional(),
   form: z.lazy(() => FormOrderByWithRelationInputSchema).optional(),
@@ -2701,6 +2706,7 @@ export const DataTrackWhereUniqueInputSchema: z.ZodType<Prisma.DataTrackWhereUni
   NOT: z.union([ z.lazy(() => DataTrackWhereInputSchema),z.lazy(() => DataTrackWhereInputSchema).array() ]).optional(),
   startStepIndex: z.union([ z.lazy(() => IntFilterSchema),z.number().int() ]).optional(),
   endStepIndex: z.union([ z.lazy(() => IntFilterSchema),z.number().int() ]).optional(),
+  name: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
   formId: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
   layerOrder: z.lazy(() => StringNullableListFilterSchema).optional(),
   form: z.union([ z.lazy(() => FormNullableRelationFilterSchema),z.lazy(() => FormWhereInputSchema) ]).optional().nullable(),
@@ -2711,6 +2717,7 @@ export const DataTrackOrderByWithAggregationInputSchema: z.ZodType<Prisma.DataTr
   id: z.lazy(() => SortOrderSchema).optional(),
   startStepIndex: z.lazy(() => SortOrderSchema).optional(),
   endStepIndex: z.lazy(() => SortOrderSchema).optional(),
+  name: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   formId: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   layerOrder: z.lazy(() => SortOrderSchema).optional(),
   _count: z.lazy(() => DataTrackCountOrderByAggregateInputSchema).optional(),
@@ -2727,6 +2734,7 @@ export const DataTrackScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.Dat
   id: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
   startStepIndex: z.union([ z.lazy(() => IntWithAggregatesFilterSchema),z.number() ]).optional(),
   endStepIndex: z.union([ z.lazy(() => IntWithAggregatesFilterSchema),z.number() ]).optional(),
+  name: z.union([ z.lazy(() => StringNullableWithAggregatesFilterSchema),z.string() ]).optional().nullable(),
   formId: z.union([ z.lazy(() => StringNullableWithAggregatesFilterSchema),z.string() ]).optional().nullable(),
   layerOrder: z.lazy(() => StringNullableListFilterSchema).optional()
 }).strict();
@@ -4163,6 +4171,7 @@ export const DataTrackCreateInputSchema: z.ZodType<Prisma.DataTrackCreateInput> 
   id: z.string().cuid().optional(),
   startStepIndex: z.number().int(),
   endStepIndex: z.number().int(),
+  name: z.string().optional().nullable(),
   layerOrder: z.union([ z.lazy(() => DataTrackCreatelayerOrderInputSchema),z.string().array() ]).optional(),
   form: z.lazy(() => FormCreateNestedOneWithoutDataTracksInputSchema).optional(),
   layers: z.lazy(() => LayerCreateNestedManyWithoutDataTrackInputSchema).optional()
@@ -4172,6 +4181,7 @@ export const DataTrackUncheckedCreateInputSchema: z.ZodType<Prisma.DataTrackUnch
   id: z.string().cuid().optional(),
   startStepIndex: z.number().int(),
   endStepIndex: z.number().int(),
+  name: z.string().optional().nullable(),
   formId: z.string().optional().nullable(),
   layerOrder: z.union([ z.lazy(() => DataTrackCreatelayerOrderInputSchema),z.string().array() ]).optional(),
   layers: z.lazy(() => LayerUncheckedCreateNestedManyWithoutDataTrackInputSchema).optional()
@@ -4181,6 +4191,7 @@ export const DataTrackUpdateInputSchema: z.ZodType<Prisma.DataTrackUpdateInput> 
   id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   startStepIndex: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   endStepIndex: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   layerOrder: z.union([ z.lazy(() => DataTrackUpdatelayerOrderInputSchema),z.string().array() ]).optional(),
   form: z.lazy(() => FormUpdateOneWithoutDataTracksNestedInputSchema).optional(),
   layers: z.lazy(() => LayerUpdateManyWithoutDataTrackNestedInputSchema).optional()
@@ -4190,6 +4201,7 @@ export const DataTrackUncheckedUpdateInputSchema: z.ZodType<Prisma.DataTrackUnch
   id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   startStepIndex: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   endStepIndex: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   formId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   layerOrder: z.union([ z.lazy(() => DataTrackUpdatelayerOrderInputSchema),z.string().array() ]).optional(),
   layers: z.lazy(() => LayerUncheckedUpdateManyWithoutDataTrackNestedInputSchema).optional()
@@ -4199,6 +4211,7 @@ export const DataTrackCreateManyInputSchema: z.ZodType<Prisma.DataTrackCreateMan
   id: z.string().cuid().optional(),
   startStepIndex: z.number().int(),
   endStepIndex: z.number().int(),
+  name: z.string().optional().nullable(),
   formId: z.string().optional().nullable(),
   layerOrder: z.union([ z.lazy(() => DataTrackCreatelayerOrderInputSchema),z.string().array() ]).optional(),
 }).strict();
@@ -4207,6 +4220,7 @@ export const DataTrackUpdateManyMutationInputSchema: z.ZodType<Prisma.DataTrackU
   id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   startStepIndex: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   endStepIndex: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   layerOrder: z.union([ z.lazy(() => DataTrackUpdatelayerOrderInputSchema),z.string().array() ]).optional(),
 }).strict();
 
@@ -4214,6 +4228,7 @@ export const DataTrackUncheckedUpdateManyInputSchema: z.ZodType<Prisma.DataTrack
   id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   startStepIndex: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   endStepIndex: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   formId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   layerOrder: z.union([ z.lazy(() => DataTrackUpdatelayerOrderInputSchema),z.string().array() ]).optional(),
 }).strict();
@@ -5493,6 +5508,7 @@ export const DataTrackCountOrderByAggregateInputSchema: z.ZodType<Prisma.DataTra
   id: z.lazy(() => SortOrderSchema).optional(),
   startStepIndex: z.lazy(() => SortOrderSchema).optional(),
   endStepIndex: z.lazy(() => SortOrderSchema).optional(),
+  name: z.lazy(() => SortOrderSchema).optional(),
   formId: z.lazy(() => SortOrderSchema).optional(),
   layerOrder: z.lazy(() => SortOrderSchema).optional()
 }).strict();
@@ -5506,6 +5522,7 @@ export const DataTrackMaxOrderByAggregateInputSchema: z.ZodType<Prisma.DataTrack
   id: z.lazy(() => SortOrderSchema).optional(),
   startStepIndex: z.lazy(() => SortOrderSchema).optional(),
   endStepIndex: z.lazy(() => SortOrderSchema).optional(),
+  name: z.lazy(() => SortOrderSchema).optional(),
   formId: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
@@ -5513,6 +5530,7 @@ export const DataTrackMinOrderByAggregateInputSchema: z.ZodType<Prisma.DataTrack
   id: z.lazy(() => SortOrderSchema).optional(),
   startStepIndex: z.lazy(() => SortOrderSchema).optional(),
   endStepIndex: z.lazy(() => SortOrderSchema).optional(),
+  name: z.lazy(() => SortOrderSchema).optional(),
   formId: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
@@ -8696,6 +8714,7 @@ export const DataTrackCreateWithoutFormInputSchema: z.ZodType<Prisma.DataTrackCr
   id: z.string().cuid().optional(),
   startStepIndex: z.number().int(),
   endStepIndex: z.number().int(),
+  name: z.string().optional().nullable(),
   layerOrder: z.union([ z.lazy(() => DataTrackCreatelayerOrderInputSchema),z.string().array() ]).optional(),
   layers: z.lazy(() => LayerCreateNestedManyWithoutDataTrackInputSchema).optional()
 }).strict();
@@ -8704,6 +8723,7 @@ export const DataTrackUncheckedCreateWithoutFormInputSchema: z.ZodType<Prisma.Da
   id: z.string().cuid().optional(),
   startStepIndex: z.number().int(),
   endStepIndex: z.number().int(),
+  name: z.string().optional().nullable(),
   layerOrder: z.union([ z.lazy(() => DataTrackCreatelayerOrderInputSchema),z.string().array() ]).optional(),
   layers: z.lazy(() => LayerUncheckedCreateNestedManyWithoutDataTrackInputSchema).optional()
 }).strict();
@@ -8939,6 +8959,7 @@ export const DataTrackScalarWhereInputSchema: z.ZodType<Prisma.DataTrackScalarWh
   id: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   startStepIndex: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
   endStepIndex: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
+  name: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
   formId: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
   layerOrder: z.lazy(() => StringNullableListFilterSchema).optional()
 }).strict();
@@ -10596,6 +10617,7 @@ export const DataTrackCreateWithoutLayersInputSchema: z.ZodType<Prisma.DataTrack
   id: z.string().cuid().optional(),
   startStepIndex: z.number().int(),
   endStepIndex: z.number().int(),
+  name: z.string().optional().nullable(),
   layerOrder: z.union([ z.lazy(() => DataTrackCreatelayerOrderInputSchema),z.string().array() ]).optional(),
   form: z.lazy(() => FormCreateNestedOneWithoutDataTracksInputSchema).optional()
 }).strict();
@@ -10604,6 +10626,7 @@ export const DataTrackUncheckedCreateWithoutLayersInputSchema: z.ZodType<Prisma.
   id: z.string().cuid().optional(),
   startStepIndex: z.number().int(),
   endStepIndex: z.number().int(),
+  name: z.string().optional().nullable(),
   formId: z.string().optional().nullable(),
   layerOrder: z.union([ z.lazy(() => DataTrackCreatelayerOrderInputSchema),z.string().array() ]).optional(),
 }).strict();
@@ -10672,6 +10695,7 @@ export const DataTrackUpdateWithoutLayersInputSchema: z.ZodType<Prisma.DataTrack
   id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   startStepIndex: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   endStepIndex: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   layerOrder: z.union([ z.lazy(() => DataTrackUpdatelayerOrderInputSchema),z.string().array() ]).optional(),
   form: z.lazy(() => FormUpdateOneWithoutDataTracksNestedInputSchema).optional()
 }).strict();
@@ -10680,6 +10704,7 @@ export const DataTrackUncheckedUpdateWithoutLayersInputSchema: z.ZodType<Prisma.
   id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   startStepIndex: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   endStepIndex: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   formId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   layerOrder: z.union([ z.lazy(() => DataTrackUpdatelayerOrderInputSchema),z.string().array() ]).optional(),
 }).strict();
@@ -11160,6 +11185,7 @@ export const DataTrackCreateManyFormInputSchema: z.ZodType<Prisma.DataTrackCreat
   id: z.string().cuid().optional(),
   startStepIndex: z.number().int(),
   endStepIndex: z.number().int(),
+  name: z.string().optional().nullable(),
   layerOrder: z.union([ z.lazy(() => DataTrackCreatelayerOrderInputSchema),z.string().array() ]).optional(),
 }).strict();
 
@@ -11230,6 +11256,7 @@ export const DataTrackUpdateWithoutFormInputSchema: z.ZodType<Prisma.DataTrackUp
   id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   startStepIndex: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   endStepIndex: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   layerOrder: z.union([ z.lazy(() => DataTrackUpdatelayerOrderInputSchema),z.string().array() ]).optional(),
   layers: z.lazy(() => LayerUpdateManyWithoutDataTrackNestedInputSchema).optional()
 }).strict();
@@ -11238,6 +11265,7 @@ export const DataTrackUncheckedUpdateWithoutFormInputSchema: z.ZodType<Prisma.Da
   id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   startStepIndex: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   endStepIndex: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   layerOrder: z.union([ z.lazy(() => DataTrackUpdatelayerOrderInputSchema),z.string().array() ]).optional(),
   layers: z.lazy(() => LayerUncheckedUpdateManyWithoutDataTrackNestedInputSchema).optional()
 }).strict();
@@ -11246,6 +11274,7 @@ export const DataTrackUncheckedUpdateManyWithoutFormInputSchema: z.ZodType<Prism
   id: z.union([ z.string().cuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   startStepIndex: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   endStepIndex: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   layerOrder: z.union([ z.lazy(() => DataTrackUpdatelayerOrderInputSchema),z.string().array() ]).optional(),
 }).strict();
 

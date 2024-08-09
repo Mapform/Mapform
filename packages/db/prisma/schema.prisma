@@ -201,6 +201,7 @@ model DataTrack {
     id             String   @id @default(cuid())
     startStepIndex Int
     endStepIndex   Int
+    name           String?
     formId         String?
     form           Form?    @relation(name: "DataTracks", fields: [formId], references: [id], onDelete: Cascade)
     // Array of layer IDs
