@@ -325,7 +325,8 @@ export function Steps() {
                     >
                       <DatatrackDrawerRoot
                         onOpenChange={(isOpen) => {
-                          if (!isOpen) setQueryParamFor("d");
+                          if (!isOpen && currentDataTrack?.id === dataTrack.id)
+                            setQueryParamFor("d");
                         }}
                         open={currentDataTrack?.id === dataTrack.id}
                       >
