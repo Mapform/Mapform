@@ -152,7 +152,7 @@ export function Steps() {
   );
 
   return (
-    <div className="border-t overflow-x-auto">
+    <div className="border-t overflow-x-auto px-3 pb-2">
       <table className="table-fixed min-w-full">
         <thead>
           <tr>
@@ -202,7 +202,7 @@ export function Steps() {
                   return (
                     <td
                       className={cn(
-                        "whitespace-nowrap p-1.5 text-sm text-stone-700 w-48 min-w-40 relative",
+                        "whitespace-nowrap p-1 text-sm text-stone-700 w-48 min-w-40 relative",
                         {
                           "before:absolute before:bg-stone-100 before:inset-0":
                             currentStepIndex === index,
@@ -222,9 +222,9 @@ export function Steps() {
                           <StepDrawerTrigger asChild>
                             <button
                               className={cn(
-                                "flex relative px-3 rounded-md text-md h-12 text-background w-full bg-violet-400",
+                                "flex relative px-3 rounded-md text-md h-12 text-orange-950 w-full bg-orange-100",
                                 {
-                                  "ring-4 ring-offset-1 ring-violet-800":
+                                  "ring-2 ring-offset-2 ring-orange-500":
                                     currentEditableStep?.id === stepId,
                                 }
                               )}
@@ -237,8 +237,8 @@ export function Steps() {
                               }}
                               type="button"
                             >
-                              <div className="flex-1 h-full flex justify-center items-center bg-violet-600">
-                                <span className="line-clamp-1.5 break-words px-1 text-sm">
+                              <div className="flex-1 h-full flex justify-center items-center bg-orange-300">
+                                <span className="line-clamp-1 break-words px-1 text-sm">
                                   {step.title || "Untitled"}
                                 </span>
                               </div>
@@ -251,13 +251,13 @@ export function Steps() {
                   );
                 })}
               </SortableContext>
-              <td className="whitespace-nowrap p-1.5 pb-2 text-sm text-stone-700 w-48 min-w-40 relative">
+              <td className="whitespace-nowrap p-1 text-sm text-stone-700 w-48 min-w-40 relative">
                 <button
-                  className="w-full h-12 flex justify-center items-center bg-violet-200 rounded-md relative"
+                  className="w-full h-12 flex justify-center items-center bg-orange-100 rounded-md relative"
                   disabled={status === "pending"}
                   onClick={onAdd}
                 >
-                  <PlusIcon className="h-6 w-6" />
+                  <PlusIcon className="text-orange-950 h-5 w-5" />
                 </button>
               </td>
             </DndContext>
@@ -312,7 +312,7 @@ function DatatrackRow({
           return (
             <td
               className={cn(
-                "whitespace-nowrap p-1.5 pb-2 text-sm text-stone-700 w-48 min-w-40 relative",
+                "whitespace-nowrap p-1 text-sm text-stone-700 w-48 min-w-40 relative",
                 {
                   "before:absolute before:bg-stone-100 before:top-0 before:left-0 before:right-0 before:bottom-1 before:rounded-b-md":
                     currentStepIndex === index,
@@ -330,9 +330,9 @@ function DatatrackRow({
                 <Draggable id={dataTrack.id} key={dataTrack.id}>
                   <button
                     className={cn(
-                      "flex relative px-3 rounded-md text-md h-8 w-full text-background bg-blue-400",
+                      "flex relative px-3 rounded-md text-md h-8 w-full text-blue-950 bg-blue-100",
                       {
-                        "ring-4 ring-offset-1 ring-blue-800":
+                        "ring-2 ring-offset-2 ring-blue-600":
                           currentDataTrack?.id === dataTrack.id,
                       }
                     )}
@@ -345,8 +345,8 @@ function DatatrackRow({
                     }}
                     type="button"
                   >
-                    <div className="flex-1 h-full flex justify-center items-center bg-blue-600">
-                      <span className="line-clamp-1.5 break-words px-1 text-sm">
+                    <div className="flex-1 h-full flex justify-center items-center bg-blue-300">
+                      <span className="line-clamp-1 break-words px-1 text-sm">
                         {dataTrack.layers.length}{" "}
                         {pluralize("layer", "layers", dataTrack.layers.length)}
                       </span>
@@ -364,7 +364,7 @@ function DatatrackRow({
         ].map((index) => (
           <td
             className={cn(
-              "whitespace-nowrap p-1.5 pb-2 text-sm text-stone-700 w-48 min-w-40 relative",
+              "whitespace-nowrap p-1 text-sm text-stone-700 w-48 min-w-40 relative",
               {
                 "before:absolute before:bg-stone-100 before:top-0 before:left-0 before:right-0 before:bottom-1 before:rounded-b-md":
                   currentStepIndex === index + formWithSteps.dataTracks.length,
@@ -373,11 +373,11 @@ function DatatrackRow({
             key={index}
           >
             <button
-              className="w-full h-8 flex justify-center items-center bg-blue-200 rounded-md opacity-0 hover:opacity-100 relative"
+              className="w-full h-8 flex justify-center items-center bg-blue-100 rounded-md opacity-0 hover:opacity-100 relative"
               disabled={status === "pending"}
               onClick={onAddDataTrack}
             >
-              <PlusIcon className="h-6 w-6" />
+              <PlusIcon className="text-blue-950 h-5 w-5" />
             </button>
           </td>
         ))}
