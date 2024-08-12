@@ -14,7 +14,7 @@ export const getLayerData = authAction
         id: dataTrackId,
       },
       include: {
-        layers: {
+        layer: {
           include: {
             pointLayer: true,
           },
@@ -26,14 +26,9 @@ export const getLayerData = authAction
       return undefined;
     }
 
-    const pointLayers = dataTrack.layers
-      .map((layer) => layer.pointLayer)
-      .filter(Boolean) as PointLayer[];
+    const pointLayer = dataTrack.layer?.pointLayer as PointLayer;
 
-    const points = (
-      await Promise.all(
-        pointLayers.map(async (pointLayer) => {
-          return prisma.$queryRaw`
+    const points: Points = await prisma.$queryRaw`
           SELECT "Column".id, "PointCell".id, ST_X("PointCell".value) AS longitude, ST_Y("PointCell".value) AS latitude
           FROM "PointCell"
           JOIN "CellValue" ON "PointCell"."cellvalueid" = "CellValue".id
@@ -44,9 +39,6 @@ export const getLayerData = authAction
           )
           AND "Column".id = ${pointLayer.pointColumnId};
         `;
-        })
-      )
-    ).flat() as Points;
 
     return {
       points,

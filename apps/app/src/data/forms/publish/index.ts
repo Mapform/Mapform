@@ -22,7 +22,7 @@ export const publishForm = authAction
       include: {
         dataTracks: {
           include: {
-            layers: {
+            layer: {
               include: {
                 pointLayer: true,
               },
@@ -47,7 +47,7 @@ export const publishForm = authAction
      * Note: We create with empty stepOrder since we need to create brand new steps and log those IDs later on.
      * Note 2: Transactions currently don't work due to the createWithLocation extension.
      */
-    await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async () => {
       const newPublishedForm = await prisma.form.create({
         data: {
           name: rootForm.name,
@@ -79,35 +79,33 @@ export const publishForm = authAction
       });
 
       await Promise.all(
-        rootDataTracksWithIds.flatMap((dataTrack) =>
-          dataTrack.layers.map((layer) => {
-            const newDataTrack = newDataTracks.find(
-              (ndt) => ndt.id === dataTrack.newId
-            );
+        rootDataTracksWithIds.flatMap((dataTrack) => {
+          const newDataTrack = newDataTracks.find(
+            (ndt) => ndt.id === dataTrack.newId
+          );
 
-            if (!newDataTrack) {
-              throw new Error("Data track not found");
-            }
+          if (!newDataTrack) {
+            throw new Error("Data track not found");
+          }
 
-            if (!layer.pointLayer) {
-              throw new Error("Point layer not found");
-            }
+          const layer = dataTrack.layer;
 
-            return prisma.layer.create({
-              data: {
-                type: layer.type,
-                name: layer.name,
-                dataTrackId: newDataTrack.id,
-                datasetId: layer.datasetId,
-                pointLayer: {
-                  create: {
-                    pointColumnId: layer.pointLayer.pointColumnId,
-                  },
+          if (!layer?.pointLayer) {
+            throw new Error("Point layer not found");
+          }
+
+          return prisma.layer.create({
+            data: {
+              type: layer.type,
+              dataTrackId: newDataTrack.id,
+              pointLayer: {
+                create: {
+                  pointColumnId: layer.pointLayer.pointColumnId,
                 },
               },
-            });
-          })
-        )
+            },
+          });
+        })
       );
 
       // TODO: Improve this. This query is very slow and inefficient.Note that

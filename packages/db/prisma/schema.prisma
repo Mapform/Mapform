@@ -198,15 +198,14 @@ model Step {
 }
 
 model DataTrack {
-    id             String   @id @default(cuid())
+    id             String  @id @default(cuid())
+    name           String?
     startStepIndex Int
     endStepIndex   Int
-    name           String?
+    layerIndex     Int     @default(1)
     formId         String?
-    form           Form?    @relation(name: "DataTracks", fields: [formId], references: [id], onDelete: Cascade)
-    // Array of layer IDs
-    layerOrder     String[]
-    layers         Layer[]
+    form           Form?   @relation(name: "DataTracks", fields: [formId], references: [id], onDelete: Cascade)
+    layer          Layer?
 }
 
 model FormSubmission {
@@ -237,7 +236,6 @@ model Dataset {
     form        Form?
     workspaceId String
     workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-    layers      Layer[]
 }
 
 model Column {
@@ -317,13 +315,10 @@ enum ColumnType {
 
 model Layer {
     id          String      @id @default(cuid())
-    name        String?
     type        LayerType
     pointLayer  PointLayer?
-    dataTrackId String
-    dataTrack   DataTrack?  @relation(fields: [dataTrackId], references: [id], onDelete: Cascade)
-    datasetId   String
-    dataset     Dataset     @relation(fields: [datasetId], references: [id], onDelete: Cascade)
+    dataTrackId String      @unique
+    dataTrack   DataTrack   @relation(fields: [dataTrackId], references: [id], onDelete: Cascade)
 }
 
 model PointLayer {

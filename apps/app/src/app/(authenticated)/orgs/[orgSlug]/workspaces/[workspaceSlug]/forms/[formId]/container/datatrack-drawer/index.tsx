@@ -50,30 +50,6 @@ export function DatatrackContent() {
               <GeneralForm currentDataTrack={currentDataTrack} />
             </AccordionContent>
           </AccordionItem>
-          <AccordionItem value="item-2">
-            <AccordionTrigger>
-              Layers
-              <NewLayerDrawerTrigger asChild>
-                <Button
-                  className="ml-auto hover:bg-stone-200"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                  }}
-                  size="icon-xs"
-                  variant="ghost"
-                >
-                  <PlusIcon className="h-4 w-4" />
-                </Button>
-              </NewLayerDrawerTrigger>
-            </AccordionTrigger>
-            <AccordionContent>
-              {currentDataTrack.layers.map((layer) => (
-                <div className="capitalize" key={layer.id}>
-                  {layer.name ?? `${layer.type.toLocaleLowerCase()} layer`}
-                </div>
-              ))}
-            </AccordionContent>
-          </AccordionItem>
         </Accordion>
         <NewLayerDrawerContent />
       </NewLayerDrawerRoot>

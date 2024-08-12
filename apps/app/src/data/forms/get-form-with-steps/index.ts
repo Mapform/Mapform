@@ -24,7 +24,7 @@ export const getFormWithSteps = authAction
       include: {
         dataTracks: {
           include: {
-            layers: {
+            layer: {
               include: {
                 pointLayer: true,
               },

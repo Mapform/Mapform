@@ -347,8 +347,7 @@ function DatatrackRow({
                   >
                     <div className="flex-1 h-full flex justify-center items-center bg-blue-300">
                       <span className="line-clamp-1 break-words px-1 text-sm">
-                        {dataTrack.layers.length}{" "}
-                        {pluralize("layer", "layers", dataTrack.layers.length)}
+                        {dataTrack.name || "Untitled"}
                       </span>
                     </div>
                   </button>
