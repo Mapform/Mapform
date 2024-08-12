@@ -19,9 +19,11 @@ import { useMutation } from "@tanstack/react-query";
 import { pluralize } from "@mapform/lib/pluralize";
 import { Badge } from "@mapform/ui/components/badge";
 import { useAction } from "next-safe-action/hooks";
+import type { DataTrack } from "@mapform/db";
 import { createStep } from "~/data/steps/create";
 import { updateForm } from "~/data/forms/update";
 import { createDataTrack } from "~/data/datatracks/create";
+import type { FormWithSteps } from "~/data/forms/get-form-with-steps";
 import { Draggable } from "../draggable";
 import { useContainerContext } from "../context";
 import {
@@ -154,10 +156,6 @@ export function Steps() {
       <table className="table-fixed min-w-full">
         <thead>
           <tr>
-            <th
-              className="p-1.5 text-left text-sm font-semibold text-stone-900 w-32"
-              scope="col"
-            />
             {trackSlots.map((_, index) => (
               <th
                 className={cn(
@@ -178,11 +176,7 @@ export function Steps() {
               >
                 <span className="ml-[18px] text-xs font-semibold  relative">
                   <span className="mr-2">Step {index + 1}</span>
-                  {currentStepIndex === index ? (
-                    <Badge className="bg-stone-200" variant="secondary">
-                      Current
-                    </Badge>
-                  ) : null}
+                  {currentStepIndex === index ? <Badge>Current</Badge> : null}
                 </span>
               </th>
             ))}
@@ -191,26 +185,6 @@ export function Steps() {
         <tbody className="bg-white">
           {/* STEPS */}
           <tr>
-            <td className="flex justify-between whitespace-nowrap px-4 text-sm font-medium text-stone-900 w-32">
-              <div className="text-xs font-semibold leading-6 text-stone-700 mb-0">
-                Steps
-              </div>
-              <span>
-                <Button
-                  className="-mr-1.5"
-                  disabled={status === "pending"}
-                  onClick={onAdd}
-                  size="icon-xs"
-                  variant="ghost"
-                >
-                  {status === "pending" ? (
-                    <Spinner variant="dark" />
-                  ) : (
-                    <PlusIcon className="h-4 w-4 text-stone-700" />
-                  )}
-                </Button>
-              </span>
-            </td>
             <DndContext
               collisionDetection={closestCenter}
               onDragEnd={reorderSteps}
@@ -248,9 +222,9 @@ export function Steps() {
                           <StepDrawerTrigger asChild>
                             <button
                               className={cn(
-                                "flex relative px-3 rounded-md text-md h-12 w-full bg-orange-200",
+                                "flex relative px-3 rounded-md text-md h-12 text-background w-full bg-violet-400",
                                 {
-                                  "ring-4 ring-orange-500":
+                                  "ring-4 ring-offset-1 ring-violet-800":
                                     currentEditableStep?.id === stepId,
                                 }
                               )}
@@ -263,7 +237,7 @@ export function Steps() {
                               }}
                               type="button"
                             >
-                              <div className="flex-1 h-full flex justify-center items-center bg-orange-300">
+                              <div className="flex-1 h-full flex justify-center items-center bg-violet-600">
                                 <span className="line-clamp-1.5 break-words px-1 text-sm">
                                   {step.title || "Untitled"}
                                 </span>
@@ -277,125 +251,137 @@ export function Steps() {
                   );
                 })}
               </SortableContext>
+              <td className="whitespace-nowrap p-1.5 pb-2 text-sm text-stone-700 w-48 min-w-40 relative">
+                <button
+                  className="w-full h-12 flex justify-center items-center bg-violet-200 rounded-md relative"
+                  disabled={status === "pending"}
+                  onClick={onAdd}
+                >
+                  <PlusIcon className="h-6 w-6" />
+                </button>
+              </td>
             </DndContext>
           </tr>
 
           {/* DATA */}
-          <tr>
-            <td className="flex justify-between whitespace-nowrap px-4 text-sm font-medium text-stone-900 w-32">
-              <div className="text-xs font-semibold leading-6 text-stone-700 mb-0">
-                Data
-              </div>
-              <span>
-                <Button
-                  className="-mr-1.5"
-                  disabled={status === "pending"}
-                  onClick={onAddDataTrack}
-                  size="icon-xs"
-                  variant="ghost"
-                >
-                  {status === "pending" ? (
-                    <Spinner variant="dark" />
-                  ) : (
-                    <PlusIcon className="h-4 w-4 text-stone-700" />
-                  )}
-                </Button>
-              </span>
-            </td>
-            <DndContext
-              collisionDetection={closestCenter}
-              onDragEnd={reorderDataTracks}
-              sensors={sensors}
-            >
-              <SortableContext
-                items={formWithSteps.dataTracks}
-                strategy={horizontalListSortingStrategy}
-              >
-                {formWithSteps.dataTracks.map((dataTrack, index) => {
-                  return (
-                    <td
-                      className={cn(
-                        "whitespace-nowrap p-1.5 pb-2 text-sm text-stone-700 w-48 min-w-40 relative",
-                        {
-                          "before:absolute before:bg-stone-100 before:top-0 before:left-0 before:right-0 before:bottom-1 before:rounded-b-md":
-                            currentStepIndex === index,
-                        }
-                      )}
-                      key={dataTrack.id}
-                    >
-                      <DatatrackDrawerRoot
-                        onOpenChange={(isOpen) => {
-                          if (!isOpen && currentDataTrack?.id === dataTrack.id)
-                            setQueryParamFor("d");
-                        }}
-                        open={currentDataTrack?.id === dataTrack.id}
-                      >
-                        <Draggable id={dataTrack.id} key={dataTrack.id}>
-                          <button
-                            className={cn(
-                              "flex relative px-3 rounded-md text-md h-12 w-full bg-blue-200",
-                              {
-                                "ring-4 ring-blue-500":
-                                  currentDataTrack?.id === dataTrack.id,
-                              }
-                            )}
-                            onClick={() => {
-                              if (currentDataTrack?.id === dataTrack.id) {
-                                setQueryParamFor("d");
-                                return;
-                              }
-                              setQueryParamFor("d", dataTrack.id);
-                            }}
-                            type="button"
-                          >
-                            <div className="flex-1 h-full flex justify-center items-center bg-blue-300">
-                              <span className="line-clamp-1.5 break-words px-1 text-sm">
-                                {dataTrack.layers.length}{" "}
-                                {pluralize(
-                                  "layer",
-                                  "layers",
-                                  dataTrack.layers.length
-                                )}
-                              </span>
-                            </div>
-                          </button>
-                        </Draggable>
-                        <DatatrackContent />
-                      </DatatrackDrawerRoot>
-                    </td>
-                  );
-                })}
-                {/* Render placeholder slots */}
-                {[
-                  ...Array(
-                    trackSlots.length - formWithSteps.dataTracks.length
-                  ).keys(),
-                ].map((index) => (
-                  <td
-                    className={cn(
-                      "whitespace-nowrap p-1.5 pb-2 text-sm text-stone-700 w-48 min-w-40 relative",
-                      {
-                        "before:absolute before:bg-stone-100 before:top-0 before:left-0 before:right-0 before:bottom-1 before:rounded-b-md":
-                          currentStepIndex ===
-                          index + formWithSteps.dataTracks.length,
-                      }
-                    )}
-                    key={index}
-                  >
-                    <button
-                      className="w-full h-12 flex justify-center items-center bg-blue-200 rounded-md opacity-0 hover:opacity-100 relative"
-                      disabled={status === "pending"}
-                      onClick={onAddDataTrack}
-                    >
-                      <PlusIcon className="h-6 w-6" />
-                    </button>
-                  </td>
-                ))}
-              </SortableContext>
-            </DndContext>
-          </tr>
+          <DndContext
+            collisionDetection={closestCenter}
+            onDragEnd={reorderDataTracks}
+            sensors={sensors}
+          >
+            <DatatrackRow
+              formWithSteps={formWithSteps}
+              currentStepIndex={currentStepIndex}
+              currentDataTrack={currentDataTrack}
+              setQueryParamFor={setQueryParamFor}
+              onAddDataTrack={onAddDataTrack}
+              trackSlots={trackSlots}
+              status={status}
+            />
+          </DndContext>
         </tbody>
       </table>
     </div>
+  );
+}
+
+function DatatrackRow({
+  formWithSteps,
+  currentStepIndex,
+  currentDataTrack,
+  setQueryParamFor,
+  onAddDataTrack,
+  trackSlots,
+  status,
+}: {
+  formWithSteps: NonNullable<FormWithSteps["data"]>;
+  currentStepIndex: number;
+  currentDataTrack: DataTrack | undefined;
+  setQueryParamFor: (param: "d" | "e" | "s", value?: string) => void;
+  onAddDataTrack: () => void;
+  trackSlots: unknown[];
+  status: string;
+}) {
+  return (
+    <tr>
+      <SortableContext
+        items={formWithSteps.dataTracks}
+        strategy={horizontalListSortingStrategy}
+      >
+        {formWithSteps.dataTracks.map((dataTrack, index) => {
+          return (
+            <td
+              className={cn(
+                "whitespace-nowrap p-1.5 pb-2 text-sm text-stone-700 w-48 min-w-40 relative",
+                {
+                  "before:absolute before:bg-stone-100 before:top-0 before:left-0 before:right-0 before:bottom-1 before:rounded-b-md":
+                    currentStepIndex === index,
+                }
+              )}
+              key={dataTrack.id}
+            >
+              <DatatrackDrawerRoot
+                onOpenChange={(isOpen) => {
+                  if (!isOpen && currentDataTrack?.id === dataTrack.id)
+                    setQueryParamFor("d");
+                }}
+                open={currentDataTrack?.id === dataTrack.id}
+              >
+                <Draggable id={dataTrack.id} key={dataTrack.id}>
+                  <button
+                    className={cn(
+                      "flex relative px-3 rounded-md text-md h-8 w-full text-background bg-blue-400",
+                      {
+                        "ring-4 ring-offset-1 ring-blue-800":
+                          currentDataTrack?.id === dataTrack.id,
+                      }
+                    )}
+                    onClick={() => {
+                      if (currentDataTrack?.id === dataTrack.id) {
+                        setQueryParamFor("d");
+                        return;
+                      }
+                      setQueryParamFor("d", dataTrack.id);
+                    }}
+                    type="button"
+                  >
+                    <div className="flex-1 h-full flex justify-center items-center bg-blue-600">
+                      <span className="line-clamp-1.5 break-words px-1 text-sm">
+                        {dataTrack.layers.length}{" "}
+                        {pluralize("layer", "layers", dataTrack.layers.length)}
+                      </span>
+                    </div>
+                  </button>
+                </Draggable>
+                <DatatrackContent />
+              </DatatrackDrawerRoot>
+            </td>
+          );
+        })}
+        {/* Render placeholder slots */}
+        {[
+          ...Array(trackSlots.length - formWithSteps.dataTracks.length).keys(),
+        ].map((index) => (
+          <td
+            className={cn(
+              "whitespace-nowrap p-1.5 pb-2 text-sm text-stone-700 w-48 min-w-40 relative",
+              {
+                "before:absolute before:bg-stone-100 before:top-0 before:left-0 before:right-0 before:bottom-1 before:rounded-b-md":
+                  currentStepIndex === index + formWithSteps.dataTracks.length,
+              }
+            )}
+            key={index}
+          >
+            <button
+              className="w-full h-8 flex justify-center items-center bg-blue-200 rounded-md opacity-0 hover:opacity-100 relative"
+              disabled={status === "pending"}
+              onClick={onAddDataTrack}
+            >
+              <PlusIcon className="h-6 w-6" />
+            </button>
+          </td>
+        ))}
+      </SortableContext>
+    </tr>
   );
 }
