@@ -45,7 +45,6 @@ export function Steps() {
   const { mutateAsync: createStepMutation, status } = useMutation({
     mutationFn: createStep,
   });
-  const { execute } = useAction(createDataTrack);
 
   /**
    * Needed to support click events on DND items
@@ -93,19 +92,6 @@ export function Steps() {
 
     setDragSteps((prev) => [...prev, newStepId]);
     setQueryParamFor("s", newStepId);
-  };
-
-  const onAddDataTrack = (
-    startStepIndex: number,
-    endStepIndex: number,
-    layerIndex: number
-  ) => {
-    execute({
-      formId: formWithSteps.id,
-      startStepIndex,
-      endStepIndex,
-      layerIndex,
-    });
   };
 
   const currentStepIndex = dragSteps.findIndex(
