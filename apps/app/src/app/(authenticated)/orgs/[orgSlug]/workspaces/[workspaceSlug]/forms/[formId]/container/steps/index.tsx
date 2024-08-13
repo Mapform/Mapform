@@ -22,7 +22,7 @@ import { useAction } from "next-safe-action/hooks";
 import type { DataTrack } from "@mapform/db";
 import { createStep } from "~/data/steps/create";
 import { updateForm } from "~/data/forms/update";
-import { createDataTrack } from "~/data/datatracks/create";
+import { createDataTrack } from "~/data/datatracks/create-datatrack";
 import type { FormWithSteps } from "~/data/forms/get-form-with-steps";
 import { Draggable } from "../draggable";
 import { useContainerContext } from "../context";
@@ -129,23 +129,18 @@ export function Steps() {
     setQueryParamFor("s", newStepId);
   };
 
-  const lastDataTrackStepIndex =
-    formWithSteps.dataTracks
-      .map((dataTrack) => dataTrack.endStepIndex)
-      .sort((a, b) => a - b)
-      .pop() || 0;
-
-  const onAddDataTrack = () => {
+  const onAddDataTrack = (
+    startStepIndex: number,
+    endStepIndex: number,
+    layerIndex: number
+  ) => {
     execute({
       formId: formWithSteps.id,
-      startStepIndex: lastDataTrackStepIndex,
-      endStepIndex: lastDataTrackStepIndex + 1,
+      startStepIndex,
+      endStepIndex,
+      layerIndex,
     });
   };
-
-  const trackSlots = new Array(
-    Math.max(dragSteps.length, lastDataTrackStepIndex, 1)
-  ).fill(null);
 
   const currentStepIndex = dragSteps.findIndex(
     (step) => step === currentStep?.id
@@ -156,7 +151,7 @@ export function Steps() {
       <table className="table-fixed min-w-full">
         <thead>
           <tr>
-            {trackSlots.map((_, index) => (
+            {dragSteps.map((_, index) => (
               <th
                 className={cn(
                   "pt-4 pb-2 w-32 text-left relative cursor-pointer",
@@ -270,12 +265,15 @@ export function Steps() {
             sensors={sensors}
           >
             <DatatrackRow
-              formWithSteps={formWithSteps}
               currentStepIndex={currentStepIndex}
-              currentDataTrack={currentDataTrack}
-              setQueryParamFor={setQueryParamFor}
+              layerIndex={0}
               onAddDataTrack={onAddDataTrack}
-              trackSlots={trackSlots}
+              status={status}
+            />
+            <DatatrackRow
+              currentStepIndex={currentStepIndex}
+              layerIndex={1}
+              onAddDataTrack={onAddDataTrack}
               status={status}
             />
           </DndContext>
@@ -286,29 +284,44 @@ export function Steps() {
 }
 
 function DatatrackRow({
-  formWithSteps,
   currentStepIndex,
-  currentDataTrack,
-  setQueryParamFor,
   onAddDataTrack,
-  trackSlots,
   status,
+  layerIndex,
 }: {
-  formWithSteps: NonNullable<FormWithSteps["data"]>;
   currentStepIndex: number;
-  currentDataTrack: DataTrack | undefined;
-  setQueryParamFor: (param: "d" | "e" | "s", value?: string) => void;
-  onAddDataTrack: () => void;
-  trackSlots: unknown[];
+  layerIndex: number;
+  onAddDataTrack: (
+    startStepIndex: number,
+    endStepIndex: number,
+    layerIndex: number
+  ) => void;
   status: string;
 }) {
+  const { dragSteps, formWithSteps, currentDataTrack, setQueryParamFor } =
+    useContainerContext();
+
+  const currentRowDataTracks = formWithSteps.dataTracks.filter(
+    (dataTrack) => dataTrack.layerIndex === layerIndex
+  );
+
+  const lastDataTrackStepIndex =
+    currentRowDataTracks
+      .map((dataTrack) => dataTrack.endStepIndex)
+      .sort((a, b) => a - b)
+      .pop() || 0;
+
+  const trackSlots = new Array(
+    Math.max(dragSteps.length, lastDataTrackStepIndex, 1)
+  ).fill(null);
+
   return (
     <tr>
       <SortableContext
         items={formWithSteps.dataTracks}
         strategy={horizontalListSortingStrategy}
       >
-        {formWithSteps.dataTracks.map((dataTrack, index) => {
+        {currentRowDataTracks.map((dataTrack, index) => {
           return (
             <td
               className={cn(
@@ -358,28 +371,35 @@ function DatatrackRow({
           );
         })}
         {/* Render placeholder slots */}
-        {[
-          ...Array(trackSlots.length - formWithSteps.dataTracks.length).keys(),
-        ].map((index) => (
-          <td
-            className={cn(
-              "whitespace-nowrap p-1 text-sm text-stone-700 w-48 min-w-40 relative",
-              {
-                "before:absolute before:bg-stone-100 before:top-0 before:left-0 before:right-0 before:bottom-1 before:rounded-b-md":
-                  currentStepIndex === index + formWithSteps.dataTracks.length,
-              }
-            )}
-            key={index}
-          >
-            <button
-              className="w-full h-8 flex justify-center items-center bg-blue-100 rounded-md opacity-0 hover:opacity-100 relative"
-              disabled={status === "pending"}
-              onClick={onAddDataTrack}
+        {/* {[...Array(trackSlots.length - currentRowDataTracks.length).keys()].map(
+          (index) => (
+            <td
+              className={cn(
+                "whitespace-nowrap p-1 text-sm text-stone-700 w-48 min-w-40 relative",
+                {
+                  "before:absolute before:bg-stone-100 before:top-0 before:left-0 before:right-0 before:bottom-1 before:rounded-b-md":
+                    currentStepIndex ===
+                    index + formWithSteps.dataTracks.length,
+                }
+              )}
+              key={index}
             >
-              <PlusIcon className="text-blue-950 h-5 w-5" />
-            </button>
-          </td>
-        ))}
+              <button
+                className="w-full h-8 flex justify-center items-center bg-blue-100 rounded-md opacity-0 hover:opacity-100 relative"
+                disabled={status === "pending"}
+                onClick={() => {
+                  onAddDataTrack(
+                    currentRowDataTracks.length + index,
+                    currentRowDataTracks.length + index + 1,
+                    layerIndex
+                  );
+                }}
+              >
+                <PlusIcon className="text-blue-950 h-5 w-5" />
+              </button>
+            </td>
+          )
+        )} */}
       </SortableContext>
     </tr>
   );

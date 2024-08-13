@@ -202,7 +202,7 @@ model DataTrack {
     name           String?
     startStepIndex Int
     endStepIndex   Int
-    layerIndex     Int     @default(1)
+    layerIndex     Int     @default(0)
     formId         String?
     form           Form?   @relation(name: "DataTracks", fields: [formId], references: [id], onDelete: Cascade)
     layer          Layer?

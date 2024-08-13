@@ -92,7 +92,7 @@ export function Blocknote({
     <div className="h-full flex flex-col prose mx-auto">
       <div className="flex-1 flex flex-col overflow-y-auto">
         {/* Content */}
-        <div className="overflow-y-auto p-4 pb-0 flex-1">
+        <div className="overflow-y-auto p-4 pb-0">
           {/* Title */}
           {editable ? (
             <AutoSizeTextArea

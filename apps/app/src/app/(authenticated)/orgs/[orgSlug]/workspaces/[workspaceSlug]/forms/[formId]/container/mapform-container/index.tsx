@@ -26,7 +26,7 @@ function MapFormContainer({
   } = useContainerContext();
 
   return (
-    <div className="p-4 flex-1 flex justify-center">
+    <div className="p-4 flex-1 flex justify-center overflow-hidden">
       <div className="flex flex-col flex-1">
         {/* <div className="flex border-b justify-between bg-white py-1 px-4">
           <h3 className="text-xs font-semibold leading-6 text-stone-400">
