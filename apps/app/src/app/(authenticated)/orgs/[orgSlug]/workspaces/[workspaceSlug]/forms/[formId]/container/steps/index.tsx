@@ -343,6 +343,7 @@ function DatatrackRow({
                 )}
                 key={index}
               >
+                {/* <Draggable id={index} key={dataTrack.id}> */}
                 <button
                   className="w-full h-8 flex justify-center items-center bg-blue-100 rounded-md opacity-0 hover:opacity-100 relative"
                   disabled={status === "pending"}
@@ -352,6 +353,7 @@ function DatatrackRow({
                 >
                   <PlusIcon className="text-blue-950 h-5 w-5" />
                 </button>
+                {/* </Draggable> */}
               </td>
             );
           }
