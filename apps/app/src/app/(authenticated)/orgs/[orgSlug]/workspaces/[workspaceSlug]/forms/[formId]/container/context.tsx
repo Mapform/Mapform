@@ -27,6 +27,7 @@ export interface ContainerContextProps {
   dragSteps: string[];
   formWithSteps: NonNullable<FormWithSteps["data"]>;
   currentStep: StepWithLocation | undefined;
+  currentStepIndex: number;
   currentDataTrack:
     | NonNullable<FormWithSteps["data"]>["dataTracks"][number]
     | undefined;
@@ -244,6 +245,7 @@ export function ContainerProvider({
       value={{
         map,
         currentStep,
+        currentStepIndex,
         dragSteps,
         setDragSteps,
         viewState,
