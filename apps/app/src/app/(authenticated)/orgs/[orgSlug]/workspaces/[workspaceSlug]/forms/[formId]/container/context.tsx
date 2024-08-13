@@ -188,6 +188,18 @@ export function ContainerProvider({
         current.set("s", value);
         current.set("e", value);
         current.delete("d");
+
+        const step = formWithSteps.steps.find((s2) => s2.id === value);
+
+        if (!step) return;
+
+        map.current?.flyTo({
+          center: [step.longitude, step.latitude],
+          zoom: step.zoom,
+          pitch: step.pitch,
+          bearing: step.bearing,
+          duration: 1000,
+        });
       }
 
       if (param === "d") {

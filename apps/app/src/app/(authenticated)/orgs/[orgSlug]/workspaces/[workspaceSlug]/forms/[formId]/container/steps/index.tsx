@@ -15,15 +15,13 @@ import { cn } from "@mapform/lib/classnames";
 import { Button } from "@mapform/ui/components/button";
 import { Spinner } from "@mapform/ui/components/spinner";
 import { PlusIcon } from "lucide-react";
+import { useMemo } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { pluralize } from "@mapform/lib/pluralize";
 import { Badge } from "@mapform/ui/components/badge";
 import { useAction } from "next-safe-action/hooks";
-import type { DataTrack } from "@mapform/db";
 import { createStep } from "~/data/steps/create";
 import { updateForm } from "~/data/forms/update";
 import { createDataTrack } from "~/data/datatracks/create-datatrack";
-import type { FormWithSteps } from "~/data/forms/get-form-with-steps";
 import { Draggable } from "../draggable";
 import { useContainerContext } from "../context";
 import {
@@ -291,43 +289,54 @@ function DatatrackRow({
     (dataTrack) => dataTrack.layerIndex === layerIndex
   );
 
-  const trackSlots = new Array(dragSteps.length).fill(null).map((_, index) => {
-    // Check if index is within the range of any data track
-    const dataTrack = currentRowDataTracks.find(
-      (track) => index >= track.startStepIndex && index < track.endStepIndex
-    );
+  const trackSlots = useMemo(
+    () =>
+      new Array(dragSteps.length).fill(null).map((_, index) => {
+        // Check if index is within the range of any data track
+        const dataTrack = currentRowDataTracks.find(
+          (track) => index >= track.startStepIndex && index < track.endStepIndex
+        );
 
-    if (dataTrack) {
-      return dataTrack;
-    }
+        if (dataTrack) {
+          return {
+            id: dataTrack.id,
+            name: dataTrack.name,
+            isPlaceholder: false,
+          };
+        }
 
-    return null;
-  });
+        return {
+          id: Math.random().toString(36).substring(7),
+          isPlaceholder: true,
+        };
+      }),
+    [currentRowDataTracks, dragSteps.length]
+  );
 
   return (
     <tr>
       <SortableContext
-        items={formWithSteps.dataTracks}
+        items={trackSlots}
         strategy={horizontalListSortingStrategy}
       >
         {trackSlots.map((dataTrack, index) => {
-          if (!dataTrack) {
+          if (dataTrack.isPlaceholder) {
             return (
               <td
                 className="whitespace-nowrap p-1 text-sm text-stone-700 w-48 min-w-40"
-                key={index}
+                key={dataTrack.id}
               >
-                {/* <Draggable id={index} key={dataTrack.id}> */}
-                <button
-                  className="w-full h-8 flex justify-center items-center bg-blue-100 rounded-md opacity-0 hover:opacity-100 relative"
-                  disabled={status === "pending"}
-                  onClick={() => {
-                    onAddDataTrack(index, index + 1, layerIndex);
-                  }}
-                >
-                  <PlusIcon className="text-blue-950 h-5 w-5" />
-                </button>
-                {/* </Draggable> */}
+                <Draggable id={dataTrack.id} key={dataTrack.id}>
+                  <button
+                    className="w-full h-8 flex justify-center items-center bg-blue-100 rounded-md opacity-0 hover:opacity-100 relative"
+                    disabled={status === "pending"}
+                    onClick={() => {
+                      onAddDataTrack(index, index + 1, layerIndex);
+                    }}
+                  >
+                    <PlusIcon className="text-blue-950 h-5 w-5" />
+                  </button>
+                </Draggable>
               </td>
             );
           }
