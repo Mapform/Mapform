@@ -153,26 +153,19 @@ export function Steps() {
           <tr>
             {dragSteps.map((_, index) => (
               <th
-                className={cn(
-                  "pt-4 pb-2 w-32 text-left relative cursor-pointer",
-                  currentStepIndex === index
-                    ? "text-stone-700"
-                    : "text-stone-500",
-                  {
-                    "before:absolute before:bg-stone-100 before:top-1 before:left-0 before:right-0 before:bottom-0 before:rounded-t-md":
-                      currentStepIndex === index,
-                  }
-                )}
+                className="whitespace-nowrap p-1 text-sm text-stone-700 w-48 min-w-40"
                 key={index}
                 onClick={() => {
                   setQueryParamFor("s", dragSteps[index]);
                 }}
                 scope="col"
               >
-                <span className="ml-[18px] text-xs font-semibold  relative">
-                  <span className="mr-2">Step {index + 1}</span>
-                  {currentStepIndex === index ? <Badge>Current</Badge> : null}
-                </span>
+                <button className="hover:bg-stone-100 rounded-md w-full text-left py-2 flex items-center">
+                  <span className="ml-[18px] text-xs font-semibold">
+                    <span className="mr-2">Step {index + 1}</span>
+                    {currentStepIndex === index ? <Badge>Current</Badge> : null}
+                  </span>
+                </button>
               </th>
             ))}
           </tr>
@@ -189,20 +182,14 @@ export function Steps() {
                 items={dragSteps}
                 strategy={horizontalListSortingStrategy}
               >
-                {dragSteps.map((stepId, index) => {
+                {dragSteps.map((stepId) => {
                   const step = formWithSteps.steps.find((s) => s.id === stepId);
 
                   if (!step) return null;
 
                   return (
                     <td
-                      className={cn(
-                        "whitespace-nowrap p-1 text-sm text-stone-700 w-48 min-w-40 relative",
-                        {
-                          "before:absolute before:bg-stone-100 before:inset-0":
-                            currentStepIndex === index,
-                        }
-                      )}
+                      className="whitespace-nowrap p-1 text-sm text-stone-700 w-48 min-w-40"
                       key={stepId}
                     >
                       <StepDrawerRoot
@@ -217,9 +204,9 @@ export function Steps() {
                           <StepDrawerTrigger asChild>
                             <button
                               className={cn(
-                                "flex relative px-3 rounded-md text-md h-12 text-orange-950 w-full bg-orange-100",
+                                "flex relative px-3 rounded-md text-md h-12 text-background w-full bg-orange-200",
                                 {
-                                  "ring-2 ring-offset-2 ring-orange-500":
+                                  "ring-2 ring-offset-2 ring-orange-600":
                                     currentEditableStep?.id === stepId,
                                 }
                               )}
@@ -232,7 +219,7 @@ export function Steps() {
                               }}
                               type="button"
                             >
-                              <div className="flex-1 h-full flex justify-center items-center bg-orange-300">
+                              <div className="flex-1 h-full flex justify-center items-center bg-orange-400">
                                 <span className="line-clamp-1 break-words px-1 text-sm">
                                   {step.title || "Untitled"}
                                 </span>
@@ -246,9 +233,9 @@ export function Steps() {
                   );
                 })}
               </SortableContext>
-              <td className="whitespace-nowrap p-1 text-sm text-stone-700 w-48 min-w-40 relative">
+              <td className="whitespace-nowrap p-1 text-sm text-stone-700 w-48 min-w-40">
                 <button
-                  className="w-full h-12 flex justify-center items-center bg-orange-100 rounded-md relative"
+                  className="w-full h-12 flex justify-center items-center bg-orange-200 rounded-md"
                   disabled={status === "pending"}
                   onClick={onAdd}
                 >
@@ -284,7 +271,6 @@ export function Steps() {
 }
 
 function DatatrackRow({
-  currentStepIndex,
   onAddDataTrack,
   status,
   layerIndex,
@@ -304,12 +290,6 @@ function DatatrackRow({
   const currentRowDataTracks = formWithSteps.dataTracks.filter(
     (dataTrack) => dataTrack.layerIndex === layerIndex
   );
-
-  const lastDataTrackStepIndex =
-    currentRowDataTracks
-      .map((dataTrack) => dataTrack.endStepIndex)
-      .sort((a, b) => a - b)
-      .pop() || 0;
 
   const trackSlots = new Array(dragSteps.length).fill(null).map((_, index) => {
     // Check if index is within the range of any data track
@@ -334,13 +314,7 @@ function DatatrackRow({
           if (!dataTrack) {
             return (
               <td
-                className={cn(
-                  "whitespace-nowrap p-1 text-sm text-stone-700 w-48 min-w-40 relative",
-                  {
-                    "before:absolute before:bg-stone-100 before:top-0 before:left-0 before:right-0 before:bottom-1 before:rounded-b-md":
-                      currentStepIndex === index,
-                  }
-                )}
+                className="whitespace-nowrap p-1 text-sm text-stone-700 w-48 min-w-40"
                 key={index}
               >
                 {/* <Draggable id={index} key={dataTrack.id}> */}
@@ -361,11 +335,7 @@ function DatatrackRow({
           return (
             <td
               className={cn(
-                "whitespace-nowrap p-1 text-sm text-stone-700 w-48 min-w-40 relative",
-                {
-                  "before:absolute before:bg-stone-100 before:top-0 before:left-0 before:right-0 before:bottom-1 before:rounded-b-md":
-                    currentStepIndex === index,
-                }
+                "whitespace-nowrap p-1 text-sm text-stone-700 w-48 min-w-40"
               )}
               key={dataTrack.id}
             >
