@@ -291,31 +291,58 @@ function DatatrackRow({
 
   const trackSlots = useMemo(
     () =>
-      new Array(dragSteps.length).fill(null).map((_, index) => {
-        // Check if index is within the range of any data track
-        const dataTrack = currentRowDataTracks.find(
-          (track) => index >= track.startStepIndex && index < track.endStepIndex
-        );
+      new Array(dragSteps.length)
+        .fill(null)
+        .map((_, index) => {
+          // Check if index is within the range of any data track
+          const dataTrack = currentRowDataTracks.find(
+            (track) =>
+              index >= track.startStepIndex && index < track.endStepIndex
+          );
 
-        if (dataTrack) {
+          if (dataTrack) {
+            return {
+              id: dataTrack.id,
+              name: dataTrack.name,
+              isPlaceholder: false,
+            };
+          }
+
           return {
-            id: dataTrack.id,
-            name: dataTrack.name,
-            isPlaceholder: false,
+            id: Math.random().toString(36).substring(7),
+            isPlaceholder: true,
           };
-        }
+        })
+        .reduce((acc, curr) => {
+          // Group non-placeholder items with same ID together
+          let lastItem = acc[acc.length - 1];
 
-        return {
-          id: Math.random().toString(36).substring(7),
-          isPlaceholder: true,
-        };
-      }),
+          if (lastItem?.id === curr.id) {
+            acc.pop();
+            return [
+              ...acc,
+              {
+                ...lastItem,
+                colSpan: lastItem.colSpan + 1,
+              },
+            ];
+          }
+
+          return [
+            ...acc,
+            {
+              ...curr,
+              colSpan: 1,
+            },
+          ];
+        }, []),
     [currentRowDataTracks, dragSteps.length]
   );
 
   return (
     <tr>
       <SortableContext
+        id={layerIndex.toString()}
         items={trackSlots}
         strategy={horizontalListSortingStrategy}
       >
@@ -346,6 +373,7 @@ function DatatrackRow({
               className={cn(
                 "whitespace-nowrap p-1 text-sm text-stone-700 w-48 min-w-40"
               )}
+              colSpan={dataTrack.colSpan}
               key={dataTrack.id}
             >
               <DatatrackDrawerRoot
