@@ -311,9 +311,18 @@ function DatatrackRow({
       .sort((a, b) => a - b)
       .pop() || 0;
 
-  const trackSlots = new Array(
-    Math.max(dragSteps.length, lastDataTrackStepIndex, 1)
-  ).fill(null);
+  const trackSlots = new Array(dragSteps.length).fill(null).map((_, index) => {
+    // Check if index is within the range of any data track
+    const dataTrack = currentRowDataTracks.find(
+      (track) => index >= track.startStepIndex && index < track.endStepIndex
+    );
+
+    if (dataTrack) {
+      return dataTrack;
+    }
+
+    return null;
+  });
 
   return (
     <tr>
@@ -321,7 +330,32 @@ function DatatrackRow({
         items={formWithSteps.dataTracks}
         strategy={horizontalListSortingStrategy}
       >
-        {currentRowDataTracks.map((dataTrack, index) => {
+        {trackSlots.map((dataTrack, index) => {
+          if (!dataTrack) {
+            return (
+              <td
+                className={cn(
+                  "whitespace-nowrap p-1 text-sm text-stone-700 w-48 min-w-40 relative",
+                  {
+                    "before:absolute before:bg-stone-100 before:top-0 before:left-0 before:right-0 before:bottom-1 before:rounded-b-md":
+                      currentStepIndex === index,
+                  }
+                )}
+                key={index}
+              >
+                <button
+                  className="w-full h-8 flex justify-center items-center bg-blue-100 rounded-md opacity-0 hover:opacity-100 relative"
+                  disabled={status === "pending"}
+                  onClick={() => {
+                    onAddDataTrack(index, index + 1, layerIndex);
+                  }}
+                >
+                  <PlusIcon className="text-blue-950 h-5 w-5" />
+                </button>
+              </td>
+            );
+          }
+
           return (
             <td
               className={cn(
@@ -370,36 +404,6 @@ function DatatrackRow({
             </td>
           );
         })}
-        {/* Render placeholder slots */}
-        {/* {[...Array(trackSlots.length - currentRowDataTracks.length).keys()].map(
-          (index) => (
-            <td
-              className={cn(
-                "whitespace-nowrap p-1 text-sm text-stone-700 w-48 min-w-40 relative",
-                {
-                  "before:absolute before:bg-stone-100 before:top-0 before:left-0 before:right-0 before:bottom-1 before:rounded-b-md":
-                    currentStepIndex ===
-                    index + formWithSteps.dataTracks.length,
-                }
-              )}
-              key={index}
-            >
-              <button
-                className="w-full h-8 flex justify-center items-center bg-blue-100 rounded-md opacity-0 hover:opacity-100 relative"
-                disabled={status === "pending"}
-                onClick={() => {
-                  onAddDataTrack(
-                    currentRowDataTracks.length + index,
-                    currentRowDataTracks.length + index + 1,
-                    layerIndex
-                  );
-                }}
-              >
-                <PlusIcon className="text-blue-950 h-5 w-5" />
-              </button>
-            </td>
-          )
-        )} */}
       </SortableContext>
     </tr>
   );
