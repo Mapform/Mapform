@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { cn } from "@mapform/lib/classnames";
 import { getFormWithSteps } from "~/data/forms/get-form-with-steps";
-import { Steps } from "./steps";
 import { ContainerProvider } from "./context";
 import MapFormContainer from "./mapform-container";
 
@@ -40,7 +39,7 @@ export function Container({ formId }: { formId: string }) {
       )} */}
       <div className={cn("flex flex-col flex-1 overflow-hidden bg-background")}>
         <MapFormContainer setMapformLoaded={setMapformLoaded} />
-        <Steps />
+        {/* <Steps /> */}
       </div>
     </ContainerProvider>
   );

@@ -99,7 +99,7 @@ export function Steps() {
   );
 
   return (
-    <div className="border-t overflow-x-auto px-3 pb-2">
+    <div className="border-t overflow-x-auto px-4 py-2">
       {/* <thead>
           <tr>
             {dragSteps.map((_, index) => (

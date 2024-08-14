@@ -83,6 +83,10 @@ export function DataTracks() {
   });
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
 
+  const deepestLayerIndex = Math.max(
+    ...formWithSteps.dataTracks.map((track) => track.layerIndex)
+  );
+
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -124,6 +128,7 @@ export function DataTracks() {
     }
 
     setItems((prev) => {
+      console.log("RERENDER BUG");
       const activeItems = prev[activeContainer];
       const overItems = prev[overContainer];
 
@@ -147,7 +152,7 @@ export function DataTracks() {
         newIndex = overIndex >= 0 ? overIndex + modifier : overItems.length + 1;
       }
 
-      return prev;
+      // return prev;
 
       return {
         ...prev,

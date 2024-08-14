@@ -6,12 +6,6 @@ generator client {
     previewFeatures = ["driverAdapters", "postgresqlExtensions"]
 }
 
-generator zod {
-    provider                  = "zod-prisma-types"
-    output                    = "./zod"
-    createRelationValuesTypes = true
-}
-
 generator json {
     provider = "prisma-json-types-generator"
 }
@@ -153,7 +147,7 @@ model Form {
     // Array of step IDs
     stepOrder      String[]
     steps          Step[]           @relation(name: "Steps")
-    dataTracks     DataTrack[]      @relation(name: "DataTracks")
+    layers         Layer[]
     workspaceId    String
     workspace      Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
     formSubmission FormSubmission[]
@@ -190,22 +184,13 @@ model Step {
     locationId      Int             @unique
     location        Location        @relation(fields: [locationId], references: [id], onDelete: Cascade)
     contentViewType ContentViewType @default(PARTIAL)
+    layerOrder      String[]
 
+    layers         Layer[]
     datasetColumns Column[]
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
-}
-
-model DataTrack {
-    id             String  @id @default(cuid())
-    name           String?
-    startStepIndex Int
-    endStepIndex   Int
-    layerIndex     Int     @default(0)
-    formId         String?
-    form           Form?   @relation(name: "DataTracks", fields: [formId], references: [id], onDelete: Cascade)
-    layer          Layer?
 }
 
 model FormSubmission {
@@ -314,11 +299,14 @@ enum ColumnType {
 }
 
 model Layer {
-    id          String      @id @default(cuid())
-    type        LayerType
-    pointLayer  PointLayer?
-    dataTrackId String      @unique
-    dataTrack   DataTrack   @relation(fields: [dataTrackId], references: [id], onDelete: Cascade)
+    id         String      @id @default(cuid())
+    type       LayerType
+    pointLayer PointLayer?
+
+    formId String @unique
+    form   Form   @relation(fields: [formId], references: [id], onDelete: Cascade)
+
+    steps Step[]
 }
 
 model PointLayer {

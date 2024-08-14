@@ -51,6 +51,7 @@ export function Row({
             <td
               className="whitespace-nowrap text-sm text-stone-700"
               key={item.id}
+              style={{ gridRow: layerIndex + 2 }}
             >
               <Draggable id={item.id} key={item.id}>
                 <button
