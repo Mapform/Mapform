@@ -22,13 +22,9 @@ export const getFormWithSteps = authAction
         },
       },
       include: {
-        dataTracks: {
+        layers: {
           include: {
-            layer: {
-              include: {
-                pointLayer: true,
-              },
-            },
+            pointLayer: true,
           },
         },
       },

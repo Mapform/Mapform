@@ -28,9 +28,6 @@ export interface ContainerContextProps {
   formWithSteps: NonNullable<FormWithSteps["data"]>;
   currentStep: StepWithLocation | undefined;
   currentStepIndex: number;
-  currentDataTrack:
-    | NonNullable<FormWithSteps["data"]>["dataTracks"][number]
-    | undefined;
   currentEditableStep: StepWithLocation | undefined;
   viewState: ViewState;
   setViewState: Dispatch<SetStateAction<ViewState>>;
@@ -77,14 +74,8 @@ export function ContainerProvider({
   const createQueryString = useCreateQueryString();
   // Selected step view
   const s = searchParams.get("s");
-  // Selected data track
-  const d = searchParams.get("d");
   // Selected editable step
   const e = searchParams.get("e");
-
-  const currentDataTrack = formWithSteps.dataTracks.find(
-    (track) => track.id === d
-  );
 
   const currentStepIndex = formWithSteps.steps.findIndex(
     (step) => step.id === s
@@ -92,12 +83,7 @@ export function ContainerProvider({
 
   const currentEditableStep = formWithSteps.steps.find((step) => step.id === e);
 
-  const dataTrackForActiveStep = formWithSteps.dataTracks.find((track) => {
-    return (
-      currentStepIndex >= track.startStepIndex &&
-      currentStepIndex < track.endStepIndex
-    );
-  });
+  // const activeStepLayers = formWithSteps.
 
   const map = useRef<MapRef>(null);
   const initialBounds = map.current?.getBounds();
@@ -128,30 +114,30 @@ export function ContainerProvider({
     },
   });
 
-  const { data } = useQuery({
-    placeholderData: (prevData) =>
-      dataTrackForActiveStep && prevData ? prevData : { data: { points: [] } },
-    queryKey: ["pointData", dataTrackForActiveStep?.id, bounds],
-    queryFn: () =>
-      getLayerData({
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Handled via enabled
-        dataTrackId: dataTrackForActiveStep!.id,
-        bounds: {
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Handled via enabled
-          minLng: bounds!._sw.lng,
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Handled via enabled
-          minLat: bounds!._sw.lat,
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Handled via enabled
-          maxLng: bounds!._ne.lng,
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Handled via enabled
-          maxLat: bounds!._ne.lat,
-        },
-      }),
-    enabled: Boolean(bounds) && Boolean(dataTrackForActiveStep),
-    staleTime: Infinity,
-  });
+  // const { data } = useQuery({
+  //   placeholderData: (prevData) =>
+  //     dataTrackForActiveStep && prevData ? prevData : { data: { points: [] } },
+  //   queryKey: ["pointData", dataTrackForActiveStep?.id, bounds],
+  //   queryFn: () =>
+  //     getLayerData({
+  //       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Handled via enabled
+  //       dataTrackId: dataTrackForActiveStep!.id,
+  //       bounds: {
+  //         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Handled via enabled
+  //         minLng: bounds!._sw.lng,
+  //         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Handled via enabled
+  //         minLat: bounds!._sw.lat,
+  //         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Handled via enabled
+  //         maxLng: bounds!._ne.lng,
+  //         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Handled via enabled
+  //         maxLat: bounds!._ne.lat,
+  //       },
+  //     }),
+  //   enabled: Boolean(bounds) && Boolean(dataTrackForActiveStep),
+  //   staleTime: Infinity,
+  // });
 
-  const points = data?.data?.points.filter(notEmpty) || [];
+  // const points = data?.data?.points.filter(notEmpty) || [];
   const debouncedUpdateStep = useDebounce(updateStepMutation, 500);
 
   useEffect(() => {
@@ -252,11 +238,10 @@ export function ContainerProvider({
         setViewState,
         formWithSteps,
         debouncedUpdateStep,
-        currentDataTrack,
         currentEditableStep,
         setQueryParamFor,
         onMoveEnd,
-        points,
+        // points,
         bounds,
         setBounds,
       }}

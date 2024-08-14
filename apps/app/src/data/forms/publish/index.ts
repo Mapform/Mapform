@@ -20,13 +20,9 @@ export const publishForm = authAction
         isRoot: true,
       },
       include: {
-        dataTracks: {
+        layers: {
           include: {
-            layer: {
-              include: {
-                pointLayer: true,
-              },
-            },
+            pointLayer: true,
           },
         },
         _count: {
@@ -60,53 +56,51 @@ export const publishForm = authAction
         },
       });
 
-      const rootDataTracksWithIds = rootForm.dataTracks.map((dataTrack) => ({
-        ...dataTrack,
-        newId: uuidv4(),
-      }));
+      // const rootLayersWithIds = rootForm.layers.map((layer) => ({
+      //   ...layer,
+      //   newId: uuidv4(),
+      // }));
 
-      /**
-       * We duplidate the datatrack, layers, and sub layer types for the new form.
-       * We do NOT duplicate the data itself (dataset).
-       */
-      const newDataTracks = await prisma.dataTrack.createManyAndReturn({
-        data: rootDataTracksWithIds.map((dataTrack) => ({
-          id: dataTrack.newId,
-          formId: newPublishedForm.id,
-          startStepIndex: dataTrack.startStepIndex,
-          endStepIndex: dataTrack.endStepIndex,
-        })),
-      });
+      // /**
+      //  * We duplidate the layers and sub layer types for the new form.
+      //  * We do NOT duplicate the data itself (dataset).
+      //  */
+      // const newLayers = await prisma.layer.createManyAndReturn({
+      //   data: rootDataTracksWithIds.map((dataTrack) => ({
+      //     id: dataTrack.newId,
+      //     formId: newPublishedForm.id,
+      //   })),
+      // });
 
-      await Promise.all(
-        rootDataTracksWithIds.flatMap((dataTrack) => {
-          const newDataTrack = newDataTracks.find(
-            (ndt) => ndt.id === dataTrack.newId
-          );
+      // await Promise.all(
+      //   rootDataTracksWithIds.flatMap((dataTrack) => {
+      //     const newDataTrack = newDataTracks.find(
+      //       (ndt) => ndt.id === dataTrack.newId
+      //     );
 
-          if (!newDataTrack) {
-            throw new Error("Data track not found");
-          }
+      //     if (!newDataTrack) {
+      //       throw new Error("Data track not found");
+      //     }
 
-          const layer = dataTrack.layer;
+      //     const layer = dataTrack.layer;
 
-          if (!layer?.pointLayer) {
-            throw new Error("Point layer not found");
-          }
+      //     if (!layer?.pointLayer) {
+      //       throw new Error("Point layer not found");
+      //     }
 
-          return prisma.layer.create({
-            data: {
-              type: layer.type,
-              dataTrackId: newDataTrack.id,
-              pointLayer: {
-                create: {
-                  pointColumnId: layer.pointLayer.pointColumnId,
-                },
-              },
-            },
-          });
-        })
-      );
+      //     return prisma.layer.create({
+      //       data: {
+      //         type: layer.type,
+      //         dataTrackId: newDataTrack.id,
+      //         pointLayer: {
+      //           create: {
+      //             pointColumnId: layer.pointLayer.pointColumnId,
+      //           },
+      //         },
+      //       },
+      //     });
+      //   })
+      // );
 
       // TODO: Improve this. This query is very slow and inefficient.Note that
       // createWithLocation creates a stepOrder on the form. Steps must be created

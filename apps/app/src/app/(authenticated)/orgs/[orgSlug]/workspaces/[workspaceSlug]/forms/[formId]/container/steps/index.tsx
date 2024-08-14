@@ -18,7 +18,6 @@ import { Badge } from "@mapform/ui/components/badge";
 import { useAction } from "next-safe-action/hooks";
 import { createStep } from "~/data/steps/create";
 import { updateForm } from "~/data/forms/update";
-import { createDataTrack } from "~/data/datatracks/create-datatrack";
 import { Draggable } from "../draggable";
 import { useContainerContext } from "../context";
 import {
@@ -26,7 +25,6 @@ import {
   StepDrawerRoot,
   StepDrawerTrigger,
 } from "../step-drawer";
-import { DataTracks } from "./datatracks";
 
 export function Steps() {
   const {
@@ -198,8 +196,6 @@ export function Steps() {
             </button>
           </div>
         </DndContext>
-
-        <DataTracks />
       </div>
     </div>
   );
