@@ -147,8 +147,6 @@ export function DataTracks() {
         newIndex = overIndex >= 0 ? overIndex + modifier : overItems.length + 1;
       }
 
-      console.log(11111, activeIndex, overIndex, newIndex);
-
       return prev;
 
       return {

@@ -100,8 +100,7 @@ export function Steps() {
 
   return (
     <div className="border-t overflow-x-auto px-3 pb-2">
-      <table className="table-fixed min-w-full">
-        <thead>
+      {/* <thead>
           <tr>
             {dragSteps.map((_, index) => (
               <th
@@ -121,85 +120,87 @@ export function Steps() {
               </th>
             ))}
           </tr>
-        </thead>
-        <tbody className="bg-white">
-          {/* STEPS */}
-          <tr>
-            <DndContext
-              collisionDetection={closestCenter}
-              onDragEnd={reorderSteps}
-              sensors={sensors}
-            >
-              <SortableContext
-                items={dragSteps}
-                strategy={horizontalListSortingStrategy}
-              >
-                {dragSteps.map((stepId) => {
-                  const step = formWithSteps.steps.find((s) => s.id === stepId);
+        </thead> */}
+      <div
+        className="grid gap-1.5"
+        style={{
+          gridTemplateColumns: `repeat(${dragSteps.length + 1}, 150px)`,
+        }}
+      >
+        {/* STEPS */}
+        <DndContext
+          collisionDetection={closestCenter}
+          onDragEnd={reorderSteps}
+          sensors={sensors}
+        >
+          <SortableContext
+            items={dragSteps}
+            strategy={horizontalListSortingStrategy}
+          >
+            {dragSteps.map((stepId) => {
+              const step = formWithSteps.steps.find((s) => s.id === stepId);
 
-                  if (!step) return null;
+              if (!step) return null;
 
-                  return (
-                    <td
-                      className="whitespace-nowrap p-1 text-sm text-stone-700 w-48 min-w-40"
-                      key={stepId}
-                    >
-                      <StepDrawerRoot
-                        key={stepId}
-                        onOpenChange={(isOpen) => {
-                          if (!isOpen && currentEditableStep?.id === stepId)
-                            setQueryParamFor("e");
-                        }}
-                        open={currentEditableStep?.id === stepId}
-                      >
-                        <Draggable id={stepId}>
-                          <StepDrawerTrigger asChild>
-                            <button
-                              className={cn(
-                                "flex relative px-3 rounded-md text-md h-12 text-background w-full bg-orange-200",
-                                {
-                                  "ring-2 ring-offset-2 ring-orange-600":
-                                    currentEditableStep?.id === stepId,
-                                }
-                              )}
-                              onClick={() => {
-                                if (currentEditableStep?.id === step.id) {
-                                  setQueryParamFor("e");
-                                  return;
-                                }
-                                setQueryParamFor("e", stepId);
-                              }}
-                              type="button"
-                            >
-                              <div className="flex-1 h-full flex justify-center items-center bg-orange-400">
-                                <span className="line-clamp-1 break-words px-1 text-sm">
-                                  {step.title || "Untitled"}
-                                </span>
-                              </div>
-                            </button>
-                          </StepDrawerTrigger>
-                        </Draggable>
-                        <StepDrawerContent />
-                      </StepDrawerRoot>
-                    </td>
-                  );
-                })}
-              </SortableContext>
-              <td className="whitespace-nowrap p-1 text-sm text-stone-700 w-48 min-w-40">
-                <button
-                  className="w-full h-12 flex justify-center items-center bg-orange-200 rounded-md"
-                  disabled={status === "pending"}
-                  onClick={onAdd}
+              return (
+                <div
+                  className="whitespace-nowrap text-sm text-stone-700"
+                  key={stepId}
                 >
-                  <PlusIcon className="text-orange-950 h-5 w-5" />
-                </button>
-              </td>
-            </DndContext>
-          </tr>
+                  <StepDrawerRoot
+                    key={stepId}
+                    onOpenChange={(isOpen) => {
+                      if (!isOpen && currentEditableStep?.id === stepId)
+                        setQueryParamFor("e");
+                    }}
+                    open={currentEditableStep?.id === stepId}
+                  >
+                    <Draggable id={stepId}>
+                      <StepDrawerTrigger asChild>
+                        <button
+                          className={cn(
+                            "flex relative px-3 rounded-md text-md h-12 text-background w-full bg-orange-200",
+                            {
+                              "ring-2 ring-offset-2 ring-orange-600":
+                                currentEditableStep?.id === stepId,
+                            }
+                          )}
+                          onClick={() => {
+                            if (currentEditableStep?.id === step.id) {
+                              setQueryParamFor("e");
+                              return;
+                            }
+                            setQueryParamFor("e", stepId);
+                          }}
+                          type="button"
+                        >
+                          <div className="flex-1 h-full flex justify-center items-center bg-orange-400">
+                            <span className="line-clamp-1 break-words px-1 text-sm">
+                              {step.title || "Untitled"}
+                            </span>
+                          </div>
+                        </button>
+                      </StepDrawerTrigger>
+                    </Draggable>
+                    <StepDrawerContent />
+                  </StepDrawerRoot>
+                </div>
+              );
+            })}
+          </SortableContext>
+          <div className="whitespace-nowrap text-sm text-stone-700">
+            <button
+              className="w-full h-12 flex justify-center items-center bg-orange-200 rounded-md"
+              disabled={status === "pending"}
+              onClick={onAdd}
+            >
+              <PlusIcon className="text-orange-950 h-5 w-5" />
+            </button>
+          </div>
+        </DndContext>
 
-          <DataTracks />
-        </tbody>
-      </table>
+        <DataTracks />
+      </div>
     </div>
   );
 }

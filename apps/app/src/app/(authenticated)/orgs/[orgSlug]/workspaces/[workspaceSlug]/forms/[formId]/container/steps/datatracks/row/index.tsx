@@ -40,79 +40,77 @@ export function Row({
   };
 
   return (
-    <tr>
-      <SortableContext
-        id={layerIndex.toString()}
-        items={items}
-        strategy={horizontalListSortingStrategy}
-      >
-        {items.map((item, index) => {
-          if (item.isPlaceholder) {
-            return (
-              <td
-                className="whitespace-nowrap p-1 text-sm text-stone-700 w-48 min-w-40"
-                key={item.id}
-              >
-                <Draggable id={item.id} key={item.id}>
-                  <button
-                    className="w-full h-8 flex justify-center items-center bg-blue-100 rounded-md opacity-0 hover:opacity-100 relative"
-                    onClick={() => {
-                      onAddDataTrack(index, index + 1, layerIndex);
-                    }}
-                  >
-                    <PlusIcon className="text-blue-950 h-5 w-5" />
-                  </button>
-                </Draggable>
-              </td>
-            );
-          }
-
+    <SortableContext
+      id={layerIndex.toString()}
+      items={items}
+      strategy={horizontalListSortingStrategy}
+    >
+      {items.map((item, index) => {
+        if (item.isPlaceholder) {
           return (
             <td
-              className={cn(
-                "whitespace-nowrap p-1 text-sm text-stone-700 w-48 min-w-40"
-              )}
-              colSpan={item.colSpan}
+              className="whitespace-nowrap text-sm text-stone-700"
               key={item.id}
             >
-              <DatatrackDrawerRoot
-                onOpenChange={(isOpen) => {
-                  if (!isOpen && currentDataTrack?.id === item.id)
-                    setQueryParamFor("d");
-                }}
-                open={currentDataTrack?.id === item.id}
-              >
-                <Draggable id={item.id} key={item.id}>
-                  <button
-                    className={cn(
-                      "flex relative px-3 rounded-md text-md h-8 w-full text-blue-950 bg-blue-100",
-                      {
-                        "ring-2 ring-offset-2 ring-blue-600":
-                          currentDataTrack?.id === item.id,
-                      }
-                    )}
-                    onClick={() => {
-                      if (currentDataTrack?.id === item.id) {
-                        setQueryParamFor("d");
-                        return;
-                      }
-                      setQueryParamFor("d", item.id);
-                    }}
-                    type="button"
-                  >
-                    <div className="flex-1 h-full flex justify-center items-center bg-blue-300">
-                      <span className="line-clamp-1 break-words px-1 text-sm">
-                        {item.name || "Untitled"}
-                      </span>
-                    </div>
-                  </button>
-                </Draggable>
-                <DatatrackContent />
-              </DatatrackDrawerRoot>
+              <Draggable id={item.id} key={item.id}>
+                <button
+                  className="w-full h-8 flex justify-center items-center bg-blue-100 rounded-md opacity-0 hover:opacity-100 relative"
+                  onClick={() => {
+                    onAddDataTrack(index, index + 1, layerIndex);
+                  }}
+                >
+                  <PlusIcon className="text-blue-950 h-5 w-5" />
+                </button>
+              </Draggable>
             </td>
           );
-        })}
-      </SortableContext>
-    </tr>
+        }
+
+        return (
+          <div
+            className={cn("whitespace-nowrap text-sm text-stone-700", {
+              "col-span-2": item.colSpan > 1,
+            })}
+            key={item.id}
+            style={{ gridRow: layerIndex + 2 }}
+          >
+            <DatatrackDrawerRoot
+              onOpenChange={(isOpen) => {
+                if (!isOpen && currentDataTrack?.id === item.id)
+                  setQueryParamFor("d");
+              }}
+              open={currentDataTrack?.id === item.id}
+            >
+              <Draggable id={item.id} key={item.id}>
+                <button
+                  className={cn(
+                    "flex relative px-3 rounded-md text-md h-8 w-full text-blue-950 bg-blue-100",
+                    {
+                      "ring-2 ring-offset-2 ring-blue-600":
+                        currentDataTrack?.id === item.id,
+                    }
+                  )}
+                  onClick={() => {
+                    if (currentDataTrack?.id === item.id) {
+                      setQueryParamFor("d");
+                      return;
+                    }
+                    setQueryParamFor("d", item.id);
+                  }}
+                  type="button"
+                >
+                  <div className="flex-1 h-full flex justify-center items-center bg-blue-300">
+                    <span className="line-clambreak-words px-1 text-sm">
+                      {item.name || "Untitled"}
+                    </span>
+                  </div>
+                </button>
+              </Draggable>
+              <DatatrackContent />
+            </DatatrackDrawerRoot>
+          </div>
+        );
+      })}
+    </SortableContext>
   );
 }
