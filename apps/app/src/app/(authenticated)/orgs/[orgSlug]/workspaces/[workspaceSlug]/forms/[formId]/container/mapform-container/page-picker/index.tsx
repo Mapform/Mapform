@@ -30,6 +30,7 @@ import {
 import { createStep } from "~/data/steps/create";
 import { DragItem, DragHandle } from "~/components/draggable";
 import { useContainerContext } from "../../context";
+import { PageItemPopover } from "./page-item-popover";
 
 export function PagePicker() {
   const {
@@ -130,13 +131,7 @@ export function PagePicker() {
                                 {step.title ?? `Untitled Page ${index + 1}`}
                               </span>
                             </Link>
-                            <Button
-                              className="ml-auto hover:bg-stone-200"
-                              size="icon-xs"
-                              variant="ghost"
-                            >
-                              <Ellipsis className="h-4 w-4 flex-shrink-0" />
-                            </Button>
+                            <PageItemPopover />
                           </div>
                         </div>
                       </DragItem>
