@@ -18,7 +18,7 @@ import { Badge } from "@mapform/ui/components/badge";
 import { useAction } from "next-safe-action/hooks";
 import { createStep } from "~/data/steps/create";
 import { updateForm } from "~/data/forms/update";
-import { Draggable } from "../draggable";
+import { Draggable } from "../../../../../../../../../../components/draggable";
 import { useContainerContext } from "../context";
 import {
   StepDrawerContent,
