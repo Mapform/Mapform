@@ -11,7 +11,13 @@ import {
 } from "@blocknote/react";
 import "@blocknote/mantine/style.css";
 import { BlockNoteView } from "@blocknote/mantine";
-import { TextIcon, ChevronLeftIcon, ImageIcon, MapPinIcon } from "lucide-react";
+import {
+  TextIcon,
+  ChevronLeftIcon,
+  ImageIcon,
+  MapPinIcon,
+  EllipsisIcon,
+} from "lucide-react";
 import { Button } from "@mapform/ui/components/button";
 import { schema, type CustomBlock } from "@mapform/blocknote";
 import "./style.css";

@@ -158,9 +158,6 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
             <div
               className={cn(
                 "flex-shrink-0 backdrop-blur-md bg-background z-10 transition-[width,transform]",
-                {
-                  "pl-6": editable && currentStep?.contentViewType !== "HIDDEN",
-                },
                 currentStep?.contentViewType === "FULL"
                   ? "w-full"
                   : currentStep?.contentViewType === "PARTIAL"

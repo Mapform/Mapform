@@ -12,7 +12,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@mapform/ui/components/accordion";
-import { useContainerContext } from "../context";
+import { useContainerContext } from "../../context";
 import { DeleteButton } from "./delete-button";
 import { GeneralForm } from "./general-form";
 
@@ -47,10 +47,8 @@ export function StepDrawerContent() {
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value="item-2">
-          <AccordionTrigger>Danger Zone</AccordionTrigger>
-          <AccordionContent>
-            <DeleteButton stepId={currentStep.id} />
-          </AccordionContent>
+          <AccordionTrigger>Data layers</AccordionTrigger>
+          <AccordionContent>Data layers</AccordionContent>
         </AccordionItem>
       </Accordion>
     </DrawerContent>

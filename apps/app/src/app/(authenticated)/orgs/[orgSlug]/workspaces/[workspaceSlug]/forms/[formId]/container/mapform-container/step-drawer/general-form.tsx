@@ -63,7 +63,7 @@ export function GeneralForm({ currentStep }: GeneralFormProps) {
         stepId: currentStep.id,
         data: {
           contentViewType: data.data.contentViewType,
-          formId: currentStep.formId,
+          formId: currentStep.formId ?? undefined,
         },
       });
     },

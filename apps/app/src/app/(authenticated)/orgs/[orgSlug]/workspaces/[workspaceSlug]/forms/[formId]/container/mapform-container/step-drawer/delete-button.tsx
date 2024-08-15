@@ -5,7 +5,7 @@ import { Button } from "@mapform/ui/components/button";
 import { useAction } from "next-safe-action/hooks";
 import { deleteStep } from "~/data/steps/delete";
 import { useCreateQueryString } from "~/lib/create-query-string";
-import { useContainerContext } from "../context";
+import { useContainerContext } from "../../context";
 
 interface DeleteButtonProps {
   stepId: string;
