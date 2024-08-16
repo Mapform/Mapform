@@ -22,15 +22,17 @@ function MapFormContainer({
   setMapformLoaded: (loaded: boolean) => void;
 }) {
   const {
-    formWithSteps,
+    map,
+    points,
+    viewState,
+    onMoveEnd,
+    setBounds,
     currentStep,
     setViewState,
-    viewState,
-    map,
+    formWithSteps,
+    setQueryParamFor,
+    currentEditableStep,
     debouncedUpdateStep,
-    onMoveEnd,
-    points,
-    setBounds,
   } = useContainerContext();
 
   return (
@@ -40,9 +42,22 @@ function MapFormContainer({
           <div className="flex gap-1">{/* Empty (for now) */}</div>
           {/* Edit controls */}
           <div className="flex gap-1">
-            <StepDrawerRoot>
-              <StepDrawerTrigger>
-                <Button size="icon-sm" variant="ghost">
+            <StepDrawerRoot
+              onOpenChange={(isOpen) => {
+                if (!isOpen && currentEditableStep?.id === currentStep?.id)
+                  setQueryParamFor("e");
+              }}
+              open={currentEditableStep?.id === currentStep?.id}
+            >
+              <StepDrawerTrigger asChild>
+                <Button
+                  className="data-[state=open]:bg-accent"
+                  onClick={() => {
+                    setQueryParamFor("e", currentStep?.id);
+                  }}
+                  size="icon-sm"
+                  variant="ghost"
+                >
                   <EllipsisIcon className="h-5 w-5" />
                 </Button>
               </StepDrawerTrigger>
