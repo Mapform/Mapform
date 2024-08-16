@@ -89,7 +89,7 @@ export function PagePicker() {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger>
+      <DropdownMenuTrigger asChild>
         <Button size="sm">
           <ChevronDown className="h-4 w-4 mr-1" />
           {currentStep?.title ?? `Untitled Page ${currentStepIndex + 1}`}
@@ -113,7 +113,7 @@ export function PagePicker() {
 
               return (
                 <DragItem id={stepId} key={stepId}>
-                  <DropdownMenuItem>
+                  <DropdownMenuItem highlight={stepId === currentStep?.id}>
                     <DragHandle id={stepId}>
                       <div className="mr-2 flex items-center justify-center flex-shrink-0 cursor-move">
                         <GripVerticalIcon className="h-4 w-4 flex-shrink-0" />
