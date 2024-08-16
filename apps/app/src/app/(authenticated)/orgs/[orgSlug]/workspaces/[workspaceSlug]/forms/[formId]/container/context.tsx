@@ -25,7 +25,7 @@ import { updateStep } from "~/data/steps/update";
 export interface ContainerContextProps {
   map: React.RefObject<MapRef>;
   dragSteps: string[];
-  formWithSteps: NonNullable<FormWithSteps["data"]>;
+  formWithSteps: NonNullable<FormWithSteps>;
   currentStep: StepWithLocation | undefined;
   currentStepIndex: number;
   currentEditableStep: StepWithLocation | undefined;
@@ -64,7 +64,7 @@ export function ContainerProvider({
   formWithSteps,
   children,
 }: {
-  formWithSteps: NonNullable<FormWithSteps["data"]>;
+  formWithSteps: NonNullable<FormWithSteps>;
   children: React.ReactNode;
 }) {
   const router = useRouter();
@@ -95,7 +95,7 @@ export function ContainerProvider({
       const queryKey = ["forms", data.formId];
       await queryClient.cancelQueries({ queryKey });
 
-      const prevForm: FormWithSteps["data"] | undefined =
+      const prevForm: FormWithSteps | undefined =
         queryClient.getQueryData(queryKey);
 
       // This should never happen
