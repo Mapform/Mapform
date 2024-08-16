@@ -6,7 +6,7 @@ import type {
   ViewStateChangeEvent,
   LngLatBounds,
 } from "@mapform/mapform";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import {
   type Dispatch,
@@ -19,7 +19,7 @@ import {
 } from "react";
 import { useCreateQueryString } from "~/lib/create-query-string";
 import { type FormWithSteps } from "~/data/forms/get-form-with-steps";
-import { type Points, getLayerData } from "~/data/datatracks/get-layer-data";
+import { type Points } from "~/data/datatracks/get-layer-data";
 import { updateStep } from "~/data/steps/update";
 
 export interface ContainerContextProps {
@@ -33,7 +33,10 @@ export interface ContainerContextProps {
   setViewState: Dispatch<SetStateAction<ViewState>>;
   setDragSteps: Dispatch<SetStateAction<string[]>>;
   debouncedUpdateStep: typeof updateStep;
-  setQueryParamFor: (param: "d" | "e" | "s", value?: string) => void;
+  setQueryParamFor: (
+    param: "e" | "s",
+    step?: NonNullable<FormWithSteps>["steps"][number]
+  ) => void;
   onMoveEnd?: ((e: ViewStateChangeEvent) => void) | undefined;
   points: Points;
   bounds: LngLatBounds | undefined;
@@ -163,26 +166,25 @@ export function ContainerProvider({
     padding: initialViewState.padding,
   });
 
-  const setQueryParamFor = (param: "d" | "e" | "s", value?: string) => {
+  const setQueryParamFor = (
+    param: "e" | "s",
+    step?: NonNullable<FormWithSteps>["steps"][number]
+  ) => {
     // Get current search params
     const current = new URLSearchParams(Array.from(searchParams.entries()));
 
     // Clear the param if value is not provided
-    if (!value) {
+    if (!step) {
       current.delete(param);
     } else {
       if (param === "e") {
-        current.set("s", value);
-        current.set("e", value);
+        current.set("s", step.id);
+        current.set("e", step.id);
       }
 
       if (param === "s") {
-        current.set("s", value);
+        current.set("s", step.id);
         current.delete("e");
-
-        const step = formWithSteps.steps.find((s2) => s2.id === value);
-
-        if (!step) return;
 
         map.current?.flyTo({
           center: [step.longitude, step.latitude],
@@ -230,8 +232,4 @@ export function ContainerProvider({
       {children}
     </ContainerContext.Provider>
   );
-}
-
-function notEmpty<TValue>(value: TValue | null | undefined): value is TValue {
-  return value !== null && value !== undefined;
 }

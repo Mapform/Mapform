@@ -1,15 +1,5 @@
 import Link from "next/link";
-import {
-  ChevronDown,
-  Ellipsis,
-  GripVerticalIcon,
-  PlusIcon,
-} from "lucide-react";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@mapform/ui/components/popover";
+import { ChevronDown, GripVerticalIcon, PlusIcon } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -56,7 +46,12 @@ export function PagePicker() {
     createStep,
     {
       onSuccess: (newStep) => {
-        setQueryParamFor("s", newStep.data?.id);
+        const newStepData = newStep.data;
+
+        if (!newStepData) return;
+
+        setDragSteps((prev) => [...prev, newStepData.id]);
+        setQueryParamFor("s", newStepData);
       },
     }
   );
