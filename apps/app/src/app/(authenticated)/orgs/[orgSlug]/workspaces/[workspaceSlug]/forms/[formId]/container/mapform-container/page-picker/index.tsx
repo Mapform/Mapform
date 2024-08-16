@@ -91,7 +91,7 @@ export function PagePicker() {
         <Button className="max-w-40" size="sm">
           <ChevronDown className="h-4 w-4 mr-1 flex-shrink-0" />
           <span className="truncate">
-            {currentStep?.title ?? `Untitled Page ${currentStepIndex + 1}`}
+            {currentStep?.title ?? "Untitled Page"}
           </span>
         </Button>
       </DropdownMenuTrigger>
@@ -127,7 +127,7 @@ export function PagePicker() {
                       type="button"
                     >
                       <span className="truncate">
-                        {step.title ?? `Untitled Page ${index + 1}`}
+                        {step.title ?? "Untitled Page"}
                       </span>
                     </button>
                     <PageItemSubmenu pageId={stepId} />
