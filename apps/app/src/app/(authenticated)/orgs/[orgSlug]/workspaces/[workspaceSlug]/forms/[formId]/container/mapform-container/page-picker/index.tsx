@@ -10,6 +10,14 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@mapform/ui/components/popover";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@mapform/ui/components/dropdown-menu";
 import { Button } from "@mapform/ui/components/button";
 import { cn } from "@mapform/lib/classnames";
 import { usePathname } from "next/navigation";
@@ -75,6 +83,73 @@ export function PagePicker() {
       // });
     }
   };
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger>
+        <Button size="sm">
+          <ChevronDown className="h-4 w-4 mr-1" />
+          {currentStep?.title ?? `Untitled Page ${currentStepIndex + 1}`}
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-72">
+        <DropdownMenuLabel>Pages</DropdownMenuLabel>
+        <DndContext
+          collisionDetection={closestCenter}
+          onDragEnd={reorderSteps}
+          sensors={sensors}
+        >
+          <SortableContext
+            items={dragSteps}
+            strategy={verticalListSortingStrategy}
+          >
+            {dragSteps.map((stepId, index) => {
+              const step = formWithSteps.steps.find((s) => s.id === stepId);
+
+              if (!step) return null;
+
+              return (
+                <DragItem id={stepId} key={stepId}>
+                  <DropdownMenuItem>
+                    <DragHandle id={stepId}>
+                      <div className="mr-2 flex items-center justify-center flex-shrink-0 cursor-move">
+                        <GripVerticalIcon className="h-4 w-4 flex-shrink-0" />
+                      </div>
+                    </DragHandle>
+                    <Link className="flex-1" href={`${pathname}?s=${stepId}`}>
+                      <span className="truncate">
+                        {step.title ?? `Untitled Page ${index + 1}`}
+                      </span>
+                    </Link>
+                    <PageItemPopover />
+                  </DropdownMenuItem>
+                </DragItem>
+              );
+            })}
+          </SortableContext>
+        </DndContext>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          className="font-medium cursor-pointer"
+          onClick={async () => {
+            const newStep = await executeAsync({
+              formId: formWithSteps.id,
+              location: viewState,
+            });
+
+            setQueryParamFor("s", newStep?.data?.id);
+          }}
+        >
+          <div className="h-4 w-4 flex items-center justify-center mr-2">
+            <PlusIcon className="h-4 w-4 flex-shrink-0" />
+          </div>
+          Create new page
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+
+  return;
 
   return (
     <Popover>
