@@ -52,8 +52,14 @@ export function PagePicker() {
     setQueryParamFor,
   } = useContainerContext();
   const pathname = usePathname();
-  const { executeAsync: createStepAsync, status: createStepStatus } =
-    useAction(createStep);
+  const { execute: executeCreateStep, status: createStepStatus } = useAction(
+    createStep,
+    {
+      onSuccess: (newStep) => {
+        setQueryParamFor("s", newStep.data?.id);
+      },
+    }
+  );
   const { executeAsync: updateFormAsync } = useAction(updateForm);
 
   const sensors = useSensors(
@@ -90,9 +96,11 @@ export function PagePicker() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button size="sm">
-          <ChevronDown className="h-4 w-4 mr-1" />
-          {currentStep?.title ?? `Untitled Page ${currentStepIndex + 1}`}
+        <Button className="max-w-40" size="sm">
+          <ChevronDown className="h-4 w-4 mr-1 flex-shrink-0" />
+          <span className="truncate">
+            {currentStep?.title ?? `Untitled Page ${currentStepIndex + 1}`}
+          </span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-72">
@@ -119,7 +127,10 @@ export function PagePicker() {
                         <GripVerticalIcon className="h-4 w-4 flex-shrink-0" />
                       </div>
                     </DragHandle>
-                    <Link className="flex-1" href={`${pathname}?s=${stepId}`}>
+                    <Link
+                      className="flex-1 truncate"
+                      href={`${pathname}?s=${stepId}`}
+                    >
                       <span className="truncate">
                         {step.title ?? `Untitled Page ${index + 1}`}
                       </span>
@@ -135,13 +146,11 @@ export function PagePicker() {
         <DropdownMenuItem
           className="font-medium cursor-pointer"
           disabled={createStepStatus === "executing"}
-          onClick={async () => {
-            const newStep = await createStepAsync({
+          onClick={() => {
+            executeCreateStep({
               formId: formWithSteps.id,
               location: viewState,
             });
-
-            setQueryParamFor("s", newStep?.data?.id);
           }}
         >
           <div className="h-4 w-4 flex items-center justify-center mr-2">

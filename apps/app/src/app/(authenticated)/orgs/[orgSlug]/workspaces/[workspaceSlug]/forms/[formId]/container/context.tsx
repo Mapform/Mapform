@@ -201,15 +201,17 @@ export function ContainerProvider({
 
         const step = formWithSteps.steps.find((s2) => s2.id === value);
 
-        if (!step) return;
+        console.log(9999999, step);
 
-        map.current?.flyTo({
-          center: [step.longitude, step.latitude],
-          zoom: step.zoom,
-          pitch: step.pitch,
-          bearing: step.bearing,
-          duration: 1000,
-        });
+        // if (!step) return;
+
+        // map.current?.flyTo({
+        //   center: [step.longitude, step.latitude],
+        //   zoom: step.zoom,
+        //   pitch: step.pitch,
+        //   bearing: step.bearing,
+        //   duration: 1000,
+        // });
       }
     }
 
