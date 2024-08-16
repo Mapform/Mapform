@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { ChevronDown, GripVerticalIcon, PlusIcon } from "lucide-react";
 import {
   DropdownMenu,
@@ -10,7 +9,6 @@ import {
 } from "@mapform/ui/components/dropdown-menu";
 import { Button } from "@mapform/ui/components/button";
 import { Spinner } from "@mapform/ui/components/spinner";
-import { usePathname } from "next/navigation";
 import { useAction } from "next-safe-action/hooks";
 import {
   DndContext,
@@ -41,7 +39,6 @@ export function PagePicker() {
     currentStepIndex,
     setQueryParamFor,
   } = useContainerContext();
-  const pathname = usePathname();
   const { execute: executeCreateStep, status: createStepStatus } = useAction(
     createStep,
     {
@@ -122,14 +119,17 @@ export function PagePicker() {
                         <GripVerticalIcon className="h-4 w-4 flex-shrink-0" />
                       </div>
                     </DragHandle>
-                    <Link
-                      className="flex-1 truncate"
-                      href={`${pathname}?s=${stepId}`}
+                    <button
+                      className="flex-1 truncate text-left"
+                      onClick={() => {
+                        setQueryParamFor("s", step);
+                      }}
+                      type="button"
                     >
                       <span className="truncate">
                         {step.title ?? `Untitled Page ${index + 1}`}
                       </span>
-                    </Link>
+                    </button>
                     <PageItemSubmenu pageId={stepId} />
                   </DropdownMenuItem>
                 </DragItem>

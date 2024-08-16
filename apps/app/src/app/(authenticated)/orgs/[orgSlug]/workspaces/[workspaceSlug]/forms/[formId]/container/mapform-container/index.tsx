@@ -53,7 +53,7 @@ function MapFormContainer({
                 <Button
                   className="data-[state=open]:bg-accent"
                   onClick={() => {
-                    setQueryParamFor("e", currentStep?.id);
+                    setQueryParamFor("e", currentStep);
                   }}
                   size="icon-sm"
                   variant="ghost"
