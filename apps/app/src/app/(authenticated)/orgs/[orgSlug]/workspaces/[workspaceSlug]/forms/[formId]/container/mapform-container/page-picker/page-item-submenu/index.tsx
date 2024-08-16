@@ -16,7 +16,7 @@ export function PageItemSubmenu({ pageId }: { pageId: string }) {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
-          className="ml-auto hover:bg-stone-200 data-[state=open]:bg-accent"
+          className="ml-auto hover:bg-stone-200 data-[state=open]:bg-stone-200"
           size="icon-xs"
           variant="ghost"
         >
