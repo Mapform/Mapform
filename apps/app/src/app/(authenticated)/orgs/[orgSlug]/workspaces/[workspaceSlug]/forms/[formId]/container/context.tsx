@@ -174,7 +174,11 @@ export function ContainerProvider({
       if (param === "e") {
         current.set("s", value);
         current.set("e", value);
-        current.delete("d");
+      }
+
+      if (param === "s") {
+        current.set("s", value);
+        current.delete("e");
 
         const step = formWithSteps.steps.find((s2) => s2.id === value);
 
@@ -187,31 +191,6 @@ export function ContainerProvider({
           bearing: step.bearing,
           duration: 1000,
         });
-      }
-
-      if (param === "d") {
-        current.set("d", value);
-        current.delete("e");
-      }
-
-      if (param === "s") {
-        current.set("s", value);
-        current.delete("e");
-        current.delete("d");
-
-        const step = formWithSteps.steps.find((s2) => s2.id === value);
-
-        console.log(9999999, step);
-
-        // if (!step) return;
-
-        // map.current?.flyTo({
-        //   center: [step.longitude, step.latitude],
-        //   zoom: step.zoom,
-        //   pitch: step.pitch,
-        //   bearing: step.bearing,
-        //   duration: 1000,
-        // });
       }
     }
 
