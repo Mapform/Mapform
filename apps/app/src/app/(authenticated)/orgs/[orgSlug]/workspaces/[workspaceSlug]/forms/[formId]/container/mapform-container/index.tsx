@@ -5,7 +5,7 @@ import { MapForm } from "@mapform/mapform";
 import { toast } from "@mapform/ui/components/toaster";
 import type { CustomBlock } from "@mapform/blocknote";
 import { Button } from "@mapform/ui/components/button";
-import { EllipsisIcon } from "lucide-react";
+import { EllipsisIcon, Monitor, Smartphone } from "lucide-react";
 import { uploadImage } from "~/data/images";
 import { env } from "~/env.mjs";
 import { useContainerContext } from "../context";
@@ -38,8 +38,15 @@ function MapFormContainer({
   return (
     <div className="p-4 flex-1 flex justify-center overflow-hidden">
       <div className="flex flex-col flex-1">
-        <div className="group flex-1 flex justify-between mb-2 -mt-2">
-          <div className="flex gap-1">{/* Empty (for now) */}</div>
+        <div className="group flex-1 flex justify-between mb-4 p-2 bg-accent rounded-md border">
+          <div className="flex">
+            <Button className="bg-stone-200" size="icon-sm" variant="ghost">
+              <Monitor className="h-5 w-5" />
+            </Button>
+            <Button size="icon-sm" variant="ghost">
+              <Smartphone className="h-5 w-5" />
+            </Button>
+          </div>
           {/* Edit controls */}
           <div className="flex gap-1">
             <StepDrawerRoot
@@ -51,7 +58,7 @@ function MapFormContainer({
             >
               <StepDrawerTrigger asChild>
                 <Button
-                  className="data-[state=open]:bg-accent"
+                  className="data-[state=open]:bg-stone-200 hover:bg-stone-200"
                   onClick={() => {
                     setQueryParamFor("e", currentStep?.id);
                   }}
