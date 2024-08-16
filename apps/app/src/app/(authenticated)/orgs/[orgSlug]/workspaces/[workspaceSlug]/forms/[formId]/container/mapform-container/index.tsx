@@ -38,15 +38,8 @@ function MapFormContainer({
   return (
     <div className="p-4 flex-1 flex justify-center overflow-hidden">
       <div className="flex flex-col flex-1">
-        <div className="group flex-1 flex justify-between mb-4 p-2 bg-accent rounded-md border">
-          <div className="flex">
-            <Button className="bg-stone-200" size="icon-sm" variant="ghost">
-              <Monitor className="h-5 w-5" />
-            </Button>
-            <Button size="icon-sm" variant="ghost">
-              <Smartphone className="h-5 w-5" />
-            </Button>
-          </div>
+        <div className="group flex-1 flex justify-between mb-4">
+          <div className="flex">{/* Empty for now */}</div>
           {/* Edit controls */}
           <div className="flex gap-1">
             <StepDrawerRoot
