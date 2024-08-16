@@ -19,7 +19,7 @@ import {
   DropdownMenuTrigger,
 } from "@mapform/ui/components/dropdown-menu";
 import { Button } from "@mapform/ui/components/button";
-import { cn } from "@mapform/lib/classnames";
+import { Spinner } from "@mapform/ui/components/spinner";
 import { usePathname } from "next/navigation";
 import { useAction } from "next-safe-action/hooks";
 import {
@@ -39,7 +39,7 @@ import { createStep } from "~/data/steps/create";
 import { updateForm } from "~/data/forms/update";
 import { DragItem, DragHandle } from "~/components/draggable";
 import { useContainerContext } from "../../context";
-import { PageItemPopover } from "./page-item-popover";
+import { PageItemSubmenu } from "./page-item-submenu";
 
 export function PagePicker() {
   const {
@@ -52,7 +52,8 @@ export function PagePicker() {
     setQueryParamFor,
   } = useContainerContext();
   const pathname = usePathname();
-  const { executeAsync: createStepAsync } = useAction(createStep);
+  const { executeAsync: createStepAsync, status: createStepStatus } =
+    useAction(createStep);
   const { executeAsync: updateFormAsync } = useAction(updateForm);
 
   const sensors = useSensors(
@@ -123,7 +124,7 @@ export function PagePicker() {
                         {step.title ?? `Untitled Page ${index + 1}`}
                       </span>
                     </Link>
-                    <PageItemPopover />
+                    <PageItemSubmenu pageId={stepId} />
                   </DropdownMenuItem>
                 </DragItem>
               );
@@ -133,6 +134,7 @@ export function PagePicker() {
         <DropdownMenuSeparator />
         <DropdownMenuItem
           className="font-medium cursor-pointer"
+          disabled={createStepStatus === "executing"}
           onClick={async () => {
             const newStep = await createStepAsync({
               formId: formWithSteps.id,
@@ -143,7 +145,11 @@ export function PagePicker() {
           }}
         >
           <div className="h-4 w-4 flex items-center justify-center mr-2">
-            <PlusIcon className="h-4 w-4 flex-shrink-0" />
+            {createStepStatus === "executing" ? (
+              <Spinner size="xs" variant="dark" />
+            ) : (
+              <PlusIcon className="h-4 w-4 flex-shrink-0" />
+            )}
           </div>
           Create new page
         </DropdownMenuItem>

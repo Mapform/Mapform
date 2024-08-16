@@ -23,16 +23,25 @@ export const createStep = authAction
         longitude: location.longitude,
       });
 
-      await tx.form.update({
+      const form = await tx.form.update({
         where: {
           id: formId,
         },
         data: {
           isDirty: true,
         },
+        include: {
+          workspace: {
+            include: {
+              organization: true,
+            },
+          },
+        },
       });
 
-      revalidatePath("/");
+      revalidatePath(
+        `/orgs/${form.workspace.organization.slug}/workspaces/${form.workspace.slug}/forms/${form.id}`
+      );
 
       return newStep;
     });

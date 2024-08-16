@@ -36,14 +36,23 @@ export const deleteStep = authAction
       stepId,
     });
 
-    await prisma.form.update({
+    const form = await prisma.form.update({
       where: {
         id: userStep.formId,
       },
       data: {
         isDirty: true,
       },
+      include: {
+        workspace: {
+          include: {
+            organization: true,
+          },
+        },
+      },
     });
 
-    revalidatePath(`/forms/${userStep.formId}`);
+    revalidatePath(
+      `/orgs/${form.workspace.organization.slug}/workspaces/${form.workspace.slug}/forms/${userStep.formId}`
+    );
   });
