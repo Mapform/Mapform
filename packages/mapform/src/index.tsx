@@ -197,7 +197,7 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
                 name: "globe",
               }}
               ref={ref}
-              style={{ flex: 1 }}
+              style={{ flex: 1, borderRadius: editable ? "8px" : 0 }}
             >
               <StyleLoadedGuard guardState={styleLoadedGuardState}>
                 <NavigationControl />
