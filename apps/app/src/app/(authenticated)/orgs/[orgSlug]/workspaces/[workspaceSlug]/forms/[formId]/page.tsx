@@ -25,7 +25,7 @@ export default async function Workspace({
   });
 
   return (
-    <div className="-m-6 flex flex-col flex-1 overflow-hidden">
+    <div className="-m-4 flex flex-col flex-1 overflow-hidden">
       <HydrationBoundary state={dehydrate(queryClient)}>
         <MapProvider>
           <Container formId={params.formId} />

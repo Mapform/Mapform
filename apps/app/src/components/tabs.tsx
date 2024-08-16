@@ -58,7 +58,7 @@ export function Tabs({ name, isLoading, tabs, action, children }: TabsProps) {
           </nav>
         </div>
       </div>
-      <div className="flex flex-col flex-1 p-6 overflow-hidden">{children}</div>
+      <div className="flex flex-col flex-1 p-4 overflow-hidden">{children}</div>
     </div>
   );
 }
