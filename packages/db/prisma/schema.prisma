@@ -300,6 +300,7 @@ enum ColumnType {
 
 model Layer {
     id         String      @id @default(cuid())
+    name       String?
     type       LayerType
     pointLayer PointLayer?
 

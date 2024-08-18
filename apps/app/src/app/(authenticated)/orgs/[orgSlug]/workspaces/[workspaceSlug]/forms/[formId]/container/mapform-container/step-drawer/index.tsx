@@ -12,10 +12,14 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@mapform/ui/components/accordion";
-import { useContainerContext } from "../../context";
-import { DeleteButton } from "./delete-button";
-import { GeneralForm } from "./general-form";
 import { cn } from "@mapform/lib/classnames";
+import { useContainerContext } from "../../context";
+import { GeneralForm } from "./general-form";
+import {
+  NewLayerDrawerContent,
+  NewLayerDrawerRoot,
+  NewLayerDrawerTrigger,
+} from "./new-layer-drawer";
 
 export const StepDrawerRoot = Drawer;
 export const StepDrawerTrigger = DrawerTrigger;
@@ -50,16 +54,23 @@ export function StepDrawerContent() {
         <AccordionItem value="item-2">
           <AccordionTrigger>
             <span className="flex-1 text-left">Data layers</span>
-            <span
-              className={cn(
-                buttonVariants({ variant: "ghost", size: "icon-xs" }),
-                "text-muted-foreground hover:bg-stone-200"
-              )}
-            >
-              <PlusIcon className="size-4 " onClick={() => alert("ok")} />
-            </span>
+            <NewLayerDrawerRoot>
+              <NewLayerDrawerTrigger>
+                <span
+                  className={cn(
+                    buttonVariants({ variant: "ghost", size: "icon-xs" }),
+                    "text-muted-foreground hover:bg-stone-200"
+                  )}
+                >
+                  <PlusIcon className="size-4" />
+                </span>
+              </NewLayerDrawerTrigger>
+              <NewLayerDrawerContent />
+            </NewLayerDrawerRoot>
           </AccordionTrigger>
-          <AccordionContent>Data layers</AccordionContent>
+          <AccordionContent>
+            {currentStep.layers.map((layer) => layer.id)}
+          </AccordionContent>
         </AccordionItem>
       </Accordion>
     </DrawerContent>

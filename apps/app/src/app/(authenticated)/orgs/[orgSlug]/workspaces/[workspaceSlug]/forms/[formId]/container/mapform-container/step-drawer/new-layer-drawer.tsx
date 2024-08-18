@@ -45,11 +45,7 @@ export const NewLayerDrawerRoot = NestedDrawer;
 export const NewLayerDrawerTrigger = DrawerTrigger;
 
 export function NewLayerDrawerContent() {
-  const { currentDataTrack } = useContainerContext();
   const form = useForm<CreateLayerSchema>({
-    defaultValues: {
-      dataTrackId: currentDataTrack?.id,
-    },
     resolver: zodResolver(createLayerSchema),
   });
   const params = useParams<{ formId: string }>();
