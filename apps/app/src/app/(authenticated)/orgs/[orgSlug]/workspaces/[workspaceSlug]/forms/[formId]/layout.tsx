@@ -1,6 +1,7 @@
 import { Tabs } from "~/components/tabs";
+import { getForm } from "~/data/forms/get-form";
 
-export default function Layout({
+export default async function Layout({
   params,
   children,
   actions,
@@ -20,8 +21,26 @@ export default function Layout({
     },
   ];
 
+  const form = await getForm({
+    formId: params.formId,
+  });
+
+  if (!form) {
+    return null;
+  }
+
   return (
-    <Tabs action={actions} name="Some form" tabs={tabs}>
+    <Tabs
+      action={actions}
+      nameSections={[
+        {
+          name: form.workspace.name,
+          href: `/orgs/${params.orgSlug}/workspaces/${params.workspaceSlug}`,
+        },
+        { name: form.name },
+      ]}
+      tabs={tabs}
+    >
       {children}
     </Tabs>
   );

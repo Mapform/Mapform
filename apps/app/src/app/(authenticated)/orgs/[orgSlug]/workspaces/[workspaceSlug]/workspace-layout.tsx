@@ -4,7 +4,7 @@ interface WorkspaceLayoutProps {
   orgSlug: string;
   workspaceSlug: string;
   workspaceId: string;
-  name?: string;
+  name: string;
   children: React.ReactNode;
   action?: React.ReactNode;
 }
@@ -29,7 +29,7 @@ export default function WorkspaceLayout({
   ];
 
   return (
-    <Tabs action={action} name={name} tabs={tabs}>
+    <Tabs action={action} nameSections={[{ name }]} tabs={tabs}>
       {children}
     </Tabs>
   );
