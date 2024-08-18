@@ -2,8 +2,9 @@
 
 import * as React from "react";
 import * as AccordionPrimitive from "@radix-ui/react-accordion";
-import { ChevronDownIcon } from "lucide-react";
+import { ChevronDownIcon, PlusIcon } from "lucide-react";
 import { cn } from "@mapform/lib/classnames";
+import { buttonVariants } from "./button";
 
 const Accordion = AccordionPrimitive.Root;
 
@@ -22,15 +23,23 @@ const AccordionTrigger = React.forwardRef<
   <AccordionPrimitive.Header className="flex flex-1 px-4">
     <AccordionPrimitive.Trigger
       className={cn(
-        "-mx-3 hover:bg-stone-100 flex-1 pl-2 pr-2 py-1 rounded transition-colors flex items-center mb-[2px] cursor-pointer gap-1 text-sm text-stone-700 [&[data-state=closed]>div]:-rotate-90 [&[data-state=open]>div]:rotate-0",
+        "-mx-3 hover:bg-stone-100 flex-1 pl-2 pr-2 py-1 rounded flex items-center mb-[2px] cursor-pointer gap-1 text-sm text-stone-700 [&[data-state=closed]>span>svg]:-rotate-90 [&[data-state=open]>span>svg]:rotate-0 transition-all duration-200",
         className
       )}
       ref={ref}
       {...props}
     >
-      <div className="flex rounded items-center justify-center flex-shrink-0 p-1 hover:bg-stone-200">
-        <ChevronDownIcon className="h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-200" />
-      </div>
+      {/* <div className="flex rounded items-center justify-center flex-shrink-0 p-1 hover:bg-stone-200">
+        <ChevronDownIcon className="h-4 w-4 shrink-0 text-muted-foreground" />
+      </div> */}
+      <span
+        className={cn(
+          buttonVariants({ variant: "ghost", size: "icon-xs" }),
+          "text-muted-foreground hover:bg-stone-200"
+        )}
+      >
+        <ChevronDownIcon className="h-4 w-4 shrink-0 transition-all duration-200" />
+      </span>
       {children}
     </AccordionPrimitive.Trigger>
   </AccordionPrimitive.Header>

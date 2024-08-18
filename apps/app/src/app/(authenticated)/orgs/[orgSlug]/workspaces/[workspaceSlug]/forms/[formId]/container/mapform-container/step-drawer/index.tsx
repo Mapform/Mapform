@@ -1,11 +1,11 @@
-import { Button } from "@mapform/ui/components/button";
+import { Button, buttonVariants } from "@mapform/ui/components/button";
 import {
   Drawer,
   DrawerContent,
   DrawerHeader,
   DrawerTrigger,
 } from "@mapform/ui/components/drawer";
-import { ChevronsLeftIcon } from "lucide-react";
+import { ChevronsLeftIcon, PlusIcon } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
@@ -15,6 +15,7 @@ import {
 import { useContainerContext } from "../../context";
 import { DeleteButton } from "./delete-button";
 import { GeneralForm } from "./general-form";
+import { cn } from "@mapform/lib/classnames";
 
 export const StepDrawerRoot = Drawer;
 export const StepDrawerTrigger = DrawerTrigger;
@@ -33,7 +34,7 @@ export function StepDrawerContent() {
         <div className="-mr-2">
           <DrawerTrigger asChild>
             <Button size="icon-sm" variant="ghost">
-              <ChevronsLeftIcon className="h-4 w-4" />
+              <ChevronsLeftIcon className="size-4" />
             </Button>
           </DrawerTrigger>
         </div>
@@ -47,7 +48,17 @@ export function StepDrawerContent() {
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value="item-2">
-          <AccordionTrigger>Data layers</AccordionTrigger>
+          <AccordionTrigger>
+            <span className="flex-1 text-left">Data layers</span>
+            <span
+              className={cn(
+                buttonVariants({ variant: "ghost", size: "icon-xs" }),
+                "text-muted-foreground hover:bg-stone-200"
+              )}
+            >
+              <PlusIcon className="size-4 " onClick={() => alert("ok")} />
+            </span>
+          </AccordionTrigger>
           <AccordionContent>Data layers</AccordionContent>
         </AccordionItem>
       </Accordion>
