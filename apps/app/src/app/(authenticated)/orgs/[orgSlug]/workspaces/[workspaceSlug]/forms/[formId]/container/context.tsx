@@ -19,7 +19,7 @@ import {
 } from "react";
 import { useCreateQueryString } from "~/lib/create-query-string";
 import { type FormWithSteps } from "~/data/forms/get-form-with-steps";
-import { type Points } from "~/data/datatracks/get-layer-data";
+import type { GetStepData } from "~/data/steps/get-step-data";
 import { updateStep } from "~/data/steps/update";
 
 export interface ContainerContextProps {
@@ -38,7 +38,7 @@ export interface ContainerContextProps {
     step?: NonNullable<FormWithSteps>["steps"][number]
   ) => void;
   onMoveEnd?: ((e: ViewStateChangeEvent) => void) | undefined;
-  points: Points;
+  points: GetStepData;
   bounds: LngLatBounds | undefined;
   setBounds: Dispatch<SetStateAction<LngLatBounds | undefined>>;
 }
@@ -65,9 +65,11 @@ const initialViewState = {
 
 export function ContainerProvider({
   formWithSteps,
+  points,
   children,
 }: {
   formWithSteps: NonNullable<FormWithSteps>;
+  points: GetStepData;
   children: React.ReactNode;
 }) {
   const router = useRouter();
@@ -85,8 +87,6 @@ export function ContainerProvider({
   );
 
   const currentEditableStep = formWithSteps.steps.find((step) => step.id === e);
-
-  // const activeStepLayers = formWithSteps.
 
   const map = useRef<MapRef>(null);
   const initialBounds = map.current?.getBounds();
@@ -224,7 +224,7 @@ export function ContainerProvider({
         currentEditableStep,
         setQueryParamFor,
         onMoveEnd,
-        // points,
+        points,
         bounds,
         setBounds,
       }}

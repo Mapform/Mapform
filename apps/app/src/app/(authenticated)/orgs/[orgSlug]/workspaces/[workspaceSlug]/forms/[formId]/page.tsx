@@ -6,11 +6,16 @@ import {
 } from "@tanstack/react-query";
 import { getFormWithSteps } from "~/data/forms/get-form-with-steps";
 import { Container } from "./container";
+import { getStepData } from "~/data/steps/get-step-data";
 
 export default async function Workspace({
   params,
+  searchParams,
 }: {
   params: { orgSlug: string; workspaceSlug: string; formId: string };
+  searchParams?: {
+    s?: string;
+  };
 }) {
   const { formId } = params;
   const queryClient = new QueryClient({
@@ -31,11 +36,21 @@ export default async function Workspace({
       )?.data,
   });
 
+  // if (!searchParams?.s) {
+  //   return null;
+  // }
+
+  const stepData = await getStepData({
+    stepId: searchParams?.s ?? "",
+  });
+
+  console.log(11111, stepData);
+
   return (
     <div className="-m-4 flex flex-col flex-1 overflow-hidden">
       <HydrationBoundary state={dehydrate(queryClient)}>
         <MapProvider>
-          <Container formId={params.formId} />
+          <Container formId={params.formId} points={stepData?.data ?? []} />
         </MapProvider>
       </HydrationBoundary>
     </div>
