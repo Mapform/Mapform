@@ -217,7 +217,16 @@ export function stepsExtension() {
             // Order the steps according to the form's stepOrder
             const orderedSteps = form.stepOrder
               .map((id) => {
-                return joinedSteps.find((step) => step.id === id);
+                const step = joinedSteps.find((step) => step.id === id);
+
+                return {
+                  ...step,
+                  layers:
+                    // Ordered layers
+                    step?.layerOrder.map((layerId) =>
+                      step?.layers.find((layer) => layer.id === layerId)
+                    ) ?? [],
+                };
               })
               .filter((s) => Boolean(s)) as StepWithLocation[];
 
