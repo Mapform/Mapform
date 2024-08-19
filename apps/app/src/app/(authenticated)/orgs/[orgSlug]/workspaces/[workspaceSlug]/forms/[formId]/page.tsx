@@ -13,7 +13,14 @@ export default async function Workspace({
   params: { orgSlug: string; workspaceSlug: string; formId: string };
 }) {
   const { formId } = params;
-  const queryClient = new QueryClient();
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        staleTime: 1000 * 60 * 5,
+        refetchInterval: 1000 * 60 * 5,
+      },
+    },
+  });
   await queryClient.prefetchQuery({
     queryKey: ["forms", formId],
     queryFn: async () =>

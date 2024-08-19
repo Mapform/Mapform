@@ -32,14 +32,8 @@ export function Container({ formId }: { formId: string }) {
 
   return (
     <ContainerProvider formWithSteps={data}>
-      {/* {mapformLoaded ? null : (
-        <div className="absolute inset-0 flex justify-center items-center">
-          <Spinner variant="dark" />
-        </div>
-      )} */}
       <div className={cn("flex flex-col flex-1 overflow-hidden bg-background")}>
         <MapFormContainer setMapformLoaded={setMapformLoaded} />
-        {/* <Steps /> */}
       </div>
     </ContainerProvider>
   );

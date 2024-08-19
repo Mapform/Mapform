@@ -28,7 +28,6 @@ import {
 } from "@mapform/ui/components/accordion";
 import { cn } from "@mapform/lib/classnames";
 import { DragHandle, DragItem } from "~/components/draggable";
-import { updateStep } from "~/data/steps/update";
 import { useContainerContext } from "../../context";
 import { GeneralForm } from "./general-form";
 import {
@@ -41,7 +40,7 @@ export const StepDrawerRoot = Drawer;
 export const StepDrawerTrigger = DrawerTrigger;
 
 export function StepDrawerContent() {
-  const { currentStep } = useContainerContext();
+  const { currentStep, debouncedUpdateStep } = useContainerContext();
   const [dragLayers, setDragLayers] = useState(currentStep?.layers ?? []);
 
   const sensors = useSensors(
@@ -73,7 +72,7 @@ export function StepDrawerContent() {
       );
       setDragLayers(newLayerList);
 
-      await updateStep({
+      await debouncedUpdateStep({
         stepId: currentStep.id,
         data: {
           formId: currentStep.formId ?? undefined,

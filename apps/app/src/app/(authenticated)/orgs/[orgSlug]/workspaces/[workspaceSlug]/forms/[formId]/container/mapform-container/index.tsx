@@ -130,5 +130,5 @@ function MapFormContainer({
   );
 }
 
-// To this to avoid SSR caused by Blocknote / Tiptap
+// This is to avoid SSR caused by Blocknote / Tiptap
 export default dynamic(() => Promise.resolve(MapFormContainer), { ssr: false });
