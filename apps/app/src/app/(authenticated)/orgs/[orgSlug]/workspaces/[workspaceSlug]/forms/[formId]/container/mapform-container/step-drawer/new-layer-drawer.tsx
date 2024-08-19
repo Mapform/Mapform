@@ -45,10 +45,15 @@ export const NewLayerDrawerRoot = NestedDrawer;
 export const NewLayerDrawerTrigger = DrawerTrigger;
 
 export function NewLayerDrawerContent() {
+  const { currentStep } = useContainerContext();
+  const params = useParams<{ formId: string }>();
   const form = useForm<CreateLayerSchema>({
+    defaultValues: {
+      formId: params.formId,
+      stepId: currentStep?.id,
+    },
     resolver: zodResolver(createLayerSchema),
   });
-  const params = useParams<{ formId: string }>();
   const { data, isLoading } = useQuery({
     queryKey: ["datasets", params.formId],
     queryFn: () => listAvailableDatasets({ formId: params.formId }),

@@ -221,6 +221,7 @@ model Dataset {
     form        Form?
     workspaceId String
     workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+    layers      Layer[]
 }
 
 model Column {
@@ -307,7 +308,9 @@ model Layer {
     formId String @unique
     form   Form   @relation(fields: [formId], references: [id], onDelete: Cascade)
 
-    steps Step[]
+    steps     Step[]
+    datasetId String
+    dataset   Dataset @relation(fields: [datasetId], references: [id], onDelete: Cascade)
 }
 
 model PointLayer {
