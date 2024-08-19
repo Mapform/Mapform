@@ -126,7 +126,7 @@ export function PagePicker() {
                       type="button"
                     >
                       <span className="truncate">
-                        {step.title ?? "Untitled Page"}
+                        {step.title || "Untitled Page"}
                       </span>
                     </button>
                     <PageItemSubmenu pageId={stepId} />
