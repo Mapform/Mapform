@@ -1,11 +1,25 @@
+import { useState } from "react";
 import { Button, buttonVariants } from "@mapform/ui/components/button";
+import {
+  DndContext,
+  PointerSensor,
+  closestCenter,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import type { DragEndEvent } from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 import {
   Drawer,
   DrawerContent,
   DrawerHeader,
   DrawerTrigger,
 } from "@mapform/ui/components/drawer";
-import { ChevronsLeftIcon, PlusIcon } from "lucide-react";
+import { ChevronsLeftIcon, GripVerticalIcon, PlusIcon } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
@@ -20,16 +34,45 @@ import {
   NewLayerDrawerRoot,
   NewLayerDrawerTrigger,
 } from "./new-layer-drawer";
+import { DragHandle, DragItem } from "~/components/draggable";
 
 export const StepDrawerRoot = Drawer;
 export const StepDrawerTrigger = DrawerTrigger;
 
 export function StepDrawerContent() {
   const { currentStep } = useContainerContext();
+  const [dragLayers, setDragLayers] = useState(currentStep?.layers ?? []);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    })
+  );
 
   if (!currentStep) {
     return <div className="bg-white w-[400px] border-l" />;
   }
+
+  const reorderLayers = async (e: DragEndEvent) => {
+    // if (!e.over) return;
+    // if (e.active.id !== e.over.id) {
+    //   const activeStepIndex = dragSteps.findIndex(
+    //     (step) => step === e.active.id
+    //   );
+    //   const overStepIndex = dragSteps.findIndex((step) => step === e.over?.id);
+    //   if (activeStepIndex < 0 || overStepIndex < 0) return;
+    //   const newStepList = arrayMove(dragSteps, activeStepIndex, overStepIndex);
+    //   setDragSteps(newStepList);
+    //   await updateFormAsync({
+    //     formId: formWithSteps.id,
+    //     data: {
+    //       stepOrder: newStepList,
+    //     },
+    //   });
+    // }
+  };
 
   return (
     <DrawerContent>
@@ -69,7 +112,33 @@ export function StepDrawerContent() {
             </NewLayerDrawerRoot>
           </AccordionTrigger>
           <AccordionContent>
-            {currentStep.layers.map((layer) => layer.id)}
+            <DndContext
+              collisionDetection={closestCenter}
+              onDragEnd={reorderLayers}
+              sensors={sensors}
+            >
+              <SortableContext
+                items={dragLayers}
+                strategy={verticalListSortingStrategy}
+              >
+                {dragLayers.map((layer) => {
+                  return (
+                    <DragItem id={layer.id} key={layer.id}>
+                      <div className="flex items-center">
+                        <DragHandle id={layer.id}>
+                          <div className="mr-2 flex items-center justify-center flex-shrink-0 cursor-move">
+                            <GripVerticalIcon className="h-4 w-4 flex-shrink-0" />
+                          </div>
+                        </DragHandle>
+                        <div className="flex items-center">
+                          <span className="flex-1 truncate">{layer.name}</span>
+                        </div>
+                      </div>
+                    </DragItem>
+                  );
+                })}
+              </SortableContext>
+            </DndContext>
           </AccordionContent>
         </AccordionItem>
       </Accordion>

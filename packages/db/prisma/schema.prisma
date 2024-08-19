@@ -305,7 +305,7 @@ model Layer {
     type       LayerType
     pointLayer PointLayer?
 
-    formId String @unique
+    formId String
     form   Form   @relation(fields: [formId], references: [id], onDelete: Cascade)
 
     steps     Step[]

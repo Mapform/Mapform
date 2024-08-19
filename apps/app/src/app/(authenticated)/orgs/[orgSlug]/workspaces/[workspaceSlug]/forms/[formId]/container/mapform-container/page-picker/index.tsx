@@ -36,7 +36,6 @@ export function PagePicker() {
     currentStep,
     setDragSteps,
     formWithSteps,
-    currentStepIndex,
     setQueryParamFor,
   } = useContainerContext();
   const { execute: executeCreateStep, status: createStepStatus } = useAction(
@@ -106,7 +105,7 @@ export function PagePicker() {
             items={dragSteps}
             strategy={verticalListSortingStrategy}
           >
-            {dragSteps.map((stepId, index) => {
+            {dragSteps.map((stepId) => {
               const step = formWithSteps.steps.find((s) => s.id === stepId);
 
               if (!step) return null;
