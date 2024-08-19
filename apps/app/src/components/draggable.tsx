@@ -14,7 +14,12 @@ export function DragHandle({
   });
 
   return (
-    <div {...attributes} {...listeners} suppressHydrationWarning>
+    <div
+      className="cursor-move"
+      {...attributes}
+      {...listeners}
+      suppressHydrationWarning
+    >
       {children}
     </div>
   );

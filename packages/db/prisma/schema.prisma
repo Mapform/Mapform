@@ -236,7 +236,7 @@ model Column {
     dataset   Dataset @relation("DatasetColumns", fields: [datasetId], references: [id])
 
     // Step is only for datasets belonging to a form
-    step   Step?   @relation(fields: [stepId], references: [id], onDelete: Cascade)
+    step   Step?   @relation(fields: [stepId], references: [id])
     stepId String?
 
     cellValues  CellValue[]  @relation("ColumnCellValues")

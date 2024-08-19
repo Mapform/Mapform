@@ -117,8 +117,6 @@ export const updateStep = authAction
     });
 
     await prisma.$transaction(async (tx) => {
-      console.log(11111, data);
-
       await tx.step.update({
         where: {
           id: stepId,

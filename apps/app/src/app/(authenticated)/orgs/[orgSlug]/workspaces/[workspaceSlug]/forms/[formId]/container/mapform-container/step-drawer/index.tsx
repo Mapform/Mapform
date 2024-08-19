@@ -35,6 +35,7 @@ import {
   NewLayerDrawerRoot,
   NewLayerDrawerTrigger,
 } from "./new-layer-drawer";
+import { LayerSubmenu } from "./layer-submenu";
 
 export const StepDrawerRoot = Drawer;
 export const StepDrawerTrigger = DrawerTrigger;
@@ -95,7 +96,7 @@ export function StepDrawerContent() {
         </div>
       </DrawerHeader>
 
-      <Accordion defaultValue={["item-1"]} type="multiple">
+      <Accordion defaultValue={["item-1", "item-2"]} type="multiple">
         <AccordionItem value="item-1">
           <AccordionTrigger>General</AccordionTrigger>
           <AccordionContent>
@@ -106,7 +107,11 @@ export function StepDrawerContent() {
           <AccordionTrigger>
             <span className="flex-1 text-left">Data layers</span>
             <NewLayerDrawerRoot>
-              <NewLayerDrawerTrigger>
+              <NewLayerDrawerTrigger
+                onClick={(e) => {
+                  e.stopPropagation();
+                }}
+              >
                 <span
                   className={cn(
                     buttonVariants({ variant: "ghost", size: "icon-xs" }),
@@ -116,7 +121,7 @@ export function StepDrawerContent() {
                   <PlusIcon className="size-4" />
                 </span>
               </NewLayerDrawerTrigger>
-              <NewLayerDrawerContent />
+              <NewLayerDrawerContent setDragLayers={setDragLayers} />
             </NewLayerDrawerRoot>
           </AccordionTrigger>
           <AccordionContent>
@@ -129,22 +134,30 @@ export function StepDrawerContent() {
                 items={dragLayers}
                 strategy={verticalListSortingStrategy}
               >
-                {dragLayers.map((layer) => {
-                  return (
-                    <DragItem id={layer.id} key={layer.id}>
-                      <div className="flex items-center">
-                        <DragHandle id={layer.id}>
-                          <div className="mr-2 flex items-center justify-center flex-shrink-0 cursor-move">
-                            <GripVerticalIcon className="h-4 w-4 flex-shrink-0" />
+                <div className="space-y-1">
+                  {dragLayers.map((layer) => {
+                    return (
+                      <DragItem id={layer.id} key={layer.id}>
+                        <div className="flex items-center py-1">
+                          <DragHandle id={layer.id}>
+                            <div className="mr-2 flex items-center justify-center flex-shrink-0">
+                              <GripVerticalIcon className="h-4 w-4 flex-shrink-0" />
+                            </div>
+                          </DragHandle>
+                          <div className="flex items-center">
+                            <span className="flex-1 truncate">
+                              {layer.name}
+                            </span>
                           </div>
-                        </DragHandle>
-                        <div className="flex items-center">
-                          <span className="flex-1 truncate">{layer.name}</span>
+                          <LayerSubmenu
+                            layerId={layer.id}
+                            setDragLayers={setDragLayers}
+                          />
                         </div>
-                      </div>
-                    </DragItem>
-                  );
-                })}
+                      </DragItem>
+                    );
+                  })}
+                </div>
               </SortableContext>
             </DndContext>
           </AccordionContent>

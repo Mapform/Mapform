@@ -27,11 +27,13 @@ import {
   SelectContent,
   SelectItem,
 } from "@mapform/ui/components/select";
+import type { Layer } from "@mapform/db";
 import { ChevronsLeftIcon } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { Input } from "@mapform/ui/components/input";
-import { toast } from "@mapform/ui/components/toaster";
 import { useAction } from "next-safe-action/hooks";
+import { Input } from "@mapform/ui/components/input";
+import type { Dispatch, SetStateAction } from "react";
+import { toast } from "@mapform/ui/components/toaster";
 import {
   type CreateLayerSchema,
   createLayerSchema,
@@ -44,7 +46,11 @@ export const NewLayerDrawerRoot = NestedDrawer;
 
 export const NewLayerDrawerTrigger = DrawerTrigger;
 
-export function NewLayerDrawerContent() {
+export function NewLayerDrawerContent({
+  setDragLayers,
+}: {
+  setDragLayers: Dispatch<SetStateAction<Layer[]>>;
+}) {
   const { currentStep } = useContainerContext();
   const params = useParams<{ formId: string }>();
   const form = useForm<CreateLayerSchema>({
@@ -59,6 +65,16 @@ export function NewLayerDrawerContent() {
     queryFn: () => listAvailableDatasets({ formId: params.formId }),
   });
   const { execute, status } = useAction(createLayerAction, {
+    onSuccess: ({ data: createResponse }) => {
+      console.log(11111);
+      if (!createResponse) {
+        return;
+      }
+
+      console.log(22222, createResponse);
+
+      setDragLayers((layers) => [...layers, createResponse]);
+    },
     onError: ({ error }) => {
       if (error.serverError) {
         toast(error.serverError);
