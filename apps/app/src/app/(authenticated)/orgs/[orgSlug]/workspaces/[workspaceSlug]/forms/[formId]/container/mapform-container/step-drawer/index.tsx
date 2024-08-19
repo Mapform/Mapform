@@ -27,6 +27,8 @@ import {
   AccordionTrigger,
 } from "@mapform/ui/components/accordion";
 import { cn } from "@mapform/lib/classnames";
+import { DragHandle, DragItem } from "~/components/draggable";
+import { updateStep } from "~/data/steps/update";
 import { useContainerContext } from "../../context";
 import { GeneralForm } from "./general-form";
 import {
@@ -34,7 +36,6 @@ import {
   NewLayerDrawerRoot,
   NewLayerDrawerTrigger,
 } from "./new-layer-drawer";
-import { DragHandle, DragItem } from "~/components/draggable";
 
 export const StepDrawerRoot = Drawer;
 export const StepDrawerTrigger = DrawerTrigger;
@@ -56,22 +57,30 @@ export function StepDrawerContent() {
   }
 
   const reorderLayers = async (e: DragEndEvent) => {
-    // if (!e.over) return;
-    // if (e.active.id !== e.over.id) {
-    //   const activeStepIndex = dragSteps.findIndex(
-    //     (step) => step === e.active.id
-    //   );
-    //   const overStepIndex = dragSteps.findIndex((step) => step === e.over?.id);
-    //   if (activeStepIndex < 0 || overStepIndex < 0) return;
-    //   const newStepList = arrayMove(dragSteps, activeStepIndex, overStepIndex);
-    //   setDragSteps(newStepList);
-    //   await updateFormAsync({
-    //     formId: formWithSteps.id,
-    //     data: {
-    //       stepOrder: newStepList,
-    //     },
-    //   });
-    // }
+    if (!e.over) return;
+    if (e.active.id !== e.over.id) {
+      const activeLayerIndex = dragLayers.findIndex(
+        (layer) => layer.id === e.active.id
+      );
+      const overLayerIndex = dragLayers.findIndex(
+        (layer) => layer.id === e.over?.id
+      );
+      if (activeLayerIndex < 0 || overLayerIndex < 0) return;
+      const newLayerList = arrayMove(
+        dragLayers,
+        activeLayerIndex,
+        overLayerIndex
+      );
+      setDragLayers(newLayerList);
+
+      await updateStep({
+        stepId: currentStep.id,
+        data: {
+          formId: currentStep.formId ?? undefined,
+          layerOrder: newLayerList.map((layer) => layer.id),
+        },
+      });
+    }
   };
 
   return (

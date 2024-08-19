@@ -11,6 +11,7 @@ export const updateStepSchema = z.object({
     bearing: z.number().optional(),
     pitch: z.number().optional(),
     contentViewType: z.any().optional(),
+    layerOrder: z.array(z.string()).optional(),
   }),
 });
 
