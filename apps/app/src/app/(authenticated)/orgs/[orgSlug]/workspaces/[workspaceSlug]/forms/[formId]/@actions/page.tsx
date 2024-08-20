@@ -24,7 +24,7 @@ export default async function Actions({
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button disabled={!form.isDirty} size="sm" variant="ghost">
+        <Button size="sm" variant="ghost">
           <SendIcon className="h-4 w-4 mr-2" />
           Share
         </Button>

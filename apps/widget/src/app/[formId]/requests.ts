@@ -15,9 +15,6 @@ export async function getFormWithSteps(formId: string) {
         createdAt: "desc",
       },
       take: 1,
-      include: {
-        dataTracks: true,
-      },
     })
   )[0];
 

@@ -417,6 +417,40 @@ importers:
         specifier: ^5.5.4
         version: 5.5.4
 
+  packages/map-utils:
+    dependencies:
+      zod:
+        specifier: 3.23.8
+        version: 3.23.8
+    devDependencies:
+      '@mapform/db':
+        specifier: workspace:*
+        version: link:../db
+      '@mapform/eslint-config':
+        specifier: workspace:*
+        version: link:../eslint-config
+      '@mapform/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      '@types/node':
+        specifier: ^20.8.10
+        version: 20.11.25
+      '@types/react':
+        specifier: ^18.2.73
+        version: 18.2.73
+      '@types/react-dom':
+        specifier: ^18.2.23
+        version: 18.2.23
+      eslint:
+        specifier: ^8.57.0
+        version: 8.57.0
+      react:
+        specifier: ^18.2.0
+        version: 18.2.0
+      typescript:
+        specifier: ^5.5.4
+        version: 5.5.4
+
   packages/mapform:
     dependencies:
       '@blocknote/core':
