@@ -56,21 +56,32 @@ export const publishForm = authAction
         },
       });
 
-      // const rootLayersWithIds = rootForm.layers.map((layer) => ({
-      //   ...layer,
-      //   newId: uuidv4(),
-      // }));
+      const rootLayersWithIds = rootForm.layers.map((layer) => ({
+        ...layer,
+        newId: uuidv4(),
+      }));
 
       // /**
       //  * We duplidate the layers and sub layer types for the new form.
       //  * We do NOT duplicate the data itself (dataset).
       //  */
-      // const newLayers = await prisma.layer.createManyAndReturn({
-      //   data: rootDataTracksWithIds.map((dataTrack) => ({
-      //     id: dataTrack.newId,
-      //     formId: newPublishedForm.id,
-      //   })),
-      // });
+      const newLayers = await prisma.layer.createManyAndReturn({
+        data: rootLayersWithIds.map((layer) => ({
+          id: layer.newId,
+          type: layer.type,
+          formId: newPublishedForm.id,
+          datasetId: layer.datasetId,
+        })),
+      });
+
+      await prisma.pointLayer.createManyAndReturn({
+        data: rootLayersWithIds
+          .filter((layer) => layer.pointLayer?.id)
+          .map((layer) => ({
+            pointColumnId: layer.pointLayer!.pointColumnId,
+            layerId: newLayers.find((l) => l.id === layer.newId)?.id,
+          })),
+      });
 
       // await Promise.all(
       //   rootDataTracksWithIds.flatMap((dataTrack) => {
@@ -107,6 +118,7 @@ export const publishForm = authAction
       // sequentially and NOT in parallel, otherwise the step order will be
       // incorrect.
       for (const step of steps) {
+        console.log(11111, newLayers, rootLayersWithIds);
         // eslint-disable-next-line no-await-in-loop -- We want to execute sequentially
         await prisma.step.createWithLocation({
           formId: newPublishedForm.id,
@@ -117,6 +129,14 @@ export const publishForm = authAction
           longitude: step.longitude,
           title: step.title,
           description: step.description || undefined,
+          layerOrder: step.layerOrder,
+          layers: {
+            connect: rootLayersWithIds
+              .map((layer) => ({
+                id: newLayers.find((l) => l.id === layer.newId)?.id,
+              }))
+              .filter((l) => l.id),
+          },
         });
       }
 
