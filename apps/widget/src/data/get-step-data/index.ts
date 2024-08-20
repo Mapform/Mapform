@@ -4,7 +4,7 @@ import { prisma } from "@mapform/db";
 import { action } from "~/lib/safe-action";
 import { getStepDataSchema } from "./schema";
 
-export type Points = {
+export type P = {
   id: number;
   longitude: number;
   latitude: number;
@@ -27,11 +27,13 @@ export const getStepData = action
       },
     });
 
+    console.log(11111, step);
+
     if (!step) {
       throw new Error("Step not found");
     }
 
-    const resp: Points[][] = await Promise.all(
+    const resp: P[][] = await Promise.all(
       step.layers.map(
         async (layer) => prisma.$queryRaw`
         SELECT "Column".id, "PointCell".id, ST_X("PointCell".value) AS longitude, ST_Y("PointCell".value) AS latitude
@@ -44,6 +46,8 @@ export const getStepData = action
       )
     );
 
+    console.log(222222, resp);
+
     // WHERE ST_Within(
     //   value,
     //   ST_MakeEnvelope(${bounds.minLng}, ${bounds.minLat}, ${bounds.maxLng}, ${bounds.maxLat}, 4326)
@@ -52,6 +56,6 @@ export const getStepData = action
     return resp.flat();
   });
 
-export type GetStepData = NonNullable<
-  Awaited<ReturnType<typeof getStepData>>
->["data"];
+export type GetStepData = NonNullable<Awaited<ReturnType<typeof getStepData>>>;
+
+export type Points = GetStepData["data"];

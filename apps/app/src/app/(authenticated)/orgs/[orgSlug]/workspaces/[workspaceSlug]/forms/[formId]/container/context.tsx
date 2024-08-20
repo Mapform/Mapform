@@ -17,7 +17,7 @@ import {
   useEffect,
   useRef,
 } from "react";
-import { useCreateQueryString } from "~/lib/create-query-string";
+import { useCreateQueryString } from "@mapform/lib/hooks/use-create-query-string";
 import { type FormWithSteps } from "~/data/forms/get-form-with-steps";
 import type { GetStepData } from "~/data/steps/get-step-data";
 import { updateStep } from "~/data/steps/update";
