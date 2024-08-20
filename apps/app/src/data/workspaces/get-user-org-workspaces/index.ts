@@ -22,6 +22,9 @@ export async function getUserOrgWorkspaces({ orgSlug }: { orgSlug: string }) {
     },
     include: {
       forms: {
+        where: {
+          isRoot: true,
+        },
         select: {
           id: true,
           name: true,
