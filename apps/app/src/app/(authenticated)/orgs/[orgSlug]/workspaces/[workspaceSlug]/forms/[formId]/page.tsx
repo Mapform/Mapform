@@ -44,8 +44,6 @@ export default async function Workspace({
     stepId: searchParams?.s ?? "",
   });
 
-  console.log(11111, stepData);
-
   return (
     <div className="-m-4 flex flex-col flex-1 overflow-hidden">
       <HydrationBoundary state={dehydrate(queryClient)}>

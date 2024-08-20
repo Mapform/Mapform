@@ -90,7 +90,7 @@ export function PagePicker() {
         <Button className="max-w-40" size="sm">
           <ChevronDown className="h-4 w-4 mr-1 flex-shrink-0" />
           <span className="truncate">
-            {currentStep?.title ?? "Untitled Page"}
+            {currentStep?.title || "Untitled Page"}
           </span>
         </Button>
       </DropdownMenuTrigger>

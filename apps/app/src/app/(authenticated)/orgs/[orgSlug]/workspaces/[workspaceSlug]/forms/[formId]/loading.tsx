@@ -1,11 +1,15 @@
-"use client";
-
-import { Spinner } from "@mapform/ui/components/spinner";
+import Image from "next/image";
 
 export default function Loading() {
   return (
-    <div className="absolute inset-0 flex justify-center items-center">
-      <Spinner variant="dark" />
+    <div className="flex h-full justify-center items-center">
+      <Image
+        alt="Loading"
+        className="animate-pulse"
+        height={48}
+        src="/mapform.svg"
+        width={48}
+      />
     </div>
   );
 }
