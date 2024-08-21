@@ -29,6 +29,7 @@ import {
   getFormSchemaFromBlockNote,
 } from "@mapform/blocknote";
 import { useMeasure } from "@mapform/lib/hooks/use-measure";
+import type { Points } from "@mapform/map-utils/types";
 import { Blocknote } from "./block-note";
 import { Data } from "./data";
 
@@ -86,7 +87,7 @@ interface MapFormProps {
   onStepSubmit?: (data: Record<string, string>) => void;
   onImageUpload?: (file: File) => Promise<string | null>;
   onMoveEnd?: ((e: ViewStateChangeEvent) => void) | undefined;
-  points?: { id: number; latitude: number; longitude: number }[];
+  points?: Points;
 }
 
 export const MapForm = forwardRef<MapRef, MapFormProps>(

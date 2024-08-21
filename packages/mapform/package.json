@@ -17,6 +17,7 @@
     "@mapform/blocknote": "workspace:*",
     "@mapform/db": "workspace:*",
     "@mapform/lib": "workspace:*",
+    "@mapform/map-utils": "workspace:*",
     "@mapform/ui": "workspace:*",
     "@types/mapbox-gl": "^3.1.0",
     "geojson": "^0.5.0",

@@ -7,6 +7,7 @@
   "devDependencies": {
     "@mapform/eslint-config": "workspace:*",
     "@mapform/typescript-config": "workspace:*",
+    "@types/mapbox__geo-viewport": "^0.5.3",
     "@types/node": "^20.8.10",
     "@types/react": "^18.2.73",
     "@types/react-dom": "^18.2.23",

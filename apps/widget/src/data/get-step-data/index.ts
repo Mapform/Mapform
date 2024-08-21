@@ -1,16 +1,10 @@
 "server only";
 
 import { prisma } from "@mapform/db";
+import type { Points } from "@mapform/map-utils/types";
 import { estimateBounds } from "@mapform/map-utils/estimate-bounds";
 import { action } from "~/lib/safe-action";
 import { getStepDataSchema } from "./schema";
-
-export type P = {
-  id: number;
-  longitude: number;
-  latitude: number;
-  zIndex: number;
-}[];
 
 export const getStepData = action
   .schema(getStepDataSchema)
@@ -66,7 +60,7 @@ export const getStepData = action
       1000
     );
 
-    const resp: P[][] = await Promise.all(
+    const resp: Points[] = await Promise.all(
       step.layers.map(
         async (layer) => prisma.$queryRaw`
         SELECT "Column".id, "PointCell".id, ST_X("PointCell".value) AS longitude, ST_Y("PointCell".value) AS latitude
@@ -87,4 +81,4 @@ export const getStepData = action
 
 export type GetStepData = NonNullable<Awaited<ReturnType<typeof getStepData>>>;
 
-export type Points = GetStepData["data"];
+export type { Points };
