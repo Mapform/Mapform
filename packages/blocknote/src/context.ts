@@ -14,7 +14,7 @@ import {
 export interface CustomBlockContextProps {
   editable: boolean;
   viewState: ViewState;
-  setViewState: Dispatch<SetStateAction<ViewState>>;
+  setViewState: Dispatch<SetStateAction<ViewState | null>>;
   onImageUpload?: (file: File) => Promise<string | null>;
   isSelectingPinLocationFor: string | null;
   setIsSelectingPinLocationFor: React.Dispatch<

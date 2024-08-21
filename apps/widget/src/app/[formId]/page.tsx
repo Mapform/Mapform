@@ -49,13 +49,11 @@ export default async function Page({
     stepData = await getStepData({ stepId: s });
   }
 
-  console.log(111111, stepData, s);
-
   return (
     <Map
-      points={stepData?.data ?? []}
       formValues={formValues}
       formWithSteps={formWithSteps}
+      points={stepData?.data ?? []}
       // We clear the session id if the form id doesn't match the current form
       sessionId={
         session?.publishedFormId === formWithSteps.id ? session.id : null

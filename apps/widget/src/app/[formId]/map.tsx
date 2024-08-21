@@ -1,10 +1,10 @@
 "use client";
 
+import { MapForm } from "@mapform/mapform";
+import { useAction } from "next-safe-action/hooks";
 import React, { useEffect, useRef, useState } from "react";
 import type { LngLatBounds, MapRef, ViewState } from "@mapform/mapform";
-import { MapForm } from "@mapform/mapform";
 import { useCreateQueryString } from "@mapform/lib/hooks/use-create-query-string";
-import { useAction } from "next-safe-action/hooks";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import type { Points } from "~/data/get-step-data";
 import { submitFormStep } from "~/data/submit-form-step";
@@ -27,14 +27,10 @@ export function Map({
   sessionId,
   points,
 }: MapProps) {
-  const map = useRef<MapRef>(null);
-  const { execute } = useAction(submitFormStep);
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const createQueryString = useCreateQueryString();
-  // Selected step view
-  const [currentSession, setCurrentSession] = useState<string | null>(null);
 
   const s = searchParams.get("s");
   const currentStep = formWithSteps.steps.find((step) => step.id === s);
@@ -42,35 +38,28 @@ export function Map({
     router.push(`${pathname}?${createQueryString("s", step.id)}`);
   };
 
-  // const [currentStep, setCurrentStep] = useState<Step | null>(
-  //   formWithSteps.steps[0] || null
-  // );
-
-  const initialViewState = {
-    longitude: -122.4,
-    latitude: 37.8,
-    zoom: 14,
-    bearing: 0,
-    pitch: 0,
-    padding: {
-      top: 0,
-      bottom: 0,
-      left: 0,
-      right: 0,
-    },
-  };
-  const [viewState, setViewState] = useState<ViewState>({
-    latitude: currentStep?.latitude ?? initialViewState.latitude,
-    longitude: currentStep?.longitude ?? initialViewState.longitude,
-    zoom: currentStep?.zoom ?? initialViewState.zoom,
-    bearing: currentStep?.bearing ?? initialViewState.bearing,
-    pitch: currentStep?.pitch ?? initialViewState.pitch,
-    padding: initialViewState.padding,
-  });
-
-  const currentStepIndex = formWithSteps.steps.findIndex(
-    (step) => step.id === currentStep?.id
+  const [currentSession, setCurrentSession] = useState<string | null>(null);
+  const [viewState, setViewState] = useState<ViewState | null>(
+    currentStep
+      ? {
+          latitude: currentStep.latitude,
+          longitude: currentStep.longitude,
+          zoom: currentStep.zoom,
+          bearing: currentStep.bearing,
+          pitch: currentStep.pitch,
+          padding: {
+            top: 0,
+            bottom: 0,
+            left: 0,
+            right: 0,
+          },
+        }
+      : null
   );
+
+  const map = useRef<MapRef>(null);
+
+  const { execute } = useAction(submitFormStep);
 
   const [bounds, setBounds] = useState<LngLatBounds | undefined>();
 
@@ -90,25 +79,35 @@ export function Map({
       let newSessionId = sessionId;
 
       if (!newSessionId) {
-        const { data } = await createFormSubmission({
+        const response = await createFormSubmission({
           formId: formWithSteps.id,
         });
 
-        if (data) {
-          newSessionId = data;
+        if (response?.data) {
+          newSessionId = response.data;
         }
       }
       setCurrentSession(newSessionId);
     })();
   }, []);
 
+  /**
+   * Fix the 's' query param if no valid step
+   */
   useEffect(() => {
-    if (formWithSteps.steps[0] && !s) {
+    if (formWithSteps.steps[0] && (!s || !currentStep)) {
       router.push(
         `${pathname}?${createQueryString("s", formWithSteps.steps[0].id)}`
       );
     }
-  }, [s, formWithSteps.steps, pathname, router, createQueryString]);
+  }, [
+    s,
+    router,
+    pathname,
+    currentStep,
+    createQueryString,
+    formWithSteps.steps,
+  ]);
 
   const stepValues = (currentStep?.description?.content ?? []).reduce(
     (acc: Record<string, string>, block) => {
@@ -126,7 +125,7 @@ export function Map({
     {}
   );
 
-  if (!currentSession || !currentStep) {
+  if (!currentSession || !currentStep || !viewState) {
     return null;
   }
 

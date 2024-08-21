@@ -77,7 +77,7 @@ interface MapFormProps {
   currentStep?: ExtendedStep;
   viewState: ViewState;
   defaultFormValues?: Record<string, string>;
-  setViewState: Dispatch<SetStateAction<ViewState>>;
+  setViewState: Dispatch<SetStateAction<ViewState | null>>;
   contentViewType?: "full" | "partial" | "closed";
   onPrev?: () => void;
   onLoad?: () => void;
