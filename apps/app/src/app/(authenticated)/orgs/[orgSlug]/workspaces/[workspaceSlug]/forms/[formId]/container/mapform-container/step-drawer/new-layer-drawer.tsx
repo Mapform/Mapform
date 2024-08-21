@@ -66,12 +66,9 @@ export function NewLayerDrawerContent({
   });
   const { execute, status } = useAction(createLayerAction, {
     onSuccess: ({ data: createResponse }) => {
-      console.log(11111);
       if (!createResponse) {
         return;
       }
-
-      console.log(22222, createResponse);
 
       setDragLayers((layers) => [...layers, createResponse]);
     },

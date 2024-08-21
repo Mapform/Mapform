@@ -18,10 +18,6 @@ export default async function Page({
   params: { formId: string };
   searchParams?: {
     s?: string;
-    minLng?: string;
-    minLat?: string;
-    maxLng?: string;
-    maxLat?: string;
   };
 }) {
   const formWithSteps = await getFormWithSteps(params.formId);
@@ -51,21 +47,8 @@ export default async function Page({
     }
   }
 
-  const bounds =
-    searchParams?.maxLat &&
-    searchParams.minLat &&
-    searchParams.maxLng &&
-    searchParams.minLng
-      ? {
-          minLat: parseFloat(searchParams.minLat),
-          maxLat: parseFloat(searchParams.maxLat),
-          minLng: parseFloat(searchParams.minLng),
-          maxLng: parseFloat(searchParams.maxLng),
-        }
-      : undefined;
-
   if (s) {
-    stepData = await getStepData({ stepId: s, ...(bounds && { bounds }) });
+    stepData = await getStepData({ stepId: s });
   }
 
   return (

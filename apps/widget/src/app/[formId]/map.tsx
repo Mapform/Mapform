@@ -4,7 +4,6 @@ import { MapForm } from "@mapform/mapform";
 import { useAction } from "next-safe-action/hooks";
 import React, { useEffect, useRef, useState } from "react";
 import type { MapRef, ViewState } from "@mapform/mapform";
-import { useSetQueryParams } from "@mapform/lib/hooks/use-set-query-params";
 import { useCreateQueryString } from "@mapform/lib/hooks/use-create-query-string";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import type { Points } from "~/data/get-step-data";
@@ -31,7 +30,6 @@ export function Map({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const setQueryParams = useSetQueryParams();
   const createQueryString = useCreateQueryString();
 
   const s = searchParams.get("s");
@@ -96,9 +94,25 @@ export function Map({
    */
   useEffect(() => {
     if (formWithSteps.steps[0] && (!s || !currentStep)) {
+      const firstStep = formWithSteps.steps[0];
+
       router.push(
         `${pathname}?${createQueryString("s", formWithSteps.steps[0].id)}`
       );
+
+      setViewState({
+        latitude: firstStep.latitude,
+        longitude: firstStep.longitude,
+        zoom: firstStep.zoom,
+        bearing: firstStep.bearing,
+        pitch: firstStep.pitch,
+        padding: {
+          top: 0,
+          bottom: 0,
+          left: 0,
+          right: 0,
+        },
+      });
     }
   }, [
     s,
@@ -134,34 +148,6 @@ export function Map({
       currentStep={currentStep}
       defaultFormValues={stepValues}
       mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
-      onLoad={() => {
-        const b = map.current?.getBounds();
-
-        if (!b) {
-          return;
-        }
-
-        setQueryParams({
-          minLng: b._sw.lng.toString(),
-          minLat: b._sw.lat.toString(),
-          maxLng: b._ne.lng.toString(),
-          maxLat: b._ne.lat.toString(),
-        });
-      }}
-      onMoveEnd={() => {
-        const b = map.current?.getBounds();
-
-        if (!b) {
-          return;
-        }
-
-        setQueryParams({
-          minLng: b._sw.lng.toString(),
-          minLat: b._sw.lat.toString(),
-          maxLng: b._ne.lng.toString(),
-          maxLat: b._ne.lat.toString(),
-        });
-      }}
       onPrev={() => {
         const prevStepIndex =
           formWithSteps.steps.findIndex((step) => step.id === currentStep.id) -
