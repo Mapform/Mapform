@@ -8,9 +8,10 @@ import { useCreateQueryString } from "@mapform/lib/hooks/use-create-query-string
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import type { Points } from "~/data/get-step-data";
 import { submitFormStep } from "~/data/submit-form-step";
+import type { FormWithSteps } from "~/data/get-form-with-steps";
 import { createFormSubmission } from "~/data/create-form-submission";
+import type { Responses } from "~/data/get-responses.ts";
 import { env } from "../env.mjs";
-import type { FormWithSteps, Responses } from "./requests";
 
 interface MapProps {
   points: Points;

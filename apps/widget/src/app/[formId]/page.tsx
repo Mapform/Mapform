@@ -1,14 +1,11 @@
 import React from "react";
 import { cookies } from "next/headers";
 import { type FormSubmission } from "@mapform/db";
+import { getSession } from "~/data/get-session";
 import { getStepData } from "~/data/get-step-data";
+import { getFormWithSteps } from "~/data/get-form-with-steps";
+import { type Responses, getResponses } from "~/data/get-responses.ts";
 import { Map } from "./map";
-import {
-  getFormWithSteps,
-  getResponses,
-  getSession,
-  type Responses,
-} from "./requests";
 
 // The DRAFT FormID
 export default async function Page({

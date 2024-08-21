@@ -53,6 +53,10 @@ export const getStepData = action
     /**
      * We estimate the bounds rather than pass them from the client so that we
      * can show data on first render, instead of making a return request.
+     *
+     * TODO: We can also pass the lat / lng, and zoom from the client to allow
+     * them to update the bounds as the map moves, and to persist the location
+     * on refresh.
      */
     const estimatedBounds = estimateBounds(
       centerLatitude,

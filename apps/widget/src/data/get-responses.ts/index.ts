@@ -1,4 +1,4 @@
-"use server";
+"server-only";
 
 import { type PointCell, prisma } from "@mapform/db";
 
@@ -7,33 +7,9 @@ export type PointCellResponse = PointCell & {
   longitude: number;
 };
 
-export async function getFormWithSteps(formId: string) {
-  const form = (
-    await prisma.form.findMany({
-      where: { rootFormId: formId },
-      orderBy: {
-        createdAt: "desc",
-      },
-      take: 1,
-    })
-  )[0];
-
-  if (!form) {
-    return null;
-  }
-
-  const steps = await prisma.step.findManyWithLocation({
-    formId: form.id,
-  });
-
-  return {
-    ...form,
-    steps,
-  };
-}
-
-export type FormWithSteps = Awaited<ReturnType<typeof getFormWithSteps>>;
-
+/**
+ * Returns a session's previous responses
+ */
 export async function getResponses(formSubmissionId: string) {
   const formSubmission = await prisma.formSubmission.findUnique({
     where: {
@@ -96,12 +72,3 @@ async function getPointCell(pointCellId: string) {
 }
 
 export type Responses = Awaited<ReturnType<typeof getResponses>>;
-
-export async function getSession(formSubmissionId: string, formId: string) {
-  return prisma.formSubmission.findUnique({
-    where: {
-      id: formSubmissionId,
-      publishedFormId: formId,
-    },
-  });
-}
