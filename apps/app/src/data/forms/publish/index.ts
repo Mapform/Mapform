@@ -43,8 +43,8 @@ export const publishForm = authAction
      * Note: We create with empty stepOrder since we need to create brand new steps and log those IDs later on.
      * Note 2: Transactions currently don't work due to the createWithLocation extension.
      */
-    await prisma.$transaction(async () => {
-      const newPublishedForm = await prisma.form.create({
+    await prisma.$transaction(async (tx) => {
+      const newPublishedForm = await tx.form.create({
         data: {
           name: rootForm.name,
           slug: rootForm.slug,
@@ -65,7 +65,7 @@ export const publishForm = authAction
       //  * We duplidate the layers and sub layer types for the new form.
       //  * We do NOT duplicate the data itself (dataset).
       //  */
-      const newLayers = await prisma.layer.createManyAndReturn({
+      const newLayers = await tx.layer.createManyAndReturn({
         data: rootLayersWithIds.map((layer) => ({
           id: layer.newId,
           type: layer.type,
@@ -74,53 +74,27 @@ export const publishForm = authAction
         })),
       });
 
-      await prisma.pointLayer.createManyAndReturn({
-        data: rootLayersWithIds
-          .filter((layer) => layer.pointLayer?.id)
-          .map((layer) => ({
-            pointColumnId: layer.pointLayer!.pointColumnId,
-            layerId: newLayers.find((l) => l.id === layer.newId)?.id,
-          })),
+      const pointLayersToCreate = rootLayersWithIds
+        .map((layer) => ({
+          pointColumnId: layer.pointLayer?.pointColumnId,
+          layerId: newLayers.find((l) => l.id === layer.newId)?.id,
+        }))
+        .filter((layer) => layer.pointColumnId) as {
+        pointColumnId: string;
+        layerId: string;
+      }[];
+
+      await tx.pointLayer.createManyAndReturn({
+        data: pointLayersToCreate,
       });
-
-      // await Promise.all(
-      //   rootDataTracksWithIds.flatMap((dataTrack) => {
-      //     const newDataTrack = newDataTracks.find(
-      //       (ndt) => ndt.id === dataTrack.newId
-      //     );
-
-      //     if (!newDataTrack) {
-      //       throw new Error("Data track not found");
-      //     }
-
-      //     const layer = dataTrack.layer;
-
-      //     if (!layer?.pointLayer) {
-      //       throw new Error("Point layer not found");
-      //     }
-
-      //     return prisma.layer.create({
-      //       data: {
-      //         type: layer.type,
-      //         dataTrackId: newDataTrack.id,
-      //         pointLayer: {
-      //           create: {
-      //             pointColumnId: layer.pointLayer.pointColumnId,
-      //           },
-      //         },
-      //       },
-      //     });
-      //   })
-      // );
 
       // TODO: Improve this. This query is very slow and inefficient.Note that
       // createWithLocation creates a stepOrder on the form. Steps must be created
       // sequentially and NOT in parallel, otherwise the step order will be
       // incorrect.
       for (const step of steps) {
-        console.log(11111, newLayers, rootLayersWithIds);
         // eslint-disable-next-line no-await-in-loop -- We want to execute sequentially
-        await prisma.step.createWithLocation({
+        await tx.step.createWithLocation({
           formId: newPublishedForm.id,
           zoom: step.zoom,
           pitch: step.pitch,
@@ -140,7 +114,7 @@ export const publishForm = authAction
         });
       }
 
-      await prisma.form.update({
+      await tx.form.update({
         where: {
           id: rootForm.id,
         },
