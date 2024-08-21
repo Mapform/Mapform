@@ -17,6 +17,10 @@ export const getStepData = action
     const step = await prisma.step.findUnique({
       where: {
         id: stepId,
+        form: {
+          isClosed: false,
+          isRoot: false,
+        },
       },
       include: {
         layers: {
@@ -26,8 +30,6 @@ export const getStepData = action
         },
       },
     });
-
-    console.log(11111, step);
 
     if (!step) {
       throw new Error("Step not found");
@@ -40,18 +42,14 @@ export const getStepData = action
         FROM "PointCell"
         JOIN "CellValue" ON "PointCell"."cellvalueid" = "CellValue".id
         JOIN "Column" ON "CellValue"."columnId" = "Column".id
-
+        WHERE ST_Within(
+          value,
+          ST_MakeEnvelope(${bounds?.minLng}, ${bounds?.minLat}, ${bounds?.maxLng}, ${bounds?.maxLat}, 4326)
+        )
         AND "Column".id = ${layer.pointLayer?.pointColumnId};
       `
       )
     );
-
-    console.log(222222, resp);
-
-    // WHERE ST_Within(
-    //   value,
-    //   ST_MakeEnvelope(${bounds.minLng}, ${bounds.minLat}, ${bounds.maxLng}, ${bounds.maxLat}, 4326)
-    // )
 
     return resp.flat();
   });

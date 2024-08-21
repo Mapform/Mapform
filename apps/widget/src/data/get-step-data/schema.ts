@@ -4,10 +4,10 @@ export const getStepDataSchema = z.object({
   stepId: z.string(),
   bounds: z
     .object({
-      minLat: z.number(),
-      maxLat: z.number(),
-      minLng: z.number(),
-      maxLng: z.number(),
+      minLat: z.coerce.number(),
+      maxLat: z.coerce.number(),
+      minLng: z.coerce.number(),
+      maxLng: z.coerce.number(),
     })
     .optional(),
 });

@@ -3,7 +3,8 @@
 import { MapForm } from "@mapform/mapform";
 import { useAction } from "next-safe-action/hooks";
 import React, { useEffect, useRef, useState } from "react";
-import type { LngLatBounds, MapRef, ViewState } from "@mapform/mapform";
+import type { MapRef, ViewState } from "@mapform/mapform";
+import { useSetQueryParams } from "@mapform/lib/hooks/use-set-query-params";
 import { useCreateQueryString } from "@mapform/lib/hooks/use-create-query-string";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import type { Points } from "~/data/get-step-data";
@@ -30,6 +31,7 @@ export function Map({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const setQueryParams = useSetQueryParams();
   const createQueryString = useCreateQueryString();
 
   const s = searchParams.get("s");
@@ -60,8 +62,6 @@ export function Map({
   const map = useRef<MapRef>(null);
 
   const { execute } = useAction(submitFormStep);
-
-  const [bounds, setBounds] = useState<LngLatBounds | undefined>();
 
   const setCurrentStepAndFly = (step: Step) => {
     setCurrentStep(step);
@@ -136,7 +136,31 @@ export function Map({
       mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
       onLoad={() => {
         const b = map.current?.getBounds();
-        setBounds(b);
+
+        if (!b) {
+          return;
+        }
+
+        setQueryParams({
+          minLng: b._sw.lng.toString(),
+          minLat: b._sw.lat.toString(),
+          maxLng: b._ne.lng.toString(),
+          maxLat: b._ne.lat.toString(),
+        });
+      }}
+      onMoveEnd={() => {
+        const b = map.current?.getBounds();
+
+        if (!b) {
+          return;
+        }
+
+        setQueryParams({
+          minLng: b._sw.lng.toString(),
+          minLat: b._sw.lat.toString(),
+          maxLng: b._ne.lng.toString(),
+          maxLat: b._ne.lat.toString(),
+        });
       }}
       onPrev={() => {
         const prevStepIndex =

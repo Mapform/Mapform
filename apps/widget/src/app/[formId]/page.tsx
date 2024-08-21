@@ -1,7 +1,7 @@
 import React from "react";
 import { cookies } from "next/headers";
 import { type FormSubmission } from "@mapform/db";
-import { type GetStepData, getStepData } from "~/data/get-step-data";
+import { getStepData } from "~/data/get-step-data";
 import { Map } from "./map";
 import {
   getFormWithSteps,
@@ -16,7 +16,13 @@ export default async function Page({
   searchParams,
 }: {
   params: { formId: string };
-  searchParams?: { s?: string };
+  searchParams?: {
+    s?: string;
+    minLng?: string;
+    minLat?: string;
+    maxLng?: string;
+    maxLat?: string;
+  };
 }) {
   const formWithSteps = await getFormWithSteps(params.formId);
   const cookieStore = cookies();
@@ -45,8 +51,21 @@ export default async function Page({
     }
   }
 
+  const bounds =
+    searchParams?.maxLat &&
+    searchParams.minLat &&
+    searchParams.maxLng &&
+    searchParams.minLng
+      ? {
+          minLat: parseFloat(searchParams.minLat),
+          maxLat: parseFloat(searchParams.maxLat),
+          minLng: parseFloat(searchParams.minLng),
+          maxLng: parseFloat(searchParams.maxLng),
+        }
+      : undefined;
+
   if (s) {
-    stepData = await getStepData({ stepId: s });
+    stepData = await getStepData({ stepId: s, ...(bounds && { bounds }) });
   }
 
   return (
