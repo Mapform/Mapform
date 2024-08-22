@@ -6,10 +6,19 @@ import { listAvailableSchema } from "./schema";
 
 export const listAvailableDatasets = authAction
   .schema(listAvailableSchema)
-  .action(async ({ parsedInput: { formId } }) => {
+  .action(async ({ parsedInput: { formId }, ctx: { userId } }) => {
     const form = await prisma.form.findUnique({
       where: {
         id: formId,
+        workspace: {
+          organization: {
+            members: {
+              some: {
+                userId,
+              },
+            },
+          },
+        },
       },
       select: {
         workspaceId: true,
@@ -20,11 +29,18 @@ export const listAvailableDatasets = authAction
       throw new Error("Form not found");
     }
 
-    // TODO: Check that user has access to this form / workspace
-
     return prisma.dataset.findMany({
       where: {
         workspaceId: form.workspaceId,
+        workspace: {
+          organization: {
+            members: {
+              some: {
+                userId,
+              },
+            },
+          },
+        },
       },
       include: {
         columns: true,
