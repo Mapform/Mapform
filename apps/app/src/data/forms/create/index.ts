@@ -2,6 +2,7 @@
 
 import slugify from "slugify";
 import { prisma } from "@mapform/db";
+// import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { authAction } from "~/lib/safe-action";
 import { createFormSchema } from "./schema";
@@ -17,7 +18,11 @@ const initialViewState = {
 export const createForm = authAction
   .schema(createFormSchema)
   .action(async ({ parsedInput: { name, workspaceId }, ctx: { userId } }) => {
-    const slug = slugify(name, {
+    // TODO: We should be able to get the IP address geo info from this, but only when hosted on Vercel.
+    //stackoverflow.com/questions/75532475/how-can-i-get-the-ip-adress-of-a-client-in-server-component-of-the-app-directory#:~:text=You%20can%20use%20the%20nextjs,header%20in%20your%20server%20component.
+    // const forwardedFor = headers().get("x-forwarded-for");
+
+    https: const slug = slugify(name, {
       lower: true,
       strict: true,
     });
