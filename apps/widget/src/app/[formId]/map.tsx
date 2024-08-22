@@ -2,8 +2,8 @@
 
 import { MapForm } from "@mapform/mapform";
 import { useAction } from "next-safe-action/hooks";
-import React, { useEffect, useRef, useState } from "react";
-import type { MapRef, ViewState } from "@mapform/mapform";
+import React, { useEffect, useState } from "react";
+import { useMap, type ViewState } from "@mapform/mapform";
 import { useCreateQueryString } from "@mapform/lib/hooks/use-create-query-string";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import type { Points } from "~/data/get-step-data";
@@ -39,6 +39,8 @@ export function Map({
     router.push(`${pathname}?${createQueryString("s", step.id)}`);
   };
 
+  const { map } = useMap();
+
   const [currentSession, setCurrentSession] = useState<string | null>(null);
   const [viewState, setViewState] = useState<ViewState | null>(
     currentStep
@@ -58,13 +60,11 @@ export function Map({
       : null
   );
 
-  const map = useRef<MapRef>(null);
-
   const { execute } = useAction(submitFormStep);
 
   const setCurrentStepAndFly = (step: Step) => {
     setCurrentStep(step);
-    map.current?.flyTo({
+    map?.flyTo({
       center: [step.longitude, step.latitude],
       zoom: step.zoom,
       pitch: step.pitch,
@@ -177,7 +177,6 @@ export function Map({
         }
       }}
       points={points}
-      ref={map}
       setViewState={setViewState}
       viewState={viewState}
     />
