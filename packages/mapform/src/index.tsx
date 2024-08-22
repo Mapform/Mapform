@@ -15,7 +15,6 @@ import {
   type Dispatch,
   type SetStateAction,
   forwardRef,
-  useEffect,
   useState,
 } from "react";
 import type { Step } from "@mapform/db";
@@ -34,43 +33,6 @@ import { Blocknote } from "./block-note";
 import { Data } from "./data";
 
 type ExtendedStep = Step & { latitude: number; longitude: number };
-
-interface StyleLoadedGuardProps {
-  // this state has to come from outside the StyleLoadedGuard component as otherwise
-  // it'll get cleared if/when the map changes. And the guard has to be its own component
-  // as it seems like that's the only way to get a ref to the map via useMap()...
-  guardState: [boolean, React.Dispatch<React.SetStateAction<boolean>>]; // useState(false)
-  children?: React.ReactNode;
-}
-
-/**
- * This is a workaround to a style loading error with react-map-gl.
- * TODO: Check back to see if we can remove this workaround.
- * https://github.com/visgl/react-map-gl/issues/2377#issuecomment-2204500493
- */
-const StyleLoadedGuard: React.FC<StyleLoadedGuardProps> = (props) => {
-  const mapRef = useMap();
-  const [styleLoadedAtLeastOnce, setStyleLoadedAtLeastOnce] = props.guardState;
-  useEffect(() => {
-    if (mapRef.current) {
-      const map = mapRef.current;
-
-      const onStyleLoad = () => {
-        setStyleLoadedAtLeastOnce(true);
-      };
-      map.on("style.load", onStyleLoad);
-      if (map.isStyleLoaded()) {
-        onStyleLoad();
-      }
-      return () => {
-        map.off("style.load", onStyleLoad);
-      };
-    }
-    return undefined;
-  }, [mapRef, setStyleLoadedAtLeastOnce]);
-
-  return styleLoadedAtLeastOnce && props.children;
-};
 
 interface MapFormProps {
   editable?: boolean;
@@ -121,8 +83,6 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
       string | null
     >(null);
     const { ref: drawerRef } = useMeasure<HTMLDivElement>();
-
-    const styleLoadedGuardState = useState(false);
 
     const onSubmit = (data: FormSchema) => {
       onStepSubmit && onStepSubmit(data);
@@ -200,52 +160,50 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
               ref={ref}
               style={{ flex: 1, borderRadius: editable ? "8px" : 0 }}
             >
-              <StyleLoadedGuard guardState={styleLoadedGuardState}>
-                <NavigationControl />
+              <NavigationControl />
 
-                {isSelectingPinLocationFor ? (
-                  <Marker
-                    color="red"
-                    latitude={viewState.latitude}
-                    longitude={viewState.longitude}
-                  />
-                ) : (
-                  pinBlocks?.map((block) => {
+              {isSelectingPinLocationFor ? (
+                <Marker
+                  color="red"
+                  latitude={viewState.latitude}
+                  longitude={viewState.longitude}
+                />
+              ) : (
+                pinBlocks?.map((block) => {
+                  // @ts-expect-error -- This does in fact exist. Because the form is dynamic, TS can't infer the type.
+                  const latitude = form.watch(
                     // @ts-expect-error -- This does in fact exist. Because the form is dynamic, TS can't infer the type.
-                    const latitude = form.watch(
-                      // @ts-expect-error -- This does in fact exist. Because the form is dynamic, TS can't infer the type.
-                      `${block.id}.latitude`
-                    ) as number;
+                    `${block.id}.latitude`
+                  ) as number;
+                  // @ts-expect-error -- This does in fact exist. Because the form is dynamic, TS can't infer the type.
+                  const longitude = form.watch(
                     // @ts-expect-error -- This does in fact exist. Because the form is dynamic, TS can't infer the type.
-                    const longitude = form.watch(
-                      // @ts-expect-error -- This does in fact exist. Because the form is dynamic, TS can't infer the type.
-                      `${block.id}.longitude`
-                    ) as number;
+                    `${block.id}.longitude`
+                  ) as number;
 
-                    if (!latitude || !longitude) {
-                      return null;
-                    }
+                  if (!latitude || !longitude) {
+                    return null;
+                  }
 
-                    return (
-                      <Marker
-                        color="red"
-                        key={block.id}
-                        latitude={latitude}
-                        longitude={longitude}
-                        onDragEnd={(e) => {
-                          // @ts-expect-error -- This does in fact exist. Because the form is dynamic, TS can't infer the type.
-                          form.setValue(`${block.id}.latitude`, e.lngLat.lat);
-                          // @ts-expect-error -- This does in fact exist. Because the form is dynamic, TS can't infer the type.
-                          form.setValue(`${block.id}.longitude`, e.lngLat.lng);
-                        }}
-                      />
-                    );
-                  })
-                )}
+                  return (
+                    <Marker
+                      color="red"
+                      key={block.id}
+                      latitude={latitude}
+                      longitude={longitude}
+                      onDragEnd={(e) => {
+                        // @ts-expect-error -- This does in fact exist. Because the form is dynamic, TS can't infer the type.
+                        form.setValue(`${block.id}.latitude`, e.lngLat.lat);
+                        // @ts-expect-error -- This does in fact exist. Because the form is dynamic, TS can't infer the type.
+                        form.setValue(`${block.id}.longitude`, e.lngLat.lng);
+                      }}
+                    />
+                  );
+                })
+              )}
 
-                {/* Render active data points */}
-                <Data points={points} />
-              </StyleLoadedGuard>
+              {/* Render active data points */}
+              <Data points={points} />
             </Map>
           </CustomBlockContext.Provider>
         </form>
