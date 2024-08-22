@@ -16,13 +16,28 @@ const initialViewState = {
 
 export const createForm = authAction
   .schema(createFormSchema)
-  .action(async ({ parsedInput: { name, workspaceId } }) => {
+  .action(async ({ parsedInput: { name, workspaceId }, ctx: { userId } }) => {
     const slug = slugify(name, {
       lower: true,
       strict: true,
     });
 
-    // TODO: Check if user has access to the workspace
+    const workspace = await prisma.workspace.findUnique({
+      where: {
+        id: workspaceId,
+        organization: {
+          members: {
+            some: {
+              userId,
+            },
+          },
+        },
+      },
+    });
+
+    if (!workspace) {
+      throw new Error("Workspace not found");
+    }
 
     const newForm = await prisma.form.create({
       data: {

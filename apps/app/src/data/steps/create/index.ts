@@ -7,8 +7,25 @@ import { createStepSchema } from "./schema";
 
 export const createStep = authAction
   .schema(createStepSchema)
-  .action(async ({ parsedInput: { formId, location } }) => {
-    // TODO: Check if form belongs to the user
+  .action(async ({ parsedInput: { formId, location }, ctx: { userId } }) => {
+    const form = await prisma.form.findUnique({
+      where: {
+        id: formId,
+        workspace: {
+          organization: {
+            members: {
+              some: {
+                userId,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!form) {
+      throw new Error("Form not found");
+    }
 
     /**
      * This uses the Prisma extension to create a step with a location
@@ -23,7 +40,7 @@ export const createStep = authAction
         longitude: location.longitude,
       });
 
-      const form = await tx.form.update({
+      const updatedForm = await tx.form.update({
         where: {
           id: formId,
         },
@@ -40,7 +57,7 @@ export const createStep = authAction
       });
 
       revalidatePath(
-        `/orgs/${form.workspace.organization.slug}/workspaces/${form.workspace.slug}/forms/${form.id}`
+        `/orgs/${updatedForm.workspace.organization.slug}/workspaces/${updatedForm.workspace.slug}/forms/${updatedForm.id}`
       );
 
       return newStep;
