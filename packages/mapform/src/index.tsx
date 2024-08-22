@@ -206,6 +206,7 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
             <Map
               editable={editable}
               initialViewState={viewState}
+              points={points}
               setViewState={setViewState}
             />
           </CustomBlockContext.Provider>
