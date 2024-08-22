@@ -1,6 +1,6 @@
 "use client";
 
-import Map, {
+import {
   type MapRef,
   type ViewState,
   type ViewStateChangeEvent,
@@ -31,6 +31,7 @@ import { useMeasure } from "@mapform/lib/hooks/use-measure";
 import type { Points } from "@mapform/map-utils/types";
 import { Blocknote } from "./block-note";
 import { Data } from "./data";
+import { Map } from "./map";
 
 type ExtendedStep = Step & { latitude: number; longitude: number };
 
@@ -142,7 +143,7 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
                 />
               ) : null}
             </div>
-            <Map
+            {/* <Map
               {...viewState}
               mapStyle="mapbox://styles/nichaley/clsxaiasf00ue01qjfhtt2v81"
               mapboxAccessToken={mapboxAccessToken}
@@ -202,9 +203,9 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
                 })
               )}
 
-              {/* Render active data points */}
               <Data points={points} />
-            </Map>
+            </Map> */}
+            <Map editable={editable} />
           </CustomBlockContext.Provider>
         </form>
       </Form>
