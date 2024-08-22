@@ -4,9 +4,9 @@ import {
   HydrationBoundary,
   QueryClient,
 } from "@tanstack/react-query";
+import { getStepData } from "~/data/steps/get-step-data";
 import { getFormWithSteps } from "~/data/forms/get-form-with-steps";
 import { Container } from "./container";
-import { getStepData } from "~/data/steps/get-step-data";
 
 export default async function Workspace({
   params,

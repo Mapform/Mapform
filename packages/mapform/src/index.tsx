@@ -5,8 +5,6 @@ import {
   type ViewState,
   type ViewStateChangeEvent,
   Marker,
-  MapProvider,
-  useMap,
   NavigationControl,
   type LngLatBounds,
 } from "react-map-gl";
@@ -31,7 +29,7 @@ import { useMeasure } from "@mapform/lib/hooks/use-measure";
 import type { Points } from "@mapform/map-utils/types";
 import { Blocknote } from "./block-note";
 import { Data } from "./data";
-import { Map } from "./map";
+import { Map, MapProvider, useMap, type MBMap } from "./map";
 
 type ExtendedStep = Step & { latitude: number; longitude: number };
 
@@ -207,8 +205,8 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
             </Map> */}
             <Map
               editable={editable}
+              initialViewState={viewState}
               setViewState={setViewState}
-              viewState={viewState}
             />
           </CustomBlockContext.Provider>
         </form>
@@ -220,4 +218,4 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
 MapForm.displayName = "MapForm";
 
 export { MapProvider, useMap };
-export type { ViewState, ViewStateChangeEvent, MapRef, LngLatBounds };
+export type { ViewState, ViewStateChangeEvent, MapRef, LngLatBounds, MBMap };

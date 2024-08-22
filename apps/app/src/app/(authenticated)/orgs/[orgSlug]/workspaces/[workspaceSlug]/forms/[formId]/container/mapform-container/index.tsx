@@ -22,13 +22,9 @@ function MapFormContainer({
   setMapformLoaded: (loaded: boolean) => void;
 }) {
   const {
-    map,
     points,
     viewState,
-    onMoveEnd,
-    setBounds,
     currentStep,
-    setViewState,
     formWithSteps,
     setQueryParamFor,
     currentEditableStep,
@@ -101,11 +97,8 @@ function MapFormContainer({
               return success?.url || null;
             }}
             onLoad={() => {
-              const bounds = map.current?.getBounds();
-              setBounds(bounds);
               setMapformLoaded(true);
             }}
-            onMoveEnd={onMoveEnd}
             onTitleChange={async (content: string) => {
               if (!currentStep) {
                 return;
@@ -120,8 +113,6 @@ function MapFormContainer({
               });
             }}
             points={points}
-            ref={map}
-            setViewState={setViewState}
             viewState={viewState}
           />
         </div>

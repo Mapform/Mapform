@@ -1,12 +1,7 @@
-import { type StepWithLocation } from "@mapform/db/extentsions/steps";
 import { useDebounce } from "@mapform/lib/use-debounce";
-import type {
-  ViewState,
-  MapRef,
-  ViewStateChangeEvent,
-  LngLatBounds,
-} from "@mapform/mapform";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { type StepWithLocation } from "@mapform/db/extentsions/steps";
+import { useMap, type MBMap, type ViewState } from "@mapform/mapform";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import {
   type Dispatch,
@@ -15,7 +10,6 @@ import {
   useContext,
   useState,
   useEffect,
-  useRef,
 } from "react";
 import { useCreateQueryString } from "@mapform/lib/hooks/use-create-query-string";
 import { type FormWithSteps } from "~/data/forms/get-form-with-steps";
@@ -23,7 +17,7 @@ import type { GetStepData } from "~/data/steps/get-step-data";
 import { updateStep } from "~/data/steps/update";
 
 export interface ContainerContextProps {
-  map: React.RefObject<MapRef>;
+  map: MBMap | undefined;
   dragSteps: string[];
   formWithSteps: NonNullable<FormWithSteps>;
   currentStep: StepWithLocation | undefined;
@@ -37,10 +31,7 @@ export interface ContainerContextProps {
     param: "e" | "s",
     step?: NonNullable<FormWithSteps>["steps"][number]
   ) => void;
-  onMoveEnd?: ((e: ViewStateChangeEvent) => void) | undefined;
   points: GetStepData;
-  bounds: LngLatBounds | undefined;
-  setBounds: Dispatch<SetStateAction<LngLatBounds | undefined>>;
 }
 
 export const ContainerContext = createContext<ContainerContextProps>(
@@ -72,6 +63,7 @@ export function ContainerProvider({
   points: GetStepData;
   children: React.ReactNode;
 }) {
+  const { map } = useMap();
   const router = useRouter();
   const pathname = usePathname();
   const queryClient = useQueryClient();
@@ -87,10 +79,6 @@ export function ContainerProvider({
   );
 
   const currentEditableStep = formWithSteps.steps.find((step) => step.id === e);
-
-  const map = useRef<MapRef>(null);
-  const initialBounds = map.current?.getBounds();
-  const [bounds, setBounds] = useState<LngLatBounds | undefined>(initialBounds);
 
   const { mutateAsync: updateStepMutation } = useMutation({
     mutationFn: updateStep,
@@ -186,7 +174,7 @@ export function ContainerProvider({
         current.set("s", step.id);
         current.delete("e");
 
-        map.current?.flyTo({
+        map?.flyTo({
           center: [step.longitude, step.latitude],
           zoom: step.zoom,
           pitch: step.pitch,
@@ -200,13 +188,6 @@ export function ContainerProvider({
     const query = search ? `?${search}` : "";
 
     router.push(`${pathname}${query}`);
-  };
-
-  const onMoveEnd = () => {
-    const newBounds = map.current?.getBounds();
-    if (!newBounds) return;
-
-    setBounds(newBounds);
   };
 
   return (
@@ -223,10 +204,7 @@ export function ContainerProvider({
         debouncedUpdateStep,
         currentEditableStep,
         setQueryParamFor,
-        onMoveEnd,
         points,
-        bounds,
-        setBounds,
       }}
     >
       {children}

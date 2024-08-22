@@ -1,15 +1,50 @@
 /* eslint-disable import/no-named-as-default-member -- It's cool yo */
-import { useRef, useEffect, type Dispatch, type SetStateAction } from "react";
+import {
+  useRef,
+  useState,
+  useEffect,
+  useContext,
+  createContext,
+  type Dispatch,
+  type SetStateAction,
+} from "react";
 import mapboxgl from "mapbox-gl";
 import { cn } from "@mapform/lib/classnames";
 import type { ViewState } from "@mapform/map-utils/types";
 
 const accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
 
+export type MBMap = mapboxgl.Map;
+
 interface MapProps {
   editable?: boolean;
   initialViewState: ViewState;
   setViewState: Dispatch<SetStateAction<ViewState | null>>;
+}
+
+interface MapProviderContextProps {
+  map?: MBMap;
+  setMap: Dispatch<SetStateAction<MBMap | undefined>>;
+}
+
+export const MapProviderContext = createContext<MapProviderContextProps>(
+  {} as MapProviderContextProps
+);
+export const useMap = () => useContext(MapProviderContext);
+
+export function MapProvider({ children }: { children: React.ReactNode }) {
+  const [map, setMap] = useState<MBMap>();
+
+  return (
+    <MapProviderContext.Provider
+      value={{
+        map,
+        setMap,
+      }}
+    >
+      {children}
+    </MapProviderContext.Provider>
+  );
 }
 
 /**
@@ -21,6 +56,7 @@ interface MapProps {
  */
 export function Map({ initialViewState, editable = false }: MapProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
+  const { setMap } = useMap();
 
   useEffect(() => {
     if (!accessToken) {
@@ -44,10 +80,14 @@ export function Map({ initialViewState, editable = false }: MapProps) {
       map.addControl(new mapboxgl.NavigationControl(), "top-right");
 
       // Add your custom markers and lines here
+      map.on("load", () => {
+        setMap(map);
+      });
 
       // Clean up on unmount
       return () => {
         map.remove();
+        setMap(undefined);
       };
     }
   }, []);
