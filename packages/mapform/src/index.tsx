@@ -205,7 +205,11 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
 
               <Data points={points} />
             </Map> */}
-            <Map editable={editable} />
+            <Map
+              editable={editable}
+              setViewState={setViewState}
+              viewState={viewState}
+            />
           </CustomBlockContext.Provider>
         </form>
       </Form>
