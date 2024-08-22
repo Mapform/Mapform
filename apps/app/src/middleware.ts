@@ -34,7 +34,7 @@ export default auth(async (req) => {
   /**
    * Redirect root to account
    */
-  if (reqUrl.pathname === "/") {
+  if (reqUrl.pathname === "/" || reqUrl.pathname === "/orgs") {
     const userWithOrgs = await prisma.user.findUnique({
       where: { id: req.auth.user?.id },
       include: {
