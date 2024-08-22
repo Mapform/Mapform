@@ -8,11 +8,18 @@ const accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
 
 interface MapProps {
   editable?: boolean;
-  viewState: ViewState;
+  initialViewState: ViewState;
   setViewState: Dispatch<SetStateAction<ViewState | null>>;
 }
 
-export function Map({ viewState, setViewState, editable = false }: MapProps) {
+/**
+ * TODO:
+ * 1. Create a context provider
+ * 2. Set the map state in the context provider
+ * 3. Can use the map anywhere to allow for flying / panning to location
+ * 4. Add overlays accoriding to https://github.com/mapbox/mapbox-react-examples/blob/master/data-overlay/src/Map.js
+ */
+export function Map({ initialViewState, editable = false }: MapProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -26,32 +33,15 @@ export function Map({ viewState, setViewState, editable = false }: MapProps) {
       // Create map with initial state
       const map = new mapboxgl.Map({
         container: mapContainer.current,
-        center: [viewState.longitude, viewState.latitude],
-        zoom: viewState.zoom,
-        pitch: viewState.pitch,
-        bearing: viewState.bearing,
+        center: [initialViewState.longitude, initialViewState.latitude],
+        zoom: initialViewState.zoom,
+        pitch: initialViewState.pitch,
+        bearing: initialViewState.bearing,
         maxZoom: 20,
       });
 
       // Add zoom controls
       map.addControl(new mapboxgl.NavigationControl(), "top-right");
-
-      // Update the map state when the viewState changes
-      map.on("move", () => {
-        const { lng, lat } = map.getCenter();
-        const zoom = map.getZoom();
-        const bearing = map.getBearing();
-        const pitch = map.getPitch();
-
-        setViewState({
-          longitude: lng,
-          latitude: lat,
-          zoom,
-          bearing,
-          pitch,
-          padding: viewState.padding,
-        });
-      });
 
       // Add your custom markers and lines here
 
