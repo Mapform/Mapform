@@ -1,9 +1,8 @@
 "use client";
 
-import { MapForm } from "@mapform/mapform";
+import { MapForm, useMap } from "@mapform/mapform";
 import { useAction } from "next-safe-action/hooks";
 import React, { useEffect, useState } from "react";
-import { useMap, type ViewState } from "@mapform/mapform";
 import { useCreateQueryString } from "@mapform/lib/hooks/use-create-query-string";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import type { Points } from "~/data/get-step-data";
@@ -42,23 +41,6 @@ export function Map({
   const { map } = useMap();
 
   const [currentSession, setCurrentSession] = useState<string | null>(null);
-  const [viewState, setViewState] = useState<ViewState | null>(
-    currentStep
-      ? {
-          latitude: currentStep.latitude,
-          longitude: currentStep.longitude,
-          zoom: currentStep.zoom,
-          bearing: currentStep.bearing,
-          pitch: currentStep.pitch,
-          padding: {
-            top: 0,
-            bottom: 0,
-            left: 0,
-            right: 0,
-          },
-        }
-      : null
-  );
 
   const { execute } = useAction(submitFormStep);
 
@@ -101,19 +83,19 @@ export function Map({
         `${pathname}?${createQueryString("s", formWithSteps.steps[0].id)}`
       );
 
-      setViewState({
-        latitude: firstStep.latitude,
-        longitude: firstStep.longitude,
-        zoom: firstStep.zoom,
-        bearing: firstStep.bearing,
-        pitch: firstStep.pitch,
-        padding: {
-          top: 0,
-          bottom: 0,
-          left: 0,
-          right: 0,
-        },
-      });
+      // setViewState({
+      //   latitude: firstStep.latitude,
+      //   longitude: firstStep.longitude,
+      //   zoom: firstStep.zoom,
+      //   bearing: firstStep.bearing,
+      //   pitch: firstStep.pitch,
+      //   padding: {
+      //     top: 0,
+      //     bottom: 0,
+      //     left: 0,
+      //     right: 0,
+      //   },
+      // });
     }
   }, [
     s,
@@ -141,7 +123,7 @@ export function Map({
     {}
   );
 
-  if (!currentSession || !currentStep || !viewState) {
+  if (!currentSession || !currentStep) {
     return null;
   }
 
@@ -177,8 +159,6 @@ export function Map({
         }
       }}
       points={points}
-      setViewState={setViewState}
-      viewState={viewState}
     />
   );
 }

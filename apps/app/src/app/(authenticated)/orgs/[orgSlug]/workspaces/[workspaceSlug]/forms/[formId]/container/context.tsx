@@ -1,7 +1,7 @@
 import { useDebounce } from "@mapform/lib/use-debounce";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { type StepWithLocation } from "@mapform/db/extentsions/steps";
-import { useMap, type MBMap, type ViewState } from "@mapform/mapform";
+import { useMap, type MBMap } from "@mapform/mapform";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import {
   type Dispatch,
@@ -23,8 +23,6 @@ export interface ContainerContextProps {
   currentStep: StepWithLocation | undefined;
   currentStepIndex: number;
   currentEditableStep: StepWithLocation | undefined;
-  viewState: ViewState;
-  setViewState: Dispatch<SetStateAction<ViewState>>;
   setDragSteps: Dispatch<SetStateAction<string[]>>;
   debouncedUpdateStep: typeof updateStep;
   setQueryParamFor: (
@@ -38,21 +36,6 @@ export const ContainerContext = createContext<ContainerContextProps>(
   {} as ContainerContextProps
 );
 export const useContainerContext = () => useContext(ContainerContext);
-
-// TODO. Temporary. Should get initial view state from previous step, or from user location
-const initialViewState = {
-  longitude: -122.4,
-  latitude: 37.8,
-  zoom: 14,
-  bearing: 0,
-  pitch: 0,
-  padding: {
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
-  },
-};
 
 export function ContainerProvider({
   formWithSteps,
@@ -145,14 +128,6 @@ export function ContainerProvider({
   );
 
   const currentStep = formWithSteps.steps.find((step) => step.id === s);
-  const [viewState, setViewState] = useState<ViewState>({
-    latitude: currentStep?.latitude ?? initialViewState.latitude,
-    longitude: currentStep?.longitude ?? initialViewState.longitude,
-    zoom: currentStep?.zoom ?? initialViewState.zoom,
-    bearing: currentStep?.bearing ?? initialViewState.bearing,
-    pitch: currentStep?.pitch ?? initialViewState.pitch,
-    padding: initialViewState.padding,
-  });
 
   const setQueryParamFor = (
     param: "e" | "s",
@@ -198,8 +173,6 @@ export function ContainerProvider({
         currentStepIndex,
         dragSteps,
         setDragSteps,
-        viewState,
-        setViewState,
         formWithSteps,
         debouncedUpdateStep,
         currentEditableStep,

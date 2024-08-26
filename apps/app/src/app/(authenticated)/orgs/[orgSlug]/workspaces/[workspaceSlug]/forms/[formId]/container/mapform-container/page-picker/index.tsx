@@ -31,8 +31,8 @@ import { PageItemSubmenu } from "./page-item-submenu";
 
 export function PagePicker() {
   const {
+    map,
     dragSteps,
-    viewState,
     currentStep,
     setDragSteps,
     formWithSteps,
@@ -141,9 +141,24 @@ export function PagePicker() {
           className="font-medium cursor-pointer"
           disabled={createStepStatus === "executing"}
           onClick={() => {
+            const loc = map?.getCenter();
+            const zoom = map?.getZoom();
+            const pitch = map?.getPitch();
+            const bearing = map?.getBearing();
+
+            console.log(loc, zoom, pitch, bearing);
+
+            if (!loc || !zoom || !pitch || !bearing) return;
+
             executeCreateStep({
               formId: formWithSteps.id,
-              location: viewState,
+              location: {
+                latitude: loc.lat,
+                longitude: loc.lng,
+                zoom,
+                pitch,
+                bearing,
+              },
             });
           }}
         >

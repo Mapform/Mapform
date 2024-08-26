@@ -44,7 +44,7 @@ export const publishForm = authAction
      * Note 2: Transactions currently don't work due to the createWithLocation extension.
      */
     await prisma.$transaction(async (tx) => {
-      const newPublishedForm = await tx.form.create({
+      const newPublishedForm = await prisma.form.create({
         data: {
           name: rootForm.name,
           slug: rootForm.slug,
@@ -65,7 +65,7 @@ export const publishForm = authAction
       //  * We duplidate the layers and sub layer types for the new form.
       //  * We do NOT duplicate the data itself (dataset).
       //  */
-      const newLayers = await tx.layer.createManyAndReturn({
+      const newLayers = await prisma.layer.createManyAndReturn({
         data: rootLayersWithIds.map((layer) => ({
           id: layer.newId,
           type: layer.type,
@@ -94,7 +94,7 @@ export const publishForm = authAction
       // incorrect.
       for (const step of steps) {
         // eslint-disable-next-line no-await-in-loop -- We want to execute sequentially
-        await tx.step.createWithLocation({
+        await prisma.step.createWithLocation({
           formId: newPublishedForm.id,
           zoom: step.zoom,
           pitch: step.pitch,
@@ -114,7 +114,7 @@ export const publishForm = authAction
         });
       }
 
-      await tx.form.update({
+      await prisma.form.update({
         where: {
           id: rootForm.id,
         },

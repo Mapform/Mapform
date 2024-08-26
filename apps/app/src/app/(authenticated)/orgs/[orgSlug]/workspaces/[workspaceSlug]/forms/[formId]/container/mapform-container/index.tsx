@@ -16,14 +16,9 @@ import {
 } from "./step-drawer";
 import { PagePicker } from "./page-picker";
 
-function MapFormContainer({
-  setMapformLoaded,
-}: {
-  setMapformLoaded: (loaded: boolean) => void;
-}) {
+function MapFormContainer() {
   const {
     points,
-    viewState,
     currentStep,
     formWithSteps,
     setQueryParamFor,
@@ -96,9 +91,6 @@ function MapFormContainer({
 
               return success?.url || null;
             }}
-            onLoad={() => {
-              setMapformLoaded(true);
-            }}
             onTitleChange={async (content: string) => {
               if (!currentStep) {
                 return;
@@ -113,7 +105,6 @@ function MapFormContainer({
               });
             }}
             points={points}
-            viewState={viewState}
           />
         </div>
       </div>

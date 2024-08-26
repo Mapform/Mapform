@@ -6,7 +6,7 @@ import {
   FormControl,
   useFormContext,
 } from "@mapform/ui/components/form";
-import { useState } from "react";
+// import { useState } from "react";
 import { Button } from "@mapform/ui/components/button";
 import { Input } from "@mapform/ui/components/input";
 import { AsteriskIcon } from "lucide-react";
@@ -32,12 +32,10 @@ export const Pin = createReactBlockSpec(
       const form = useFormContext();
       const {
         editable,
-        viewState,
-        setViewState,
         isSelectingPinLocationFor,
         setIsSelectingPinLocationFor,
       } = useCustomBlockContext();
-      const [prevViewState, setPrevViewState] = useState(viewState);
+      // const [prevViewState, setPrevViewState] = useState(viewState);
 
       if (editable) {
         return (
@@ -77,9 +75,9 @@ export const Pin = createReactBlockSpec(
               <Button
                 className="w-full"
                 onClick={() => {
-                  form.setValue(`${block.id}.latitude`, viewState.latitude);
-                  form.setValue(`${block.id}.longitude`, viewState.longitude);
-                  setViewState(prevViewState);
+                  // form.setValue(`${block.id}.latitude`, viewState.latitude);
+                  // form.setValue(`${block.id}.longitude`, viewState.longitude);
+                  // setViewState(prevViewState);
                   setIsSelectingPinLocationFor(null);
                 }}
                 size="sm"
@@ -92,7 +90,7 @@ export const Pin = createReactBlockSpec(
                   onClick={() => {
                     form.setValue(`${block.id}.latitude`, "");
                     form.setValue(`${block.id}.longitude`, "");
-                    setViewState(prevViewState);
+                    // setViewState(prevViewState);
                     setIsSelectingPinLocationFor(null);
                   }}
                   variant="outline"
@@ -103,7 +101,7 @@ export const Pin = createReactBlockSpec(
               <Button
                 className="w-full"
                 onClick={() => {
-                  setViewState(prevViewState);
+                  // setViewState(prevViewState);
                   setIsSelectingPinLocationFor(null);
                 }}
                 size="sm"
@@ -118,18 +116,18 @@ export const Pin = createReactBlockSpec(
               onClick={() => {
                 setIsSelectingPinLocationFor(block.id);
 
-                setPrevViewState(viewState);
+                // setPrevViewState(viewState);
 
-                setViewState({
-                  ...viewState,
-                  zoom: viewState.zoom * 1.2,
-                  latitude: currentLatitude
-                    ? currentLatitude
-                    : viewState.latitude,
-                  longitude: currentLongitude
-                    ? currentLongitude
-                    : viewState.longitude,
-                });
+                // setViewState({
+                //   ...viewState,
+                //   zoom: viewState.zoom * 1.2,
+                //   latitude: currentLatitude
+                //     ? currentLatitude
+                //     : viewState.latitude,
+                //   longitude: currentLongitude
+                //     ? currentLongitude
+                //     : viewState.longitude,
+                // });
               }}
               size="sm"
               variant="outline"

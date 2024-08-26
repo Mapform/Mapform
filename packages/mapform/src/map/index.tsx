@@ -46,19 +46,21 @@ export function MapProvider({ children }: { children: React.ReactNode }) {
 interface MapProps {
   points?: Points;
   editable?: boolean;
+  onLoad?: () => void;
   initialViewState: ViewState;
-  setViewState: Dispatch<SetStateAction<ViewState | null>>;
 }
 
 /**
  * TODO:
- * 1. Add overlays accoriding to https://github.com/mapbox/mapbox-react-examples/blob/master/data-overlay/src/Map.js
- * 2. Add ability to add markers
+ * 1. Add ability to add markers
+ * 2. Style points a bit better
+ * 3. Add zIndex to points according to layer order
  */
 export function Map({
   initialViewState,
   editable = false,
   points = [],
+  onLoad,
 }: MapProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const { map, setMap } = useMap();
@@ -87,6 +89,9 @@ export function Map({
 
     mapboxgl.accessToken = accessToken;
 
+    /**
+     * Configure the map object and set it in context
+     */
     if (mapContainer.current) {
       // Create map with initial state
       const m = new mapboxgl.Map({
@@ -104,6 +109,7 @@ export function Map({
       // Add your custom markers and lines here
       m.on("load", () => {
         setMap(m);
+        onLoad && onLoad();
       });
 
       // Clean up on unmount
@@ -114,6 +120,9 @@ export function Map({
     }
   }, []);
 
+  /**
+   * Update layers
+   */
   useEffect(() => {
     if (map) {
       const currentSource = map.getSource("points") as
