@@ -32,7 +32,6 @@ interface MapFormProps {
   onStepSubmit?: (data: Record<string, string>) => void;
   onImageUpload?: (file: File) => Promise<string | null>;
   points?: Points;
-  initialViewState?: ViewState;
 }
 
 export function MapForm({
@@ -46,19 +45,6 @@ export function MapForm({
   onImageUpload,
   defaultFormValues,
   onDescriptionChange,
-  initialViewState = {
-    longitude: -122.4,
-    latitude: 37.8,
-    zoom: 14,
-    bearing: 0,
-    pitch: 0,
-    padding: {
-      top: 0,
-      bottom: 0,
-      left: 0,
-      right: 0,
-    },
-  },
 }: MapFormProps) {
   const blocknoteStepSchema = getFormSchemaFromBlockNote(
     currentStep?.description?.content || []
@@ -76,9 +62,27 @@ export function MapForm({
     onStepSubmit?.(data);
   };
 
-  const pinBlocks = currentStep?.description?.content.filter((c) => {
+  if (!currentStep) {
+    return null;
+  }
+
+  const pinBlocks = currentStep.description?.content.filter((c) => {
     return c.type === "pin";
   });
+
+  const initialViewState = {
+    longitude: currentStep.longitude,
+    latitude: currentStep.latitude,
+    zoom: currentStep.zoom,
+    bearing: currentStep.bearing,
+    pitch: currentStep.pitch,
+    padding: {
+      top: 0,
+      bottom: 0,
+      left: 0,
+      right: 0,
+    },
+  };
 
   return (
     <Form {...form}>
@@ -97,34 +101,28 @@ export function MapForm({
           <div
             className={cn(
               "flex-shrink-0 backdrop-blur-md bg-background z-10 transition-[width,transform]",
-              currentStep?.contentViewType === "FULL"
+              currentStep.contentViewType === "FULL"
                 ? "w-full"
-                : currentStep?.contentViewType === "PARTIAL"
+                : currentStep.contentViewType === "PARTIAL"
                   ? "w-[320px] lg:w-[400px]"
                   : "w-0 overflow-hidden"
             )}
             ref={drawerRef}
           >
-            {currentStep ? (
-              <Blocknote
-                defaultFormValues={defaultFormValues}
-                description={currentStep.description ?? undefined}
-                // Need key to force re-render, otherwise Blocknote state doesn't
-                // change when changing steps
-                editable={editable}
-                key={currentStep.id}
-                onDescriptionChange={onDescriptionChange}
-                onPrev={onPrev}
-                onTitleChange={onTitleChange}
-                title={currentStep.title}
-              />
-            ) : null}
+            <Blocknote
+              defaultFormValues={defaultFormValues}
+              description={currentStep.description ?? undefined}
+              // Need key to force re-render, otherwise Blocknote state doesn't
+              // change when changing steps
+              editable={editable}
+              key={currentStep.id}
+              onDescriptionChange={onDescriptionChange}
+              onPrev={onPrev}
+              onTitleChange={onTitleChange}
+              title={currentStep.title}
+            />
           </div>
           {/* <Map
-              {...viewState}
-              mapStyle="mapbox://styles/nichaley/clsxaiasf00ue01qjfhtt2v81"
-              mapboxAccessToken={mapboxAccessToken}
-              onLoad={onLoad}
               onMove={(event) => {
                 setViewState((prev) => ({
                   ...prev,
@@ -132,14 +130,7 @@ export function MapForm({
                 }));
               }}
               onMoveEnd={onMoveEnd}
-              projection={{
-                name: "globe",
-              }}
-              ref={ref}
-              style={{ flex: 1, borderRadius: editable ? "8px" : 0 }}
             >
-              <NavigationControl />
-
               {isSelectingPinLocationFor ? (
                 <Marker
                   color="red"

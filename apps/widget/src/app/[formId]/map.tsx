@@ -83,22 +83,17 @@ export function Map({
         `${pathname}?${createQueryString("s", formWithSteps.steps[0].id)}`
       );
 
-      // setViewState({
-      //   latitude: firstStep.latitude,
-      //   longitude: firstStep.longitude,
-      //   zoom: firstStep.zoom,
-      //   bearing: firstStep.bearing,
-      //   pitch: firstStep.pitch,
-      //   padding: {
-      //     top: 0,
-      //     bottom: 0,
-      //     left: 0,
-      //     right: 0,
-      //   },
-      // });
+      map?.flyTo({
+        center: [firstStep.longitude, firstStep.latitude],
+        zoom: firstStep.zoom,
+        pitch: firstStep.pitch,
+        bearing: firstStep.bearing,
+        duration: 1000,
+      });
     }
   }, [
     s,
+    map,
     router,
     pathname,
     currentStep,

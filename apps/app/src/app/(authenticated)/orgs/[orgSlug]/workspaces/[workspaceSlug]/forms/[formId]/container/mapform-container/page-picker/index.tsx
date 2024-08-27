@@ -146,9 +146,13 @@ export function PagePicker() {
             const pitch = map?.getPitch();
             const bearing = map?.getBearing();
 
-            console.log(loc, zoom, pitch, bearing);
-
-            if (!loc || !zoom || !pitch || !bearing) return;
+            if (
+              !loc ||
+              zoom === undefined ||
+              pitch === undefined ||
+              bearing === undefined
+            )
+              return;
 
             executeCreateStep({
               formId: formWithSteps.id,
