@@ -175,21 +175,23 @@ export function MapForm({
 
               <Data points={points} />
             </Map> */}
-          <div className="relative flex flex-1">
-            <Map
-              editable={editable}
-              initialViewState={initialViewState}
-              onLoad={onLoad}
-              points={points}
-            />
-            <Button
-              className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10"
-              size="sm"
-            >
-              <PenIcon className="w-3.5 h-3.5 mr-2 -ml-1" />
-              Edit
-            </Button>
-          </div>
+          {editable ? (
+            <div className="relative flex flex-1">
+              <Map
+                editable={editable}
+                initialViewState={initialViewState}
+                onLoad={onLoad}
+                points={points}
+              />
+              <Button
+                className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10"
+                size="sm"
+              >
+                <PenIcon className="w-3.5 h-3.5 mr-2 -ml-1" />
+                Edit
+              </Button>
+            </div>
+          ) : null}
         </CustomBlockContext.Provider>
       </form>
     </Form>
