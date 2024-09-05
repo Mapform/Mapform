@@ -33,6 +33,7 @@ interface MapFormProps {
   onDescriptionChange?: (content: { content: CustomBlock[] }) => void;
   onStepSubmit?: (data: Record<string, string>) => void;
   onImageUpload?: (file: File) => Promise<string | null>;
+  onLocationSave?: (location: ViewState) => Promise<{ success: boolean }>;
   points?: Points;
 }
 
@@ -45,6 +46,7 @@ export function MapForm({
   onStepSubmit,
   onTitleChange,
   onImageUpload,
+  onLocationSave,
   defaultFormValues,
   onDescriptionChange,
 }: MapFormProps) {
@@ -218,7 +220,43 @@ export function MapForm({
                 >
                   <Undo2Icon className="w-4 h-4" />
                 </Button>
-                <Button disabled={!hasMoved} size="sm">
+                <Button
+                  disabled={!hasMoved}
+                  onClick={async () => {
+                    const center = map?.getCenter();
+                    const zoom = map?.getZoom();
+                    const pitch = map?.getPitch();
+                    const bearing = map?.getBearing();
+
+                    if (
+                      onLocationSave &&
+                      center !== undefined &&
+                      zoom !== undefined &&
+                      pitch !== undefined &&
+                      bearing !== undefined
+                    ) {
+                      setHasMoved(false);
+                      const result = await onLocationSave({
+                        latitude: center.lat,
+                        longitude: center.lng,
+                        zoom,
+                        pitch,
+                        bearing,
+                        padding: {
+                          top: 0,
+                          bottom: 0,
+                          left: 0,
+                          right: 0,
+                        },
+                      });
+
+                      if (!result.success) {
+                        setHasMoved(true);
+                      }
+                    }
+                  }}
+                  size="sm"
+                >
                   Save
                 </Button>
               </div>

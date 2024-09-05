@@ -7,6 +7,7 @@ import type { CustomBlock } from "@mapform/blocknote";
 import { Button } from "@mapform/ui/components/button";
 import { EllipsisIcon } from "lucide-react";
 import { uploadImage } from "~/data/images";
+import { updateStepWithLocation } from "~/data/steps/update-location";
 import { env } from "~/env.mjs";
 import { useContainerContext } from "../context";
 import {
@@ -91,6 +92,27 @@ function MapFormContainer() {
               }
 
               return success?.url || null;
+            }}
+            onLocationSave={async (location) => {
+              if (!currentStep) {
+                return { success: false };
+              }
+
+              await updateStepWithLocation({
+                stepId: currentStep.id,
+                data: {
+                  latitude: location.latitude,
+                  longitude: location.longitude,
+                  zoom: location.zoom,
+                  pitch: location.pitch,
+                  bearing: location.bearing,
+                },
+              }).catch(() => {
+                toast("Failed to update location");
+                return { success: false };
+              });
+
+              return { success: true };
             }}
             onTitleChange={async (content: string) => {
               if (!currentStep) {
