@@ -23,6 +23,7 @@ import {
 import { Input } from "@mapform/ui/components/input";
 import { toast } from "@mapform/ui/components/toaster";
 import { useAction } from "next-safe-action/hooks";
+import { useState } from "react";
 import { createForm } from "~/data/forms/create";
 import {
   createFormSchema,
@@ -36,15 +37,15 @@ export function CreateDialog({
   workspaceId: string;
   disabled?: boolean;
 }) {
+  const [open, setOpen] = useState(false);
   const form = useForm<CreateFormSchema>({
     defaultValues: {
       name: "",
       workspaceId,
     },
-    mode: "onChange",
     resolver: zodResolver(createFormSchema),
   });
-  const { execute } = useAction(createForm, {
+  const { execute, status } = useAction(createForm, {
     onError: ({ error }) => {
       if (error.serverError) {
         toast(error.serverError);
@@ -58,6 +59,7 @@ export function CreateDialog({
     onSuccess: () => {
       form.reset();
       toast("Your form has been created.");
+      setOpen(false);
     },
   });
 
@@ -68,19 +70,19 @@ export function CreateDialog({
   };
 
   return (
-    <Dialog>
+    <Dialog onOpenChange={setOpen} open={open}>
       <DialogTrigger asChild>
         <Button disabled={disabled} size="sm">
-          Create Form
+          Create Project
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <DialogHeader>
-              <DialogTitle>Create MapForm</DialogTitle>
+              <DialogTitle>Create Project</DialogTitle>
               <DialogDescription>
-                Make your new map-based experience.
+                Collect and display location data with a new project.
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4 py-6">
@@ -107,9 +109,7 @@ export function CreateDialog({
             </div>
             <DialogFooter>
               <Button
-                disabled={
-                  form.formState.isSubmitting || !form.formState.isValid
-                }
+                disabled={status === "executing" || !form.formState.isValid}
                 type="submit"
               >
                 Create

@@ -23,6 +23,7 @@ import {
 import { Input } from "@mapform/ui/components/input";
 import { toast } from "@mapform/ui/components/toaster";
 import { useAction } from "next-safe-action/hooks";
+import { useState } from "react";
 import { createWorkspace } from "~/data/workspaces/create";
 import {
   createWorkspaceSchema,
@@ -36,6 +37,7 @@ export function CreateDialog({
   organizationSlug: string;
   disabled?: boolean;
 }) {
+  const [open, setOpen] = useState(false);
   const form = useForm<CreateWorkspaceSchema>({
     defaultValues: {
       name: "",
@@ -44,7 +46,7 @@ export function CreateDialog({
     mode: "onChange",
     resolver: zodResolver(createWorkspaceSchema),
   });
-  const { execute } = useAction(createWorkspace, {
+  const { execute, status } = useAction(createWorkspace, {
     onError: ({ error }) => {
       if (error.serverError) {
         toast(error.serverError);
@@ -58,6 +60,7 @@ export function CreateDialog({
     onSuccess: () => {
       form.reset();
       toast("Your workspace has been created.");
+      setOpen(false);
     },
   });
 
@@ -68,7 +71,7 @@ export function CreateDialog({
   };
 
   return (
-    <Dialog>
+    <Dialog onOpenChange={setOpen} open={open}>
       <DialogTrigger asChild>
         <Button disabled={disabled} size="sm" variant="outline">
           Create Workspace
@@ -107,9 +110,7 @@ export function CreateDialog({
             </div>
             <DialogFooter>
               <Button
-                disabled={
-                  form.formState.isSubmitting || !form.formState.isValid
-                }
+                disabled={status === "executing" || !form.formState.isValid}
                 type="submit"
               >
                 Create
