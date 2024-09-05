@@ -70,7 +70,9 @@ export function CreateDialog({
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button disabled={disabled}>Create Form</Button>
+        <Button disabled={disabled} size="sm">
+          Create Form
+        </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <Form {...form}>

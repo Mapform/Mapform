@@ -34,6 +34,7 @@ function MapFormContainer() {
           {/* Edit controls */}
           <div className="flex gap-1">
             <StepDrawerRoot
+              key={currentStep?.id}
               onOpenChange={(isOpen) => {
                 if (!isOpen && currentEditableStep?.id === currentStep?.id)
                   setQueryParamFor("e");

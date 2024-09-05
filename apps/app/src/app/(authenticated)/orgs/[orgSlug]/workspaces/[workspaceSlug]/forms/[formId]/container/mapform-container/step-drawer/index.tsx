@@ -27,6 +27,7 @@ import {
   AccordionTrigger,
 } from "@mapform/ui/components/accordion";
 import { cn } from "@mapform/lib/classnames";
+import type { StepWithLocation } from "@mapform/db/extentsions/steps";
 import { DragHandle, DragItem } from "~/components/draggable";
 import { useContainerContext } from "../../context";
 import { GeneralForm } from "./general-form";
@@ -41,8 +42,22 @@ export const StepDrawerRoot = Drawer;
 export const StepDrawerTrigger = DrawerTrigger;
 
 export function StepDrawerContent() {
-  const { currentStep, debouncedUpdateStep } = useContainerContext();
-  const [dragLayers, setDragLayers] = useState(currentStep?.layers ?? []);
+  const { currentStep } = useContainerContext();
+
+  if (!currentStep) {
+    return <div className="bg-white w-[400px] border-l" />;
+  }
+
+  return <StepDrawerContentInner currentStep={currentStep} />;
+}
+
+function StepDrawerContentInner({
+  currentStep,
+}: {
+  currentStep: StepWithLocation;
+}) {
+  const [dragLayers, setDragLayers] = useState(currentStep.layers);
+  const { debouncedUpdateStep } = useContainerContext();
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -51,10 +66,6 @@ export function StepDrawerContent() {
       },
     })
   );
-
-  if (!currentStep) {
-    return <div className="bg-white w-[400px] border-l" />;
-  }
 
   const reorderLayers = async (e: DragEndEvent) => {
     if (!e.over) return;
