@@ -23,6 +23,7 @@ import { ChevronsLeftIcon, GripVerticalIcon, PlusIcon } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
+  AccordionHeader,
   AccordionItem,
   AccordionTrigger,
 } from "@mapform/ui/components/accordion";
@@ -109,24 +110,24 @@ function StepDrawerContentInner({
 
       <Accordion defaultValue={["item-1", "item-2"]} type="multiple">
         <AccordionItem value="item-1">
-          <AccordionTrigger>General</AccordionTrigger>
+          <AccordionHeader>
+            <AccordionTrigger>General</AccordionTrigger>
+          </AccordionHeader>
           <AccordionContent>
             <GeneralForm currentStep={currentStep} />
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value="item-2">
-          <AccordionTrigger>
-            <span className="flex-1 text-left">Data layers</span>
+          <AccordionHeader>
+            <AccordionTrigger>
+              <span className="flex-1 text-left">Data layers</span>
+            </AccordionTrigger>
             <NewLayerDrawerRoot>
-              <NewLayerDrawerTrigger
-                onClick={(e) => {
-                  e.stopPropagation();
-                }}
-              >
+              <NewLayerDrawerTrigger>
                 <span
                   className={cn(
                     buttonVariants({ variant: "ghost", size: "icon-xs" }),
-                    "text-muted-foreground hover:bg-stone-200"
+                    "mr-2 text-muted-foreground hover:bg-stone-200"
                   )}
                 >
                   <PlusIcon className="size-4" />
@@ -134,7 +135,7 @@ function StepDrawerContentInner({
               </NewLayerDrawerTrigger>
               <NewLayerDrawerContent setDragLayers={setDragLayers} />
             </NewLayerDrawerRoot>
-          </AccordionTrigger>
+          </AccordionHeader>
           <AccordionContent>
             <DndContext
               collisionDetection={closestCenter}

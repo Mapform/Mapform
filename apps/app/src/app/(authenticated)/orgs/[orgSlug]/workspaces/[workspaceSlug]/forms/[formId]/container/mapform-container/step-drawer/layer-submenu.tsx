@@ -20,7 +20,7 @@ export function LayerSubmenu({ layerId, setDragLayers }: LayerSubmenuProps) {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
-          className="ml-auto hover:bg-stone-200 data-[state=open]:bg-stone-200"
+          className="ml-auto hover:bg-stone-200 data-[state=open]:bg-stone-200 -mr-1"
           size="icon-xs"
           variant="ghost"
         >
