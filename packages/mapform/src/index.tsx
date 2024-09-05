@@ -16,6 +16,8 @@ import { useMeasure } from "@mapform/lib/hooks/use-measure";
 import type { Points, ViewState } from "@mapform/map-utils/types";
 import { Blocknote } from "./block-note";
 import { Map, MapProvider, useMap, type MBMap } from "./map";
+import { Button } from "@mapform/ui/components/button";
+import { PenIcon } from "lucide-react";
 
 type ExtendedStep = Step & { latitude: number; longitude: number };
 
@@ -173,12 +175,21 @@ export function MapForm({
 
               <Data points={points} />
             </Map> */}
-          <Map
-            editable={editable}
-            initialViewState={initialViewState}
-            onLoad={onLoad}
-            points={points}
-          />
+          <div className="relative flex flex-1">
+            <Map
+              editable={editable}
+              initialViewState={initialViewState}
+              onLoad={onLoad}
+              points={points}
+            />
+            <Button
+              className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10"
+              size="sm"
+            >
+              <PenIcon className="w-3.5 h-3.5 mr-2 -ml-1" />
+              Edit
+            </Button>
+          </div>
         </CustomBlockContext.Provider>
       </form>
     </Form>
