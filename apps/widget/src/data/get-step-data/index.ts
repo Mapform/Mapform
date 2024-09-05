@@ -1,4 +1,4 @@
-"server only";
+"server-only";
 
 import { prisma } from "@mapform/db";
 import type { Points } from "@mapform/map-utils/types";

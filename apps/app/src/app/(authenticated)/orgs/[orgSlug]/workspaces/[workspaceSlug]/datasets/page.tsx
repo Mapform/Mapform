@@ -48,7 +48,7 @@ export default async function WorkspaceDatasets({
               key={dataset.id}
             >
               <Link
-                href={`/orgs/${params.orgSlug}/workspaces/${params.workspaceSlug}/forms/${dataset.id}`}
+                href={`/orgs/${params.orgSlug}/workspaces/${params.workspaceSlug}/datasets/${dataset.id}`}
               >
                 <div className="flex items-center gap-x-4 border-b border-gray-900/5 bg-stone-50 p-6">
                   {dataset.name}

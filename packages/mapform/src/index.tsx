@@ -193,15 +193,15 @@ export function MapForm({
 
               <Data points={points} />
             </Map> */}
-          {editable ? (
-            <div className="relative flex flex-1 overflow-hidden">
-              <Map
-                editable={editable}
-                initialViewState={initialViewState}
-                onLoad={onLoad}
-                points={points}
-              />
-              {/* Edit bar */}
+          <div className="relative flex flex-1 overflow-hidden">
+            <Map
+              editable={editable}
+              initialViewState={initialViewState}
+              onLoad={onLoad}
+              points={points}
+            />
+            {/* Edit bar */}
+            {editable ? (
               <div className="flex items-center bg-primary rounded-lg overflow-hidden px-2 py-0 absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10">
                 <Button
                   disabled={!hasMoved}
@@ -260,8 +260,8 @@ export function MapForm({
                   Save
                 </Button>
               </div>
-            </div>
-          ) : null}
+            ) : null}
+          </div>
         </CustomBlockContext.Provider>
       </form>
     </Form>
