@@ -1,7 +1,7 @@
 "use client";
 
 import "mapbox-gl/dist/mapbox-gl.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { Step } from "@mapform/db";
 import { Form, useForm, zodResolver } from "@mapform/ui/components/form";
 import type { z } from "zod";
@@ -14,10 +14,10 @@ import {
 } from "@mapform/blocknote";
 import { useMeasure } from "@mapform/lib/hooks/use-measure";
 import type { Points, ViewState } from "@mapform/map-utils/types";
+import { Button } from "@mapform/ui/components/button";
+import { Undo2Icon } from "lucide-react";
 import { Blocknote } from "./block-note";
 import { Map, MapProvider, useMap, type MBMap } from "./map";
-import { Button } from "@mapform/ui/components/button";
-import { PenIcon } from "lucide-react";
 
 type ExtendedStep = Step & { latitude: number; longitude: number };
 
@@ -48,6 +48,7 @@ export function MapForm({
   defaultFormValues,
   onDescriptionChange,
 }: MapFormProps) {
+  const { map } = useMap();
   const blocknoteStepSchema = getFormSchemaFromBlockNote(
     currentStep?.description?.content || []
   );
@@ -59,10 +60,25 @@ export function MapForm({
     string | null
   >(null);
   const { ref: drawerRef } = useMeasure<HTMLDivElement>();
+  const [hasMoved, setHasMoved] = useState(false);
 
   const onSubmit = (data: FormSchema) => {
     onStepSubmit?.(data);
   };
+
+  const handleOnMove = () => {
+    setHasMoved(true);
+  };
+
+  useEffect(() => {
+    if (map) {
+      map.on("move", handleOnMove);
+
+      return () => {
+        map.off("move", handleOnMove);
+      };
+    }
+  }, [map]);
 
   if (!currentStep) {
     return null;
@@ -176,20 +192,36 @@ export function MapForm({
               <Data points={points} />
             </Map> */}
           {editable ? (
-            <div className="relative flex flex-1">
+            <div className="relative flex flex-1 overflow-hidden">
               <Map
                 editable={editable}
                 initialViewState={initialViewState}
                 onLoad={onLoad}
                 points={points}
               />
-              <Button
-                className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10"
-                size="sm"
-              >
-                <PenIcon className="w-3.5 h-3.5 mr-2 -ml-1" />
-                Edit
-              </Button>
+              {/* Edit bar */}
+              <div className="flex items-center bg-primary rounded-lg overflow-hidden px-2 py-0 absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10">
+                <Button
+                  disabled={!hasMoved}
+                  onClick={() => {
+                    map?.setCenter([
+                      initialViewState.longitude,
+                      initialViewState.latitude,
+                    ]);
+                    map?.setZoom(initialViewState.zoom);
+                    map?.setPitch(initialViewState.pitch);
+                    map?.setBearing(initialViewState.bearing);
+
+                    setHasMoved(false);
+                  }}
+                  size="icon-sm"
+                >
+                  <Undo2Icon className="w-4 h-4" />
+                </Button>
+                <Button disabled={!hasMoved} size="sm">
+                  Save
+                </Button>
+              </div>
             </div>
           ) : null}
         </CustomBlockContext.Provider>
