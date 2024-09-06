@@ -47,6 +47,7 @@ export interface PlacesSearchResponse {
   };
 }
 
+// TODO: Rate limit this endpoint, it can get expensive
 export async function GET(request: Request) {
   const query = new URL(request.url).searchParams.get("query") ?? "";
 
@@ -64,9 +65,9 @@ export async function GET(request: Request) {
       throw new Error(`Response status: ${response.status}`);
     }
 
-    const data: PlacesSearchResponse = await response.json();
+    const json: PlacesSearchResponse = await response.json();
 
-    return NextResponse.json({ data });
+    return NextResponse.json({ data: json.data });
   } catch (e: unknown) {
     return NextResponse.json({ msg: "Failure" });
   }

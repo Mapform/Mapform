@@ -20,6 +20,7 @@ import { Button } from "@mapform/ui/components/button";
 import { Undo2Icon } from "lucide-react";
 import { Blocknote } from "./block-note";
 import { Map, MapProvider, useMap, type MBMap } from "./map";
+import { Search } from "./search";
 
 type ExtendedStep = Step & { latitude: number; longitude: number };
 
@@ -237,6 +238,12 @@ export function MapForm({
               onLoad={onLoad}
               points={points}
             />
+
+            {/* User search bar */}
+            <div className="absolute top-0 left-0 z-10">
+              <Search />
+            </div>
+
             {/* Edit bar */}
             {editable ? (
               <div className="flex items-center bg-primary rounded-lg overflow-hidden px-2 py-0 absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10">

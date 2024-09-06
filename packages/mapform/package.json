@@ -29,6 +29,7 @@
   "devDependencies": {
     "@mapform/eslint-config": "workspace:*",
     "@mapform/typescript-config": "workspace:*",
+    "@tanstack/react-query": "^5.29.0",
     "@types/eslint": "^8.56.5",
     "@types/geojson": "^7946.0.14",
     "@types/node": "^20.11.24",
