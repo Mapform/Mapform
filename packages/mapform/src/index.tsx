@@ -3,8 +3,10 @@
 import "mapbox-gl/dist/mapbox-gl.css";
 import { useEffect, useState } from "react";
 import type { Step } from "@mapform/db";
+import { usePrevious } from "@mapform/lib/use-previous";
 import { Form, useForm, zodResolver } from "@mapform/ui/components/form";
 import type { z } from "zod";
+import type { MapboxEvent } from "mapbox-gl";
 import { cn } from "@mapform/lib/classnames";
 import type { FormSchema } from "@mapform/lib/schemas/form-step-schema";
 import { CustomBlockContext } from "@mapform/blocknote";
@@ -24,7 +26,7 @@ type ExtendedStep = Step & { latitude: number; longitude: number };
 interface MapFormProps {
   editable?: boolean;
   mapboxAccessToken: string;
-  currentStep?: ExtendedStep;
+  currentStep: ExtendedStep;
   defaultFormValues?: Record<string, string>;
   contentViewType?: "full" | "partial" | "closed";
   onPrev?: () => void;
@@ -52,7 +54,7 @@ export function MapForm({
 }: MapFormProps) {
   const { map } = useMap();
   const blocknoteStepSchema = getFormSchemaFromBlockNote(
-    currentStep?.description?.content || []
+    currentStep.description?.content || []
   );
   const form = useForm<z.infer<typeof blocknoteStepSchema>>({
     resolver: zodResolver(blocknoteStepSchema),
@@ -62,34 +64,6 @@ export function MapForm({
     string | null
   >(null);
   const { ref: drawerRef } = useMeasure<HTMLDivElement>();
-  const [hasMoved, setHasMoved] = useState(false);
-
-  const onSubmit = (data: FormSchema) => {
-    onStepSubmit?.(data);
-  };
-
-  const handleOnMove = () => {
-    setHasMoved(true);
-  };
-
-  useEffect(() => {
-    if (map) {
-      map.on("move", handleOnMove);
-
-      return () => {
-        map.off("move", handleOnMove);
-      };
-    }
-  }, [map]);
-
-  if (!currentStep) {
-    return null;
-  }
-
-  const pinBlocks = currentStep.description?.content.filter((c) => {
-    return c.type === "pin";
-  });
-
   const initialViewState = {
     longitude: currentStep.longitude,
     latitude: currentStep.latitude,
@@ -103,6 +77,69 @@ export function MapForm({
       right: 0,
     },
   };
+  const [movedCoords, setMovedCoords] = useState<{
+    lat: number;
+    lng: number;
+    zoom: number;
+    pitch: number;
+    bearing: number;
+  }>({
+    lat: currentStep.latitude,
+    lng: currentStep.longitude,
+    zoom: currentStep.zoom,
+    pitch: currentStep.pitch,
+    bearing: currentStep.bearing,
+  });
+
+  const prevCurrentStep = usePrevious(currentStep);
+
+  const onSubmit = (data: FormSchema) => {
+    onStepSubmit?.(data);
+  };
+
+  const handleOnMove = (e: MapboxEvent) => {
+    setMovedCoords({
+      lat: e.target.getCenter().lat,
+      lng: e.target.getCenter().lng,
+      zoom: e.target.getZoom(),
+      pitch: e.target.getPitch(),
+      bearing: e.target.getBearing(),
+    });
+  };
+
+  useEffect(() => {
+    if (map) {
+      map.on("moveend", handleOnMove);
+
+      return () => {
+        map.off("moveend", handleOnMove);
+      };
+    }
+  }, [map, currentStep, prevCurrentStep]);
+
+  // Update movedCoords when the step changes
+  useEffect(() => {
+    setMovedCoords({
+      lat: currentStep.latitude,
+      lng: currentStep.longitude,
+      zoom: currentStep.zoom,
+      pitch: currentStep.pitch,
+      bearing: currentStep.bearing,
+    });
+  }, [currentStep]);
+
+  const pinBlocks = currentStep.description?.content.filter((c) => {
+    return c.type === "pin";
+  });
+
+  const roundLocation = (num: number) => Math.round(num * 1000000) / 1000000;
+
+  const hasMoved =
+    roundLocation(movedCoords.lat) !== roundLocation(currentStep.latitude) ||
+    roundLocation(movedCoords.lng) !== roundLocation(currentStep.longitude) ||
+    movedCoords.zoom !== currentStep.zoom ||
+    movedCoords.pitch !== currentStep.pitch ||
+    movedCoords.bearing !== currentStep.bearing;
 
   return (
     <Form {...form}>
@@ -213,8 +250,6 @@ export function MapForm({
                     map?.setZoom(initialViewState.zoom);
                     map?.setPitch(initialViewState.pitch);
                     map?.setBearing(initialViewState.bearing);
-
-                    setHasMoved(false);
                   }}
                   size="icon-sm"
                 >
@@ -235,8 +270,7 @@ export function MapForm({
                       pitch !== undefined &&
                       bearing !== undefined
                     ) {
-                      setHasMoved(false);
-                      const result = await onLocationSave({
+                      await onLocationSave({
                         latitude: center.lat,
                         longitude: center.lng,
                         zoom,
@@ -249,10 +283,6 @@ export function MapForm({
                           right: 0,
                         },
                       });
-
-                      if (!result.success) {
-                        setHasMoved(true);
-                      }
                     }
                   }}
                   size="sm"

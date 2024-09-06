@@ -27,6 +27,10 @@ function MapFormContainer() {
     debouncedUpdateStep,
   } = useContainerContext();
 
+  if (!currentStep) {
+    return null;
+  }
+
   return (
     <div className="p-4 flex-1 flex justify-center overflow-hidden">
       <div className="flex flex-col flex-1">
@@ -35,12 +39,12 @@ function MapFormContainer() {
           {/* Edit controls */}
           <div className="flex gap-1">
             <StepDrawerRoot
-              key={currentStep?.id}
+              key={currentStep.id}
               onOpenChange={(isOpen) => {
-                if (!isOpen && currentEditableStep?.id === currentStep?.id)
+                if (!isOpen && currentEditableStep?.id === currentStep.id)
                   setQueryParamFor("e");
               }}
-              open={currentEditableStep?.id === currentStep?.id}
+              open={currentEditableStep?.id === currentStep.id}
             >
               <StepDrawerTrigger asChild>
                 <Button
@@ -68,10 +72,6 @@ function MapFormContainer() {
             onDescriptionChange={async (content: {
               content: CustomBlock[];
             }) => {
-              if (!currentStep) {
-                return;
-              }
-
               await debouncedUpdateStep({
                 stepId: currentStep.id,
                 data: {
@@ -94,10 +94,6 @@ function MapFormContainer() {
               return success?.url || null;
             }}
             onLocationSave={async (location) => {
-              if (!currentStep) {
-                return { success: false };
-              }
-
               await updateStepWithLocation({
                 stepId: currentStep.id,
                 data: {
@@ -115,10 +111,6 @@ function MapFormContainer() {
               return { success: true };
             }}
             onTitleChange={async (content: string) => {
-              if (!currentStep) {
-                return;
-              }
-
               await debouncedUpdateStep({
                 stepId: currentStep.id,
                 data: {
