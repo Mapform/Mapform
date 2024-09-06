@@ -2,23 +2,24 @@
 
 import { cn } from "@mapform/lib/classnames";
 import { Button } from "@mapform/ui/components/button";
+import { ArrowUpRightIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 interface TabsProps {
   name?: string;
   nameSections: { name: string; href?: string }[];
-  tabs: { name: string; href: string }[];
+  tabs?: { name: string; href: string; isExternal?: boolean }[];
   children: React.ReactNode;
   action?: React.ReactNode;
 }
 
-export function Tabs({ nameSections, tabs, action, children }: TabsProps) {
+export function Tabs({ nameSections, tabs = [], action, children }: TabsProps) {
   const pathname = usePathname();
 
   return (
     <div className="flex flex-col flex-1 overflow-hidden">
-      <div className="flex items-center justify-between relative py-2 pl-4 pr-2 border-b">
+      <div className="flex items-center justify-between relative py-2 pl-4 pr-2 border-b h-[50px]">
         <div className="flex items-center">
           <h3 className="flex items-center text-base font-semibold leading-6 text-stone-900">
             {/* {name} */}
@@ -48,6 +49,9 @@ export function Tabs({ nameSections, tabs, action, children }: TabsProps) {
                   variant="ghost"
                 >
                   {tab.name}
+                  {tab.isExternal ? (
+                    <ArrowUpRightIcon className="w-4 h-4 ml-0.5 -mr-1" />
+                  ) : null}
                 </Button>
               </Link>
             ))}

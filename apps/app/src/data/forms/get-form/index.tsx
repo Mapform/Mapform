@@ -24,6 +24,7 @@ export async function getForm({ formId }: { formId: string }) {
       isRoot: true,
       isClosed: true,
       isDirty: true,
+      datasetId: true,
       workspace: {
         select: {
           name: true,

@@ -10,17 +10,6 @@ export default async function Layout({
   children: React.ReactNode;
   actions: React.ReactNode;
 }) {
-  const tabs = [
-    {
-      name: "Create",
-      href: `/orgs/${params.orgSlug}/workspaces/${params.workspaceSlug}/forms/${params.formId}`,
-    },
-    {
-      name: "Submissions",
-      href: `/orgs/${params.orgSlug}/workspaces/${params.workspaceSlug}/forms/${params.formId}/submissions`,
-    },
-  ];
-
   const form = await getForm({
     formId: params.formId,
   });
@@ -28,6 +17,18 @@ export default async function Layout({
   if (!form) {
     return null;
   }
+
+  const tabs = [
+    {
+      name: "Create",
+      href: `/orgs/${params.orgSlug}/workspaces/${params.workspaceSlug}/forms/${params.formId}`,
+    },
+    {
+      name: "Submissions",
+      href: `/orgs/${params.orgSlug}/workspaces/${params.workspaceSlug}/datasets/${form.datasetId}`,
+      isExternal: true,
+    },
+  ];
 
   return (
     <Tabs

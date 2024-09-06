@@ -21,6 +21,11 @@ export const getDataset = authAction
         },
       },
       include: {
+        workspace: {
+          select: {
+            name: true,
+          },
+        },
         columns: true,
         rows: {
           include: {
