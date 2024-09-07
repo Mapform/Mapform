@@ -239,14 +239,10 @@ export function MapForm({
               points={points}
             />
 
-            {/* User search bar */}
-            <div className="absolute top-0 left-0 z-10">
-              <Search />
-            </div>
-
             {/* Edit bar */}
             {editable ? (
-              <div className="flex items-center bg-primary rounded-lg overflow-hidden px-2 py-0 absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10">
+              <div className="flex items-center bg-primary rounded-lg px-2 py-0 absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10">
+                <Search />
                 <Button
                   disabled={!hasMoved}
                   onClick={() => {

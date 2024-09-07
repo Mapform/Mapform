@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import type { PlacesSearchResponse } from "@mapform/map-utils/types";
 
 const options = {
   method: "GET",
@@ -7,45 +8,6 @@ const options = {
     Authorization: process.env.FOURSQUARE_API_KEY!,
   },
 };
-
-export interface PlacesSearchResponse {
-  data: {
-    results: {
-      fsq_id: string;
-      name: string;
-      location: {
-        address: string;
-        country: string;
-        cross_street: string;
-        formatted_address: string;
-        locality: string;
-        postcode: string;
-        region: string;
-      };
-      geocodes: {
-        main: {
-          latitude: number;
-          longitude: number;
-        };
-        roof: {
-          latitude: number;
-          longitude: number;
-        };
-      };
-      distance: number;
-      categories: {
-        id: number;
-        name: string;
-        short_name: string;
-        plural_name: string;
-        icon: {
-          prefix: string;
-          suffix: string;
-        };
-      }[];
-    }[];
-  };
-}
 
 // TODO: Rate limit this endpoint, it can get expensive
 export async function GET(request: Request) {
@@ -65,9 +27,9 @@ export async function GET(request: Request) {
       throw new Error(`Response status: ${response.status}`);
     }
 
-    const json: PlacesSearchResponse = await response.json();
+    const data: PlacesSearchResponse = await response.json();
 
-    return NextResponse.json({ data: json.data });
+    return NextResponse.json({ data });
   } catch (e: unknown) {
     return NextResponse.json({ msg: "Failure" });
   }

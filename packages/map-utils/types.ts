@@ -20,3 +20,42 @@ export type ViewState = {
   pitch: number;
   padding: PaddingOptions;
 };
+
+export interface PlacesSearchResponse {
+  data: {
+    results: {
+      fsq_id: string;
+      name: string;
+      location: {
+        address: string;
+        country: string;
+        cross_street: string;
+        formatted_address: string;
+        locality: string;
+        postcode: string;
+        region: string;
+      };
+      geocodes: {
+        main: {
+          latitude: number;
+          longitude: number;
+        };
+        roof: {
+          latitude: number;
+          longitude: number;
+        };
+      };
+      distance: number;
+      categories: {
+        id: number;
+        name: string;
+        short_name: string;
+        plural_name: string;
+        icon: {
+          prefix: string;
+          suffix: string;
+        };
+      }[];
+    }[];
+  };
+}
