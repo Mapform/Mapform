@@ -20,7 +20,7 @@ import {
 } from "@mapform/ui/components/select";
 import { toast } from "@mapform/ui/components/toaster";
 import { useAction } from "next-safe-action/hooks";
-import { useDebounce } from "@mapform/lib/use-debounce";
+import { useDebounce } from "@mapform/lib/hooks/use-debounce";
 import type { StepWithLocation } from "@mapform/db/extentsions/steps";
 import { useCallback, useEffect } from "react";
 import {

@@ -1,4 +1,4 @@
-import { useDebounce } from "@mapform/lib/use-debounce";
+import { useDebounce } from "@mapform/lib/hooks/use-debounce";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { type StepWithLocation } from "@mapform/db/extentsions/steps";
 import { useMap, type MBMap } from "@mapform/mapform";

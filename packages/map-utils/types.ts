@@ -22,40 +22,35 @@ export type ViewState = {
 };
 
 export interface PlacesSearchResponse {
-  data: {
-    results: {
-      fsq_id: string;
-      name: string;
-      location: {
-        address: string;
-        country: string;
-        cross_street: string;
-        formatted_address: string;
-        locality: string;
-        postcode: string;
-        region: string;
+  type: string;
+  features: {
+    type: string;
+    properties: {
+      place_id: string;
+      name?: string;
+      country: string;
+      country_code: string;
+      region: string;
+      state: string;
+      city: string;
+      lon: number;
+      lat: number;
+      result_type: string;
+      formatted: string;
+      address_line1: string;
+      address_line2: string;
+      category: string;
+      rank: {
+        importance: number;
+        confidence: number;
+        confidence_city_level: number;
+        match_type: string;
       };
-      geocodes: {
-        main: {
-          latitude: number;
-          longitude: number;
-        };
-        roof: {
-          latitude: number;
-          longitude: number;
-        };
+      geometry: {
+        type: "Point" | unknown;
+        coordinates: [number, number] | unknown;
       };
-      distance: number;
-      categories: {
-        id: number;
-        name: string;
-        short_name: string;
-        plural_name: string;
-        icon: {
-          prefix: string;
-          suffix: string;
-        };
-      }[];
-    }[];
-  };
+      bbox: [number, number, number, number];
+    };
+  }[];
 }

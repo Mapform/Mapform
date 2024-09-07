@@ -35,6 +35,9 @@ importers:
       '@dnd-kit/utilities':
         specifier: ^3.2.2
         version: 3.2.2(react@18.2.0)
+      '@geoapify/geocoder-autocomplete':
+        specifier: ^2.0.1
+        version: 2.0.1
       '@headlessui/react':
         specifier: ^1.7.18
         version: 1.7.18(react-dom@18.2.0)(react@18.2.0)
@@ -1148,6 +1151,10 @@ packages:
 
   /@floating-ui/utils@0.2.1:
     resolution: {integrity: sha512-9TANp6GPoMtYzQdt54kfAyMmz1+osLlXdg2ENroU7zzrtflTLrrC/lgrIfaSe+Wu0b89GKccT7vxXA0MoAIO+Q==}
+    dev: false
+
+  /@geoapify/geocoder-autocomplete@2.0.1:
+    resolution: {integrity: sha512-uylT+V33dcYsCdTfmzx6kH6wgQLaGWeGYY4S1ko54W6wTYfua2VfMV6rOvaxqYg3J8WFCtWoUozWG8Xm3p3h+w==}
     dev: false
 
   /@headlessui/react@1.7.18(react-dom@18.2.0)(react@18.2.0):

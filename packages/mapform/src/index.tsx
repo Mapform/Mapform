@@ -3,7 +3,6 @@
 import "mapbox-gl/dist/mapbox-gl.css";
 import { useEffect, useState } from "react";
 import type { Step } from "@mapform/db";
-import { usePrevious } from "@mapform/lib/use-previous";
 import { Form, useForm, zodResolver } from "@mapform/ui/components/form";
 import type { z } from "zod";
 import type { MapboxEvent } from "mapbox-gl";
@@ -16,11 +15,9 @@ import {
 } from "@mapform/blocknote";
 import { useMeasure } from "@mapform/lib/hooks/use-measure";
 import type { Points, ViewState } from "@mapform/map-utils/types";
-import { Button } from "@mapform/ui/components/button";
-import { Undo2Icon } from "lucide-react";
 import { Blocknote } from "./block-note";
 import { Map, MapProvider, useMap, type MBMap } from "./map";
-import { Search } from "./search";
+import { EditBar } from "./edit-bar";
 
 type ExtendedStep = Step & { latitude: number; longitude: number };
 
@@ -92,8 +89,6 @@ export function MapForm({
     bearing: currentStep.bearing,
   });
 
-  const prevCurrentStep = usePrevious(currentStep);
-
   const onSubmit = (data: FormSchema) => {
     onStepSubmit?.(data);
   };
@@ -116,7 +111,7 @@ export function MapForm({
         map.off("moveend", handleOnMove);
       };
     }
-  }, [map, currentStep, prevCurrentStep]);
+  }, [map, currentStep]);
 
   // Update movedCoords when the step changes
   useEffect(() => {
@@ -241,58 +236,11 @@ export function MapForm({
 
             {/* Edit bar */}
             {editable ? (
-              <div className="flex items-center bg-primary rounded-lg px-2 py-0 absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10">
-                <Search />
-                <Button
-                  disabled={!hasMoved}
-                  onClick={() => {
-                    map?.setCenter([
-                      initialViewState.longitude,
-                      initialViewState.latitude,
-                    ]);
-                    map?.setZoom(initialViewState.zoom);
-                    map?.setPitch(initialViewState.pitch);
-                    map?.setBearing(initialViewState.bearing);
-                  }}
-                  size="icon-sm"
-                >
-                  <Undo2Icon className="w-4 h-4" />
-                </Button>
-                <Button
-                  disabled={!hasMoved}
-                  onClick={async () => {
-                    const center = map?.getCenter();
-                    const zoom = map?.getZoom();
-                    const pitch = map?.getPitch();
-                    const bearing = map?.getBearing();
-
-                    if (
-                      onLocationSave &&
-                      center !== undefined &&
-                      zoom !== undefined &&
-                      pitch !== undefined &&
-                      bearing !== undefined
-                    ) {
-                      await onLocationSave({
-                        latitude: center.lat,
-                        longitude: center.lng,
-                        zoom,
-                        pitch,
-                        bearing,
-                        padding: {
-                          top: 0,
-                          bottom: 0,
-                          left: 0,
-                          right: 0,
-                        },
-                      });
-                    }
-                  }}
-                  size="sm"
-                >
-                  Save
-                </Button>
-              </div>
+              <EditBar
+                hasMoved={hasMoved}
+                initialViewState={initialViewState}
+                onLocationSave={onLocationSave}
+              />
             ) : null}
           </div>
         </CustomBlockContext.Provider>
