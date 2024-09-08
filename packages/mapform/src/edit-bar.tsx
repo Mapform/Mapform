@@ -7,7 +7,7 @@ import {
   QueryClientProvider,
   useQuery,
 } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   CommandEmpty,
   CommandShortcut,
@@ -68,7 +68,7 @@ function EditBarInner({
         open={openSearch}
         shouldFilter={false}
       >
-        <CommandSearch />
+        <CommandSearch setOpenSearch={setOpenSearch} />
       </CommandDialog>
 
       <Button
@@ -124,14 +124,57 @@ function EditBarInner({
   );
 }
 
-function CommandSearch() {
+function CommandSearch({
+  setOpenSearch,
+}: {
+  setOpenSearch: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
+  const { map } = useMap();
   const [query, setQuery] = useState("");
   const debouncedQuery = useDebounce(query, 500);
-  const { isPending, isError, data, error } = useQuery({
+  const { data } = useQuery({
     queryKey: ["search", debouncedQuery],
     queryFn: () => fetchPlaces(debouncedQuery),
     placeholderData: (prev) => prev,
   });
+
+  useEffect(() => {
+    const down = (key: string, center: [number, number], e: KeyboardEvent) => {
+      if (e.key === key.toString() && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault();
+        e.stopPropagation();
+        setOpenSearch(false);
+        map?.setCenter(center);
+      }
+    };
+
+    data?.features.forEach((feature, i) => {
+      if (i < 9) {
+        const key = i.toString();
+        document.addEventListener(
+          "keydown",
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- Safe
+          down.bind(null, key, [feature.properties.lon, feature.properties.lat])
+        );
+      }
+    });
+
+    return () => {
+      data?.features.forEach((feature, i) => {
+        if (i < 9) {
+          const key = i.toString();
+          document.removeEventListener(
+            "keydown",
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- Safe
+            down.bind(null, key, [
+              feature.properties.lon,
+              feature.properties.lat,
+            ])
+          );
+        }
+      });
+    };
+  }, [data?.features, map, setOpenSearch]);
 
   return (
     <>
@@ -147,7 +190,16 @@ function CommandSearch() {
         <CommandEmpty>No results found.</CommandEmpty>
         <CommandGroup>
           {data?.features.map((feature, i) => (
-            <CommandItem key={feature.properties.place_id}>
+            <CommandItem
+              key={feature.properties.place_id}
+              onSelect={() => {
+                setOpenSearch(false);
+                map?.setCenter([
+                  feature.properties.lon,
+                  feature.properties.lat,
+                ]);
+              }}
+            >
               <span className="truncate pr-2">
                 <span className="font-medium">
                   {feature.properties.name ?? feature.properties.address_line1}
@@ -156,7 +208,7 @@ function CommandSearch() {
                   {feature.properties.address_line2}
                 </span>
               </span>
-              <CommandShortcut>⌘{i + 1}</CommandShortcut>
+              <CommandShortcut>⌘{i}</CommandShortcut>
             </CommandItem>
           ))}
         </CommandGroup>
