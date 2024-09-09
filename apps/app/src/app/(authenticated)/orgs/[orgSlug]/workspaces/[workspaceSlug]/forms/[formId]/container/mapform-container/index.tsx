@@ -4,8 +4,7 @@ import dynamic from "next/dynamic";
 import { MapForm } from "@mapform/mapform";
 import { toast } from "@mapform/ui/components/toaster";
 import type { CustomBlock } from "@mapform/blocknote";
-import { Button } from "@mapform/ui/components/button";
-import { EllipsisIcon } from "lucide-react";
+import { SettingsIcon } from "lucide-react";
 import { uploadImage } from "~/data/images";
 import { updateStepWithLocation } from "~/data/steps/update-location";
 import { env } from "~/env.mjs";
@@ -16,6 +15,7 @@ import {
   StepDrawerContent,
 } from "./step-drawer";
 import { PagePicker } from "./page-picker";
+import { PageBarButton } from "./page-bar-button";
 
 function MapFormContainer() {
   const {
@@ -33,9 +33,9 @@ function MapFormContainer() {
 
   return (
     <div className="p-4 flex-1 flex justify-center overflow-hidden">
-      <div className="flex flex-col flex-1">
-        <div className="flex justify-between mb-4">
-          <div className="flex">
+      <div className="flex flex-col flex-1 overflow-hidden">
+        <div className="flex justify-between mb-4 overflow-hidden">
+          <div className="flex overflow-x-auto no-scrollbar">
             <PagePicker />
           </div>
           {/* Edit controls */}
@@ -49,16 +49,15 @@ function MapFormContainer() {
               open={currentEditableStep?.id === currentStep.id}
             >
               <StepDrawerTrigger asChild>
-                <Button
-                  className="data-[state=open]:bg-accent"
+                <PageBarButton
+                  Icon={SettingsIcon}
+                  isActive={currentEditableStep?.id === currentStep.id}
                   onClick={() => {
                     setQueryParamFor("e", currentStep);
                   }}
-                  size="icon-sm"
-                  variant="ghost"
                 >
-                  <EllipsisIcon className="h-5 w-5" />
-                </Button>
+                  Page Settings
+                </PageBarButton>
               </StepDrawerTrigger>
               <StepDrawerContent />
             </StepDrawerRoot>

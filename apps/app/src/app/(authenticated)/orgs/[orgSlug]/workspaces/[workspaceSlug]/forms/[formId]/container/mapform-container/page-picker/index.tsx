@@ -33,9 +33,9 @@ import {
 import { createStep } from "~/data/steps/create";
 import { updateForm } from "~/data/forms/update";
 import { DragItem, DragHandle } from "~/components/draggable";
+import { PageBarButton } from "../page-bar-button";
 import { useContainerContext } from "../../context";
 import { PageItemSubmenu } from "./page-item-submenu";
-import { cn } from "@mapform/lib/classnames";
 
 export function PagePicker() {
   const {
@@ -111,40 +111,26 @@ export function PagePicker() {
             return (
               <DragItem id={stepId} key={stepId}>
                 <DragHandle id={stepId}>
-                  <button
-                    className={cn(
-                      "flex-1 truncate text-center group hover:text-primary",
-                      {
-                        "text-muted-foreground": stepId !== currentStep?.id,
-                        "font-medium": stepId === currentStep?.id,
-                      }
-                    )}
+                  <PageBarButton
+                    Icon={PanelLeftIcon}
+                    isActive={stepId === currentStep?.id}
+                    isSubtle
                     onClick={() => {
                       setQueryParamFor("s", step);
                     }}
-                    type="button"
                   >
-                    <PanelLeftIcon className="h-6 w-6 flex-shrink-0 mx-auto" />
-                    <span
-                      className={cn(
-                        "truncate text-xs px-1.5 py-0.5 rounded-md group-hover:bg-muted transition",
-                        {
-                          "!bg-primary text-white": stepId === currentStep?.id,
-                        }
-                      )}
-                    >
-                      {step.title || "Untitled"}
-                    </span>
-                  </button>
+                    {step.title || "Untitled"}
+                  </PageBarButton>
                 </DragHandle>
               </DragItem>
             );
           })}
         </SortableContext>
       </DndContext>
-      <button
-        className="flex-1 truncate text-center"
-        disabled={createStepStatus === "executing"}
+      <PageBarButton
+        Icon={SquarePlusIcon}
+        isDisabled={createStepStatus === "executing"}
+        isLoading={createStepStatus === "executing"}
         onClick={() => {
           const loc = map?.getCenter();
           const zoom = map?.getZoom();
@@ -170,112 +156,9 @@ export function PagePicker() {
             },
           });
         }}
-        type="button"
       >
-        {createStepStatus === "executing" ? (
-          <div className="flex h-6 w-6 justify-center items-center mx-auto">
-            <Spinner variant="dark" />
-          </div>
-        ) : (
-          <SquarePlusIcon className="h-6 w-6 flex-shrink-0 mx-auto" />
-        )}
-        <span className="truncate text-xs font-medium">Add Page</span>
-      </button>
+        Add Page
+      </PageBarButton>
     </div>
-  );
-
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button className="max-w-40" size="sm">
-          <ChevronDown className="h-4 w-4 mr-1 flex-shrink-0" />
-          <span className="truncate">
-            {currentStep?.title || "Untitled Page"}
-          </span>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-72">
-        <DropdownMenuLabel>Pages</DropdownMenuLabel>
-        <DndContext
-          collisionDetection={closestCenter}
-          onDragEnd={reorderSteps}
-          sensors={sensors}
-        >
-          <SortableContext
-            items={dragSteps}
-            strategy={verticalListSortingStrategy}
-          >
-            {dragSteps.map((stepId) => {
-              const step = formWithSteps.steps.find((s) => s.id === stepId);
-
-              if (!step) return null;
-
-              return (
-                <DragItem id={stepId} key={stepId}>
-                  <DropdownMenuItem highlight={stepId === currentStep?.id}>
-                    <DragHandle id={stepId}>
-                      <div className="mr-2 flex items-center justify-center flex-shrink-0 cursor-move">
-                        <GripVerticalIcon className="h-4 w-4 flex-shrink-0" />
-                      </div>
-                    </DragHandle>
-                    <button
-                      className="flex-1 truncate text-left"
-                      onClick={() => {
-                        setQueryParamFor("s", step);
-                      }}
-                      type="button"
-                    >
-                      <span className="truncate">
-                        {step.title || "Untitled Page"}
-                      </span>
-                    </button>
-                    <PageItemSubmenu pageId={stepId} />
-                  </DropdownMenuItem>
-                </DragItem>
-              );
-            })}
-          </SortableContext>
-        </DndContext>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem
-          className="font-medium cursor-pointer"
-          disabled={createStepStatus === "executing"}
-          onClick={() => {
-            const loc = map?.getCenter();
-            const zoom = map?.getZoom();
-            const pitch = map?.getPitch();
-            const bearing = map?.getBearing();
-
-            if (
-              !loc ||
-              zoom === undefined ||
-              pitch === undefined ||
-              bearing === undefined
-            )
-              return;
-
-            executeCreateStep({
-              formId: formWithSteps.id,
-              location: {
-                latitude: loc.lat,
-                longitude: loc.lng,
-                zoom,
-                pitch,
-                bearing,
-              },
-            });
-          }}
-        >
-          <div className="h-4 w-4 flex items-center justify-center mr-2">
-            {createStepStatus === "executing" ? (
-              <Spinner size="xs" variant="dark" />
-            ) : (
-              <PlusIcon className="h-4 w-4 flex-shrink-0" />
-            )}
-          </div>
-          Create new page
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
   );
 }
