@@ -35,7 +35,9 @@ function MapFormContainer() {
     <div className="p-4 flex-1 flex justify-center overflow-hidden">
       <div className="flex flex-col flex-1">
         <div className="flex justify-between mb-4">
-          <div className="flex">{/* Empty for now */}</div>
+          <div className="flex">
+            <PagePicker />
+          </div>
           {/* Edit controls */}
           <div className="flex gap-1">
             <StepDrawerRoot
@@ -60,7 +62,6 @@ function MapFormContainer() {
               </StepDrawerTrigger>
               <StepDrawerContent />
             </StepDrawerRoot>
-            <PagePicker />
           </div>
         </div>
 

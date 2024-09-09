@@ -131,7 +131,7 @@ function CommandSearch({
 }) {
   const { map } = useMap();
   const [query, setQuery] = useState("");
-  const debouncedQuery = useDebounce(query, 500);
+  const debouncedQuery = useDebounce(query, 250);
   const { data } = useQuery({
     queryKey: ["search", debouncedQuery],
     queryFn: () => fetchPlaces(debouncedQuery),

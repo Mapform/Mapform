@@ -112,7 +112,10 @@ export function ContainerProvider({
   // });
 
   // const points = data?.data?.points.filter(notEmpty) || [];
-  const debouncedUpdateStep = useDebounce(updateStepMutation, 500);
+
+  // TODO: Debounced update is not working
+  // const debouncedUpdateStep = useDebounce(updateStepMutation, 500);
+  const debouncedUpdateStep = updateStepMutation;
 
   useEffect(() => {
     if (formWithSteps.steps[0] && !s) {

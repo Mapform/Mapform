@@ -1,4 +1,10 @@
-import { ChevronDown, GripVerticalIcon, PlusIcon } from "lucide-react";
+import {
+  ChevronDown,
+  GripVerticalIcon,
+  PanelLeftIcon,
+  PlusIcon,
+  SquarePlusIcon,
+} from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,6 +26,7 @@ import {
 import type { DragEndEvent } from "@dnd-kit/core";
 import {
   arrayMove,
+  horizontalListSortingStrategy,
   SortableContext,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
@@ -28,6 +35,7 @@ import { updateForm } from "~/data/forms/update";
 import { DragItem, DragHandle } from "~/components/draggable";
 import { useContainerContext } from "../../context";
 import { PageItemSubmenu } from "./page-item-submenu";
+import { cn } from "@mapform/lib/classnames";
 
 export function PagePicker() {
   const {
@@ -83,6 +91,98 @@ export function PagePicker() {
       });
     }
   };
+
+  return (
+    <div className="flex gap-4">
+      <DndContext
+        collisionDetection={closestCenter}
+        onDragEnd={reorderSteps}
+        sensors={sensors}
+      >
+        <SortableContext
+          items={dragSteps}
+          strategy={horizontalListSortingStrategy}
+        >
+          {dragSteps.map((stepId) => {
+            const step = formWithSteps.steps.find((s) => s.id === stepId);
+
+            if (!step) return null;
+
+            return (
+              <DragItem id={stepId} key={stepId}>
+                <DragHandle id={stepId}>
+                  <button
+                    className={cn(
+                      "flex-1 truncate text-center group hover:text-primary",
+                      {
+                        "text-muted-foreground": stepId !== currentStep?.id,
+                        "font-medium": stepId === currentStep?.id,
+                      }
+                    )}
+                    onClick={() => {
+                      setQueryParamFor("s", step);
+                    }}
+                    type="button"
+                  >
+                    <PanelLeftIcon className="h-6 w-6 flex-shrink-0 mx-auto" />
+                    <span
+                      className={cn(
+                        "truncate text-xs px-1.5 py-0.5 rounded-md group-hover:bg-muted transition",
+                        {
+                          "!bg-primary text-white": stepId === currentStep?.id,
+                        }
+                      )}
+                    >
+                      {step.title || "Untitled"}
+                    </span>
+                  </button>
+                </DragHandle>
+              </DragItem>
+            );
+          })}
+        </SortableContext>
+      </DndContext>
+      <button
+        className="flex-1 truncate text-center"
+        disabled={createStepStatus === "executing"}
+        onClick={() => {
+          const loc = map?.getCenter();
+          const zoom = map?.getZoom();
+          const pitch = map?.getPitch();
+          const bearing = map?.getBearing();
+
+          if (
+            !loc ||
+            zoom === undefined ||
+            pitch === undefined ||
+            bearing === undefined
+          )
+            return;
+
+          executeCreateStep({
+            formId: formWithSteps.id,
+            location: {
+              latitude: loc.lat,
+              longitude: loc.lng,
+              zoom,
+              pitch,
+              bearing,
+            },
+          });
+        }}
+        type="button"
+      >
+        {createStepStatus === "executing" ? (
+          <div className="flex h-6 w-6 justify-center items-center mx-auto">
+            <Spinner variant="dark" />
+          </div>
+        ) : (
+          <SquarePlusIcon className="h-6 w-6 flex-shrink-0 mx-auto" />
+        )}
+        <span className="truncate text-xs font-medium">Add Page</span>
+      </button>
+    </div>
+  );
 
   return (
     <DropdownMenu>
