@@ -102,7 +102,28 @@ export function Map({
         bearing: initialViewState.bearing,
         maxZoom: 20,
         logoPosition: "bottom-right",
+        fitBoundsOptions: {
+          padding: { top: 10, bottom: 25, left: 800, right: 5 },
+        },
       });
+
+      m.showPadding = true;
+
+      m.setPadding({
+        top: 0,
+        bottom: 0,
+        left: 800,
+        right: 0,
+      });
+
+      // setTimeout(() => {
+      //   m.easeTo({
+      //     padding: {
+      //       left: 700,
+      //     },
+      //     duration: 1000, // In ms. This matches the CSS transition duration property.
+      //   });
+      // }, 1000);
 
       // Add zoom controls
       m.addControl(new mapboxgl.NavigationControl(), "top-right");

@@ -4,7 +4,11 @@ import dynamic from "next/dynamic";
 import { MapForm } from "@mapform/mapform";
 import { toast } from "@mapform/ui/components/toaster";
 import type { CustomBlock } from "@mapform/blocknote";
-import { SettingsIcon } from "lucide-react";
+import {
+  Settings2Icon,
+  SettingsIcon,
+  SlidersHorizontalIcon,
+} from "lucide-react";
 import { uploadImage } from "~/data/images";
 import { updateStepWithLocation } from "~/data/steps/update-location";
 import { env } from "~/env.mjs";
@@ -50,13 +54,13 @@ function MapFormContainer() {
             >
               <StepDrawerTrigger asChild>
                 <PageBarButton
-                  Icon={SettingsIcon}
+                  Icon={Settings2Icon}
                   isActive={currentEditableStep?.id === currentStep.id}
                   onClick={() => {
                     setQueryParamFor("e", currentStep);
                   }}
                 >
-                  Page Settings
+                  Edit Page
                 </PageBarButton>
               </StepDrawerTrigger>
               <StepDrawerContent />

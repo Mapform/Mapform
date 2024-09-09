@@ -98,7 +98,7 @@ function StepDrawerContentInner({
   return (
     <DrawerContent>
       <DrawerHeader className="flex justify-between items-center py-2">
-        <h2 className="text-base font-medium">Edit Step</h2>
+        <h2 className="text-base font-medium">Edit Page</h2>
         <div className="-mr-2">
           <DrawerTrigger asChild>
             <Button size="icon-sm" variant="ghost">

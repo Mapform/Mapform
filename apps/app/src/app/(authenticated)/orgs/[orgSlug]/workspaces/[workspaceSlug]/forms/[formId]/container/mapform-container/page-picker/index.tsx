@@ -1,20 +1,4 @@
-import {
-  ChevronDown,
-  GripVerticalIcon,
-  PanelLeftIcon,
-  PlusIcon,
-  SquarePlusIcon,
-} from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@mapform/ui/components/dropdown-menu";
-import { Button } from "@mapform/ui/components/button";
-import { Spinner } from "@mapform/ui/components/spinner";
+import { PanelLeftIcon, SquarePlusIcon } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import {
   DndContext,
@@ -28,14 +12,12 @@ import {
   arrayMove,
   horizontalListSortingStrategy,
   SortableContext,
-  verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { createStep } from "~/data/steps/create";
 import { updateForm } from "~/data/forms/update";
 import { DragItem, DragHandle } from "~/components/draggable";
 import { PageBarButton } from "../page-bar-button";
 import { useContainerContext } from "../../context";
-import { PageItemSubmenu } from "./page-item-submenu";
 
 export function PagePicker() {
   const {
