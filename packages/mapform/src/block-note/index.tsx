@@ -13,6 +13,8 @@ import "@blocknote/mantine/style.css";
 import { BlockNoteView } from "@blocknote/mantine";
 import { TextIcon, ChevronLeftIcon, ImageIcon, MapPinIcon } from "lucide-react";
 import { Button } from "@mapform/ui/components/button";
+import { cn } from "@mapform/lib/classnames";
+import type { ContentViewType } from "@mapform/db";
 import { schema, type CustomBlock } from "@mapform/blocknote";
 import "./style.css";
 import { AutoSizeTextArea } from "./autosize-text-area";
@@ -25,6 +27,7 @@ interface BlocknoteProps {
     content: CustomBlock[];
   };
   defaultFormValues?: Record<string, string>;
+  contentViewType: ContentViewType;
   onNext?: () => void;
   onPrev?: () => void;
   onTitleChange?: (content: string) => void;
@@ -37,6 +40,7 @@ export function Blocknote({
   editable,
   description,
   onTitleChange,
+  contentViewType,
   onDescriptionChange,
 }: BlocknoteProps) {
   const [uncontrolledTitle, setUncontrolledTitle] = useState<string>(
@@ -46,7 +50,7 @@ export function Blocknote({
   const editor = useCreateBlockNote({
     initialContent: description?.content,
     placeholders: {
-      default: "Write something, or press '/' for commands...",
+      default: "Write, or press '/' for commands...",
     },
     schema,
   });
@@ -89,7 +93,11 @@ export function Blocknote({
 
   // Renders the editor instance using a React component.
   return (
-    <div className="h-full flex flex-col prose mx-auto">
+    <div
+      className={cn("h-full flex flex-col prose mx-auto", {
+        "max-h-[300px]": contentViewType === "MAP",
+      })}
+    >
       <div className="flex-1 flex flex-col overflow-y-auto">
         {/* Content */}
         <div className="overflow-y-auto p-4 pb-0">

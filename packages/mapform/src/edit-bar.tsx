@@ -54,7 +54,7 @@ function EditBarInner({
   const [openSearch, setOpenSearch] = useState(false);
 
   return (
-    <div className="flex items-center bg-primary rounded-lg px-2 py-0 absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10">
+    <div>
       <Button
         onClick={() => {
           setOpenSearch(true);

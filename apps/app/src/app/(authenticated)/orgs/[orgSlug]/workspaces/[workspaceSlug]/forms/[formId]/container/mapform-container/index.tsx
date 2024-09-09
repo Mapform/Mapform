@@ -68,7 +68,7 @@ function MapFormContainer() {
           </div>
         </div>
 
-        <div className="flex-1 flex pl-8">
+        <div className="flex-1 flex">
           <MapForm
             currentStep={currentStep}
             editable

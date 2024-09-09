@@ -153,27 +153,36 @@ export function MapForm({
         >
           <div
             className={cn(
-              "flex-shrink-0 backdrop-blur-md bg-background z-10 transition-[width,transform]",
+              "absolute bg-background z-10 transition w-[360px]",
               currentStep.contentViewType === "TEXT"
-                ? "w-full"
+                ? "h-full w-full z-10"
                 : currentStep.contentViewType === "SPLIT"
-                  ? "w-[320px] lg:w-[400px]"
-                  : "w-0 overflow-hidden"
+                  ? "h-full p-2 m-0"
+                  : "h-initial rounded-lg shadow-lg p-0 m-2"
             )}
             ref={drawerRef}
           >
-            <Blocknote
-              defaultFormValues={defaultFormValues}
-              description={currentStep.description ?? undefined}
-              // Need key to force re-render, otherwise Blocknote state doesn't
-              // change when changing steps
-              editable={editable}
-              key={currentStep.id}
-              onDescriptionChange={onDescriptionChange}
-              onPrev={onPrev}
-              onTitleChange={onTitleChange}
-              title={currentStep.title}
-            />
+            <div
+              className={cn("h-full", {
+                "pl-9":
+                  (editable && currentStep.contentViewType === "SPLIT") ||
+                  currentStep.contentViewType === "MAP",
+              })}
+            >
+              <Blocknote
+                contentViewType={currentStep.contentViewType}
+                defaultFormValues={defaultFormValues}
+                description={currentStep.description ?? undefined}
+                // Need key to force re-render, otherwise Blocknote state doesn't
+                // change when changing steps
+                editable={editable}
+                key={currentStep.id}
+                onDescriptionChange={onDescriptionChange}
+                onPrev={onPrev}
+                onTitleChange={onTitleChange}
+                title={currentStep.title}
+              />
+            </div>
           </div>
           {/* <Map
               onMove={(event) => {
@@ -226,23 +235,35 @@ export function MapForm({
 
               <Data points={points} />
             </Map> */}
-          <div className="relative flex flex-1 overflow-hidden">
-            <Map
-              editable={editable}
-              initialViewState={initialViewState}
-              onLoad={onLoad}
-              points={points}
-            />
-
-            {/* Edit bar */}
-            {editable ? (
-              <EditBar
-                hasMoved={hasMoved}
+          {currentStep.contentViewType !== "TEXT" ? (
+            <div className="relative flex flex-1 overflow-hidden">
+              <Map
+                editable={editable}
                 initialViewState={initialViewState}
-                onLocationSave={onLocationSave}
+                onLoad={onLoad}
+                points={points}
               />
-            ) : null}
-          </div>
+
+              {/* Edit bar */}
+              {editable ? (
+                <div
+                  className="flex items-center bg-primary rounded-lg px-2 py-0 absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10"
+                  style={{
+                    left:
+                      currentStep.contentViewType === "SPLIT"
+                        ? "calc(50% + 180px)"
+                        : "50%",
+                  }}
+                >
+                  <EditBar
+                    hasMoved={hasMoved}
+                    initialViewState={initialViewState}
+                    onLocationSave={onLocationSave}
+                  />
+                </div>
+              ) : null}
+            </div>
+          ) : null}
         </CustomBlockContext.Provider>
       </form>
     </Form>
