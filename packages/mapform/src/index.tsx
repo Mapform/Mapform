@@ -154,9 +154,9 @@ export function MapForm({
           <div
             className={cn(
               "flex-shrink-0 backdrop-blur-md bg-background z-10 transition-[width,transform]",
-              currentStep.contentViewType === "FULL"
+              currentStep.contentViewType === "TEXT"
                 ? "w-full"
-                : currentStep.contentViewType === "PARTIAL"
+                : currentStep.contentViewType === "SPLIT"
                   ? "w-[320px] lg:w-[400px]"
                   : "w-0 overflow-hidden"
             )}

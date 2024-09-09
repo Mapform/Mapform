@@ -101,6 +101,7 @@ export function Map({
         pitch: initialViewState.pitch,
         bearing: initialViewState.bearing,
         maxZoom: 20,
+        logoPosition: "bottom-right",
       });
 
       // Add zoom controls

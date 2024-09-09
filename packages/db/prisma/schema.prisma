@@ -166,9 +166,14 @@ model Form {
 }
 
 enum ContentViewType {
-    FULL
-    PARTIAL
-    HIDDEN
+    TEXT
+    MAP
+    SPLIT
+}
+
+enum PanelSide {
+    LEFT
+    RIGHT
 }
 
 model Step {
@@ -183,7 +188,8 @@ model Step {
     form            Form?           @relation(name: "Steps", fields: [formId], references: [id], onDelete: Cascade)
     locationId      Int             @unique
     location        Location        @relation(fields: [locationId], references: [id], onDelete: Cascade)
-    contentViewType ContentViewType @default(PARTIAL)
+    contentViewType ContentViewType @default(SPLIT)
+    panelSide       PanelSide       @default(LEFT)
     layerOrder      String[]
 
     layers         Layer[]

@@ -10,7 +10,7 @@ export const updateStepSchema = z.object({
     zoom: z.number().optional(),
     bearing: z.number().optional(),
     pitch: z.number().optional(),
-    contentViewType: z.any().optional(),
+    contentViewType: z.enum(["TEXT", "MAP", "SPLIT"]).optional(),
     layerOrder: z.array(z.string()).optional(),
   }),
 });

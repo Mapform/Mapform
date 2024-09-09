@@ -104,14 +104,14 @@ export function GeneralForm({ currentStep }: GeneralFormProps) {
                       <SelectValue placeholder="Select a content view type" />
                     </SelectTrigger>
                     <SelectContent ref={field.ref}>
-                      <SelectItem className="capitalize" value="FULL">
-                        Full
+                      <SelectItem className="capitalize" value="SPLIT">
+                        Split View
                       </SelectItem>
-                      <SelectItem className="capitalize" value="PARTIAL">
-                        Partial
+                      <SelectItem className="capitalize" value="MAP">
+                        Map View
                       </SelectItem>
-                      <SelectItem className="capitalize" value="HIDDEN">
-                        Hidden
+                      <SelectItem className="capitalize" value="TEXT">
+                        Text View
                       </SelectItem>
                     </SelectContent>
                   </Select>
