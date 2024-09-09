@@ -155,18 +155,17 @@ export function MapForm({
             className={cn(
               "absolute bg-background z-10 transition w-[360px]",
               currentStep.contentViewType === "TEXT"
-                ? "h-full w-full z-10"
+                ? "h-full w-full p-2 pb-0 z-10"
                 : currentStep.contentViewType === "SPLIT"
-                  ? "h-full p-2 m-0"
+                  ? "h-full p-2 pb-0 m-0"
                   : "h-initial rounded-lg shadow-lg p-0 m-2"
             )}
             ref={drawerRef}
           >
             <div
               className={cn("h-full", {
-                "pl-9":
-                  (editable && currentStep.contentViewType === "SPLIT") ||
-                  currentStep.contentViewType === "MAP",
+                "pl-9": editable,
+                "pr-9": editable && currentStep.contentViewType === "TEXT",
               })}
             >
               <Blocknote
