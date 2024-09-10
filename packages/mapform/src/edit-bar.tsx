@@ -139,12 +139,25 @@ function CommandSearch({
   });
 
   useEffect(() => {
-    const down = (key: string, center: [number, number], e: KeyboardEvent) => {
+    const down = (
+      key: string,
+      bbox: [number, number, number, number],
+      e: KeyboardEvent
+    ) => {
       if (e.key === key.toString() && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
         e.stopPropagation();
         setOpenSearch(false);
-        map?.setCenter(center);
+        // map?.setCenter(center);
+        map?.fitBounds(
+          [
+            [bbox[0], bbox[1]],
+            [bbox[2], bbox[3]],
+          ],
+          {
+            duration: 0,
+          }
+        );
       }
     };
 
@@ -154,7 +167,7 @@ function CommandSearch({
         document.addEventListener(
           "keydown",
           // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- Safe
-          down.bind(null, key, [feature.properties.lon, feature.properties.lat])
+          down.bind(null, key, feature.bbox)
         );
       }
     });
@@ -166,10 +179,7 @@ function CommandSearch({
           document.removeEventListener(
             "keydown",
             // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- Safe
-            down.bind(null, key, [
-              feature.properties.lon,
-              feature.properties.lat,
-            ])
+            down.bind(null, key, feature.bbox)
           );
         }
       });
@@ -194,10 +204,16 @@ function CommandSearch({
               key={feature.properties.place_id}
               onSelect={() => {
                 setOpenSearch(false);
-                map?.setCenter([
-                  feature.properties.lon,
-                  feature.properties.lat,
-                ]);
+
+                map?.fitBounds(
+                  [
+                    [feature.bbox[0], feature.bbox[1]],
+                    [feature.bbox[2], feature.bbox[3]],
+                  ],
+                  {
+                    duration: 0,
+                  }
+                );
               }}
             >
               <span className="truncate pr-2">

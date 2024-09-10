@@ -50,7 +50,7 @@ export interface PlacesSearchResponse {
         type: "Point" | unknown;
         coordinates: [number, number] | unknown;
       };
-      bbox: [number, number, number, number];
     };
+    bbox: [number, number, number, number];
   }[];
 }

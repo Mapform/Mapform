@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { GeocoderAutocomplete } from "@geoapify/geocoder-autocomplete";
 import type { PlacesSearchResponse } from "@mapform/map-utils/types";
 
 // TODO: We may want to rate limit this, and / or cache the results

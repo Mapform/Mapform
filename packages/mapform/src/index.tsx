@@ -153,7 +153,7 @@ export function MapForm({
         >
           <div
             className={cn(
-              "absolute bg-background z-10 transition w-[360px]",
+              "group absolute bg-background z-10 w-[360px]",
               currentStep.contentViewType === "TEXT"
                 ? "h-full w-full p-2 pb-0 z-10"
                 : currentStep.contentViewType === "SPLIT"
@@ -164,8 +164,9 @@ export function MapForm({
           >
             <div
               className={cn("h-full", {
-                "pl-9": editable,
-                "pr-9": editable && currentStep.contentViewType === "TEXT",
+                // "pl-9": editable,
+                "px-9": editable && currentStep.contentViewType === "TEXT",
+                "pl-9": editable && currentStep.contentViewType !== "TEXT",
               })}
             >
               <Blocknote
