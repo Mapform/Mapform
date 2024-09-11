@@ -48,6 +48,10 @@ interface MapProps {
   editable?: boolean;
   onLoad?: () => void;
   initialViewState: ViewState;
+  marker?: {
+    latitude: number;
+    longitude: number;
+  };
 }
 
 /**
@@ -61,6 +65,7 @@ export function Map({
   editable = false,
   points = [],
   onLoad,
+  marker,
 }: MapProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const { map, setMap } = useMap();
@@ -162,6 +167,29 @@ export function Map({
       }
     }
   }, [map, geojson]);
+
+  /**
+   * Update marker
+   */
+  useEffect(() => {
+    if (map && marker) {
+      const el = document.createElement("div");
+      el.className = "marker";
+
+      new mapboxgl.Marker()
+        .setLngLat([marker.longitude, marker.latitude])
+        .addTo(map);
+      // new mapboxgl.Marker(el)
+      //   .setLngLat([marker.longitude, marker.latitude])
+      //   .addTo(map);
+    }
+
+    // Remove marker if marker is null
+    if (map && !marker) {
+      const el = document.querySelector(".marker");
+      el && el.remove();
+    }
+  }, [map, marker]);
 
   return (
     <div

@@ -88,6 +88,12 @@ export function MapForm({
     pitch: currentStep.pitch,
     bearing: currentStep.bearing,
   });
+  const [searchLocation, setSearchLocation] = useState<{
+    latitude: number;
+    longitude: number;
+    name: string;
+    address: string;
+  } | null>(null);
 
   const onSubmit = (data: FormSchema) => {
     onStepSubmit?.(data);
@@ -240,6 +246,14 @@ export function MapForm({
               <Map
                 editable={editable}
                 initialViewState={initialViewState}
+                marker={
+                  searchLocation
+                    ? {
+                        latitude: searchLocation.latitude,
+                        longitude: searchLocation.longitude,
+                      }
+                    : undefined
+                }
                 onLoad={onLoad}
                 points={points}
               />
@@ -259,6 +273,7 @@ export function MapForm({
                     hasMoved={hasMoved}
                     initialViewState={initialViewState}
                     onLocationSave={onLocationSave}
+                    setSearchLocation={setSearchLocation}
                   />
                 </div>
               ) : null}

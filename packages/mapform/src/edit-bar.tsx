@@ -22,6 +22,14 @@ import { useMap } from "./map";
 interface EditBarProps {
   hasMoved: boolean;
   initialViewState: ViewState;
+  setSearchLocation: React.Dispatch<
+    React.SetStateAction<{
+      latitude: number;
+      longitude: number;
+      name: string;
+      address: string;
+    } | null>
+  >;
   onLocationSave?: (location: ViewState) => Promise<{ success: boolean }>;
 }
 
@@ -33,6 +41,7 @@ export function EditBar({
   hasMoved,
   initialViewState,
   onLocationSave,
+  setSearchLocation,
 }: EditBarProps) {
   return (
     <QueryClientProvider client={queryClient}>
@@ -40,6 +49,7 @@ export function EditBar({
         hasMoved={hasMoved}
         initialViewState={initialViewState}
         onLocationSave={onLocationSave}
+        setSearchLocation={setSearchLocation}
       />
     </QueryClientProvider>
   );
@@ -49,6 +59,7 @@ function EditBarInner({
   hasMoved,
   initialViewState,
   onLocationSave,
+  setSearchLocation,
 }: EditBarInnerProps) {
   const { map } = useMap();
   const [openSearch, setOpenSearch] = useState(false);
@@ -68,7 +79,10 @@ function EditBarInner({
         open={openSearch}
         shouldFilter={false}
       >
-        <CommandSearch setOpenSearch={setOpenSearch} />
+        <CommandSearch
+          setOpenSearch={setOpenSearch}
+          setSearchLocation={setSearchLocation}
+        />
       </CommandDialog>
 
       <Button
@@ -126,8 +140,17 @@ function EditBarInner({
 
 function CommandSearch({
   setOpenSearch,
+  setSearchLocation,
 }: {
   setOpenSearch: React.Dispatch<React.SetStateAction<boolean>>;
+  setSearchLocation: React.Dispatch<
+    React.SetStateAction<{
+      latitude: number;
+      longitude: number;
+      name: string;
+      address: string;
+    } | null>
+  >;
 }) {
   const { map } = useMap();
   const [query, setQuery] = useState("");
@@ -141,14 +164,14 @@ function CommandSearch({
   useEffect(() => {
     const down = (
       key: string,
-      bbox: [number, number, number, number],
+      feature: PlacesSearchResponse["features"][number],
       e: KeyboardEvent
     ) => {
       if (e.key === key.toString() && (e.metaKey || e.ctrlKey)) {
+        const bbox = feature.bbox;
         e.preventDefault();
         e.stopPropagation();
         setOpenSearch(false);
-        // map?.setCenter(center);
         map?.fitBounds(
           [
             [bbox[0], bbox[1]],
@@ -158,6 +181,13 @@ function CommandSearch({
             duration: 0,
           }
         );
+
+        setSearchLocation({
+          latitude: feature.properties.lat,
+          longitude: feature.properties.lon,
+          name: feature.properties.name ?? feature.properties.address_line1,
+          address: feature.properties.address_line2,
+        });
       }
     };
 
@@ -167,7 +197,7 @@ function CommandSearch({
         document.addEventListener(
           "keydown",
           // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- Safe
-          down.bind(null, key, feature.bbox)
+          down.bind(null, key, feature)
         );
       }
     });
@@ -179,12 +209,12 @@ function CommandSearch({
           document.removeEventListener(
             "keydown",
             // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- Safe
-            down.bind(null, key, feature.bbox)
+            down.bind(null, key, feature)
           );
         }
       });
     };
-  }, [data?.features, map, setOpenSearch]);
+  }, [data?.features, map, setOpenSearch, setSearchLocation]);
 
   return (
     <>
@@ -214,6 +244,14 @@ function CommandSearch({
                     duration: 0,
                   }
                 );
+
+                setSearchLocation({
+                  latitude: feature.properties.lat,
+                  longitude: feature.properties.lon,
+                  name:
+                    feature.properties.name ?? feature.properties.address_line1,
+                  address: feature.properties.address_line2,
+                });
               }}
             >
               <span className="truncate pr-2">
