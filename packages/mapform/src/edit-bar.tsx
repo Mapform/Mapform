@@ -27,7 +27,6 @@ interface EditBarProps {
       latitude: number;
       longitude: number;
       name: string;
-      address: string;
     } | null>
   >;
   onLocationSave?: (location: ViewState) => Promise<{ success: boolean }>;
@@ -148,7 +147,6 @@ function CommandSearch({
       latitude: number;
       longitude: number;
       name: string;
-      address: string;
     } | null>
   >;
 }) {
@@ -186,7 +184,6 @@ function CommandSearch({
           latitude: feature.properties.lat,
           longitude: feature.properties.lon,
           name: feature.properties.name ?? feature.properties.address_line1,
-          address: feature.properties.address_line2,
         });
       }
     };
@@ -250,7 +247,6 @@ function CommandSearch({
                   longitude: feature.properties.lon,
                   name:
                     feature.properties.name ?? feature.properties.address_line1,
-                  address: feature.properties.address_line2,
                 });
               }}
             >

@@ -18,6 +18,8 @@ import type { Points, ViewState } from "@mapform/map-utils/types";
 import { Blocknote } from "./block-note";
 import { Map, MapProvider, useMap, type MBMap } from "./map";
 import { EditBar } from "./edit-bar";
+import "./style.css";
+import { LocationEditor } from "./location-editor";
 
 type ExtendedStep = Step & { latitude: number; longitude: number };
 
@@ -92,7 +94,9 @@ export function MapForm({
     latitude: number;
     longitude: number;
     name: string;
-    address: string;
+    description?: {
+      content: CustomBlock[];
+    };
   } | null>(null);
 
   const onSubmit = (data: FormSchema) => {
@@ -177,11 +181,11 @@ export function MapForm({
             >
               <Blocknote
                 contentViewType={currentStep.contentViewType}
-                defaultFormValues={defaultFormValues}
                 description={currentStep.description ?? undefined}
                 // Need key to force re-render, otherwise Blocknote state doesn't
                 // change when changing steps
                 editable={editable}
+                isPage
                 key={currentStep.id}
                 onDescriptionChange={onDescriptionChange}
                 onPrev={onPrev}
@@ -190,6 +194,55 @@ export function MapForm({
               />
             </div>
           </div>
+
+          {/* MARKER EDITOR */}
+          {searchLocation ? (
+            <div
+              className={cn(
+                "group absolute bg-background z-10 w-[360px]",
+                currentStep.contentViewType === "TEXT"
+                  ? "h-full w-full p-2 pb-0 z-10"
+                  : currentStep.contentViewType === "SPLIT"
+                    ? "h-full p-2 pb-0 m-0"
+                    : "h-initial rounded-lg shadow-lg p-0 m-2"
+              )}
+              ref={drawerRef}
+            >
+              <div
+                className={cn("h-full", {
+                  // "pl-9": editable,
+                  "px-9": editable && currentStep.contentViewType === "TEXT",
+                  "pl-9": editable && currentStep.contentViewType !== "TEXT",
+                })}
+              >
+                <Blocknote
+                  contentViewType={currentStep.contentViewType}
+                  description={searchLocation.description ?? undefined}
+                  // Need key to force re-render, otherwise Blocknote state doesn't
+                  // change when changing steps
+                  editable={editable}
+                  key={currentStep.id}
+                  onDescriptionChange={(val) => {
+                    setSearchLocation((prev) => ({
+                      description: val,
+                      name: prev?.name ?? "",
+                      latitude: prev?.latitude ?? 0,
+                      longitude: prev?.longitude ?? 0,
+                    }));
+                  }}
+                  onTitleChange={(val) => {
+                    setSearchLocation((prev) => ({
+                      ...prev,
+                      name: val,
+                      latitude: prev?.latitude ?? 0,
+                      longitude: prev?.longitude ?? 0,
+                    }));
+                  }}
+                  title={searchLocation.name}
+                />
+              </div>
+            </div>
+          ) : null}
           {/* <Map
               onMove={(event) => {
                 setViewState((prev) => ({

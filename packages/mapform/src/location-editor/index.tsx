@@ -11,13 +11,13 @@ import {
 } from "@blocknote/react";
 import "@blocknote/mantine/style.css";
 import { BlockNoteView } from "@blocknote/mantine";
-import { TextIcon, ChevronLeftIcon, ImageIcon, MapPinIcon } from "lucide-react";
+import { ImageIcon } from "lucide-react";
 import { Button } from "@mapform/ui/components/button";
 import { cn } from "@mapform/lib/classnames";
 import type { ContentViewType } from "@mapform/db";
 import { schema, type CustomBlock } from "@mapform/blocknote";
-import { AutoSizeTextArea } from "../components/autosize-text-area";
 import { CustomSideMenu } from "../components/side-menu";
+import { AutoSizeTextArea } from "../components/autosize-text-area";
 
 interface BlocknoteProps {
   editable: boolean;
@@ -25,20 +25,16 @@ interface BlocknoteProps {
   description?: {
     content: CustomBlock[];
   };
-  isPage?: boolean;
   contentViewType: ContentViewType;
-  onPrev?: () => void;
   onTitleChange?: (content: string) => void;
   onDescriptionChange?: (content: { content: CustomBlock[] }) => void;
 }
 
-export function Blocknote({
+export function LocationEditor({
   title,
-  onPrev,
   editable,
   description,
   onTitleChange,
-  isPage = false,
   contentViewType,
   onDescriptionChange,
 }: BlocknoteProps) {
@@ -52,30 +48,6 @@ export function Blocknote({
       default: "Write, or press '/' for commands...",
     },
     schema,
-  });
-
-  const insertPin = (edtr: typeof schema.BlockNoteEditor) => ({
-    title: "Pin",
-    onItemClick: () => {
-      insertOrUpdateBlock(edtr, {
-        type: "pin",
-      });
-    },
-    aliases: ["location", "pins"],
-    group: "Inputs",
-    icon: <MapPinIcon />,
-  });
-
-  const insertTextInput = (edtr: typeof schema.BlockNoteEditor) => ({
-    title: "Text Input",
-    onItemClick: () => {
-      insertOrUpdateBlock(edtr, {
-        type: "textInput",
-      });
-    },
-    aliases: ["input", "short-text"],
-    group: "Inputs",
-    icon: <TextIcon />,
   });
 
   const insertImage = (edtr: typeof schema.BlockNoteEditor) => ({
@@ -99,7 +71,7 @@ export function Blocknote({
     >
       <div className="flex-1 flex flex-col overflow-y-auto">
         {/* Content */}
-        <div className="overflow-y-auto p-4">
+        <div className="overflow-y-auto p-4 pb-0">
           {/* Title */}
           {editable ? (
             <AutoSizeTextArea
@@ -141,10 +113,6 @@ export function Blocknote({
                 return filterSuggestionItems(
                   [
                     ...getDefaultReactSlashMenuItems(editor),
-                    // Only provide inputs for pages
-                    ...(isPage
-                      ? [insertTextInput(editor), insertPin(editor)]
-                      : []),
                     insertImage(editor),
                   ],
                   query
@@ -163,24 +131,11 @@ export function Blocknote({
           }}
         />
       </div>
-      {isPage ? (
-        <div className="mt-auto flex justify-between p-4 pt-0">
-          <div className="gap-2">
-            <Button
-              disabled={editable}
-              onClick={onPrev}
-              size="icon"
-              type="button"
-              variant="ghost"
-            >
-              <ChevronLeftIcon />
-            </Button>
-          </div>
-          <Button disabled={editable} type="submit">
-            Next
-          </Button>
-        </div>
-      ) : null}
+      <div className="mt-auto flex justify-between p-4">
+        {/* <Button disabled={editable} type="submit">
+          
+        </Button> */}
+      </div>
     </div>
   );
 }
