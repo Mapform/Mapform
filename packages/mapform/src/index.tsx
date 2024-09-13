@@ -1,7 +1,7 @@
 "use client";
 
 import "mapbox-gl/dist/mapbox-gl.css";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import type { Step } from "@mapform/db";
 import { Form, useForm, zodResolver } from "@mapform/ui/components/form";
 import type { z } from "zod";
@@ -36,12 +36,16 @@ interface MapFormProps {
   onImageUpload?: (file: File) => Promise<string | null>;
   onLocationSave?: (location: ViewState) => Promise<{ success: boolean }>;
   points?: Points;
+  editFields?: {
+    addLocationDropdown: React.ReactNode;
+  };
 }
 
 export function MapForm({
   editable = false,
   onPrev,
   onLoad,
+  editFields,
   currentStep,
   points = [],
   onStepSubmit,
@@ -181,6 +185,7 @@ export function MapForm({
             >
               <Blocknote
                 contentViewType={currentStep.contentViewType}
+                currentStep={currentStep}
                 description={currentStep.description ?? undefined}
                 // Need key to force re-render, otherwise Blocknote state doesn't
                 // change when changing steps
@@ -223,6 +228,7 @@ export function MapForm({
                   editable={editable}
                   key={searchLocation.id}
                   locationEditorProps={{
+                    addLocationDropdown: editFields?.addLocationDropdown,
                     onClose: () => {
                       setSearchLocation(null);
                     },

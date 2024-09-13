@@ -12,7 +12,8 @@
   },
   "include": [
     "src",
-    "global.d.ts"
+    "global.d.ts",
+    "../../apps/app/src/app/(authenticated)/orgs/[orgSlug]/workspaces/[workspaceSlug]/forms/[formId]/container/mapform-container/add-location-dropdown/quick-create-dialog.tsx"
   ],
   "exclude": [
     "node_modules",

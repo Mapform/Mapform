@@ -37,7 +37,7 @@ export const createDataset = authAction
       });
     });
 
-    await prisma.$transaction(async (tx) => {
+    const datasetResponse = await prisma.$transaction(async (tx) => {
       const datasetWithCols = await tx.dataset.create({
         data: {
           name,
@@ -145,6 +145,8 @@ export const createDataset = authAction
     });
 
     revalidatePath("/");
+
+    return datasetResponse;
   });
 
 function validateFieldTypes(array: Record<string, any>[]) {

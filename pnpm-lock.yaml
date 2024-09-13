@@ -87,8 +87,8 @@ importers:
         specifier: 5.0.0-beta.20
         version: 5.0.0-beta.20(next@14.2.5)(react@18.2.0)
       next-safe-action:
-        specifier: 7.1.4-experimental.1
-        version: 7.1.4-experimental.1(next@14.2.5)(react-dom@18.2.0)(react@18.2.0)(zod@3.23.8)
+        specifier: ^7.9.3
+        version: 7.9.3(next@14.2.5)(react-dom@18.2.0)(react@18.2.0)(zod@3.23.8)
       papaparse:
         specifier: ^5.4.1
         version: 5.4.1
@@ -6555,14 +6555,26 @@ packages:
       zod: 3.23.8
     dev: false
 
-  /next-safe-action@7.1.4-experimental.1(next@14.2.5)(react-dom@18.2.0)(react@18.2.0)(zod@3.23.8):
-    resolution: {integrity: sha512-6BihKPIJ/Wu7qgEGUKAUJfy5NTPO2eV1BJ/7WWpgMarHzm+6/OUkllwwndAw85YLy+khVmzHYkSCS+n0Ei7qMg==}
+  /next-safe-action@7.9.3(next@14.2.5)(react-dom@18.2.0)(react@18.2.0)(zod@3.23.8):
+    resolution: {integrity: sha512-2GH7/iRiM5R/y6sIQZsNHGeRr/iKQJsg8ejP63WhTS7fXS9KzxVbEKrWwLNNhL33V9cn0448cPSI/aiSK/PUbA==}
     engines: {node: '>=18.17'}
     peerDependencies:
+      '@sinclair/typebox': '>= 0.33.3'
       next: '>= 14.0.0'
       react: '>= 18.2.0'
       react-dom: '>= 18.2.0'
+      valibot: '>= 0.36.0'
+      yup: '>= 1.0.0'
       zod: '>= 3.0.0'
+    peerDependenciesMeta:
+      '@sinclair/typebox':
+        optional: true
+      valibot:
+        optional: true
+      yup:
+        optional: true
+      zod:
+        optional: true
     dependencies:
       next: 14.2.5(react-dom@18.2.0)(react@18.2.0)
       react: 18.2.0

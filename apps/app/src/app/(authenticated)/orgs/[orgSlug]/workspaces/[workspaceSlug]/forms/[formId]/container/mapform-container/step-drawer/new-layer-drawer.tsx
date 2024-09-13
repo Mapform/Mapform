@@ -39,7 +39,7 @@ import {
   createLayerSchema,
 } from "~/data/layers/create/schema";
 import { listAvailableDatasets } from "~/data/datasets/list-available";
-import { createLayerAction } from "~/data/layers/create";
+import { createLayer } from "~/data/layers/create";
 import { useContainerContext } from "../../context";
 
 export const NewLayerDrawerRoot = NestedDrawer;
@@ -64,7 +64,7 @@ export function NewLayerDrawerContent({
     queryKey: ["datasets", params.formId],
     queryFn: () => listAvailableDatasets({ formId: params.formId }),
   });
-  const { execute, status } = useAction(createLayerAction, {
+  const { execute, status } = useAction(createLayer, {
     onSuccess: ({ data: createResponse }) => {
       if (!createResponse) {
         return;

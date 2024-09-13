@@ -20,6 +20,7 @@ import {
 } from "./step-drawer";
 import { PagePicker } from "./page-picker";
 import { PageBarButton } from "./page-bar-button";
+import { AddLocationDropdown } from "./add-location-dropdown";
 
 function MapFormContainer() {
   const {
@@ -71,6 +72,14 @@ function MapFormContainer() {
         <div className="flex-1 flex">
           <MapForm
             currentStep={currentStep}
+            editFields={{
+              addLocationDropdown: (
+                <AddLocationDropdown
+                  formId={formWithSteps.id}
+                  stepId={currentStep.id}
+                />
+              ),
+            }}
             editable
             mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
             onDescriptionChange={async (content: {

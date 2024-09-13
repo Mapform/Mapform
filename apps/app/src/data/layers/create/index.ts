@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 import { authAction } from "~/lib/safe-action";
 import { createLayerSchema } from "./schema";
 
-export const createLayerAction = authAction
+export const createLayer = authAction
   .schema(createLayerSchema)
   .action(
     async ({
@@ -49,7 +49,7 @@ export const createLayerAction = authAction
         return newLayer;
       });
 
-      revalidatePath("/forms/");
+      revalidatePath("/");
 
       return layer;
     }

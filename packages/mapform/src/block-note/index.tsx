@@ -17,21 +17,7 @@ import {
   ImageIcon,
   MapPinIcon,
   XIcon,
-  ChevronRightIcon,
 } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuGroup,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-  DropdownMenuSub,
-  DropdownMenuSubTrigger,
-  DropdownMenuPortal,
-  DropdownMenuSubContent,
-} from "@mapform/ui/components/dropdown-menu";
 import { Button } from "@mapform/ui/components/button";
 import { cn } from "@mapform/lib/classnames";
 import type { ContentViewType } from "@mapform/db";
@@ -48,6 +34,7 @@ interface BlocknoteProps {
   isPage?: boolean;
   contentViewType: ContentViewType;
   locationEditorProps?: {
+    addLocationDropdown: React.ReactNode;
     onClose: () => void;
   };
   onPrev?: () => void;
@@ -218,46 +205,9 @@ export function Blocknote({
         </div>
       ) : null}
 
-      {!isPage && editable ? (
+      {!isPage && editable && locationEditorProps?.addLocationDropdown ? (
         <div className="p-4 ml-auto">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button type="button">
-                Add to
-                <ChevronRightIcon className="ml-2 size-4 -mr-1" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent side="right">
-              <DropdownMenuGroup>
-                <DropdownMenuItem className="font-semibold">
-                  + Quick create
-                </DropdownMenuItem>
-              </DropdownMenuGroup>
-              <DropdownMenuSeparator />
-              <DropdownMenuGroup>
-                <DropdownMenuLabel>Layers</DropdownMenuLabel>
-                <DropdownMenuSub>
-                  <DropdownMenuItem>+ Add to new data layer</DropdownMenuItem>
-                  <DropdownMenuSubTrigger>
-                    Add to existing data layer
-                  </DropdownMenuSubTrigger>
-                  <DropdownMenuPortal>
-                    <DropdownMenuSubContent>
-                      <DropdownMenuItem>Layer 1</DropdownMenuItem>
-                      <DropdownMenuItem>Layer 2</DropdownMenuItem>
-                      <DropdownMenuItem>Layer 3</DropdownMenuItem>
-                    </DropdownMenuSubContent>
-                  </DropdownMenuPortal>
-                </DropdownMenuSub>
-              </DropdownMenuGroup>
-              {/* <DropdownMenuLabel>Layers</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>Profile</DropdownMenuItem>
-              <DropdownMenuItem>Billing</DropdownMenuItem>
-              <DropdownMenuItem>Team</DropdownMenuItem>
-              <DropdownMenuItem>Subscription</DropdownMenuItem> */}
-            </DropdownMenuContent>
-          </DropdownMenu>
+          {locationEditorProps.addLocationDropdown}
         </div>
       ) : null}
     </div>
