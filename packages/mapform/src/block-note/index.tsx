@@ -17,7 +17,16 @@ import {
   ImageIcon,
   MapPinIcon,
   XIcon,
+  ChevronRightIcon,
 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@mapform/ui/components/dropdown-menu";
 import { Button } from "@mapform/ui/components/button";
 import { cn } from "@mapform/lib/classnames";
 import type { ContentViewType } from "@mapform/db";
@@ -201,6 +210,27 @@ export function Blocknote({
           <Button disabled={editable} type="submit">
             Next
           </Button>
+        </div>
+      ) : null}
+
+      {!isPage && editable ? (
+        <div className="p-4 ml-auto">
+          <DropdownMenu>
+            <DropdownMenuTrigger>
+              <Button type="button">
+                Add to
+                <ChevronRightIcon className="ml-2 size-4 -mr-1" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuLabel>Layers</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>Profile</DropdownMenuItem>
+              <DropdownMenuItem>Billing</DropdownMenuItem>
+              <DropdownMenuItem>Team</DropdownMenuItem>
+              <DropdownMenuItem>Subscription</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       ) : null}
     </div>
