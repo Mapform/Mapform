@@ -19,7 +19,6 @@ import { Blocknote } from "./block-note";
 import { Map, MapProvider, useMap, type MBMap } from "./map";
 import { EditBar } from "./edit-bar";
 import "./style.css";
-import { LocationEditor } from "./location-editor";
 
 type ExtendedStep = Step & { latitude: number; longitude: number };
 
@@ -222,6 +221,11 @@ export function MapForm({
                   // change when changing steps
                   editable={editable}
                   key={currentStep.id}
+                  locationEditorProps={{
+                    onClose: () => {
+                      setSearchLocation(null);
+                    },
+                  }}
                   onDescriptionChange={(val) => {
                     setSearchLocation((prev) => ({
                       description: val,

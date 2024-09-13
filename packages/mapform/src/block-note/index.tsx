@@ -11,7 +11,13 @@ import {
 } from "@blocknote/react";
 import "@blocknote/mantine/style.css";
 import { BlockNoteView } from "@blocknote/mantine";
-import { TextIcon, ChevronLeftIcon, ImageIcon, MapPinIcon } from "lucide-react";
+import {
+  TextIcon,
+  ChevronLeftIcon,
+  ImageIcon,
+  MapPinIcon,
+  XIcon,
+} from "lucide-react";
 import { Button } from "@mapform/ui/components/button";
 import { cn } from "@mapform/lib/classnames";
 import type { ContentViewType } from "@mapform/db";
@@ -27,6 +33,9 @@ interface BlocknoteProps {
   };
   isPage?: boolean;
   contentViewType: ContentViewType;
+  locationEditorProps?: {
+    onClose: () => void;
+  };
   onPrev?: () => void;
   onTitleChange?: (content: string) => void;
   onDescriptionChange?: (content: { content: CustomBlock[] }) => void;
@@ -41,6 +50,7 @@ export function Blocknote({
   isPage = false,
   contentViewType,
   onDescriptionChange,
+  locationEditorProps,
 }: BlocknoteProps) {
   const [uncontrolledTitle, setUncontrolledTitle] = useState<string>(
     title || ""
@@ -93,11 +103,23 @@ export function Blocknote({
   // Renders the editor instance using a React component.
   return (
     <div
-      className={cn("h-full flex flex-col prose mx-auto", {
+      className={cn("h-full flex flex-col prose mx-auto relative", {
         "max-h-[300px]": contentViewType === "MAP",
       })}
     >
       <div className="flex-1 flex flex-col overflow-y-auto">
+        {locationEditorProps ? (
+          <Button
+            className="absolute top-2 right-2"
+            onClick={locationEditorProps.onClose}
+            size="icon-sm"
+            type="button"
+            variant="ghost"
+          >
+            <XIcon className="size-4" />
+          </Button>
+        ) : null}
+
         {/* Content */}
         <div className="overflow-y-auto p-4">
           {/* Title */}

@@ -69,6 +69,7 @@ export function Map({
 }: MapProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const { map, setMap } = useMap();
+  const markerEl = useRef<mapboxgl.Marker | null>(null);
 
   const geojson: FeatureCollection = useMemo(
     () => ({
@@ -176,7 +177,7 @@ export function Map({
       const el = document.createElement("div");
       el.className = "marker";
 
-      new mapboxgl.Marker()
+      markerEl.current = new mapboxgl.Marker()
         .setLngLat([marker.longitude, marker.latitude])
         .addTo(map);
       // new mapboxgl.Marker(el)
@@ -186,8 +187,9 @@ export function Map({
 
     // Remove marker if marker is null
     if (map && !marker) {
-      const el = document.querySelector(".marker");
-      el && el.remove();
+      markerEl.current?.remove();
+      // const el = document.querySelector(".marker");
+      // el && el.remove();
     }
   }, [map, marker]);
 
