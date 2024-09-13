@@ -90,6 +90,7 @@ export function MapForm({
     bearing: currentStep.bearing,
   });
   const [searchLocation, setSearchLocation] = useState<{
+    id: string;
     latitude: number;
     longitude: number;
     name: string;
@@ -220,7 +221,7 @@ export function MapForm({
                   // Need key to force re-render, otherwise Blocknote state doesn't
                   // change when changing steps
                   editable={editable}
-                  key={currentStep.id}
+                  key={searchLocation.id}
                   locationEditorProps={{
                     onClose: () => {
                       setSearchLocation(null);
@@ -228,6 +229,7 @@ export function MapForm({
                   }}
                   onDescriptionChange={(val) => {
                     setSearchLocation((prev) => ({
+                      id: prev?.id ?? "",
                       description: val,
                       name: prev?.name ?? "",
                       latitude: prev?.latitude ?? 0,
@@ -238,6 +240,7 @@ export function MapForm({
                     setSearchLocation((prev) => ({
                       ...prev,
                       name: val,
+                      id: prev?.id ?? "",
                       latitude: prev?.latitude ?? 0,
                       longitude: prev?.longitude ?? 0,
                     }));

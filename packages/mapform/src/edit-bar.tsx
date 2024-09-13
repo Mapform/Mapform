@@ -24,6 +24,7 @@ interface EditBarProps {
   initialViewState: ViewState;
   setSearchLocation: React.Dispatch<
     React.SetStateAction<{
+      id: string;
       latitude: number;
       longitude: number;
       name: string;
@@ -144,6 +145,7 @@ function CommandSearch({
   setOpenSearch: React.Dispatch<React.SetStateAction<boolean>>;
   setSearchLocation: React.Dispatch<
     React.SetStateAction<{
+      id: string;
       latitude: number;
       longitude: number;
       name: string;
@@ -181,6 +183,7 @@ function CommandSearch({
         );
 
         setSearchLocation({
+          id: feature.properties.place_id,
           latitude: feature.properties.lat,
           longitude: feature.properties.lon,
           name: feature.properties.name ?? feature.properties.address_line1,
@@ -243,6 +246,7 @@ function CommandSearch({
                 );
 
                 setSearchLocation({
+                  id: feature.properties.place_id,
                   latitude: feature.properties.lat,
                   longitude: feature.properties.lon,
                   name:
