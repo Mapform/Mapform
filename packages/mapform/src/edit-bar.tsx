@@ -64,7 +64,7 @@ function EditBarInner({
   const [openSearch, setOpenSearch] = useState(false);
 
   return (
-    <div>
+    <>
       <Button
         onClick={() => {
           setOpenSearch(true);
@@ -133,7 +133,7 @@ function EditBarInner({
       >
         Save
       </Button>
-    </div>
+    </>
   );
 }
 
