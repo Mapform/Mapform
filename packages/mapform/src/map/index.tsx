@@ -173,7 +173,7 @@ export function Map({
    * Update marker
    */
   useEffect(() => {
-    if (map && marker) {
+    if (map && marker && !markerEl.current) {
       const el = document.createElement("div");
       el.className = "marker";
 
