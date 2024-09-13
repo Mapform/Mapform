@@ -173,23 +173,21 @@ export function Map({
    * Update marker
    */
   useEffect(() => {
-    if (map && marker && !markerEl.current) {
-      const el = document.createElement("div");
-      el.className = "marker";
-
+    const currentLngLat = markerEl.current?.getLngLat();
+    if (
+      map &&
+      marker &&
+      currentLngLat?.lat !== marker.latitude &&
+      currentLngLat?.lng !== marker.longitude
+    ) {
+      markerEl.current?.remove();
       markerEl.current = new mapboxgl.Marker()
         .setLngLat([marker.longitude, marker.latitude])
         .addTo(map);
-      // new mapboxgl.Marker(el)
-      //   .setLngLat([marker.longitude, marker.latitude])
-      //   .addTo(map);
     }
 
-    // Remove marker if marker is null
     if (map && !marker) {
       markerEl.current?.remove();
-      // const el = document.querySelector(".marker");
-      // el && el.remove();
     }
   }, [map, marker]);
 
