@@ -15,6 +15,8 @@ import {
 } from "@mapform/blocknote";
 import { useMeasure } from "@mapform/lib/hooks/use-measure";
 import type { Points, ViewState } from "@mapform/map-utils/types";
+import { Button } from "@mapform/ui/components/button";
+import { ChevronLeftIcon } from "lucide-react";
 import { Blocknote } from "./block-note";
 import { Map, MapProvider, useMap, type MBMap } from "./map";
 import { EditBar } from "./edit-bar";
@@ -37,7 +39,10 @@ interface MapFormProps {
   onLocationSave?: (location: ViewState) => Promise<{ success: boolean }>;
   points?: Points;
   editFields?: {
-    addLocationDropdown: React.ReactNode;
+    AddLocationDropdown: (input: {
+      stepId: string;
+      formId: string;
+    }) => JSX.Element;
   };
 }
 
@@ -151,6 +156,8 @@ export function MapForm({
     movedCoords.pitch !== currentStep.pitch ||
     movedCoords.bearing !== currentStep.bearing;
 
+  const AddLocationDropdown = editFields?.AddLocationDropdown;
+
   return (
     <Form {...form}>
       <form
@@ -196,7 +203,24 @@ export function MapForm({
                 onPrev={onPrev}
                 onTitleChange={onTitleChange}
                 title={currentStep.title}
-              />
+              >
+                <div className="mt-auto flex justify-between p-4 pt-0">
+                  <div className="gap-2">
+                    <Button
+                      disabled={editable}
+                      onClick={onPrev}
+                      size="icon"
+                      type="button"
+                      variant="ghost"
+                    >
+                      <ChevronLeftIcon />
+                    </Button>
+                  </div>
+                  <Button disabled={editable} type="submit">
+                    Next
+                  </Button>
+                </div>
+              </Blocknote>
             </div>
           </div>
 
@@ -222,13 +246,13 @@ export function MapForm({
               >
                 <Blocknote
                   contentViewType={currentStep.contentViewType}
+                  currentStep={currentStep}
                   description={searchLocation.description ?? undefined}
                   // Need key to force re-render, otherwise Blocknote state doesn't
                   // change when changing steps
                   editable={editable}
                   key={searchLocation.id}
                   locationEditorProps={{
-                    addLocationDropdown: editFields?.addLocationDropdown,
                     onClose: () => {
                       setSearchLocation(null);
                     },
@@ -252,7 +276,16 @@ export function MapForm({
                     }));
                   }}
                   title={searchLocation.name}
-                />
+                >
+                  {editable && AddLocationDropdown && currentStep.formId ? (
+                    <div className="p-4 ml-auto">
+                      <AddLocationDropdown
+                        formId={currentStep.formId}
+                        stepId={currentStep.id}
+                      />
+                    </div>
+                  ) : null}
+                </Blocknote>
               </div>
             </div>
           ) : null}

@@ -4,11 +4,7 @@ import dynamic from "next/dynamic";
 import { MapForm } from "@mapform/mapform";
 import { toast } from "@mapform/ui/components/toaster";
 import type { CustomBlock } from "@mapform/blocknote";
-import {
-  Settings2Icon,
-  SettingsIcon,
-  SlidersHorizontalIcon,
-} from "lucide-react";
+import { Settings2Icon } from "lucide-react";
 import { uploadImage } from "~/data/images";
 import { updateStepWithLocation } from "~/data/steps/update-location";
 import { env } from "~/env.mjs";
@@ -73,12 +69,7 @@ function MapFormContainer() {
           <MapForm
             currentStep={currentStep}
             editFields={{
-              addLocationDropdown: (
-                <AddLocationDropdown
-                  formId={formWithSteps.id}
-                  stepId={currentStep.id}
-                />
-              ),
+              AddLocationDropdown,
             }}
             editable
             mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}

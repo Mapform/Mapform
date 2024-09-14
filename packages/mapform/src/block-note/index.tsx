@@ -11,30 +11,27 @@ import {
 } from "@blocknote/react";
 import "@blocknote/mantine/style.css";
 import { BlockNoteView } from "@blocknote/mantine";
-import {
-  TextIcon,
-  ChevronLeftIcon,
-  ImageIcon,
-  MapPinIcon,
-  XIcon,
-} from "lucide-react";
+import { TextIcon, ImageIcon, MapPinIcon, XIcon } from "lucide-react";
 import { Button } from "@mapform/ui/components/button";
 import { cn } from "@mapform/lib/classnames";
-import type { ContentViewType } from "@mapform/db";
+import type { ContentViewType, Step } from "@mapform/db";
 import { schema, type CustomBlock } from "@mapform/blocknote";
 import { AutoSizeTextArea } from "../components/autosize-text-area";
 import { CustomSideMenu } from "../components/side-menu";
 
+type ExtendedStep = Step & { latitude: number; longitude: number };
+
 interface BlocknoteProps {
   editable: boolean;
   title?: string | null;
+  currentStep: ExtendedStep;
   description?: {
     content: CustomBlock[];
   };
   isPage?: boolean;
+  children?: React.ReactNode;
   contentViewType: ContentViewType;
   locationEditorProps?: {
-    addLocationDropdown: React.ReactNode;
     onClose: () => void;
   };
   onPrev?: () => void;
@@ -44,8 +41,8 @@ interface BlocknoteProps {
 
 export function Blocknote({
   title,
-  onPrev,
   editable,
+  children,
   description,
   onTitleChange,
   isPage = false,
@@ -186,30 +183,7 @@ export function Blocknote({
           }}
         />
       </div>
-      {isPage ? (
-        <div className="mt-auto flex justify-between p-4 pt-0">
-          <div className="gap-2">
-            <Button
-              disabled={editable}
-              onClick={onPrev}
-              size="icon"
-              type="button"
-              variant="ghost"
-            >
-              <ChevronLeftIcon />
-            </Button>
-          </div>
-          <Button disabled={editable} type="submit">
-            Next
-          </Button>
-        </div>
-      ) : null}
-
-      {!isPage && editable && locationEditorProps?.addLocationDropdown ? (
-        <div className="p-4 ml-auto">
-          {locationEditorProps.addLocationDropdown}
-        </div>
-      ) : null}
+      {children}
     </div>
   );
 }

@@ -44,6 +44,8 @@ export function QuickCreateContent({
       name: "",
       stepId,
       formId,
+      data: [],
+      type: "POINT",
     },
     resolver: zodResolver(quickCreateDataLayerSchema),
   });
@@ -67,6 +69,8 @@ export function QuickCreateContent({
   const onSubmit = (values: QuickCreateDataLayerSchema) => {
     execute(values);
   };
+
+  console.log(11111, form.formState.errors);
 
   return (
     <DialogContent>
