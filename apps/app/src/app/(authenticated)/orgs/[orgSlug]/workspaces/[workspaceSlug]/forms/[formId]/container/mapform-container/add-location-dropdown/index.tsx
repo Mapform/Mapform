@@ -30,6 +30,7 @@ export function AddLocationDropdown({
 }: AddLocationDropdownProps) {
   return (
     <QuickCreateDialog>
+      <QuickCreateContent formId={formId} stepId={stepId} />
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button type="button">
@@ -70,7 +71,6 @@ export function AddLocationDropdown({
               <DropdownMenuItem>Subscription</DropdownMenuItem> */}
         </DropdownMenuContent>
       </DropdownMenu>
-      <QuickCreateContent formId={formId} stepId={stepId} />
     </QuickCreateDialog>
   );
 }

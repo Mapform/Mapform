@@ -1,11 +1,11 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { prisma } from "@mapform/db";
 import { authAction } from "~/lib/safe-action";
 import { createLayer } from "~/data/layers/create";
 import { createDataset } from "~/data/datasets/create";
 import { quickCreateDataLayerSchema } from "./schema";
-import { revalidatePath } from "next/cache";
 
 export const quickCreateDataLayer = authAction
   .schema(quickCreateDataLayerSchema)
