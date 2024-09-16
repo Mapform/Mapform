@@ -41,6 +41,9 @@ importers:
       '@headlessui/react':
         specifier: ^1.7.18
         version: 1.7.18(react-dom@18.2.0)(react@18.2.0)
+      '@infra-blocks/zod-utils':
+        specifier: ^0.4.5
+        version: 0.4.5
       '@mapform/blocknote':
         specifier: workspace:*
         version: link:../../packages/blocknote
@@ -1197,6 +1200,13 @@ packages:
   /@humanwhocodes/object-schema@2.0.2:
     resolution: {integrity: sha512-6EwiSjwWYP7pTckG6I5eyFANjPhmPjUX9JRLUSfNPC7FX7zK9gyZAfUEaECL6ALTpGX5AjnBq3C9XmVWPitNpw==}
     dev: true
+
+  /@infra-blocks/zod-utils@0.4.5:
+    resolution: {integrity: sha512-s9SC7T+rPydr5g6KIIWfVhrsLFwREwWVB3M9ZEiOF9zCTlPvgmfckEwFtoGJkT6lnOduxgPOFxXGjv8wbcdbbQ==}
+    engines: {node: '>=18.0.0'}
+    dependencies:
+      zod: 3.23.8
+    dev: false
 
   /@isaacs/cliui@8.0.2:
     resolution: {integrity: sha512-O8jcjabXaleOG9DQ0+ARXWZBTfnP4WNAqzuiJK7ll44AmxGKv/J2M4TPjxjY3znBCfvBXFzucm1twdyFybFqEA==}

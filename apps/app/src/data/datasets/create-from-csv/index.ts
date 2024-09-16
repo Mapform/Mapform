@@ -7,6 +7,9 @@ import { revalidatePath } from "next/cache";
 import { authAction } from "~/lib/safe-action";
 import { createDatasetFromCSVSchema } from "./schema";
 
+/**
+ * TODO: This is not being used currently. Should ideally update it to work in conjunction with create-from-geojson
+ */
 export const createDatasetFromCSV = authAction
   .schema(createDatasetFromCSVSchema)
   .action(async ({ parsedInput: { name, workspaceId, data } }) => {
@@ -104,8 +107,8 @@ export const createDatasetFromCSV = authAction
        */
       const stringCells = cells.filter((cell) => cell.type === "STRING");
       const boolCells = cells.filter((cell) => cell.type === "BOOL");
-      const pointCells = cells
-        .filter((cell) => cell.type === "POINT")
+      const geometryCells = cells
+        .filter((cell) => cell.type === "GEOMETRY")
         .map(
           (cell) =>
             Prisma.sql`(${uuidv4()}, ${cell.id}, ST_SetSRID(ST_MakePoint(${cell.value.coordinates[0]}, ${cell.value.coordinates[1]}), 4326))`
@@ -133,11 +136,11 @@ export const createDatasetFromCSV = authAction
         }),
 
         /**
-         * Insert PointCells. Need to INSERT using raw SQL because Prisma does not support PostGIS
+         * Insert GeometryCells. Need to INSERT using raw SQL because Prisma does not support PostGIS
          */
         tx.$executeRaw`
-          INSERT INTO "PointCell" (id, cellvalueid, value)
-          VALUES ${Prisma.join(pointCells)};
+          INSERT INTO "GeometryCell" (id, cellvalueid, value)
+          VALUES ${Prisma.join(geometryCells)};
         `,
       ]);
 

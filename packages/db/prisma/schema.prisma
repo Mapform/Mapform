@@ -268,9 +268,9 @@ model CellValue {
     column   Column @relation("ColumnCellValues", fields: [columnId], references: [id])
     row      Row    @relation("RowCellValues", fields: [rowId], references: [id])
 
-    boolCell   BoolCell?
-    stringCell StringCell?
-    pointCell  PointCell?
+    boolCell     BoolCell?
+    stringCell   StringCell?
+    geometryCell GeometryCell?
 
     @@unique([rowId, columnId])
 }
@@ -289,7 +289,7 @@ model StringCell {
     cellValue   CellValue @relation(fields: [cellValueId], references: [id])
 }
 
-model PointCell {
+model GeometryCell {
     id          String                               @id @default(cuid())
     // This needs to be lowercase for Prisma executeRaw to work
     cellvalueid String                               @unique
@@ -302,7 +302,7 @@ model PointCell {
 enum ColumnType {
     STRING
     BOOL
-    POINT
+    GEOMETRY
 }
 
 model Layer {
@@ -324,7 +324,7 @@ model PointLayer {
     layerId String @unique
     layer   Layer  @relation(fields: [layerId], references: [id], onDelete: Cascade)
 
-    // Needed for identifying PointCells
+    // Needed for identifying GeometryCells
     pointColumnId String
     pointColumn   Column @relation(fields: [pointColumnId], references: [id], onDelete: Cascade)
 }

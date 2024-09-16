@@ -1,8 +1,8 @@
 "server-only";
 
-import { type PointCell, prisma } from "@mapform/db";
+import { type GeometryCell, prisma } from "@mapform/db";
 
-export type PointCellResponse = PointCell & {
+export type GeometryCellResponse = GeometryCell & {
   latitude: number;
   longitude: number;
 };
@@ -22,7 +22,7 @@ export async function getResponses(formSubmissionId: string) {
             include: {
               column: true,
               boolCell: true,
-              pointCell: true,
+              geometryCell: true,
               stringCell: true,
             },
           },
@@ -34,12 +34,12 @@ export async function getResponses(formSubmissionId: string) {
   // Backfill location-based responses since Prisma doesn't support them
   const responses = await Promise.all(
     formSubmission?.row.cellValues.map(async (cellValue) => {
-      if (cellValue.pointCell) {
-        const pointCell = await getPointCell(cellValue.pointCell.id);
+      if (cellValue.geometryCell) {
+        const geometryCell = await getGeomtryCell(cellValue.geometryCell.id);
 
         return {
           ...cellValue,
-          pointCell,
+          geometryCell,
         };
       }
 
@@ -50,20 +50,20 @@ export async function getResponses(formSubmissionId: string) {
   return responses;
 }
 
-async function getPointCell(pointCellId: string) {
+async function getGeomtryCell(geometryCellId: string) {
   // Make raw query to get LocationResponse with Location lat lng
-  const pointCellResponse: PointCellResponse[] = await prisma.$queryRaw`
-    SELECT DISTINCT "PointCell".*, ST_X("PointCell".value) AS longitude, ST_Y("PointCell".value) AS latitude
-    FROM "PointCell"
-    WHERE "PointCell"."id" = ${pointCellId};
+  const geometryCellResponse: GeometryCellResponse[] = await prisma.$queryRaw`
+    SELECT DISTINCT "GeometryCell".*, ST_X("GeometryCell".value) AS longitude, ST_Y("GeometryCell".value) AS latitude
+    FROM "GeometryCell"
+    WHERE "GeometryCell"."id" = ${geometryCellId};
   `;
 
-  const formattedResponse = pointCellResponse[0]
+  const formattedResponse = geometryCellResponse[0]
     ? {
-        ...pointCellResponse[0],
+        ...geometryCellResponse[0],
         value: {
-          latitude: pointCellResponse[0].latitude,
-          longitude: pointCellResponse[0].longitude,
+          latitude: geometryCellResponse[0].latitude,
+          longitude: geometryCellResponse[0].longitude,
         },
       }
     : null;

@@ -33,7 +33,7 @@ export const getDataset = authAction
             cellValues: {
               include: {
                 boolCell: true,
-                pointCell: true,
+                geometryCell: true,
                 stringCell: true,
               },
             },
@@ -47,31 +47,31 @@ export const getDataset = authAction
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- It is necessary
-    const pointCellsWithLocation = (await prisma.$queryRaw`
-      SELECT "PointCell".id, ST_X("PointCell".value) AS longitude, ST_Y("PointCell".value) AS latitude
-      FROM "PointCell"
-      JOIN "CellValue" ON "PointCell"."cellvalueid" = "CellValue".id
+    const geometryCellsWithLocation = (await prisma.$queryRaw`
+      SELECT "GeometryCell".id, ST_X("GeometryCell".value) AS longitude, ST_Y("GeometryCell".value) AS latitude
+      FROM "GeometryCell"
+      JOIN "CellValue" ON "GeometryCell"."cellvalueid" = "CellValue".id
       JOIN "Row" ON "CellValue"."rowId" = "Row".id
       JOIN "Dataset" ON "Row"."datasetId" = "Dataset".id
       WHERE "Dataset".id = ${datasetId};
     `) as { id: string; longitude: string; latitude: string }[];
 
-    // Combine the pointCell data with the form data
+    // Combine the geometryCell data with the form data
     const combined = dataset.rows.map((row) => {
       const formSubmission = row.formSubmission;
       const cellValues = row.cellValues.map((cellValue) => {
-        const pointCell = pointCellsWithLocation.find(
-          (pc) => pc.id === cellValue.pointCell?.id
+        const geometryCell = geometryCellsWithLocation.find(
+          (pc) => pc.id === cellValue.geometryCell?.id
         );
 
         return {
           ...cellValue,
-          pointCell: pointCell
+          geometryCell: geometryCell
             ? {
-                ...cellValue.pointCell,
-                value: `${pointCell.longitude},${pointCell.latitude}`,
+                ...cellValue.geometryCell,
+                value: `${geometryCell.longitude},${geometryCell.latitude}`,
               }
-            : cellValue.pointCell,
+            : cellValue.geometryCell,
         };
       });
 
