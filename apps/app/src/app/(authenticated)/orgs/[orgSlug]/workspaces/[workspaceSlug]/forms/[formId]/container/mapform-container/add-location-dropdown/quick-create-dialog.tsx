@@ -70,8 +70,6 @@ export function QuickCreateContent({
     execute(values);
   };
 
-  console.log(11111, form.formState.errors);
-
   return (
     <DialogContent>
       <Form {...form}>

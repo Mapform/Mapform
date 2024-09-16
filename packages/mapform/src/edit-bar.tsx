@@ -169,8 +169,14 @@ function CommandSearch({
     ) => {
       if (e.key === key.toString() && (e.metaKey || e.ctrlKey)) {
         const bbox = feature.bbox;
+
+        if (!bbox || !feature.properties) {
+          return;
+        }
+
         e.preventDefault();
         e.stopPropagation();
+
         setOpenSearch(false);
         map?.fitBounds(
           [
@@ -196,7 +202,7 @@ function CommandSearch({
         const key = i.toString();
         document.addEventListener(
           "keydown",
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- Safe
+
           down.bind(null, key, feature)
         );
       }
@@ -208,7 +214,7 @@ function CommandSearch({
           const key = i.toString();
           document.removeEventListener(
             "keydown",
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- Safe
+
             down.bind(null, key, feature)
           );
         }
@@ -229,42 +235,54 @@ function CommandSearch({
       <CommandList>
         <CommandEmpty>No results found.</CommandEmpty>
         <CommandGroup>
-          {data?.features.map((feature, i) => (
-            <CommandItem
-              key={feature.properties.place_id}
-              onSelect={() => {
-                setOpenSearch(false);
+          {data?.features.map((feature, i) => {
+            if (!feature.bbox || !feature.properties) {
+              return;
+            }
 
-                map?.fitBounds(
-                  [
-                    [feature.bbox[0], feature.bbox[1]],
-                    [feature.bbox[2], feature.bbox[3]],
-                  ],
-                  {
-                    duration: 0,
+            return (
+              <CommandItem
+                key={feature.properties.place_id}
+                onSelect={() => {
+                  setOpenSearch(false);
+
+                  if (!feature.bbox || !feature.properties) {
+                    return;
                   }
-                );
 
-                setSearchLocation({
-                  id: feature.properties.place_id,
-                  latitude: feature.properties.lat,
-                  longitude: feature.properties.lon,
-                  name:
-                    feature.properties.name ?? feature.properties.address_line1,
-                });
-              }}
-            >
-              <span className="truncate pr-2">
-                <span className="font-medium">
-                  {feature.properties.name ?? feature.properties.address_line1}
+                  map?.fitBounds(
+                    [
+                      [feature.bbox[0], feature.bbox[1]],
+                      [feature.bbox[2], feature.bbox[3]],
+                    ],
+                    {
+                      duration: 0,
+                    }
+                  );
+
+                  setSearchLocation({
+                    id: feature.properties.place_id,
+                    latitude: feature.properties.lat,
+                    longitude: feature.properties.lon,
+                    name:
+                      feature.properties.name ??
+                      feature.properties.address_line1,
+                  });
+                }}
+              >
+                <span className="truncate pr-2">
+                  <span className="font-medium">
+                    {feature.properties.name ??
+                      feature.properties.address_line1}
+                  </span>
+                  <span className="text-sm text-muted-foreground ml-2">
+                    {feature.properties.address_line2}
+                  </span>
                 </span>
-                <span className="text-sm text-muted-foreground ml-2">
-                  {feature.properties.address_line2}
-                </span>
-              </span>
-              <CommandShortcut>⌘{i}</CommandShortcut>
-            </CommandItem>
-          ))}
+                <CommandShortcut>⌘{i}</CommandShortcut>
+              </CommandItem>
+            );
+          })}
         </CommandGroup>
       </CommandList>
     </>

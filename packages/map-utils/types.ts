@@ -24,8 +24,8 @@ export type ViewState = {
 export interface PlacesSearchResponse {
   type: string;
   features: {
-    type: string;
-    properties: {
+    type?: string;
+    properties?: {
       place_id: string;
       name?: string;
       country: string;
@@ -46,11 +46,11 @@ export interface PlacesSearchResponse {
         confidence_city_level: number;
         match_type: string;
       };
-      geometry: {
+      geometry?: {
         type: "Point" | unknown;
         coordinates: [number, number] | unknown;
       };
     };
-    bbox: [number, number, number, number];
+    bbox?: [number, number, number, number];
   }[];
 }
