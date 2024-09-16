@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@mapform/db";
 import { authAction } from "~/lib/safe-action";
 import { createLayer } from "~/data/layers/create";
-import { createDatasetFromCSV } from "~/data/datasets/create-from-csv";
+import { createDatasetFromGeojson } from "~/data/datasets/create-from-geojson";
 import { quickCreateDataLayerSchema } from "./schema";
 
 export const quickCreateDataLayer = authAction
@@ -20,7 +20,7 @@ export const quickCreateDataLayer = authAction
       throw new Error("Form not found");
     }
 
-    const datasetResponse = await createDatasetFromCSV({
+    const datasetResponse = await createDatasetFromGeojson({
       name,
       workspaceId: form.workspaceId,
       data,
@@ -32,8 +32,8 @@ export const quickCreateDataLayer = authAction
       throw new Error("Dataset not found");
     }
 
-    const pointCol = dataset.columns.find(
-      (column) => column.dataType === "POINT"
+    const geoCol = dataset.columns.find(
+      (column) => column.dataType === "GEOMETRY"
     );
 
     await createLayer({
@@ -41,7 +41,7 @@ export const quickCreateDataLayer = authAction
       type: "POINT",
       formId,
       stepId,
-      pointColumnId: pointCol?.id,
+      pointColumnId: geoCol?.id,
       datasetId: dataset.id,
     });
 

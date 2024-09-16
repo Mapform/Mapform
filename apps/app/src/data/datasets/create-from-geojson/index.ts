@@ -27,7 +27,7 @@ export const createDatasetFromGeojson = authAction
       { set: new Set(), result: [] }
     ).result;
 
-    await prisma.$transaction(async (tx) => {
+    const datasetResponse = await prisma.$transaction(async (tx) => {
       const datasetWithCols = await tx.dataset.create({
         data: {
           name,
@@ -169,6 +169,8 @@ export const createDatasetFromGeojson = authAction
 
       return dataset;
     });
+
+    return datasetResponse;
   });
 
 function getCellsToCreate(data: GeoJson) {

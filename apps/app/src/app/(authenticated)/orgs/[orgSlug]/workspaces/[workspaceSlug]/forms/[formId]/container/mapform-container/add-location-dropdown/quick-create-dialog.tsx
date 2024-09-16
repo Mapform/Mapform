@@ -44,7 +44,6 @@ export function QuickCreateContent({
       name: "",
       stepId,
       formId,
-      data: [],
       type: "POINT",
     },
     resolver: zodResolver(quickCreateDataLayerSchema),
