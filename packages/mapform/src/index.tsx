@@ -42,6 +42,7 @@ interface MapFormProps {
     AddLocationDropdown: (input: {
       stepId: string;
       formId: string;
+      data: any;
     }) => JSX.Element;
   };
 }
@@ -280,6 +281,17 @@ export function MapForm({
                   {editable && AddLocationDropdown && currentStep.formId ? (
                     <div className="p-4 ml-auto">
                       <AddLocationDropdown
+                        data={{
+                          type: "Feature",
+                          geometry: {
+                            type: "Point",
+                            coordinates: [
+                              searchLocation.longitude,
+                              searchLocation.latitude,
+                            ],
+                          },
+                          properties: {},
+                        }}
                         formId={currentStep.formId}
                         stepId={currentStep.id}
                       />

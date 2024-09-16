@@ -13,6 +13,7 @@ import {
   DropdownMenuSubContent,
 } from "@mapform/ui/components/dropdown-menu";
 import { ChevronRightIcon } from "lucide-react";
+import type { GeoJson } from "@infra-blocks/zod-utils/geojson";
 import {
   QuickCreateDialog,
   QuickCreateContent,
@@ -22,15 +23,17 @@ import {
 interface AddLocationDropdownProps {
   stepId: string;
   formId: string;
+  data: GeoJson;
 }
 
 export function AddLocationDropdown({
   stepId,
   formId,
+  data,
 }: AddLocationDropdownProps) {
   return (
     <QuickCreateDialog>
-      <QuickCreateContent formId={formId} stepId={stepId} />
+      <QuickCreateContent data={data} formId={formId} stepId={stepId} />
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button type="button">

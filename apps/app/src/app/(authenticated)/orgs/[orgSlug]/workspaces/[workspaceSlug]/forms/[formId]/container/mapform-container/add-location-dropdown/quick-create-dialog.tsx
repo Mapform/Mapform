@@ -21,6 +21,7 @@ import {
 import { useAction } from "next-safe-action/hooks";
 import { toast } from "@mapform/ui/components/toaster";
 import { Input } from "@mapform/ui/components/input";
+import type { GeoJson } from "@infra-blocks/zod-utils/geojson";
 import {
   quickCreateDataLayerSchema,
   type QuickCreateDataLayerSchema,
@@ -33,17 +34,22 @@ export const QuickCreateDialogTrigger = DialogTrigger;
 interface QuickCreateContentProps {
   stepId: string;
   formId: string;
+  data: GeoJson;
 }
 
 export function QuickCreateContent({
   stepId,
   formId,
+  data,
 }: QuickCreateContentProps) {
+  console.log(11111, data);
+
   const form = useForm<QuickCreateDataLayerSchema>({
     defaultValues: {
       name: "",
       stepId,
       formId,
+      data,
       type: "POINT",
     },
     resolver: zodResolver(quickCreateDataLayerSchema),
