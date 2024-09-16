@@ -25,9 +25,9 @@ import { useState } from "react";
 import { Input } from "@mapform/ui/components/input";
 import { toast } from "@mapform/ui/components/toaster";
 import { useAction } from "next-safe-action/hooks";
-import type { CreateDatasetSchema } from "~/data/datasets/create/schema";
-import { createDatasetSchema } from "~/data/datasets/create/schema";
-import { createDataset } from "~/data/datasets/create";
+import type { CreateDatasetFromCSVSchema } from "~/data/datasets/create-from-csv/schema";
+import { createDatasetFromCSVSchema } from "~/data/datasets/create-from-csv/schema";
+import { createDatasetFromCSV } from "~/data/datasets/create-from-csv";
 
 export function CreateDialog({
   workspaceId,
@@ -37,15 +37,15 @@ export function CreateDialog({
   disabled?: boolean;
 }) {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const form = useForm<CreateDatasetSchema>({
+  const form = useForm<CreateDatasetFromCSVSchema>({
     defaultValues: {
       name: "",
       workspaceId,
     },
     mode: "onChange",
-    resolver: zodResolver(createDatasetSchema),
+    resolver: zodResolver(createDatasetFromCSVSchema),
   });
-  const { execute, status } = useAction(createDataset, {
+  const { execute, status } = useAction(createDatasetFromCSV, {
     onError: ({ error }) => {
       if (error.serverError) {
         toast(error.serverError);
@@ -63,7 +63,7 @@ export function CreateDialog({
     },
   });
 
-  const onSubmit = (values: CreateDatasetSchema) => {
+  const onSubmit = (values: CreateDatasetFromCSVSchema) => {
     if (disabled) return;
 
     execute(values);

@@ -5,10 +5,10 @@ import { v4 as uuidv4 } from "uuid";
 import { ColumnType, Prisma, prisma } from "@mapform/db";
 import { revalidatePath } from "next/cache";
 import { authAction } from "~/lib/safe-action";
-import { createDatasetSchema } from "./schema";
+import { createDatasetFromCSVSchema } from "./schema";
 
-export const createDataset = authAction
-  .schema(createDatasetSchema)
+export const createDatasetFromCSV = authAction
+  .schema(createDatasetFromCSVSchema)
   .action(async ({ parsedInput: { name, workspaceId, data } }) => {
     // Validate field types are consistent
     if (!validateFieldTypes(data)) {
