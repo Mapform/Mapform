@@ -103,7 +103,7 @@ export const createDatasetFromCSV = authAction
       const cells = dataWithModifiedCells.flatMap((row) => row);
 
       /**
-       * Insert StringCells
+       * Insert cells
        */
       const stringCells = cells.filter((cell) => cell.type === "STRING");
       const boolCells = cells.filter((cell) => cell.type === "BOOL");

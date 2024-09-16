@@ -1,8 +1,6 @@
 "use server";
 
-// eslint-disable-next-line import/named -- This is found. Not sure why it's being flagged
-import { z } from "zod";
-import { ColumnType, prisma } from "@mapform/db";
+import { ColumnType, Prisma, prisma } from "@mapform/db";
 import { revalidatePath } from "next/cache";
 import { v4 as uuidv4 } from "uuid";
 import { authAction } from "~/lib/safe-action";
@@ -15,7 +13,7 @@ export const createDatasetFromGeojson = authAction
     if (data.type === "FeatureCollection") {
       const rows = data.features;
 
-      const cells = rows.flatMap((row) => {
+      const dataWithModifiedCells = rows.flatMap((row) => {
         const properties = row.properties;
         const geometry = row.geometry;
 
@@ -45,7 +43,7 @@ export const createDatasetFromGeojson = authAction
       });
 
       // Group cells by key
-      const groupedCells = cells.reduce(
+      const groupedCells = dataWithModifiedCells.reduce(
         (acc, current) => {
           const identifier = `${current.type}-${current.key}`; // Create a unique identifier
 
@@ -81,6 +79,125 @@ export const createDatasetFromGeojson = authAction
             columns: true,
           },
         });
+
+        const dataset = await tx.dataset.update({
+          where: {
+            id: datasetWithCols.id,
+          },
+          data: {
+            rows: {
+              create: [
+                ...dataWithModifiedCells.map((row) => ({
+                  cellValues: {
+                    create: Object.values(row).map((cell) => {
+                      return {
+                        id: cell.id,
+                        column: {
+                          connect: {
+                            datasetId_name: {
+                              datasetId: datasetWithCols.id,
+                              name: cell.key,
+                            },
+                          },
+                        },
+                      };
+                    }),
+                  },
+                })),
+              ],
+            },
+          },
+          include: {
+            rows: {
+              include: {
+                cellValues: true,
+              },
+            },
+            columns: true,
+          },
+        });
+
+        const cells = dataWithModifiedCells.flatMap((row) => row);
+
+        /**
+         * Insert cells
+         */
+        const stringCells = cells.filter((cell) => cell.type === "STRING");
+        const boolCells = cells.filter((cell) => cell.type === "BOOL");
+        const floatCells = cells.filter((cell) => cell.type === "FLOAT");
+        const intCells = cells.filter((cell) => cell.type === "INT");
+        const dateCells = cells.filter((cell) => cell.type === "DATE");
+        const geometryCells = cells
+          .filter((cell) => cell.type === "GEOMETRY")
+          .map(
+            (cell) =>
+              Prisma.sql`(${uuidv4()}, ${cell.id}, ST_GeomFromGeoJSON('{
+                  "type": ${cell.value.type},
+                  "coordinates": ${cell.value.coordinates}
+              }')`
+          );
+
+        await Promise.all([
+          /**
+           * Insert StringCells
+           */
+          tx.stringCell.createMany({
+            data: stringCells.map((cell) => ({
+              cellValueId: cell.id,
+              value: cell.value as string,
+            })),
+          }),
+
+          /**
+           * Insert BoolCells
+           */
+          tx.boolCell.createMany({
+            data: boolCells.map((cell) => ({
+              cellValueId: cell.id,
+              value: cell.value as boolean,
+            })),
+          }),
+
+          /**
+           * Insert FloatCells
+           */
+          tx.floatCell.createMany({
+            data: floatCells.map((cell) => ({
+              cellValueId: cell.id,
+              value: cell.value as number,
+            })),
+          }),
+
+          /**
+           * Insert IntCells
+           */
+          tx.intCell.createMany({
+            data: intCells.map((cell) => ({
+              cellValueId: cell.id,
+              value: cell.value as number,
+            })),
+          }),
+
+          /**
+           * Insert DateCells
+           */
+          tx.dateCell.createMany({
+            data: dateCells.map((cell) => ({
+              cellValueId: cell.id,
+              value: cell.value as Date,
+            })),
+          }),
+
+          /**
+           * Insert GeometryCells. Need to INSERT using raw SQL because Prisma does not support PostGIS
+           */
+          tx.$executeRaw`
+          INSERT INTO "GeometryCell" (id, cellvalueid, value)
+          VALUES ${Prisma.join(geometryCells)};
+        `,
+        ]);
+
+        return dataset;
       });
     }
   });
