@@ -270,6 +270,9 @@ model CellValue {
 
     boolCell     BoolCell?
     stringCell   StringCell?
+    intCell      IntCell?
+    floatCell    FloatCell?
+    dateCell     DateCell?
     geometryCell GeometryCell?
 
     @@unique([rowId, columnId])
@@ -289,6 +292,27 @@ model StringCell {
     cellValue   CellValue @relation(fields: [cellValueId], references: [id])
 }
 
+model FloatCell {
+    id          String    @id @default(cuid())
+    cellValueId String    @unique
+    value       Float
+    cellValue   CellValue @relation(fields: [cellValueId], references: [id])
+}
+
+model IntCell {
+    id          String    @id @default(cuid())
+    cellValueId String    @unique
+    value       Int
+    cellValue   CellValue @relation(fields: [cellValueId], references: [id])
+}
+
+model DateCell {
+    id          String    @id @default(cuid())
+    cellValueId String    @unique
+    value       DateTime
+    cellValue   CellValue @relation(fields: [cellValueId], references: [id])
+}
+
 model GeometryCell {
     id          String                               @id @default(cuid())
     // This needs to be lowercase for Prisma executeRaw to work
@@ -302,6 +326,9 @@ model GeometryCell {
 enum ColumnType {
     STRING
     BOOL
+    INT
+    FLOAT
+    DATE
     GEOMETRY
 }
 

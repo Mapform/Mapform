@@ -1,6 +1,7 @@
 "use server";
 
 // eslint-disable-next-line import/named -- This is found. Not sure why it's being flagged
+import { z } from "zod";
 import { ColumnType, Prisma, prisma } from "@mapform/db";
 import { revalidatePath } from "next/cache";
 import { v4 as uuidv4 } from "uuid";
@@ -26,7 +27,7 @@ export const createDatasetFromGeojson = authAction
             return {
               id: uuidv4(),
               key,
-              type: typeof val,
+              type: parseType(val as unknown).type,
               value: val,
             };
           }
@@ -35,7 +36,7 @@ export const createDatasetFromGeojson = authAction
         const geometryWithId = {
           id: uuidv4(),
           key: "geometry",
-          type: "GEOMETRY",
+          type: ColumnType.GEOMETRY,
           value: geometry,
         };
 
@@ -43,15 +44,19 @@ export const createDatasetFromGeojson = authAction
       });
 
       // Group cells by key
-      const groupedCells = cells.reduce((acc, cell) => {
-        if (!acc[cell.key]) {
-          acc[cell.key] = [];
-        }
+      const groupedCells = cells.reduce(
+        (acc, current) => {
+          const identifier = `${current.type}-${current.key}`; // Create a unique identifier
 
-        acc[cell.key].push(cell);
+          if (!acc.set.has(identifier)) {
+            acc.set.add(identifier); // Track this combination
+            acc.result.push(current); // Add object to the result array
+          }
 
-        return acc;
-      }, {});
+          return acc;
+        },
+        { set: new Set(), result: [] }
+      ).result;
 
       await prisma.$transaction(async (tx) => {
         const datasetWithCols = await tx.dataset.create({
@@ -64,9 +69,9 @@ export const createDatasetFromGeojson = authAction
             },
             columns: {
               create: [
-                ...Object.entries(firstRow).map(([key, val]) => ({
-                  name: key,
-                  dataType: parseType(val).type,
+                ...groupedCells.map((cell) => ({
+                  name: cell.key,
+                  dataType: cell.type,
                 })),
               ],
             },
@@ -79,28 +84,42 @@ export const createDatasetFromGeojson = authAction
     }
   });
 
-function parseType(val: string) {
-  const valType = typeof val;
+function parseType(val: unknown) {
   // Parse booleans
-  if (valType === "boolean") {
+  if (z.boolean().safeParse(val).success) {
     return {
       type: ColumnType.BOOL,
       value: val,
     };
   }
 
-  if (valType === "number") {
+  if (z.string().safeParse(val).success) {
     return {
-      type: ColumnType.NUMBER,
+      type: ColumnType.STRING,
       value: val,
     };
   }
 
-  /**
-   * Treat all other values as strings
-   */
-  return {
-    type: ColumnType.STRING,
-    value: val,
-  };
+  if (z.number().int().safeParse(val).success) {
+    return {
+      type: ColumnType.INT,
+      value: val,
+    };
+  }
+
+  if (z.number().safeParse(val).success) {
+    return {
+      type: ColumnType.FLOAT,
+      value: val,
+    };
+  }
+
+  if (z.date().safeParse(val).success) {
+    return {
+      type: ColumnType.DATE,
+      value: val,
+    };
+  }
+
+  throw new Error("Could not parse type");
 }
