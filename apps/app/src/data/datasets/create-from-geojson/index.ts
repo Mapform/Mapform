@@ -2,11 +2,12 @@
 
 // eslint-disable-next-line import/named -- This is found. Not sure why it's being flagged
 import { z } from "zod";
-import { ColumnType, Prisma, prisma } from "@mapform/db";
+import { ColumnType, prisma } from "@mapform/db";
 import { revalidatePath } from "next/cache";
 import { v4 as uuidv4 } from "uuid";
 import { authAction } from "~/lib/safe-action";
 import { createDatasetFromGeojsonSchema } from "./schema";
+import { parseType } from "./parse-type";
 
 export const createDatasetFromGeojson = authAction
   .schema(createDatasetFromGeojsonSchema)
@@ -83,43 +84,3 @@ export const createDatasetFromGeojson = authAction
       });
     }
   });
-
-function parseType(val: unknown) {
-  // Parse booleans
-  if (z.boolean().safeParse(val).success) {
-    return {
-      type: ColumnType.BOOL,
-      value: val,
-    };
-  }
-
-  if (z.string().safeParse(val).success) {
-    return {
-      type: ColumnType.STRING,
-      value: val,
-    };
-  }
-
-  if (z.number().int().safeParse(val).success) {
-    return {
-      type: ColumnType.INT,
-      value: val,
-    };
-  }
-
-  if (z.number().safeParse(val).success) {
-    return {
-      type: ColumnType.FLOAT,
-      value: val,
-    };
-  }
-
-  if (z.date().safeParse(val).success) {
-    return {
-      type: ColumnType.DATE,
-      value: val,
-    };
-  }
-
-  throw new Error("Could not parse type");
-}
