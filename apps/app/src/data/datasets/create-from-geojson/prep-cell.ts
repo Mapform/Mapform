@@ -23,7 +23,7 @@ export function prepCell(row: GeoJsonFeature) {
   const geometryWithId = {
     id: uuidv4(),
     key: "geometry",
-    type: ColumnType.GEOMETRY,
+    type: ColumnType.POINT,
     value: geometry,
   };
 

@@ -107,8 +107,7 @@ export function Map({
         (v) => v.column.blockNoteId === block.id
       );
       // @ts-expect-error -- Value does exist here
-      const value =
-        cellValue?.stringCell?.value ?? cellValue?.geometryCell?.value;
+      const value = cellValue?.stringCell?.value ?? cellValue?.pointCell?.value;
 
       if (value) {
         acc[block.id] = value;

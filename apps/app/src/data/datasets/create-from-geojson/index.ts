@@ -13,7 +13,7 @@ export const createDatasetFromGeojson = authAction
     const cellsToCreate = getCellsToCreate(data);
 
     // Group cells by key
-    const groupedCells = cellsToCreate.reduce(
+    const groupedCells = cellsToCreate.flat().reduce(
       (acc, current) => {
         const identifier = `${current.type}-${current.key}`; // Create a unique identifier
 
@@ -49,6 +49,8 @@ export const createDatasetFromGeojson = authAction
           columns: true,
         },
       });
+
+      console.log(123, datasetWithCols);
 
       const dataset = await tx.dataset.update({
         where: {
@@ -87,6 +89,8 @@ export const createDatasetFromGeojson = authAction
         },
       });
 
+      console.log(456, dataset);
+
       const cells = cellsToCreate.flatMap((row) => row);
 
       /**
@@ -97,14 +101,11 @@ export const createDatasetFromGeojson = authAction
       const floatCells = cells.filter((cell) => cell.type === "FLOAT");
       const intCells = cells.filter((cell) => cell.type === "INT");
       const dateCells = cells.filter((cell) => cell.type === "DATE");
-      const geometryCells = cells
-        .filter((cell) => cell.type === "GEOMETRY")
+      const pointCells = cells
+        .filter((cell) => cell.type === "POINT")
         .map(
           (cell) =>
-            Prisma.sql`(${uuidv4()}, ${cell.id}, ST_GeomFromGeoJSON('{
-                  "type": ${cell.value.type},
-                  "coordinates": ${cell.value.coordinates}
-              }')`
+            Prisma.sql`(${uuidv4()}, ${cell.id}, ST_SetSRID(ST_MakePoint(${cell.value.coordinates[0]}, ${cell.value.coordinates[1]}), 4326))`
         );
 
       await Promise.all([
@@ -159,11 +160,11 @@ export const createDatasetFromGeojson = authAction
         }),
 
         /**
-         * Insert GeometryCells. Need to INSERT using raw SQL because Prisma does not support PostGIS
+         * Insert PointCells. Need to INSERT using raw SQL because Prisma does not support PostGIS
          */
         tx.$executeRaw`
-          INSERT INTO "GeometryCell" (id, cellvalueid, value)
-          VALUES ${Prisma.join(geometryCells)};
+          INSERT INTO "PointCell" (id, cellvalueid, value)
+          VALUES ${Prisma.join(pointCells)};
         `,
       ]);
 
@@ -175,14 +176,14 @@ export const createDatasetFromGeojson = authAction
 
 function getCellsToCreate(data: GeoJson) {
   if (data.type === "FeatureCollection") {
-    return data.features.flatMap((row) => prepCell(row));
+    return data.features.map((row) => prepCell(row));
   } else if (data.type === "Feature") {
-    return prepCell(data);
+    return [prepCell(data)];
   } else if (data.type === "GeometryCollection") {
-    return data.geometries.flatMap((row) =>
+    return data.geometries.map((row) =>
       prepCell({ type: "Feature", geometry: row, properties: {} })
     );
   }
 
-  return prepCell({ type: "Feature", geometry: data, properties: {} });
+  return [prepCell({ type: "Feature", geometry: data, properties: {} })];
 }

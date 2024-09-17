@@ -33,7 +33,7 @@ export const quickCreateDataLayer = authAction
     }
 
     const geoCol = dataset.columns.find(
-      (column) => column.dataType === "GEOMETRY"
+      (column) => column.dataType === "POINT"
     );
 
     await createLayer({

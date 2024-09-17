@@ -74,7 +74,7 @@ export const submitFormStep = action
             },
             include: {
               boolCell: true,
-              geometryCell: true,
+              pointCell: true,
               stringCell: true,
             },
           });
@@ -105,10 +105,10 @@ export const submitFormStep = action
           }
 
           if (block?.type === "pin") {
-            if (cellValue?.geometryCell) {
+            if (cellValue?.pointCell) {
               return prisma.$executeRaw`
-                UPDATE "GeometryCell" SET value = ST_SetSRID(ST_MakePoint(${value.longitude}, ${value.latitude}), 4326)
-                WHERE id = ${cellValue.geometryCell.id}
+                UPDATE "PointCell" SET value = ST_SetSRID(ST_MakePoint(${value.longitude}, ${value.latitude}), 4326)
+                WHERE id = ${cellValue.pointCell.id}
               `;
             }
 
@@ -120,7 +120,7 @@ export const submitFormStep = action
             });
 
             return prisma.$executeRaw`
-              INSERT INTO "GeometryCell" (id, cellvalueid, value)
+              INSERT INTO "PointCell" (id, cellvalueid, value)
               VALUES (${uuidv4()}, ${newCellValue.id}, ST_SetSRID(ST_MakePoint(${value.longitude}, ${value.latitude}), 4326));
             `;
           }

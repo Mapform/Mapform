@@ -89,7 +89,7 @@ export default async function Submissions({
                             >
                               {cell?.stringCell?.value ||
                                 cell?.boolCell?.value?.toString() ||
-                                cell?.geometryCell?.value?.toString() ||
+                                cell?.pointCell?.value?.toString() ||
                                 "-"}
                             </td>
                           ))}

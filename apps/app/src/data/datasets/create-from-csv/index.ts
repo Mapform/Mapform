@@ -107,8 +107,8 @@ export const createDatasetFromCSV = authAction
        */
       const stringCells = cells.filter((cell) => cell.type === "STRING");
       const boolCells = cells.filter((cell) => cell.type === "BOOL");
-      const geometryCells = cells
-        .filter((cell) => cell.type === "GEOMETRY")
+      const pointCells = cells
+        .filter((cell) => cell.type === "POINT")
         .map(
           (cell) =>
             Prisma.sql`(${uuidv4()}, ${cell.id}, ST_SetSRID(ST_MakePoint(${cell.value.coordinates[0]}, ${cell.value.coordinates[1]}), 4326))`
@@ -136,11 +136,11 @@ export const createDatasetFromCSV = authAction
         }),
 
         /**
-         * Insert GeometryCells. Need to INSERT using raw SQL because Prisma does not support PostGIS
+         * Insert PointCells. Need to INSERT using raw SQL because Prisma does not support PostGIS
          */
         tx.$executeRaw`
-          INSERT INTO "GeometryCell" (id, cellvalueid, value)
-          VALUES ${Prisma.join(geometryCells)};
+          INSERT INTO "PointCell" (id, cellvalueid, value)
+          VALUES ${Prisma.join(pointCells)};
         `,
       ]);
 

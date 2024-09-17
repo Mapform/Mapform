@@ -63,9 +63,9 @@ export const getStepData = action
     const resp: Points[] = await Promise.all(
       step.layers.map(
         async (layer) => prisma.$queryRaw`
-        SELECT "Column".id, "GeometryCell".id, ST_X("GeometryCell".value) AS longitude, ST_Y("GeometryCell".value) AS latitude
-        FROM "GeometryCell"
-        JOIN "CellValue" ON "GeometryCell"."cellvalueid" = "CellValue".id
+        SELECT "Column".id, "PointCell".id, ST_X("PointCell".value) AS longitude, ST_Y("PointCell".value) AS latitude
+        FROM "PointCell"
+        JOIN "CellValue" ON "PointCell"."cellvalueid" = "CellValue".id
         JOIN "Column" ON "CellValue"."columnId" = "Column".id
         WHERE ST_Within(
           value,
