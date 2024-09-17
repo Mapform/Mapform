@@ -4,6 +4,7 @@
   "dependencies": {
     "clsx": "^2.1.0",
     "lucide-react": "^0.354.0",
+    "next": "14.2.5",
     "tailwind-merge": "^2.2.1",
     "zod": "3.23.8"
   },
@@ -15,6 +16,6 @@
     "@types/react-dom": "^18.2.23",
     "eslint": "^8.57.0",
     "react": "^18.2.0",
-    "typescript": "^5.5.2"
+    "typescript": "^5.5.4"
   }
 }

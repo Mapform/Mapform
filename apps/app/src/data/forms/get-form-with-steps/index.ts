@@ -6,22 +6,25 @@ import { getFormWithStepsSchema } from "./schema";
 
 export const getFormWithSteps = authAction
   .schema(getFormWithStepsSchema)
-  .action(async ({ parsedInput: { formId }, ctx: { orgId } }) => {
+  .action(async ({ parsedInput: { formId }, ctx: { userId } }) => {
     const form = await prisma.form.findUnique({
       where: {
         id: formId,
         workspace: {
-          organizationId: orgId,
+          organization: {
+            members: {
+              some: {
+                // Ensure the user is a member of the organization
+                userId,
+              },
+            },
+          },
         },
       },
       include: {
-        dataTracks: {
+        layers: {
           include: {
-            layers: {
-              include: {
-                pointLayer: true,
-              },
-            },
+            pointLayer: true,
           },
         },
       },
@@ -43,4 +46,4 @@ export const getFormWithSteps = authAction
 
 export type FormWithSteps = NonNullable<
   Awaited<ReturnType<typeof getFormWithSteps>>
->;
+>["data"];

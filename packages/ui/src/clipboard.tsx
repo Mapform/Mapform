@@ -43,9 +43,9 @@ export function Clipboard({
       variant={variant}
     >
       {copied ? (
-        <ClipboardCheckIcon className="w-5 h-5 text-green-600 animate-fade-in" />
+        <ClipboardCheckIcon className="w-4 h-4 animate-fade-in" />
       ) : (
-        <ClipboardCopyIcon className="w-5 h-5 animate-fade-in" />
+        <ClipboardCopyIcon className="w-4 h-4 animate-fade-in" />
       )}
       {copied ? copiedText : copyText}
     </Button>

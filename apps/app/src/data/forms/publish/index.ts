@@ -20,13 +20,9 @@ export const publishForm = authAction
         isRoot: true,
       },
       include: {
-        dataTracks: {
+        layers: {
           include: {
-            layers: {
-              include: {
-                pointLayer: true,
-              },
-            },
+            pointLayer: true,
           },
         },
         _count: {
@@ -60,55 +56,37 @@ export const publishForm = authAction
         },
       });
 
-      const rootDataTracksWithIds = rootForm.dataTracks.map((dataTrack) => ({
-        ...dataTrack,
+      const rootLayersWithIds = rootForm.layers.map((layer) => ({
+        ...layer,
         newId: uuidv4(),
       }));
 
-      /**
-       * We duplidate the datatrack, layers, and sub layer types for the new form.
-       * We do NOT duplicate the data itself (dataset).
-       */
-      const newDataTracks = await prisma.dataTrack.createManyAndReturn({
-        data: rootDataTracksWithIds.map((dataTrack) => ({
-          id: dataTrack.newId,
+      // /**
+      //  * We duplidate the layers and sub layer types for the new form.
+      //  * We do NOT duplicate the data itself (dataset).
+      //  */
+      const newLayers = await prisma.layer.createManyAndReturn({
+        data: rootLayersWithIds.map((layer) => ({
+          id: layer.newId,
+          type: layer.type,
           formId: newPublishedForm.id,
-          startStepIndex: dataTrack.startStepIndex,
-          endStepIndex: dataTrack.endStepIndex,
+          datasetId: layer.datasetId,
         })),
       });
 
-      await Promise.all(
-        rootDataTracksWithIds.flatMap((dataTrack) =>
-          dataTrack.layers.map((layer) => {
-            const newDataTrack = newDataTracks.find(
-              (ndt) => ndt.id === dataTrack.newId
-            );
+      const pointLayersToCreate = rootLayersWithIds
+        .map((layer) => ({
+          pointColumnId: layer.pointLayer?.pointColumnId,
+          layerId: newLayers.find((l) => l.id === layer.newId)?.id,
+        }))
+        .filter((layer) => layer.pointColumnId) as {
+        pointColumnId: string;
+        layerId: string;
+      }[];
 
-            if (!newDataTrack) {
-              throw new Error("Data track not found");
-            }
-
-            if (!layer.pointLayer) {
-              throw new Error("Point layer not found");
-            }
-
-            return prisma.layer.create({
-              data: {
-                type: layer.type,
-                name: layer.name,
-                dataTrackId: newDataTrack.id,
-                datasetId: layer.datasetId,
-                pointLayer: {
-                  create: {
-                    pointColumnId: layer.pointLayer.pointColumnId,
-                  },
-                },
-              },
-            });
-          })
-        )
-      );
+      await tx.pointLayer.createManyAndReturn({
+        data: pointLayersToCreate,
+      });
 
       // TODO: Improve this. This query is very slow and inefficient.Note that
       // createWithLocation creates a stepOrder on the form. Steps must be created
@@ -125,6 +103,14 @@ export const publishForm = authAction
           longitude: step.longitude,
           title: step.title,
           description: step.description || undefined,
+          layerOrder: step.layerOrder,
+          layers: {
+            connect: rootLayersWithIds
+              .map((layer) => ({
+                id: newLayers.find((l) => l.id === layer.newId)?.id,
+              }))
+              .filter((l) => l.id),
+          },
         });
       }
 

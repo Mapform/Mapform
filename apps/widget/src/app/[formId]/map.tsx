@@ -1,17 +1,19 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
-import type { LngLatBounds, MapRef, ViewState } from "@mapform/mapform";
-import { MapForm } from "@mapform/mapform";
-import { useQuery } from "@tanstack/react-query";
+import { MapForm, useMap } from "@mapform/mapform";
 import { useAction } from "next-safe-action/hooks";
+import React, { useEffect, useState } from "react";
+import { useCreateQueryString } from "@mapform/lib/hooks/use-create-query-string";
+import { usePathname, useSearchParams, useRouter } from "next/navigation";
+import type { Points } from "~/data/get-step-data";
 import { submitFormStep } from "~/data/submit-form-step";
-import { getLayerData } from "~/data/datatracks/get-layer-data";
+import type { FormWithSteps } from "~/data/get-form-with-steps";
 import { createFormSubmission } from "~/data/create-form-submission";
+import type { Responses } from "~/data/get-responses.ts";
 import { env } from "../env.mjs";
-import type { FormWithSteps, Responses } from "./requests";
 
 interface MapProps {
+  points: Points;
   formWithSteps: NonNullable<FormWithSteps>;
   formValues: NonNullable<Responses>;
   sessionId: string | null;
@@ -19,70 +21,32 @@ interface MapProps {
 
 type Step = NonNullable<FormWithSteps>["steps"][number];
 
-export function Map({ formWithSteps, formValues, sessionId }: MapProps) {
-  const map = useRef<MapRef>(null);
-  const { execute } = useAction(submitFormStep);
-  const [currentSession, setCurrentSession] = useState<string | null>(null);
-  const [currentStep, setCurrentStep] = useState<Step | null>(
-    formWithSteps.steps[0] || null
-  );
+export function Map({
+  formWithSteps,
+  formValues,
+  sessionId,
+  points,
+}: MapProps) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const createQueryString = useCreateQueryString();
 
-  const initialViewState = {
-    longitude: currentStep!.longitude,
-    latitude: currentStep!.latitude,
-    zoom: currentStep!.zoom,
-    bearing: currentStep!.bearing,
-    pitch: currentStep!.pitch,
-    padding: {
-      top: 0,
-      bottom: 0,
-      left: 0,
-      right: 0,
-    },
+  const s = searchParams.get("s");
+  const currentStep = formWithSteps.steps.find((step) => step.id === s);
+  const setCurrentStep = (step: Step) => {
+    router.push(`${pathname}?${createQueryString("s", step.id)}`);
   };
-  const [viewState, setViewState] = useState<ViewState>(initialViewState);
 
-  const currentStepIndex = formWithSteps.steps.findIndex(
-    (step) => step.id === currentStep?.id
-  );
+  const { map } = useMap();
 
-  const dataTrackForActiveStep = formWithSteps.dataTracks.find((track) => {
-    return (
-      currentStepIndex >= track.startStepIndex &&
-      currentStepIndex < track.endStepIndex
-    );
-  });
+  const [currentSession, setCurrentSession] = useState<string | null>(null);
 
-  const [bounds, setBounds] = useState<LngLatBounds | undefined>();
-
-  const { data } = useQuery({
-    placeholderData: (prevData) =>
-      dataTrackForActiveStep && prevData ? prevData : { data: { points: [] } },
-    queryKey: ["pointData", dataTrackForActiveStep?.id, bounds],
-    queryFn: () =>
-      getLayerData({
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Handled via enabled
-        dataTrackId: dataTrackForActiveStep!.id,
-        bounds: {
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Handled via enabled
-          minLng: bounds!._sw.lng,
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Handled via enabled
-          minLat: bounds!._sw.lat,
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Handled via enabled
-          maxLng: bounds!._ne.lng,
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Handled via enabled
-          maxLat: bounds!._ne.lat,
-        },
-      }),
-    enabled: Boolean(bounds) && Boolean(dataTrackForActiveStep),
-    staleTime: Infinity,
-  });
-
-  const points = data?.data?.points.filter(notEmpty) || [];
+  const { execute } = useAction(submitFormStep);
 
   const setCurrentStepAndFly = (step: Step) => {
     setCurrentStep(step);
-    map.current?.flyTo({
+    map?.flyTo({
       center: [step.longitude, step.latitude],
       zoom: step.zoom,
       pitch: step.pitch,
@@ -96,23 +60,53 @@ export function Map({ formWithSteps, formValues, sessionId }: MapProps) {
       let newSessionId = sessionId;
 
       if (!newSessionId) {
-        const { data } = await createFormSubmission({
+        const response = await createFormSubmission({
           formId: formWithSteps.id,
         });
 
-        if (data) {
-          newSessionId = data;
+        if (response?.data) {
+          newSessionId = response.data;
         }
       }
       setCurrentSession(newSessionId);
     })();
   }, []);
 
+  /**
+   * Fix the 's' query param if no valid step
+   */
+  useEffect(() => {
+    if (formWithSteps.steps[0] && (!s || !currentStep)) {
+      const firstStep = formWithSteps.steps[0];
+
+      router.push(
+        `${pathname}?${createQueryString("s", formWithSteps.steps[0].id)}`
+      );
+
+      map?.flyTo({
+        center: [firstStep.longitude, firstStep.latitude],
+        zoom: firstStep.zoom,
+        pitch: firstStep.pitch,
+        bearing: firstStep.bearing,
+        duration: 1000,
+      });
+    }
+  }, [
+    s,
+    map,
+    router,
+    pathname,
+    currentStep,
+    createQueryString,
+    formWithSteps.steps,
+  ]);
+
   const stepValues = (currentStep?.description?.content ?? []).reduce(
     (acc: Record<string, string>, block) => {
       const cellValue = formValues.find(
         (v) => v.column.blockNoteId === block.id
       );
+      // @ts-expect-error -- Value does exist here
       const value = cellValue?.stringCell?.value ?? cellValue?.pointCell?.value;
 
       if (value) {
@@ -133,10 +127,6 @@ export function Map({ formWithSteps, formValues, sessionId }: MapProps) {
       currentStep={currentStep}
       defaultFormValues={stepValues}
       mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
-      onLoad={() => {
-        const b = map.current?.getBounds();
-        setBounds(b);
-      }}
       onPrev={() => {
         const prevStepIndex =
           formWithSteps.steps.findIndex((step) => step.id === currentStep.id) -
@@ -164,13 +154,6 @@ export function Map({ formWithSteps, formValues, sessionId }: MapProps) {
         }
       }}
       points={points}
-      ref={map}
-      setViewState={setViewState}
-      viewState={viewState}
     />
   );
-}
-
-function notEmpty<TValue>(value: TValue | null | undefined): value is TValue {
-  return value !== null && value !== undefined;
 }

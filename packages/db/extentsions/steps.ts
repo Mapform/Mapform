@@ -1,6 +1,8 @@
-import { Prisma, Step } from "@prisma/client";
+import { Prisma, Step, Layer } from "@prisma/client";
 
 export type StepWithLocation = Step & {
+  layers: Layer[];
+} & {
   latitude: number;
   longitude: number;
   description?: {
@@ -169,30 +171,62 @@ export function stepsExtension() {
 
           // Order by Form.stepOrder using WITH ORDINALITY
           findManyWithLocation: async ({ formId }: { formId: string }) => {
-            const steps = (await prisma.$queryRaw`
-              SELECT "Step".*, ST_X("Location".geom) AS longitude, ST_Y("Location".geom) AS latitude
+            const stepLocations = (await prisma.$queryRaw`
+              SELECT "Step".id, ST_X("Location".geom) AS longitude, ST_Y("Location".geom) AS latitude
               FROM "Step"
               LEFT JOIN "Location" ON "Step"."locationId" = "Location".id
               WHERE "Step"."formId" = ${formId};
             `) as StepWithLocation[];
 
-            const form = await prisma.form.findUnique({
-              where: {
-                id: formId,
-              },
-              select: {
-                stepOrder: true,
-              },
-            });
+            const [form, steps] = await Promise.all([
+              prisma.form.findUnique({
+                where: {
+                  id: formId,
+                },
+                select: {
+                  stepOrder: true,
+                },
+              }),
+              prisma.step.findMany({
+                where: {
+                  id: { in: stepLocations.map((s) => s.id) },
+                },
+                include: {
+                  layers: true,
+                },
+              }),
+            ]);
 
             if (!form) {
               throw new Error("Form not found");
             }
 
+            if (!steps) {
+              throw new Error("Steps not found");
+            }
+
+            const joinedSteps = steps.map((step) => {
+              const stepLocation = stepLocations.find((s) => s.id === step.id);
+              return {
+                ...step,
+                latitude: stepLocation?.latitude,
+                longitude: stepLocation?.longitude,
+              };
+            });
+
             // Order the steps according to the form's stepOrder
             const orderedSteps = form.stepOrder
               .map((id) => {
-                return steps.find((step) => step.id === id);
+                const step = joinedSteps.find((step) => step.id === id);
+
+                return {
+                  ...step,
+                  layers:
+                    // Ordered layers
+                    step?.layerOrder.map((layerId) =>
+                      step?.layers.find((layer) => layer.id === layerId)
+                    ) ?? [],
+                };
               })
               .filter((s) => Boolean(s)) as StepWithLocation[];
 

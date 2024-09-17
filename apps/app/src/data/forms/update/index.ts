@@ -7,12 +7,19 @@ import { updateFormSchema } from "./schema";
 
 export const updateForm = authAction
   .schema(updateFormSchema)
-  .action(async ({ parsedInput: { formId, data }, ctx: { orgId } }) => {
+  .action(async ({ parsedInput: { formId, data }, ctx: { userId } }) => {
     const userForm = await prisma.form.findUnique({
       where: {
         id: formId,
         workspace: {
-          organizationId: orgId,
+          organization: {
+            members: {
+              some: {
+                // Ensure the user is a member of the organization
+                userId,
+              },
+            },
+          },
         },
       },
     });

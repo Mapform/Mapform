@@ -1,25 +1,11 @@
 "use client";
 
-import Map, {
-  type MapRef,
-  type ViewState,
-  type ViewStateChangeEvent,
-  Marker,
-  MapProvider,
-  useMap,
-  NavigationControl,
-  type LngLatBounds,
-} from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
-import {
-  type Dispatch,
-  type SetStateAction,
-  forwardRef,
-  useState,
-} from "react";
+import React, { useEffect, useState } from "react";
 import type { Step } from "@mapform/db";
 import { Form, useForm, zodResolver } from "@mapform/ui/components/form";
 import type { z } from "zod";
+import type { MapboxEvent } from "mapbox-gl";
 import { cn } from "@mapform/lib/classnames";
 import type { FormSchema } from "@mapform/lib/schemas/form-step-schema";
 import { CustomBlockContext } from "@mapform/blocknote";
@@ -28,18 +14,21 @@ import {
   getFormSchemaFromBlockNote,
 } from "@mapform/blocknote";
 import { useMeasure } from "@mapform/lib/hooks/use-measure";
+import type { Points, ViewState } from "@mapform/map-utils/types";
+import { Button } from "@mapform/ui/components/button";
+import { ChevronLeftIcon } from "lucide-react";
 import { Blocknote } from "./block-note";
-import { Data } from "./data";
+import { Map, MapProvider, useMap, type MBMap } from "./map";
+import { EditBar } from "./edit-bar";
+import "./style.css";
 
 type ExtendedStep = Step & { latitude: number; longitude: number };
 
 interface MapFormProps {
   editable?: boolean;
   mapboxAccessToken: string;
-  currentStep?: ExtendedStep;
-  viewState: ViewState;
+  currentStep: ExtendedStep;
   defaultFormValues?: Record<string, string>;
-  setViewState: Dispatch<SetStateAction<ViewState>>;
   contentViewType?: "full" | "partial" | "closed";
   onPrev?: () => void;
   onLoad?: () => void;
@@ -47,108 +36,272 @@ interface MapFormProps {
   onDescriptionChange?: (content: { content: CustomBlock[] }) => void;
   onStepSubmit?: (data: Record<string, string>) => void;
   onImageUpload?: (file: File) => Promise<string | null>;
-  onMoveEnd?: ((e: ViewStateChangeEvent) => void) | undefined;
-  points?: { id: number; latitude: number; longitude: number }[];
+  onLocationSave?: (location: ViewState) => Promise<{ success: boolean }>;
+  points?: Points;
+  editFields?: {
+    AddLocationDropdown: (input: {
+      stepId: string;
+      formId: string;
+      data: any;
+    }) => JSX.Element;
+  };
 }
 
-export const MapForm = forwardRef<MapRef, MapFormProps>(
-  (
-    {
-      editable = false,
-      onPrev,
-      mapboxAccessToken,
-      viewState,
-      setViewState,
-      currentStep,
-      onLoad,
-      onTitleChange,
-      onDescriptionChange,
-      onStepSubmit,
-      defaultFormValues,
-      onImageUpload,
-      onMoveEnd,
-      points = [],
+export function MapForm({
+  editable = false,
+  onPrev,
+  onLoad,
+  editFields,
+  currentStep,
+  points = [],
+  onStepSubmit,
+  onTitleChange,
+  onImageUpload,
+  onLocationSave,
+  defaultFormValues,
+  onDescriptionChange,
+}: MapFormProps) {
+  const { map } = useMap();
+  const blocknoteStepSchema = getFormSchemaFromBlockNote(
+    currentStep.description?.content || []
+  );
+  const form = useForm<z.infer<typeof blocknoteStepSchema>>({
+    resolver: zodResolver(blocknoteStepSchema),
+    defaultValues: defaultFormValues,
+  });
+  const [isSelectingPinLocationFor, setIsSelectingPinLocationFor] = useState<
+    string | null
+  >(null);
+  const { ref: drawerRef } = useMeasure<HTMLDivElement>();
+  const initialViewState = {
+    longitude: currentStep.longitude,
+    latitude: currentStep.latitude,
+    zoom: currentStep.zoom,
+    bearing: currentStep.bearing,
+    pitch: currentStep.pitch,
+    padding: {
+      top: 0,
+      bottom: 0,
+      left: 0,
+      right: 0,
     },
-    ref
-  ) => {
-    const blocknoteStepSchema = getFormSchemaFromBlockNote(
-      currentStep?.description?.content || []
-    );
-    const form = useForm<z.infer<typeof blocknoteStepSchema>>({
-      resolver: zodResolver(blocknoteStepSchema),
-      defaultValues: defaultFormValues,
-    });
-    const [isSelectingPinLocationFor, setIsSelectingPinLocationFor] = useState<
-      string | null
-    >(null);
-    const { ref: drawerRef, bounds } = useMeasure<HTMLDivElement>();
-
-    const onSubmit = (data: FormSchema) => {
-      onStepSubmit && onStepSubmit(data);
+  };
+  const [movedCoords, setMovedCoords] = useState<{
+    lat: number;
+    lng: number;
+    zoom: number;
+    pitch: number;
+    bearing: number;
+  }>({
+    lat: currentStep.latitude,
+    lng: currentStep.longitude,
+    zoom: currentStep.zoom,
+    pitch: currentStep.pitch,
+    bearing: currentStep.bearing,
+  });
+  const [searchLocation, setSearchLocation] = useState<{
+    id: string;
+    latitude: number;
+    longitude: number;
+    name: string;
+    description?: {
+      content: CustomBlock[];
     };
+  } | null>(null);
 
-    const pinBlocks = currentStep?.description?.content.filter((c) => {
-      return c.type === "pin";
+  const onSubmit = (data: FormSchema) => {
+    onStepSubmit?.(data);
+  };
+
+  const handleOnMove = (e: MapboxEvent) => {
+    setMovedCoords({
+      lat: e.target.getCenter().lat,
+      lng: e.target.getCenter().lng,
+      zoom: e.target.getZoom(),
+      pitch: e.target.getPitch(),
+      bearing: e.target.getBearing(),
     });
+  };
 
-    return (
-      <Form {...form}>
-        <form
-          className="relative w-full h-full"
-          onSubmit={form.handleSubmit(onSubmit)}
+  useEffect(() => {
+    if (map) {
+      map.on("moveend", handleOnMove);
+
+      return () => {
+        map.off("moveend", handleOnMove);
+      };
+    }
+  }, [map, currentStep]);
+
+  // Update movedCoords when the step changes
+  useEffect(() => {
+    setMovedCoords({
+      lat: currentStep.latitude,
+      lng: currentStep.longitude,
+      zoom: currentStep.zoom,
+      pitch: currentStep.pitch,
+      bearing: currentStep.bearing,
+    });
+  }, [currentStep]);
+
+  const pinBlocks = currentStep.description?.content.filter((c) => {
+    return c.type === "pin";
+  });
+
+  const roundLocation = (num: number) => Math.round(num * 1000000) / 1000000;
+
+  const hasMoved =
+    roundLocation(movedCoords.lat) !== roundLocation(currentStep.latitude) ||
+    roundLocation(movedCoords.lng) !== roundLocation(currentStep.longitude) ||
+    movedCoords.zoom !== currentStep.zoom ||
+    movedCoords.pitch !== currentStep.pitch ||
+    movedCoords.bearing !== currentStep.bearing;
+
+  const AddLocationDropdown = editFields?.AddLocationDropdown;
+
+  return (
+    <Form {...form}>
+      <form
+        className="relative w-full h-full flex"
+        onSubmit={form.handleSubmit(onSubmit)}
+      >
+        <CustomBlockContext.Provider
+          value={{
+            editable,
+            onImageUpload,
+            isSelectingPinLocationFor,
+            setIsSelectingPinLocationFor,
+          }}
         >
-          <CustomBlockContext.Provider
-            value={{
-              editable,
-              viewState: {
-                ...viewState,
-                padding: {
-                  left: bounds.width || 0,
-                  right: 0,
-                  top: 0,
-                  bottom: 0,
-                },
-              },
-              setViewState,
-              onImageUpload,
-              isSelectingPinLocationFor,
-              setIsSelectingPinLocationFor,
-            }}
+          <div
+            className={cn(
+              "group absolute bg-background z-10 w-[360px]",
+              currentStep.contentViewType === "TEXT"
+                ? "h-full w-full p-2 pb-0 z-10"
+                : currentStep.contentViewType === "SPLIT"
+                  ? "h-full p-2 pb-0 m-0"
+                  : "h-initial rounded-lg shadow-lg p-0 m-2"
+            )}
+            ref={drawerRef}
           >
             <div
+              className={cn("h-full", {
+                // "pl-9": editable,
+                "px-9": editable && currentStep.contentViewType === "TEXT",
+                "pl-9": editable && currentStep.contentViewType !== "TEXT",
+              })}
+            >
+              <Blocknote
+                contentViewType={currentStep.contentViewType}
+                currentStep={currentStep}
+                description={currentStep.description ?? undefined}
+                // Need key to force re-render, otherwise Blocknote state doesn't
+                // change when changing steps
+                editable={editable}
+                isPage
+                key={currentStep.id}
+                onDescriptionChange={onDescriptionChange}
+                onPrev={onPrev}
+                onTitleChange={onTitleChange}
+                title={currentStep.title}
+              >
+                <div className="mt-auto flex justify-between p-4 pt-0">
+                  <div className="gap-2">
+                    <Button
+                      disabled={editable}
+                      onClick={onPrev}
+                      size="icon"
+                      type="button"
+                      variant="ghost"
+                    >
+                      <ChevronLeftIcon />
+                    </Button>
+                  </div>
+                  <Button disabled={editable} type="submit">
+                    Next
+                  </Button>
+                </div>
+              </Blocknote>
+            </div>
+          </div>
+
+          {/* MARKER EDITOR */}
+          {searchLocation ? (
+            <div
               className={cn(
-                "absolute top-0 left-0 bottom-0 w-full flex-shrink-0 backdrop-blur-md bg-white/85 shadow z-10 transition-[width,transform]",
-                currentStep?.contentViewType === "FULL"
-                  ? "w-full"
-                  : "w-[320px] lg:w-[400px]"
+                "group absolute bg-background z-10 w-[360px]",
+                currentStep.contentViewType === "TEXT"
+                  ? "h-full w-full p-2 pb-0 z-10"
+                  : currentStep.contentViewType === "SPLIT"
+                    ? "h-full p-2 pb-0 m-0"
+                    : "h-initial rounded-lg shadow-lg p-0 m-2"
               )}
               ref={drawerRef}
-              style={{
-                transform: `translateX(${
-                  currentStep?.contentViewType === "HIDDEN" ? -bounds.width : 0
-                }px)`,
-              }}
             >
-              {currentStep ? (
+              <div
+                className={cn("h-full", {
+                  // "pl-9": editable,
+                  "px-9": editable && currentStep.contentViewType === "TEXT",
+                  "pl-9": editable && currentStep.contentViewType !== "TEXT",
+                })}
+              >
                 <Blocknote
-                  defaultFormValues={defaultFormValues}
-                  description={currentStep.description ?? undefined}
+                  contentViewType={currentStep.contentViewType}
+                  currentStep={currentStep}
+                  description={searchLocation.description ?? undefined}
                   // Need key to force re-render, otherwise Blocknote state doesn't
                   // change when changing steps
                   editable={editable}
-                  key={currentStep.id}
-                  onDescriptionChange={onDescriptionChange}
-                  onPrev={onPrev}
-                  onTitleChange={onTitleChange}
-                  title={currentStep.title}
-                />
-              ) : null}
+                  key={searchLocation.id}
+                  locationEditorProps={{
+                    onClose: () => {
+                      setSearchLocation(null);
+                    },
+                  }}
+                  onDescriptionChange={(val) => {
+                    setSearchLocation((prev) => ({
+                      id: prev?.id ?? "",
+                      description: val,
+                      name: prev?.name ?? "",
+                      latitude: prev?.latitude ?? 0,
+                      longitude: prev?.longitude ?? 0,
+                    }));
+                  }}
+                  onTitleChange={(val) => {
+                    setSearchLocation((prev) => ({
+                      ...prev,
+                      name: val,
+                      id: prev?.id ?? "",
+                      latitude: prev?.latitude ?? 0,
+                      longitude: prev?.longitude ?? 0,
+                    }));
+                  }}
+                  title={searchLocation.name}
+                >
+                  {editable && AddLocationDropdown && currentStep.formId ? (
+                    <div className="p-4 ml-auto">
+                      <AddLocationDropdown
+                        data={{
+                          type: "Feature",
+                          geometry: {
+                            type: "Point",
+                            coordinates: [
+                              searchLocation.longitude,
+                              searchLocation.latitude,
+                            ],
+                          },
+                          properties: {},
+                        }}
+                        formId={currentStep.formId}
+                        stepId={currentStep.id}
+                      />
+                    </div>
+                  ) : null}
+                </Blocknote>
+              </div>
             </div>
-            <Map
-              {...viewState}
-              mapStyle="mapbox://styles/nichaley/clsxaiasf00ue01qjfhtt2v81"
-              mapboxAccessToken={mapboxAccessToken}
-              onLoad={onLoad}
+          ) : null}
+          {/* <Map
               onMove={(event) => {
                 setViewState((prev) => ({
                   ...prev,
@@ -156,14 +309,7 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
                 }));
               }}
               onMoveEnd={onMoveEnd}
-              projection={{
-                name: "globe",
-              }}
-              ref={ref}
-              style={{ flex: 1 }}
             >
-              <NavigationControl />
-
               {isSelectingPinLocationFor ? (
                 <Marker
                   color="red"
@@ -173,7 +319,10 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
               ) : (
                 pinBlocks?.map((block) => {
                   // @ts-expect-error -- This does in fact exist. Because the form is dynamic, TS can't infer the type.
-                  const latitude = form.watch(`${block.id}.latitude`) as number;
+                  const latitude = form.watch(
+                    // @ts-expect-error -- This does in fact exist. Because the form is dynamic, TS can't infer the type.
+                    `${block.id}.latitude`
+                  ) as number;
                   // @ts-expect-error -- This does in fact exist. Because the form is dynamic, TS can't infer the type.
                   const longitude = form.watch(
                     // @ts-expect-error -- This does in fact exist. Because the form is dynamic, TS can't infer the type.
@@ -201,17 +350,53 @@ export const MapForm = forwardRef<MapRef, MapFormProps>(
                 })
               )}
 
-              {/* Render active data points */}
               <Data points={points} />
-            </Map>
-          </CustomBlockContext.Provider>
-        </form>
-      </Form>
-    );
-  }
-);
+            </Map> */}
+          {currentStep.contentViewType !== "TEXT" ? (
+            <div className="relative flex flex-1 overflow-hidden">
+              <Map
+                editable={editable}
+                initialViewState={initialViewState}
+                marker={
+                  searchLocation
+                    ? {
+                        latitude: searchLocation.latitude,
+                        longitude: searchLocation.longitude,
+                      }
+                    : undefined
+                }
+                onLoad={onLoad}
+                points={points}
+              />
+
+              {/* Edit bar */}
+              {editable ? (
+                <div
+                  className="flex items-center bg-primary rounded-lg px-2 py-0 absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10"
+                  style={{
+                    left:
+                      currentStep.contentViewType === "SPLIT"
+                        ? "calc(50% + 180px)"
+                        : "50%",
+                  }}
+                >
+                  <EditBar
+                    hasMoved={hasMoved}
+                    initialViewState={initialViewState}
+                    onLocationSave={onLocationSave}
+                    setSearchLocation={setSearchLocation}
+                  />
+                </div>
+              ) : null}
+            </div>
+          ) : null}
+        </CustomBlockContext.Provider>
+      </form>
+    </Form>
+  );
+}
 
 MapForm.displayName = "MapForm";
 
 export { MapProvider, useMap };
-export type { ViewState, ViewStateChangeEvent, MapRef, LngLatBounds };
+export type { ViewState, MBMap };

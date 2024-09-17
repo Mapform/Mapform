@@ -11,21 +11,29 @@ import {
 } from "@blocknote/react";
 import "@blocknote/mantine/style.css";
 import { BlockNoteView } from "@blocknote/mantine";
-import { TextIcon, ChevronLeftIcon, ImageIcon, MapPinIcon } from "lucide-react";
+import { TextIcon, ImageIcon, MapPinIcon, XIcon } from "lucide-react";
 import { Button } from "@mapform/ui/components/button";
+import { cn } from "@mapform/lib/classnames";
+import type { ContentViewType, Step } from "@mapform/db";
 import { schema, type CustomBlock } from "@mapform/blocknote";
-import "./style.css";
-import { AutoSizeTextArea } from "./autosize-text-area";
-import { CustomSideMenu } from "./side-menu";
+import { AutoSizeTextArea } from "../components/autosize-text-area";
+import { CustomSideMenu } from "../components/side-menu";
+
+type ExtendedStep = Step & { latitude: number; longitude: number };
 
 interface BlocknoteProps {
   editable: boolean;
   title?: string | null;
+  currentStep: ExtendedStep;
   description?: {
     content: CustomBlock[];
   };
-  defaultFormValues?: Record<string, string>;
-  onNext?: () => void;
+  isPage?: boolean;
+  children?: React.ReactNode;
+  contentViewType: ContentViewType;
+  locationEditorProps?: {
+    onClose: () => void;
+  };
   onPrev?: () => void;
   onTitleChange?: (content: string) => void;
   onDescriptionChange?: (content: { content: CustomBlock[] }) => void;
@@ -33,11 +41,14 @@ interface BlocknoteProps {
 
 export function Blocknote({
   title,
-  onPrev,
   editable,
+  children,
   description,
   onTitleChange,
+  isPage = false,
+  contentViewType,
   onDescriptionChange,
+  locationEditorProps,
 }: BlocknoteProps) {
   const [uncontrolledTitle, setUncontrolledTitle] = useState<string>(
     title || ""
@@ -46,7 +57,7 @@ export function Blocknote({
   const editor = useCreateBlockNote({
     initialContent: description?.content,
     placeholders: {
-      default: "Write something, or press '/' for commands...",
+      default: "Write, or press '/' for commands...",
     },
     schema,
   });
@@ -89,10 +100,26 @@ export function Blocknote({
 
   // Renders the editor instance using a React component.
   return (
-    <div className="h-full flex flex-col prose mx-auto">
+    <div
+      className={cn("h-full flex flex-col prose mx-auto relative", {
+        "max-h-[300px]": contentViewType === "MAP",
+      })}
+    >
       <div className="flex-1 flex flex-col overflow-y-auto">
+        {locationEditorProps ? (
+          <Button
+            className="absolute top-2 right-2"
+            onClick={locationEditorProps.onClose}
+            size="icon-sm"
+            type="button"
+            variant="ghost"
+          >
+            <XIcon className="size-4" />
+          </Button>
+        ) : null}
+
         {/* Content */}
-        <div className="overflow-y-auto p-4 pb-0">
+        <div className="overflow-y-auto p-4">
           {/* Title */}
           {editable ? (
             <AutoSizeTextArea
@@ -134,9 +161,10 @@ export function Blocknote({
                 return filterSuggestionItems(
                   [
                     ...getDefaultReactSlashMenuItems(editor),
-
-                    insertPin(editor),
-                    insertTextInput(editor),
+                    // Only provide inputs for pages
+                    ...(isPage
+                      ? [insertTextInput(editor), insertPin(editor)]
+                      : []),
                     insertImage(editor),
                   ],
                   query
@@ -155,22 +183,7 @@ export function Blocknote({
           }}
         />
       </div>
-      <div className="mt-auto flex justify-between p-4">
-        <div className="gap-2">
-          <Button
-            disabled={editable}
-            onClick={onPrev}
-            size="icon"
-            type="button"
-            variant="ghost"
-          >
-            <ChevronLeftIcon />
-          </Button>
-        </div>
-        <Button disabled={editable} type="submit">
-          Next
-        </Button>
-      </div>
+      {children}
     </div>
   );
 }
