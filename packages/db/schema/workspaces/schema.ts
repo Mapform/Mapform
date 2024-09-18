@@ -1,12 +1,6 @@
-import {
-  boolean,
-  timestamp,
-  pgTable,
-  text,
-  primaryKey,
-  integer,
-  varchar,
-} from "drizzle-orm/pg-core";
+import { timestamp, pgTable, text, varchar } from "drizzle-orm/pg-core";
+import { relations } from "../../utils";
+import { workspaceMemberships } from "../workspace-memberships";
 
 export const workspaces = pgTable("workspace", {
   id: text("id").primaryKey(),
@@ -22,3 +16,7 @@ export const workspaces = pgTable("workspace", {
     .$onUpdate(() => new Date())
     .notNull(),
 });
+
+export const workspacesRelations = relations(workspaces, ({ many }) => ({
+  workspaceMemberships: many(workspaceMemberships),
+}));

@@ -1,3 +1,4 @@
+import { relations } from "drizzle-orm";
 import {
   boolean,
   timestamp,
@@ -8,6 +9,7 @@ import {
   varchar,
 } from "drizzle-orm/pg-core";
 import type { AdapterAccountType } from "next-auth/adapters";
+import { workspaceMemberships } from "../workspace-memberships";
 
 export const users = pgTable("user", {
   id: text("id").primaryKey(),
@@ -17,6 +19,10 @@ export const users = pgTable("user", {
   image: text("image"),
   hasOnboarded: boolean("hasOnboarded").notNull().default(false),
 });
+
+export const usersRelations = relations(users, ({ many }) => ({
+  workspaceMemberships: many(workspaceMemberships),
+}));
 
 export const accounts = pgTable(
   "account",
