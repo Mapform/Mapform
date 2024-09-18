@@ -338,6 +338,9 @@ importers:
       drizzle-orm:
         specifier: ^0.33.0
         version: 0.33.0(@neondatabase/serverless@0.9.0)(@prisma/client@5.17.0)(@types/pg@8.11.10)(pg@8.13.0)(prisma@5.17.0)(react@18.2.0)
+      drizzle-zod:
+        specifier: ^0.5.1
+        version: 0.5.1(drizzle-orm@0.33.0)(zod@3.23.8)
       pg:
         specifier: ^8.13.0
         version: 8.13.0
@@ -350,6 +353,9 @@ importers:
       ws:
         specifier: ^8.16.0
         version: 8.16.0(bufferutil@4.0.8)
+      zod:
+        specifier: 3.23.8
+        version: 3.23.8
     optionalDependencies:
       bufferutil:
         specifier: ^4.0.8
@@ -5345,6 +5351,16 @@ packages:
       pg: 8.13.0
       prisma: 5.17.0
       react: 18.2.0
+    dev: false
+
+  /drizzle-zod@0.5.1(drizzle-orm@0.33.0)(zod@3.23.8):
+    resolution: {integrity: sha512-C/8bvzUH/zSnVfwdSibOgFjLhtDtbKYmkbPbUCq46QZyZCH6kODIMSOgZ8R7rVjoI+tCj3k06MRJMDqsIeoS4A==}
+    peerDependencies:
+      drizzle-orm: '>=0.23.13'
+      zod: '*'
+    dependencies:
+      drizzle-orm: 0.33.0(@neondatabase/serverless@0.9.0)(@prisma/client@5.17.0)(@types/pg@8.11.10)(pg@8.13.0)(prisma@5.17.0)(react@18.2.0)
+      zod: 3.23.8
     dev: false
 
   /earcut@2.2.4:
