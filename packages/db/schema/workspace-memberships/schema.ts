@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { primaryKey } from "drizzle-orm/pg-core";
+import { primaryKey, text } from "drizzle-orm/pg-core";
 import { pgTable, integer } from "drizzle-orm/pg-core";
 import { users } from "../users";
 import { workspaces } from "../workspaces";
@@ -7,10 +7,10 @@ import { workspaces } from "../workspaces";
 export const workspaceMemberships = pgTable(
   "workspace_membership",
   {
-    userId: integer("user_id")
+    userId: text("user_id")
       .notNull()
       .references(() => users.id),
-    workspaceId: integer("workspace_id")
+    workspaceId: text("workspace_id")
       .notNull()
       .references(() => workspaces.id),
   },

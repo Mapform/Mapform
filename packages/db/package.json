@@ -3,14 +3,13 @@
   "version": "0.1.0",
   "main": "index.ts",
   "scripts": {
-    "push": "drizzle-kit push",
-    "generate": "drizzle-kit generate",
-    "migrate": "drizzle-kit migrate",
-    "studio": "drizzle-kit studio",
-    "db:generate": "prisma generate",
-    "db:migrate": "prisma migrate dev",
-    "db:studio": "prisma studio",
-    "postinstall": "prisma generate"
+    "db:drop": "drizzle-kit drop",
+    "db:push": "drizzle-kit push",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:studio": "drizzle-kit studio",
+    "db:squash": "pnpm db:drop && pnpm db:generate && pnpm db:migrate",
+    "postinstall": "pnpm db:generate"
   },
   "prisma": {
     "seed": "ts-node --transpile-only --compiler-options {\"module\":\"CommonJS\"} ./prisma/seed.ts"
