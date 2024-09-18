@@ -8,10 +8,10 @@ import { completeOnboardingSchema } from "./schema";
 
 export const completeOnboarding = authAction
   .schema(completeOnboardingSchema)
-  .action(async ({ parsedInput: { userName }, ctx: { userId } }) => {
+  .action(async ({ parsedInput: { name }, ctx: { userId } }) => {
     const randomChars = Math.random().toString(36).substring(7);
 
-    const orgName = `${userName}'s Mapform`;
+    const orgName = `${name}'s Mapform`;
     const orgSlug = `${slugify(orgName, {
       lower: true,
       strict: true,
@@ -28,12 +28,15 @@ export const completeOnboarding = authAction
       throw new Error("User has already onboarded");
     }
 
-    await db
-      .update(users)
-      .set({
-        hasOnboarded: true,
-      })
-      .where(eq(users.id, userId));
+    await db.transaction(async (tx) => {
+      await tx
+        .update(users)
+        .set({
+          name,
+          hasOnboarded: true,
+        })
+        .where(eq(users.id, userId));
+    });
 
     // await db.update(users).set({
     //   where: {
