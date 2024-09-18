@@ -1,7 +1,9 @@
 "use server";
 
 import slugify from "slugify";
-import { db, eq, users } from "@mapform/db";
+import { db } from "@mapform/db";
+import { eq } from "@mapform/db/utils";
+import { users } from "@mapform/db/schema";
 import { redirect } from "next/navigation";
 import { authAction } from "~/lib/safe-action";
 import { completeOnboardingSchema } from "./schema";

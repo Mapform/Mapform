@@ -1,5 +1,11 @@
 import NextAuth from "next-auth";
-import { db, users, accounts, sessions, verificationTokens } from "@mapform/db";
+import { db } from "@mapform/db";
+import {
+  users,
+  accounts,
+  sessions,
+  verificationTokens,
+} from "@mapform/db/schema";
 import Resend from "next-auth/providers/resend";
 // import { PrismaAdapter } from "@auth/prisma-adapter";
 import { DrizzleAdapter } from "@auth/drizzle-adapter";

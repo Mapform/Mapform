@@ -1,7 +1,7 @@
 {
   "name": "@mapform/db",
   "version": "0.1.0",
-  "main": "src/index.ts",
+  "main": "index.ts",
   "scripts": {
     "push": "drizzle-kit push",
     "generate": "drizzle-kit generate",
