@@ -1,7 +1,7 @@
 "use server";
 
 import slugify from "slugify";
-import { prisma } from "@mapform/db";
+import { db, eq, users } from "@mapform/db";
 import { redirect } from "next/navigation";
 import { authAction } from "~/lib/safe-action";
 import { completeOnboardingSchema } from "./schema";
@@ -20,51 +20,56 @@ export const completeOnboarding = authAction
     const workspaceName = "Personal";
     const workspaceSlug = "personal";
 
-    const user = await prisma.user.findUnique({
-      where: {
-        id: userId,
-      },
+    const user = await db.query.users.findFirst({
+      where: eq(users.id, userId),
     });
 
     if (user?.hasOnboarded) {
       throw new Error("User has already onboarded");
     }
 
-    await prisma.user.update({
-      where: {
-        id: userId,
-      },
-      data: {
+    await db
+      .update(users)
+      .set({
         hasOnboarded: true,
-        organizationMemberships: {
-          create: {
-            role: "OWNER",
-            organization: {
-              create: {
-                slug: orgSlug,
-                name: orgName,
-                workspaces: {
-                  create: {
-                    slug: workspaceSlug,
-                    name: workspaceName,
-                    members: {
-                      create: {
-                        role: "OWNER",
-                        user: {
-                          connect: {
-                            id: userId,
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-    });
+      })
+      .where(eq(users.id, userId));
+
+    // await db.update(users).set({
+    //   where: {
+    //     id: userId,
+    //   },
+    //   data: {
+    //     hasOnboarded: true,
+    //     organizationMemberships: {
+    //       create: {
+    //         role: "OWNER",
+    //         organization: {
+    //           create: {
+    //             slug: orgSlug,
+    //             name: orgName,
+    //             workspaces: {
+    //               create: {
+    //                 slug: workspaceSlug,
+    //                 name: workspaceName,
+    //                 members: {
+    //                   create: {
+    //                     role: "OWNER",
+    //                     user: {
+    //                       connect: {
+    //                         id: userId,
+    //                       },
+    //                     },
+    //                   },
+    //                 },
+    //               },
+    //             },
+    //           },
+    //         },
+    //       },
+    //     },
+    //   },
+    // });
 
     redirect("/");
   });
