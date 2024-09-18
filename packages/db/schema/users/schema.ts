@@ -7,12 +7,14 @@ import {
   primaryKey,
   integer,
   varchar,
+  uuid,
 } from "drizzle-orm/pg-core";
 import type { AdapterAccountType } from "next-auth/adapters";
 import { workspaceMemberships } from "../workspace-memberships";
+import { teamspaceMemberships } from "../teamspace-memberships";
 
 export const users = pgTable("user", {
-  id: text("id").primaryKey(),
+  id: uuid("id").primaryKey().defaultRandom(),
   name: varchar("name", { length: 256 }),
   email: text("email").unique(),
   emailVerified: timestamp("emailVerified", { mode: "date" }),
@@ -22,6 +24,7 @@ export const users = pgTable("user", {
 
 export const usersRelations = relations(users, ({ many }) => ({
   workspaceMemberships: many(workspaceMemberships),
+  teamspaceMemberships: many(teamspaceMemberships),
 }));
 
 export const accounts = pgTable(

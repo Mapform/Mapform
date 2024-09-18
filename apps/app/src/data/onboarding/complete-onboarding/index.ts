@@ -3,7 +3,7 @@
 import slugify from "slugify";
 import { db } from "@mapform/db";
 import { eq } from "@mapform/db/utils";
-import { users } from "@mapform/db/schema";
+import { users, workspaceMemberships, workspaces } from "@mapform/db/schema";
 import { redirect } from "next/navigation";
 import { authAction } from "~/lib/safe-action";
 import { completeOnboardingSchema } from "./schema";
@@ -13,14 +13,14 @@ export const completeOnboarding = authAction
   .action(async ({ parsedInput: { name }, ctx: { userId } }) => {
     const randomChars = Math.random().toString(36).substring(7);
 
-    const orgName = `${name}'s Mapform`;
-    const orgSlug = `${slugify(orgName, {
+    const workspaceName = `${name}'s Mapform`;
+    const workspacelug = `${slugify(workspaceName, {
       lower: true,
       strict: true,
     })}-${randomChars}`;
 
-    const workspaceName = "Personal";
-    const workspaceSlug = "personal";
+    const teamspaceName = "Personal";
+    const teamspaceSlug = "personal";
 
     const user = await db.query.users.findFirst({
       where: eq(users.id, userId),
@@ -38,6 +38,23 @@ export const completeOnboarding = authAction
           hasOnboarded: true,
         })
         .where(eq(users.id, userId));
+
+      const [workspace] = await tx
+        .insert(workspaces)
+        .values({
+          slug: workspacelug,
+          name: workspaceName,
+        })
+        .returning();
+
+      if (!workspace) {
+        throw new Error("Failed to create workspace");
+      }
+
+      await tx.insert(workspaceMemberships).values({
+        userId,
+        workspaceId: workspace?.id,
+      });
     });
 
     // await db.update(users).set({
