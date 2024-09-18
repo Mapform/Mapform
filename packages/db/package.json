@@ -14,8 +14,11 @@
   "devDependencies": {
     "@mapform/blocknote": "workspace:*",
     "@types/node": "^20.11.24",
+    "@types/pg": "^8.11.10",
     "@types/uuid": "^9.0.8",
     "@types/ws": "^8.5.10",
+    "drizzle-kit": "^0.24.2",
+    "next-auth": "5.0.0-beta.20",
     "prisma": "^5.17.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.5.4"
@@ -26,6 +29,8 @@
     "@prisma/adapter-neon": "^5.17.0",
     "@prisma/client": "^5.17.0",
     "dotenv": "^16.4.5",
+    "drizzle-orm": "^0.33.0",
+    "pg": "^8.13.0",
     "prisma-json-types-generator": "^3.0.4",
     "uuid": "^9.0.1",
     "ws": "^8.16.0"
