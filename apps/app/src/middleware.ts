@@ -28,19 +28,8 @@ export default auth(async (req) => {
   }
 
   /**
-   * Redirect to onboarding if the user has not onboarded yet
+   * Prevent requests to workspace that the user is not a member of
    */
-  if (reqUrl.pathname !== "/onboarding" && !req.auth.user?.hasOnboarded) {
-    return NextResponse.redirect(new URL(`/onboarding`, req.url));
-  }
-
-  /**
-   * Don't let them go back to onboarding once they've onboarded
-   */
-  if (reqUrl.pathname === "/onboarding" && req.auth.user?.hasOnboarded) {
-    return NextResponse.redirect(new URL(`/`, req.url));
-  }
-
   if (req.auth.user?.id && !isPublicAppPath) {
     const workspaceSlug = req.nextUrl.pathname.split("/")[1];
     const hasWorkspaceSlug =
@@ -75,6 +64,20 @@ export default auth(async (req) => {
 
       return NextResponse.redirect(new URL(`/account`, req.url));
     }
+  }
+
+  /**
+   * Redirect to onboarding if the user has not onboarded yet
+   */
+  if (reqUrl.pathname !== "/onboarding" && !req.auth.user?.hasOnboarded) {
+    return NextResponse.redirect(new URL(`/onboarding`, req.url));
+  }
+
+  /**
+   * Don't let them go back to onboarding once they've onboarded
+   */
+  if (reqUrl.pathname === "/onboarding" && req.auth.user?.hasOnboarded) {
+    return NextResponse.redirect(new URL(`/`, req.url));
   }
 }) as ReturnType<typeof auth>;
 
