@@ -1,12 +1,20 @@
 import { db } from "@mapform/db";
-import { users } from "@mapform/db/schema";
+import { users, workspaceMemberships, workspaces } from "@mapform/db/schema";
 import { eq } from "@mapform/db/utils";
 import { NextResponse } from "next/server";
 import { auth, BASE_PATH } from "~/lib/auth";
 
+const publicAppPaths = ["/onboarding"];
+
 // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- This shows an ugly TS error otherwise
 export default auth(async (req) => {
   const reqUrl = new URL(req.url);
+
+  const pathname = req.nextUrl.pathname;
+
+  const isPublicAppPath = publicAppPaths.some((path) =>
+    pathname.startsWith(path)
+  );
 
   if (!req.auth) {
     return NextResponse.redirect(
@@ -33,32 +41,40 @@ export default auth(async (req) => {
     return NextResponse.redirect(new URL(`/`, req.url));
   }
 
-  /**
-   * Redirect root to account
-   */
-  if (reqUrl.pathname === "/" && req.auth.user?.id) {
-    const userWithWorkspaces = await db.query.users.findFirst({
-      where: eq(users.id, req.auth.user.id),
-      with: {
-        workspaceMemberships: {
-          with: {
-            workspace: {
-              columns: {
-                slug: true,
-              },
-            },
-          },
-        },
-      },
-    });
-    const firstWorkspace =
-      userWithWorkspaces?.workspaceMemberships[0]?.workspace;
+  if (req.auth.user?.id && !isPublicAppPath) {
+    const workspaceSlug = req.nextUrl.pathname.split("/")[1];
+    const hasWorkspaceSlug =
+      Boolean(workspaceSlug) && workspaceSlug?.trim() !== "";
 
-    if (firstWorkspace) {
-      return NextResponse.redirect(new URL(`/${firstWorkspace.slug}`, req.url));
+    const allowedWorkspaces = await db
+      .select()
+      .from(workspaceMemberships)
+      .innerJoin(users, eq(users.id, workspaceMemberships.userId))
+      .innerJoin(
+        workspaces,
+        eq(workspaces.id, workspaceMemberships.workspaceId)
+      )
+      .where(eq(users.id, req.auth.user.id));
+
+    if (hasWorkspaceSlug) {
+      const hasAccessToWorkspace = allowedWorkspaces.find(
+        ({ workspace }) => workspace.slug === workspaceSlug
+      );
+
+      if (!hasAccessToWorkspace) {
+        return NextResponse.redirect(new URL("/", req.url));
+      }
+    } else if (allowedWorkspaces.length > 0) {
+      const firstWorkspace = allowedWorkspaces[0]?.workspace;
+
+      if (firstWorkspace) {
+        return NextResponse.redirect(
+          new URL(`/${firstWorkspace.slug}`, req.url)
+        );
+      }
+
+      return NextResponse.redirect(new URL(`/account`, req.url));
     }
-
-    return NextResponse.redirect(new URL(`/account`, req.url));
   }
 }) as ReturnType<typeof auth>;
 

@@ -25,7 +25,7 @@ export default async function Layout({
       currentWorkspaceSlug={params.wsSlug}
       topContent={
         <TopContent
-          orgSlug={params.wsSlug}
+          workspaceSlug={params.wsSlug}
           workspaceWithTeamspaces={workspaceWithTeamspaces}
         />
       }

@@ -62,7 +62,7 @@ export function SwitcherPopover({
             </Link>
           </div>
           <h3 className="text-xs font-semibold leading-6 text-stone-400 mb-1">
-            Organizations
+            Workspaces
           </h3>
           <ul className="text-sm">
             {workspaceMemberships?.map((membership) => (
@@ -72,7 +72,7 @@ export function SwitcherPopover({
               >
                 <Link
                   className="flex items-center justify-between hover:bg-stone-100 py-1.5 px-2 -mx-2 transition-colors rounded"
-                  href={`/orgs/${membership.workspace.slug}`}
+                  href={`/${membership.workspace.slug}`}
                 >
                   <div className="flex items-center gap-2 overflow-hidden">
                     <div className="h-4 w-4 flex items-center justify-center flex-shrink-0">
@@ -100,7 +100,7 @@ export function SwitcherPopover({
                 <div className="h-4 w-4 flex items-center justify-center">
                   <PlusIcon className="h-4 w-4 text-stone-500 flex-shrink-0" />
                 </div>
-                Create organization (Coming soon)
+                Create workspace (Coming soon)
               </button>
             </li>
           </ul>

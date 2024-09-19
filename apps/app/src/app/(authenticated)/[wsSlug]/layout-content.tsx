@@ -34,19 +34,19 @@ export function BottomContent() {
 }
 
 export function TopContent({
-  orgSlug,
+  workspaceSlug,
   workspaceWithTeamspaces,
 }: {
-  orgSlug: string;
+  workspaceSlug: string;
   workspaceWithTeamspaces: NonNullable<WorkspaceWithTeamspaces>;
 }) {
   const router = useRouter();
   const pathname = usePathname();
 
   const topLinks = [
-    { href: `/orgs/${orgSlug}`, icon: HomeIcon, label: "Home" },
+    { href: `/${workspaceSlug}`, icon: HomeIcon, label: "Home" },
     {
-      href: `/orgs/${orgSlug}/settings`,
+      href: `/${workspaceSlug}/settings`,
       icon: SettingsIcon,
       label: "Settings",
     },
@@ -54,7 +54,7 @@ export function TopContent({
 
   const isFormActive = (workspaceSlug: string, formId: string) => {
     return pathname.includes(
-      `/orgs/${orgSlug}/workspaces/${workspaceSlug}/forms/${formId}`
+      `/orgs/${workspaceSlug}/workspaces/${workspaceSlug}/forms/${formId}`
     );
   };
 
@@ -93,20 +93,20 @@ export function TopContent({
                     "-mx-3 hover:bg-stone-100 pl-2 pr-2 py-1 rounded transition-colors flex items-center justify-between mb-[2px] cursor-pointer",
                     {
                       "bg-stone-100 text-stone-900": pathname.includes(
-                        `/orgs/${orgSlug}/workspaces/${teamspace.slug}`
+                        `/orgs/${workspaceSlug}/workspaces/${teamspace.slug}`
                       ),
                     }
                   )}
                   // We use an on click event handler instead of a Link so that the nested e.stopPropagation() works
                   onClick={() => {
                     router.push(
-                      `/orgs/${orgSlug}/workspaces/${teamspace.slug}`
+                      `/orgs/${workspaceSlug}/workspaces/${teamspace.slug}`
                     );
                   }}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
                       router.push(
-                        `/orgs/${orgSlug}/workspaces/${teamspace.slug}`
+                        `/orgs/${workspaceSlug}/workspaces/${teamspace.slug}`
                       );
                     }
                   }}
@@ -128,7 +128,7 @@ export function TopContent({
                 {/* <AccordionPrimitive.Content>
                   {workspace.forms.map((form) => (
                     <NavLink
-                      href={`/orgs/${orgSlug}/workspaces/${workspace.slug}/forms/${form.id}`}
+                      href={`/orgs/${workspaceSlug}/workspaces/${workspace.slug}/forms/${form.id}`}
                       icon={MapIcon}
                       isActive={isFormActive(workspace.slug, form.id)}
                       key={form.id}
