@@ -1,5 +1,5 @@
 {
-  "id": "d0d15a6e-8e80-4054-8973-3b2e1dec759c",
+  "id": "634eccbb-5021-4e01-9fde-e9c2a203aa8f",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -335,6 +335,12 @@
           "notNull": true,
           "default": "gen_random_uuid()"
         },
+        "slug": {
+          "name": "slug",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": true
+        },
         "name": {
           "name": "name",
           "type": "varchar(256)",
@@ -366,11 +372,11 @@
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "workspace_name_unique": {
-          "name": "workspace_name_unique",
+        "workspace_slug_unique": {
+          "name": "workspace_slug_unique",
           "nullsNotDistinct": false,
           "columns": [
-            "name"
+            "slug"
           ]
         }
       }
@@ -450,6 +456,12 @@
           "notNull": true,
           "default": "gen_random_uuid()"
         },
+        "slug": {
+          "name": "slug",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": true
+        },
         "name": {
           "name": "name",
           "type": "varchar(256)",
@@ -487,11 +499,11 @@
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "teamspace_name_unique": {
-          "name": "teamspace_name_unique",
+        "teamspace_slug_unique": {
+          "name": "teamspace_slug_unique",
           "nullsNotDistinct": false,
           "columns": [
-            "name"
+            "slug"
           ]
         }
       }

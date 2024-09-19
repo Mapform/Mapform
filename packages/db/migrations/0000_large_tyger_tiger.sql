@@ -63,11 +63,12 @@ CREATE TABLE IF NOT EXISTS "verification_token" (
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "workspace" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"slug" varchar(256) NOT NULL,
 	"name" varchar(256) NOT NULL,
 	"imageUri" text,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
-	CONSTRAINT "workspace_name_unique" UNIQUE("name")
+	CONSTRAINT "workspace_slug_unique" UNIQUE("slug")
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "workspace_membership" (
@@ -79,12 +80,13 @@ CREATE TABLE IF NOT EXISTS "workspace_membership" (
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "teamspace" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"slug" varchar(256) NOT NULL,
 	"name" varchar(256) NOT NULL,
 	"workspace_id" text NOT NULL,
 	"imageUri" text,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
-	CONSTRAINT "teamspace_name_unique" UNIQUE("name")
+	CONSTRAINT "teamspace_slug_unique" UNIQUE("slug")
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "teamspace_membership" (
