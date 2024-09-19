@@ -8,7 +8,7 @@ import { getWorkspaceWithTeamspacesSchema } from "./schema";
 
 export const getWorkspaceWithTeamspaces = authAction
   .schema(getWorkspaceWithTeamspacesSchema)
-  .action(async ({ parsedInput: { slug } }) => {
+  .action(({ parsedInput: { slug } }) => {
     return db.query.workspaces.findFirst({
       where: eq(workspaces.slug, slug),
       columns: {
@@ -28,6 +28,6 @@ export const getWorkspaceWithTeamspaces = authAction
     });
   });
 
-export type WorkspaceWithTeams = Awaited<
-  ReturnType<typeof getWorkspaceWithTeamspaces>
->;
+export type WorkspaceWithTeamspaces = NonNullable<
+  Awaited<ReturnType<typeof getWorkspaceWithTeamspaces>>
+>["data"];

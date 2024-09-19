@@ -24,11 +24,11 @@ import { Input } from "@mapform/ui/components/input";
 import { toast } from "@mapform/ui/components/toaster";
 import { useAction } from "next-safe-action/hooks";
 import { useState } from "react";
-import { createWorkspace } from "~/data/workspaces/create";
+import { createWorkspace } from "~/data/workspaces/create-workspace";
 import {
   createWorkspaceSchema,
   type CreateWorkspaceSchema,
-} from "~/data/workspaces/create/schema";
+} from "~/data/workspaces/create-workspace/schema";
 
 export function CreateDialog({
   organizationSlug,

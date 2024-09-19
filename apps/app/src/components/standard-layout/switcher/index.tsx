@@ -1,14 +1,19 @@
-import { getUserOrgs } from "~/data/orgs/get-user-orgs";
+import { getCurrentUserWorkspaceMemberships } from "~/data/workspace-memberships/get-current-user-workspace-memberships";
 import { SwitcherPopover } from "./popover";
 
 export async function Switcher({
-  currentOrgSlug,
+  currentWorkspaceSlug,
 }: {
-  currentOrgSlug?: string;
+  currentWorkspaceSlug?: string;
 }) {
-  const userOrgs = await getUserOrgs();
+  const workspaceMembershipsResponse =
+    await getCurrentUserWorkspaceMemberships();
+  const workspaceMemberships = workspaceMembershipsResponse?.data;
 
   return (
-    <SwitcherPopover currentOrgSlug={currentOrgSlug} userOrgs={userOrgs} />
+    <SwitcherPopover
+      currentWorkspaceSlug={currentWorkspaceSlug}
+      workspaceMemberships={workspaceMemberships}
+    />
   );
 }

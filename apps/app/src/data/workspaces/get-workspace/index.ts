@@ -8,12 +8,12 @@ import { getWorkspaceSchema } from "./schema";
 
 export const getWorkspace = authAction
   .schema(getWorkspaceSchema)
-  .action(async ({ parsedInput: { slug } }) => {
-    const workspace = await db.query.workspaces.findFirst({
+  .action(({ parsedInput: { slug } }) => {
+    return db.query.workspaces.findFirst({
       where: eq(workspaces.slug, slug),
     });
-
-    return workspace;
   });
 
-export type UserWorkspace = Awaited<ReturnType<typeof getWorkspace>>;
+export type UserWorkspace = NonNullable<
+  Awaited<ReturnType<typeof getWorkspace>>
+>["data"];

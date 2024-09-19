@@ -12,7 +12,7 @@ import Link from "next/link";
 import { cn } from "@mapform/lib/classnames";
 import { AccordionPrimitive } from "@mapform/ui/components/accordion";
 import { useRouter, usePathname } from "next/navigation";
-import { type UserOrgWorkspaces } from "~/data/workspaces/get-user-org-workspaces";
+import type { WorkspaceWithTeamspaces } from "~/data/workspaces/get-workspace-with-teamspaces";
 
 const bottomLinks = [
   { href: "https://todo.com", icon: ListOrderedIcon, label: "Roadmap" },
@@ -35,10 +35,10 @@ export function BottomContent() {
 
 export function TopContent({
   orgSlug,
-  userOrgWorkspaces,
+  workspaceWithTeamspaces,
 }: {
   orgSlug: string;
-  userOrgWorkspaces: UserOrgWorkspaces;
+  workspaceWithTeamspaces: NonNullable<WorkspaceWithTeamspaces>;
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -58,13 +58,13 @@ export function TopContent({
     );
   };
 
-  const defaultOpenWorkspaces = userOrgWorkspaces
-    .filter((workspace) => {
-      return workspace.forms.some((form) =>
-        isFormActive(workspace.slug, form.id)
-      );
-    })
-    .map((workspace) => workspace.id);
+  // const defaultOpenWorkspaces = userOrgWorkspaces
+  //   .filter((workspace) => {
+  //     return workspace.forms.some((form) =>
+  //       isFormActive(workspace.slug, form.id)
+  //     );
+  //   })
+  //   .map((workspace) => workspace.id);
 
   return (
     <div className="text-sm text-stone-700 space-y-4 mt-4">
@@ -79,34 +79,34 @@ export function TopContent({
       </section>
       <section>
         <h3 className="text-xs font-semibold leading-6 text-stone-400 mb-1">
-          Workspaces
+          Teamspaces
         </h3>
         <AccordionPrimitive.Root
-          defaultValue={defaultOpenWorkspaces}
+          // defaultValue={defaultOpenWorkspaces}
           type="multiple"
         >
           <ul>
-            {userOrgWorkspaces.map((workspace) => (
-              <AccordionPrimitive.Item key={workspace.id} value={workspace.id}>
+            {workspaceWithTeamspaces.teamspaces.map((teamspace) => (
+              <AccordionPrimitive.Item key={teamspace.id} value={teamspace.id}>
                 <div
                   className={cn(
                     "-mx-3 hover:bg-stone-100 pl-2 pr-2 py-1 rounded transition-colors flex items-center justify-between mb-[2px] cursor-pointer",
                     {
                       "bg-stone-100 text-stone-900": pathname.includes(
-                        `/orgs/${orgSlug}/workspaces/${workspace.slug}`
+                        `/orgs/${orgSlug}/workspaces/${teamspace.slug}`
                       ),
                     }
                   )}
                   // We use an on click event handler instead of a Link so that the nested e.stopPropagation() works
                   onClick={() => {
                     router.push(
-                      `/orgs/${orgSlug}/workspaces/${workspace.slug}`
+                      `/orgs/${orgSlug}/workspaces/${teamspace.slug}`
                     );
                   }}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
                       router.push(
-                        `/orgs/${orgSlug}/workspaces/${workspace.slug}`
+                        `/orgs/${orgSlug}/workspaces/${teamspace.slug}`
                       );
                     }
                   }}
@@ -122,10 +122,10 @@ export function TopContent({
                     >
                       <ChevronDownIcon className="h-4 w-4 transition-transform duration-200" />
                     </AccordionPrimitive.Trigger>
-                    <span className="truncate">{workspace.name}</span>
+                    <span className="truncate">{teamspace.name}</span>
                   </div>
                 </div>
-                <AccordionPrimitive.Content>
+                {/* <AccordionPrimitive.Content>
                   {workspace.forms.map((form) => (
                     <NavLink
                       href={`/orgs/${orgSlug}/workspaces/${workspace.slug}/forms/${form.id}`}
@@ -136,7 +136,7 @@ export function TopContent({
                       nested
                     />
                   ))}
-                </AccordionPrimitive.Content>
+                </AccordionPrimitive.Content> */}
               </AccordionPrimitive.Item>
             ))}
           </ul>

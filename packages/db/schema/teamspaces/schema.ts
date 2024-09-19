@@ -10,7 +10,6 @@ export const teamspaces = pgTable("teamspace", {
   workspaceId: uuid("workspace_id")
     .notNull()
     .references(() => workspaces.id),
-  imageUrl: text("imageUri"),
 
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()

@@ -1,5 +1,6 @@
+import { notFound } from "next/navigation";
 import { StandardLayout } from "~/components/standard-layout";
-import { getWorkspace } from "~/data/workspaces/get-workspace";
+import { getWorkspaceWithTeamspaces } from "~/data/workspaces/get-workspace-with-teamspaces";
 import { BottomContent, TopContent } from "./layout-content";
 
 export default async function Layout({
@@ -9,22 +10,27 @@ export default async function Layout({
   children: React.ReactNode;
   params: { wsSlug: string };
 }) {
-  // const userOrgWorkspaces = await getWorkspace({
-  //   slug: params.wsSlug,
-  // });
-  // return (
-  //   <StandardLayout
-  //     bottomContent={<BottomContent />}
-  //     currentOrgSlug={params.wsSlug}
-  //     topContent={
-  //       <TopContent
-  //         orgSlug={params.wsSlug}
-  //         userOrgWorkspaces={userOrgWorkspaces}
-  //       />
-  //     }
-  //   >
-  //     {children}
-  //   </StandardLayout>
-  // );
-  return children;
+  const getWorkspaceWithTeamspacesResponse = await getWorkspaceWithTeamspaces({
+    slug: params.wsSlug,
+  });
+  const workspaceWithTeamspaces = getWorkspaceWithTeamspacesResponse?.data;
+
+  if (!workspaceWithTeamspaces) {
+    return notFound();
+  }
+
+  return (
+    <StandardLayout
+      bottomContent={<BottomContent />}
+      currentWorkspaceSlug={params.wsSlug}
+      topContent={
+        <TopContent
+          orgSlug={params.wsSlug}
+          workspaceWithTeamspaces={workspaceWithTeamspaces}
+        />
+      }
+    >
+      {children}
+    </StandardLayout>
+  );
 }

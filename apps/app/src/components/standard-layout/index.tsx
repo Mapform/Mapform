@@ -5,12 +5,12 @@ import { Switcher } from "./switcher";
 export function StandardLayout({
   topContent,
   bottomContent,
-  currentOrgSlug,
+  currentWorkspaceSlug,
   children,
 }: {
   topContent?: React.ReactNode;
   bottomContent?: React.ReactNode;
-  currentOrgSlug?: string;
+  currentWorkspaceSlug?: string;
   children: React.ReactNode;
 }) {
   return (
@@ -20,7 +20,7 @@ export function StandardLayout({
         <div className="flex flex-col flex-shrink-0 gap-y-5 overflow-y-auto bg-stone-50 px-4 py-2 w-[300px] border-r">
           <nav className="flex flex-1 flex-col">
             <Suspense fallback={<Skeleton className="h-7 w-full rounded" />}>
-              <Switcher currentOrgSlug={currentOrgSlug} />
+              <Switcher currentWorkspaceSlug={currentWorkspaceSlug} />
             </Suspense>
             {topContent}
             <div className="mt-auto">{bottomContent}</div>

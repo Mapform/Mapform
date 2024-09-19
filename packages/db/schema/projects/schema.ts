@@ -1,12 +1,14 @@
-import { timestamp, pgTable, text, varchar, uuid } from "drizzle-orm/pg-core";
+import { timestamp, pgTable, varchar, uuid } from "drizzle-orm/pg-core";
 import { relations } from "../../utils";
-import { workspaceMemberships } from "../workspace-memberships";
 import { teamspaces } from "../teamspaces";
 
-export const workspaces = pgTable("workspace", {
+export const projects = pgTable("project", {
   id: uuid("id").primaryKey().defaultRandom(),
   slug: varchar("slug", { length: 256 }).unique().notNull(),
   name: varchar("name", { length: 256 }).notNull(),
+  teamspaceId: uuid("teamspace_id")
+    .notNull()
+    .references(() => teamspaces.id),
 
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()
@@ -17,7 +19,9 @@ export const workspaces = pgTable("workspace", {
     .notNull(),
 });
 
-export const workspacesRelations = relations(workspaces, ({ many }) => ({
-  workspaceMemberships: many(workspaceMemberships),
-  teamspaces: many(teamspaces),
+export const projectsRelations = relations(projects, ({ one, many }) => ({
+  teamspace: one(teamspaces, {
+    fields: [projects.teamspaceId],
+    references: [teamspaces.id],
+  }),
 }));
