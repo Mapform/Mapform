@@ -1,5 +1,5 @@
 import { StandardLayout } from "~/components/standard-layout";
-import { getUserOrgWorkspaces } from "~/data/workspaces/get-user-org-workspaces";
+import { getUserWorkspace } from "~/data/workspaces/get-user-workspace";
 import { BottomContent, TopContent } from "./layout-content";
 
 export default async function Layout({
@@ -7,19 +7,19 @@ export default async function Layout({
   params,
 }: {
   children: React.ReactNode;
-  params: { orgSlug: string };
+  params: { wsSlug: string };
 }) {
-  const userOrgWorkspaces = await getUserOrgWorkspaces({
-    orgSlug: params.orgSlug,
+  const userOrgWorkspaces = await getUserWorkspace({
+    wsSlug: params.wsSlug,
   });
 
   return (
     <StandardLayout
       bottomContent={<BottomContent />}
-      currentOrgSlug={params.orgSlug}
+      currentOrgSlug={params.wsSlug}
       topContent={
         <TopContent
-          orgSlug={params.orgSlug}
+          orgSlug={params.wsSlug}
           userOrgWorkspaces={userOrgWorkspaces}
         />
       }

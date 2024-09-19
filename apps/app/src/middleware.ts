@@ -36,10 +36,7 @@ export default auth(async (req) => {
   /**
    * Redirect root to account
    */
-  if (
-    (reqUrl.pathname === "/" || reqUrl.pathname === "/orgs") &&
-    req.auth.user?.id
-  ) {
+  if (reqUrl.pathname === "/" && req.auth.user?.id) {
     const userWithWorkspaces = await db.query.users.findFirst({
       where: eq(users.id, req.auth.user.id),
       with: {
@@ -54,10 +51,11 @@ export default auth(async (req) => {
         },
       },
     });
-    const firstOrg = userWithWorkspaces?.workspaceMemberships[0]?.workspace;
+    const firstWorkspace =
+      userWithWorkspaces?.workspaceMemberships[0]?.workspace;
 
-    if (firstOrg) {
-      return NextResponse.redirect(new URL(`/orgs/${firstOrg.slug}`, req.url));
+    if (firstWorkspace) {
+      return NextResponse.redirect(new URL(`/${firstWorkspace.slug}`, req.url));
     }
 
     return NextResponse.redirect(new URL(`/account`, req.url));

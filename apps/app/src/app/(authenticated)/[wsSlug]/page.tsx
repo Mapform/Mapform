@@ -1,66 +1,65 @@
 import Link from "next/link";
-import { prisma } from "@mapform/db";
-import { format } from "date-fns";
+import { db } from "@mapform/db";
+import { eq, and } from "@mapform/db/utils";
+import { workspaces } from "@mapform/db/schema";
 import { auth } from "~/lib/auth";
 
 export default async function Organization({
   params,
 }: {
-  params: { orgSlug: string };
+  params: { wsSlug: string };
   children: React.ReactNode;
 }) {
   const session = await auth();
+  const userId = session?.user?.id;
 
-  const currentOrg = await prisma.organization.findUnique({
-    where: {
-      slug: params.orgSlug,
-      members: {
-        some: {
-          userId: session?.user?.id,
-        },
-      },
-    },
-    include: {
-      workspaces: {
-        include: {
-          _count: {
-            select: { forms: true },
-          },
+  if (!userId) {
+    return <div>Not authenticated</div>;
+  }
+
+  const currentWorkspace = await db.query.workspaces.findFirst({
+    where: and(eq(workspaces.slug, params.wsSlug)),
+    with: {
+      teamspaces: {
+        columns: {
+          id: true,
+          name: true,
+          slug: true,
         },
       },
     },
   });
 
-  if (!currentOrg) {
-    return <div>Organization not found</div>;
+  if (!currentWorkspace) {
+    return <div>Workspace not found</div>;
   }
 
   return (
     <div className="p-4">
       <h3 className="text-base font-semibold leading-6 text-stone-900 mb-4">
-        {currentOrg.name}
+        {currentWorkspace.name}
       </h3>
       <ul className="flex flex-wrap gap-4">
-        {currentOrg.workspaces.map((workspace) => (
+        {currentWorkspace.teamspaces.map((teamspace) => (
           <li
             className="overflow-hidden rounded-xl border w-72"
-            key={workspace.id}
+            key={teamspace.id}
           >
-            <Link href={`/orgs/${params.orgSlug}/workspaces/${workspace.slug}`}>
+            <Link href={`/orgs/${params.wsSlug}/workspaces/${teamspace.slug}`}>
               <div className="flex items-center gap-x-4 border-b border-gray-900/5 bg-stone-50 p-6">
-                {workspace.name}
+                {teamspace.name}
               </div>
               <dl className="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
                 <div className="flex justify-between gap-x-4 py-3">
                   <dt className="text-stone-500">Forms</dt>
-                  <dd className="text-stone-700">{workspace._count.forms}</dd>
+                  {/* <dd className="text-stone-700">{workspace._count.forms}</dd> */}
                 </div>
                 <div className="flex justify-between gap-x-4 py-3">
                   <dt className="text-stone-500">Created</dt>
                   <dd className="text-stone-700">
-                    <time dateTime={workspace.createdAt.toDateString()}>
+                    {/* <time dateTime={workspace.createdAt.toDateString()}>
                       {format(workspace.createdAt, "MMMM do, yyyy")}
-                    </time>
+                    </time> */}
                   </dd>
                 </div>
               </dl>
