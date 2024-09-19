@@ -1,5 +1,17 @@
+DO $$ BEGIN
+ CREATE TYPE "public"."workspace_role" AS ENUM('owner', 'member');
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ CREATE TYPE "public"."teamspace_role" AS ENUM('owner', 'member');
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "account" (
-	"userId" text NOT NULL,
+	"userId" uuid NOT NULL,
 	"type" text NOT NULL,
 	"provider" text NOT NULL,
 	"provider_account_id" text NOT NULL,
@@ -15,7 +27,7 @@ CREATE TABLE IF NOT EXISTS "account" (
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "authenticator" (
 	"credentialID" text NOT NULL,
-	"userId" text NOT NULL,
+	"userId" uuid NOT NULL,
 	"providerAccountId" text NOT NULL,
 	"credentialPublicKey" text NOT NULL,
 	"counter" integer NOT NULL,
@@ -28,12 +40,12 @@ CREATE TABLE IF NOT EXISTS "authenticator" (
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "session" (
 	"sessionToken" text PRIMARY KEY NOT NULL,
-	"userId" text NOT NULL,
+	"userId" uuid NOT NULL,
 	"expires" timestamp NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "user" (
-	"id" text PRIMARY KEY NOT NULL,
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"name" varchar(256),
 	"email" text,
 	"emailVerified" timestamp,
@@ -50,7 +62,7 @@ CREATE TABLE IF NOT EXISTS "verification_token" (
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "workspace" (
-	"id" text PRIMARY KEY NOT NULL,
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"name" varchar(256) NOT NULL,
 	"imageUri" text,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
@@ -59,9 +71,27 @@ CREATE TABLE IF NOT EXISTS "workspace" (
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "workspace_membership" (
-	"user_id" text NOT NULL,
-	"workspace_id" text NOT NULL,
+	"user_id" uuid NOT NULL,
+	"workspace_id" uuid NOT NULL,
+	"workspace_role" "workspace_role" NOT NULL,
 	CONSTRAINT "workspace_membership_user_id_workspace_id_pk" PRIMARY KEY("user_id","workspace_id")
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "teamspace" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"name" varchar(256) NOT NULL,
+	"workspace_id" text NOT NULL,
+	"imageUri" text,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
+	CONSTRAINT "teamspace_name_unique" UNIQUE("name")
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "teamspace_membership" (
+	"user_id" uuid NOT NULL,
+	"teamspace_id" uuid NOT NULL,
+	"teamspace_role" "teamspace_role" NOT NULL,
+	CONSTRAINT "teamspace_membership_user_id_teamspace_id_pk" PRIMARY KEY("user_id","teamspace_id")
 );
 --> statement-breakpoint
 DO $$ BEGIN
@@ -90,6 +120,18 @@ END $$;
 --> statement-breakpoint
 DO $$ BEGIN
  ALTER TABLE "workspace_membership" ADD CONSTRAINT "workspace_membership_workspace_id_workspace_id_fk" FOREIGN KEY ("workspace_id") REFERENCES "public"."workspace"("id") ON DELETE no action ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "teamspace_membership" ADD CONSTRAINT "teamspace_membership_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE no action ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "teamspace_membership" ADD CONSTRAINT "teamspace_membership_teamspace_id_teamspace_id_fk" FOREIGN KEY ("teamspace_id") REFERENCES "public"."teamspace"("id") ON DELETE no action ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;

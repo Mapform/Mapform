@@ -1,18 +1,21 @@
 import { relations } from "drizzle-orm";
-import { primaryKey, text } from "drizzle-orm/pg-core";
+import { pgEnum, primaryKey, uuid } from "drizzle-orm/pg-core";
 import { pgTable } from "drizzle-orm/pg-core";
 import { users } from "../users";
 import { teamspaces } from "../teamspaces";
 
+export const teamspaceRoleEnum = pgEnum("teamspace_role", ["owner", "member"]);
+
 export const teamspaceMemberships = pgTable(
   "teamspace_membership",
   {
-    userId: text("user_id")
+    userId: uuid("user_id")
       .notNull()
       .references(() => users.id),
-    teamspaceId: text("teamspace_id")
+    teamspaceId: uuid("teamspace_id")
       .notNull()
       .references(() => teamspaces.id),
+    role: teamspaceRoleEnum("teamspace_role").notNull(),
   },
   (t) => ({
     pk: primaryKey({ columns: [t.userId, t.teamspaceId] }),

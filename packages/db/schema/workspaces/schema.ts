@@ -1,6 +1,7 @@
 import { timestamp, pgTable, text, varchar, uuid } from "drizzle-orm/pg-core";
 import { relations } from "../../utils";
 import { workspaceMemberships } from "../workspace-memberships";
+import { teamspaces } from "../teamspaces";
 
 export const workspaces = pgTable("workspace", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -19,4 +20,5 @@ export const workspaces = pgTable("workspace", {
 
 export const workspacesRelations = relations(workspaces, ({ many }) => ({
   workspaceMemberships: many(workspaceMemberships),
+  teamspaces: many(teamspaces),
 }));

@@ -3,7 +3,13 @@
 import slugify from "slugify";
 import { db } from "@mapform/db";
 import { eq } from "@mapform/db/utils";
-import { users, workspaceMemberships, workspaces } from "@mapform/db/schema";
+import {
+  users,
+  workspaces,
+  teamspaces,
+  workspaceMemberships,
+  teamspaceMemberships,
+} from "@mapform/db/schema";
 import { redirect } from "next/navigation";
 import { authAction } from "~/lib/safe-action";
 import { completeOnboardingSchema } from "./schema";
@@ -53,45 +59,29 @@ export const completeOnboarding = authAction
 
       await tx.insert(workspaceMemberships).values({
         userId,
-        workspaceId: workspace?.id,
+        workspaceId: workspace.id,
+        role: "owner",
+      });
+
+      const [teamspace] = await tx
+        .insert(teamspaces)
+        .values({
+          slug: teamspaceSlug,
+          name: teamspaceName,
+          workspaceId: workspace.id,
+        })
+        .returning();
+
+      if (!teamspace) {
+        throw new Error("Failed to create teamspace");
+      }
+
+      await tx.insert(teamspaceMemberships).values({
+        userId,
+        teamspaceId: teamspace.id,
+        role: "owner",
       });
     });
-
-    // await db.update(users).set({
-    //   where: {
-    //     id: userId,
-    //   },
-    //   data: {
-    //     hasOnboarded: true,
-    //     organizationMemberships: {
-    //       create: {
-    //         role: "OWNER",
-    //         organization: {
-    //           create: {
-    //             slug: orgSlug,
-    //             name: orgName,
-    //             workspaces: {
-    //               create: {
-    //                 slug: workspaceSlug,
-    //                 name: workspaceName,
-    //                 members: {
-    //                   create: {
-    //                     role: "OWNER",
-    //                     user: {
-    //                       connect: {
-    //                         id: userId,
-    //                       },
-    //                     },
-    //                   },
-    //                 },
-    //               },
-    //             },
-    //           },
-    //         },
-    //       },
-    //     },
-    //   },
-    // });
 
     redirect("/");
   });
