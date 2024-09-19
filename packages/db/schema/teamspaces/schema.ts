@@ -1,24 +1,37 @@
-import { timestamp, pgTable, text, varchar, uuid } from "drizzle-orm/pg-core";
+import {
+  timestamp,
+  pgTable,
+  text,
+  varchar,
+  uuid,
+  unique,
+} from "drizzle-orm/pg-core";
 import { relations } from "../../utils";
 import { teamspaceMemberships } from "../teamspace-memberships";
 import { workspaces } from "../workspaces";
 
-export const teamspaces = pgTable("teamspace", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  slug: varchar("slug", { length: 256 }).unique().notNull(),
-  name: varchar("name", { length: 256 }).notNull(),
-  workspaceId: uuid("workspace_id")
-    .notNull()
-    .references(() => workspaces.id),
+export const teamspaces = pgTable(
+  "teamspace",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    slug: varchar("slug", { length: 256 }).notNull(),
+    name: varchar("name", { length: 256 }).notNull(),
+    workspaceId: uuid("workspace_id")
+      .notNull()
+      .references(() => workspaces.id),
 
-  createdAt: timestamp("created_at", { withTimezone: true })
-    .defaultNow()
-    .notNull(),
-  updatedAt: timestamp("updated_at", { withTimezone: true })
-    .defaultNow()
-    .$onUpdate(() => new Date())
-    .notNull(),
-});
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .$onUpdate(() => new Date())
+      .notNull(),
+  },
+  (t) => ({
+    unq: unique().on(t.workspaceId, t.slug),
+  })
+);
 
 export const teamspacesRelations = relations(teamspaces, ({ one, many }) => ({
   teamspaceMemberships: many(teamspaceMemberships),
