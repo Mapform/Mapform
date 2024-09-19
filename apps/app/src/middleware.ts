@@ -1,4 +1,6 @@
-import { prisma } from "@mapform/db";
+import { db } from "@mapform/db";
+import { users } from "@mapform/db/schema";
+import { eq } from "@mapform/db/utils";
 import { NextResponse } from "next/server";
 import { auth, BASE_PATH } from "~/lib/auth";
 
@@ -34,14 +36,17 @@ export default auth(async (req) => {
   /**
    * Redirect root to account
    */
-  if (reqUrl.pathname === "/" || reqUrl.pathname === "/orgs") {
-    const userWithOrgs = await prisma.user.findUnique({
-      where: { id: req.auth.user?.id },
-      include: {
-        organizationMemberships: {
-          include: {
-            organization: {
-              select: {
+  if (
+    (reqUrl.pathname === "/" || reqUrl.pathname === "/orgs") &&
+    req.auth.user?.id
+  ) {
+    const userWithWorkspaces = await db.query.users.findFirst({
+      where: eq(users.id, req.auth.user.id),
+      with: {
+        workspaceMemberships: {
+          with: {
+            workspace: {
+              columns: {
                 slug: true,
               },
             },
@@ -49,7 +54,7 @@ export default auth(async (req) => {
         },
       },
     });
-    const firstOrg = userWithOrgs?.organizationMemberships[0]?.organization;
+    const firstOrg = userWithWorkspaces?.workspaceMemberships[0]?.workspace;
 
     if (firstOrg) {
       return NextResponse.redirect(new URL(`/orgs/${firstOrg.slug}`, req.url));
