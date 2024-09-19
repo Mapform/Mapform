@@ -7,7 +7,9 @@ export const teamspaces = pgTable("teamspace", {
   id: uuid("id").primaryKey().defaultRandom(),
   slug: varchar("slug", { length: 256 }).unique().notNull(),
   name: varchar("name", { length: 256 }).notNull(),
-  workspaceId: text("workspace_id").notNull(),
+  workspaceId: uuid("workspace_id")
+    .notNull()
+    .references(() => workspaces.id),
   imageUrl: text("imageUri"),
 
   createdAt: timestamp("created_at", { withTimezone: true })

@@ -1,5 +1,5 @@
 {
-  "id": "634eccbb-5021-4e01-9fde-e9c2a203aa8f",
+  "id": "a0abba46-870d-44af-b7df-04ace305c604",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -470,7 +470,7 @@
         },
         "workspace_id": {
           "name": "workspace_id",
-          "type": "text",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": true
         },
@@ -496,7 +496,21 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "teamspace_workspace_id_workspace_id_fk": {
+          "name": "teamspace_workspace_id_workspace_id_fk",
+          "tableFrom": "teamspace",
+          "tableTo": "workspace",
+          "columnsFrom": [
+            "workspace_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "teamspace_slug_unique": {
