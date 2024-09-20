@@ -25,6 +25,15 @@ export const getWorkspaceWithTeamspaces = authAction
             slug: true,
             createdAt: true,
           },
+          with: {
+            projects: {
+              columns: {
+                id: true,
+                name: true,
+                createdAt: true,
+              },
+            },
+          },
         },
       },
     });

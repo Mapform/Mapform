@@ -52,19 +52,17 @@ export function TopContent({
     },
   ];
 
-  const isFormActive = (workspaceSlug: string, formId: string) => {
-    return pathname.includes(
-      `/orgs/${workspaceSlug}/workspaces/${workspaceSlug}/forms/${formId}`
-    );
+  const isProjectActive = (teamspaceSlug: string, projectId: string) => {
+    return pathname.includes(`/${workspaceSlug}/${teamspaceSlug}/${projectId}`);
   };
 
-  // const defaultOpenWorkspaces = userOrgWorkspaces
-  //   .filter((workspace) => {
-  //     return workspace.forms.some((form) =>
-  //       isFormActive(workspace.slug, form.id)
-  //     );
-  //   })
-  //   .map((workspace) => workspace.id);
+  const defaultOpenTeamspaces = workspaceWithTeamspaces.teamspaces
+    .filter((teamspace) => {
+      return teamspace.projects.some((project) =>
+        isProjectActive(teamspace.slug, project.id)
+      );
+    })
+    .map((workspace) => workspace.id);
 
   return (
     <div className="text-sm text-stone-700 space-y-4 mt-4">
@@ -82,7 +80,7 @@ export function TopContent({
           Teamspaces
         </h3>
         <AccordionPrimitive.Root
-          // defaultValue={defaultOpenWorkspaces}
+          defaultValue={defaultOpenTeamspaces}
           type="multiple"
         >
           <ul>
@@ -125,18 +123,18 @@ export function TopContent({
                     <span className="truncate">{teamspace.name}</span>
                   </div>
                 </div>
-                {/* <AccordionPrimitive.Content>
-                  {workspace.forms.map((form) => (
+                <AccordionPrimitive.Content>
+                  {teamspace.projects.map((project) => (
                     <NavLink
-                      href={`/orgs/${workspaceSlug}/workspaces/${workspace.slug}/forms/${form.id}`}
+                      href={`/${workspaceSlug}/${teamspace.slug}/${project.id}`}
                       icon={MapIcon}
-                      isActive={isFormActive(workspace.slug, form.id)}
-                      key={form.id}
-                      label={form.name}
+                      isActive={isProjectActive(teamspace.slug, project.id)}
+                      key={project.id}
+                      label={project.name}
                       nested
                     />
                   ))}
-                </AccordionPrimitive.Content> */}
+                </AccordionPrimitive.Content>
               </AccordionPrimitive.Item>
             ))}
           </ul>
