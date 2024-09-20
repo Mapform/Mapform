@@ -91,21 +91,17 @@ export function TopContent({
                     "-mx-3 hover:bg-stone-100 pl-2 pr-2 py-1 rounded transition-colors flex items-center justify-between mb-[2px] cursor-pointer",
                     {
                       "bg-stone-100 text-stone-900": pathname.includes(
-                        `/orgs/${workspaceSlug}/workspaces/${teamspace.slug}`
+                        `/${workspaceSlug}/${teamspace.slug}`
                       ),
                     }
                   )}
                   // We use an on click event handler instead of a Link so that the nested e.stopPropagation() works
                   onClick={() => {
-                    router.push(
-                      `/orgs/${workspaceSlug}/workspaces/${teamspace.slug}`
-                    );
+                    router.push(`/${workspaceSlug}/${teamspace.slug}`);
                   }}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
-                      router.push(
-                        `/orgs/${workspaceSlug}/workspaces/${teamspace.slug}`
-                      );
+                      router.push(`/${workspaceSlug}/${teamspace.slug}`);
                     }
                   }}
                   role="button"
@@ -126,7 +122,7 @@ export function TopContent({
                 <AccordionPrimitive.Content>
                   {teamspace.projects.map((project) => (
                     <NavLink
-                      href={`/${workspaceSlug}/${teamspace.slug}/${project.id}`}
+                      href={`/${workspaceSlug}/${teamspace.slug}/projects/${project.id}`}
                       icon={MapIcon}
                       isActive={isProjectActive(teamspace.slug, project.id)}
                       key={project.id}

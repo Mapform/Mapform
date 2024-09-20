@@ -5,19 +5,16 @@ import {
   PopoverTrigger,
 } from "@mapform/ui/components/popover";
 import { SendIcon } from "lucide-react";
-import { getForm } from "~/data/forms/get-form";
+import { getProjectWithTeamspace } from "~/data/projects/get-project-with-teamspace";
 import { ShareContent } from "./share-content";
 
-export default async function Actions({
-  params,
-}: {
-  params: { formId: string };
-}) {
-  const form = await getForm({
-    formId: params.formId,
+export default async function Actions({ params }: { params: { pId: string } }) {
+  const projectResponse = await getProjectWithTeamspace({
+    id: params.pId,
   });
+  const project = projectResponse?.data;
 
-  if (!form) {
+  if (!project) {
     return null;
   }
 
@@ -31,9 +28,9 @@ export default async function Actions({
       </PopoverTrigger>
       <PopoverContent collisionPadding={16}>
         <ShareContent
-          formId={params.formId}
-          isDirty={form.isDirty}
-          numberOfVersions={form._count.formVersions}
+          isDirty={project.isDirty}
+          projectId={params.pId}
+          // numberOfVersions={form._count.formVersions}
         />
       </PopoverContent>
     </Popover>
