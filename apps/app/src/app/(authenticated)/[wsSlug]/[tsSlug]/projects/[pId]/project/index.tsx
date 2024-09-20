@@ -10,10 +10,10 @@ import { updateStepWithLocation } from "~/data/steps/update-location";
 import { env } from "~/env.mjs";
 import { useProjectContext } from "../context";
 import {
-  StepDrawerRoot,
-  StepDrawerTrigger,
-  StepDrawerContent,
-} from "./step-drawer";
+  PageDrawerRoot,
+  PageDrawerTrigger,
+  PageDrawerContent,
+} from "./page-drawer";
 import { PagePicker } from "./page-picker";
 import { PageBarButton } from "./page-bar-button";
 import { AddLocationDropdown } from "./add-location-dropdown";
@@ -41,7 +41,7 @@ function Project() {
           </div>
           {/* Edit controls */}
           <div className="flex gap-1">
-            <StepDrawerRoot
+            <PageDrawerRoot
               key={currentPage.id}
               onOpenChange={(isOpen) => {
                 if (!isOpen && currentEditablePage?.id === currentPage.id)
@@ -49,7 +49,7 @@ function Project() {
               }}
               open={currentEditablePage?.id === currentPage.id}
             >
-              <StepDrawerTrigger asChild>
+              <PageDrawerTrigger asChild>
                 <PageBarButton
                   Icon={Settings2Icon}
                   isActive={currentEditablePage?.id === currentPage.id}
@@ -59,9 +59,9 @@ function Project() {
                 >
                   Edit Page
                 </PageBarButton>
-              </StepDrawerTrigger>
-              <StepDrawerContent />
-            </StepDrawerRoot>
+              </PageDrawerTrigger>
+              <PageDrawerContent />
+            </PageDrawerRoot>
           </div>
         </div>
 

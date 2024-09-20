@@ -71,7 +71,6 @@ export function MapForm({
     string | null
   >(null);
   const { ref: drawerRef } = useMeasure<HTMLDivElement>();
-  console.log(11111, currentPage);
   const initialViewState = {
     longitude: currentPage.center.x,
     latitude: currentPage.center.y,

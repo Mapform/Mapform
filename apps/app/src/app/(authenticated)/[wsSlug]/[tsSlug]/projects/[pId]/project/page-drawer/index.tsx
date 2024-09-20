@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button, buttonVariants } from "@mapform/ui/components/button";
 import {
   DndContext,
@@ -28,7 +28,7 @@ import {
   AccordionTrigger,
 } from "@mapform/ui/components/accordion";
 import { cn } from "@mapform/lib/classnames";
-import type { StepWithLocation } from "@mapform/db/extentsions/steps";
+import type { ProjectWithPages } from "~/data/projects/get-project-with-pages";
 import { DragHandle, DragItem } from "~/components/draggable";
 import { useProjectContext } from "../../context";
 import { GeneralForm } from "./general-form";
@@ -39,25 +39,23 @@ import {
 } from "./new-layer-drawer";
 import { LayerSubmenu } from "./layer-submenu";
 
-export const StepDrawerRoot = Drawer;
-export const StepDrawerTrigger = DrawerTrigger;
+type Page = ProjectWithPages["pages"][number];
 
-export function StepDrawerContent() {
-  const { currentStep } = useProjectContext();
+export const PageDrawerRoot = Drawer;
+export const PageDrawerTrigger = DrawerTrigger;
 
-  if (!currentStep) {
+export function PageDrawerContent() {
+  const { currentPage } = useProjectContext();
+
+  if (!currentPage) {
     return <div className="bg-white w-[400px] border-l" />;
   }
 
-  return <StepDrawerContentInner currentStep={currentStep} />;
+  return <PageDrawerContentInner currentPage={currentPage} />;
 }
 
-function StepDrawerContentInner({
-  currentStep,
-}: {
-  currentStep: StepWithLocation;
-}) {
-  const [dragLayers, setDragLayers] = useState(currentStep.layers);
+function PageDrawerContentInner({ currentPage }: { currentPage: Page }) {
+  const [dragLayers, setDragLayers] = useState(currentPage.layers);
   const { debouncedUpdateStep } = useProjectContext();
 
   const sensors = useSensors(
@@ -86,9 +84,9 @@ function StepDrawerContentInner({
       setDragLayers(newLayerList);
 
       await debouncedUpdateStep({
-        stepId: currentStep.id,
+        stepId: currentPage.id,
         data: {
-          formId: currentStep.formId ?? undefined,
+          formId: currentPage.formId ?? undefined,
           layerOrder: newLayerList.map((layer) => layer.id),
         },
       });
@@ -114,7 +112,7 @@ function StepDrawerContentInner({
             <AccordionTrigger>General</AccordionTrigger>
           </AccordionHeader>
           <AccordionContent>
-            <GeneralForm currentStep={currentStep} />
+            <GeneralForm currentPage={currentPage} />
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value="item-2">
