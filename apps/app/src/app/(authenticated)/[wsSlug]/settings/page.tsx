@@ -1,9 +1,12 @@
+import { ConstructionIcon } from "lucide-react";
+
 export default function Settings() {
   return (
-    <div className="p-4">
-      <h3 className="text-base font-semibold leading-6 text-stone-900 mb-4">
-        Settings
-      </h3>
+    <div className="flex justify-center items-center w-full">
+      <div className="text-muted-foreground flex flex-col gap-2 items-center">
+        <ConstructionIcon className="size-6" />
+        <p>This page is under construction</p>
+      </div>
     </div>
   );
 }

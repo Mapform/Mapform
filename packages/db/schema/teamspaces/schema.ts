@@ -6,7 +6,7 @@ import {
   uuid,
   unique,
 } from "drizzle-orm/pg-core";
-import { relations } from "../../utils";
+import { relations } from "drizzle-orm";
 import { teamspaceMemberships } from "../teamspace-memberships";
 import { workspaces } from "../workspaces";
 import { projects } from "../projects";

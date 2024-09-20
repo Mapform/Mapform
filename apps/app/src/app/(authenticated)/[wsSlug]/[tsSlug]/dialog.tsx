@@ -24,11 +24,11 @@ import { Input } from "@mapform/ui/components/input";
 import { toast } from "@mapform/ui/components/toaster";
 import { useAction } from "next-safe-action/hooks";
 import { useState } from "react";
-import { createForm } from "~/data/forms/create";
+import { createProject } from "~/data/projects/create-project";
 import {
-  createFormSchema,
-  type CreateFormSchema,
-} from "~/data/forms/create/schema";
+  createProjectSchema,
+  type CreateProjectSchema,
+} from "~/data/projects/create-project/schema";
 
 export function CreateDialog({
   teamspaceId,
@@ -38,14 +38,14 @@ export function CreateDialog({
   disabled?: boolean;
 }) {
   const [open, setOpen] = useState(false);
-  const form = useForm<CreateFormSchema>({
+  const form = useForm<CreateProjectSchema>({
     defaultValues: {
       name: "",
       teamspaceId,
     },
-    resolver: zodResolver(createFormSchema),
+    resolver: zodResolver(createProjectSchema),
   });
-  const { execute, status } = useAction(createForm, {
+  const { execute, status } = useAction(createProject, {
     onError: ({ error }) => {
       if (error.serverError) {
         toast(error.serverError);
@@ -53,17 +53,17 @@ export function CreateDialog({
       }
 
       if (error.validationErrors) {
-        toast("There was an error creating the form");
+        toast("There was an error creating the project");
       }
     },
     onSuccess: () => {
       form.reset();
-      toast("Your form has been created.");
+      toast("Your project has been created.");
       setOpen(false);
     },
   });
 
-  const onSubmit = (values: CreateFormSchema) => {
+  const onSubmit = (values: CreateProjectSchema) => {
     if (disabled) return;
 
     execute(values);

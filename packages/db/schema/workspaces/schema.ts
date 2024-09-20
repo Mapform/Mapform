@@ -1,5 +1,5 @@
 import { timestamp, pgTable, text, varchar, uuid } from "drizzle-orm/pg-core";
-import { relations } from "../../utils";
+import { relations } from "drizzle-orm";
 import { workspaceMemberships } from "../workspace-memberships";
 import { teamspaces } from "../teamspaces";
 

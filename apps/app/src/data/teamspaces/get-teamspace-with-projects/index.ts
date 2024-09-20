@@ -31,7 +31,6 @@ export const getTeamspaceWithProjects = authAction
           columns: {
             id: true,
             name: true,
-            slug: true,
             createdAt: true,
           },
         },

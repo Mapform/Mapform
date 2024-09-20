@@ -29,6 +29,20 @@
       "when": 1726800682251,
       "tag": "0003_useful_silver_centurion",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1726837033278,
+      "tag": "0004_keen_bastion",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1726840625219,
+      "tag": "0005_pink_doctor_spectrum",
+      "breakpoints": true
     }
   ]
 }
