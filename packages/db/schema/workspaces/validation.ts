@@ -9,4 +9,4 @@ export const insertWorkspaceSchema = createInsertSchema(workspaces, {
 export const selectWorkspaceSchema = createSelectSchema(workspaces);
 
 export type InsertWorkspace = z.infer<typeof insertWorkspaceSchema>;
-export type Workspace = z.infer<typeof selectWorkspaceSchema>;
+export type Workspace = typeof workspaces.$inferSelect;

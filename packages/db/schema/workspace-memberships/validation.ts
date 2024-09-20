@@ -11,6 +11,4 @@ export const selectWorkspaceMembershipSchema =
 export type InsertWorkspaceMembership = z.infer<
   typeof insertWorkspaceMembershipSchema
 >;
-export type WorkspaceMembership = z.infer<
-  typeof selectWorkspaceMembershipSchema
->;
+export type WorkspaceMembership = typeof workspaceMemberships.$inferSelect;

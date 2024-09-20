@@ -61,13 +61,6 @@ export type InsertPage = Modify<
   }
 >;
 
-export type Page = Modify<
-  z.infer<typeof selectPageSchema>,
-  {
-    content?: {
-      content: DocumentContent;
-    };
-  }
->;
+export type Page = typeof pages.$inferSelect;
 
 type Modify<T, R> = Omit<T, keyof R> & R;

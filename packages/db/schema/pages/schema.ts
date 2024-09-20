@@ -12,6 +12,7 @@ import {
   varchar,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
+import type { DocumentContent } from "@mapform/blocknote";
 import { projects } from "../projects";
 
 export const contentViewTypeEnum = pgEnum("content_view_type", [
@@ -31,7 +32,7 @@ export const pages = pgTable("page", {
   bannerImage: text("banner_image"),
   icon: varchar("icon", { length: 256 }),
   title: text("title"),
-  content: jsonb("content"),
+  content: jsonb("content").$type<{ content: DocumentContent }>(),
 
   zoom: doublePrecision("zoom").notNull(),
   pitch: real("pitch").notNull(),

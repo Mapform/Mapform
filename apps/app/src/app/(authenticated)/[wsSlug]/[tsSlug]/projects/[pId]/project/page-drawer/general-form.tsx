@@ -23,6 +23,7 @@ import { useAction } from "next-safe-action/hooks";
 import { useDebounce } from "@mapform/lib/hooks/use-debounce";
 import type { StepWithLocation } from "@mapform/db/extentsions/steps";
 import { useCallback, useEffect } from "react";
+import type { Page } from "@mapform/db/schema";
 import {
   type UpdateStepSchema,
   updateStepSchema,
@@ -30,10 +31,10 @@ import {
 import { updateStep } from "~/data/steps/update";
 
 interface GeneralFormProps {
-  currentStep: StepWithLocation;
+  currentPage: Page;
 }
 
-export function GeneralForm({ currentStep }: GeneralFormProps) {
+export function GeneralForm({ currentPage }: GeneralFormProps) {
   const form = useForm<UpdateStepSchema>({
     resolver: zodResolver(updateStepSchema),
     defaultValues: {
