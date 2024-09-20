@@ -8,7 +8,7 @@ import { Settings2Icon } from "lucide-react";
 import { uploadImage } from "~/data/images";
 import { updateStepWithLocation } from "~/data/steps/update-location";
 import { env } from "~/env.mjs";
-import { useContainerContext } from "../context";
+import { useProjectContext } from "../context";
 import {
   StepDrawerRoot,
   StepDrawerTrigger,
@@ -18,17 +18,17 @@ import { PagePicker } from "./page-picker";
 import { PageBarButton } from "./page-bar-button";
 import { AddLocationDropdown } from "./add-location-dropdown";
 
-function MapFormContainer() {
+function Project() {
   const {
     points,
-    currentStep,
-    formWithSteps,
+    currentPage,
+    projectWithPages,
     setQueryParamFor,
-    currentEditableStep,
-    debouncedUpdateStep,
-  } = useContainerContext();
+    currentEditablePage,
+    // debouncedUpdateStep,
+  } = useProjectContext();
 
-  if (!currentStep) {
+  if (!currentPage) {
     return null;
   }
 
@@ -42,19 +42,19 @@ function MapFormContainer() {
           {/* Edit controls */}
           <div className="flex gap-1">
             <StepDrawerRoot
-              key={currentStep.id}
+              key={currentPage.id}
               onOpenChange={(isOpen) => {
-                if (!isOpen && currentEditableStep?.id === currentStep.id)
+                if (!isOpen && currentEditablePage?.id === currentPage.id)
                   setQueryParamFor("e");
               }}
-              open={currentEditableStep?.id === currentStep.id}
+              open={currentEditablePage?.id === currentPage.id}
             >
               <StepDrawerTrigger asChild>
                 <PageBarButton
                   Icon={Settings2Icon}
-                  isActive={currentEditableStep?.id === currentStep.id}
+                  isActive={currentEditablePage?.id === currentPage.id}
                   onClick={() => {
-                    setQueryParamFor("e", currentStep);
+                    setQueryParamFor("e", currentPage);
                   }}
                 >
                   Edit Page
@@ -67,7 +67,7 @@ function MapFormContainer() {
 
         <div className="flex-1 flex">
           <MapForm
-            currentStep={currentStep}
+            currentPage={currentPage}
             editFields={{
               AddLocationDropdown,
             }}
@@ -77,10 +77,10 @@ function MapFormContainer() {
               content: CustomBlock[];
             }) => {
               await debouncedUpdateStep({
-                stepId: currentStep.id,
+                stepId: currentPage.id,
                 data: {
                   description: content,
-                  formId: formWithSteps.id,
+                  formId: projectWithPages.id,
                 },
               });
             }}
@@ -99,7 +99,7 @@ function MapFormContainer() {
             }}
             onLocationSave={async (location) => {
               await updateStepWithLocation({
-                stepId: currentStep.id,
+                stepId: currentPage.id,
                 data: {
                   latitude: location.latitude,
                   longitude: location.longitude,
@@ -116,7 +116,7 @@ function MapFormContainer() {
             }}
             onTitleChange={async (content: string) => {
               await debouncedUpdateStep({
-                stepId: currentStep.id,
+                stepId: currentPage.id,
                 data: {
                   title: content,
                   formId: formWithSteps.id,
@@ -132,4 +132,4 @@ function MapFormContainer() {
 }
 
 // This is to avoid SSR caused by Blocknote / Tiptap
-export default dynamic(() => Promise.resolve(MapFormContainer), { ssr: false });
+export default dynamic(() => Promise.resolve(Project), { ssr: false });

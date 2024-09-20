@@ -23,10 +23,10 @@ export const getProjectWithPages = authAction
 
     return {
       ..._projects2,
-      _pages,
+      pages: _pages,
     };
   });
 
 export type ProjectWithPages = NonNullable<
-  Awaited<ReturnType<typeof getProjectWithPages>>
->["data"];
+  NonNullable<Awaited<ReturnType<typeof getProjectWithPages>>>["data"]
+>;

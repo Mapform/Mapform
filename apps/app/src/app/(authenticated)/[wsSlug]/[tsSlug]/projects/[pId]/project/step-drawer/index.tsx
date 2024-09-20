@@ -30,7 +30,7 @@ import {
 import { cn } from "@mapform/lib/classnames";
 import type { StepWithLocation } from "@mapform/db/extentsions/steps";
 import { DragHandle, DragItem } from "~/components/draggable";
-import { useContainerContext } from "../../context";
+import { useProjectContext } from "../../context";
 import { GeneralForm } from "./general-form";
 import {
   NewLayerDrawerContent,
@@ -43,7 +43,7 @@ export const StepDrawerRoot = Drawer;
 export const StepDrawerTrigger = DrawerTrigger;
 
 export function StepDrawerContent() {
-  const { currentStep } = useContainerContext();
+  const { currentStep } = useProjectContext();
 
   if (!currentStep) {
     return <div className="bg-white w-[400px] border-l" />;
@@ -58,7 +58,7 @@ function StepDrawerContentInner({
   currentStep: StepWithLocation;
 }) {
   const [dragLayers, setDragLayers] = useState(currentStep.layers);
-  const { debouncedUpdateStep } = useContainerContext();
+  const { debouncedUpdateStep } = useProjectContext();
 
   const sensors = useSensors(
     useSensor(PointerSensor, {

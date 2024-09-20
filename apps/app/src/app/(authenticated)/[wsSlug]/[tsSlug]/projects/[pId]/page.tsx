@@ -1,11 +1,9 @@
+import { cn } from "@mapform/lib/classnames";
 import { MapProvider } from "@mapform/mapform";
-import {
-  dehydrate,
-  HydrationBoundary,
-  QueryClient,
-} from "@tanstack/react-query";
+import { notFound } from "next/navigation";
 import { getProjectWithPages } from "~/data/projects/get-project-with-pages";
-import { Container } from "./container";
+import { ProjectProvider } from "./context";
+import Project from "./project";
 
 export default async function Workspace({
   params,
@@ -16,37 +14,28 @@ export default async function Workspace({
   };
 }) {
   const { pId } = params;
-  // const queryClient = new QueryClient({
-  //   defaultOptions: {
-  //     queries: {
-  //       staleTime: 1000 * 60 * 5,
-  //       refetchInterval: 1000 * 60 * 5,
-  //     },
-  //   },
-  // });
-  // await queryClient.prefetchQuery({
-  //   queryKey: ["projects", pId],
-  //   queryFn: async () =>
-  //     (
-  //       await getProjectWithPages({
-  //         id: pId,
-  //       })
-  //     )?.data,
-  // });
-  const projectWithPages = await getProjectWithPages({
+  const projectWithPagesResponse = await getProjectWithPages({
     id: pId,
   });
+  const projectWithPages = projectWithPagesResponse?.data;
 
-  console.log(99999, projectWithPages);
+  if (!projectWithPages) {
+    return notFound();
+  }
+
+  // TODO: Fetch points per page
 
   return (
     <div className="-m-4 flex flex-col flex-1 overflow-hidden">
-      {/* <HydrationBoundary state={dehydrate(queryClient)}> */}
       <MapProvider>
-        Project
-        {/* <Container formId={params.formId} points={stepData?.data ?? []} /> */}
+        <ProjectProvider points={[]} projectWithPages={projectWithPages}>
+          <div
+            className={cn("flex flex-col flex-1 overflow-hidden bg-background")}
+          >
+            <Project />
+          </div>
+        </ProjectProvider>
       </MapProvider>
-      {/* </HydrationBoundary> */}
     </div>
   );
 }

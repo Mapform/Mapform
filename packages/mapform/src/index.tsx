@@ -2,7 +2,7 @@
 
 import "mapbox-gl/dist/mapbox-gl.css";
 import React, { useEffect, useState } from "react";
-import type { Step } from "@mapform/db";
+import type { Page } from "@mapform/db/schema";
 import { Form, useForm, zodResolver } from "@mapform/ui/components/form";
 import type { z } from "zod";
 import type { MapboxEvent } from "mapbox-gl";
@@ -22,12 +22,10 @@ import { Map, MapProvider, useMap, type MBMap } from "./map";
 import { EditBar } from "./edit-bar";
 import "./style.css";
 
-type ExtendedStep = Step & { latitude: number; longitude: number };
-
 interface MapFormProps {
   editable?: boolean;
   mapboxAccessToken: string;
-  currentStep: ExtendedStep;
+  currentPage: Page;
   defaultFormValues?: Record<string, string>;
   contentViewType?: "full" | "partial" | "closed";
   onPrev?: () => void;
@@ -52,7 +50,7 @@ export function MapForm({
   onPrev,
   onLoad,
   editFields,
-  currentStep,
+  currentPage,
   points = [],
   onStepSubmit,
   onTitleChange,
@@ -63,7 +61,7 @@ export function MapForm({
 }: MapFormProps) {
   const { map } = useMap();
   const blocknoteStepSchema = getFormSchemaFromBlockNote(
-    currentStep.description?.content || []
+    currentPage.content?.content || []
   );
   const form = useForm<z.infer<typeof blocknoteStepSchema>>({
     resolver: zodResolver(blocknoteStepSchema),
@@ -73,12 +71,13 @@ export function MapForm({
     string | null
   >(null);
   const { ref: drawerRef } = useMeasure<HTMLDivElement>();
+  console.log(11111, currentPage);
   const initialViewState = {
-    longitude: currentStep.longitude,
-    latitude: currentStep.latitude,
-    zoom: currentStep.zoom,
-    bearing: currentStep.bearing,
-    pitch: currentStep.pitch,
+    longitude: currentPage.center.x,
+    latitude: currentPage.center.y,
+    zoom: currentPage.zoom,
+    bearing: currentPage.bearing,
+    pitch: currentPage.pitch,
     padding: {
       top: 0,
       bottom: 0,
@@ -93,11 +92,11 @@ export function MapForm({
     pitch: number;
     bearing: number;
   }>({
-    lat: currentStep.latitude,
-    lng: currentStep.longitude,
-    zoom: currentStep.zoom,
-    pitch: currentStep.pitch,
-    bearing: currentStep.bearing,
+    lat: currentPage.center.y,
+    lng: currentPage.center.x,
+    zoom: currentPage.zoom,
+    pitch: currentPage.pitch,
+    bearing: currentPage.bearing,
   });
   const [searchLocation, setSearchLocation] = useState<{
     id: string;
@@ -131,31 +130,31 @@ export function MapForm({
         map.off("moveend", handleOnMove);
       };
     }
-  }, [map, currentStep]);
+  }, [map, currentPage]);
 
   // Update movedCoords when the step changes
   useEffect(() => {
     setMovedCoords({
-      lat: currentStep.latitude,
-      lng: currentStep.longitude,
-      zoom: currentStep.zoom,
-      pitch: currentStep.pitch,
-      bearing: currentStep.bearing,
+      lat: currentPage.center.y,
+      lng: currentPage.center.x,
+      zoom: currentPage.zoom,
+      pitch: currentPage.pitch,
+      bearing: currentPage.bearing,
     });
-  }, [currentStep]);
+  }, [currentPage]);
 
-  const pinBlocks = currentStep.description?.content.filter((c) => {
+  const pinBlocks = currentPage.content?.content.filter((c) => {
     return c.type === "pin";
   });
 
   const roundLocation = (num: number) => Math.round(num * 1000000) / 1000000;
 
   const hasMoved =
-    roundLocation(movedCoords.lat) !== roundLocation(currentStep.latitude) ||
-    roundLocation(movedCoords.lng) !== roundLocation(currentStep.longitude) ||
-    movedCoords.zoom !== currentStep.zoom ||
-    movedCoords.pitch !== currentStep.pitch ||
-    movedCoords.bearing !== currentStep.bearing;
+    roundLocation(movedCoords.lat) !== roundLocation(currentPage.center.y) ||
+    roundLocation(movedCoords.lng) !== roundLocation(currentPage.center.x) ||
+    movedCoords.zoom !== currentPage.zoom ||
+    movedCoords.pitch !== currentPage.pitch ||
+    movedCoords.bearing !== currentPage.bearing;
 
   const AddLocationDropdown = editFields?.AddLocationDropdown;
 
@@ -176,9 +175,9 @@ export function MapForm({
           <div
             className={cn(
               "group absolute bg-background z-10 w-[360px]",
-              currentStep.contentViewType === "TEXT"
+              currentPage.contentViewType === "text"
                 ? "h-full w-full p-2 pb-0 z-10"
-                : currentStep.contentViewType === "SPLIT"
+                : currentPage.contentViewType === "split"
                   ? "h-full p-2 pb-0 m-0"
                   : "h-initial rounded-lg shadow-lg p-0 m-2"
             )}
@@ -187,23 +186,23 @@ export function MapForm({
             <div
               className={cn("h-full", {
                 // "pl-9": editable,
-                "px-9": editable && currentStep.contentViewType === "TEXT",
-                "pl-9": editable && currentStep.contentViewType !== "TEXT",
+                "px-9": editable && currentPage.contentViewType === "text",
+                "pl-9": editable && currentPage.contentViewType !== "text",
               })}
             >
               <Blocknote
-                contentViewType={currentStep.contentViewType}
-                currentStep={currentStep}
-                description={currentStep.description ?? undefined}
+                contentViewType={currentPage.contentViewType}
+                currentPage={currentPage}
+                description={currentPage.content ?? undefined}
                 // Need key to force re-render, otherwise Blocknote state doesn't
                 // change when changing steps
                 editable={editable}
-                isPage
-                key={currentStep.id}
+                iscurrentPage
+                key={currentPage.id}
                 onDescriptionChange={onDescriptionChange}
                 onPrev={onPrev}
                 onTitleChange={onTitleChange}
-                title={currentStep.title}
+                title={currentPage.title}
               >
                 <div className="mt-auto flex justify-between p-4 pt-0">
                   <div className="gap-2">
@@ -230,9 +229,9 @@ export function MapForm({
             <div
               className={cn(
                 "group absolute bg-background z-10 w-[360px]",
-                currentStep.contentViewType === "TEXT"
+                currentPage.contentViewType === "text"
                   ? "h-full w-full p-2 pb-0 z-10"
-                  : currentStep.contentViewType === "SPLIT"
+                  : currentPage.contentViewType === "split"
                     ? "h-full p-2 pb-0 m-0"
                     : "h-initial rounded-lg shadow-lg p-0 m-2"
               )}
@@ -241,13 +240,13 @@ export function MapForm({
               <div
                 className={cn("h-full", {
                   // "pl-9": editable,
-                  "px-9": editable && currentStep.contentViewType === "TEXT",
-                  "pl-9": editable && currentStep.contentViewType !== "TEXT",
+                  "px-9": editable && currentPage.contentViewType === "text",
+                  "pl-9": editable && currentPage.contentViewType !== "text",
                 })}
               >
                 <Blocknote
-                  contentViewType={currentStep.contentViewType}
-                  currentStep={currentStep}
+                  contentViewType={currentPage.contentViewType}
+                  currentPage={currentPage}
                   description={searchLocation.description ?? undefined}
                   // Need key to force re-render, otherwise Blocknote state doesn't
                   // change when changing steps
@@ -278,7 +277,7 @@ export function MapForm({
                   }}
                   title={searchLocation.name}
                 >
-                  {editable && AddLocationDropdown && currentStep.formId ? (
+                  {editable && AddLocationDropdown && currentPage.projectId ? (
                     <div className="p-4 ml-auto">
                       <AddLocationDropdown
                         data={{
@@ -292,8 +291,8 @@ export function MapForm({
                           },
                           properties: {},
                         }}
-                        formId={currentStep.formId}
-                        stepId={currentStep.id}
+                        formId={currentPage.projectId}
+                        stepId={currentPage.id}
                       />
                     </div>
                   ) : null}
@@ -352,7 +351,7 @@ export function MapForm({
 
               <Data points={points} />
             </Map> */}
-          {currentStep.contentViewType !== "TEXT" ? (
+          {currentPage.contentViewType !== "text" ? (
             <div className="relative flex flex-1 overflow-hidden">
               <Map
                 editable={editable}
@@ -375,7 +374,7 @@ export function MapForm({
                   className="flex items-center bg-primary rounded-lg px-2 py-0 absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10"
                   style={{
                     left:
-                      currentStep.contentViewType === "SPLIT"
+                      currentPage.contentViewType === "split"
                         ? "calc(50% + 180px)"
                         : "50%",
                   }}
