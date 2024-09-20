@@ -31,17 +31,17 @@ import {
 } from "~/data/forms/create/schema";
 
 export function CreateDialog({
-  workspaceId,
+  teamspaceId,
   disabled,
 }: {
-  workspaceId: string;
+  teamspaceId: string;
   disabled?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const form = useForm<CreateFormSchema>({
     defaultValues: {
       name: "",
-      workspaceId,
+      teamspaceId,
     },
     resolver: zodResolver(createFormSchema),
   });

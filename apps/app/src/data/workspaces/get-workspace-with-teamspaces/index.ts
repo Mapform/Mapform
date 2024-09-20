@@ -15,6 +15,7 @@ export const getWorkspaceWithTeamspaces = authAction
         id: true,
         name: true,
         slug: true,
+        createdAt: true,
       },
       with: {
         teamspaces: {
@@ -22,6 +23,7 @@ export const getWorkspaceWithTeamspaces = authAction
             id: true,
             name: true,
             slug: true,
+            createdAt: true,
           },
         },
       },

@@ -9,6 +9,7 @@ import {
 import { relations } from "../../utils";
 import { teamspaceMemberships } from "../teamspace-memberships";
 import { workspaces } from "../workspaces";
+import { projects } from "../projects";
 
 export const teamspaces = pgTable(
   "teamspace",
@@ -34,6 +35,7 @@ export const teamspaces = pgTable(
 );
 
 export const teamspacesRelations = relations(teamspaces, ({ one, many }) => ({
+  projects: many(projects),
   teamspaceMemberships: many(teamspaceMemberships),
   workspace: one(workspaces, {
     fields: [teamspaces.workspaceId],

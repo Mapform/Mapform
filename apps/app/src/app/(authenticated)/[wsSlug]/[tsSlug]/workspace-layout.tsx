@@ -1,30 +1,29 @@
 import { Tabs } from "~/components/tabs";
 
 interface WorkspaceLayoutProps {
-  orgSlug: string;
-  workspaceSlug: string;
-  workspaceId: string;
+  wsSlug: string;
+  tsSlug: string;
   name: string;
   children: React.ReactNode;
   action?: React.ReactNode;
 }
 
 export default function WorkspaceLayout({
-  orgSlug,
-  workspaceSlug,
+  wsSlug,
+  tsSlug,
   name,
   children,
   action,
 }: WorkspaceLayoutProps) {
   const tabs = [
-    { name: "Forms", href: `/orgs/${orgSlug}/workspaces/${workspaceSlug}` },
+    { name: "Forms", href: `/orgs/${wsSlug}/workspaces/${tsSlug}` },
     {
       name: "Datasets",
-      href: `/orgs/${orgSlug}/workspaces/${workspaceSlug}/datasets`,
+      href: `/orgs/${wsSlug}/workspaces/${tsSlug}/datasets`,
     },
     {
       name: "Settings",
-      href: `/orgs/${orgSlug}/workspaces/${workspaceSlug}/settings`,
+      href: `/orgs/${wsSlug}/workspaces/${tsSlug}/settings`,
     },
   ];
 
