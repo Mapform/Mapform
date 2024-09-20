@@ -7,11 +7,11 @@ import { Clipboard } from "@mapform/ui/components/clipboard";
 import { publishForm } from "~/data/forms/publish";
 
 export function ShareContent({
-  formId,
+  projectId,
   isDirty,
   numberOfVersions,
 }: {
-  formId: string;
+  projectId: string;
   isDirty: boolean;
   numberOfVersions: number;
 }) {
@@ -26,8 +26,8 @@ export function ShareContent({
             className="w-full justify-start"
             clipboardText={
               process.env.NODE_ENV === "production"
-                ? `mapform.co/${formId}`
-                : `localhost:3001/${formId}`
+                ? `mapform.co/${projectId}`
+                : `localhost:3001/${projectId}`
             }
             copiedText="Copied!"
             copyText="Copy shareable link"
@@ -44,7 +44,7 @@ export function ShareContent({
         className="w-full mt-4"
         disabled={!isDirty || status === "executing"}
         onClick={() => {
-          execute({ formId });
+          execute({ projectId });
         }}
         variant="outline"
       >
