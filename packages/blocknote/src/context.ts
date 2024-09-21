@@ -6,7 +6,7 @@ import { useContext, createContext } from "react";
  * Context needed to support custom blocks
  */
 export interface CustomBlockContextProps {
-  editable: boolean;
+  isProduction: boolean;
   onImageUpload?: (file: File) => Promise<string | null>;
   isSelectingPinLocationFor: string | null;
   setIsSelectingPinLocationFor: React.Dispatch<

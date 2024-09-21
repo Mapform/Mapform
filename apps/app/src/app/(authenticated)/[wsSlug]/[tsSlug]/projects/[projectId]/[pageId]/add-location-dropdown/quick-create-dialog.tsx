@@ -42,8 +42,6 @@ export function QuickCreateContent({
   formId,
   data,
 }: QuickCreateContentProps) {
-  console.log(11111, data);
-
   const form = useForm<QuickCreateDataLayerSchema>({
     defaultValues: {
       name: "",

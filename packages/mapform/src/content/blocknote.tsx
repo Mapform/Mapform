@@ -16,13 +16,12 @@ import { Button } from "@mapform/ui/components/button";
 import { cn } from "@mapform/lib/classnames";
 import type { Page } from "@mapform/db/schema";
 import { schema, type CustomBlock } from "@mapform/blocknote";
-import { AutoSizeTextArea } from "../components/autosize-text-area";
-import { CustomSideMenu } from "../components/side-menu";
+import { AutoSizeTextArea } from "./autosize-text-area";
+import { CustomSideMenu } from "./side-menu";
 
 interface BlocknoteProps {
-  editable: boolean;
+  isProduction: boolean;
   title?: string | null;
-  currentPage: Page;
   description?: {
     content: CustomBlock[];
   };
@@ -34,18 +33,18 @@ interface BlocknoteProps {
   };
   onPrev?: () => void;
   onTitleChange?: (content: string) => void;
-  onDescriptionChange?: (content: { content: CustomBlock[] }) => void;
+  onContentChange?: (content: { content: CustomBlock[] }) => void;
 }
 
 export function Blocknote({
   title,
-  editable,
   children,
   description,
+  isProduction,
   onTitleChange,
   isPage = false,
   contentViewType,
-  onDescriptionChange,
+  onContentChange,
   locationEditorProps,
 }: BlocknoteProps) {
   const [uncontrolledTitle, setUncontrolledTitle] = useState<string>(
@@ -119,7 +118,7 @@ export function Blocknote({
         {/* Content */}
         <div className="overflow-y-auto p-4">
           {/* Title */}
-          {editable ? (
+          {!isProduction ? (
             <AutoSizeTextArea
               onChange={(val) => {
                 setUncontrolledTitle(val);
@@ -142,11 +141,11 @@ export function Blocknote({
           {/* Description */}
           <BlockNoteView
             className="flex-1"
-            editable={editable}
+            editable={!isProduction}
             editor={editor}
             onChange={() => {
-              onDescriptionChange &&
-                onDescriptionChange({
+              onContentChange &&
+                onContentChange({
                   content: editor.document,
                 });
             }}

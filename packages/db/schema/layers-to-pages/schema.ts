@@ -26,4 +26,7 @@ export const layersToPages = pgTable(
   })
 );
 
-export const layersRelations = relations(layers, ({ one, many }) => ({}));
+export const layersToPagesRelations = relations(
+  layers,
+  ({ one, many }) => ({})
+);

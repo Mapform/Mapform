@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { MapForm } from "@mapform/mapform";
+import { MapFormContent, MapFormMap, useMapForm } from "@mapform/mapform";
 import { toast } from "@mapform/ui/components/toaster";
 import type { CustomBlock } from "@mapform/blocknote";
 import { Settings2Icon } from "lucide-react";
@@ -17,8 +17,10 @@ import {
 import { PagePicker } from "./page-picker";
 import { PageBarButton } from "./page-bar-button";
 import { AddLocationDropdown } from "./add-location-dropdown";
+import type { Page } from "@mapform/db/schema";
+import { useEffect } from "react";
 
-function Project() {
+function Project({ page }: { page: Page }) {
   const {
     points,
     currentPage,
@@ -27,6 +29,11 @@ function Project() {
     currentEditablePage,
     // debouncedUpdateStep,
   } = useProjectContext();
+  const { setCurrentPage } = useMapForm();
+
+  useEffect(() => {
+    setCurrentPage(page);
+  }, [page]);
 
   if (!currentPage) {
     return null;
@@ -40,7 +47,7 @@ function Project() {
             <PagePicker />
           </div>
           {/* Edit controls */}
-          <div className="flex gap-1">
+          {/* <div className="flex gap-1">
             <PageDrawerRoot
               key={currentPage.id}
               onOpenChange={(isOpen) => {
@@ -62,69 +69,12 @@ function Project() {
               </PageDrawerTrigger>
               <PageDrawerContent />
             </PageDrawerRoot>
-          </div>
+          </div> */}
         </div>
 
         <div className="flex-1 flex">
-          <MapForm
-            currentPage={currentPage}
-            editFields={{
-              AddLocationDropdown,
-            }}
-            editable
-            mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
-            onDescriptionChange={async (content: {
-              content: CustomBlock[];
-            }) => {
-              await debouncedUpdateStep({
-                stepId: currentPage.id,
-                data: {
-                  description: content,
-                  formId: projectWithPages.id,
-                },
-              });
-            }}
-            onImageUpload={async (file: File) => {
-              const formData = new FormData();
-              formData.append("image", file);
-
-              const { success, error } = await uploadImage(formData);
-
-              if (error) {
-                toast(error);
-                return null;
-              }
-
-              return success?.url || null;
-            }}
-            onLocationSave={async (location) => {
-              await updateStepWithLocation({
-                stepId: currentPage.id,
-                data: {
-                  latitude: location.latitude,
-                  longitude: location.longitude,
-                  zoom: location.zoom,
-                  pitch: location.pitch,
-                  bearing: location.bearing,
-                },
-              }).catch(() => {
-                toast("Failed to update location");
-                return { success: false };
-              });
-
-              return { success: true };
-            }}
-            onTitleChange={async (content: string) => {
-              await debouncedUpdateStep({
-                stepId: currentPage.id,
-                data: {
-                  title: content,
-                  formId: formWithSteps.id,
-                },
-              });
-            }}
-            points={points}
-          />
+          {/* <MapFormContent /> */}
+          <MapFormMap />
         </div>
       </div>
     </div>

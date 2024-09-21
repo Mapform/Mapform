@@ -31,13 +31,13 @@ export const Pin = createReactBlockSpec(
     render: ({ block, editor }) => {
       const form = useFormContext();
       const {
-        editable,
+        isProduction,
         isSelectingPinLocationFor,
         setIsSelectingPinLocationFor,
       } = useCustomBlockContext();
       // const [prevViewState, setPrevViewState] = useState(viewState);
 
-      if (editable) {
+      if (!isProduction) {
         return (
           <Button
             className="w-full cursor-default relative"

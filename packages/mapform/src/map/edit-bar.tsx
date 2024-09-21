@@ -17,7 +17,7 @@ import {
   CommandList,
   CommandDialog,
 } from "@mapform/ui/components/command";
-import { useMap } from "./map";
+import { useMapForm } from "../context";
 
 interface EditBarProps {
   hasMoved: boolean;
@@ -61,7 +61,7 @@ function EditBarInner({
   onLocationSave,
   setSearchLocation,
 }: EditBarInnerProps) {
-  const { map } = useMap();
+  const { map } = useMapForm();
   const [openSearch, setOpenSearch] = useState(false);
 
   return (
@@ -152,7 +152,7 @@ function CommandSearch({
     } | null>
   >;
 }) {
-  const { map } = useMap();
+  const { map } = useMapForm();
   const [query, setQuery] = useState("");
   const debouncedQuery = useDebounce(query, 250);
   const { data } = useQuery({

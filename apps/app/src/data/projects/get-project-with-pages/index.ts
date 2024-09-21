@@ -21,6 +21,10 @@ export const getProjectWithPages = authAction
       }),
     ]);
 
+    if (!_projects2) {
+      return null;
+    }
+
     return {
       ..._projects2,
       pages: _pages,

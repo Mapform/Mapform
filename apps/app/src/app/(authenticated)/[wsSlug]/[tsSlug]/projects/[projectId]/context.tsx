@@ -3,7 +3,7 @@
 import { useDebounce } from "@mapform/lib/hooks/use-debounce";
 // import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { type StepWithLocation } from "@mapform/db/extentsions/steps";
-import { useMap, type MBMap } from "@mapform/mapform";
+import { useMapForm, type MBMap } from "@mapform/mapform";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import {
   type Dispatch,
@@ -47,7 +47,7 @@ export function ProjectProvider({
   points: GetStepData;
   children: React.ReactNode;
 }) {
-  const { map } = useMap();
+  const { map } = useMapForm();
   const router = useRouter();
   const pathname = usePathname();
   // const queryClient = useQueryClient();

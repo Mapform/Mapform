@@ -1,202 +1,120 @@
-/* eslint-disable import/no-named-as-default-member -- It's cool yo */
-import {
-  useRef,
-  useState,
-  useEffect,
-  useContext,
-  createContext,
-  type Dispatch,
-  type SetStateAction,
-  useMemo,
-} from "react";
-import mapboxgl from "mapbox-gl";
-import { cn } from "@mapform/lib/classnames";
-import type { FeatureCollection } from "geojson";
-import type { Points, ViewState } from "@mapform/map-utils/types";
+"use client";
 
-const accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
+import type { CustomBlock } from "@mapform/blocknote";
+import { useEffect, useState } from "react";
+import type { Page } from "@mapform/db/schema";
+import { useMapForm } from "../context";
+import { Mapbox } from "./mapbox";
+import { EditBar } from "./edit-bar";
 
-export type MBMap = mapboxgl.Map;
+export function MapFormMap() {
+  const { currentPage } = useMapForm();
 
-interface MapProviderContextProps {
-  map?: MBMap;
-  setMap: Dispatch<SetStateAction<MBMap | undefined>>;
+  if (!currentPage) {
+    return null;
+  }
+
+  return <MapFormMapInner currentPage={currentPage} />;
 }
 
-export const MapProviderContext = createContext<MapProviderContextProps>(
-  {} as MapProviderContextProps
-);
-export const useMap = () => useContext(MapProviderContext);
-
-export function MapProvider({ children }: { children: React.ReactNode }) {
-  const [map, setMap] = useState<MBMap>();
-
-  return (
-    <MapProviderContext.Provider
-      value={{
-        map,
-        setMap,
-      }}
-    >
-      {children}
-    </MapProviderContext.Provider>
-  );
-}
-
-interface MapProps {
-  points?: Points;
-  editable?: boolean;
-  onLoad?: () => void;
-  initialViewState: ViewState;
-  marker?: {
+export function MapFormMapInner({ currentPage }: { currentPage: Page }) {
+  const { isProduction, onLocationSave, onLoad } = useMapForm();
+  const [movedCoords, setMovedCoords] = useState<{
+    lat: number;
+    lng: number;
+    zoom: number;
+    pitch: number;
+    bearing: number;
+  }>({
+    lat: currentPage.center.y,
+    lng: currentPage.center.x,
+    zoom: currentPage.zoom,
+    pitch: currentPage.pitch,
+    bearing: currentPage.bearing,
+  });
+  const [searchLocation, setSearchLocation] = useState<{
+    id: string;
     latitude: number;
     longitude: number;
+    name: string;
+    description?: {
+      content: CustomBlock[];
+    };
+  } | null>(null);
+
+  const roundLocation = (num: number) => Math.round(num * 1000000) / 1000000;
+
+  const hasMoved =
+    roundLocation(movedCoords.lat) !== roundLocation(currentPage.center.y) ||
+    roundLocation(movedCoords.lng) !== roundLocation(currentPage.center.x) ||
+    movedCoords.zoom !== currentPage.zoom ||
+    movedCoords.pitch !== currentPage.pitch ||
+    movedCoords.bearing !== currentPage.bearing;
+
+  const initialViewState = {
+    latitude: currentPage.center.y,
+    longitude: currentPage.center.x,
+    zoom: currentPage.zoom,
+    pitch: currentPage.pitch,
+    bearing: currentPage.bearing,
+    padding: {
+      top: 0,
+      bottom: 0,
+      left: 0,
+      right: 0,
+    },
   };
-}
-
-/**
- * TODO:
- * 1. Add ability to add markers
- * 2. Style points a bit better
- * 3. Add zIndex to points according to layer order
- */
-export function Map({
-  initialViewState,
-  editable = false,
-  points = [],
-  onLoad,
-  marker,
-}: MapProps) {
-  const mapContainer = useRef<HTMLDivElement>(null);
-  const { map, setMap } = useMap();
-  const markerEl = useRef<mapboxgl.Marker | null>(null);
-
-  const geojson: FeatureCollection = useMemo(
-    () => ({
-      type: "FeatureCollection",
-      features: points.map((point) => ({
-        type: "Feature",
-        geometry: {
-          type: "Point",
-          coordinates: [point.longitude, point.latitude],
-        },
-        properties: {
-          id: point.id,
-        },
-      })),
-    }),
-    [points]
-  );
 
   useEffect(() => {
-    if (!accessToken) {
-      return;
-    }
+    setMovedCoords({
+      lat: currentPage.center.y,
+      lng: currentPage.center.x,
+      zoom: currentPage.zoom,
+      pitch: currentPage.pitch,
+      bearing: currentPage.bearing,
+    });
+  }, [currentPage]);
 
-    mapboxgl.accessToken = accessToken;
-
-    /**
-     * Configure the map object and set it in context
-     */
-    if (mapContainer.current) {
-      // Create map with initial state
-      const m = new mapboxgl.Map({
-        container: mapContainer.current,
-        center: [initialViewState.longitude, initialViewState.latitude],
-        zoom: initialViewState.zoom,
-        pitch: initialViewState.pitch,
-        bearing: initialViewState.bearing,
-        maxZoom: 20,
-        logoPosition: "bottom-right",
-        fitBoundsOptions: {
-          padding: { top: 10, bottom: 25, left: 800, right: 5 },
-        },
-      });
-
-      m.setPadding({
-        top: 0,
-        bottom: 0,
-        left: 360,
-        right: 0,
-      });
-
-      // Add zoom controls
-      m.addControl(new mapboxgl.NavigationControl(), "top-right");
-
-      // Add your custom markers and lines here
-      m.on("load", () => {
-        setMap(m);
-        onLoad && onLoad();
-      });
-
-      // Clean up on unmount
-      return () => {
-        m.remove();
-        setMap(undefined);
-      };
-    }
-  }, []);
-
-  /**
-   * Update layers
-   */
-  useEffect(() => {
-    if (map) {
-      const currentSource = map.getSource("points") as
-        | mapboxgl.AnySourceImpl
-        | undefined;
-
-      if (currentSource) {
-        // Update the source data
-        (currentSource as mapboxgl.GeoJSONSource).setData(geojson);
-      } else {
-        // Add a new source and layer
-        map.addSource("points", {
-          type: "geojson",
-          data: geojson,
-        });
-
-        map.addLayer({
-          id: "points",
-          type: "circle",
-          source: "points",
-          paint: {
-            "circle-radius": 10,
-            "circle-color": "#007cbf",
-          },
-        });
-      }
-    }
-  }, [map, geojson]);
-
-  /**
-   * Update marker
-   */
-  useEffect(() => {
-    const currentLngLat = markerEl.current?.getLngLat();
-    if (
-      map &&
-      marker &&
-      currentLngLat?.lat !== marker.latitude &&
-      currentLngLat?.lng !== marker.longitude
-    ) {
-      markerEl.current?.remove();
-      markerEl.current = new mapboxgl.Marker()
-        .setLngLat([marker.longitude, marker.latitude])
-        .addTo(map);
-    }
-
-    if (map && !marker) {
-      markerEl.current?.remove();
-    }
-  }, [map, marker]);
+  if (currentPage.contentViewType === "text") {
+    return null;
+  }
 
   return (
-    <div
-      className={cn("flex-1", {
-        "rounded-md": editable,
-      })}
-      ref={mapContainer}
-    />
+    <div className="relative flex flex-1 overflow-hidden">
+      <Mapbox
+        initialViewState={initialViewState}
+        isProduction={isProduction}
+        marker={
+          searchLocation
+            ? {
+                latitude: searchLocation.latitude,
+                longitude: searchLocation.longitude,
+              }
+            : undefined
+        }
+        onLoad={onLoad}
+        points={[]}
+      />
+
+      {/* Edit bar */}
+      {!isProduction ? (
+        <div
+          className="flex items-center bg-primary rounded-lg px-2 py-0 absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10"
+          style={{
+            left:
+              currentPage.contentViewType === "split"
+                ? "calc(50% + 180px)"
+                : "50%",
+          }}
+        >
+          <EditBar
+            hasMoved={hasMoved}
+            initialViewState={initialViewState}
+            onLocationSave={onLocationSave}
+            setSearchLocation={setSearchLocation}
+          />
+        </div>
+      ) : null}
+    </div>
   );
 }
