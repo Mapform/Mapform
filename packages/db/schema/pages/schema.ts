@@ -14,6 +14,7 @@ import {
 import { relations } from "drizzle-orm";
 import type { DocumentContent } from "@mapform/blocknote";
 import { projects } from "../projects";
+import { layersToPages } from "../layers-to-pages";
 
 export const contentViewTypeEnum = pgEnum("content_view_type", [
   "map",
@@ -54,9 +55,10 @@ export const pages = pgTable("page", {
     .notNull(),
 });
 
-export const pagesRelations = relations(pages, ({ one }) => ({
+export const pagesRelations = relations(pages, ({ one, many }) => ({
   project: one(projects, {
     fields: [pages.projectId],
     references: [projects.id],
   }),
+  layersToPages: many(layersToPages),
 }));
