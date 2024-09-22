@@ -5,7 +5,7 @@ import { Button } from "@mapform/ui/components/button";
 import { useAction } from "next-safe-action/hooks";
 import { deleteStep } from "~/data/steps/delete";
 import { useCreateQueryString } from "~/lib/create-query-string";
-import { useProjectContext } from "../../context";
+import { useProject } from "../../project-context";
 
 interface DeleteButtonProps {
   stepId: string;
@@ -16,7 +16,7 @@ export function DeleteButton({ stepId }: DeleteButtonProps) {
   const pathname = usePathname();
   const createQueryString = useCreateQueryString();
   const { execute, status } = useAction(deleteStep);
-  const { setDragSteps, setQueryParamFor } = useProjectContext();
+  const { setDragSteps, setQueryParamFor } = useProject();
 
   return (
     <Button

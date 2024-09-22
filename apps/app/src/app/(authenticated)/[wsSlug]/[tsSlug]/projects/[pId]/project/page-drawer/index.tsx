@@ -30,7 +30,7 @@ import {
 import { cn } from "@mapform/lib/classnames";
 import type { ProjectWithPages } from "~/data/projects/get-project-with-pages";
 import { DragHandle, DragItem } from "~/components/draggable";
-import { useProjectContext } from "../../context";
+import { useProject } from "../../project-context";
 import { GeneralForm } from "./general-form";
 import {
   NewLayerDrawerContent,
@@ -45,7 +45,7 @@ export const PageDrawerRoot = Drawer;
 export const PageDrawerTrigger = DrawerTrigger;
 
 export function PageDrawerContent() {
-  const { currentPage } = useProjectContext();
+  const { currentPage } = useProject();
 
   if (!currentPage) {
     return <div className="bg-white w-[400px] border-l" />;
@@ -56,7 +56,7 @@ export function PageDrawerContent() {
 
 function PageDrawerContentInner({ currentPage }: { currentPage: Page }) {
   const [dragLayers, setDragLayers] = useState(currentPage.layers);
-  const { debouncedUpdateStep } = useProjectContext();
+  const { debouncedUpdateStep } = useProject();
 
   const sensors = useSensors(
     useSensor(PointerSensor, {

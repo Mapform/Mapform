@@ -8,7 +8,8 @@ import { Settings2Icon } from "lucide-react";
 import { uploadImage } from "~/data/images";
 import { updateStepWithLocation } from "~/data/steps/update-location";
 import { env } from "~/env.mjs";
-import { useProjectContext } from "../context";
+import { usePage } from "../page-context";
+import { useProject } from "../project-context";
 import {
   PageDrawerRoot,
   PageDrawerTrigger,
@@ -19,16 +20,10 @@ import { PageBarButton } from "./page-bar-button";
 import { AddLocationDropdown } from "./add-location-dropdown";
 
 function Project() {
-  const {
-    points,
-    currentPage,
-    projectWithPages,
-    setQueryParamFor,
-    currentEditablePage,
-    // debouncedUpdateStep,
-  } = useProjectContext();
+  const {} = useProject();
+  const { optimisticPage } = usePage();
 
-  if (!currentPage) {
+  if (!optimisticPage) {
     return null;
   }
 
@@ -41,33 +36,33 @@ function Project() {
           </div>
           {/* Edit controls */}
           <div className="flex gap-1">
-            <PageDrawerRoot
-              key={currentPage.id}
+            {/* <PageDrawerRoot
+              key={optimisticPage.id}
               onOpenChange={(isOpen) => {
-                if (!isOpen && currentEditablePage?.id === currentPage.id)
+                if (!isOpen && currentEditablePage?.id === optimisticPage.id)
                   setQueryParamFor("e");
               }}
-              open={currentEditablePage?.id === currentPage.id}
+              open={currentEditablePage?.id === optimisticPage.id}
             >
               <PageDrawerTrigger asChild>
                 <PageBarButton
                   Icon={Settings2Icon}
-                  isActive={currentEditablePage?.id === currentPage.id}
+                  isActive={currentEditablePage?.id === optimisticPage.id}
                   onClick={() => {
-                    setQueryParamFor("e", currentPage);
+                    setQueryParamFor("e", optimisticPage);
                   }}
                 >
                   Edit Page
                 </PageBarButton>
               </PageDrawerTrigger>
               <PageDrawerContent />
-            </PageDrawerRoot>
+            </PageDrawerRoot> */}
           </div>
         </div>
 
         <div className="flex-1 flex">
           <MapForm
-            currentPage={currentPage}
+            currentPage={optimisticPage}
             editFields={{
               AddLocationDropdown,
             }}
@@ -76,13 +71,13 @@ function Project() {
             onDescriptionChange={async (content: {
               content: CustomBlock[];
             }) => {
-              await debouncedUpdateStep({
-                stepId: currentPage.id,
-                data: {
-                  description: content,
-                  formId: projectWithPages.id,
-                },
-              });
+              // await debouncedUpdateStep({
+              //   stepId: optimisticPage.id,
+              //   data: {
+              //     description: content,
+              //     formId: projectWithPages.id,
+              //   },
+              // });
             }}
             onImageUpload={async (file: File) => {
               const formData = new FormData();
@@ -99,7 +94,7 @@ function Project() {
             }}
             onLocationSave={async (location) => {
               await updateStepWithLocation({
-                stepId: currentPage.id,
+                stepId: optimisticPage.id,
                 data: {
                   latitude: location.latitude,
                   longitude: location.longitude,
@@ -115,15 +110,15 @@ function Project() {
               return { success: true };
             }}
             onTitleChange={async (content: string) => {
-              await debouncedUpdateStep({
-                stepId: currentPage.id,
-                data: {
-                  title: content,
-                  formId: formWithSteps.id,
-                },
-              });
+              // await debouncedUpdateStep({
+              //   stepId: optimisticPage.id,
+              //   data: {
+              //     title: content,
+              //     formId: formWithSteps.id,
+              //   },
+              // });
             }}
-            points={points}
+            points={[]}
           />
         </div>
       </div>

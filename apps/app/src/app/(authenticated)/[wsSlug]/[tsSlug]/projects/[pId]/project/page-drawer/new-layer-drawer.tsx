@@ -40,7 +40,7 @@ import {
 } from "~/data/layers/create/schema";
 import { listAvailableDatasets } from "~/data/datasets/list-available";
 import { createLayer } from "~/data/layers/create";
-import { useProjectContext } from "../../context";
+import { useProject } from "../../project-context";
 
 export const NewLayerDrawerRoot = NestedDrawer;
 
@@ -51,7 +51,7 @@ export function NewLayerDrawerContent({
 }: {
   setDragLayers: Dispatch<SetStateAction<Layer[]>>;
 }) {
-  const { currentStep } = useProjectContext();
+  const { currentStep } = useProject();
   const params = useParams<{ formId: string }>();
   const form = useForm<CreateLayerSchema>({
     defaultValues: {

@@ -13,21 +13,19 @@ import {
   horizontalListSortingStrategy,
   SortableContext,
 } from "@dnd-kit/sortable";
+import { useMap } from "@mapform/mapform";
 import { createStep } from "~/data/steps/create";
 import { updateForm } from "~/data/forms/update";
 import { DragItem, DragHandle } from "~/components/draggable";
 import { PageBarButton } from "../page-bar-button";
-import { useProjectContext } from "../../context";
+import { useProject } from "../../project-context";
+import { usePage } from "../../page-context";
+import { set } from "date-fns";
 
 export function PagePicker() {
-  const {
-    map,
-    dragPages,
-    currentPage,
-    setDragPages,
-    projectWithPages,
-    setQueryParamFor,
-  } = useProjectContext();
+  const { optimisticProjectWithPages } = useProject();
+  const { setActivePage, optimisticPage } = usePage();
+  const { map } = useMap();
   const { execute: executeCreateStep, status: createStepStatus } = useAction(
     createStep,
     {
@@ -36,11 +34,12 @@ export function PagePicker() {
 
         if (!newPageData) return;
 
-        setDragPages((prev) => [...prev, newPageData.id]);
-        setQueryParamFor("p", newPageData);
+        // setDragPages((prev) => [...prev, newPageData.id]);
+        // setActivePage(newPageData);
       },
     }
   );
+  const dragPages = optimisticProjectWithPages.pages;
   const { executeAsync: updateFormAsync } = useAction(updateForm);
 
   const sensors = useSensors(
@@ -85,23 +84,19 @@ export function PagePicker() {
           items={dragPages}
           strategy={horizontalListSortingStrategy}
         >
-          {dragPages.map((pageId) => {
-            const step = projectWithPages.pages.find((p) => p.id === pageId);
-
-            if (!step) return null;
-
+          {dragPages.map((page) => {
             return (
-              <DragItem id={pageId} key={pageId}>
-                <DragHandle id={pageId}>
+              <DragItem id={page.id} key={page.id}>
+                <DragHandle id={page.id}>
                   <PageBarButton
                     Icon={PanelLeftIcon}
-                    isActive={pageId === currentPage?.id}
+                    isActive={page.id === optimisticPage?.id}
                     isSubtle
                     onClick={() => {
-                      setQueryParamFor("p", step);
+                      setActivePage(page);
                     }}
                   >
-                    {step.title || "Untitled"}
+                    {page.title || "Untitled"}
                   </PageBarButton>
                 </DragHandle>
               </DragItem>
@@ -127,16 +122,16 @@ export function PagePicker() {
           )
             return;
 
-          executeCreateStep({
-            formId: projectWithPages.id,
-            location: {
-              latitude: loc.lat,
-              longitude: loc.lng,
-              zoom,
-              pitch,
-              bearing,
-            },
-          });
+          // executeCreateStep({
+          //   formId: projectWithPages.id,
+          //   location: {
+          //     latitude: loc.lat,
+          //     longitude: loc.lng,
+          //     zoom,
+          //     pitch,
+          //     bearing,
+          //   },
+          // });
         }}
       >
         Add Page
