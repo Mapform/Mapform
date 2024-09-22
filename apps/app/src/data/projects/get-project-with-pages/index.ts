@@ -14,12 +14,40 @@ export const getProjectWithPages = authAction
     const [_projects2, _pages] = await Promise.all([
       db.query.projects.findFirst({
         where: and(eq(projects.id, id), isNull(projects.rootProjectId)),
+        with: {
+          teamspace: {
+            columns: {
+              id: true,
+            },
+            with: {
+              workspace: {
+                columns: {
+                  id: true,
+                },
+              },
+            },
+          },
+        },
       }),
 
       db.query.pages.findMany({
         where: eq(pages.projectId, id),
+        columns: {
+          id: true,
+          title: true,
+          position: true,
+          center: true,
+          zoom: true,
+          pitch: true,
+          bearing: true,
+        },
+        orderBy: (_pages2, { asc }) => [asc(_pages2.position)],
       }),
     ]);
+
+    if (!_projects2) {
+      throw new Error("Project not found");
+    }
 
     return {
       ..._projects2,

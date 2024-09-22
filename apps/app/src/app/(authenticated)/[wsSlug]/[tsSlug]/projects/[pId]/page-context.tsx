@@ -13,7 +13,9 @@ import type { PageWithData } from "~/data/pages/get-page-with-data";
 export interface PageContextProps {
   optimisticPage: PageWithData | undefined;
   updatePage: (action: PageWithData) => void;
-  setActivePage: (page?: PageWithData) => void;
+  setActivePage: (
+    page?: Pick<PageWithData, "id" | "center" | "zoom" | "pitch" | "bearing">
+  ) => void;
   toggleActiveMode: () => void;
 }
 
@@ -41,7 +43,9 @@ export function PageProvider({
     ...newPage,
   }));
 
-  const setActivePage = (page?: PageWithData) => {
+  const setActivePage = (
+    page?: Pick<PageWithData, "id" | "center" | "zoom" | "pitch" | "bearing">
+  ) => {
     // Get current search params
     const current = new URLSearchParams(Array.from(searchParams.entries()));
 
@@ -52,7 +56,7 @@ export function PageProvider({
       current.set("page", page.id);
 
       map?.flyTo({
-        center: [page.center.y, page.center.x],
+        center: [page.center.x, page.center.y],
         zoom: page.zoom,
         pitch: page.pitch,
         bearing: page.bearing,
@@ -66,7 +70,7 @@ export function PageProvider({
     const search = current.toString();
     const query = search ? `?${search}` : "";
 
-    void router.push(`${pathname}${query}`);
+    router.push(`${pathname}${query}`);
   };
 
   const toggleActiveMode = () => {
@@ -81,7 +85,7 @@ export function PageProvider({
     const search = current.toString();
     const query = search ? `?${search}` : "";
 
-    void router.push(`${pathname}${query}`);
+    router.push(`${pathname}${query}`);
   };
 
   return (

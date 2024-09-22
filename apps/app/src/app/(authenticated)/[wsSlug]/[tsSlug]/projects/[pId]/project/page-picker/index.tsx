@@ -14,33 +14,31 @@ import {
   SortableContext,
 } from "@dnd-kit/sortable";
 import { useMap } from "@mapform/mapform";
-import { createStep } from "~/data/steps/create";
-import { updateForm } from "~/data/forms/update";
+import { createPage } from "~/data/pages/create-page";
 import { DragItem, DragHandle } from "~/components/draggable";
+import { updatePageOrder } from "~/data/pages/update-page-order";
 import { PageBarButton } from "../page-bar-button";
 import { useProject } from "../../project-context";
 import { usePage } from "../../page-context";
-import { set } from "date-fns";
 
 export function PagePicker() {
-  const { optimisticProjectWithPages } = useProject();
+  const { optimisticProjectWithPages, updateProjectWithPages } = useProject();
   const { setActivePage, optimisticPage } = usePage();
   const { map } = useMap();
-  const { execute: executeCreateStep, status: createStepStatus } = useAction(
-    createStep,
+  const { execute: executeCreatePage, status: createPageStatus } = useAction(
+    createPage,
     {
       onSuccess: (newPage) => {
         const newPageData = newPage.data;
 
         if (!newPageData) return;
 
-        // setDragPages((prev) => [...prev, newPageData.id]);
-        // setActivePage(newPageData);
+        setActivePage(newPageData);
       },
     }
   );
   const dragPages = optimisticProjectWithPages.pages;
-  const { executeAsync: updateFormAsync } = useAction(updateForm);
+  const { executeAsync: updatePageOrderAsync } = useAction(updatePageOrder);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -55,21 +53,24 @@ export function PagePicker() {
 
     if (e.active.id !== e.over.id) {
       const activeStepIndex = dragPages.findIndex(
-        (step) => step === e.active.id
+        (page) => page.id === e.active.id
       );
-      const overStepIndex = dragPages.findIndex((step) => step === e.over?.id);
+      const overStepIndex = dragPages.findIndex(
+        (page) => page.id === e.over?.id
+      );
 
       if (activeStepIndex < 0 || overStepIndex < 0) return;
 
       const newPageList = arrayMove(dragPages, activeStepIndex, overStepIndex);
-      setDragPages(newPageList);
+      updateProjectWithPages({
+        ...optimisticProjectWithPages,
+        pages: newPageList,
+      });
 
-      // await updateFormAsync({
-      //   formId: projectWithPages.id,
-      //   data: {
-      //     stepOrder: newPageList,
-      //   },
-      // });
+      await updatePageOrderAsync({
+        projectId: optimisticProjectWithPages.id,
+        pageOrder: newPageList.map((page) => page.id),
+      });
     }
   };
 
@@ -96,7 +97,8 @@ export function PagePicker() {
                       setActivePage(page);
                     }}
                   >
-                    {page.title || "Untitled"}
+                    {/* {page.title || "Untitled"} */}
+                    {page.position} {page.id}
                   </PageBarButton>
                 </DragHandle>
               </DragItem>
@@ -106,8 +108,8 @@ export function PagePicker() {
       </DndContext>
       <PageBarButton
         Icon={SquarePlusIcon}
-        isDisabled={createStepStatus === "executing"}
-        isLoading={createStepStatus === "executing"}
+        isDisabled={createPageStatus === "executing"}
+        isLoading={createPageStatus === "executing"}
         onClick={() => {
           const loc = map?.getCenter();
           const zoom = map?.getZoom();
@@ -122,16 +124,9 @@ export function PagePicker() {
           )
             return;
 
-          // executeCreateStep({
-          //   formId: projectWithPages.id,
-          //   location: {
-          //     latitude: loc.lat,
-          //     longitude: loc.lng,
-          //     zoom,
-          //     pitch,
-          //     bearing,
-          //   },
-          // });
+          executeCreatePage({
+            projectId: optimisticProjectWithPages.id,
+          });
         }}
       >
         Add Page
