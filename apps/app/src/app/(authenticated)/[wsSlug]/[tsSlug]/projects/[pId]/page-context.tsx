@@ -11,12 +11,13 @@ import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import type { PageWithData } from "~/data/pages/get-page-with-data";
 
 export interface PageContextProps {
+  isEditingPage: boolean;
   optimisticPage: PageWithData | undefined;
   updatePage: (action: PageWithData) => void;
   setActivePage: (
     page?: Pick<PageWithData, "id" | "center" | "zoom" | "pitch" | "bearing">
   ) => void;
-  toggleActiveMode: () => void;
+  setEditMode: (open: boolean) => void;
 }
 
 export const PageContext = createContext<PageContextProps>(
@@ -42,6 +43,8 @@ export function PageProvider({
     ...state,
     ...newPage,
   }));
+
+  const isEditingPage = Boolean(searchParams.get("edit"));
 
   const setActivePage = (
     page?: Pick<PageWithData, "id" | "center" | "zoom" | "pitch" | "bearing">
@@ -73,10 +76,10 @@ export function PageProvider({
     router.push(`${pathname}${query}`);
   };
 
-  const toggleActiveMode = () => {
+  const setEditMode = (open: boolean) => {
     const current = new URLSearchParams(Array.from(searchParams.entries()));
 
-    if (current.has("edit")) {
+    if (!open) {
       current.delete("edit");
     } else {
       current.set("edit", "1");
@@ -94,7 +97,8 @@ export function PageProvider({
         optimisticPage,
         updatePage,
         setActivePage,
-        toggleActiveMode,
+        setEditMode,
+        isEditingPage,
       }}
     >
       {children}

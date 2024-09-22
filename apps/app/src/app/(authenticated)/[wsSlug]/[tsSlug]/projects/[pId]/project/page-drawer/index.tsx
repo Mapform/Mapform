@@ -30,6 +30,7 @@ import {
 import { cn } from "@mapform/lib/classnames";
 import type { ProjectWithPages } from "~/data/projects/get-project-with-pages";
 import { DragHandle, DragItem } from "~/components/draggable";
+import { usePage } from "../../page-context";
 import { useProject } from "../../project-context";
 import { GeneralForm } from "./general-form";
 import {
@@ -45,17 +46,17 @@ export const PageDrawerRoot = Drawer;
 export const PageDrawerTrigger = DrawerTrigger;
 
 export function PageDrawerContent() {
-  const { currentPage } = useProject();
+  const { optimisticPage } = usePage();
 
-  if (!currentPage) {
+  if (!optimisticPage) {
     return <div className="bg-white w-[400px] border-l" />;
   }
 
-  return <PageDrawerContentInner currentPage={currentPage} />;
+  return <PageDrawerContentInner optimisticPage={optimisticPage} />;
 }
 
-function PageDrawerContentInner({ currentPage }: { currentPage: Page }) {
-  const [dragLayers, setDragLayers] = useState(currentPage.layers);
+function PageDrawerContentInner({ optimisticPage }: { optimisticPage: Page }) {
+  // const [dragLayers, setDragLayers] = useState(currentPage.layers);
   const { debouncedUpdateStep } = useProject();
 
   const sensors = useSensors(
@@ -66,32 +67,32 @@ function PageDrawerContentInner({ currentPage }: { currentPage: Page }) {
     })
   );
 
-  const reorderLayers = async (e: DragEndEvent) => {
-    if (!e.over) return;
-    if (e.active.id !== e.over.id) {
-      const activeLayerIndex = dragLayers.findIndex(
-        (layer) => layer.id === e.active.id
-      );
-      const overLayerIndex = dragLayers.findIndex(
-        (layer) => layer.id === e.over?.id
-      );
-      if (activeLayerIndex < 0 || overLayerIndex < 0) return;
-      const newLayerList = arrayMove(
-        dragLayers,
-        activeLayerIndex,
-        overLayerIndex
-      );
-      setDragLayers(newLayerList);
+  // const reorderLayers = async (e: DragEndEvent) => {
+  //   if (!e.over) return;
+  //   if (e.active.id !== e.over.id) {
+  //     const activeLayerIndex = dragLayers.findIndex(
+  //       (layer) => layer.id === e.active.id
+  //     );
+  //     const overLayerIndex = dragLayers.findIndex(
+  //       (layer) => layer.id === e.over?.id
+  //     );
+  //     if (activeLayerIndex < 0 || overLayerIndex < 0) return;
+  //     const newLayerList = arrayMove(
+  //       dragLayers,
+  //       activeLayerIndex,
+  //       overLayerIndex
+  //     );
+  //     setDragLayers(newLayerList);
 
-      await debouncedUpdateStep({
-        stepId: currentPage.id,
-        data: {
-          formId: currentPage.formId ?? undefined,
-          layerOrder: newLayerList.map((layer) => layer.id),
-        },
-      });
-    }
-  };
+  //     await debouncedUpdateStep({
+  //       stepId: currentPage.id,
+  //       data: {
+  //         formId: currentPage.formId ?? undefined,
+  //         layerOrder: newLayerList.map((layer) => layer.id),
+  //       },
+  //     });
+  //   }
+  // };
 
   return (
     <DrawerContent>
@@ -112,10 +113,10 @@ function PageDrawerContentInner({ currentPage }: { currentPage: Page }) {
             <AccordionTrigger>General</AccordionTrigger>
           </AccordionHeader>
           <AccordionContent>
-            <GeneralForm currentPage={currentPage} />
+            {/* <GeneralForm optimisticPage={optimisticPage} /> */}
           </AccordionContent>
         </AccordionItem>
-        <AccordionItem value="item-2">
+        {/* <AccordionItem value="item-2">
           <AccordionHeader>
             <AccordionTrigger>
               <span className="flex-1 text-left">Data layers</span>
@@ -171,7 +172,7 @@ function PageDrawerContentInner({ currentPage }: { currentPage: Page }) {
               </SortableContext>
             </DndContext>
           </AccordionContent>
-        </AccordionItem>
+        </AccordionItem> */}
       </Accordion>
     </DrawerContent>
   );

@@ -97,8 +97,7 @@ export function PagePicker() {
                       setActivePage(page);
                     }}
                   >
-                    {/* {page.title || "Untitled"} */}
-                    {page.position} {page.id}
+                    {page.title || "Untitled"}
                   </PageBarButton>
                 </DragHandle>
               </DragItem>

@@ -21,7 +21,7 @@ import { AddLocationDropdown } from "./add-location-dropdown";
 
 function Project() {
   const {} = useProject();
-  const { optimisticPage } = usePage();
+  const { optimisticPage, isEditingPage, setEditMode } = usePage();
 
   if (!optimisticPage) {
     return null;
@@ -36,27 +36,26 @@ function Project() {
           </div>
           {/* Edit controls */}
           <div className="flex gap-1">
-            {/* <PageDrawerRoot
+            <PageDrawerRoot
               key={optimisticPage.id}
               onOpenChange={(isOpen) => {
-                if (!isOpen && currentEditablePage?.id === optimisticPage.id)
-                  setQueryParamFor("e");
+                setEditMode(isOpen);
               }}
-              open={currentEditablePage?.id === optimisticPage.id}
+              open={isEditingPage}
             >
               <PageDrawerTrigger asChild>
                 <PageBarButton
                   Icon={Settings2Icon}
-                  isActive={currentEditablePage?.id === optimisticPage.id}
+                  isActive={isEditingPage}
                   onClick={() => {
-                    setQueryParamFor("e", optimisticPage);
+                    setEditMode(!isEditingPage);
                   }}
                 >
                   Edit Page
                 </PageBarButton>
               </PageDrawerTrigger>
               <PageDrawerContent />
-            </PageDrawerRoot> */}
+            </PageDrawerRoot>
           </div>
         </div>
 
