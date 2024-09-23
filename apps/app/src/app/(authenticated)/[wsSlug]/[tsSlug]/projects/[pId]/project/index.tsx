@@ -1,6 +1,5 @@
 "use client";
 
-import { useTransition } from "react";
 import dynamic from "next/dynamic";
 import { MapForm } from "@mapform/mapform";
 import { toast } from "@mapform/ui/components/toaster";
@@ -9,11 +8,9 @@ import { useAction } from "next-safe-action/hooks";
 import { debounce } from "@mapform/lib/lodash";
 import { Settings2Icon } from "lucide-react";
 import { uploadImage } from "~/data/images";
-import { updateStepWithLocation } from "~/data/steps/update-location";
 import { updatePage as updatePageAction } from "~/data/pages/update-page";
 import { env } from "~/env.mjs";
 import { usePage } from "../page-context";
-import { useProject } from "../project-context";
 import {
   PageDrawerRoot,
   PageDrawerTrigger,
@@ -24,13 +21,9 @@ import { PageBarButton } from "./page-bar-button";
 import { AddLocationDropdown } from "./add-location-dropdown";
 
 function Project() {
-  const [_, startTransition] = useTransition();
-  const { optimisticProjectWithPages, updateProjectWithPages } = useProject();
   const { optimisticPage, isEditingPage, setEditMode } = usePage();
 
-  const { execute } = useAction(updatePageAction, {
-    onError: (error) => {},
-  });
+  const { executeAsync } = useAction(updatePageAction);
 
   if (!optimisticPage) {
     return null;
@@ -39,15 +32,27 @@ function Project() {
   const updatePageServer = ({
     content,
     title,
+    zoom,
+    pitch,
+    bearing,
+    center,
   }: {
     content?: { content: CustomBlock[] };
     title?: string;
+    zoom?: number;
+    pitch?: number;
+    bearing?: number;
+    center?: { x: number; y: number };
   }) => {
-    execute({
+    // @ts-expect-error -- Content type is not compatible with the schema
+    return executeAsync({
       id: optimisticPage.id,
-      // @ts-expect-error -- Can't fully reconcile the types
-      content,
-      title,
+      ...(content && { content }),
+      ...(title && { title }),
+      ...(zoom && { zoom }),
+      ...(pitch && { pitch }),
+      ...(bearing && { bearing }),
+      ...(center && { center }),
     });
   };
 
@@ -94,7 +99,7 @@ function Project() {
             editable
             mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
             onDescriptionChange={(content: { content: CustomBlock[] }) => {
-              debouncedUpdatePageServer({ content });
+              void debouncedUpdatePageServer({ content });
             }}
             onImageUpload={async (file: File) => {
               const formData = new FormData();
@@ -110,36 +115,17 @@ function Project() {
               return success?.url || null;
             }}
             onLocationSave={async (location) => {
-              await updateStepWithLocation({
-                stepId: optimisticPage.id,
-                data: {
-                  latitude: location.latitude,
-                  longitude: location.longitude,
-                  zoom: location.zoom,
-                  pitch: location.pitch,
-                  bearing: location.bearing,
-                },
-              }).catch(() => {
-                toast("Failed to update location");
-                return { success: false };
+              await debouncedUpdatePageServer({
+                center: { x: location.longitude, y: location.latitude },
+                zoom: location.zoom,
+                pitch: location.pitch,
+                bearing: location.bearing,
               });
 
               return { success: true };
             }}
             onTitleChange={(title: string) => {
-              /**
-               * This is to update the title in the PagePicker
-               */
-              startTransition(() => {
-                updateProjectWithPages({
-                  ...optimisticProjectWithPages,
-                  pages: optimisticProjectWithPages.pages.map((page) =>
-                    page.id === optimisticPage.id ? { ...page, title } : page
-                  ),
-                });
-              });
-
-              debouncedUpdatePageServer({
+              void debouncedUpdatePageServer({
                 title,
               });
             }}

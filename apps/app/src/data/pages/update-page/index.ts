@@ -10,47 +10,51 @@ import { updatePageSchema } from "./schema";
 
 export const updatePage = authAction
   .schema(updatePageSchema)
-  .action(async ({ parsedInput: { id, title, content } }) => {
-    const insertContent = content as unknown as { content: DocumentContent };
+  .action(
+    async ({
+      parsedInput: { id, title, content, zoom, pitch, bearing, center },
+    }) => {
+      const insertContent = content as unknown as { content: DocumentContent };
 
-    const page = await db.query.pages.findFirst({
-      where: eq(pages.id, id),
-      columns: {
-        id: true,
-      },
-      with: {
-        project: {
-          columns: {
-            id: true,
-          },
-          with: {
-            teamspace: {
-              columns: {
-                id: true,
-              },
-              with: {
-                workspace: {
-                  columns: {
-                    id: true,
+      const page = await db.query.pages.findFirst({
+        where: eq(pages.id, id),
+        columns: {
+          id: true,
+        },
+        with: {
+          project: {
+            columns: {
+              id: true,
+            },
+            with: {
+              teamspace: {
+                columns: {
+                  id: true,
+                },
+                with: {
+                  workspace: {
+                    columns: {
+                      id: true,
+                    },
                   },
                 },
               },
             },
           },
         },
-      },
-    });
+      });
 
-    if (!page) {
-      throw new Error("Page not found");
+      if (!page) {
+        throw new Error("Page not found");
+      }
+
+      await db
+        .update(pages)
+        .set({ title, content: insertContent, zoom, pitch, bearing, center })
+        .where(eq(pages.id, id));
+
+      revalidatePath(
+        `/${page.project.teamspace.workspace.id}/${page.project.teamspace.id}/projects/${page.project.id}`
+      );
     }
-
-    await db
-      .update(pages)
-      .set({ title, content: insertContent })
-      .where(eq(pages.id, id));
-
-    revalidatePath(
-      `/${page.project.teamspace.workspace.id}/${page.project.teamspace.id}/projects/${page.project.id}`
-    );
-  });
+  );
