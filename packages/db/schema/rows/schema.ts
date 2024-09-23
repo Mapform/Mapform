@@ -1,14 +1,9 @@
-import { timestamp, pgTable, uuid, text, pgEnum } from "drizzle-orm/pg-core";
+import { timestamp, pgTable, uuid } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { datasets } from "../datasets";
-import { layersToPages } from "../layers-to-pages";
 
-export const layerTypeEnum = pgEnum("layer_type", ["point"]);
-
-export const layers = pgTable("layer", {
+export const rows = pgTable("row", {
   id: uuid("id").primaryKey().defaultRandom(),
-  name: text("name"),
-  type: layerTypeEnum("type").notNull(),
   datasetId: uuid("dataset_id")
     .notNull()
     .references(() => datasets.id, { onDelete: "cascade" }),
@@ -22,10 +17,9 @@ export const layers = pgTable("layer", {
     .notNull(),
 });
 
-export const layersRelations = relations(layers, ({ one, many }) => ({
+export const rowsRelations = relations(rows, ({ one, many }) => ({
   dataset: one(datasets, {
-    fields: [layers.datasetId],
+    fields: [rows.datasetId],
     references: [datasets.id],
   }),
-  layersToPages: many(layersToPages),
 }));

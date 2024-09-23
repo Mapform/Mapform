@@ -14,10 +14,10 @@ export const layersToPages = pgTable(
   {
     layerId: uuid("layer_id")
       .notNull()
-      .references(() => layers.id),
+      .references(() => layers.id, { onDelete: "cascade" }),
     pageId: uuid("page_id")
       .notNull()
-      .references(() => pages.id),
+      .references(() => pages.id, { onDelete: "cascade" }),
     position: smallint("position").notNull(),
 
     createdAt: timestamp("created_at", { withTimezone: true })

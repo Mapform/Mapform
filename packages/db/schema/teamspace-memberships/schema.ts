@@ -11,10 +11,10 @@ export const teamspaceMemberships = pgTable(
   {
     userId: uuid("user_id")
       .notNull()
-      .references(() => users.id),
+      .references(() => users.id, { onDelete: "cascade" }),
     teamspaceId: uuid("teamspace_id")
       .notNull()
-      .references(() => teamspaces.id),
+      .references(() => teamspaces.id, { onDelete: "cascade" }),
     role: teamspaceRoleEnum("teamspace_role").notNull(),
   },
   (t) => ({

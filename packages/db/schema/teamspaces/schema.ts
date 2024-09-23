@@ -10,6 +10,7 @@ import { relations } from "drizzle-orm";
 import { teamspaceMemberships } from "../teamspace-memberships";
 import { workspaces } from "../workspaces";
 import { projects } from "../projects";
+import { datasets } from "../datasets";
 
 export const teamspaces = pgTable(
   "teamspace",
@@ -19,7 +20,7 @@ export const teamspaces = pgTable(
     name: varchar("name", { length: 256 }).notNull(),
     workspaceId: uuid("workspace_id")
       .notNull()
-      .references(() => workspaces.id),
+      .references(() => workspaces.id, { onDelete: "cascade" }),
 
     createdAt: timestamp("created_at", { withTimezone: true })
       .defaultNow()
@@ -36,6 +37,7 @@ export const teamspaces = pgTable(
 
 export const teamspacesRelations = relations(teamspaces, ({ one, many }) => ({
   projects: many(projects),
+  datasets: many(datasets),
   teamspaceMemberships: many(teamspaceMemberships),
   workspace: one(workspaces, {
     fields: [teamspaces.workspaceId],

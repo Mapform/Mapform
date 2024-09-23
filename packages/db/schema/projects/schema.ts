@@ -17,7 +17,7 @@ export const projects = pgTable("project", {
 
   teamspaceId: uuid("teamspace_id")
     .notNull()
-    .references(() => teamspaces.id),
+    .references(() => teamspaces.id, { onDelete: "cascade" }),
   isDirty: boolean("is_dirty").default(false).notNull(),
 
   // This is NULL for the root project

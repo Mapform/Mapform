@@ -28,7 +28,7 @@ export const pages = pgTable("page", {
   id: uuid("id").primaryKey().defaultRandom(),
   projectId: uuid("project_id")
     .notNull()
-    .references(() => projects.id),
+    .references(() => projects.id, { onDelete: "cascade" }),
 
   bannerImage: text("banner_image"),
   icon: varchar("icon", { length: 256 }),
