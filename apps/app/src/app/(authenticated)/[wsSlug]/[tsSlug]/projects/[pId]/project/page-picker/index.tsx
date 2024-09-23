@@ -125,6 +125,10 @@ export function PagePicker() {
 
           executeCreatePage({
             projectId: optimisticProjectWithPages.id,
+            center: { x: loc.lng, y: loc.lat },
+            zoom,
+            pitch,
+            bearing,
           });
         }}
       >
