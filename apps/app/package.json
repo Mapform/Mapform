@@ -30,7 +30,6 @@
     "@tanstack/react-query-devtools": "^5.29.0",
     "@vercel/blob": "^0.23.3",
     "date-fns": "^3.6.0",
-    "lodash.memoize": "^4.1.2",
     "lucide-react": "^0.354.0",
     "next": "14.2.5",
     "next-auth": "5.0.0-beta.21",
@@ -47,7 +46,6 @@
   "devDependencies": {
     "@mapform/eslint-config": "workspace:*",
     "@mapform/typescript-config": "workspace:*",
-    "@types/lodash.memoize": "^4.1.9",
     "@types/node": "^20",
     "@types/papaparse": "^5.3.14",
     "@types/react": "^18.3.8",

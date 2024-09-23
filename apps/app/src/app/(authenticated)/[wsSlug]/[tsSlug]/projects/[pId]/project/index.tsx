@@ -1,12 +1,16 @@
 "use client";
 
+import { useTransition } from "react";
 import dynamic from "next/dynamic";
 import { MapForm } from "@mapform/mapform";
 import { toast } from "@mapform/ui/components/toaster";
 import type { CustomBlock } from "@mapform/blocknote";
+import { useAction } from "next-safe-action/hooks";
+import { debounce } from "@mapform/lib/lodash";
 import { Settings2Icon } from "lucide-react";
 import { uploadImage } from "~/data/images";
 import { updateStepWithLocation } from "~/data/steps/update-location";
+import { updatePage as updatePageAction } from "~/data/pages/update-page";
 import { env } from "~/env.mjs";
 import { usePage } from "../page-context";
 import { useProject } from "../project-context";
@@ -20,12 +24,34 @@ import { PageBarButton } from "./page-bar-button";
 import { AddLocationDropdown } from "./add-location-dropdown";
 
 function Project() {
-  const {} = useProject();
+  const [_, startTransition] = useTransition();
+  const { optimisticProjectWithPages, updateProjectWithPages } = useProject();
   const { optimisticPage, isEditingPage, setEditMode } = usePage();
+
+  const { execute } = useAction(updatePageAction, {
+    onError: (error) => {},
+  });
 
   if (!optimisticPage) {
     return null;
   }
+
+  const updatePageServer = ({
+    content,
+    title,
+  }: {
+    content?: { content: CustomBlock[] };
+    title?: string;
+  }) => {
+    execute({
+      id: optimisticPage.id,
+      // @ts-expect-error -- Can't fully reconcile the types
+      content,
+      title,
+    });
+  };
+
+  const debouncedUpdatePageServer = debounce(updatePageServer, 1000);
 
   return (
     <div className="p-4 flex-1 flex justify-center overflow-hidden">
@@ -67,16 +93,8 @@ function Project() {
             }}
             editable
             mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
-            onDescriptionChange={async (content: {
-              content: CustomBlock[];
-            }) => {
-              // await debouncedUpdateStep({
-              //   stepId: optimisticPage.id,
-              //   data: {
-              //     description: content,
-              //     formId: projectWithPages.id,
-              //   },
-              // });
+            onDescriptionChange={(content: { content: CustomBlock[] }) => {
+              debouncedUpdatePageServer({ content });
             }}
             onImageUpload={async (file: File) => {
               const formData = new FormData();
@@ -108,14 +126,22 @@ function Project() {
 
               return { success: true };
             }}
-            onTitleChange={async (content: string) => {
-              // await debouncedUpdateStep({
-              //   stepId: optimisticPage.id,
-              //   data: {
-              //     title: content,
-              //     formId: formWithSteps.id,
-              //   },
-              // });
+            onTitleChange={(title: string) => {
+              /**
+               * This is to update the title in the PagePicker
+               */
+              startTransition(() => {
+                updateProjectWithPages({
+                  ...optimisticProjectWithPages,
+                  pages: optimisticProjectWithPages.pages.map((page) =>
+                    page.id === optimisticPage.id ? { ...page, title } : page
+                  ),
+                });
+              });
+
+              debouncedUpdatePageServer({
+                title,
+              });
             }}
             points={[]}
           />

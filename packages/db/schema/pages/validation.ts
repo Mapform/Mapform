@@ -18,7 +18,7 @@ const linkSchema = z.object({
 const baseBlockSchema = z.object({
   id: z.string(),
   type: z.string(),
-  props: z.record(z.string(), z.union([z.string(), z.number(), z.boolean()])),
+  props: z.record(z.string(), z.unknown()),
   content: z.union([styleTextSchema, linkSchema]).array().optional(),
 });
 
@@ -37,7 +37,7 @@ export const insertPageSchema = createInsertSchema(pages, {
     y: z.number(),
   }),
   content: z.object({
-    content: z.record(z.string(), z.string()).array(),
+    content: blockSchema.array(),
   }),
 });
 
