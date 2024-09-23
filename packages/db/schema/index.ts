@@ -7,3 +7,8 @@ export * from "./projects";
 export * from "./pages";
 export * from "./layers";
 export * from "./layers-to-pages";
+export * from "./datasets";
+export * from "./rows";
+export * from "./columns";
+export * from "./cells";
+export * from "./submissions";

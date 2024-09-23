@@ -2,9 +2,13 @@ import { timestamp, pgTable, uuid, text, pgEnum } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { datasets } from "../datasets";
 import { layersToPages } from "../layers-to-pages";
+import { columns } from "../columns";
 
 export const layerTypeEnum = pgEnum("layer_type", ["point"]);
 
+/**
+ * PARENT LAYER
+ */
 export const layers = pgTable("layer", {
   id: uuid("id").primaryKey().defaultRandom(),
   name: text("name"),
@@ -28,4 +32,37 @@ export const layersRelations = relations(layers, ({ one, many }) => ({
     references: [datasets.id],
   }),
   layersToPages: many(layersToPages),
+  pointLayer: one(pointLayers),
+}));
+
+/**
+ * POINT LAYER
+ */
+export const pointLayers = pgTable("point_layer", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  layerId: uuid("layer_id")
+    .notNull()
+    .references(() => layers.id, { onDelete: "cascade" }),
+  pointColumnId: uuid("point_column_id")
+    .notNull()
+    .references(() => columns.id, { onDelete: "cascade" }),
+
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .defaultNow()
+    .$onUpdate(() => new Date())
+    .notNull(),
+});
+
+export const pointLayersRelations = relations(pointLayers, ({ one }) => ({
+  layer: one(layers, {
+    fields: [pointLayers.layerId],
+    references: [layers.id],
+  }),
+  pointColumn: one(columns, {
+    fields: [pointLayers.pointColumnId],
+    references: [columns.id],
+  }),
 }));

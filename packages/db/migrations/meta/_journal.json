@@ -57,6 +57,13 @@
       "when": 1727113711355,
       "tag": "0007_smart_scarlet_spider",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1727119698559,
+      "tag": "0008_abnormal_mathemanic",
+      "breakpoints": true
     }
   ]
 }
