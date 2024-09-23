@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { Button, buttonVariants } from "@mapform/ui/components/button";
 import {
   DndContext,
@@ -28,10 +27,8 @@ import {
   AccordionTrigger,
 } from "@mapform/ui/components/accordion";
 import { cn } from "@mapform/lib/classnames";
-import type { ProjectWithPages } from "~/data/projects/get-project-with-pages";
 import { DragHandle, DragItem } from "~/components/draggable";
 import { usePage } from "../../page-context";
-import { useProject } from "../../project-context";
 import { GeneralForm } from "./general-form";
 import {
   NewLayerDrawerContent,
@@ -40,24 +37,11 @@ import {
 } from "./new-layer-drawer";
 import { LayerSubmenu } from "./layer-submenu";
 
-type Page = ProjectWithPages["pages"][number];
-
 export const PageDrawerRoot = Drawer;
 export const PageDrawerTrigger = DrawerTrigger;
 
 export function PageDrawerContent() {
   const { optimisticPage } = usePage();
-
-  if (!optimisticPage) {
-    return <div className="bg-white w-[400px] border-l" />;
-  }
-
-  return <PageDrawerContentInner optimisticPage={optimisticPage} />;
-}
-
-function PageDrawerContentInner({ optimisticPage }: { optimisticPage: Page }) {
-  // const [dragLayers, setDragLayers] = useState(currentPage.layers);
-  const { debouncedUpdateStep } = useProject();
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -67,32 +51,41 @@ function PageDrawerContentInner({ optimisticPage }: { optimisticPage: Page }) {
     })
   );
 
-  // const reorderLayers = async (e: DragEndEvent) => {
-  //   if (!e.over) return;
-  //   if (e.active.id !== e.over.id) {
-  //     const activeLayerIndex = dragLayers.findIndex(
-  //       (layer) => layer.id === e.active.id
-  //     );
-  //     const overLayerIndex = dragLayers.findIndex(
-  //       (layer) => layer.id === e.over?.id
-  //     );
-  //     if (activeLayerIndex < 0 || overLayerIndex < 0) return;
-  //     const newLayerList = arrayMove(
-  //       dragLayers,
-  //       activeLayerIndex,
-  //       overLayerIndex
-  //     );
-  //     setDragLayers(newLayerList);
+  if (!optimisticPage) {
+    return <div className="bg-white w-[400px] border-l" />;
+  }
 
-  //     await debouncedUpdateStep({
-  //       stepId: currentPage.id,
-  //       data: {
-  //         formId: currentPage.formId ?? undefined,
-  //         layerOrder: newLayerList.map((layer) => layer.id),
-  //       },
-  //     });
-  //   }
-  // };
+  const dragLayers = optimisticPage.layersToPages.map((ltp) => ltp.layer);
+
+  const reorderLayers = async (e: DragEndEvent) => {
+    if (!e.over) return;
+
+    if (e.active.id !== e.over.id) {
+      const activeLayerIndex = dragLayers.findIndex(
+        (layer) => layer.id === e.active.id
+      );
+      const overLayerIndex = dragLayers.findIndex(
+        (layer) => layer.id === e.over?.id
+      );
+
+      if (activeLayerIndex < 0 || overLayerIndex < 0) return;
+
+      const newLayerList = arrayMove(
+        dragLayers,
+        activeLayerIndex,
+        overLayerIndex
+      );
+      // setDragLayers(newLayerList);
+
+      // await debouncedUpdateStep({
+      //   stepId: currentPage.id,
+      //   data: {
+      //     formId: currentPage.formId ?? undefined,
+      //     layerOrder: newLayerList.map((layer) => layer.id),
+      //   },
+      // });
+    }
+  };
 
   return (
     <DrawerContent>
@@ -113,10 +106,10 @@ function PageDrawerContentInner({ optimisticPage }: { optimisticPage: Page }) {
             <AccordionTrigger>General</AccordionTrigger>
           </AccordionHeader>
           <AccordionContent>
-            {/* <GeneralForm optimisticPage={optimisticPage} /> */}
+            <GeneralForm optimisticPage={optimisticPage} />
           </AccordionContent>
         </AccordionItem>
-        {/* <AccordionItem value="item-2">
+        <AccordionItem value="item-2">
           <AccordionHeader>
             <AccordionTrigger>
               <span className="flex-1 text-left">Data layers</span>
@@ -132,7 +125,7 @@ function PageDrawerContentInner({ optimisticPage }: { optimisticPage: Page }) {
                   <PlusIcon className="size-4" />
                 </span>
               </NewLayerDrawerTrigger>
-              <NewLayerDrawerContent setDragLayers={setDragLayers} />
+              <NewLayerDrawerContent />
             </NewLayerDrawerRoot>
           </AccordionHeader>
           <AccordionContent>
@@ -160,10 +153,7 @@ function PageDrawerContentInner({ optimisticPage }: { optimisticPage: Page }) {
                               {layer.name}
                             </span>
                           </div>
-                          <LayerSubmenu
-                            layerId={layer.id}
-                            setDragLayers={setDragLayers}
-                          />
+                          <LayerSubmenu layerId={layer.id} />
                         </div>
                       </DragItem>
                     );
@@ -172,7 +162,7 @@ function PageDrawerContentInner({ optimisticPage }: { optimisticPage: Page }) {
               </SortableContext>
             </DndContext>
           </AccordionContent>
-        </AccordionItem> */}
+        </AccordionItem>
       </Accordion>
     </DrawerContent>
   );

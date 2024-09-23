@@ -12,7 +12,16 @@ export const updatePage = authAction
   .schema(updatePageSchema)
   .action(
     async ({
-      parsedInput: { id, title, content, zoom, pitch, bearing, center },
+      parsedInput: {
+        id,
+        title,
+        content,
+        zoom,
+        pitch,
+        bearing,
+        center,
+        contentViewType,
+      },
     }) => {
       const insertContent = content as unknown as { content: DocumentContent };
 
@@ -50,7 +59,15 @@ export const updatePage = authAction
 
       await db
         .update(pages)
-        .set({ title, content: insertContent, zoom, pitch, bearing, center })
+        .set({
+          zoom,
+          title,
+          pitch,
+          center,
+          bearing,
+          contentViewType,
+          content: insertContent,
+        })
         .where(eq(pages.id, id));
 
       revalidatePath(

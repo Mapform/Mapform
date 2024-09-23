@@ -9,6 +9,7 @@ export const updatePageSchema = z.object({
   zoom: insertPageSchema.shape.zoom.optional(),
   pitch: insertPageSchema.shape.pitch.optional(),
   bearing: insertPageSchema.shape.bearing.optional(),
+  contentViewType: insertPageSchema.shape.contentViewType.optional(),
 });
 
 export type UpdatePageSchema = z.infer<typeof updatePageSchema>;

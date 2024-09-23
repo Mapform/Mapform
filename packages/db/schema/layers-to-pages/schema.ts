@@ -1,4 +1,10 @@
-import { timestamp, pgTable, uuid, primaryKey } from "drizzle-orm/pg-core";
+import {
+  timestamp,
+  pgTable,
+  uuid,
+  primaryKey,
+  smallint,
+} from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { layers } from "../layers";
 import { pages } from "../pages";
@@ -12,6 +18,7 @@ export const layersToPages = pgTable(
     pageId: uuid("page_id")
       .notNull()
       .references(() => pages.id),
+    position: smallint("position").notNull(),
 
     createdAt: timestamp("created_at", { withTimezone: true })
       .defaultNow()
@@ -26,4 +33,13 @@ export const layersToPages = pgTable(
   })
 );
 
-export const layersRelations = relations(layers, ({ one, many }) => ({}));
+export const layersToPagesRelations = relations(layersToPages, ({ one }) => ({
+  layer: one(layers, {
+    fields: [layersToPages.layerId],
+    references: [layers.id],
+  }),
+  page: one(pages, {
+    fields: [layersToPages.layerId],
+    references: [pages.id],
+  }),
+}));

@@ -11,6 +11,14 @@ export const getPageWithData = authAction
   .action(async ({ parsedInput: { id } }) => {
     return db.query.pages.findFirst({
       where: eq(pages.id, id),
+      with: {
+        layersToPages: {
+          with: {
+            layer: true,
+          },
+          orderBy: (layerToPage, { asc }) => [asc(layerToPage.position)],
+        },
+      },
     });
   });
 

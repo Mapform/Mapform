@@ -18,57 +18,54 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@mapform/ui/components/select";
-import { toast } from "@mapform/ui/components/toaster";
 import { useAction } from "next-safe-action/hooks";
 import { useDebounce } from "@mapform/lib/hooks/use-debounce";
-import type { StepWithLocation } from "@mapform/db/extentsions/steps";
 import { useCallback, useEffect } from "react";
-import type { Page } from "@mapform/db/schema";
+import type { PageWithData } from "~/data/pages/get-page-with-data";
 import {
-  type UpdateStepSchema,
-  updateStepSchema,
-} from "~/data/steps/update/schema";
-import { updateStep } from "~/data/steps/update";
+  updatePageSchema,
+  type UpdatePageSchema,
+} from "~/data/pages/update-page/schema";
+import { updatePage as updatePageAction } from "~/data/pages/update-page";
+import { usePage } from "../../page-context";
 
 interface GeneralFormProps {
-  currentPage: Page;
+  optimisticPage: PageWithData;
 }
 
-export function GeneralForm({ currentPage }: GeneralFormProps) {
-  const form = useForm<UpdateStepSchema>({
-    resolver: zodResolver(updateStepSchema),
+export function GeneralForm({ optimisticPage }: GeneralFormProps) {
+  const { updatePage } = usePage();
+  const form = useForm<UpdatePageSchema>({
+    resolver: zodResolver(updatePageSchema),
     defaultValues: {
-      stepId: currentStep.id,
-      data: {
-        contentViewType: currentStep.contentViewType,
-      },
+      id: optimisticPage.id,
+      contentViewType: optimisticPage.contentViewType,
     },
   });
-  const updateFormState = (step: StepWithLocation) => {
-    form.setValue("data", step);
-  };
-  const debouncedUpdateFormState = useDebounce(updateFormState, 500);
+  // const updateFormState = (step: StepWithLocation) => {
+  //   form.setValue("data", step);
+  // };
+  // const debouncedUpdateFormState = useDebounce(updateFormState, 500);
 
-  const { execute, status } = useAction(updateStep, {
-    onSuccess: () => {
-      toast("Step settings updated ✅");
-    },
-    onError: () => {
-      toast("There was an issue updating the step settings.");
-    },
-  });
+  const { execute, status } = useAction(updatePageAction);
 
   const onSubmit = useCallback(
-    (data: UpdateStepSchema) => {
+    (data: UpdatePageSchema) => {
+      if (!data.contentViewType) {
+        return;
+      }
+
+      updatePage({
+        ...optimisticPage,
+        contentViewType: data.contentViewType,
+      });
+
       execute({
-        stepId: currentStep.id,
-        data: {
-          contentViewType: data.data.contentViewType,
-          formId: currentStep.formId ?? undefined,
-        },
+        id: optimisticPage.id,
+        contentViewType: data.contentViewType,
       });
     },
-    [currentStep, execute]
+    [optimisticPage, execute, updatePage]
   );
 
   useEffect(() => {
@@ -78,9 +75,9 @@ export function GeneralForm({ currentPage }: GeneralFormProps) {
     };
   }, [form, form.handleSubmit, form.watch, onSubmit]);
 
-  useEffect(() => {
-    // debouncedUpdateFormState(currentStep);
-  }, [currentStep, debouncedUpdateFormState]);
+  // useEffect(() => {
+  // debouncedUpdateFormState(currentStep);
+  // }, [currentStep, debouncedUpdateFormState]);
 
   return (
     <Form {...form}>
@@ -88,7 +85,7 @@ export function GeneralForm({ currentPage }: GeneralFormProps) {
         <div>
           <FormField
             control={form.control}
-            name="data.contentViewType"
+            name="contentViewType"
             render={({ field }) => (
               <FormItem>
                 <FormLabel htmlFor="contentViewType">
@@ -105,13 +102,13 @@ export function GeneralForm({ currentPage }: GeneralFormProps) {
                       <SelectValue placeholder="Select a content view type" />
                     </SelectTrigger>
                     <SelectContent ref={field.ref}>
-                      <SelectItem className="capitalize" value="SPLIT">
+                      <SelectItem className="capitalize" value="split">
                         Split View
                       </SelectItem>
-                      <SelectItem className="capitalize" value="MAP">
+                      <SelectItem className="capitalize" value="map">
                         Map View
                       </SelectItem>
-                      <SelectItem className="capitalize" value="TEXT">
+                      <SelectItem className="capitalize" value="text">
                         Text View
                       </SelectItem>
                     </SelectContent>

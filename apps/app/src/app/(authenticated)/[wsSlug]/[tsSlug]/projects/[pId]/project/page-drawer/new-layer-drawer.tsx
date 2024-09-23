@@ -46,11 +46,7 @@ export const NewLayerDrawerRoot = NestedDrawer;
 
 export const NewLayerDrawerTrigger = DrawerTrigger;
 
-export function NewLayerDrawerContent({
-  setDragLayers,
-}: {
-  setDragLayers: Dispatch<SetStateAction<Layer[]>>;
-}) {
+export function NewLayerDrawerContent() {
   const { currentStep } = useProject();
   const params = useParams<{ formId: string }>();
   const form = useForm<CreateLayerSchema>({

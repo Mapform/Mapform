@@ -5,3 +5,5 @@ export * from "./teamspaces";
 export * from "./teamspace-memberships";
 export * from "./projects";
 export * from "./pages";
+export * from "./layers";
+export * from "./layers-to-pages";

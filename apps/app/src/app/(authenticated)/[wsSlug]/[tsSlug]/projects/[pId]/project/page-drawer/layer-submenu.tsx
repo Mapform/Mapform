@@ -12,10 +12,9 @@ import { deleteLayer } from "~/data/layers/delete-layer";
 
 interface LayerSubmenuProps {
   layerId: string;
-  setDragLayers: Dispatch<SetStateAction<Layer[]>>;
 }
 
-export function LayerSubmenu({ layerId, setDragLayers }: LayerSubmenuProps) {
+export function LayerSubmenu({ layerId }: LayerSubmenuProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
