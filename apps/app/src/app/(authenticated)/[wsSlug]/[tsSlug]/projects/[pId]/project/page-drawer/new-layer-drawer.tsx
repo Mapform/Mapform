@@ -7,7 +7,6 @@ import {
   DrawerTrigger,
 } from "@mapform/ui/components/drawer";
 import { Button } from "@mapform/ui/components/button";
-import { Skeleton } from "@mapform/ui/components/skeleton";
 import {
   Form,
   FormControl,
@@ -19,7 +18,6 @@ import {
   useForm,
   zodResolver,
 } from "@mapform/ui/components/form";
-import { useParams } from "next/navigation";
 import {
   Select,
   SelectTrigger,
@@ -27,46 +25,36 @@ import {
   SelectContent,
   SelectItem,
 } from "@mapform/ui/components/select";
-import type { Layer } from "@mapform/db";
 import { ChevronsLeftIcon } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
 import { useAction } from "next-safe-action/hooks";
 import { Input } from "@mapform/ui/components/input";
-import type { Dispatch, SetStateAction } from "react";
 import { toast } from "@mapform/ui/components/toaster";
 import {
   type CreateLayerSchema,
   createLayerSchema,
-} from "~/data/layers/create/schema";
-import { listAvailableDatasets } from "~/data/datasets/list-available";
-import { createLayer } from "~/data/layers/create";
-import { useProject } from "../../project-context";
+} from "~/data/layers/create-layer/schema";
+import { createLayer } from "~/data/layers/create-layer";
+import { usePage } from "../../page-context";
 
 export const NewLayerDrawerRoot = NestedDrawer;
 
 export const NewLayerDrawerTrigger = DrawerTrigger;
 
 export function NewLayerDrawerContent() {
-  const { currentStep } = useProject();
-  const params = useParams<{ formId: string }>();
+  const pageProps = usePage();
+  const optimisticPage = pageProps.optimisticPage!;
+
   const form = useForm<CreateLayerSchema>({
     defaultValues: {
-      formId: params.formId,
-      stepId: currentStep?.id,
+      pageId: optimisticPage.id,
     },
     resolver: zodResolver(createLayerSchema),
-  });
-  const { data, isLoading } = useQuery({
-    queryKey: ["datasets", params.formId],
-    queryFn: () => listAvailableDatasets({ formId: params.formId }),
   });
   const { execute, status } = useAction(createLayer, {
     onSuccess: ({ data: createResponse }) => {
       if (!createResponse) {
         return;
       }
-
-      setDragLayers((layers) => [...layers, createResponse]);
     },
     onError: ({ error }) => {
       if (error.serverError) {
@@ -74,7 +62,7 @@ export function NewLayerDrawerContent() {
         return;
       }
 
-      toast("There was an error creating the layer.");
+      // toast("There was an error creating the layer.");
     },
   });
 
@@ -99,14 +87,6 @@ export function NewLayerDrawerContent() {
   };
 
   const availableCols = getAvailableColumns();
-
-  if (isLoading) {
-    return (
-      <div className="absolute inset-0 bg-white z-10 p-4">
-        <Skeleton className="w-full h-8" />
-      </div>
-    );
-  }
 
   return (
     <DrawerContent>
