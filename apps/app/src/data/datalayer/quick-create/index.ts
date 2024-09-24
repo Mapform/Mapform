@@ -1,9 +1,9 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { prisma } from "@mapform/db";
+import { db } from "@mapform/db";
 import { authAction } from "~/lib/safe-action";
-import { createLayer } from "~/data/layers/create";
+import { createLayer } from "~/data/layers/create-layer";
 import { createDatasetFromGeojson } from "~/data/datasets/create-from-geojson";
 import { quickCreateDataLayerSchema } from "./schema";
 

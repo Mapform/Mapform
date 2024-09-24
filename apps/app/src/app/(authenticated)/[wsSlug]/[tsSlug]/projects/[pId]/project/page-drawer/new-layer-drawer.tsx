@@ -41,8 +41,8 @@ export const NewLayerDrawerRoot = NestedDrawer;
 export const NewLayerDrawerTrigger = DrawerTrigger;
 
 export function NewLayerDrawerContent() {
-  const pageProps = usePage();
-  const optimisticPage = pageProps.optimisticPage!;
+  const { availableDatasets, ...rest } = usePage();
+  const optimisticPage = rest.optimisticPage!;
 
   const form = useForm<CreateLayerSchema>({
     defaultValues: {
@@ -51,10 +51,8 @@ export function NewLayerDrawerContent() {
     resolver: zodResolver(createLayerSchema),
   });
   const { execute, status } = useAction(createLayer, {
-    onSuccess: ({ data: createResponse }) => {
-      if (!createResponse) {
-        return;
-      }
+    onSuccess: () => {
+      toast("Layer created successfully.");
     },
     onError: ({ error }) => {
       if (error.serverError) {
@@ -62,7 +60,7 @@ export function NewLayerDrawerContent() {
         return;
       }
 
-      // toast("There was an error creating the layer.");
+      toast("There was an error creating the layer.");
     },
   });
 
@@ -74,15 +72,14 @@ export function NewLayerDrawerContent() {
   const getAvailableColumns = () => {
     const type = form.watch("type");
     const datasetId = form.watch("datasetId");
-    const dataset = data?.data?.find((ds) => ds.id === datasetId);
+    const dataset = availableDatasets.find((ds) => ds.id === datasetId);
 
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- This won't be an issue when more types are added
     if (!dataset || !type) {
       return null;
     }
 
     return dataset.columns.filter((column) => {
-      return column.dataType === type;
+      return column.type === type;
     });
   };
 
@@ -121,7 +118,7 @@ export function NewLayerDrawerContent() {
                         onChange={field.onChange}
                         placeholder="New Layer"
                         ref={field.ref}
-                        value={field.value}
+                        value={field.value ?? ""}
                       />
                     </FormControl>
                     <FormMessage />
@@ -146,7 +143,7 @@ export function NewLayerDrawerContent() {
                           <SelectValue placeholder="Select a dataset" />
                         </SelectTrigger>
                         <SelectContent ref={field.ref}>
-                          {data?.data?.map((dataset) => (
+                          {availableDatasets.map((dataset) => (
                             <SelectItem key={dataset.id} value={dataset.id}>
                               {dataset.name}
                             </SelectItem>
@@ -190,8 +187,7 @@ export function NewLayerDrawerContent() {
                 )}
               />
 
-              {/* eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- This will not be needed once we add more types */}
-              {form.watch("type") === "POINT" && availableCols ? (
+              {form.watch("type") === "point" && availableCols ? (
                 <FormField
                   control={form.control}
                   name="pointColumnId"

@@ -9,10 +9,12 @@ import {
 import { useMap } from "@mapform/mapform";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import type { PageWithData } from "~/data/pages/get-page-with-data";
+import type { ListAvailableDatasets } from "~/data/datasets/list-available-datasets";
 
 export interface PageContextProps {
   isEditingPage: boolean;
   optimisticPage: PageWithData | undefined;
+  availableDatasets: ListAvailableDatasets;
   updatePage: (action: PageWithData) => void;
   setActivePage: (
     page?: Pick<PageWithData, "id" | "center" | "zoom" | "pitch" | "bearing">
@@ -27,9 +29,11 @@ export const usePage = () => useContext(PageContext);
 
 export function PageProvider({
   pageWithData,
+  availableDatasets = [],
   children,
 }: {
   pageWithData?: PageWithData;
+  availableDatasets?: ListAvailableDatasets;
   children: React.ReactNode;
 }) {
   const { map } = useMap();
@@ -99,6 +103,7 @@ export function PageProvider({
         setActivePage,
         setEditMode,
         isEditingPage,
+        availableDatasets,
       }}
     >
       {children}
