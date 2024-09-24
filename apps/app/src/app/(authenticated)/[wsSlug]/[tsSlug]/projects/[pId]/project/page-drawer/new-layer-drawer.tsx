@@ -173,7 +173,7 @@ export function NewLayerDrawerContent() {
                           <SelectValue placeholder="Select a layer type" />
                         </SelectTrigger>
                         <SelectContent ref={field.ref}>
-                          <SelectItem className="capitalize" value="POINT">
+                          <SelectItem className="capitalize" value="point">
                             Point
                           </SelectItem>
                         </SelectContent>

@@ -5,10 +5,10 @@ import { MapProvider } from "@mapform/mapform";
 import { notFound } from "next/navigation";
 import { getPageWithData } from "~/data/pages/get-page-with-data";
 import { getProjectWithPages } from "~/data/projects/get-project-with-pages";
+import { listAvailableDatasets } from "~/data/datasets/list-available-datasets";
 import { ProjectProvider } from "./project-context";
 import Project from "./project";
 import { PageProvider } from "./page-context";
-import { listAvailableDatasets } from "~/data/datasets/list-available-datasets";
 
 const fetchProjectWithPages = cache(async (id: string) => {
   const projectWithPagesResponse = await getProjectWithPages({
@@ -51,10 +51,6 @@ const fetchAvailableDatasets = cache(async (id: string) => {
   });
   const availableDatasets = availableDatasetsResponse?.data;
 
-  if (!availableDatasets) {
-    return notFound();
-  }
-
   return availableDatasets;
 });
 
@@ -74,7 +70,7 @@ export default async function ProjectPage({
     [
       fetchProjectWithPages(pId),
       fetchPageWithData(searchParams?.page),
-      searchParams?.edit && fetchAvailableDatasets(pId),
+      searchParams?.edit ? fetchAvailableDatasets(pId) : undefined,
     ]
   );
 
@@ -83,7 +79,7 @@ export default async function ProjectPage({
       <MapProvider>
         <ProjectProvider projectWithPages={projectWithPages}>
           <PageProvider
-            availableDatasets={availableDatasets}
+            availableDatasets={availableDatasets ?? []}
             pageWithData={pageWithData}
           >
             <div

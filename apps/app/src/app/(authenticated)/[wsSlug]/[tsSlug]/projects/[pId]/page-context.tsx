@@ -29,11 +29,11 @@ export const usePage = () => useContext(PageContext);
 
 export function PageProvider({
   pageWithData,
-  availableDatasets = [],
+  availableDatasets,
   children,
 }: {
   pageWithData?: PageWithData;
-  availableDatasets?: ListAvailableDatasets;
+  availableDatasets: ListAvailableDatasets;
   children: React.ReactNode;
 }) {
   const { map } = useMap();
