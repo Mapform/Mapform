@@ -5,4 +5,4 @@ export const updatePageOrderSchema = z.object({
   pageOrder: z.array(z.string()),
 });
 
-export type CpdatePageOrderSchema = z.infer<typeof updatePageOrderSchema>;
+export type UpdatePageOrderSchema = z.infer<typeof updatePageOrderSchema>;

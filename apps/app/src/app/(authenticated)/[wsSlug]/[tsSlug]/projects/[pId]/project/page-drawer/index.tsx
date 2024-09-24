@@ -27,7 +27,9 @@ import {
   AccordionTrigger,
 } from "@mapform/ui/components/accordion";
 import { cn } from "@mapform/lib/classnames";
+import { useAction } from "next-safe-action/hooks";
 import { DragHandle, DragItem } from "~/components/draggable";
+import { updateLayerOrder } from "~/data/layers/update-layer-order";
 import { usePage } from "../../page-context";
 import { GeneralForm } from "./general-form";
 import {
@@ -41,7 +43,7 @@ export const PageDrawerRoot = Drawer;
 export const PageDrawerTrigger = DrawerTrigger;
 
 export function PageDrawerContent() {
-  const { optimisticPage } = usePage();
+  const { optimisticPage, updatePage } = usePage();
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -51,6 +53,8 @@ export function PageDrawerContent() {
     })
   );
 
+  const { executeAsync: updateLayerOrderAsync } = useAction(updateLayerOrder);
+
   if (!optimisticPage) {
     return <div className="bg-white w-[400px] border-l" />;
   }
@@ -58,7 +62,7 @@ export function PageDrawerContent() {
   const dragLayers = optimisticPage.layersToPages.map((ltp) => ltp.layer);
 
   const reorderLayers = async (e: DragEndEvent) => {
-    if (!e.over) return;
+    if (!e.over || !optimisticPage.id) return;
 
     if (e.active.id !== e.over.id) {
       const activeLayerIndex = dragLayers.findIndex(
@@ -75,15 +79,21 @@ export function PageDrawerContent() {
         activeLayerIndex,
         overLayerIndex
       );
-      // setDragLayers(newLayerList);
 
-      // await debouncedUpdateStep({
-      //   stepId: currentPage.id,
-      //   data: {
-      //     formId: currentPage.formId ?? undefined,
-      //     layerOrder: newLayerList.map((layer) => layer.id),
-      //   },
-      // });
+      updatePage({
+        ...optimisticPage,
+        layersToPages: optimisticPage.layersToPages.sort((a, b) => {
+          const aIndex = newLayerList.findIndex((l) => l.id === a.layer.id);
+          const bIndex = newLayerList.findIndex((l) => l.id === b.layer.id);
+
+          return aIndex - bIndex;
+        }),
+      });
+
+      await updateLayerOrderAsync({
+        pageId: optimisticPage.id,
+        layerOrder: newLayerList.map((layer) => layer.id),
+      });
     }
   };
 
