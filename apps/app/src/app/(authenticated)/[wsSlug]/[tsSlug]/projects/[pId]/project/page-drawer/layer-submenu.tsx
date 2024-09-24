@@ -6,15 +6,18 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@mapform/ui/components/dropdown-menu";
-import type { Layer } from "@mapform/db";
-import type { Dispatch, SetStateAction } from "react";
+import { useAction } from "next-safe-action/hooks";
 import { deleteLayer } from "~/data/layers/delete-layer";
+import { usePage } from "../../page-context";
 
 interface LayerSubmenuProps {
   layerId: string;
 }
 
 export function LayerSubmenu({ layerId }: LayerSubmenuProps) {
+  const { optimisticPage, updatePage } = usePage();
+  const { execute } = useAction(deleteLayer);
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -36,12 +39,20 @@ export function LayerSubmenu({ layerId }: LayerSubmenuProps) {
           Edit
         </DropdownMenuItem> */}
         <DropdownMenuItem
-          onClick={async () => {
-            await deleteLayer({
+          onClick={() => {
+            if (!optimisticPage) return;
+
+            updatePage({
+              ...optimisticPage,
+              layersToPages: optimisticPage.layersToPages.filter(
+                (ltp) => ltp.layerId !== layerId
+              ),
+            });
+
+            execute({
               layerId,
             });
 
-            setDragLayers((layers) => layers.filter((l) => l.id !== layerId));
             // Needed to fix issue where menu can't be clicked again afterwards
             document.body.style.pointerEvents = "";
           }}

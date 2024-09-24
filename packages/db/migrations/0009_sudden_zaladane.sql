@@ -1,0 +1,1 @@
+ALTER TABLE "column" ADD CONSTRAINT "column_dataset_id_name_unique" UNIQUE("dataset_id","name");
