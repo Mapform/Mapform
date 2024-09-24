@@ -19,7 +19,6 @@ import {
   SelectValue,
 } from "@mapform/ui/components/select";
 import { useAction } from "next-safe-action/hooks";
-import { useDebounce } from "@mapform/lib/hooks/use-debounce";
 import { useCallback, useEffect } from "react";
 import type { PageWithData } from "~/data/pages/get-page-with-data";
 import {
@@ -42,16 +41,12 @@ export function GeneralForm({ optimisticPage }: GeneralFormProps) {
       contentViewType: optimisticPage.contentViewType,
     },
   });
-  // const updateFormState = (step: StepWithLocation) => {
-  //   form.setValue("data", step);
-  // };
-  // const debouncedUpdateFormState = useDebounce(updateFormState, 500);
 
   const { execute, status } = useAction(updatePageAction);
 
   const onSubmit = useCallback(
     (data: UpdatePageSchema) => {
-      if (!data.contentViewType) {
+      if (!data.contentViewType || !optimisticPage.id) {
         return;
       }
 
@@ -74,10 +69,6 @@ export function GeneralForm({ optimisticPage }: GeneralFormProps) {
       subscription.unsubscribe();
     };
   }, [form, form.handleSubmit, form.watch, onSubmit]);
-
-  // useEffect(() => {
-  // debouncedUpdateFormState(currentStep);
-  // }, [currentStep, debouncedUpdateFormState]);
 
   return (
     <Form {...form}>
