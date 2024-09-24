@@ -64,7 +64,5 @@ export const updateLayerOrder = authAction
       )
     );
 
-    revalidatePath(
-      `/${page.project.teamspace.workspace.id}/${page.project.teamspace.id}/projects/${page.projectId}`
-    );
+    revalidatePath("/[wsSlug]/[tsSlug]/projects/[pId]/project", "page");
   });

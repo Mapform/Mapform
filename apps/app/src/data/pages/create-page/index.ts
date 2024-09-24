@@ -34,9 +34,7 @@ export const createPage = authAction
         })
         .returning();
 
-      revalidatePath(
-        `/${projectWithPages.teamspace.workspace.id}/${projectWithPages.teamspace.id}/projects/${projectId}`
-      );
+      revalidatePath("/[wsSlug]/[tsSlug]/projects/[pId]/project", "page");
 
       return page;
     }

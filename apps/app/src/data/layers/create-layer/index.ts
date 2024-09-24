@@ -6,6 +6,7 @@ import { layers, layersToPages, pointLayers } from "@mapform/db/schema";
 // import { revalidatePath } from "next/cache";
 import { authAction } from "~/lib/safe-action";
 import { createLayerSchema } from "./schema";
+import { revalidatePath } from "next/cache";
 
 export const createLayer = authAction
   .schema(createLayerSchema)
@@ -47,5 +48,7 @@ export const createLayer = authAction
           });
         }
       });
+
+      revalidatePath("/[wsSlug]/[tsSlug]/projects/[pId]/project", "page");
     }
   );

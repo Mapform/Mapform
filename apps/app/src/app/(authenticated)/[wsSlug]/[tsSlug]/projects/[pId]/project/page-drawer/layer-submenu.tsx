@@ -1,3 +1,4 @@
+import { startTransition } from "react";
 import { Button } from "@mapform/ui/components/button";
 import { Ellipsis } from "lucide-react";
 import {
@@ -9,6 +10,7 @@ import {
 import { useAction } from "next-safe-action/hooks";
 import { deleteLayer } from "~/data/layers/delete-layer";
 import { usePage } from "../../page-context";
+import { toast } from "@mapform/ui/components/toaster";
 
 interface LayerSubmenuProps {
   layerId: string;
@@ -16,7 +18,17 @@ interface LayerSubmenuProps {
 
 export function LayerSubmenu({ layerId }: LayerSubmenuProps) {
   const { optimisticPage, updatePage } = usePage();
-  const { execute } = useAction(deleteLayer);
+  const { execute } = useAction(deleteLayer, {
+    onSuccess: () => {
+      toast.success("Layer deleted");
+
+      // Needed to fix issue where menu can't be clicked again afterwards
+      // document.body.style.pointerEvents = "";
+    },
+    onError: (e) => {
+      toast.success("Error");
+    },
+  });
 
   return (
     <DropdownMenu>
@@ -42,19 +54,18 @@ export function LayerSubmenu({ layerId }: LayerSubmenuProps) {
           onClick={() => {
             if (!optimisticPage) return;
 
-            updatePage({
-              ...optimisticPage,
-              layersToPages: optimisticPage.layersToPages.filter(
-                (ltp) => ltp.layerId !== layerId
-              ),
+            startTransition(() => {
+              updatePage({
+                ...optimisticPage,
+                layersToPages: optimisticPage.layersToPages.filter(
+                  (ltp) => ltp.layerId !== layerId
+                ),
+              });
             });
 
             execute({
               layerId,
             });
-
-            // Needed to fix issue where menu can't be clicked again afterwards
-            document.body.style.pointerEvents = "";
           }}
         >
           Delete
