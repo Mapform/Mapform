@@ -2,6 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import { db } from "@mapform/db";
+import { eq } from "@mapform/db/utils";
+import { pages } from "@mapform/db/schema";
 import { authAction } from "~/lib/safe-action";
 import { createLayer } from "~/data/layers/create-layer";
 import { createDatasetFromGeojson } from "~/data/datasets/create-from-geojson";
@@ -9,20 +11,21 @@ import { quickCreateDataLayerSchema } from "./schema";
 
 export const quickCreateDataLayer = authAction
   .schema(quickCreateDataLayerSchema)
-  .action(async ({ parsedInput: { name, formId, stepId, data } }) => {
-    const form = await prisma.form.findUnique({
-      where: {
-        id: formId,
+  .action(async ({ parsedInput: { name, pageId, data } }) => {
+    const page = await db.query.pages.findFirst({
+      where: eq(pages.id, pageId),
+      with: {
+        project: true,
       },
     });
 
-    if (!form) {
-      throw new Error("Form not found");
+    if (!page) {
+      throw new Error("Page not found");
     }
 
     const datasetResponse = await createDatasetFromGeojson({
       name,
-      workspaceId: form.workspaceId,
+      teamspaceId: page.project.teamspaceId,
       data,
     });
 
@@ -32,17 +35,14 @@ export const quickCreateDataLayer = authAction
       throw new Error("Dataset not found");
     }
 
-    const geoCol = dataset.columns.find(
-      (column) => column.dataType === "POINT"
-    );
+    const geoCol = dataset.columns.find((column) => column.type === "point");
 
     await createLayer({
       name,
-      type: "POINT",
-      formId,
-      stepId,
+      type: "point",
+      pageId,
       pointColumnId: geoCol?.id,
-      datasetId: dataset.id,
+      datasetId: dataset.dataset.id,
     });
 
     revalidatePath("/");

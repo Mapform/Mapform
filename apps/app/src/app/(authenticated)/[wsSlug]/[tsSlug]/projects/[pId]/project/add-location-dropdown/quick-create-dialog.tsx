@@ -27,28 +27,22 @@ import {
   type QuickCreateDataLayerSchema,
 } from "~/data/datalayer/quick-create/schema";
 import { quickCreateDataLayer } from "~/data/datalayer/quick-create";
+import { usePage } from "../../page-context";
 
 export const QuickCreateDialog = Dialog;
 export const QuickCreateDialogTrigger = DialogTrigger;
 
 interface QuickCreateContentProps {
-  stepId: string;
-  formId: string;
   data: GeoJson;
 }
 
-export function QuickCreateContent({
-  stepId,
-  formId,
-  data,
-}: QuickCreateContentProps) {
+export function QuickCreateContent({ data }: QuickCreateContentProps) {
+  const { optimisticPage } = usePage();
   const form = useForm<QuickCreateDataLayerSchema>({
     defaultValues: {
       name: "",
-      stepId,
-      formId,
+      pageId: optimisticPage.id,
       data,
-      type: "POINT",
     },
     resolver: zodResolver(quickCreateDataLayerSchema),
   });

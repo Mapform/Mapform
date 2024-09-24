@@ -1,9 +1,10 @@
 import { z } from "zod";
 import { zu } from "@infra-blocks/zod-utils";
+import { insertDatasetSchema } from "@mapform/db/schema";
 
 export const createDatasetFromGeojsonSchema = z.object({
-  name: z.string().min(3),
-  workspaceId: z.string(),
+  name: insertDatasetSchema.shape.name,
+  teamspaceId: insertDatasetSchema.shape.teamspaceId,
   data: zu.geojson(),
 });
 
