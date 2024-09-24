@@ -8,7 +8,7 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio",
-    "db:squash": "pnpm db:drop && pnpm db:generate && pnpm db:migrate",
+    "db:undo-migration": "pnpm db:drop && pnpm db:generate && pnpm db:migrate",
     "postinstall": "pnpm db:generate"
   },
   "devDependencies": {
