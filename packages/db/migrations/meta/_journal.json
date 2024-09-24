@@ -5,85 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1726774560581,
-      "tag": "0000_neat_ultimates",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1726783114999,
-      "tag": "0001_mute_alex_wilder",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1726783195908,
-      "tag": "0002_flippant_lila_cheney",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1726800682251,
-      "tag": "0003_useful_silver_centurion",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1726837033278,
-      "tag": "0004_keen_bastion",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1726840625219,
-      "tag": "0005_pink_doctor_spectrum",
-      "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "7",
-      "when": 1727112679510,
-      "tag": "0006_medical_jackal",
-      "breakpoints": true
-    },
-    {
-      "idx": 7,
-      "version": "7",
-      "when": 1727113711355,
-      "tag": "0007_smart_scarlet_spider",
-      "breakpoints": true
-    },
-    {
-      "idx": 8,
-      "version": "7",
-      "when": 1727119698559,
-      "tag": "0008_abnormal_mathemanic",
-      "breakpoints": true
-    },
-    {
-      "idx": 9,
-      "version": "7",
-      "when": 1727207132222,
-      "tag": "0009_sudden_zaladane",
-      "breakpoints": true
-    },
-    {
-      "idx": 10,
-      "version": "7",
-      "when": 1727207740608,
-      "tag": "0010_mature_saracen",
-      "breakpoints": true
-    },
-    {
-      "idx": 11,
-      "version": "7",
-      "when": 1727207944976,
-      "tag": "0011_petite_skaar",
+      "when": 1727208792447,
+      "tag": "0000_silly_radioactive_man",
       "breakpoints": true
     }
   ]
