@@ -7,13 +7,9 @@ import {
   verificationTokens,
 } from "@mapform/db/schema";
 import Resend from "next-auth/providers/resend";
-// import { PrismaAdapter } from "@auth/prisma-adapter";
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
 
 export const BASE_PATH = "/api/auth";
-
-// Override createUser
-// prismaAdapter.createUser;
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   // @ts-ignore -- This is fine

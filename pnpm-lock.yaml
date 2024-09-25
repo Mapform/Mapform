@@ -26,9 +26,6 @@ importers:
       '@auth/drizzle-adapter':
         specifier: ^1.5.0
         version: 1.5.0
-      '@auth/prisma-adapter':
-        specifier: ^2.4.2
-        version: 2.4.2(@prisma/client@5.19.1)
       '@dnd-kit/core':
         specifier: ^6.1.0
         version: 6.1.0(react-dom@19.0.0-rc-e4953922-20240919)(react@19.0.0-rc-e4953922-20240919)
@@ -705,6 +702,7 @@ packages:
       oauth4webapi: 2.11.1
       preact: 10.11.3
       preact-render-to-string: 5.2.3(preact@10.11.3)
+    dev: true
 
   /@auth/core@0.35.0:
     resolution: {integrity: sha512-XvMALiYn5ZQd1hVeG1t+jCU89jRrc7ortl/05wkBrPHnRWZScxAK5jKuzBz+AOBQXewDjYcMpzeF5tTqg6rDhQ==}
@@ -733,19 +731,6 @@ packages:
     resolution: {integrity: sha512-JLeooOEoCulPjoLJa2IBKX8RSgSfkhmyaAeO8Xr37y+fitsEvJNqe0SsaRw3D8nXDasppSaop4uUT3ViXP+OZw==}
     dependencies:
       '@auth/core': 0.35.0
-    transitivePeerDependencies:
-      - '@simplewebauthn/browser'
-      - '@simplewebauthn/server'
-      - nodemailer
-    dev: false
-
-  /@auth/prisma-adapter@2.4.2(@prisma/client@5.19.1):
-    resolution: {integrity: sha512-QQwnGYfDiyTcAxMVhTrim+lLFFA3TKq3nIrbPtGZXlkiuNQ5t0rUg//Km7Wv21pD5bxhy4aRPlfq7TdFKk3XIw==}
-    peerDependencies:
-      '@prisma/client': '>=2.26.0 || >=3 || >=4 || >=5'
-    dependencies:
-      '@auth/core': 0.34.2
-      '@prisma/client': 5.19.1
     transitivePeerDependencies:
       - '@simplewebauthn/browser'
       - '@simplewebauthn/server'
@@ -2319,17 +2304,6 @@ packages:
 
   /@popperjs/core@2.11.8:
     resolution: {integrity: sha512-P1st0aksCrn9sGZhp8GMYwBnQsbvAWsZAX44oXNNvLHGqAOcoVxmjZiohstwQ7SqKnbR47akdNi+uleWD8+g6A==}
-    dev: false
-
-  /@prisma/client@5.19.1:
-    resolution: {integrity: sha512-x30GFguInsgt+4z5I4WbkZP2CGpotJMUXy+Gl/aaUjHn2o1DnLYNTA+q9XdYmAQZM8fIIkvUiA2NpgosM3fneg==}
-    engines: {node: '>=16.13'}
-    requiresBuild: true
-    peerDependencies:
-      prisma: '*'
-    peerDependenciesMeta:
-      prisma:
-        optional: true
     dev: false
 
   /@radix-ui/number@1.0.1:

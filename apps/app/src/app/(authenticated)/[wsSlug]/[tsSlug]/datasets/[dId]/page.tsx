@@ -82,8 +82,8 @@ export default async function Submissions({
                           key={cell?.id}
                         >
                           {cell?.stringCell?.value ||
-                            cell?.booleanCell?.value?.toString() ||
-                            cell?.pointCell?.value?.toString() ||
+                            cell?.booleanCell?.value.toString() ||
+                            cell?.pointCell?.value.toString() ||
                             "-"}
                         </td>
                       ))}
