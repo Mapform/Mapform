@@ -24,11 +24,15 @@ export default async function Layout({
       name: "Create",
       href: `/${params.wsSlug}/${params.tsSlug}/projects/${params.pId}`,
     },
-    {
-      name: "Submissions",
-      href: `/${params.wsSlug}/${params.tsSlug}/datasets/${project.}`,
-      isExternal: true,
-    },
+    ...(project.submissionsDataset
+      ? [
+          {
+            name: "Submissions",
+            href: `/${params.wsSlug}/${params.tsSlug}/datasets/${project.submissionsDataset.id}`,
+            isExternal: true,
+          },
+        ]
+      : []),
   ];
 
   return (

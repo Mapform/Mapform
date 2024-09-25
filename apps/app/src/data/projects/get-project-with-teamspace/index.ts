@@ -19,6 +19,11 @@ export const getProjectWithTeamspace = authAction
             id: true,
           },
         },
+        submissionsDataset: {
+          columns: {
+            id: true,
+          },
+        },
       },
     });
 
