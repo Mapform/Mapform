@@ -6,9 +6,9 @@ import { getDataset } from "~/data/datasets/get-dataset";
 export default async function Submissions({
   params,
 }: {
-  params: { wsSlug: string; tsSlug: string; datasetId: string };
+  params: { wsSlug: string; tsSlug: string; dId: string };
 }) {
-  const datasetResponse = await getDataset({ datasetId: params.datasetId });
+  const datasetResponse = await getDataset({ datasetId: params.dId });
   const dataset = datasetResponse?.data;
 
   if (!dataset) {
