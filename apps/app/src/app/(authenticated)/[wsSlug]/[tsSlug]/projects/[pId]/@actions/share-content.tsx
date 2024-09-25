@@ -4,7 +4,7 @@ import { useAction } from "next-safe-action/hooks";
 import { Button } from "@mapform/ui/components/button";
 import { Spinner } from "@mapform/ui/components/spinner";
 import { Clipboard } from "@mapform/ui/components/clipboard";
-import { publishForm } from "~/data/forms/publish";
+import { publishProject } from "~/data/projects/publish-project";
 
 export function ShareContent({
   projectId,
@@ -15,7 +15,7 @@ export function ShareContent({
   isDirty: boolean;
   numberOfVersions: number;
 }) {
-  const { execute, status } = useAction(publishForm);
+  const { execute, status } = useAction(publishProject);
   const hasBeenPublished = numberOfVersions > 0;
 
   return (
@@ -37,7 +37,7 @@ export function ShareContent({
         </div>
       ) : (
         <div className="p-4 bg-stone-50 rounded text-sm text-stone-500 text-center">
-          Form has not yet been published.
+          Project has not yet been published.
         </div>
       )}
       <Button

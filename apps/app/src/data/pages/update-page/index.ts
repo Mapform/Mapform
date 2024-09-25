@@ -3,7 +3,7 @@
 import { db } from "@mapform/db";
 import { eq } from "@mapform/db/utils";
 import { revalidatePath } from "next/cache";
-import { pages } from "@mapform/db/schema";
+import { pages, projects } from "@mapform/db/schema";
 import type { DocumentContent } from "@mapform/blocknote";
 import { authAction } from "~/lib/safe-action";
 import { updatePageSchema } from "./schema";
@@ -57,18 +57,27 @@ export const updatePage = authAction
         throw new Error("Page not found");
       }
 
-      await db
-        .update(pages)
-        .set({
-          zoom,
-          title,
-          pitch,
-          center,
-          bearing,
-          contentViewType,
-          content: insertContent,
-        })
-        .where(eq(pages.id, id));
+      await db.transaction(async (tx) => {
+        await Promise.all([
+          tx
+            .update(pages)
+            .set({
+              zoom,
+              title,
+              pitch,
+              center,
+              bearing,
+              contentViewType,
+              content: insertContent,
+            })
+            .where(eq(pages.id, id)),
+
+          tx
+            .update(projects)
+            .set({ isDirty: true })
+            .where(eq(projects.id, page.project.id)),
+        ]);
+      });
 
       revalidatePath(
         `/${page.project.teamspace.workspace.id}/${page.project.teamspace.id}/projects/${page.project.id}`

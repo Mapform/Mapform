@@ -13,6 +13,13 @@ export const getProjectWithTeamspace = authAction
     // Once fix is merged we can simplify this
     const project = await db.query.projects.findFirst({
       where: and(eq(projects.id, id), isNull(projects.rootProjectId)),
+      with: {
+        childProjects: {
+          columns: {
+            id: true,
+          },
+        },
+      },
     });
 
     if (!project) {

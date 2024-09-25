@@ -29,8 +29,8 @@ export default async function Actions({ params }: { params: { pId: string } }) {
       <PopoverContent collisionPadding={16}>
         <ShareContent
           isDirty={project.isDirty}
+          numberOfVersions={project.childProjects.length}
           projectId={params.pId}
-          // numberOfVersions={form._count.formVersions}
         />
       </PopoverContent>
     </Popover>
