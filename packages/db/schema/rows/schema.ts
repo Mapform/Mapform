@@ -1,7 +1,7 @@
 import { timestamp, pgTable, uuid } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { datasets } from "../datasets";
-import { submissions } from "../submissions/schema";
+import { cells } from "../cells";
 
 export const rows = pgTable("row", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -18,10 +18,10 @@ export const rows = pgTable("row", {
     .notNull(),
 });
 
-export const rowsRelations = relations(rows, ({ one }) => ({
-  submission: one(submissions),
+export const rowsRelations = relations(rows, ({ one, many }) => ({
   dataset: one(datasets, {
     fields: [rows.datasetId],
     references: [datasets.id],
   }),
+  cells: many(cells),
 }));

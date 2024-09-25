@@ -6,7 +6,7 @@ import { getDataset } from "~/data/datasets/get-dataset";
 export default async function Submissions({
   params,
 }: {
-  params: { orgSlug: string; workspaceSlug: string; datasetId: string };
+  params: { wsSlug: string; tsSlug: string; datasetId: string };
 }) {
   const datasetResponse = await getDataset({ datasetId: params.datasetId });
   const dataset = datasetResponse?.data;
@@ -17,7 +17,7 @@ export default async function Submissions({
 
   const columns = dataset.columns;
   const rowsWithCellValues = dataset.rows.map((row) => {
-    const rowCells = row.cellValues;
+    const rowCells = row.cells;
 
     return {
       ...row,
@@ -31,11 +31,10 @@ export default async function Submissions({
 
   return (
     <Tabs
-      // action={<div>Click</div>}
       nameSections={[
         {
-          name: dataset.workspace.name,
-          href: `/orgs/${params.orgSlug}/workspaces/${params.workspaceSlug}`,
+          name: dataset.teamspace.name,
+          href: `/${params.wsSlug}/${params.tsSlug}`,
         },
         { name: dataset.name },
       ]}
@@ -66,7 +65,7 @@ export default async function Submissions({
                         scope="col"
                       >
                         {column.name}{" "}
-                        <Badge variant="secondary">{column.dataType}</Badge>
+                        <Badge variant="secondary">{column.type}</Badge>
                       </th>
                     ))}
                   </tr>
@@ -74,27 +73,20 @@ export default async function Submissions({
                 <tbody className="divide-y divide-gray-200">
                   {rowsWithCellValues.map((row) => (
                     <tr className="even:bg-stone-50" key={row.id}>
-                      {row.formSubmission ? (
-                        <>
-                          <td className="whitespace-nowrap px-3 py-4 text-sm text-stone-500">
-                            {format(
-                              row.formSubmission.createdAt,
-                              "LLLL do, yyyy"
-                            )}
-                          </td>
-                          {row.cells.map((cell) => (
-                            <td
-                              className="whitespace-nowrap px-3 py-4 text-sm text-stone-500"
-                              key={cell?.id}
-                            >
-                              {cell?.stringCell?.value ||
-                                cell?.boolCell?.value?.toString() ||
-                                cell?.pointCell?.value?.toString() ||
-                                "-"}
-                            </td>
-                          ))}
-                        </>
-                      ) : null}
+                      <td className="whitespace-nowrap px-3 py-4 text-sm text-stone-500">
+                        {format(row.createdAt, "LLLL do, yyyy")}
+                      </td>
+                      {row.cells.map((cell) => (
+                        <td
+                          className="whitespace-nowrap px-3 py-4 text-sm text-stone-500"
+                          key={cell?.id}
+                        >
+                          {cell?.stringCell?.value ||
+                            cell?.booleanCell?.value?.toString() ||
+                            cell?.pointCell?.value?.toString() ||
+                            "-"}
+                        </td>
+                      ))}
                     </tr>
                   ))}
                 </tbody>

@@ -1,8 +1,8 @@
 "server-only";
 
 import { db } from "@mapform/db";
-import { workspaces } from "@mapform/db/schema";
-import { eq } from "@mapform/db/utils";
+import { projects, workspaces } from "@mapform/db/schema";
+import { eq, isNull } from "@mapform/db/utils";
 import { authAction } from "~/lib/safe-action";
 import { getWorkspaceWithTeamspacesSchema } from "./schema";
 
@@ -32,6 +32,8 @@ export const getWorkspaceWithTeamspaces = authAction
                 name: true,
                 createdAt: true,
               },
+              // Only include root projects
+              where: isNull(projects.rootProjectId),
             },
           },
         },

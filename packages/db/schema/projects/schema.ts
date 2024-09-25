@@ -4,11 +4,11 @@ import {
   varchar,
   uuid,
   boolean,
-  text,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { teamspaces } from "../teamspaces";
 import { pages } from "../pages";
+import { datasets } from "../datasets";
 
 export const projects = pgTable("project", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -46,4 +46,5 @@ export const projectsRelations = relations(projects, ({ one, many }) => ({
   childProjects: many(projects, {
     relationName: "child_to_root",
   }),
+  submissionsDataset: one(datasets),
 }));

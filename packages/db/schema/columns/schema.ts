@@ -10,6 +10,7 @@ import { relations } from "drizzle-orm";
 import { datasets } from "../datasets";
 import { pages } from "../pages";
 import { pointLayers } from "../layers";
+import { cells } from "../cells";
 
 export const columnTypeEnum = pgEnum("column_type", [
   "string",
@@ -56,4 +57,5 @@ export const columnsRelations = relations(columns, ({ one, many }) => ({
     references: [pages.id],
   }),
   pointLayers: many(pointLayers),
+  cells: many(cells),
 }));

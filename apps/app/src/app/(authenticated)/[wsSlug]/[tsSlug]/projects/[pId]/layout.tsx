@@ -26,8 +26,7 @@ export default async function Layout({
     },
     {
       name: "Submissions",
-      // TODO: Need to add ${project.datasetId} when relationship added
-      href: `/orgs/${params.wsSlug}/${params.tsSlug}/datasets/`,
+      href: `/${params.wsSlug}/${params.tsSlug}/datasets/${project.}`,
       isExternal: true,
     },
   ];

@@ -1,17 +1,34 @@
-import { timestamp, pgTable, uuid, text, varchar } from "drizzle-orm/pg-core";
+import {
+  timestamp,
+  pgTable,
+  uuid,
+  text,
+  varchar,
+  pgEnum,
+} from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { layers } from "../layers";
 import { teamspaces } from "../teamspaces";
 import { rows } from "../rows";
 import { columns } from "../columns";
+import { projects } from "../projects";
+
+export const datasetTypeEnum = pgEnum("dataset_type", [
+  "default",
+  "submissions",
+]);
 
 export const datasets = pgTable("dataset", {
   id: uuid("id").primaryKey().defaultRandom(),
   name: text("name").notNull(),
   icon: varchar("icon", { length: 256 }),
+  type: datasetTypeEnum("type").default("default").notNull(),
   teamspaceId: uuid("teamspace_id")
     .notNull()
     .references(() => teamspaces.id, { onDelete: "cascade" }),
+  projectId: uuid("project_id").references(() => projects.id, {
+    onDelete: "cascade",
+  }),
 
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()
@@ -30,4 +47,8 @@ export const datasetsRelations = relations(datasets, ({ one, many }) => ({
   layers: many(layers),
   rows: many(rows),
   columns: many(columns),
+  project: one(projects, {
+    fields: [datasets.projectId],
+    references: [projects.id],
+  }),
 }));
