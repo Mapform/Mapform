@@ -11,6 +11,22 @@ export const createProject = authAction
   .action(async ({ parsedInput: { name, teamspaceId } }) => {
     await db.transaction(async (tx) => {
       /**
+       * Create submissions dataset
+       */
+      const [dataset] = await tx
+        .insert(datasets)
+        .values({
+          name: "Submissions",
+          teamspaceId,
+          type: "submissions",
+        })
+        .returning();
+
+      if (!dataset) {
+        throw new Error("Failed to create dataset");
+      }
+
+      /**
        * Create project
        */
       const [project] = await tx
@@ -18,6 +34,7 @@ export const createProject = authAction
         .values({
           name,
           teamspaceId,
+          datasetId: dataset.id,
         })
         .returning();
 
@@ -38,16 +55,6 @@ export const createProject = authAction
           x: INITIAL_VIEW_STATE.longitude,
           y: INITIAL_VIEW_STATE.latitude,
         },
-      });
-
-      /**
-       * Create submissions dataset
-       */
-      await tx.insert(datasets).values({
-        name: "Submissions",
-        teamspaceId,
-        projectId: project.id,
-        type: "submissions",
       });
 
       return project;

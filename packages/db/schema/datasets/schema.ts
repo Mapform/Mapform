@@ -26,9 +26,6 @@ export const datasets = pgTable("dataset", {
   teamspaceId: uuid("teamspace_id")
     .notNull()
     .references(() => teamspaces.id, { onDelete: "cascade" }),
-  projectId: uuid("project_id").references(() => projects.id, {
-    onDelete: "cascade",
-  }),
 
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()
@@ -47,8 +44,5 @@ export const datasetsRelations = relations(datasets, ({ one, many }) => ({
   layers: many(layers),
   rows: many(rows),
   columns: many(columns),
-  project: one(projects, {
-    fields: [datasets.projectId],
-    references: [projects.id],
-  }),
+  project: many(projects),
 }));

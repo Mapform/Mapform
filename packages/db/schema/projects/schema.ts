@@ -22,6 +22,11 @@ export const projects = pgTable("project", {
 
   // This is NULL for the root project
   rootProjectId: uuid("root_project_id"),
+  datasetId: uuid("dataset_id")
+    .notNull()
+    .references(() => datasets.id, {
+      onDelete: "cascade",
+    }),
 
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()
@@ -46,5 +51,8 @@ export const projectsRelations = relations(projects, ({ one, many }) => ({
   childProjects: many(projects, {
     relationName: "child_to_root",
   }),
-  submissionsDataset: one(datasets),
+  submissionsDataset: one(datasets, {
+    fields: [projects.datasetId],
+    references: [datasets.id],
+  }),
 }));

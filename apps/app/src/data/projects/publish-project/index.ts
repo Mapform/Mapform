@@ -96,6 +96,7 @@ export const publishProject = authAction
           ...copyFields,
           isDirty: false,
           rootProjectId: rootProject.id,
+          datasetId: rootProject.datasetId,
         })
         .returning();
 

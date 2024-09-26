@@ -1,0 +1,1 @@
+ALTER TABLE "project" ALTER COLUMN "dataset_id" SET NOT NULL;
