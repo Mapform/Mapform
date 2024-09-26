@@ -37,6 +37,7 @@ export const createSubmission = action
     }
 
     cookies().set("mapform-submission", row.id);
+    cookies().set("mapform-project-id", projectId);
 
     return row.id;
   });

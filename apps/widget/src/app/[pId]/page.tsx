@@ -39,10 +39,15 @@ export default async function Page({
     return <div>Project has no pages</div>;
   }
 
+  /**
+   * A project version mismatch occurs when a new version has been released
+   */
+  const projectVersionMismatch = projectCookie?.value !== projectWithPages.id;
+
   if (submissionCookie) {
     session = await getSession(submissionCookie.value);
 
-    if (session && projectCookie?.value === projectWithPages.id) {
+    if (session && !projectVersionMismatch) {
       const responsesResponse = await getResponses({ id: session.id });
       const responses = responsesResponse?.data;
 
@@ -61,7 +66,7 @@ export default async function Page({
         projectWithPages={projectWithPages}
         // points={stepData?.data ?? []}
         // We clear the session id if the form id doesn't match the current form
-        sessionId={session?.id ?? null}
+        sessionId={!projectVersionMismatch && session ? session.id : null}
       />
     </MapProvider>
   );
