@@ -12,28 +12,25 @@ import { getProjectWithPagesSchema } from "./schema";
 export const getProjectWithPages = action
   .schema(getProjectWithPagesSchema)
   .action(async ({ parsedInput: { id } }) => {
-    // TODO: Cannot use 'with' with geometry columns currently due to Drizzle bug: https://github.com/drizzle-team/drizzle-orm/issues/2526
-    // Once fix is merged we can simplify this
-    const [[_project], _pages] = await Promise.all([
-      db
-        .select()
-        .from(projects)
-        .where(eq(projects.rootProjectId, id))
-        .orderBy(desc(projects.createdAt))
-        .limit(1),
+    const [_projects] = await db
+      .select()
+      .from(projects)
+      .where(eq(projects.rootProjectId, id))
+      .orderBy(desc(projects.createdAt))
+      .limit(1);
 
-      db.query.pages.findMany({
-        where: eq(pages.projectId, id),
-        orderBy: (_pages2, { asc }) => [asc(_pages2.position)],
-      }),
-    ]);
-
-    if (!_project) {
+    if (!_projects) {
       throw new Error("Project not found");
     }
 
+    const _pages = await db.query.pages.findMany({
+      where: eq(pages.projectId, _projects.id),
+
+      orderBy: (_pages2, { asc }) => [asc(_pages2.position)],
+    });
+
     return {
-      ..._project,
+      ..._projects,
       pages: _pages,
     };
   });
