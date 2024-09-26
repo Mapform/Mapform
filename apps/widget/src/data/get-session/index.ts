@@ -1,12 +1,14 @@
 "server-only";
 
-import { prisma } from "@mapform/db";
+import { db } from "@mapform/db";
+import { rows } from "@mapform/db/schema";
+import { eq } from "@mapform/db/utils";
 
-export async function getSession(formSubmissionId: string, formId: string) {
-  return prisma.formSubmission.findUnique({
-    where: {
-      id: formSubmissionId,
-      publishedFormId: formId,
-    },
+/**
+ * A session is just a row in the submissions database
+ */
+export function getSession(rowId: string) {
+  return db.query.rows.findFirst({
+    where: eq(rows.id, rowId),
   });
 }

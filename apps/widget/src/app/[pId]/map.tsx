@@ -7,22 +7,22 @@ import { useCreateQueryString } from "@mapform/lib/hooks/use-create-query-string
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import type { Points } from "~/data/get-step-data";
 import { submitFormStep } from "~/data/submit-form-step";
-import type { FormWithSteps } from "~/data/get-form-with-steps";
-import { createFormSubmission } from "~/data/create-form-submission";
+import { createSubmission } from "~/data/create-submission";
 import type { Responses } from "~/data/get-responses.ts";
+import type { ProjectWithPages } from "~/data/get-project-with-pages";
 import { env } from "../env.mjs";
 
 interface MapProps {
   points: Points;
-  formWithSteps: NonNullable<FormWithSteps>;
-  formValues: NonNullable<Responses>;
+  projectWithPages: ProjectWithPages;
+  formValues: NonNullable<Responses>["cells"];
   sessionId: string | null;
 }
 
-type Step = NonNullable<FormWithSteps>["steps"][number];
+type Page = ProjectWithPages["pages"][number];
 
 export function Map({
-  formWithSteps,
+  projectWithPages,
   formValues,
   sessionId,
   points,
@@ -32,10 +32,10 @@ export function Map({
   const searchParams = useSearchParams();
   const createQueryString = useCreateQueryString();
 
-  const s = searchParams.get("s");
-  const currentStep = formWithSteps.steps.find((step) => step.id === s);
-  const setCurrentStep = (step: Step) => {
-    router.push(`${pathname}?${createQueryString("s", step.id)}`);
+  const p = searchParams.get("p");
+  const currentPage = projectWithPages.pages.find((page) => page.id === p);
+  const setCurrentPage = (page: Page) => {
+    router.push(`${pathname}?${createQueryString("p", page.id)}`);
   };
 
   const { map } = useMap();
@@ -44,13 +44,13 @@ export function Map({
 
   const { execute } = useAction(submitFormStep);
 
-  const setCurrentStepAndFly = (step: Step) => {
-    setCurrentStep(step);
+  const setCurrentPageAndFly = (page: Page) => {
+    setCurrentPage(page);
     map?.flyTo({
-      center: [step.longitude, step.latitude],
-      zoom: step.zoom,
-      pitch: step.pitch,
-      bearing: step.bearing,
+      center: [page.center.x, page.center.y],
+      zoom: page.zoom,
+      pitch: page.pitch,
+      bearing: page.bearing,
       duration: 1000,
     });
   };
@@ -60,8 +60,8 @@ export function Map({
       let newSessionId = sessionId;
 
       if (!newSessionId) {
-        const response = await createFormSubmission({
-          formId: formWithSteps.id,
+        const response = await createSubmission({
+          projectId: projectWithPages.id,
         });
 
         if (response?.data) {
@@ -76,15 +76,15 @@ export function Map({
    * Fix the 's' query param if no valid step
    */
   useEffect(() => {
-    if (formWithSteps.steps[0] && (!s || !currentStep)) {
-      const firstStep = formWithSteps.steps[0];
+    if (projectWithPages.pages[0] && (!p || !currentPage)) {
+      const firstStep = projectWithPages.pages[0];
 
       router.push(
-        `${pathname}?${createQueryString("s", formWithSteps.steps[0].id)}`
+        `${pathname}?${createQueryString("p", projectWithPages.pages[0].id)}`
       );
 
       map?.flyTo({
-        center: [firstStep.longitude, firstStep.latitude],
+        center: [firstStep.center.x, firstStep.center.y],
         zoom: firstStep.zoom,
         pitch: firstStep.pitch,
         bearing: firstStep.bearing,
@@ -92,21 +92,20 @@ export function Map({
       });
     }
   }, [
-    s,
+    p,
     map,
     router,
     pathname,
-    currentStep,
+    currentPage,
     createQueryString,
-    formWithSteps.steps,
+    projectWithPages.pages,
   ]);
 
-  const stepValues = (currentStep?.description?.content ?? []).reduce(
+  const stepValues = (currentPage?.content?.content ?? []).reduce(
     (acc: Record<string, string>, block) => {
       const cellValue = formValues.find(
         (v) => v.column.blockNoteId === block.id
       );
-      // @ts-expect-error -- Value does exist here
       const value = cellValue?.stringCell?.value ?? cellValue?.pointCell?.value;
 
       if (value) {
@@ -118,39 +117,41 @@ export function Map({
     {}
   );
 
-  if (!currentSession || !currentStep) {
+  if (!currentSession || !currentPage) {
     return null;
   }
 
   return (
     <MapForm
-      currentStep={currentStep}
+      currentPage={currentPage}
       defaultFormValues={stepValues}
       mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
       onPrev={() => {
-        const prevStepIndex =
-          formWithSteps.steps.findIndex((step) => step.id === currentStep.id) -
-          1;
-        const prevStep = formWithSteps.steps[prevStepIndex];
+        const prevPageIndex =
+          projectWithPages.pages.findIndex(
+            (page) => page.id === currentPage.id
+          ) - 1;
+        const prevStep = projectWithPages.pages[prevPageIndex];
 
         if (prevStep) {
-          setCurrentStepAndFly(prevStep);
+          setCurrentPageAndFly(prevStep);
         }
       }}
       onStepSubmit={(data) => {
         execute({
-          stepId: currentStep.id,
+          stepId: currentPage.id,
           formSubmissionId: currentSession,
           payload: data,
         });
 
-        const nextStepIndex =
-          formWithSteps.steps.findIndex((step) => step.id === currentStep.id) +
-          1;
-        const nextStep = formWithSteps.steps[nextStepIndex];
+        const nextPageIndex =
+          projectWithPages.pages.findIndex(
+            (page) => page.id === currentPage.id
+          ) + 1;
+        const nextStep = projectWithPages.pages[nextPageIndex];
 
         if (nextStep) {
-          setCurrentStepAndFly(nextStep);
+          setCurrentPageAndFly(nextStep);
         }
       }}
       points={points}
