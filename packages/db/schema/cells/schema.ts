@@ -60,7 +60,7 @@ export const cellsRelations = relations(cells, ({ one }) => ({
 /**
  * STRING CELL
  */
-export const stringCells = pgTable("strint_cell", {
+export const stringCells = pgTable("string_cell", {
   id: uuid("id").primaryKey().defaultRandom(),
   value: text("value").notNull(),
 

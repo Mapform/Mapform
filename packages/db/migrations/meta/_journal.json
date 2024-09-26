@@ -36,6 +36,13 @@
       "when": 1727313476333,
       "tag": "0004_cloudy_gorgon",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1727380158379,
+      "tag": "0005_glossy_bug",
+      "breakpoints": true
     }
   ]
 }
