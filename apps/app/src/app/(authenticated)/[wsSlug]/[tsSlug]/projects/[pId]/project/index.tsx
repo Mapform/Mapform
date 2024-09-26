@@ -21,7 +21,8 @@ import { PageBarButton } from "./page-bar-button";
 import { AddLocationDropdown } from "./add-location-dropdown";
 
 function Project() {
-  const { optimisticPage, isEditingPage, setEditMode } = usePage();
+  const { optimisticPage, isEditingPage, setEditMode, optimisticPageData } =
+    usePage();
 
   const { executeAsync } = useAction(updatePageAction);
 
@@ -129,7 +130,7 @@ function Project() {
                 title,
               });
             }}
-            points={[]}
+            pageData={optimisticPageData}
           />
         </div>
       </div>

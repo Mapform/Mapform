@@ -3,7 +3,8 @@ import { cache } from "react";
 import { cn } from "@mapform/lib/classnames";
 import { MapProvider } from "@mapform/mapform";
 import { notFound } from "next/navigation";
-import { getPageWithData } from "~/data/pages/get-page-with-data";
+import { getPageData } from "~/data/datalayer/get-page-data";
+import { getPageWithLayers } from "~/data/pages/get-page-with-layers";
 import { getProjectWithPages } from "~/data/projects/get-project-with-pages";
 import { listAvailableDatasets } from "~/data/datasets/list-available-datasets";
 import { ProjectProvider } from "./project-context";
@@ -24,21 +25,21 @@ const fetchProjectWithPages = cache(async (id: string) => {
   return projectWithPages;
 });
 
-const fetchPageWithData = cache(async (id?: string) => {
+const fetchPageWithLayers = cache(async (id?: string) => {
   if (!id) {
     return undefined;
   }
 
-  const pageWithDataResponse = await getPageWithData({
+  const pageWithLayersResponse = await getPageWithLayers({
     id,
   });
-  const pageWithData = pageWithDataResponse?.data;
+  const pageWithLayers = pageWithLayersResponse?.data;
 
-  if (!pageWithData) {
+  if (!pageWithLayers) {
     return notFound();
   }
 
-  return pageWithData;
+  return pageWithLayers;
 });
 
 const fetchAvailableDatasets = cache(async (id: string) => {
@@ -54,6 +55,19 @@ const fetchAvailableDatasets = cache(async (id: string) => {
   return availableDatasets;
 });
 
+const fetchPageData = cache(async (id?: string) => {
+  if (!id) {
+    return undefined;
+  }
+
+  const pageDataResponse = await getPageData({
+    pageId: id,
+  });
+  const pageData = pageDataResponse?.data;
+
+  return pageData;
+});
+
 export default async function ProjectPage({
   params,
   searchParams,
@@ -66,13 +80,13 @@ export default async function ProjectPage({
 }) {
   const { pId } = params;
 
-  const [projectWithPages, pageWithData, availableDatasets] = await Promise.all(
-    [
+  const [projectWithPages, pageWithLayers, availableDatasets, pageData] =
+    await Promise.all([
       fetchProjectWithPages(pId),
-      fetchPageWithData(searchParams?.page),
+      fetchPageWithLayers(searchParams?.page),
       searchParams?.edit ? fetchAvailableDatasets(pId) : undefined,
-    ]
-  );
+      fetchPageData(searchParams?.page),
+    ]);
 
   return (
     <div className="-m-4 flex flex-col flex-1 overflow-hidden">
@@ -80,7 +94,8 @@ export default async function ProjectPage({
         <ProjectProvider projectWithPages={projectWithPages}>
           <PageProvider
             availableDatasets={availableDatasets ?? []}
-            pageWithData={pageWithData}
+            pageData={pageData}
+            pageWithLayers={pageWithLayers}
           >
             <div
               className={cn(

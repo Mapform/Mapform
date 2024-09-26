@@ -154,7 +154,7 @@ export function Map({
           setCurrentPageAndFly(nextStep);
         }
       }}
-      points={points}
+      pageData={points}
     />
   );
 }

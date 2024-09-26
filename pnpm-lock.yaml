@@ -450,6 +450,9 @@ importers:
         specifier: ^0.5.0
         version: 0.5.0
     devDependencies:
+      '@mapform/db':
+        specifier: workspace:*
+        version: link:../db
       '@mapform/eslint-config':
         specifier: workspace:*
         version: link:../eslint-config

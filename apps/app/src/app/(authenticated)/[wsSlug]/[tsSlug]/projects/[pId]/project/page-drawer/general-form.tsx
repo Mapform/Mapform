@@ -20,7 +20,7 @@ import {
 } from "@mapform/ui/components/select";
 import { useAction } from "next-safe-action/hooks";
 import { useCallback, useEffect } from "react";
-import type { PageWithData } from "~/data/pages/get-page-with-data";
+import type { PageWithLayers } from "~/data/pages/get-page-with-layers";
 import {
   updatePageSchema,
   type UpdatePageSchema,
@@ -29,7 +29,7 @@ import { updatePage as updatePageAction } from "~/data/pages/update-page";
 import { usePage } from "../../page-context";
 
 interface GeneralFormProps {
-  optimisticPage: PageWithData;
+  optimisticPage: PageWithLayers;
 }
 
 export function GeneralForm({ optimisticPage }: GeneralFormProps) {

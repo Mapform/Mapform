@@ -8,16 +8,19 @@ import {
 } from "react";
 import { useMap } from "@mapform/mapform";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
-import type { PageWithData } from "~/data/pages/get-page-with-data";
+import type { PageData } from "~/data/datalayer/get-page-data";
+import type { PageWithLayers } from "~/data/pages/get-page-with-layers";
 import type { ListAvailableDatasets } from "~/data/datasets/list-available-datasets";
 
 export interface PageContextProps {
   isEditingPage: boolean;
-  optimisticPage: PageWithData | undefined;
+  optimisticPage: PageWithLayers | undefined;
+  optimisticPageData: PageData | undefined;
   availableDatasets: ListAvailableDatasets;
-  updatePage: (action: PageWithData) => void;
+  updatePage: (action: PageWithLayers) => void;
+  updatePageData: (action: PageData) => void;
   setActivePage: (
-    page?: Pick<PageWithData, "id" | "center" | "zoom" | "pitch" | "bearing">
+    page?: Pick<PageWithLayers, "id" | "center" | "zoom" | "pitch" | "bearing">
   ) => void;
   setEditMode: (open: boolean) => void;
 }
@@ -28,11 +31,13 @@ export const PageContext = createContext<PageContextProps>(
 export const usePage = () => useContext(PageContext);
 
 export function PageProvider({
-  pageWithData,
+  pageData,
+  pageWithLayers,
   availableDatasets,
   children,
 }: {
-  pageWithData?: PageWithData;
+  pageData?: PageData;
+  pageWithLayers?: PageWithLayers;
   availableDatasets: ListAvailableDatasets;
   children: React.ReactNode;
 }) {
@@ -41,18 +46,29 @@ export function PageProvider({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [optimisticPage, updatePage] = useOptimistic<
-    PageWithData | undefined,
-    PageWithData
-  >(pageWithData, (state, newPage) => ({
+    PageWithLayers | undefined,
+    PageWithLayers
+  >(pageWithLayers, (state, newPage) => ({
     ...state,
     ...newPage,
+  }));
+  const [optimisticPageData, updatePageData] = useOptimistic<
+    PageData | undefined,
+    PageData
+  >(pageData, (state, newPageData) => ({
+    ...state,
+    ...newPageData,
   }));
 
   const isEditingPage = Boolean(searchParams.get("edit"));
 
-  const setActivePage = (
-    page?: Pick<PageWithData, "id" | "center" | "zoom" | "pitch" | "bearing">
-  ) => {
+  const setActivePage = (page?: {
+    id: string;
+    center: { x: number; y: number };
+    zoom: number;
+    pitch: number;
+    bearing: number;
+  }) => {
     // Get current search params
     const current = new URLSearchParams(Array.from(searchParams.entries()));
 
@@ -98,12 +114,14 @@ export function PageProvider({
   return (
     <PageContext.Provider
       value={{
-        optimisticPage,
         updatePage,
-        setActivePage,
         setEditMode,
         isEditingPage,
+        setActivePage,
+        optimisticPage,
+        updatePageData,
         availableDatasets,
+        optimisticPageData,
       }}
     >
       {children}

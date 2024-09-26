@@ -14,7 +14,7 @@ import {
   getFormSchemaFromBlockNote,
 } from "@mapform/blocknote";
 import { useMeasure } from "@mapform/lib/hooks/use-measure";
-import type { Points, ViewState } from "@mapform/map-utils/types";
+import type { PageData, ViewState } from "@mapform/map-utils/types";
 import { Button } from "@mapform/ui/components/button";
 import { ChevronLeftIcon } from "lucide-react";
 import { Blocknote } from "./block-note";
@@ -35,7 +35,7 @@ interface MapFormProps {
   onStepSubmit?: (data: Record<string, string>) => void;
   onImageUpload?: (file: File) => Promise<string | null>;
   onLocationSave?: (location: ViewState) => Promise<{ success: boolean }>;
-  points?: Points;
+  pageData?: PageData;
   editFields?: {
     AddLocationDropdown: (input: {
       stepId: string;
@@ -49,9 +49,9 @@ export function MapForm({
   editable = false,
   onPrev,
   onLoad,
+  pageData,
   editFields,
   currentPage,
-  points = [],
   onStepSubmit,
   onTitleChange,
   onImageUpload,
@@ -364,7 +364,7 @@ export function MapForm({
                     : undefined
                 }
                 onLoad={onLoad}
-                points={points}
+                pageData={pageData}
               />
 
               {/* Edit bar */}
