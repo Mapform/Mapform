@@ -196,7 +196,7 @@ export function MapForm({
                 // Need key to force re-render, otherwise Blocknote state doesn't
                 // change when changing steps
                 editable={editable}
-                iscurrentPage
+                isPage
                 key={currentPage.id}
                 onDescriptionChange={onDescriptionChange}
                 onPrev={onPrev}

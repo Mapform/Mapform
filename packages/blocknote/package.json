@@ -10,9 +10,9 @@
     "lint": "eslint . --max-warnings 0"
   },
   "dependencies": {
-    "@blocknote/core": "0.14.1",
-    "@blocknote/mantine": "0.14.1",
-    "@blocknote/react": "0.14.1",
+    "@blocknote/core": "0.15.10",
+    "@blocknote/mantine": "0.15.10",
+    "@blocknote/react": "0.15.10",
     "@mapform/lib": "workspace:*",
     "@mapform/ui": "workspace:*",
     "lucide-react": "^0.354.0",
