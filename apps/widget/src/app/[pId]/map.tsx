@@ -6,7 +6,7 @@ import React, { useEffect, useState } from "react";
 import { useCreateQueryString } from "@mapform/lib/hooks/use-create-query-string";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import type { Points } from "~/data/get-step-data";
-import { submitFormStep } from "~/data/submit-form-step";
+import { submitPage } from "~/data/submit-page";
 import { createSubmission } from "~/data/create-submission";
 import type { Responses } from "~/data/get-responses.ts";
 import type { ProjectWithPages } from "~/data/get-project-with-pages";
@@ -42,7 +42,7 @@ export function Map({
 
   const [currentSession, setCurrentSession] = useState<string | null>(null);
 
-  const { execute } = useAction(submitFormStep);
+  const { execute } = useAction(submitPage);
 
   const setCurrentPageAndFly = (page: Page) => {
     setCurrentPage(page);
@@ -139,8 +139,8 @@ export function Map({
       }}
       onStepSubmit={(data) => {
         execute({
-          stepId: currentPage.id,
-          formSubmissionId: currentSession,
+          pageId: currentPage.id,
+          submissionId: currentSession,
           payload: data,
         });
 
