@@ -23,7 +23,7 @@ import { completeOnboarding } from "~/data/onboarding/complete-onboarding";
 export function OnboardingForm() {
   const form = useForm<CompleteOnboardingSchema>({
     defaultValues: {
-      userName: "",
+      name: "",
     },
     resolver: zodResolver(completeOnboardingSchema),
   });
@@ -54,7 +54,7 @@ export function OnboardingForm() {
       >
         <FormField
           control={form.control}
-          name="userName"
+          name="name"
           render={({ field }) => (
             <FormItem className="flex-1">
               <FormLabel>What&apos;s your name?</FormLabel>
@@ -66,7 +66,7 @@ export function OnboardingForm() {
                   onChange={field.onChange}
                   placeholder="Jane Doe"
                   ref={field.ref}
-                  value={field.value}
+                  value={field.value ?? ""}
                 />
               </FormControl>
               <FormMessage />

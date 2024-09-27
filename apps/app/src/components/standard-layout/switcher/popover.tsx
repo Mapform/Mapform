@@ -14,19 +14,19 @@ import {
 } from "lucide-react";
 import { signOut } from "next-auth/react";
 import Link from "next/link";
-import { type UserOrgs } from "~/data/orgs/get-user-orgs";
+import type { CurrentUserWorkspaceMemberships } from "~/data/workspace-memberships/get-current-user-workspace-memberships";
 
 interface SwitcherPopoverProps {
-  currentOrgSlug?: string;
-  userOrgs: UserOrgs;
+  currentWorkspaceSlug?: string;
+  workspaceMemberships: CurrentUserWorkspaceMemberships;
 }
 
 export function SwitcherPopover({
-  currentOrgSlug,
-  userOrgs,
+  currentWorkspaceSlug,
+  workspaceMemberships,
 }: SwitcherPopoverProps) {
-  const currentOrg = userOrgs?.organizationMemberships.find(
-    (membership) => membership.organization.slug === currentOrgSlug
+  const currentWorkspace = workspaceMemberships?.find(
+    (membership) => membership.workspace.slug === currentWorkspaceSlug
   );
 
   return (
@@ -36,7 +36,7 @@ export function SwitcherPopover({
           {/* TODO: Add custom icon support */}
           <div className="text-md">🗺️</div>
           <div className="text-left text-sm font-medium truncate">
-            {currentOrg?.organization.name ?? "My Account"}
+            {currentWorkspace?.workspace.name ?? "My Account"}
           </div>
         </div>
         <ChevronDown className="text-stone-500 w-4 h-4 flex-shrink-0" />
@@ -54,7 +54,7 @@ export function SwitcherPopover({
                 </div>
                 <span className="truncate">My Account</span>
               </div>
-              {!currentOrg && (
+              {!currentWorkspace && (
                 <div className="h-4 w-4 flex items-center justify-center">
                   <CheckIcon className="h-4 w-4 flex-shrink-0" />
                 </div>
@@ -62,28 +62,28 @@ export function SwitcherPopover({
             </Link>
           </div>
           <h3 className="text-xs font-semibold leading-6 text-stone-400 mb-1">
-            Organizations
+            Workspaces
           </h3>
           <ul className="text-sm">
-            {userOrgs?.organizationMemberships.map((membership) => (
+            {workspaceMemberships?.map((membership) => (
               <li
                 className="w-full flex flex-col"
-                key={membership.organization.id}
+                key={membership.workspace.id}
               >
                 <Link
                   className="flex items-center justify-between hover:bg-stone-100 py-1.5 px-2 -mx-2 transition-colors rounded"
-                  href={`/orgs/${membership.organization.slug}`}
+                  href={`/${membership.workspace.slug}`}
                 >
                   <div className="flex items-center gap-2 overflow-hidden">
                     <div className="h-4 w-4 flex items-center justify-center flex-shrink-0">
                       🗺️
                     </div>
                     <span className="truncate">
-                      {membership.organization.name}
+                      {membership.workspace.name}
                     </span>
                   </div>
-                  {currentOrg?.organization.id ===
-                    membership.organization.id && (
+                  {currentWorkspace?.workspace.id ===
+                    membership.workspace.id && (
                     <div className="h-4 w-4 flex items-center justify-center">
                       <CheckIcon className="h-4 w-4 flex-shrink-0" />
                     </div>
@@ -100,14 +100,14 @@ export function SwitcherPopover({
                 <div className="h-4 w-4 flex items-center justify-center">
                   <PlusIcon className="h-4 w-4 text-stone-500 flex-shrink-0" />
                 </div>
-                Create organization (Coming soon)
+                Create workspace (Coming soon)
               </button>
             </li>
           </ul>
         </div>
         <div className="px-3 py-2 bg-stone-50">
           <h3 className="text-xs font-semibold leading-6 text-stone-400 mb-1 truncate">
-            Signed in as {userOrgs?.email}
+            Signed in as {currentWorkspace?.user.email}
           </h3>
           <div className="w-full flex flex-col">
             <button

@@ -1,40 +1,33 @@
-import { ColumnType } from "@mapform/db";
+import type { Column } from "@mapform/db/schema";
 import { z } from "zod";
 
 export function parseType(val: unknown) {
   // Parse booleans
   if (z.boolean().safeParse(val).success) {
     return {
-      type: ColumnType.BOOL,
-      value: val,
+      type: "bool" as Column["type"],
+      value: val as boolean,
     };
   }
 
   if (z.string().safeParse(val).success) {
     return {
-      type: ColumnType.STRING,
-      value: val,
-    };
-  }
-
-  if (z.number().int().safeParse(val).success) {
-    return {
-      type: ColumnType.INT,
-      value: val,
+      type: "string" as Column["type"],
+      value: val as string,
     };
   }
 
   if (z.number().safeParse(val).success) {
     return {
-      type: ColumnType.FLOAT,
-      value: val,
+      type: "number" as Column["type"],
+      value: val as number,
     };
   }
 
   if (z.date().safeParse(val).success) {
     return {
-      type: ColumnType.DATE,
-      value: val,
+      type: "date" as Column["type"],
+      value: val as Date,
     };
   }
 

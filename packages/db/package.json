@@ -3,32 +3,35 @@
   "version": "0.1.0",
   "main": "index.ts",
   "scripts": {
-    "db:generate": "prisma generate",
-    "db:migrate": "prisma migrate dev",
-    "db:studio": "prisma studio",
-    "postinstall": "prisma generate"
-  },
-  "prisma": {
-    "seed": "ts-node --transpile-only --compiler-options {\"module\":\"CommonJS\"} ./prisma/seed.ts"
+    "db:drop": "drizzle-kit drop",
+    "db:push": "drizzle-kit push",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:studio": "drizzle-kit studio",
+    "db:undo-migration": "pnpm db:drop && pnpm db:generate && pnpm db:migrate",
+    "postinstall": "pnpm db:generate"
   },
   "devDependencies": {
     "@mapform/blocknote": "workspace:*",
     "@types/node": "^20.11.24",
+    "@types/pg": "^8.11.10",
     "@types/uuid": "^9.0.8",
     "@types/ws": "^8.5.10",
-    "prisma": "^5.17.0",
+    "drizzle-kit": "^0.24.2",
+    "next-auth": "5.0.0-beta.20",
     "ts-node": "^10.9.2",
     "typescript": "^5.5.4"
   },
   "dependencies": {
     "@mapform/typescript-config": "workspace:*",
     "@neondatabase/serverless": "^0.9.0",
-    "@prisma/adapter-neon": "^5.17.0",
-    "@prisma/client": "^5.17.0",
     "dotenv": "^16.4.5",
-    "prisma-json-types-generator": "^3.0.4",
+    "drizzle-orm": "^0.33.0",
+    "drizzle-zod": "^0.5.1",
+    "pg": "^8.13.0",
     "uuid": "^9.0.1",
-    "ws": "^8.16.0"
+    "ws": "^8.16.0",
+    "zod": "3.23.8"
   },
   "optionalDependencies": {
     "bufferutil": "^4.0.8"

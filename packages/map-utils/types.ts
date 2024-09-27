@@ -1,9 +1,8 @@
-export type Points = {
-  id: number;
-  longitude: number;
-  latitude: number;
-  zIndex: number;
-}[];
+import type { PointCell } from "@mapform/db/schema";
+
+export type PageData = {
+  pointData: PointCell[];
+};
 
 export type PaddingOptions = {
   top: number;

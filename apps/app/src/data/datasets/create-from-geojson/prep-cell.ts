@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
-import { ColumnType } from "@mapform/db";
+import type { Column } from "@mapform/db/schema";
 import type { GeoJsonFeature } from "@infra-blocks/zod-utils/geojson";
 import { parseType } from "./parse-type";
 
@@ -11,19 +11,23 @@ export function prepCell(row: GeoJsonFeature) {
     throw new Error("Feature is missing properties or geometry");
   }
 
+  if (geometry.type !== "Point") {
+    throw new Error("Geometry must be a point");
+  }
+
   const propertiesWithId = Object.entries(properties).map(([key, val]) => {
     return {
       id: uuidv4(),
       key,
       type: parseType(val as unknown).type,
-      value: val,
+      value: parseType(val as unknown).value,
     };
   });
 
   const geometryWithId = {
     id: uuidv4(),
     key: "geometry",
-    type: ColumnType.POINT,
+    type: "point",
     value: geometry,
   };
 

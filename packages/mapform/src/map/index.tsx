@@ -12,7 +12,7 @@ import {
 import mapboxgl from "mapbox-gl";
 import { cn } from "@mapform/lib/classnames";
 import type { FeatureCollection } from "geojson";
-import type { Points, ViewState } from "@mapform/map-utils/types";
+import type { PageData, ViewState } from "@mapform/map-utils/types";
 
 const accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
 
@@ -44,7 +44,7 @@ export function MapProvider({ children }: { children: React.ReactNode }) {
 }
 
 interface MapProps {
-  points?: Points;
+  pageData?: PageData;
   editable?: boolean;
   onLoad?: () => void;
   initialViewState: ViewState;
@@ -63,7 +63,7 @@ interface MapProps {
 export function Map({
   initialViewState,
   editable = false,
-  points = [],
+  pageData,
   onLoad,
   marker,
 }: MapProps) {
@@ -74,18 +74,18 @@ export function Map({
   const geojson: FeatureCollection = useMemo(
     () => ({
       type: "FeatureCollection",
-      features: points.map((point) => ({
+      features: (pageData?.pointData ?? []).map((point) => ({
         type: "Feature",
         geometry: {
           type: "Point",
-          coordinates: [point.longitude, point.latitude],
+          coordinates: [point.value.x, point.value.y],
         },
         properties: {
           id: point.id,
         },
       })),
     }),
-    [points]
+    [pageData]
   );
 
   useEffect(() => {

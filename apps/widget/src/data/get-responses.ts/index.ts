@@ -1,74 +1,34 @@
 "server-only";
 
-import { type PointCell, prisma } from "@mapform/db";
-
-export type PointCellResponse = PointCell & {
-  latitude: number;
-  longitude: number;
-};
+import { db } from "@mapform/db";
+import { rows } from "@mapform/db/schema";
+import { eq } from "@mapform/db/utils";
+import { action } from "~/lib/safe-action";
+import { getResponsesSchema } from "./schema";
 
 /**
  * Returns a session's previous responses
  */
-export async function getResponses(formSubmissionId: string) {
-  const formSubmission = await prisma.formSubmission.findUnique({
-    where: {
-      id: formSubmissionId,
-    },
-    include: {
-      row: {
-        include: {
-          cellValues: {
-            include: {
-              column: true,
-              boolCell: true,
-              pointCell: true,
-              stringCell: true,
-            },
+export const getResponses = action
+  .schema(getResponsesSchema)
+  .action(async ({ parsedInput: { id } }) => {
+    return db.query.rows.findFirst({
+      where: eq(rows.id, id),
+      with: {
+        cells: {
+          with: {
+            column: true,
+            booleanCell: true,
+            pointCell: true,
+            stringCell: true,
+            numberCell: true,
+            dateCell: true,
           },
         },
       },
-    },
+    });
   });
 
-  // Backfill location-based responses since Prisma doesn't support them
-  const responses = await Promise.all(
-    formSubmission?.row.cellValues.map(async (cellValue) => {
-      if (cellValue.pointCell) {
-        const pointCell = await getGeomtryCell(cellValue.pointCell.id);
-
-        return {
-          ...cellValue,
-          pointCell,
-        };
-      }
-
-      return cellValue;
-    }) ?? []
-  );
-
-  return responses;
-}
-
-async function getGeomtryCell(pointCellId: string) {
-  // Make raw query to get LocationResponse with Location lat lng
-  const pointCellResponse: PointCellResponse[] = await prisma.$queryRaw`
-    SELECT DISTINCT "PointCell".*, ST_X("PointCell".value) AS longitude, ST_Y("PointCell".value) AS latitude
-    FROM "PointCell"
-    WHERE "PointCell"."id" = ${pointCellId};
-  `;
-
-  const formattedResponse = pointCellResponse[0]
-    ? {
-        ...pointCellResponse[0],
-        value: {
-          latitude: pointCellResponse[0].latitude,
-          longitude: pointCellResponse[0].longitude,
-        },
-      }
-    : null;
-
-  return formattedResponse;
-}
-
-export type Responses = Awaited<ReturnType<typeof getResponses>>;
+export type Responses = NonNullable<
+  Awaited<ReturnType<typeof getResponses>>
+>["data"];

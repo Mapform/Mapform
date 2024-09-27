@@ -14,23 +14,21 @@ import { BlockNoteView } from "@blocknote/mantine";
 import { TextIcon, ImageIcon, MapPinIcon, XIcon } from "lucide-react";
 import { Button } from "@mapform/ui/components/button";
 import { cn } from "@mapform/lib/classnames";
-import type { ContentViewType, Step } from "@mapform/db";
+import type { Page } from "@mapform/db/schema";
 import { schema, type CustomBlock } from "@mapform/blocknote";
 import { AutoSizeTextArea } from "../components/autosize-text-area";
 import { CustomSideMenu } from "../components/side-menu";
 
-type ExtendedStep = Step & { latitude: number; longitude: number };
-
 interface BlocknoteProps {
   editable: boolean;
   title?: string | null;
-  currentStep: ExtendedStep;
+  currentPage: Page;
   description?: {
     content: CustomBlock[];
   };
   isPage?: boolean;
   children?: React.ReactNode;
-  contentViewType: ContentViewType;
+  contentViewType: Page["contentViewType"];
   locationEditorProps?: {
     onClose: () => void;
   };
@@ -102,7 +100,7 @@ export function Blocknote({
   return (
     <div
       className={cn("h-full flex flex-col prose mx-auto relative", {
-        "max-h-[300px]": contentViewType === "MAP",
+        "max-h-[300px]": contentViewType === "map",
       })}
     >
       <div className="flex-1 flex flex-col overflow-y-auto">

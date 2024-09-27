@@ -5,6 +5,7 @@
     "@mapbox/geo-viewport": "^0.5.0"
   },
   "devDependencies": {
+    "@mapform/db": "workspace:*",
     "@mapform/eslint-config": "workspace:*",
     "@mapform/typescript-config": "workspace:*",
     "@types/mapbox__geo-viewport": "^0.5.3",

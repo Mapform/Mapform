@@ -1,7 +1,18 @@
 "use server";
 
-import { Prisma, prisma } from "@mapform/db";
+import { db } from "@mapform/db";
 import { v4 as uuidv4 } from "uuid";
+import {
+  datasets,
+  columns,
+  rows,
+  cells,
+  stringCells,
+  booleanCells,
+  numberCells,
+  pointCells,
+  dateCells,
+} from "@mapform/db/schema";
 import type { GeoJson } from "@infra-blocks/zod-utils/geojson";
 import { authAction } from "~/lib/safe-action";
 import { createDatasetFromGeojsonSchema } from "./schema";
@@ -9,172 +20,166 @@ import { prepCell } from "./prep-cell";
 
 export const createDatasetFromGeojson = authAction
   .schema(createDatasetFromGeojsonSchema)
-  .action(async ({ parsedInput: { name, workspaceId, data } }) => {
-    const cellsToCreate = getCellsToCreate(data);
+  .action(async ({ parsedInput: { name, teamspaceId, data } }) => {
+    const cellsToCreateByRow = getCellsToCreateByRow(data).map((row) => ({
+      cells: row,
+      rowdId: uuidv4(),
+    }));
 
     // Group cells by key
-    const groupedCells = cellsToCreate.flat().reduce(
-      (acc, current) => {
-        const identifier = `${current.type}-${current.key}`; // Create a unique identifier
+    const groupedCells = cellsToCreateByRow
+      .map((c) => c.cells)
+      .flat()
+      .reduce(
+        (acc, current) => {
+          const identifier = `${current.type}-${current.key}`; // Create a unique identifier
 
-        if (!acc.set.has(identifier)) {
-          acc.set.add(identifier); // Track this combination
-          acc.result.push(current); // Add object to the result array
-        }
+          if (!acc.set.has(identifier)) {
+            acc.set.add(identifier); // Track this combination
+            // @ts-ignore -- It's ok
+            acc.result.push(current); // Add object to the result array
+          }
 
-        return acc;
-      },
-      { set: new Set(), result: [] }
-    ).result;
+          return acc;
+        },
+        { set: new Set(), result: [] }
+      ).result;
 
-    const datasetResponse = await prisma.$transaction(async (tx) => {
-      const datasetWithCols = await tx.dataset.create({
-        data: {
+    const datasetResponse = await db.transaction(async (tx) => {
+      /**
+       * Create Dataset
+       */
+      const [dataset] = await tx
+        .insert(datasets)
+        .values({
           name,
-          workspace: {
-            connect: {
-              id: workspaceId,
-            },
-          },
-          columns: {
-            create: [
-              ...groupedCells.map((cell) => ({
-                name: cell.key,
-                dataType: cell.type,
-              })),
-            ],
-          },
-        },
-        include: {
-          columns: true,
-        },
-      });
+          teamspaceId,
+        })
+        .returning();
 
-      console.log(123, datasetWithCols);
+      if (!dataset) {
+        throw new Error("Could not create dataset");
+      }
 
-      const dataset = await tx.dataset.update({
-        where: {
-          id: datasetWithCols.id,
-        },
-        data: {
-          rows: {
-            create: [
-              ...cellsToCreate.map((row) => ({
-                cellValues: {
-                  create: Object.values(row).map((cell) => {
-                    return {
-                      id: cell.id,
-                      column: {
-                        connect: {
-                          datasetId_name: {
-                            datasetId: datasetWithCols.id,
-                            name: cell.key,
-                          },
-                        },
-                      },
-                    };
-                  }),
-                },
-              })),
-            ],
-          },
-        },
-        include: {
-          rows: {
-            include: {
-              cellValues: true,
-            },
-          },
-          columns: true,
-        },
-      });
+      const [datasetCols] = await Promise.all([
+        tx
+          .insert(columns)
+          .values(
+            groupedCells.map((cell) => ({
+              name: cell.key,
+              type: cell.type,
+              datasetId: dataset.id,
+            }))
+          )
+          .returning(),
+        tx
+          .insert(rows)
+          .values(
+            cellsToCreateByRow.map((row) => ({
+              id: row.rowdId,
+              datasetId: dataset.id,
+            }))
+          )
+          .returning(),
+      ]);
 
-      console.log(456, dataset);
+      await tx
+        .insert(cells)
+        .values(
+          cellsToCreateByRow
+            .map((row) =>
+              row.cells.map((cell) => ({
+                id: cell.id,
+                rowId: row.rowdId,
+                columnId: datasetCols.find((col) => col.name === cell.key)!.id,
+                value: cell.value,
+              }))
+            )
+            .flat()
+        )
+        .returning();
 
-      const cells = cellsToCreate.flatMap((row) => row);
+      const flatCells = cellsToCreateByRow.flatMap((row) => row.cells);
 
       /**
        * Insert cells
        */
-      const stringCells = cells.filter((cell) => cell.type === "STRING");
-      const boolCells = cells.filter((cell) => cell.type === "BOOL");
-      const floatCells = cells.filter((cell) => cell.type === "FLOAT");
-      const intCells = cells.filter((cell) => cell.type === "INT");
-      const dateCells = cells.filter((cell) => cell.type === "DATE");
-      const pointCells = cells
-        .filter((cell) => cell.type === "POINT")
-        .map(
-          (cell) =>
-            Prisma.sql`(${uuidv4()}, ${cell.id}, ST_SetSRID(ST_MakePoint(${cell.value.coordinates[0]}, ${cell.value.coordinates[1]}), 4326))`
-        );
+      const dsStringCells = flatCells.filter((cell) => cell.type === "string");
+      const dsBoolCells = flatCells.filter((cell) => cell.type === "bool");
+      const dsDateCells = flatCells.filter((cell) => cell.type === "date");
+      const dsNumberCells = flatCells.filter((cell) => cell.type === "number");
+      const dsPointCells = flatCells.filter((cell) => cell.type === "point");
 
       await Promise.all([
         /**
          * Insert StringCells
          */
-        tx.stringCell.createMany({
-          data: stringCells.map((cell) => ({
-            cellValueId: cell.id,
-            value: cell.value as string,
-          })),
-        }),
+        dsStringCells.length &&
+          tx.insert(stringCells).values(
+            dsStringCells.map((cell) => ({
+              cellId: cell.id,
+              value: cell.value as string,
+            }))
+          ),
 
         /**
          * Insert BoolCells
          */
-        tx.boolCell.createMany({
-          data: boolCells.map((cell) => ({
-            cellValueId: cell.id,
-            value: cell.value as boolean,
-          })),
-        }),
-
-        /**
-         * Insert FloatCells
-         */
-        tx.floatCell.createMany({
-          data: floatCells.map((cell) => ({
-            cellValueId: cell.id,
-            value: cell.value as number,
-          })),
-        }),
-
-        /**
-         * Insert IntCells
-         */
-        tx.intCell.createMany({
-          data: intCells.map((cell) => ({
-            cellValueId: cell.id,
-            value: cell.value as number,
-          })),
-        }),
+        dsBoolCells.length &&
+          tx.insert(booleanCells).values(
+            dsBoolCells.map((cell) => ({
+              cellId: cell.id,
+              value: cell.value as boolean,
+            }))
+          ),
 
         /**
          * Insert DateCells
          */
-        tx.dateCell.createMany({
-          data: dateCells.map((cell) => ({
-            cellValueId: cell.id,
-            value: cell.value as Date,
-          })),
-        }),
+        dsDateCells.length &&
+          tx.insert(dateCells).values(
+            dsDateCells.map((cell) => ({
+              cellId: cell.id,
+              value: cell.value as unknown as Date,
+            }))
+          ),
 
         /**
-         * Insert PointCells. Need to INSERT using raw SQL because Prisma does not support PostGIS
+         * Insert NumberCells
          */
-        tx.$executeRaw`
-          INSERT INTO "PointCell" (id, cellvalueid, value)
-          VALUES ${Prisma.join(pointCells)};
-        `,
+        dsNumberCells.length &&
+          tx.insert(numberCells).values(
+            dsNumberCells.map((cell) => ({
+              cellId: cell.id,
+              value: cell.value as unknown as number,
+            }))
+          ),
+
+        /**
+         * Insert PointCells
+         */
+        dsPointCells.length &&
+          tx.insert(pointCells).values(
+            dsPointCells.map((cell) => ({
+              cellId: cell.id,
+              value: {
+                x: cell.value.coordinates[0],
+                y: cell.value.coordinates[1],
+              },
+            }))
+          ),
       ]);
 
-      return dataset;
+      return {
+        dataset,
+        columns: datasetCols,
+      };
     });
 
     return datasetResponse;
   });
 
-function getCellsToCreate(data: GeoJson) {
+function getCellsToCreateByRow(data: GeoJson) {
   if (data.type === "FeatureCollection") {
     return data.features.map((row) => prepCell(row));
   } else if (data.type === "Feature") {
