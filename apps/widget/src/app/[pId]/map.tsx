@@ -73,7 +73,7 @@ export function Map({
   }, []);
 
   /**
-   * Fix the 's' query param if no valid step
+   * Fix the 'p' query param if no valid page
    */
   useEffect(() => {
     if (projectWithPages.pages[0] && (!p || !currentPage)) {
@@ -101,7 +101,7 @@ export function Map({
     projectWithPages.pages,
   ]);
 
-  const stepValues = (currentPage?.content?.content ?? []).reduce(
+  const pageValues = (currentPage?.content?.content ?? []).reduce(
     (acc: Record<string, string>, block) => {
       const cellValue = formValues.find(
         (v) => v.column.blockNoteId === block.id
@@ -124,7 +124,7 @@ export function Map({
   return (
     <MapForm
       currentPage={currentPage}
-      defaultFormValues={stepValues}
+      defaultFormValues={pageValues}
       mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
       onPrev={() => {
         const prevPageIndex =

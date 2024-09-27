@@ -37,11 +37,7 @@ interface MapFormProps {
   onLocationSave?: (location: ViewState) => Promise<{ success: boolean }>;
   pageData?: PageData;
   editFields?: {
-    AddLocationDropdown: (input: {
-      stepId: string;
-      formId: string;
-      data: any;
-    }) => JSX.Element;
+    AddLocationDropdown: (input: { data: any }) => JSX.Element;
   };
 }
 
@@ -193,8 +189,6 @@ export function MapForm({
                 contentViewType={currentPage.contentViewType}
                 currentPage={currentPage}
                 description={currentPage.content ?? undefined}
-                // Need key to force re-render, otherwise Blocknote state doesn't
-                // change when changing steps
                 editable={editable}
                 isPage
                 key={currentPage.id}
@@ -290,8 +284,6 @@ export function MapForm({
                           },
                           properties: {},
                         }}
-                        formId={currentPage.projectId}
-                        stepId={currentPage.id}
                       />
                     </div>
                   ) : null}

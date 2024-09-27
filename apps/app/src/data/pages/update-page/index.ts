@@ -113,7 +113,7 @@ export const updatePage = authAction
 
       const documentContent = (content?.content ?? []) as CustomBlock[];
 
-      const stepBlocks = flattenBlockNoteContent(documentContent)
+      const pageBlock = flattenBlockNoteContent(documentContent)
         .map((block) => {
           if (block.type === "pin" || block.type === "textInput") {
             return block;
@@ -125,7 +125,7 @@ export const updatePage = authAction
           return block !== undefined;
         });
 
-      const inputBlocksToCreate = stepBlocks
+      const inputBlocksToCreate = pageBlock
         .filter((block) => {
           return !datasetColumns.find((col) => col.blockNoteId === block.id);
         })
@@ -140,7 +140,7 @@ export const updatePage = authAction
       // Delete blocks which are not present in the new content, and which have no cells (submissions)
       const inputBlocksToDelete = datasetColumns.filter((col) => {
         return (
-          !stepBlocks.find((block) => block.id === col.blockNoteId) &&
+          !pageBlock.find((block) => block.id === col.blockNoteId) &&
           col.cellCount === 0
         );
       });

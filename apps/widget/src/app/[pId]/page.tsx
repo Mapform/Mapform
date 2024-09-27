@@ -46,7 +46,6 @@ export default async function Page({
     fetchProjectWithPages(params.pId),
     fetchPageData(searchParams?.p),
   ]);
-  console.log(11111, pageData);
 
   const cookieStore = cookies();
   const submissionCookie = cookieStore.get("mapform-submission");
@@ -78,10 +77,6 @@ export default async function Page({
 
       formValues.push(...(responses?.cells ?? []));
     }
-  }
-
-  if (s) {
-    // stepData = await getStepData({ stepId: s });
   }
 
   return (

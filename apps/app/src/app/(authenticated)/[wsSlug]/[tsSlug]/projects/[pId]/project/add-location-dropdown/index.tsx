@@ -21,19 +21,13 @@ import {
 } from "./quick-create-dialog";
 
 interface AddLocationDropdownProps {
-  stepId: string;
-  formId: string;
   data: GeoJson;
 }
 
-export function AddLocationDropdown({
-  stepId,
-  formId,
-  data,
-}: AddLocationDropdownProps) {
+export function AddLocationDropdown({ data }: AddLocationDropdownProps) {
   return (
     <QuickCreateDialog>
-      <QuickCreateContent data={data} formId={formId} stepId={stepId} />
+      <QuickCreateContent data={data} />
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button type="button">
