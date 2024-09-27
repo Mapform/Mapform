@@ -1,12 +1,36 @@
-import React from "react";
+// eslint-disable-next-line import/named -- It will work when React 19 is released
+import React, { cache } from "react";
 import { cookies } from "next/headers";
 import { MapProvider } from "@mapform/mapform";
 import { type Row } from "@mapform/db/schema";
 import { getSession } from "~/data/get-session";
-// import { getStepData } from "~/data/get-step-data";
+import { getPageData } from "~/data/get-page-data";
 import { getProjectWithPages } from "~/data/get-project-with-pages";
 import { type Responses, getResponses } from "~/data/get-responses.ts";
 import { Map } from "./map";
+
+const fetchProjectWithPages = cache(async (id: string) => {
+  const projectWithPagesResponse = await getProjectWithPages({
+    id,
+  });
+
+  const projectWithPages = projectWithPagesResponse?.data;
+
+  return projectWithPages;
+});
+
+const fetchPageData = cache(async (id?: string) => {
+  if (!id) {
+    return undefined;
+  }
+
+  const pageDataResponse = await getPageData({
+    pageId: id,
+  });
+  const pageData = pageDataResponse?.data;
+
+  return pageData;
+});
 
 // The root Project Id
 export default async function Page({
@@ -15,21 +39,22 @@ export default async function Page({
 }: {
   params: { pId: string };
   searchParams?: {
-    s?: string;
+    p?: string;
   };
 }) {
-  const projectWithPagesResponse = await getProjectWithPages({
-    id: params.pId,
-  });
-  const projectWithPages = projectWithPagesResponse?.data;
+  const [projectWithPages, pageData] = await Promise.all([
+    fetchProjectWithPages(params.pId),
+    fetchPageData(searchParams?.p),
+  ]);
+  console.log(11111, pageData);
+
   const cookieStore = cookies();
   const submissionCookie = cookieStore.get("mapform-submission");
   const projectCookie = cookieStore.get("mapform-project-id");
   const formValues: NonNullable<Responses>["cells"] = [];
-  const s = searchParams?.s;
+  const s = searchParams?.p;
 
   let session: Row | undefined;
-  // let stepData = null;
 
   if (!projectWithPages) {
     return <div>Project not found</div>;
@@ -63,8 +88,8 @@ export default async function Page({
     <MapProvider>
       <Map
         formValues={formValues}
+        pageData={pageData ?? []}
         projectWithPages={projectWithPages}
-        // points={stepData?.data ?? []}
         // We clear the session id if the form id doesn't match the current form
         sessionId={!projectVersionMismatch && session ? session.id : null}
       />

@@ -3,9 +3,9 @@
 import { MapForm, useMap } from "@mapform/mapform";
 import { useAction } from "next-safe-action/hooks";
 import React, { useEffect, useState } from "react";
+import type { PageData } from "@mapform/map-utils/types";
 import { useCreateQueryString } from "@mapform/lib/hooks/use-create-query-string";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
-import type { Points } from "~/data/get-step-data";
 import { submitPage } from "~/data/submit-page";
 import { createSubmission } from "~/data/create-submission";
 import type { Responses } from "~/data/get-responses.ts";
@@ -13,7 +13,7 @@ import type { ProjectWithPages } from "~/data/get-project-with-pages";
 import { env } from "../env.mjs";
 
 interface MapProps {
-  points: Points;
+  pageData: PageData;
   projectWithPages: ProjectWithPages;
   formValues: NonNullable<Responses>["cells"];
   sessionId: string | null;
@@ -25,7 +25,7 @@ export function Map({
   projectWithPages,
   formValues,
   sessionId,
-  points,
+  pageData,
 }: MapProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -154,7 +154,7 @@ export function Map({
           setCurrentPageAndFly(nextStep);
         }
       }}
-      pageData={points}
+      pageData={pageData}
     />
   );
 }

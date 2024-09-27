@@ -1,5 +1,6 @@
 "use server";
 
+import { isEqual, uniqWith } from "@mapform/lib/lodash";
 import { v4 as uuidv4 } from "uuid";
 import { db } from "@mapform/db";
 import { revalidatePath } from "next/cache";
@@ -22,59 +23,78 @@ import { publishProjectSchema } from "./schema";
 export const publishProject = authAction
   .schema(publishProjectSchema)
   .action(async ({ parsedInput: { projectId } }) => {
-    const [rootProjectResponse, projectPages] = await Promise.all([
-      await db.query.projects.findFirst({
+    const [rootProjectResponse, results] = await Promise.all([
+      db.query.projects.findFirst({
         where: and(eq(projects.id, projectId), isNull(projects.rootProjectId)),
       }),
 
-      await db.query.pages.findMany({
-        where: eq(pages.projectId, projectId),
-        with: {
-          layersToPages: {
-            with: {
-              layer: {
-                with: {
-                  pointLayer: true,
-                },
-              },
-            },
-          },
-        },
-      }),
+      db
+        .select()
+        .from(pages)
+        .leftJoin(layersToPages, eq(pages.id, layersToPages.pageId))
+        .leftJoin(layers, eq(layers.id, layersToPages.layerId))
+        .leftJoin(pointLayers, eq(layers.id, pointLayers.layerId))
+        .where(eq(pages.projectId, projectId)),
     ]);
 
     if (!rootProjectResponse) {
       throw new Error("Project not found");
     }
 
-    const rootProject = {
-      ...rootProjectResponse,
-      pages: projectPages,
-    };
+    const aggregatePages = uniqWith(
+      results.map((result) => result.page),
+      isEqual
+    );
+    const aggregateLayersToPages = uniqWith(
+      results.map((result) => result.layers_to_pages).filter(notEmpty),
+      isEqual
+    );
+    const aggregateLayers = uniqWith(
+      results.map((result) => result.layer).filter(notEmpty),
+      isEqual
+    );
+    const aggregatePointLayers = uniqWith(
+      results.map((result) => result.point_layer).filter(notEmpty),
+      isEqual
+    );
 
     /**
      * Generate UUIDs for all the records we're going to create. This will allow
      * us to create the relationships between the new records.
      */
     const rootProjectWithIds = {
-      ...rootProject,
-      pages: rootProject.pages.map((page) => ({
-        ...page,
-        newId: uuidv4(),
-        layersToPages: page.layersToPages.map((layerToPage) => ({
-          ...layerToPage,
-          layer: {
-            ...layerToPage.layer,
-            newId: uuidv4(),
-            pointLayer: layerToPage.layer.pointLayer
-              ? {
-                  ...layerToPage.layer.pointLayer,
-                  newId: uuidv4(),
-                }
-              : undefined,
-          },
-        })),
-      })),
+      ...rootProjectResponse,
+      pages: aggregatePages
+        .map((page) => ({
+          ...page,
+          newId: uuidv4(),
+          layersToPages: aggregateLayersToPages
+            .filter((ltp) => ltp.pageId === page.id)
+            .map((ltp2) => {
+              const layer = aggregateLayers.find((l) => l.id === ltp2.layerId);
+              const pointLayer = aggregatePointLayers.find(
+                (pl) => pl.layerId === ltp2.layerId
+              );
+
+              return {
+                ...ltp2,
+                layer: layer
+                  ? {
+                      ...layer,
+                      newId: uuidv4(),
+                      pointLayer: pointLayer
+                        ? {
+                            ...pointLayer,
+                            newId: uuidv4(),
+                          }
+                        : undefined,
+                    }
+                  : undefined,
+              };
+            })
+            .filter(notEmpty),
+        }))
+        .filter(notEmpty),
     };
 
     /**
@@ -89,14 +109,14 @@ export const publishProject = authAction
         createdAt: _2,
         updatedAt: _3,
         ...copyFields
-      } = rootProject;
+      } = rootProjectWithIds;
       const [newPublishedProject] = await db
         .insert(projects)
         .values({
           ...copyFields,
           isDirty: false,
-          rootProjectId: rootProject.id,
-          datasetId: rootProject.datasetId,
+          rootProjectId: rootProjectWithIds.id,
+          datasetId: rootProjectWithIds.datasetId,
         })
         .returning();
 
@@ -138,7 +158,9 @@ export const publishProject = authAction
         .map((page) =>
           page.layersToPages.map((layerToPage) => layerToPage.layer)
         )
-        .flat();
+        .flat()
+        .filter(notEmpty);
+
       await Promise.all([
         /**
          * Create the layers
@@ -202,9 +224,13 @@ export const publishProject = authAction
           .set({
             isDirty: false,
           })
-          .where(eq(projects.id, rootProject.id)),
+          .where(eq(projects.id, rootProjectWithIds.id)),
       ]);
     });
 
     revalidatePath("/[wsSlug]/[tsSlug]/projects/[pId]/project", "page");
   });
+
+function notEmpty<TValue>(value: TValue | null | undefined): value is TValue {
+  return value !== null && value !== undefined;
+}
