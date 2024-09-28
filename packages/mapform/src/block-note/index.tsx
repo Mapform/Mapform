@@ -13,7 +13,6 @@ import "@blocknote/mantine/style.css";
 import { BlockNoteView } from "@blocknote/mantine";
 import { TextIcon, ImageIcon, MapPinIcon, XIcon } from "lucide-react";
 import { Button } from "@mapform/ui/components/button";
-import { cn } from "@mapform/lib/classnames";
 import type { Page } from "@mapform/db/schema";
 import { schema, type CustomBlock } from "@mapform/blocknote";
 import { AutoSizeTextArea } from "../components/autosize-text-area";
@@ -27,8 +26,6 @@ interface BlocknoteProps {
     content: CustomBlock[];
   };
   isPage?: boolean;
-  children?: React.ReactNode;
-  contentViewType: Page["contentViewType"];
   locationEditorProps?: {
     onClose: () => void;
   };
@@ -40,11 +37,9 @@ interface BlocknoteProps {
 export function Blocknote({
   title,
   editable,
-  children,
   description,
   onTitleChange,
   isPage = false,
-  contentViewType,
   onDescriptionChange,
   locationEditorProps,
 }: BlocknoteProps) {
@@ -98,90 +93,83 @@ export function Blocknote({
 
   // Renders the editor instance using a React component.
   return (
-    <div
-      className={cn("h-full flex flex-col prose mx-auto relative", {
-        "max-h-[300px]": contentViewType === "map",
-      })}
-    >
-      <div className="flex-1 flex flex-col overflow-y-auto">
-        {locationEditorProps ? (
-          <Button
-            className="absolute top-2 right-2"
-            onClick={locationEditorProps.onClose}
-            size="icon-sm"
-            type="button"
-            variant="ghost"
-          >
-            <XIcon className="size-4" />
-          </Button>
-        ) : null}
+    <div className="flex-1 flex flex-col overflow-y-auto">
+      {locationEditorProps ? (
+        <Button
+          className="absolute top-2 right-2"
+          onClick={locationEditorProps.onClose}
+          size="icon-sm"
+          type="button"
+          variant="ghost"
+        >
+          <XIcon className="size-4" />
+        </Button>
+      ) : null}
 
-        {/* Content */}
-        <div className="overflow-y-auto p-4">
-          {/* Title */}
-          {editable ? (
-            <AutoSizeTextArea
-              onChange={(val) => {
-                setUncontrolledTitle(val);
-                onTitleChange && onTitleChange(val);
-              }}
-              onEnter={() => {
-                if (description?.content[0]) {
-                  editor.setTextCursorPosition(description.content[0], "start");
-                }
-                editor.focus();
-              }}
-              value={uncontrolledTitle}
-            />
-          ) : (
-            <h1 className="border-0 text-2xl font-bold w-full mb-2 p-0">
-              {title ?? "Untitled"}
-            </h1>
-          )}
-
-          {/* Description */}
-          <BlockNoteView
-            className="flex-1"
-            editable={editable}
-            editor={editor}
-            onChange={() => {
-              onDescriptionChange &&
-                onDescriptionChange({
-                  content: editor.document,
-                });
+      {/* Content */}
+      <div className="overflow-y-auto p-4">
+        {/* Title */}
+        {editable ? (
+          <AutoSizeTextArea
+            onChange={(val) => {
+              setUncontrolledTitle(val);
+              onTitleChange && onTitleChange(val);
             }}
-            sideMenu={false}
-            slashMenu={false}
-          >
-            <SuggestionMenuController
-              // eslint-disable-next-line @typescript-eslint/require-await -- Needs to return a Promise
-              getItems={async (query) => {
-                return filterSuggestionItems(
-                  [
-                    ...getDefaultReactSlashMenuItems(editor),
-                    // Only provide inputs for pages
-                    ...(isPage
-                      ? [insertTextInput(editor), insertPin(editor)]
-                      : []),
-                    insertImage(editor),
-                  ],
-                  query
-                );
-              }}
-              triggerCharacter="/"
-            />
-            <SideMenuController sideMenu={CustomSideMenu} />
-          </BlockNoteView>
-        </div>
-        {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions -- Disable a11y checks here */}
-        <div
+            onEnter={() => {
+              if (description?.content[0]) {
+                editor.setTextCursorPosition(description.content[0], "start");
+              }
+              editor.focus();
+            }}
+            value={uncontrolledTitle}
+          />
+        ) : (
+          <h1 className="border-0 text-2xl font-bold w-full mb-2 p-0">
+            {title ?? "Untitled"}
+          </h1>
+        )}
+
+        {/* Description */}
+        <BlockNoteView
           className="flex-1"
-          onClick={() => {
-            editor.focus();
+          editable={editable}
+          editor={editor}
+          onChange={() => {
+            onDescriptionChange &&
+              onDescriptionChange({
+                content: editor.document,
+              });
           }}
-        />
+          sideMenu={false}
+          slashMenu={false}
+        >
+          <SuggestionMenuController
+            // eslint-disable-next-line @typescript-eslint/require-await -- Needs to return a Promise
+            getItems={async (query) => {
+              return filterSuggestionItems(
+                [
+                  ...getDefaultReactSlashMenuItems(editor),
+                  // Only provide inputs for pages
+                  ...(isPage
+                    ? [insertTextInput(editor), insertPin(editor)]
+                    : []),
+                  insertImage(editor),
+                ],
+                query
+              );
+            }}
+            triggerCharacter="/"
+          />
+          <SideMenuController sideMenu={CustomSideMenu} />
+        </BlockNoteView>
       </div>
-      {children}
+      {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions -- Disable a11y checks here */}
+      <div
+        className="flex-1"
+        onClick={() => {
+          editor.focus();
+        }}
+      />
     </div>
   );
 }

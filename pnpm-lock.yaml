@@ -523,8 +523,8 @@ importers:
         specifier: ^0.5.0
         version: 0.5.0
       lucide-react:
-        specifier: ^0.354.0
-        version: 0.354.0(react@19.0.0-rc-e4953922-20240919)
+        specifier: ^0.446.0
+        version: 0.446.0(react@19.0.0-rc-e4953922-20240919)
       mapbox-gl:
         specifier: ^3.2.0
         version: 3.2.0
@@ -7286,6 +7286,14 @@ packages:
     resolution: {integrity: sha512-qI0x/hhcuHieaUUxFejesm5T/ditszQ2x1gUkqKnTMZRAOdxT2nGzbOFYrhc0wRjuA2MN1o5JCrcRPYcHH3l8A==}
     peerDependencies:
       react: ^16.5.1 || ^17.0.0 || ^18.0.0
+    dependencies:
+      react: 19.0.0-rc-e4953922-20240919
+    dev: false
+
+  /lucide-react@0.446.0(react@19.0.0-rc-e4953922-20240919):
+    resolution: {integrity: sha512-BU7gy8MfBMqvEdDPH79VhOXSEgyG8TSPOKWaExWGCQVqnGH7wGgDngPbofu+KdtVjPQBWbEmnfMTq90CTiiDRg==}
+    peerDependencies:
+      react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0-rc
     dependencies:
       react: 19.0.0-rc-e4953922-20240919
     dev: false
