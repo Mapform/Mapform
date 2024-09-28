@@ -185,12 +185,6 @@ export function MapForm({
               ? "left-1/2 md:left-[calc(50%+180px)]"
               : "left-1/2"
           )}
-          // style={{
-          //   left:
-          //     currentPage.contentViewType === "split"
-          //       ? "calc(50% + 180px)"
-          //       : "50%",
-          // }}
         >
           <EditBar
             hasMoved={hasMoved}
@@ -219,12 +213,12 @@ export function MapForm({
         >
           <div
             className={cn(
-              "group absolute bg-background z-10 w-full",
+              "group absolute bg-background z-10 w-full overflow-hidden",
               currentPage.contentViewType === "text"
-                ? "h-full md:p-2 pb-0 z-10"
+                ? "h-full z-10"
                 : currentPage.contentViewType === "split"
-                  ? "h-full md:w-[360px] md:p-2 pb-0 m-0"
-                  : "h-initial md:w-[360px] rounded-lg shadow-lg p-0 m-2"
+                  ? "h-full md:w-[360px]"
+                  : "h-initial md:w-[360px] rounded-lg shadow-lg md:m-2"
             )}
             ref={drawerRef}
           >
@@ -244,9 +238,11 @@ export function MapForm({
                   {renderMap()}
                 </div>
               ) : null}
+
               <div
-                className={cn({
+                className={cn("overflow-y-auto", {
                   "hidden md:block": showMapMobile,
+                  "md:p-2 md:pb-0": currentPage.contentViewType === "split",
                 })}
               >
                 <Blocknote
