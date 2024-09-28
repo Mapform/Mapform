@@ -45,7 +45,6 @@ function Project() {
     bearing?: number;
     center?: { x: number; y: number };
   }) => {
-    // @ts-expect-error -- Content type is not compatible with the schema
     return executeAsync({
       id: optimisticPage.id,
       ...(content && { content }),

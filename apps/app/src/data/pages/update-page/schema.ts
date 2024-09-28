@@ -4,7 +4,8 @@ import { insertPageSchema } from "@mapform/db/schema";
 export const updatePageSchema = z.object({
   id: z.string(),
   title: insertPageSchema.shape.title.optional(),
-  content: insertPageSchema.shape.content.optional(),
+  // Content is recursive, and causes a TS complexity error
+  content: insertPageSchema.shape.content.optional() as any,
   center: insertPageSchema.shape.center.optional(),
   zoom: insertPageSchema.shape.zoom.optional(),
   pitch: insertPageSchema.shape.pitch.optional(),

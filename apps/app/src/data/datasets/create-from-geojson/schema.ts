@@ -5,7 +5,8 @@ import { insertDatasetSchema } from "@mapform/db/schema";
 export const createDatasetFromGeojsonSchema = z.object({
   name: insertDatasetSchema.shape.name,
   teamspaceId: insertDatasetSchema.shape.teamspaceId,
-  data: zu.geojson(),
+  // This leads to TS complexity errors
+  data: zu.geojson() as any,
 });
 
 export type CreateDatasetFromGeojsonSchema = z.infer<
