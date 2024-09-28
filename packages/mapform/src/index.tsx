@@ -16,7 +16,12 @@ import {
 import { useMeasure } from "@mapform/lib/hooks/use-measure";
 import type { PageData, ViewState } from "@mapform/map-utils/types";
 import { Button } from "@mapform/ui/components/button";
-import { ChevronLeftIcon } from "lucide-react";
+import {
+  ArrowLeftIcon,
+  ArrowRightIcon,
+  MapIcon,
+  LetterTextIcon,
+} from "lucide-react";
 import { Blocknote } from "./block-note";
 import { Map, MapProvider, useMap, type MBMap } from "./map";
 import { EditBar } from "./edit-bar";
@@ -56,6 +61,7 @@ export function MapForm({
   onDescriptionChange,
 }: MapFormProps) {
   const { map } = useMap();
+  const [showMapMobile, setShowMapMobile] = useState(false);
   const blocknoteStepSchema = getFormSchemaFromBlockNote(
     currentPage.content?.content || []
   );
@@ -153,6 +159,47 @@ export function MapForm({
 
   const AddLocationDropdown = editFields?.AddLocationDropdown;
 
+  const renderMap = () => (
+    <>
+      <Map
+        editable={editable}
+        initialViewState={initialViewState}
+        marker={
+          searchLocation
+            ? {
+                latitude: searchLocation.latitude,
+                longitude: searchLocation.longitude,
+              }
+            : undefined
+        }
+        onLoad={onLoad}
+        pageData={pageData}
+      />
+
+      {/* Edit bar */}
+      {editable ? (
+        <div
+          className={cn(
+            "flex items-center bg-primary rounded-lg px-2 py-0 absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10",
+            currentPage.contentViewType === "split"
+              ? "left-1/2 md:left-[calc(50%+180px)]"
+              : "left-1/2"
+          )}
+        >
+          <EditBar
+            hasMoved={hasMoved}
+            initialViewState={initialViewState}
+            onLocationSave={onLocationSave}
+            setSearchLocation={setSearchLocation}
+          />
+        </div>
+      ) : null}
+    </>
+  );
+
+  // We add 36px to the width when editing to account for side padding for buttons
+  const contentWidth = editable ? "md:w-[396px]" : "md:w-[360px]";
+
   return (
     <Form {...form}>
       <form
@@ -169,51 +216,97 @@ export function MapForm({
         >
           <div
             className={cn(
-              "group absolute bg-background z-10 w-[360px]",
+              "group absolute bg-background z-10 w-full overflow-hidden",
               currentPage.contentViewType === "text"
-                ? "h-full w-full p-2 pb-0 z-10"
+                ? "h-full z-10"
                 : currentPage.contentViewType === "split"
-                  ? "h-full p-2 pb-0 m-0"
-                  : "h-initial rounded-lg shadow-lg p-0 m-2"
+                  ? `h-full ${contentWidth}`
+                  : `h-initial ${contentWidth} rounded-lg shadow-lg md:m-2`
             )}
             ref={drawerRef}
           >
             <div
-              className={cn("h-full", {
-                // "pl-9": editable,
-                "px-9": editable && currentPage.contentViewType === "text",
-                "pl-9": editable && currentPage.contentViewType !== "text",
-              })}
+              className={cn(
+                "h-full w-full flex flex-col prose max-md:max-w-full mx-auto relative",
+                {
+                  "px-9": editable && currentPage.contentViewType === "text",
+                  "pl-9": editable && currentPage.contentViewType !== "text",
+                  "max-h-[300px]": currentPage.contentViewType === "map",
+                }
+              )}
             >
-              <Blocknote
-                contentViewType={currentPage.contentViewType}
-                currentPage={currentPage}
-                description={currentPage.content ?? undefined}
-                editable={editable}
-                isPage
-                key={currentPage.id}
-                onDescriptionChange={onDescriptionChange}
-                onPrev={onPrev}
-                onTitleChange={onTitleChange}
-                title={currentPage.title}
+              {/* MOBILE MAP */}
+              {showMapMobile ? (
+                <div className="relative flex flex-1 md:hidden">
+                  {renderMap()}
+                </div>
+              ) : null}
+
+              <div
+                className={cn("overflow-y-auto", {
+                  "hidden md:block": showMapMobile,
+                  "md:p-2 md:pb-0": currentPage.contentViewType === "split",
+                })}
               >
-                <div className="mt-auto flex justify-between p-4 pt-0">
-                  <div className="gap-2">
-                    <Button
-                      disabled={editable}
-                      onClick={onPrev}
-                      size="icon"
-                      type="button"
-                      variant="ghost"
-                    >
-                      <ChevronLeftIcon />
-                    </Button>
-                  </div>
-                  <Button disabled={editable} type="submit">
-                    Next
+                <Blocknote
+                  currentPage={currentPage}
+                  description={currentPage.content ?? undefined}
+                  editable={editable}
+                  isPage
+                  key={currentPage.id}
+                  onDescriptionChange={onDescriptionChange}
+                  onPrev={onPrev}
+                  onTitleChange={onTitleChange}
+                  title={currentPage.title}
+                />
+              </div>
+              <div className="mt-auto flex justify-between px-4 py-2">
+                <div className="gap-2">
+                  <Button
+                    disabled={editable}
+                    onClick={onPrev}
+                    size="icon"
+                    type="button"
+                    variant="ghost"
+                  >
+                    <ArrowLeftIcon />
                   </Button>
                 </div>
-              </Blocknote>
+                <div
+                  className={
+                    currentPage.contentViewType === "text"
+                      ? "block"
+                      : "md:hidden"
+                  }
+                >
+                  <Button
+                    onClick={() => {
+                      setShowMapMobile((prev) => !prev);
+                    }}
+                    variant="secondary"
+                  >
+                    {showMapMobile ? (
+                      <>
+                        <LetterTextIcon className="size-5 mr-2" />
+                        Show Text
+                      </>
+                    ) : (
+                      <>
+                        <MapIcon className="size-5 mr-2" />
+                        Show Map
+                      </>
+                    )}
+                  </Button>
+                </div>
+                <Button
+                  disabled={editable}
+                  size="icon"
+                  type="submit"
+                  variant="ghost"
+                >
+                  <ArrowRightIcon />
+                </Button>
+              </div>
             </div>
           </div>
 
@@ -221,24 +314,26 @@ export function MapForm({
           {searchLocation ? (
             <div
               className={cn(
-                "group absolute bg-background z-10 w-[360px]",
+                "group absolute bg-background z-10 w-full overflow-hidden",
                 currentPage.contentViewType === "text"
-                  ? "h-full w-full p-2 pb-0 z-10"
+                  ? "h-full z-10"
                   : currentPage.contentViewType === "split"
-                    ? "h-full p-2 pb-0 m-0"
-                    : "h-initial rounded-lg shadow-lg p-0 m-2"
+                    ? `h-full ${contentWidth}`
+                    : `h-initial ${contentWidth} rounded-lg shadow-lg md:m-2`
               )}
               ref={drawerRef}
             >
               <div
-                className={cn("h-full", {
-                  // "pl-9": editable,
-                  "px-9": editable && currentPage.contentViewType === "text",
-                  "pl-9": editable && currentPage.contentViewType !== "text",
-                })}
+                className={cn(
+                  "h-full w-full flex flex-col prose max-md:max-w-full mx-auto relative",
+                  {
+                    "px-9": editable && currentPage.contentViewType === "text",
+                    "pl-9": editable && currentPage.contentViewType !== "text",
+                    "max-h-[300px]": currentPage.contentViewType === "map",
+                  }
+                )}
               >
                 <Blocknote
-                  contentViewType={currentPage.contentViewType}
                   currentPage={currentPage}
                   description={searchLocation.description ?? undefined}
                   // Need key to force re-render, otherwise Blocknote state doesn't
@@ -269,115 +364,31 @@ export function MapForm({
                     }));
                   }}
                   title={searchLocation.name}
-                >
-                  {editable && AddLocationDropdown && currentPage.projectId ? (
-                    <div className="p-4 ml-auto">
-                      <AddLocationDropdown
-                        data={{
-                          type: "Feature",
-                          geometry: {
-                            type: "Point",
-                            coordinates: [
-                              searchLocation.longitude,
-                              searchLocation.latitude,
-                            ],
-                          },
-                          properties: {},
-                        }}
-                      />
-                    </div>
-                  ) : null}
-                </Blocknote>
+                />
+                {editable && AddLocationDropdown && currentPage.projectId ? (
+                  <div className="p-4 ml-auto">
+                    <AddLocationDropdown
+                      data={{
+                        type: "Feature",
+                        geometry: {
+                          type: "Point",
+                          coordinates: [
+                            searchLocation.longitude,
+                            searchLocation.latitude,
+                          ],
+                        },
+                        properties: {},
+                      }}
+                    />
+                  </div>
+                ) : null}
               </div>
             </div>
           ) : null}
-          {/* <Map
-              onMove={(event) => {
-                setViewState((prev) => ({
-                  ...prev,
-                  ...event.viewState,
-                }));
-              }}
-              onMoveEnd={onMoveEnd}
-            >
-              {isSelectingPinLocationFor ? (
-                <Marker
-                  color="red"
-                  latitude={viewState.latitude}
-                  longitude={viewState.longitude}
-                />
-              ) : (
-                pinBlocks?.map((block) => {
-                  // @ts-expect-error -- This does in fact exist. Because the form is dynamic, TS can't infer the type.
-                  const latitude = form.watch(
-                    // @ts-expect-error -- This does in fact exist. Because the form is dynamic, TS can't infer the type.
-                    `${block.id}.latitude`
-                  ) as number;
-                  // @ts-expect-error -- This does in fact exist. Because the form is dynamic, TS can't infer the type.
-                  const longitude = form.watch(
-                    // @ts-expect-error -- This does in fact exist. Because the form is dynamic, TS can't infer the type.
-                    `${block.id}.longitude`
-                  ) as number;
 
-                  if (!latitude || !longitude) {
-                    return null;
-                  }
-
-                  return (
-                    <Marker
-                      color="red"
-                      key={block.id}
-                      latitude={latitude}
-                      longitude={longitude}
-                      onDragEnd={(e) => {
-                        // @ts-expect-error -- This does in fact exist. Because the form is dynamic, TS can't infer the type.
-                        form.setValue(`${block.id}.latitude`, e.lngLat.lat);
-                        // @ts-expect-error -- This does in fact exist. Because the form is dynamic, TS can't infer the type.
-                        form.setValue(`${block.id}.longitude`, e.lngLat.lng);
-                      }}
-                    />
-                  );
-                })
-              )}
-
-              <Data points={points} />
-            </Map> */}
           {currentPage.contentViewType !== "text" ? (
-            <div className="relative flex flex-1 overflow-hidden">
-              <Map
-                editable={editable}
-                initialViewState={initialViewState}
-                marker={
-                  searchLocation
-                    ? {
-                        latitude: searchLocation.latitude,
-                        longitude: searchLocation.longitude,
-                      }
-                    : undefined
-                }
-                onLoad={onLoad}
-                pageData={pageData}
-              />
-
-              {/* Edit bar */}
-              {editable ? (
-                <div
-                  className="flex items-center bg-primary rounded-lg px-2 py-0 absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10"
-                  style={{
-                    left:
-                      currentPage.contentViewType === "split"
-                        ? "calc(50% + 180px)"
-                        : "50%",
-                  }}
-                >
-                  <EditBar
-                    hasMoved={hasMoved}
-                    initialViewState={initialViewState}
-                    onLocationSave={onLocationSave}
-                    setSearchLocation={setSearchLocation}
-                  />
-                </div>
-              ) : null}
+            <div className="relative flex-1 overflow-hidden hidden md:flex">
+              {renderMap()}
             </div>
           ) : null}
         </CustomBlockContext.Provider>
