@@ -189,6 +189,10 @@ export const publishProject = authAction
         ...rootProjectWithIds.pages
           .map((page) =>
             page.layersToPages.map((layerToPage) => {
+              if (!layerToPage.layer) {
+                return;
+              }
+
               return tx.insert(layersToPages).values({
                 pageId: page.newId,
                 layerId: layerToPage.layer.newId,
