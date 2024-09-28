@@ -197,6 +197,9 @@ export function MapForm({
     </>
   );
 
+  // We add 36px to the width when editing to account for side padding for buttons
+  const contentWidth = editable ? "md:w-[396px]" : "md:w-[360px]";
+
   return (
     <Form {...form}>
       <form
@@ -217,8 +220,8 @@ export function MapForm({
               currentPage.contentViewType === "text"
                 ? "h-full z-10"
                 : currentPage.contentViewType === "split"
-                  ? "h-full md:w-[360px]"
-                  : "h-initial md:w-[360px] rounded-lg shadow-lg md:m-2"
+                  ? `h-full ${contentWidth}`
+                  : `h-initial ${contentWidth} rounded-lg shadow-lg md:m-2`
             )}
             ref={drawerRef}
           >
@@ -311,12 +314,12 @@ export function MapForm({
           {searchLocation ? (
             <div
               className={cn(
-                "group absolute bg-background z-10 w-full",
+                "group absolute bg-background z-10 w-full overflow-hidden",
                 currentPage.contentViewType === "text"
-                  ? "h-full md:p-2 pb-0 z-10"
+                  ? "h-full z-10"
                   : currentPage.contentViewType === "split"
-                    ? "h-full md:w-[360px] md:p-2 pb-0 m-0"
-                    : "h-initial md:w-[360px] rounded-lg shadow-lg p-0 m-2"
+                    ? `h-full ${contentWidth}`
+                    : `h-initial ${contentWidth} rounded-lg shadow-lg md:m-2`
               )}
               ref={drawerRef}
             >
