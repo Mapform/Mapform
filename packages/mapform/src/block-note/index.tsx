@@ -50,7 +50,7 @@ export function Blocknote({
   const editor = useCreateBlockNote({
     initialContent: description?.content,
     placeholders: {
-      default: "Write, or press '/' for commands...",
+      default: editable ? "Write, or press '/' for commands..." : "",
     },
     schema,
   });
