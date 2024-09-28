@@ -12,6 +12,8 @@ import { getProjectWithPagesSchema } from "./schema";
 export const getProjectWithPages = action
   .schema(getProjectWithPagesSchema)
   .action(async ({ parsedInput: { id } }) => {
+    // TODO: This line is causing the server error 'Action error: invalid input syntax for type uuid: "favicon.ico"'
+    // No idea why really...but it is innocuous so leaving for now
     const [_projects] = await db
       .select()
       .from(projects)
