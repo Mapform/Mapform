@@ -203,7 +203,7 @@ export function MapForm({
           >
             <div
               className={cn(
-                "h-full w-full flex flex-col prose mx-auto relative",
+                "h-full w-full flex flex-col prose max-md:max-w-full mx-auto relative",
                 {
                   "px-9": editable && currentPage.contentViewType === "text",
                   "pl-9": editable && currentPage.contentViewType !== "text",
@@ -244,7 +244,13 @@ export function MapForm({
                     <ArrowLeftIcon />
                   </Button>
                 </div>
-                <div className="block md:hidden">
+                <div
+                  className={
+                    currentPage.contentViewType === "text"
+                      ? "block"
+                      : "md:hidden"
+                  }
+                >
                   <Button
                     onClick={() => {
                       setShowMapMobile((prev) => !prev);
@@ -290,12 +296,14 @@ export function MapForm({
               ref={drawerRef}
             >
               <div
-                className={cn("h-full flex flex-col prose mx-auto relative", {
-                  // "pl-9": editable,
-                  "px-9": editable && currentPage.contentViewType === "text",
-                  "pl-9": editable && currentPage.contentViewType !== "text",
-                  "max-h-[300px]": currentPage.contentViewType === "map",
-                })}
+                className={cn(
+                  "h-full w-full flex flex-col prose max-md:max-w-full mx-auto relative",
+                  {
+                    "px-9": editable && currentPage.contentViewType === "text",
+                    "pl-9": editable && currentPage.contentViewType !== "text",
+                    "max-h-[300px]": currentPage.contentViewType === "map",
+                  }
+                )}
               >
                 <Blocknote
                   currentPage={currentPage}
