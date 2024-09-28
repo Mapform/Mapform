@@ -13,7 +13,7 @@ import type { ProjectWithPages } from "~/data/get-project-with-pages";
 import { env } from "../env.mjs";
 
 interface MapProps {
-  pageData: PageData;
+  pageData: PageData | undefined;
   projectWithPages: ProjectWithPages;
   formValues: NonNullable<Responses>["cells"];
   sessionId: string | null;
@@ -109,6 +109,7 @@ export function Map({
       const value = cellValue?.stringCell?.value ?? cellValue?.pointCell?.value;
 
       if (value) {
+        // @ts-expect-error -- It's ok
         acc[block.id] = value;
       }
 
