@@ -1,4 +1,3 @@
-import { ColumnType } from "@mapform/db";
 import { describe, it, expect } from "vitest";
 import { parseType } from "./parse-type";
 
@@ -7,23 +6,23 @@ describe("parseType", () => {
     const date = new Date();
 
     expect(parseType("Hello")).toEqual({
-      type: ColumnType.STRING,
+      type: "string",
       value: "Hello",
     });
     expect(parseType(123)).toEqual({
-      type: ColumnType.INT,
+      type: "number",
       value: 123,
     });
     expect(parseType(123.123)).toEqual({
-      type: ColumnType.FLOAT,
+      type: "number",
       value: 123.123,
     });
     expect(parseType(date)).toEqual({
-      type: ColumnType.DATE,
+      type: "date",
       value: date,
     });
     expect(parseType(true)).toEqual({
-      type: ColumnType.BOOL,
+      type: "bool",
       value: true,
     });
   });

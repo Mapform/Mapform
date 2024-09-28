@@ -38,10 +38,11 @@ interface QuickCreateContentProps {
 
 export function QuickCreateContent({ data }: QuickCreateContentProps) {
   const { optimisticPage } = usePage();
+  // @ts-ignore -- The type is too complex
   const form = useForm<QuickCreateDataLayerSchema>({
     defaultValues: {
       name: "",
-      pageId: optimisticPage.id,
+      pageId: optimisticPage?.id,
       data,
     },
     resolver: zodResolver(quickCreateDataLayerSchema),

@@ -12,6 +12,8 @@ import {
   numberCells,
   pointCells,
   dateCells,
+  type Cell,
+  Column,
 } from "@mapform/db/schema";
 import type { GeoJson } from "@infra-blocks/zod-utils/geojson";
 import { authAction } from "~/lib/safe-action";
@@ -43,7 +45,10 @@ export const createDatasetFromGeojson = authAction
           return acc;
         },
         { set: new Set(), result: [] }
-      ).result;
+      ).result as {
+      key: string;
+      type: Column["type"];
+    }[];
 
     const datasetResponse = await db.transaction(async (tx) => {
       /**
@@ -149,9 +154,10 @@ export const createDatasetFromGeojson = authAction
          */
         dsNumberCells.length &&
           tx.insert(numberCells).values(
+            // @ts-ignore -- It's ok
             dsNumberCells.map((cell) => ({
               cellId: cell.id,
-              value: cell.value as unknown as number,
+              value: cell.value,
             }))
           ),
 
@@ -163,7 +169,9 @@ export const createDatasetFromGeojson = authAction
             dsPointCells.map((cell) => ({
               cellId: cell.id,
               value: {
+                // @ts-ignore -- It's ok
                 x: cell.value.coordinates[0],
+                // @ts-ignore -- It's ok
                 y: cell.value.coordinates[1],
               },
             }))

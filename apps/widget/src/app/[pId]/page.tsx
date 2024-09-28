@@ -83,7 +83,7 @@ export default async function Page({
     <MapProvider>
       <Map
         formValues={formValues}
-        pageData={pageData ?? []}
+        pageData={pageData}
         projectWithPages={projectWithPages}
         // We clear the session id if the form id doesn't match the current form
         sessionId={!projectVersionMismatch && session ? session.id : null}
