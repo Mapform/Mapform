@@ -160,20 +160,47 @@ export function MapForm({
   const AddLocationDropdown = editFields?.AddLocationDropdown;
 
   const renderMap = () => (
-    <Map
-      editable={editable}
-      initialViewState={initialViewState}
-      marker={
-        searchLocation
-          ? {
-              latitude: searchLocation.latitude,
-              longitude: searchLocation.longitude,
-            }
-          : undefined
-      }
-      onLoad={onLoad}
-      pageData={pageData}
-    />
+    <>
+      <Map
+        editable={editable}
+        initialViewState={initialViewState}
+        marker={
+          searchLocation
+            ? {
+                latitude: searchLocation.latitude,
+                longitude: searchLocation.longitude,
+              }
+            : undefined
+        }
+        onLoad={onLoad}
+        pageData={pageData}
+      />
+
+      {/* Edit bar */}
+      {editable ? (
+        <div
+          className={cn(
+            "flex items-center bg-primary rounded-lg px-2 py-0 absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10",
+            currentPage.contentViewType === "split"
+              ? "left-1/2 md:left-[calc(50%+180px)]"
+              : "left-1/2"
+          )}
+          // style={{
+          //   left:
+          //     currentPage.contentViewType === "split"
+          //       ? "calc(50% + 180px)"
+          //       : "50%",
+          // }}
+        >
+          <EditBar
+            hasMoved={hasMoved}
+            initialViewState={initialViewState}
+            onLocationSave={onLocationSave}
+            setSearchLocation={setSearchLocation}
+          />
+        </div>
+      ) : null}
+    </>
   );
 
   return (
@@ -213,7 +240,9 @@ export function MapForm({
             >
               {/* MOBILE MAP */}
               {showMapMobile ? (
-                <div className="flex flex-1 md:hidden">{renderMap()}</div>
+                <div className="relative flex flex-1 md:hidden">
+                  {renderMap()}
+                </div>
               ) : null}
               <div
                 className={cn({
@@ -361,26 +390,6 @@ export function MapForm({
           {currentPage.contentViewType !== "text" ? (
             <div className="relative flex-1 overflow-hidden hidden md:flex">
               {renderMap()}
-
-              {/* Edit bar */}
-              {editable ? (
-                <div
-                  className="flex items-center bg-primary rounded-lg px-2 py-0 absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10"
-                  style={{
-                    left:
-                      currentPage.contentViewType === "split"
-                        ? "calc(50% + 180px)"
-                        : "50%",
-                  }}
-                >
-                  <EditBar
-                    hasMoved={hasMoved}
-                    initialViewState={initialViewState}
-                    onLocationSave={onLocationSave}
-                    setSearchLocation={setSearchLocation}
-                  />
-                </div>
-              ) : null}
             </div>
           ) : null}
         </CustomBlockContext.Provider>
