@@ -24,6 +24,7 @@ import {
   TooltipTrigger,
 } from "@mapform/ui/components/tooltip";
 import { useMap } from "./map";
+import { cn } from "@mapform/lib/classnames";
 
 interface EditBarProps {
   hasMoved: boolean;
@@ -195,7 +196,7 @@ function CommandSearch({
   const { map } = useMap();
   const [query, setQuery] = useState("");
   const debouncedQuery = useDebounce(query, 250);
-  const { data } = useQuery({
+  const { data, isFetching, isLoading } = useQuery({
     queryKey: ["search", debouncedQuery],
     queryFn: () => fetchPlaces(debouncedQuery),
     placeholderData: (prev) => prev,
@@ -272,7 +273,7 @@ function CommandSearch({
         placeholder="Search for places..."
         value={query}
       />
-      <CommandList>
+      <CommandList className={cn(isFetching && "animate-pulse")}>
         <CommandEmpty>No results found.</CommandEmpty>
         <CommandGroup>
           {data?.features.map((feature, i) => {
