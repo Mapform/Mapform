@@ -274,7 +274,9 @@ function CommandSearch({
         value={query}
       />
       <CommandList className={cn(isFetching && "animate-pulse")}>
-        <CommandEmpty>No results found.</CommandEmpty>
+        <CommandEmpty className="bg-gray-100 rounded m-2 mb-0 p-8 text-center text-muted-foreground">
+          No results found.
+        </CommandEmpty>
         <CommandGroup>
           {data?.features.map((feature, i) => {
             if (!feature.bbox || !feature.properties) {
