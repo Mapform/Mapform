@@ -18,6 +18,20 @@ import {
   useForm,
   zodResolver,
 } from "@mapform/ui/components/form";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@mapform/ui/components/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@mapform/ui/components/popover";
+
 import { useAction } from "next-safe-action/hooks";
 import { toast } from "@mapform/ui/components/toaster";
 import { Input } from "@mapform/ui/components/input";
@@ -28,6 +42,7 @@ import {
 } from "~/data/datalayer/quick-create/schema";
 import { quickCreateDataLayer } from "~/data/datalayer/quick-create";
 import { usePage } from "../../page-context";
+import { DatasetPicker } from "./dataset-picker";
 
 export const QuickCreateDialog = Dialog;
 export const QuickCreateDialogTrigger = DialogTrigger;
@@ -69,13 +84,17 @@ export function QuickCreateContent({ data }: QuickCreateContentProps) {
   };
 
   return (
-    <DialogContent>
+    <DialogContent
+      onInteractOutside={(e) => {
+        e.preventDefault();
+      }}
+    >
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <DialogHeader>
-            <DialogTitle>Quick Create</DialogTitle>
+            <DialogTitle>Layer Editor</DialogTitle>
             <DialogDescription>
-              Create a new dataset and layer with basic presets
+              Create and modify layers to visualize your data on the map.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-6">
@@ -99,7 +118,9 @@ export function QuickCreateContent({ data }: QuickCreateContentProps) {
                 </FormItem>
               )}
             />
+            <DatasetPicker />
           </div>
+
           <DialogFooter>
             <Button
               disabled={status === "executing" || !form.formState.isValid}

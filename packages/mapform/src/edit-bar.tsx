@@ -9,6 +9,7 @@ import {
 } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import {
+  Command,
   CommandEmpty,
   CommandShortcut,
   CommandGroup,
