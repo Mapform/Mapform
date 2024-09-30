@@ -1,7 +1,7 @@
 import type { PlacesSearchResponse, ViewState } from "@mapform/map-utils/types";
 import { Button } from "@mapform/ui/components/button";
 import { useDebounce } from "@mapform/lib/hooks/use-debounce";
-import { SearchIcon, Undo2Icon } from "lucide-react";
+import { EditIcon, SaveIcon, SearchIcon, Undo2Icon } from "lucide-react";
 import {
   QueryClient,
   QueryClientProvider,
@@ -17,6 +17,12 @@ import {
   CommandList,
   CommandDialog,
 } from "@mapform/ui/components/command";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@mapform/ui/components/tooltip";
 import { useMap } from "./map";
 
 interface EditBarProps {
@@ -62,78 +68,112 @@ function EditBarInner({
   setSearchLocation,
 }: EditBarInnerProps) {
   const { map } = useMap();
+  const [openEditor, setOpenEditor] = useState(false);
   const [openSearch, setOpenSearch] = useState(false);
 
-  return (
-    <>
+  if (!openEditor) {
+    return (
       <Button
         onClick={() => {
-          setOpenSearch(true);
-        }}
-        size="icon-sm"
-      >
-        <SearchIcon className="h-4 w-4" />
-      </Button>
-      <CommandDialog
-        onOpenChange={setOpenSearch}
-        open={openSearch}
-        shouldFilter={false}
-      >
-        <CommandSearch
-          setOpenSearch={setOpenSearch}
-          setSearchLocation={setSearchLocation}
-        />
-      </CommandDialog>
-
-      <Button
-        disabled={!hasMoved}
-        onClick={() => {
-          map?.setCenter([
-            initialViewState.longitude,
-            initialViewState.latitude,
-          ]);
-          map?.setZoom(initialViewState.zoom);
-          map?.setPitch(initialViewState.pitch);
-          map?.setBearing(initialViewState.bearing);
-        }}
-        size="icon-sm"
-      >
-        <Undo2Icon className="w-4 h-4" />
-      </Button>
-      <Button
-        disabled={!hasMoved}
-        onClick={async () => {
-          const center = map?.getCenter();
-          const zoom = map?.getZoom();
-          const pitch = map?.getPitch();
-          const bearing = map?.getBearing();
-
-          if (
-            onLocationSave &&
-            center !== undefined &&
-            zoom !== undefined &&
-            pitch !== undefined &&
-            bearing !== undefined
-          ) {
-            await onLocationSave({
-              latitude: center.lat,
-              longitude: center.lng,
-              zoom,
-              pitch,
-              bearing,
-              padding: {
-                top: 0,
-                bottom: 0,
-                left: 0,
-                right: 0,
-              },
-            });
-          }
+          setOpenEditor(true);
         }}
         size="sm"
       >
-        Save
+        <EditIcon className="size-4 mr-2 -ml-1" /> Edit Map
       </Button>
+    );
+  }
+
+  return (
+    <>
+      <TooltipProvider delayDuration={200}>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              onClick={() => {
+                setOpenSearch(true);
+              }}
+              size="icon-sm"
+            >
+              <SearchIcon className="size-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Search locations</TooltipContent>
+        </Tooltip>
+        <CommandDialog
+          onOpenChange={setOpenSearch}
+          open={openSearch}
+          shouldFilter={false}
+        >
+          <CommandSearch
+            setOpenSearch={setOpenSearch}
+            setSearchLocation={setSearchLocation}
+          />
+        </CommandDialog>
+
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              disabled={!hasMoved}
+              onClick={() => {
+                map?.setCenter([
+                  initialViewState.longitude,
+                  initialViewState.latitude,
+                ]);
+                map?.setZoom(initialViewState.zoom);
+                map?.setPitch(initialViewState.pitch);
+                map?.setBearing(initialViewState.bearing);
+              }}
+              size="icon-sm"
+            >
+              <Undo2Icon className="w-4 h-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Undo</TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              disabled={!hasMoved}
+              onClick={async () => {
+                const center = map?.getCenter();
+                const zoom = map?.getZoom();
+                const pitch = map?.getPitch();
+                const bearing = map?.getBearing();
+
+                if (
+                  onLocationSave &&
+                  center !== undefined &&
+                  zoom !== undefined &&
+                  pitch !== undefined &&
+                  bearing !== undefined
+                ) {
+                  await onLocationSave({
+                    latitude: center.lat,
+                    longitude: center.lng,
+                    zoom,
+                    pitch,
+                    bearing,
+                    padding: {
+                      top: 0,
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                    },
+                  });
+                }
+              }}
+              size="sm"
+            >
+              <SaveIcon className="size-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Save</TooltipContent>
+        </Tooltip>
+        <Button onClick={() => setOpenEditor(false)} size="sm">
+          Cancel
+        </Button>
+      </TooltipProvider>
     </>
   );
 }
