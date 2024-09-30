@@ -21,8 +21,13 @@ import { PageBarButton } from "./page-bar-button";
 import { AddLocationDropdown } from "./add-location-dropdown";
 
 function Project() {
-  const { optimisticPage, isEditingPage, setEditMode, optimisticPageData } =
-    usePage();
+  const {
+    optimisticPage,
+    isEditingPage,
+    setEditMode,
+    optimisticPageData,
+    updatePage,
+  } = usePage();
 
   const { executeAsync } = useAction(updatePageAction);
 
@@ -114,15 +119,23 @@ function Project() {
 
               return success?.url || null;
             }}
-            onLocationSave={async (location) => {
-              await debouncedUpdatePageServer({
+            onLocationSave={(location) => {
+              updatePage({
+                ...optimisticPage,
                 center: { x: location.longitude, y: location.latitude },
                 zoom: location.zoom,
                 pitch: location.pitch,
                 bearing: location.bearing,
               });
 
-              return { success: true };
+              updatePageServer({
+                center: { x: location.longitude, y: location.latitude },
+                zoom: location.zoom,
+                pitch: location.pitch,
+                bearing: location.bearing,
+              }).catch(() => {
+                toast("There was an error saving the location");
+              });
             }}
             onTitleChange={(title: string) => {
               void debouncedUpdatePageServer({

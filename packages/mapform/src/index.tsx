@@ -39,7 +39,7 @@ interface MapFormProps {
   onDescriptionChange?: (content: { content: CustomBlock[] }) => void;
   onStepSubmit?: (data: Record<string, string>) => void;
   onImageUpload?: (file: File) => Promise<string | null>;
-  onLocationSave?: (location: ViewState) => Promise<{ success: boolean }>;
+  onLocationSave?: (location: ViewState) => void;
   pageData?: PageData;
   editFields?: {
     AddLocationDropdown: (input: { data: any }) => JSX.Element;

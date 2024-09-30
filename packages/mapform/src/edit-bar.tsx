@@ -36,7 +36,7 @@ interface EditBarProps {
       name: string;
     } | null>
   >;
-  onLocationSave?: (location: ViewState) => Promise<{ success: boolean }>;
+  onLocationSave?: (location: ViewState) => void;
 }
 
 type EditBarInnerProps = EditBarProps;
@@ -98,7 +98,7 @@ function EditBarInner({
               <SearchIcon className="size-4" />
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Search locations</TooltipContent>
+          <TooltipContent>Search Locations</TooltipContent>
         </Tooltip>
         <CommandDialog
           onOpenChange={setOpenSearch}
@@ -148,7 +148,7 @@ function EditBarInner({
                   pitch !== undefined &&
                   bearing !== undefined
                 ) {
-                  await onLocationSave({
+                  onLocationSave({
                     latitude: center.lat,
                     longitude: center.lng,
                     zoom,
@@ -168,7 +168,7 @@ function EditBarInner({
               <SaveIcon className="size-4" />
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Save</TooltipContent>
+          <TooltipContent>Save Map Position</TooltipContent>
         </Tooltip>
         <Button onClick={() => setOpenEditor(false)} size="sm">
           Cancel
