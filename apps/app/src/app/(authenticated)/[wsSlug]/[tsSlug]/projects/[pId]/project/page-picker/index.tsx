@@ -15,15 +15,15 @@ import {
 } from "@dnd-kit/sortable";
 import { useMap } from "@mapform/mapform";
 import { createPage } from "~/data/pages/create-page";
-import { DragItem, DragHandle } from "~/components/draggable";
 import { updatePageOrder } from "~/data/pages/update-page-order";
 import { PageBarButton } from "../page-bar-button";
 import { useProject } from "../../project-context";
 import { usePage } from "../../page-context";
+import { Item } from "./item";
 
 export function PagePicker() {
   const { optimisticProjectWithPages, updateProjectWithPages } = useProject();
-  const { setActivePage, optimisticPage } = usePage();
+  const { setActivePage } = usePage();
   const { map } = useMap();
   const { execute: executeCreatePage, status: createPageStatus } = useAction(
     createPage,
@@ -86,22 +86,7 @@ export function PagePicker() {
           strategy={horizontalListSortingStrategy}
         >
           {dragPages.map((page) => {
-            return (
-              <DragItem id={page.id} key={page.id}>
-                <DragHandle id={page.id}>
-                  <PageBarButton
-                    Icon={PanelLeftIcon}
-                    isActive={page.id === optimisticPage?.id}
-                    isSubtle
-                    onClick={() => {
-                      setActivePage(page);
-                    }}
-                  >
-                    {page.title || "Untitled"}
-                  </PageBarButton>
-                </DragHandle>
-              </DragItem>
-            );
+            return <Item key={page.id} page={page} />;
           })}
         </SortableContext>
       </DndContext>
