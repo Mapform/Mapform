@@ -188,6 +188,7 @@ export function MapForm({
         >
           <EditBar
             hasMoved={hasMoved}
+            key={currentPage.id}
             initialViewState={initialViewState}
             onLocationSave={onLocationSave}
             setSearchLocation={setSearchLocation}
