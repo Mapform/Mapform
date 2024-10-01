@@ -18,29 +18,16 @@ import {
   useForm,
   zodResolver,
 } from "@mapform/ui/components/form";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@mapform/ui/components/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@mapform/ui/components/popover";
 
 import { useAction } from "next-safe-action/hooks";
 import { toast } from "@mapform/ui/components/toaster";
 import { Input } from "@mapform/ui/components/input";
 import type { GeoJson } from "@infra-blocks/zod-utils/geojson";
+import { createLayer } from "~/data/layers/create-layer";
 import {
-  quickCreateDataLayerSchema,
-  type QuickCreateDataLayerSchema,
-} from "~/data/datalayer/quick-create/schema";
-import { quickCreateDataLayer } from "~/data/datalayer/quick-create";
+  createLayerSchema,
+  CreateLayerSchema,
+} from "~/data/layers/create-layer/schema";
 import { usePage } from "../../page-context";
 import { DatasetPicker } from "./dataset-picker";
 
@@ -53,16 +40,14 @@ interface QuickCreateContentProps {
 
 export function QuickCreateContent({ data }: QuickCreateContentProps) {
   const { optimisticPage } = usePage();
-  // @ts-ignore -- The type is too complex
-  const form = useForm<QuickCreateDataLayerSchema>({
+  const form = useForm<CreateLayerSchema>({
     defaultValues: {
       name: "",
       pageId: optimisticPage?.id,
-      data,
     },
-    resolver: zodResolver(quickCreateDataLayerSchema),
+    resolver: zodResolver(createLayerSchema),
   });
-  const { execute, status } = useAction(quickCreateDataLayer, {
+  const { execute, status } = useAction(createLayer, {
     onError: ({ error }) => {
       if (error.serverError) {
         toast(error.serverError);
@@ -79,7 +64,7 @@ export function QuickCreateContent({ data }: QuickCreateContentProps) {
     },
   });
 
-  const onSubmit = (values: QuickCreateDataLayerSchema) => {
+  const onSubmit = (values: CreateLayerSchema) => {
     execute(values);
   };
 
@@ -111,14 +96,26 @@ export function QuickCreateContent({ data }: QuickCreateContentProps) {
                       onChange={field.onChange}
                       placeholder="My Data Layer"
                       ref={field.ref}
-                      value={field.value}
+                      value={field.value ?? ""}
                     />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <DatasetPicker />
+            <FormField
+              control={form.control}
+              name="datasetId"
+              render={({ field }) => (
+                <FormItem className="flex-1">
+                  <FormLabel>Dataset</FormLabel>
+                  <FormControl>
+                    <DatasetPicker />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </div>
 
           <DialogFooter>

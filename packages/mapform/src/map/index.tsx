@@ -13,6 +13,7 @@ import mapboxgl from "mapbox-gl";
 import { cn } from "@mapform/lib/classnames";
 import type { FeatureCollection } from "geojson";
 import type { PageData, ViewState } from "@mapform/map-utils/types";
+import ReactDOM from "react-dom";
 
 const accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
 
@@ -48,11 +49,19 @@ interface MapProps {
   editable?: boolean;
   onLoad?: () => void;
   initialViewState: ViewState;
-  marker?: {
+  searchLocationMarker?: {
     latitude: number;
     longitude: number;
   };
 }
+
+const CustomMarker = ({ title }: { title: string }) => {
+  return (
+    <div className="bg-white p-2 rounded-md shadow-md">
+      <h1 className="text-sm font-semibold">{title}</h1>
+    </div>
+  );
+};
 
 /**
  * TODO:
@@ -65,11 +74,12 @@ export function Map({
   editable = false,
   pageData,
   onLoad,
-  marker,
+  searchLocationMarker,
 }: MapProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const { map, setMap } = useMap();
   const markerEl = useRef<mapboxgl.Marker | null>(null);
+  const markerElInner = useRef<HTMLDivElement>(document.createElement("div"));
 
   const geojson: FeatureCollection = useMemo(
     () => ({
@@ -170,26 +180,33 @@ export function Map({
   }, [map, geojson]);
 
   /**
-   * Update marker
+   * Update searchLocationMarker marker
    */
   useEffect(() => {
     const currentLngLat = markerEl.current?.getLngLat();
     if (
       map &&
-      marker &&
-      currentLngLat?.lat !== marker.latitude &&
-      currentLngLat?.lng !== marker.longitude
+      searchLocationMarker &&
+      currentLngLat?.lat !== searchLocationMarker.latitude &&
+      currentLngLat?.lng !== searchLocationMarker.longitude
     ) {
+      ReactDOM.render(
+        <CustomMarker title="Search Location" />,
+        markerElInner.current
+      );
       markerEl.current?.remove();
-      markerEl.current = new mapboxgl.Marker()
-        .setLngLat([marker.longitude, marker.latitude])
+      markerEl.current = new mapboxgl.Marker(markerElInner.current)
+        .setLngLat([
+          searchLocationMarker.longitude,
+          searchLocationMarker.latitude,
+        ])
         .addTo(map);
     }
 
-    if (map && !marker) {
+    if (map && !searchLocationMarker) {
       markerEl.current?.remove();
     }
-  }, [map, marker]);
+  }, [map, searchLocationMarker]);
 
   return (
     <div

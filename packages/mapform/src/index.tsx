@@ -164,7 +164,7 @@ export function MapForm({
       <Map
         editable={editable}
         initialViewState={initialViewState}
-        marker={
+        searchLocationMarker={
           searchLocation
             ? {
                 latitude: searchLocation.latitude,
