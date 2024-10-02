@@ -244,24 +244,26 @@ function CommandSearch({
     };
 
     data?.features.forEach((feature, i) => {
-      if (i < 9) {
-        const key = i.toString();
+      const key = i + 1;
+
+      if (key <= 5) {
         document.addEventListener(
           "keydown",
 
-          down.bind(null, key, feature)
+          down.bind(null, key.toString(), feature)
         );
       }
     });
 
     return () => {
       data?.features.forEach((feature, i) => {
-        if (i < 9) {
-          const key = i.toString();
+        const key = i + 1;
+
+        if (i <= 5) {
           document.removeEventListener(
             "keydown",
 
-            down.bind(null, key, feature)
+            down.bind(null, key.toString(), feature)
           );
         }
       });
@@ -327,7 +329,7 @@ function CommandSearch({
                     {feature.properties.address_line2}
                   </span>
                 </span>
-                <CommandShortcut>⌘{i}</CommandShortcut>
+                <CommandShortcut>⌘{i + 1}</CommandShortcut>
               </CommandItem>
             );
           })}
