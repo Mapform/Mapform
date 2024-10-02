@@ -28,7 +28,9 @@ export function StandardLayout({
         </div>
 
         {/* CONTENT */}
-        <div className="flex flex-1 overflow-hidden">{children}</div>
+        <div className="flex flex-1 overflow-hidden ml-[-300px]">
+          {children}
+        </div>
       </div>
     </div>
   );

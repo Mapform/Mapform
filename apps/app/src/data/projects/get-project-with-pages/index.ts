@@ -18,6 +18,7 @@ export const getProjectWithPages = authAction
           teamspace: {
             columns: {
               id: true,
+              name: true,
             },
             with: {
               workspace: {
@@ -25,6 +26,11 @@ export const getProjectWithPages = authAction
                   id: true,
                 },
               },
+            },
+          },
+          submissionsDataset: {
+            columns: {
+              id: true,
             },
           },
         },

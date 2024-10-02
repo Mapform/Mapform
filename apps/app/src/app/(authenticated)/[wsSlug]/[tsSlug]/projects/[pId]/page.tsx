@@ -10,6 +10,7 @@ import { listAvailableDatasets } from "~/data/datasets/list-available-datasets";
 import { ProjectProvider } from "./project-context";
 import Project from "./project";
 import { PageProvider } from "./page-context";
+import { Tabs } from "~/components/tabs";
 
 const fetchProjectWithPages = cache(async (id: string) => {
   const projectWithPagesResponse = await getProjectWithPages({
@@ -94,25 +95,58 @@ export default async function ProjectPage({
     );
   }
 
+  const tabs = [
+    {
+      name: "Create",
+      href: `/${params.wsSlug}/${params.tsSlug}/projects/${params.pId}`,
+    },
+    ...(projectWithPages.submissionsDataset
+      ? [
+          {
+            name: "Submissions",
+            href: `/${params.wsSlug}/${params.tsSlug}/datasets/${projectWithPages.submissionsDataset.id}`,
+            isExternal: true,
+          },
+        ]
+      : []),
+  ];
+
   return (
-    <div className="-m-4 flex flex-col flex-1 overflow-hidden">
-      <MapProvider>
-        <ProjectProvider projectWithPages={projectWithPages}>
-          <PageProvider
-            availableDatasets={availableDatasets ?? []}
-            pageData={pageData}
-            pageWithLayers={pageWithLayers}
-          >
-            <div
-              className={cn(
-                "flex flex-col flex-1 overflow-hidden bg-background"
-              )}
-            >
-              <Project />
-            </div>
-          </PageProvider>
-        </ProjectProvider>
-      </MapProvider>
+    <div className="flex w-screen flex-shrink-0">
+      <Tabs
+        // action={actions}
+        nameSections={[
+          {
+            name: projectWithPages.teamspace.name,
+            href: `/${params.wsSlug}/${params.tsSlug}`,
+          },
+          { name: projectWithPages.name },
+        ]}
+        tabs={tabs}
+      >
+        <div className="-m-4 flex flex-col flex-1 overflow-hidden">
+          <MapProvider>
+            <ProjectProvider projectWithPages={projectWithPages}>
+              <PageProvider
+                availableDatasets={availableDatasets ?? []}
+                pageData={pageData}
+                pageWithLayers={pageWithLayers}
+              >
+                <div
+                  className={cn(
+                    "flex flex-col flex-1 overflow-hidden bg-background"
+                  )}
+                >
+                  <Project />
+                </div>
+              </PageProvider>
+            </ProjectProvider>
+          </MapProvider>
+        </div>
+      </Tabs>
+      <div className="flex flex-col flex-shrink-0 px-4 py-2 w-[300px] border-l">
+        Stuff
+      </div>
     </div>
   );
 }
