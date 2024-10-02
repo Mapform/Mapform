@@ -1,6 +1,6 @@
 import type { PlacesSearchResponse, ViewState } from "@mapform/map-utils/types";
 import { Button } from "@mapform/ui/components/button";
-import { useDebounce } from "@mapform/lib/hooks/use-debounce";
+import { debounce } from "@mapform/lib/lodash";
 import { EditIcon, SaveIcon, SearchIcon, Undo2Icon } from "lucide-react";
 import {
   QueryClient,
@@ -196,10 +196,13 @@ function CommandSearch({
 }) {
   const { map } = useMap();
   const [query, setQuery] = useState("");
-  const debouncedQuery = useDebounce(query, 250);
-  const { data, isFetching, isLoading } = useQuery({
-    queryKey: ["search", debouncedQuery],
-    queryFn: () => fetchPlaces(debouncedQuery),
+  const debouncedSetQuery = debounce(setQuery, 250, {
+    leading: true,
+    trailing: true,
+  });
+  const { data, isFetching } = useQuery({
+    queryKey: ["search", query],
+    queryFn: () => fetchPlaces(query),
     placeholderData: (prev) => prev,
   });
 
@@ -269,14 +272,14 @@ function CommandSearch({
       <CommandInput
         className="border-none focus:ring-0"
         onValueChange={(search) => {
-          setQuery(search);
+          debouncedSetQuery(search);
         }}
         placeholder="Search for places..."
         value={query}
       />
       <CommandList className={cn(isFetching && "animate-pulse")}>
         <CommandEmpty className="bg-gray-100 rounded m-2 mb-0 p-8 text-center text-muted-foreground">
-          No results found.
+          {isFetching ? "Searching..." : "No results found."}
         </CommandEmpty>
         <CommandGroup>
           {data?.features.map((feature, i) => {

@@ -104,7 +104,6 @@ const frameworks = [
 const CustomMarker = ({ title }: { title: string }) => {
   const { ref, bounds } = useMeasure<HTMLDivElement>();
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState("");
   const [query, setQuery] = useState<string>("");
 
   return (
@@ -145,7 +144,6 @@ const CustomMarker = ({ title }: { title: string }) => {
                   <CommandEmpty
                     className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none data-[disabled=true]:pointer-events-none data-[selected=true]:bg-accent data-[selected=true]:text-accent-foreground data-[disabled=true]:opacity-50 m-1"
                     onClick={() => {
-                      setValue(query);
                       setQuery("");
                       setOpen(false);
                     }}
@@ -159,7 +157,6 @@ const CustomMarker = ({ title }: { title: string }) => {
                     {query.length ? (
                       <CommandItem
                         onClick={() => {
-                          setValue(query);
                           setQuery("");
                           setOpen(false);
                         }}
