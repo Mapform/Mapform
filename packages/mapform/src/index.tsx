@@ -1,7 +1,7 @@
 "use client";
 
 import "mapbox-gl/dist/mapbox-gl.css";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import type { Page } from "@mapform/db/schema";
 import { Form, useForm, zodResolver } from "@mapform/ui/components/form";
 import type { z } from "zod";
@@ -23,12 +23,18 @@ import {
   LetterTextIcon,
 } from "lucide-react";
 import { Blocknote } from "./block-note";
-import { Map, MapProvider, useMap, type MBMap } from "./map";
-import { EditBar } from "./edit-bar";
+import {
+  Map,
+  MapProvider,
+  useMap,
+  type MBMap,
+  SearchLocationMarker,
+} from "./map";
 import "./style.css";
 
 interface MapFormProps {
   editable?: boolean;
+  children?: React.ReactNode;
   mapboxAccessToken: string;
   currentPage: Page;
   defaultFormValues?: Record<string, string>;
@@ -39,7 +45,6 @@ interface MapFormProps {
   onDescriptionChange?: (content: { content: CustomBlock[] }) => void;
   onStepSubmit?: (data: Record<string, string>) => void;
   onImageUpload?: (file: File) => Promise<string | null>;
-  onLocationSave?: (location: ViewState) => void;
   pageData?: PageData;
   editFields?: {
     AddLocationDropdown: (input: { data: any }) => JSX.Element;
@@ -51,16 +56,15 @@ export function MapForm({
   onPrev,
   onLoad,
   pageData,
+  children,
   editFields,
   currentPage,
   onStepSubmit,
   onTitleChange,
   onImageUpload,
-  onLocationSave,
   defaultFormValues,
   onDescriptionChange,
 }: MapFormProps) {
-  const { map } = useMap();
   const [showMapMobile, setShowMapMobile] = useState(false);
   const blocknoteStepSchema = getFormSchemaFromBlockNote(
     currentPage.content?.content || []
@@ -86,109 +90,26 @@ export function MapForm({
       right: 0,
     },
   };
-  const [movedCoords, setMovedCoords] = useState<{
-    lat: number;
-    lng: number;
-    zoom: number;
-    pitch: number;
-    bearing: number;
-  }>({
-    lat: currentPage.center.y,
-    lng: currentPage.center.x,
-    zoom: currentPage.zoom,
-    pitch: currentPage.pitch,
-    bearing: currentPage.bearing,
-  });
-  const [searchLocation, setSearchLocation] = useState<{
-    id: string;
-    latitude: number;
-    longitude: number;
-    name: string;
-    description?: {
-      content: CustomBlock[];
-    };
-  } | null>(null);
 
   const onSubmit = (data: FormSchema) => {
     onStepSubmit?.(data);
   };
 
-  const handleOnMove = (e: MapboxEvent) => {
-    setMovedCoords({
-      lat: e.target.getCenter().lat,
-      lng: e.target.getCenter().lng,
-      zoom: e.target.getZoom(),
-      pitch: e.target.getPitch(),
-      bearing: e.target.getBearing(),
-    });
-  };
-
-  useEffect(() => {
-    if (map) {
-      map.on("moveend", handleOnMove);
-
-      return () => {
-        map.off("moveend", handleOnMove);
-      };
-    }
-  }, [map, currentPage]);
-
-  // Update movedCoords when the step changes
-  useEffect(() => {
-    setMovedCoords({
-      lat: currentPage.center.y,
-      lng: currentPage.center.x,
-      zoom: currentPage.zoom,
-      pitch: currentPage.pitch,
-      bearing: currentPage.bearing,
-    });
-  }, [currentPage]);
-
   const pinBlocks = currentPage.content?.content.filter((c) => {
     return c.type === "pin";
   });
 
-  const roundLocation = (num: number) => Math.round(num * 1000000) / 1000000;
-
-  const hasMoved =
-    roundLocation(movedCoords.lat) !== roundLocation(currentPage.center.y) ||
-    roundLocation(movedCoords.lng) !== roundLocation(currentPage.center.x) ||
-    movedCoords.zoom !== currentPage.zoom ||
-    movedCoords.pitch !== currentPage.pitch ||
-    movedCoords.bearing !== currentPage.bearing;
-
   const AddLocationDropdown = editFields?.AddLocationDropdown;
 
   const renderMap = () => (
-    <>
-      <Map
-        editable={editable}
-        initialViewState={initialViewState}
-        searchLocationMarker={searchLocation}
-        onLoad={onLoad}
-        pageData={pageData}
-      />
-
-      {/* Edit bar */}
-      {editable ? (
-        <div
-          className={cn(
-            "flex items-center bg-primary rounded-lg px-2 py-0 absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10",
-            currentPage.contentViewType === "split"
-              ? "left-1/2 md:left-[calc(50%+180px)]"
-              : "left-1/2"
-          )}
-        >
-          <EditBar
-            hasMoved={hasMoved}
-            key={currentPage.id}
-            initialViewState={initialViewState}
-            onLocationSave={onLocationSave}
-            setSearchLocation={setSearchLocation}
-          />
-        </div>
-      ) : null}
-    </>
+    <Map
+      editable={editable}
+      initialViewState={initialViewState}
+      onLoad={onLoad}
+      pageData={pageData}
+    >
+      {children}
+    </Map>
   );
 
   // We add 36px to the width when editing to account for side padding for buttons
@@ -305,7 +226,7 @@ export function MapForm({
           </div>
 
           {/* MARKER EDITOR */}
-          {searchLocation ? (
+          {/* {searchLocation ? (
             <div
               className={cn(
                 "group absolute bg-background z-10 w-full overflow-hidden",
@@ -378,7 +299,7 @@ export function MapForm({
                 ) : null}
               </div>
             </div>
-          ) : null}
+          ) : null} */}
 
           {currentPage.contentViewType !== "text" ? (
             <div className="relative flex-1 overflow-hidden hidden md:flex">
@@ -393,5 +314,5 @@ export function MapForm({
 
 MapForm.displayName = "MapForm";
 
-export { MapProvider, useMap };
+export { MapProvider, useMap, SearchLocationMarker };
 export type { ViewState, MBMap };

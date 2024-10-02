@@ -19,15 +19,13 @@ import {
 import { PagePicker } from "./page-picker";
 import { PageBarButton } from "./page-bar-button";
 import { AddLocationDropdown } from "./add-location-dropdown";
+import { SearchLocationMarker } from "./search-location-marker";
+import { cn } from "@mapform/lib/classnames";
+import { EditBar } from "./edit-bar";
 
 function Project() {
-  const {
-    optimisticPage,
-    isEditingPage,
-    setEditMode,
-    optimisticPageData,
-    updatePage,
-  } = usePage();
+  const { optimisticPage, isEditingPage, setEditMode, optimisticPageData } =
+    usePage();
 
   const { executeAsync } = useAction(updatePageAction);
 
@@ -35,7 +33,7 @@ function Project() {
     return null;
   }
 
-  const updatePageServer = ({
+  const updatePageServer = async ({
     content,
     title,
     zoom,
@@ -50,7 +48,7 @@ function Project() {
     bearing?: number;
     center?: { x: number; y: number };
   }) => {
-    return executeAsync({
+    await executeAsync({
       id: optimisticPage.id,
       ...(content && { content }),
       ...(title && { title }),
@@ -119,31 +117,29 @@ function Project() {
 
               return success?.url || null;
             }}
-            onLocationSave={(location) => {
-              updatePage({
-                ...optimisticPage,
-                center: { x: location.longitude, y: location.latitude },
-                zoom: location.zoom,
-                pitch: location.pitch,
-                bearing: location.bearing,
-              });
-
-              updatePageServer({
-                center: { x: location.longitude, y: location.latitude },
-                zoom: location.zoom,
-                pitch: location.pitch,
-                bearing: location.bearing,
-              }).catch(() => {
-                toast("There was an error saving the location");
-              });
-            }}
             onTitleChange={(title: string) => {
               void debouncedUpdatePageServer({
                 title,
               });
             }}
             pageData={optimisticPageData}
-          />
+          >
+            <SearchLocationMarker title="Yolo" />
+
+            <div
+              className={cn(
+                "flex items-center bg-primary rounded-lg px-2 py-0 absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10",
+                optimisticPage.contentViewType === "split"
+                  ? "left-1/2 md:left-[calc(50%+180px)]"
+                  : "left-1/2"
+              )}
+            >
+              <EditBar
+                key={optimisticPage.id}
+                updatePageServer={updatePageServer}
+              />
+            </div>
+          </MapForm>
         </div>
       </div>
     </div>

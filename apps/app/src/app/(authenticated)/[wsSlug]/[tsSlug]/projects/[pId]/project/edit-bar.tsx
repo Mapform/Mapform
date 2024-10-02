@@ -24,54 +24,105 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@mapform/ui/components/tooltip";
-import { useMap } from "./map";
+import { useMap } from "@mapform/mapform";
 import { cn } from "@mapform/lib/classnames";
+import { CustomBlock } from "@mapform/blocknote";
+import type { PageWithLayers } from "~/data/pages/get-page-with-layers";
+import { usePage } from "../page-context";
+import { toast } from "@mapform/ui/components/toaster";
 
 interface EditBarProps {
-  hasMoved: boolean;
-  initialViewState: ViewState;
-  setSearchLocation: React.Dispatch<
-    React.SetStateAction<{
-      id: string;
-      latitude: number;
-      longitude: number;
-      name: string;
-    } | null>
-  >;
-  onLocationSave?: (location: ViewState) => void;
+  updatePageServer: (args: {
+    content?: { content: CustomBlock[] };
+    title?: string;
+    zoom?: number;
+    pitch?: number;
+    bearing?: number;
+    center?: { x: number; y: number };
+  }) => Promise<void>;
 }
 
-type EditBarInnerProps = EditBarProps;
+type EditBarInnerProps = EditBarProps & {
+  optimisticPage: PageWithLayers;
+};
 
 const queryClient = new QueryClient();
 
-export function EditBar({
-  hasMoved,
-  initialViewState,
-  onLocationSave,
-  setSearchLocation,
-}: EditBarProps) {
+export function EditBar({ updatePageServer }: EditBarProps) {
+  const { optimisticPage } = usePage();
+
+  if (!optimisticPage) {
+    return null;
+  }
+
   return (
     <QueryClientProvider client={queryClient}>
       <EditBarInner
-        hasMoved={hasMoved}
-        initialViewState={initialViewState}
-        onLocationSave={onLocationSave}
-        setSearchLocation={setSearchLocation}
+        optimisticPage={optimisticPage}
+        updatePageServer={updatePageServer}
       />
     </QueryClientProvider>
   );
 }
 
-function EditBarInner({
-  hasMoved,
-  initialViewState,
-  onLocationSave,
-  setSearchLocation,
-}: EditBarInnerProps) {
+function EditBarInner({ optimisticPage, updatePageServer }: EditBarInnerProps) {
   const { map } = useMap();
   const [openEditor, setOpenEditor] = useState(false);
   const [openSearch, setOpenSearch] = useState(false);
+  const { updatePage } = usePage();
+
+  const [movedCoords, setMovedCoords] = useState<{
+    lat: number;
+    lng: number;
+    zoom: number;
+    pitch: number;
+    bearing: number;
+  }>({
+    lat: optimisticPage.center.y,
+    lng: optimisticPage.center.x,
+    zoom: optimisticPage.zoom,
+    pitch: optimisticPage.pitch,
+    bearing: optimisticPage.bearing,
+  });
+  const [searchLocation, setSearchLocation] = useState<{
+    id: string;
+    latitude: number;
+    longitude: number;
+    name: string;
+    description?: {
+      content: CustomBlock[];
+    };
+  } | null>(null);
+
+  // Update movedCoords when the step changes
+  useEffect(() => {
+    setMovedCoords({
+      lat: optimisticPage.center.y,
+      lng: optimisticPage.center.x,
+      zoom: optimisticPage.zoom,
+      pitch: optimisticPage.pitch,
+      bearing: optimisticPage.bearing,
+    });
+  }, [optimisticPage]);
+
+  // useEffect(() => {
+  //   if (map) {
+  //     map.on("moveend", handleOnMove);
+
+  //     return () => {
+  //       map.off("moveend", handleOnMove);
+  //     };
+  //   }
+  // }, [map, optimisticPage]);
+
+  const roundLocation = (num: number) => Math.round(num * 1000000) / 1000000;
+
+  const hasMoved =
+    roundLocation(movedCoords.lat) !== roundLocation(optimisticPage.center.y) ||
+    roundLocation(movedCoords.lng) !== roundLocation(optimisticPage.center.x) ||
+    movedCoords.zoom !== optimisticPage.zoom ||
+    movedCoords.pitch !== optimisticPage.pitch ||
+    movedCoords.bearing !== optimisticPage.bearing;
 
   if (!openEditor) {
     return (
@@ -120,12 +171,12 @@ function EditBarInner({
               disabled={!hasMoved}
               onClick={() => {
                 map?.setCenter([
-                  initialViewState.longitude,
-                  initialViewState.latitude,
+                  optimisticPage.center.x,
+                  optimisticPage.center.y,
                 ]);
-                map?.setZoom(initialViewState.zoom);
-                map?.setPitch(initialViewState.pitch);
-                map?.setBearing(initialViewState.bearing);
+                map?.setZoom(optimisticPage.zoom);
+                map?.setPitch(optimisticPage.pitch);
+                map?.setBearing(optimisticPage.bearing);
               }}
               size="icon-sm"
             >
@@ -145,25 +196,46 @@ function EditBarInner({
                 const bearing = map?.getBearing();
 
                 if (
-                  onLocationSave &&
                   center !== undefined &&
                   zoom !== undefined &&
                   pitch !== undefined &&
                   bearing !== undefined
                 ) {
-                  onLocationSave({
-                    latitude: center.lat,
-                    longitude: center.lng,
+                  updatePage({
+                    ...optimisticPage,
+                    center: {
+                      x: center.lng,
+                      y: center.lat,
+                    },
                     zoom,
                     pitch,
                     bearing,
-                    padding: {
-                      top: 0,
-                      bottom: 0,
-                      left: 0,
-                      right: 0,
-                    },
                   });
+
+                  updatePageServer({
+                    center: {
+                      x: center.lng,
+                      y: center.lat,
+                    },
+                    zoom,
+                    pitch,
+                    bearing,
+                  }).catch(() => {
+                    toast("There was an error saving the location");
+                  });
+                  // onLocationSave({
+                  // latitude: center.lat,
+                  // longitude: center.lng,
+                  // zoom,
+                  // pitch,
+                  // bearing,
+                  //   padding: {
+                  //     top: 0,
+                  //     bottom: 0,
+                  //     left: 0,
+                  //     right: 0,
+                  //   },
+                  // });
                 }
               }}
               size="sm"
