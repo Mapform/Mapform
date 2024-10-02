@@ -106,6 +106,7 @@ function EditBarInner({
           onOpenChange={setOpenSearch}
           open={openSearch}
           shouldFilter={false}
+          dialogContentClassName="-translate-y-[150px]"
         >
           <CommandSearch
             setOpenSearch={setOpenSearch}
@@ -337,7 +338,7 @@ function CommandSearch({
 }
 
 async function fetchPlaces(query?: string) {
-  if (!query || query.length < 3) {
+  if (!query) {
     return undefined;
   }
 
