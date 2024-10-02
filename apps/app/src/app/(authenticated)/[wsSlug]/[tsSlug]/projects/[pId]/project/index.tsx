@@ -19,7 +19,7 @@ import {
 import { PagePicker } from "./page-picker";
 import { PageBarButton } from "./page-bar-button";
 import { AddLocationDropdown } from "./add-location-dropdown";
-import { SearchLocationMarker } from "./search-location-marker";
+import { SearchLocationMarker } from "./edit-bar/search-location-marker";
 import { cn } from "@mapform/lib/classnames";
 import { EditBar } from "./edit-bar";
 
@@ -124,8 +124,6 @@ function Project() {
             }}
             pageData={optimisticPageData}
           >
-            <SearchLocationMarker title="Yolo" />
-
             <div
               className={cn(
                 "flex items-center bg-primary rounded-lg px-2 py-0 absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10",
