@@ -9,7 +9,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@mapform/ui/components/tooltip";
-import { useMap } from "@mapform/mapform";
+import { useMap, type MapboxEvent } from "@mapform/mapform";
 import { CustomBlock } from "@mapform/blocknote";
 import type { PageWithLayers } from "~/data/pages/get-page-with-layers";
 import { toast } from "@mapform/ui/components/toaster";
@@ -81,6 +81,16 @@ function EditBarInner({ optimisticPage, updatePageServer }: EditBarInnerProps) {
     };
   } | null>(null);
 
+  const handleOnMove = (e: MapboxEvent) => {
+    setMovedCoords({
+      lat: e.target.getCenter().lat,
+      lng: e.target.getCenter().lng,
+      zoom: e.target.getZoom(),
+      pitch: e.target.getPitch(),
+      bearing: e.target.getBearing(),
+    });
+  };
+
   // Update movedCoords when the step changes
   useEffect(() => {
     setMovedCoords({
@@ -92,15 +102,15 @@ function EditBarInner({ optimisticPage, updatePageServer }: EditBarInnerProps) {
     });
   }, [optimisticPage]);
 
-  // useEffect(() => {
-  //   if (map) {
-  //     map.on("moveend", handleOnMove);
+  useEffect(() => {
+    if (map) {
+      map.on("moveend", handleOnMove);
 
-  //     return () => {
-  //       map.off("moveend", handleOnMove);
-  //     };
-  //   }
-  // }, [map, optimisticPage]);
+      return () => {
+        map.off("moveend", handleOnMove);
+      };
+    }
+  }, [map, optimisticPage]);
 
   const roundLocation = (num: number) => Math.round(num * 1000000) / 1000000;
 

@@ -316,3 +316,4 @@ MapForm.displayName = "MapForm";
 
 export { MapProvider, useMap, SearchLocationMarker };
 export type { ViewState, MBMap };
+export type { MapboxEvent } from "mapbox-gl";
