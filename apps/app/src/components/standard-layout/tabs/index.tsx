@@ -5,6 +5,12 @@ import { TabLinks } from "./tab-links";
 import { Button } from "@mapform/ui/components/button";
 import { ChevronsLeftIcon, ChevronsRightIcon } from "lucide-react";
 import { useStandardLayout } from "../context";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@mapform/ui/components/tooltip";
 
 export function Tabs({ children }: { children: React.ReactNode }) {
   const { showNav, setShowNav, pathNav, tabs, action } = useStandardLayout();
@@ -14,17 +20,26 @@ export function Tabs({ children }: { children: React.ReactNode }) {
       <div className="flex items-center justify-between relative py-2 pl-4 pr-2 border-b h-[50px]">
         <div className="flex items-center">
           <div className="mr-2 text-muted-foreground">
-            <Button
-              onClick={() => setShowNav((prev) => !prev)}
-              size="icon-sm"
-              variant="ghost"
-            >
-              {showNav ? (
-                <ChevronsLeftIcon className="size-4" />
-              ) : (
-                <ChevronsRightIcon className="size-4" />
-              )}
-            </Button>
+            <TooltipProvider delayDuration={200}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    onClick={() => setShowNav((prev) => !prev)}
+                    size="icon-sm"
+                    variant="ghost"
+                  >
+                    {showNav ? (
+                      <ChevronsLeftIcon className="size-4" />
+                    ) : (
+                      <ChevronsRightIcon className="size-4" />
+                    )}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent collisionPadding={16}>
+                  {showNav ? "Hide Navigation" : "Show Navigation"}
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
           <h3 className="flex items-center text-base font-semibold leading-6 text-stone-900">
             {/* {name} */}
