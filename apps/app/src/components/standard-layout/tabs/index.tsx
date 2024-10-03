@@ -1,31 +1,14 @@
+"use client";
+
 import Link from "next/link";
 import { TabLinks } from "./tab-links";
 import { Button } from "@mapform/ui/components/button";
 import { ChevronsLeftIcon, ChevronsRightIcon } from "lucide-react";
-import { Dispatch, SetStateAction } from "react";
+import { useStandardLayout } from "../context";
 
-type PathLink = {
-  name: string;
-  href: string;
-};
+export function Tabs({ children }: { children: React.ReactNode }) {
+  const { showNav, setShowNav, pathNav, tabs, action } = useStandardLayout();
 
-export interface TabsProps {
-  pathNav: PathLink[];
-  tabs?: { name: string; href: string; isExternal?: boolean }[];
-  children: React.ReactNode;
-  action?: React.ReactNode;
-  showNav: boolean;
-  setShowNav: Dispatch<SetStateAction<boolean>>;
-}
-
-export function Tabs({
-  pathNav,
-  tabs = [],
-  action,
-  children,
-  showNav,
-  setShowNav,
-}: TabsProps) {
   return (
     <div className="flex flex-col flex-1 overflow-hidden">
       <div className="flex items-center justify-between relative py-2 pl-4 pr-2 border-b h-[50px]">

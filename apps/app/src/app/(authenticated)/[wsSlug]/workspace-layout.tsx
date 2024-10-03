@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { StandardLayout } from "~/components/standard-layout";
-import type { TabsProps } from "~/components/standard-layout/tabs";
+import type { TabsProps } from "~/components/standard-layout/context";
 import { getWorkspaceWithTeamspaces } from "~/data/workspaces/get-workspace-with-teamspaces";
 import { BottomContent, TopContent } from "./layout-content";
 

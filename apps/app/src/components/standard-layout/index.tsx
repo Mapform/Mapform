@@ -1,32 +1,29 @@
-"use client";
-
-import { Suspense, useState } from "react";
+import { Suspense } from "react";
 import { Skeleton } from "@mapform/ui/components/skeleton";
 import { Switcher } from "./switcher";
-import { Tabs, type TabsProps } from "./tabs";
-import { cn } from "@mapform/lib/classnames";
+import { Tabs } from "./tabs";
+import {
+  StandardLayoutProvider,
+  type StandardLayoutProviderProps,
+} from "./context";
 
 export function StandardLayout({
+  children,
   topContent,
   bottomContent,
   drawerContent,
   currentWorkspaceSlug,
-  ...tabProps
+  ...rest
 }: {
+  children: React.ReactNode;
   topContent?: React.ReactNode;
   bottomContent?: React.ReactNode;
-  currentWorkspaceSlug?: string;
-  drawerContent?: React.ReactNode;
-  children: React.ReactNode;
-} & Pick<TabsProps, "action" | "children" | "pathNav" | "tabs">) {
-  const [showNav, setShowNav] = useState(true);
-
+} & StandardLayoutProviderProps) {
   return (
-    <div
-      className={cn(
-        "flex flex-1 overflow-hidden transition-all",
-        !showNav ? "ml-[-300px]" : drawerContent ? "mr-[-300px]" : "mr-0"
-      )}
+    <StandardLayoutProvider
+      currentWorkspaceSlug={currentWorkspaceSlug}
+      drawerContent={drawerContent}
+      {...rest}
     >
       <div className="flex-1 overflow-hidden flex">
         {/* NAV */}
@@ -41,7 +38,7 @@ export function StandardLayout({
         </div>
 
         {/* TOP BAR */}
-        <Tabs showNav={showNav} setShowNav={setShowNav} {...tabProps} />
+        <Tabs>{children}</Tabs>
       </div>
 
       {drawerContent ? (
@@ -49,6 +46,6 @@ export function StandardLayout({
           {drawerContent}
         </div>
       ) : null}
-    </div>
+    </StandardLayoutProvider>
   );
 }
