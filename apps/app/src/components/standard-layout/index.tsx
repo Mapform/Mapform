@@ -22,35 +22,33 @@ export function StandardLayout({
   const [showNav, setShowNav] = useState(true);
 
   return (
-    <div className="relative flex-1">
-      <div
-        className={cn(
-          "flex absolute overflow-hidden top-0 h-screen transition-all"
-          // showNav ? "left-0" : "-left-[300px]"
-        )}
-      >
-        <div className="w-screen flex-shrink-0 flex-1 flex">
-          {/* NAV */}
-          <div className="flex flex-col flex-shrink-0 gap-y-5 overflow-y-auto bg-stone-50 px-4 py-2 w-[300px] border-r">
-            <nav className="flex flex-1 flex-col">
-              <Suspense fallback={<Skeleton className="h-7 w-full rounded" />}>
-                <Switcher currentWorkspaceSlug={currentWorkspaceSlug} />
-              </Suspense>
-              {topContent}
-              <div className="mt-auto">{bottomContent}</div>
-            </nav>
-          </div>
-
-          {/* TOP BAR */}
-          <Tabs showNav={showNav} setShowNav={setShowNav} {...tabProps} />
+    <div
+      className={cn(
+        "flex flex-1 overflow-hidden transition-all",
+        !showNav ? "ml-[-300px]" : drawerContent ? "mr-[-300px]" : "mr-0"
+      )}
+    >
+      <div className="flex-1 overflow-hidden flex">
+        {/* NAV */}
+        <div className="flex flex-col gap-y-5 overflow-y-auto bg-stone-50 px-4 py-2 w-[300px] border-r">
+          <nav className="flex flex-1 flex-col">
+            <Suspense fallback={<Skeleton className="h-7 w-full rounded" />}>
+              <Switcher currentWorkspaceSlug={currentWorkspaceSlug} />
+            </Suspense>
+            {topContent}
+            <div className="mt-auto">{bottomContent}</div>
+          </nav>
         </div>
 
-        {drawerContent ? (
-          <div className="flex flex-col w-[300px] flex-shrink-0 px-4 py-2 border-l">
-            {drawerContent}
-          </div>
-        ) : null}
+        {/* TOP BAR */}
+        <Tabs showNav={showNav} setShowNav={setShowNav} {...tabProps} />
       </div>
+
+      {drawerContent ? (
+        <div className="flex flex-col w-[300px] flex-shrink-0 px-4 py-2 border-l">
+          {drawerContent}
+        </div>
+      ) : null}
     </div>
   );
 }
