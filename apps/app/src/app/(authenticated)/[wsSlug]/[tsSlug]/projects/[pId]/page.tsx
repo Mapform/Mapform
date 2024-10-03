@@ -1,6 +1,5 @@
 // eslint-disable-next-line import/named -- It will work when React 19 is released
 import { cache } from "react";
-import { cn } from "@mapform/lib/classnames";
 import { MapProvider } from "@mapform/mapform";
 import { notFound, redirect } from "next/navigation";
 import { getPageData } from "~/data/datalayer/get-page-data";
@@ -10,7 +9,6 @@ import { listAvailableDatasets } from "~/data/datasets/list-available-datasets";
 import { ProjectProvider } from "./project-context";
 import Project from "./project";
 import { PageProvider } from "./page-context";
-import { WorkspaceLayout } from "../../../workspace-layout";
 
 const fetchProjectWithPages = cache(async (id: string) => {
   const projectWithPagesResponse = await getProjectWithPages({

@@ -10,10 +10,9 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@mapform/ui/components/tooltip";
-import { usePathname, useParams } from "next/navigation";
+import { useParams } from "next/navigation";
 
-export function Tabs({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname();
+export function TopNav({ children }: { children: React.ReactNode }) {
   const params = useParams<{
     wsSlug: string;
     tsSlug?: string;

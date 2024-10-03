@@ -8,7 +8,8 @@ import {
   useContext,
   useState,
 } from "react";
-import { WorkspaceWithTeamspaces } from "~/data/workspaces/get-workspace-with-teamspaces";
+import type { CurrentUserWorkspaceMemberships } from "~/data/workspace-memberships/get-current-user-workspace-memberships";
+import type { WorkspaceWithTeamspaces } from "~/data/workspaces/get-workspace-directory";
 
 type PathLink = {
   name: string;
@@ -16,17 +17,18 @@ type PathLink = {
 };
 
 export type StandardLayoutContext = {
-  currentWorkspaceSlug: string;
+  workspaceSlug: string;
   drawerContent?: React.ReactNode;
   showNav: boolean;
   setShowNav: Dispatch<SetStateAction<boolean>>;
   navSlot?: React.ReactNode;
   workspaceDirectory: NonNullable<WorkspaceWithTeamspaces>;
+  workspaceMemberships: CurrentUserWorkspaceMemberships;
 };
 
 export type StandardLayoutProviderProps = {
   children: React.ReactNode;
-  currentWorkspaceSlug: string;
+  workspaceSlug: string;
   drawerContent?: React.ReactNode;
   initialShowNav?: boolean;
   navSlot?: React.ReactNode;
@@ -39,12 +41,14 @@ export const useStandardLayout = () => useContext(StandardLayoutContext);
 
 export function StandardLayoutProvider({
   children,
-  currentWorkspaceSlug,
+  workspaceSlug,
   drawerContent,
   navSlot,
   initialShowNav = true,
   workspaceDirectory,
+  workspaceMemberships,
 }: {
+  workspaceMemberships: CurrentUserWorkspaceMemberships;
   workspaceDirectory: NonNullable<WorkspaceWithTeamspaces>;
 } & StandardLayoutProviderProps) {
   const [showNav, setShowNav] = useState(initialShowNav);
@@ -52,11 +56,12 @@ export function StandardLayoutProvider({
   return (
     <StandardLayoutContext.Provider
       value={{
-        currentWorkspaceSlug,
+        workspaceSlug,
         setShowNav,
         showNav,
         navSlot,
         workspaceDirectory,
+        workspaceMemberships,
       }}
     >
       <div

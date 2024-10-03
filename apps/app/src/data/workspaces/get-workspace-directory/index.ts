@@ -4,10 +4,10 @@ import { db } from "@mapform/db";
 import { projects, workspaces } from "@mapform/db/schema";
 import { eq, isNull } from "@mapform/db/utils";
 import { authAction } from "~/lib/safe-action";
-import { getWorkspaceWithTeamspacesSchema } from "./schema";
+import { getWorkspaceDirectorySchema } from "./schema";
 
-export const getWorkspaceWithTeamspaces = authAction
-  .schema(getWorkspaceWithTeamspacesSchema)
+export const getWorkspaceDirectory = authAction
+  .schema(getWorkspaceDirectorySchema)
   .action(({ parsedInput: { slug } }) => {
     return db.query.workspaces.findFirst({
       where: eq(workspaces.slug, slug),
@@ -49,5 +49,5 @@ export const getWorkspaceWithTeamspaces = authAction
   });
 
 export type WorkspaceWithTeamspaces = NonNullable<
-  Awaited<ReturnType<typeof getWorkspaceWithTeamspaces>>
+  Awaited<ReturnType<typeof getWorkspaceDirectory>>
 >["data"];

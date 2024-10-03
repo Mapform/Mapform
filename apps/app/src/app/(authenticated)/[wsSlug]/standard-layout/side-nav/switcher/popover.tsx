@@ -17,16 +17,16 @@ import Link from "next/link";
 import type { CurrentUserWorkspaceMemberships } from "~/data/workspace-memberships/get-current-user-workspace-memberships";
 
 interface SwitcherPopoverProps {
-  currentWorkspaceSlug?: string;
+  workspaceSlug?: string;
   workspaceMemberships: CurrentUserWorkspaceMemberships;
 }
 
 export function SwitcherPopover({
-  currentWorkspaceSlug,
+  workspaceSlug,
   workspaceMemberships,
 }: SwitcherPopoverProps) {
   const currentWorkspace = workspaceMemberships?.find(
-    (membership) => membership.workspace.slug === currentWorkspaceSlug
+    (membership) => membership.workspace.slug === workspaceSlug
   );
 
   return (
@@ -43,7 +43,8 @@ export function SwitcherPopover({
       </PopoverTrigger>
       <PopoverContent className="p-0 overflow-hidden">
         <div className="px-3 py-2 border-b">
-          <div className="w-full flex flex-col mb-2">
+          {/* TODO: Add link to access accounts. This could open a modal possibly */}
+          {/* <div className="w-full flex flex-col mb-2">
             <Link
               className="flex items-center justify-between hover:bg-stone-100 py-1.5 px-2 -mx-2 transition-colors rounded"
               href="/account"
@@ -60,7 +61,7 @@ export function SwitcherPopover({
                 </div>
               )}
             </Link>
-          </div>
+          </div> */}
           <h3 className="text-xs font-semibold leading-6 text-stone-400 mb-1">
             Workspaces
           </h3>

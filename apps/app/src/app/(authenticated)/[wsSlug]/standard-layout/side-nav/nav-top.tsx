@@ -1,47 +1,16 @@
 "use client";
 
-import {
-  ChevronDownIcon,
-  HomeIcon,
-  ListOrderedIcon,
-  MapIcon,
-  SettingsIcon,
-  type LucideIcon,
-} from "lucide-react";
-import Link from "next/link";
 import { cn } from "@mapform/lib/classnames";
 import { AccordionPrimitive } from "@mapform/ui/components/accordion";
-import { useRouter, usePathname } from "next/navigation";
-import type { WorkspaceWithTeamspaces } from "~/data/workspaces/get-workspace-with-teamspaces";
+import { HomeIcon, SettingsIcon, ChevronDownIcon, MapIcon } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { NavLink } from "./nav-link";
+import { useStandardLayout } from "../context";
 
-const bottomLinks = [
-  { href: "https://todo.com", icon: ListOrderedIcon, label: "Roadmap" },
-];
-
-export function BottomContent() {
-  return (
-    <>
-      <h3 className="text-xs font-semibold leading-6 text-stone-400 mb-1">
-        Resources
-      </h3>
-      <div className="text-sm text-stone-700">
-        {bottomLinks.map((link) => (
-          <NavLink key={link.href} {...link} />
-        ))}
-      </div>
-    </>
-  );
-}
-
-export function TopContent({
-  workspaceSlug,
-  workspaceWithTeamspaces,
-}: {
-  workspaceSlug: string;
-  workspaceWithTeamspaces: NonNullable<WorkspaceWithTeamspaces>;
-}) {
+export function NavTop() {
   const router = useRouter();
   const pathname = usePathname();
+  const { workspaceDirectory, workspaceSlug } = useStandardLayout();
 
   const topLinks = [
     { href: `/${workspaceSlug}`, icon: HomeIcon, label: "Home" },
@@ -56,7 +25,7 @@ export function TopContent({
     return pathname.includes(`/${workspaceSlug}/${teamspaceSlug}/${projectId}`);
   };
 
-  const defaultOpenTeamspaces = workspaceWithTeamspaces.teamspaces
+  const defaultOpenTeamspaces = workspaceDirectory.teamspaces
     .filter((teamspace) => {
       return teamspace.projects.some((project) =>
         isProjectActive(teamspace.slug, project.id)
@@ -84,7 +53,7 @@ export function TopContent({
           type="multiple"
         >
           <ul>
-            {workspaceWithTeamspaces.teamspaces.map((teamspace) => (
+            {workspaceDirectory.teamspaces.map((teamspace) => (
               <AccordionPrimitive.Item key={teamspace.id} value={teamspace.id}>
                 <div
                   className={cn(
@@ -137,36 +106,5 @@ export function TopContent({
         </AccordionPrimitive.Root>
       </section>
     </div>
-  );
-}
-
-function NavLink(link: {
-  href: string;
-  icon: LucideIcon;
-  label: string;
-  isActive?: boolean;
-  nested?: boolean;
-}) {
-  return (
-    <Link
-      className={cn(
-        "-mx-3 hover:bg-stone-100 px-3 py-1.5 rounded transition-colors flex items-center justify-between mb-[2px]",
-        {
-          "bg-stone-100 text-stone-900": link.isActive,
-        }
-      )}
-      href={link.href}
-    >
-      <div
-        className={cn("flex items-center gap-2 overflow-hidden", {
-          "pl-4": link.nested,
-        })}
-      >
-        <div className="h-4 w-4 flex items-center justify-center flex-shrink-0">
-          <link.icon className="h-4 w-4 flex-shrink-0" />
-        </div>
-        <span className="truncate">{link.label}</span>
-      </div>
-    </Link>
   );
 }
