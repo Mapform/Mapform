@@ -1,17 +1,21 @@
 import { notFound } from "next/navigation";
 import { StandardLayout } from "~/components/standard-layout";
+import type { TabsProps } from "~/components/standard-layout/tabs";
 import { getWorkspaceWithTeamspaces } from "~/data/workspaces/get-workspace-with-teamspaces";
 import { BottomContent, TopContent } from "./layout-content";
 
-export default async function Layout({
+export async function WorkspaceLayout({
   children,
-  params,
+  wsSlug,
+  drawerContent,
+  ...tabProps
 }: {
   children: React.ReactNode;
-  params: { wsSlug: string };
-}) {
+  wsSlug: string;
+  drawerContent?: React.ReactNode;
+} & Omit<TabsProps, "showNav" | "setShowNav">) {
   const getWorkspaceWithTeamspacesResponse = await getWorkspaceWithTeamspaces({
-    slug: params.wsSlug,
+    slug: wsSlug,
   });
   const workspaceWithTeamspaces = getWorkspaceWithTeamspacesResponse?.data;
 
@@ -22,13 +26,15 @@ export default async function Layout({
   return (
     <StandardLayout
       bottomContent={<BottomContent />}
-      currentWorkspaceSlug={params.wsSlug}
+      currentWorkspaceSlug={wsSlug}
+      drawerContent={drawerContent}
       topContent={
         <TopContent
-          workspaceSlug={params.wsSlug}
+          workspaceSlug={wsSlug}
           workspaceWithTeamspaces={workspaceWithTeamspaces}
         />
       }
+      {...tabProps}
     >
       {children}
     </StandardLayout>

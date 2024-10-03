@@ -27,6 +27,11 @@ export const getTeamspaceWithProjects = authAction
         eq(teamspaces.workspaceId, workspace.id)
       ),
       with: {
+        workspace: {
+          columns: {
+            name: true,
+          },
+        },
         projects: {
           columns: {
             id: true,

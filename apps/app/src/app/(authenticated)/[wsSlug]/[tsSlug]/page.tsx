@@ -2,7 +2,7 @@ import Link from "next/link";
 import { format } from "date-fns";
 import { getTeamspaceWithProjects } from "~/data/teamspaces/get-teamspace-with-projects";
 import { CreateDialog } from "./dialog";
-import WorkspaceLayout from "./workspace-layout";
+import { WorkspaceLayout } from "../workspace-layout";
 
 export default async function WorkspaceForms({
   params,
@@ -22,9 +22,25 @@ export default async function WorkspaceForms({
   return (
     <WorkspaceLayout
       action={<CreateDialog teamspaceId={teamspace.id} />}
-      name={teamspace.name}
-      tsSlug={params.tsSlug}
       wsSlug={params.wsSlug}
+      pathNav={[
+        { name: teamspace.workspace.name, href: `/${params.wsSlug}` },
+        { name: teamspace.name, href: `/${params.wsSlug}/${params.tsSlug}` },
+      ]}
+      tabs={[
+        {
+          name: "Forms",
+          href: `/${params.wsSlug}/${params.tsSlug}`,
+        },
+        {
+          name: "Datasets",
+          href: `/${params.wsSlug}/${params.tsSlug}/datasets`,
+        },
+        {
+          name: "Settings",
+          href: `/${params.wsSlug}/${params.tsSlug}/settings`,
+        },
+      ]}
     >
       <ul className="flex flex-wrap gap-4">
         {teamspace.projects.map((project) => (

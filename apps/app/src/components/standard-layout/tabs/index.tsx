@@ -1,29 +1,51 @@
-"use client";
-
-import { cn } from "@mapform/lib/classnames";
-import { Button } from "@mapform/ui/components/button";
-import { ArrowUpRightIcon } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { TabLinks } from "./tab-links";
+import { Button } from "@mapform/ui/components/button";
+import { ChevronsLeftIcon, ChevronsRightIcon } from "lucide-react";
+import { Dispatch, SetStateAction } from "react";
 
-interface TabsProps {
-  name?: string;
-  nameSections: { name: string; href?: string }[];
+type PathLink = {
+  name: string;
+  href: string;
+};
+
+export interface TabsProps {
+  pathNav: PathLink[];
   tabs?: { name: string; href: string; isExternal?: boolean }[];
   children: React.ReactNode;
   action?: React.ReactNode;
+  showNav: boolean;
+  setShowNav: Dispatch<SetStateAction<boolean>>;
 }
 
-export function Tabs({ nameSections, tabs = [], action, children }: TabsProps) {
-  const pathname = usePathname();
-
+export function Tabs({
+  pathNav,
+  tabs = [],
+  action,
+  children,
+  showNav,
+  setShowNav,
+}: TabsProps) {
   return (
     <div className="flex flex-col flex-1 overflow-hidden">
       <div className="flex items-center justify-between relative py-2 pl-4 pr-2 border-b h-[50px]">
         <div className="flex items-center">
+          <div className="mr-2 text-muted-foreground">
+            <Button
+              onClick={() => setShowNav((prev) => !prev)}
+              size="icon-sm"
+              variant="ghost"
+            >
+              {showNav ? (
+                <ChevronsLeftIcon className="size-4" />
+              ) : (
+                <ChevronsRightIcon className="size-4" />
+              )}
+            </Button>
+          </div>
           <h3 className="flex items-center text-base font-semibold leading-6 text-stone-900">
             {/* {name} */}
-            {nameSections.map((section, index) => {
+            {pathNav.map((section, index) => {
               return (
                 <div key={section.name}>
                   {section.href ? (
@@ -31,7 +53,7 @@ export function Tabs({ nameSections, tabs = [], action, children }: TabsProps) {
                   ) : (
                     section.name
                   )}
-                  {index < nameSections.length - 1 && (
+                  {index < pathNav.length - 1 && (
                     <span className="mx-3 text-stone-200 text-sm">/</span>
                   )}
                 </div>
@@ -39,22 +61,7 @@ export function Tabs({ nameSections, tabs = [], action, children }: TabsProps) {
             })}
           </h3>
           <nav className="flex space-x-1 mx-8">
-            {tabs.map((tab) => (
-              <Link href={tab.href} key={tab.name}>
-                <Button
-                  className={cn(
-                    tab.href === pathname && "bg-accent text-accent-foreground"
-                  )}
-                  size="sm"
-                  variant="ghost"
-                >
-                  {tab.name}
-                  {tab.isExternal ? (
-                    <ArrowUpRightIcon className="w-4 h-4 ml-0.5 -mr-1" />
-                  ) : null}
-                </Button>
-              </Link>
-            ))}
+            <TabLinks tabs={tabs} />
           </nav>
         </div>
         <div>{action}</div>
