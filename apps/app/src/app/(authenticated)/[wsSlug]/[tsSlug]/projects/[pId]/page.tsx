@@ -104,6 +104,7 @@ export default async function ProjectPage({
           pageWithLayers={pageWithLayers}
         >
           <WorkspaceLayout
+            initialShowNav={false}
             pathNav={[
               {
                 name: projectWithPages.teamspace.name,
@@ -129,7 +130,7 @@ export default async function ProjectPage({
                   ]
                 : []),
             ]}
-            wsSlug={params.wsSlug}
+            currentWorkspaceSlug={params.wsSlug}
             drawerContent={<div>Test</div>}
           >
             <div className="-m-4 flex flex-col flex-1 overflow-hidden bg-background">

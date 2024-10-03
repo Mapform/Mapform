@@ -22,7 +22,7 @@ export default async function HomePage({
       pathNav={[
         { name: workspaceWithTeamspaces.name, href: `/${params.wsSlug}` },
       ]}
-      wsSlug={params.wsSlug}
+      currentWorkspaceSlug={params.wsSlug}
     >
       <div className="flex justify-center items-center w-full">
         <div className="text-muted-foreground flex flex-col gap-2 items-center">

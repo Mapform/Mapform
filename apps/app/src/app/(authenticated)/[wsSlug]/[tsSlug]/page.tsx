@@ -22,7 +22,7 @@ export default async function WorkspaceForms({
   return (
     <WorkspaceLayout
       action={<CreateDialog teamspaceId={teamspace.id} />}
-      wsSlug={params.wsSlug}
+      currentWorkspaceSlug={params.wsSlug}
       pathNav={[
         { name: teamspace.workspace.name, href: `/${params.wsSlug}` },
         { name: teamspace.name, href: `/${params.wsSlug}/${params.tsSlug}` },

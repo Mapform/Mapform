@@ -14,24 +14,25 @@ type PathLink = {
   href: string;
 };
 
-export interface TabsProps {
-  pathNav: PathLink[];
-  tabs: { name: string; href: string; isExternal?: boolean }[];
-  action?: React.ReactNode;
-}
-
 export type StandardLayoutContext = {
   currentWorkspaceSlug?: string;
   drawerContent?: React.ReactNode;
   showNav: boolean;
   setShowNav: Dispatch<SetStateAction<boolean>>;
-} & TabsProps;
+  pathNav: PathLink[];
+  tabs: { name: string; href: string; isExternal?: boolean }[];
+  action?: React.ReactNode;
+};
 
 export type StandardLayoutProviderProps = {
   children: React.ReactNode;
   currentWorkspaceSlug?: string;
   drawerContent?: React.ReactNode;
-} & TabsProps;
+  initialShowNav?: boolean;
+  pathNav: PathLink[];
+  tabs?: { name: string; href: string; isExternal?: boolean }[];
+  action?: React.ReactNode;
+};
 
 export const StandardLayoutContext = createContext<StandardLayoutContext>(
   {} as StandardLayoutContext
@@ -43,10 +44,11 @@ export function StandardLayoutProvider({
   currentWorkspaceSlug,
   drawerContent,
   pathNav,
-  tabs,
+  tabs = [],
   action,
+  initialShowNav = true,
 }: StandardLayoutProviderProps) {
-  const [showNav, setShowNav] = useState(true);
+  const [showNav, setShowNav] = useState(initialShowNav);
 
   return (
     <StandardLayoutContext.Provider
