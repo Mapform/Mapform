@@ -103,40 +103,9 @@ export default async function ProjectPage({
           pageData={pageData}
           pageWithLayers={pageWithLayers}
         >
-          <WorkspaceLayout
-            initialShowNav={false}
-            pathNav={[
-              {
-                name: projectWithPages.teamspace.name,
-                href: `/${params.wsSlug}/${params.tsSlug}`,
-              },
-              {
-                name: projectWithPages.name,
-                href: `/${params.wsSlug}/${params.tsSlug}/projects/${params.pId}`,
-              },
-            ]}
-            tabs={[
-              {
-                name: "Create",
-                href: `/${params.wsSlug}/${params.tsSlug}/projects/${params.pId}`,
-              },
-              ...(projectWithPages.submissionsDataset
-                ? [
-                    {
-                      name: "Submissions",
-                      href: `/${params.wsSlug}/${params.tsSlug}/datasets/${projectWithPages.submissionsDataset.id}`,
-                      isExternal: true,
-                    },
-                  ]
-                : []),
-            ]}
-            currentWorkspaceSlug={params.wsSlug}
-            drawerContent={<div>Test</div>}
-          >
-            <div className="-m-4 flex flex-col flex-1 overflow-hidden bg-background">
-              <Project />
-            </div>
-          </WorkspaceLayout>
+          <div className="-m-4 flex flex-col flex-1 overflow-hidden bg-background">
+            <Project />
+          </div>
         </PageProvider>
       </ProjectProvider>
     </MapProvider>

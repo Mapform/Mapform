@@ -6,8 +6,10 @@ import {
   StandardLayoutProvider,
   type StandardLayoutProviderProps,
 } from "./context";
+import { getWorkspaceWithTeamspaces } from "~/data/workspaces/get-workspace-with-teamspaces";
+import { notFound } from "next/navigation";
 
-export function StandardLayout({
+export async function StandardLayout({
   children,
   topContent,
   bottomContent,
@@ -19,10 +21,20 @@ export function StandardLayout({
   topContent?: React.ReactNode;
   bottomContent?: React.ReactNode;
 } & StandardLayoutProviderProps) {
+  const getWorkspaceWithTeamspacesResponse = await getWorkspaceWithTeamspaces({
+    slug: currentWorkspaceSlug,
+  });
+  const workspaceDirectory = getWorkspaceWithTeamspacesResponse?.data;
+
+  if (!workspaceDirectory) {
+    return notFound();
+  }
+
   return (
     <StandardLayoutProvider
       currentWorkspaceSlug={currentWorkspaceSlug}
       drawerContent={drawerContent}
+      workspaceDirectory={workspaceDirectory}
       {...rest}
     >
       <div className="flex-1 overflow-hidden flex">

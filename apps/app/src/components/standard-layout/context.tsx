@@ -8,6 +8,7 @@ import {
   useContext,
   useState,
 } from "react";
+import { WorkspaceWithTeamspaces } from "~/data/workspaces/get-workspace-with-teamspaces";
 
 type PathLink = {
   name: string;
@@ -15,23 +16,20 @@ type PathLink = {
 };
 
 export type StandardLayoutContext = {
-  currentWorkspaceSlug?: string;
+  currentWorkspaceSlug: string;
   drawerContent?: React.ReactNode;
   showNav: boolean;
   setShowNav: Dispatch<SetStateAction<boolean>>;
-  pathNav: PathLink[];
-  tabs: { name: string; href: string; isExternal?: boolean }[];
-  action?: React.ReactNode;
+  navSlot?: React.ReactNode;
+  workspaceDirectory: NonNullable<WorkspaceWithTeamspaces>;
 };
 
 export type StandardLayoutProviderProps = {
   children: React.ReactNode;
-  currentWorkspaceSlug?: string;
+  currentWorkspaceSlug: string;
   drawerContent?: React.ReactNode;
   initialShowNav?: boolean;
-  pathNav: PathLink[];
-  tabs?: { name: string; href: string; isExternal?: boolean }[];
-  action?: React.ReactNode;
+  navSlot?: React.ReactNode;
 };
 
 export const StandardLayoutContext = createContext<StandardLayoutContext>(
@@ -43,11 +41,12 @@ export function StandardLayoutProvider({
   children,
   currentWorkspaceSlug,
   drawerContent,
-  pathNav,
-  tabs = [],
-  action,
+  navSlot,
   initialShowNav = true,
-}: StandardLayoutProviderProps) {
+  workspaceDirectory,
+}: {
+  workspaceDirectory: NonNullable<WorkspaceWithTeamspaces>;
+} & StandardLayoutProviderProps) {
   const [showNav, setShowNav] = useState(initialShowNav);
 
   return (
@@ -56,9 +55,8 @@ export function StandardLayoutProvider({
         currentWorkspaceSlug,
         setShowNav,
         showNav,
-        pathNav,
-        tabs,
-        action,
+        navSlot,
+        workspaceDirectory,
       }}
     >
       <div

@@ -26,6 +26,13 @@ export const getWorkspaceWithTeamspaces = authAction
             createdAt: true,
           },
           with: {
+            datasets: {
+              columns: {
+                id: true,
+                name: true,
+                createdAt: true,
+              },
+            },
             projects: {
               columns: {
                 id: true,
