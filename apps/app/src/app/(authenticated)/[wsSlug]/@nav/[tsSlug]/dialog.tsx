@@ -29,15 +29,14 @@ import {
   createProjectSchema,
   type CreateProjectSchema,
 } from "~/data/projects/create-project/schema";
+import { useStandardLayout } from "../../standard-layout/context";
 
-export function CreateDialog({
-  teamspaceId,
-  disabled,
-}: {
-  teamspaceId: string;
-  disabled?: boolean;
-}) {
+export function CreateDialog({ tsSlug }: { tsSlug: string }) {
   const [open, setOpen] = useState(false);
+  const { workspaceDirectory } = useStandardLayout();
+  const teamspaceId = workspaceDirectory?.teamspaces.find(
+    (ts) => ts.slug === tsSlug
+  )?.id;
   const form = useForm<CreateProjectSchema>({
     defaultValues: {
       name: "",
@@ -64,17 +63,13 @@ export function CreateDialog({
   });
 
   const onSubmit = (values: CreateProjectSchema) => {
-    if (disabled) return;
-
     execute(values);
   };
 
   return (
     <Dialog onOpenChange={setOpen} open={open}>
       <DialogTrigger asChild>
-        <Button disabled={disabled} size="sm">
-          Create Project
-        </Button>
+        <Button size="sm">Create Project</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <Form {...form}>

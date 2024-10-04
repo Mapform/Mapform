@@ -42,8 +42,8 @@ export function TopNav({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex flex-col flex-1 overflow-hidden">
-      <div className="flex items-center py-2 pl-4 pr-2 border-b h-[50px]">
-        <nav className="flex items-center">
+      <div className="flex items-center py-2 px-4 border-b h-[50px]">
+        <nav className="flex flex-1 items-center">
           <div className="mr-2 text-muted-foreground">
             <TooltipProvider delayDuration={200}>
               <Tooltip>
@@ -82,7 +82,7 @@ export function TopNav({ children }: { children: React.ReactNode }) {
               );
             })}
           </h3>
-          <div className="ml-8">{navSlot}</div>
+          <div className="ml-8 flex-1">{navSlot}</div>
         </nav>
       </div>
       <div className="flex flex-col flex-1 p-4 overflow-hidden">{children}</div>

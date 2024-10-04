@@ -8,7 +8,7 @@ export default function Nav({
 }) {
   return (
     <NavSlot
-      // actions={<CreateDialog teamspaceId={teamspace.id} />}
+      actions={<CreateDialog tsSlug={params.tsSlug} />}
       tabs={[
         {
           name: "Forms",
