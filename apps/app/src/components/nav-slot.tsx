@@ -17,7 +17,7 @@ export function NavSlot({
   const pathname = usePathname();
 
   return (
-    <div className="flex items-center">
+    <div className="flex items-center gap-1">
       {tabs.map((tab) => (
         <Link href={tab.href} key={tab.name}>
           <Button

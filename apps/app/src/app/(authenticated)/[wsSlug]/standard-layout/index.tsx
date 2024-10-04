@@ -11,7 +11,7 @@ import {
 
 export async function StandardLayout({
   children,
-  drawerContent,
+  drawer,
   workspaceSlug,
   ...rest
 }: {
@@ -24,8 +24,8 @@ export async function StandardLayout({
 
   return (
     <StandardLayoutProvider
+      drawer={drawer}
       workspaceSlug={workspaceSlug}
-      drawerContent={drawerContent}
       workspaceDirectory={workspaceDirectory}
       workspaceMemberships={workspaceMemberships}
       {...rest}
@@ -35,9 +35,9 @@ export async function StandardLayout({
         <TopNav>{children}</TopNav>
       </div>
 
-      {drawerContent ? (
+      {drawer ? (
         <div className="flex flex-col w-[300px] flex-shrink-0 px-4 py-2 border-l">
-          {drawerContent}
+          {drawer}
         </div>
       ) : null}
     </StandardLayoutProvider>

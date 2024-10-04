@@ -1,6 +1,7 @@
 "use client";
 
 import { cn } from "@mapform/lib/classnames";
+import { useParams } from "next/navigation";
 import {
   createContext,
   Dispatch,
@@ -11,14 +12,8 @@ import {
 import type { CurrentUserWorkspaceMemberships } from "~/data/workspace-memberships/get-current-user-workspace-memberships";
 import type { WorkspaceWithTeamspaces } from "~/data/workspaces/get-workspace-directory";
 
-type PathLink = {
-  name: string;
-  href: string;
-};
-
 export type StandardLayoutContext = {
   workspaceSlug: string;
-  drawerContent?: React.ReactNode;
   showNav: boolean;
   setShowNav: Dispatch<SetStateAction<boolean>>;
   navSlot?: React.ReactNode;
@@ -29,8 +24,7 @@ export type StandardLayoutContext = {
 export type StandardLayoutProviderProps = {
   children: React.ReactNode;
   workspaceSlug: string;
-  drawerContent?: React.ReactNode;
-  initialShowNav?: boolean;
+  drawer?: React.ReactNode;
   navSlot?: React.ReactNode;
 };
 
@@ -41,17 +35,19 @@ export const useStandardLayout = () => useContext(StandardLayoutContext);
 
 export function StandardLayoutProvider({
   children,
+  drawer,
   workspaceSlug,
-  drawerContent,
   navSlot,
-  initialShowNav = true,
   workspaceDirectory,
   workspaceMemberships,
 }: {
   workspaceMemberships: CurrentUserWorkspaceMemberships;
   workspaceDirectory: NonNullable<WorkspaceWithTeamspaces>;
 } & StandardLayoutProviderProps) {
-  const [showNav, setShowNav] = useState(initialShowNav);
+  const params = useParams<{
+    pId?: string;
+  }>();
+  const [showNav, setShowNav] = useState(params.pId ? false : true);
 
   return (
     <StandardLayoutContext.Provider
@@ -67,7 +63,7 @@ export function StandardLayoutProvider({
       <div
         className={cn(
           "flex flex-1 overflow-hidden transition-all",
-          !showNav ? "ml-[-300px]" : drawerContent ? "mr-[-300px]" : "mr-0"
+          !showNav ? "ml-[-300px]" : drawer ? "mr-[-300px]" : "mr-0"
         )}
       >
         {children}
