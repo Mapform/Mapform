@@ -55,9 +55,19 @@ export function StandardLayoutProvider({
     <StandardLayoutContext.Provider
       value={{
         navSlot,
-        setShowNav,
+        setShowNav: (prev) => {
+          if (!showNav && showDrawer) {
+            setShowDrawer(false);
+          }
+          setShowNav(!showNav);
+        },
         showNav,
-        setShowDrawer,
+        setShowDrawer: () => {
+          if (!showDrawer && showNav) {
+            setShowNav(false);
+          }
+          setShowDrawer(!showDrawer);
+        },
         showDrawer,
         workspaceDirectory,
         workspaceMemberships,
@@ -67,10 +77,9 @@ export function StandardLayoutProvider({
       <div
         className={cn(
           "flex flex-1 overflow-hidden transition-all",
-          !showNav && showDrawer && "ml-[-300px] mr-0",
-          !showNav && !showDrawer && "ml-[-300px]"
-          // !showNav ? "ml-[-300px]" : drawer ? "mr-[-300px]" : "mr-0"
-          // Boolean(drawer) && showDrawer && "mr-[-300px]"
+          !showNav && "ml-[-300px]",
+          !showDrawer && "mr-[-300px]"
+          // showNav && showDrawer && "ml-0 mr-[-300px]"
         )}
       >
         {children}
