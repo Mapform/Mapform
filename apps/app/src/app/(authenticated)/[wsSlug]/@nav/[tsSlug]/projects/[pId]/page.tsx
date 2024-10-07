@@ -8,6 +8,7 @@ import {
 import { SendIcon } from "lucide-react";
 import { getProjectWithTeamspace } from "~/data/projects/get-project-with-teamspace";
 import { ShareContent } from "./share-content";
+import TogglePages from "./toggle-pages";
 
 export default async function Nav({
   params,
@@ -26,21 +27,24 @@ export default async function Nav({
   return (
     <NavSlot
       actions={
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button size="sm" variant="ghost">
-              <SendIcon className="h-4 w-4 mr-2" />
-              Share
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent collisionPadding={16}>
-            <ShareContent
-              isDirty={project.isDirty}
-              numberOfVersions={project.childProjects.length}
-              projectId={params.pId}
-            />
-          </PopoverContent>
-        </Popover>
+        <div className="flex gap-1 items-center">
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button size="sm" variant="ghost">
+                <SendIcon className="h-4 w-4 mr-2" />
+                Share
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent collisionPadding={16}>
+              <ShareContent
+                isDirty={project.isDirty}
+                numberOfVersions={project.childProjects.length}
+                projectId={params.pId}
+              />
+            </PopoverContent>
+          </Popover>
+          <TogglePages />
+        </div>
       }
       tabs={[
         {

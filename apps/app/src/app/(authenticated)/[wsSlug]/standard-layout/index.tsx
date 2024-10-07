@@ -8,6 +8,7 @@ import {
   StandardLayoutProvider,
   type StandardLayoutProviderProps,
 } from "./context";
+import { has } from "@mapform/lib/lodash";
 
 export async function StandardLayout({
   children,
@@ -35,11 +36,7 @@ export async function StandardLayout({
         <TopNav>{children}</TopNav>
       </div>
 
-      {drawer ? (
-        <div className="flex flex-col w-[300px] flex-shrink-0 px-4 py-2 border-l">
-          {drawer}
-        </div>
-      ) : null}
+      {drawer}
     </StandardLayoutProvider>
   );
 }
