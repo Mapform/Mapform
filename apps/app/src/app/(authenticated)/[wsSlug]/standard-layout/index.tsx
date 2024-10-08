@@ -31,7 +31,7 @@ export async function StandardLayout({
       {...rest}
     >
       <div className="flex-1 overflow-hidden flex">
-        <SideNav workspaceSlug={workspaceSlug} />
+        <SideNav />
         <TopNav>{children}</TopNav>
       </div>
 

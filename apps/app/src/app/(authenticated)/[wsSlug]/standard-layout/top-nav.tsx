@@ -44,28 +44,26 @@ export function TopNav({ children }: { children: React.ReactNode }) {
     <div className="flex flex-col flex-1 overflow-hidden">
       <div className="flex items-center py-2 px-4 border-b h-[50px]">
         <nav className="flex flex-1 items-center">
-          <div className="mr-2 text-muted-foreground">
-            <TooltipProvider delayDuration={200}>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    onClick={() => setShowNav((prev) => !prev)}
-                    size="icon-sm"
-                    variant="ghost"
-                  >
-                    {showNav ? (
-                      <ChevronsLeftIcon className="size-4" />
-                    ) : (
+          {!showNav ? (
+            <div className="mr-2 text-muted-foreground">
+              <TooltipProvider delayDuration={200}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      onClick={() => setShowNav((prev) => !prev)}
+                      size="icon-sm"
+                      variant="ghost"
+                    >
                       <MenuIcon className="size-4" />
-                    )}
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent collisionPadding={16}>
-                  {showNav ? "Hide Navigation" : "Show Navigation"}
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </div>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent collisionPadding={16}>
+                    {showNav ? "Hide Navigation" : "Show Navigation"}
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
+          ) : null}
           <h3 className="flex items-center text-base font-semibold leading-6 text-stone-900">
             {pathNav.map((section, index) => {
               return (

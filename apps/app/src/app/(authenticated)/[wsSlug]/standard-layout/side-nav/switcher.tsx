@@ -5,29 +5,49 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@mapform/ui/components/popover";
-import { CheckIcon, ChevronDown, LogOutIcon, PlusIcon } from "lucide-react";
+import {
+  CheckIcon,
+  ChevronDown,
+  ChevronsLeftIcon,
+  LogOutIcon,
+  PlusIcon,
+} from "lucide-react";
 import { signOut } from "next-auth/react";
 import Link from "next/link";
 import { useStandardLayout } from "../context";
+import { Button } from "@mapform/ui/components/button";
 
 export function Switcher() {
-  const { workspaceSlug, workspaceMemberships } = useStandardLayout();
+  const { workspaceSlug, workspaceMemberships, setShowNav } =
+    useStandardLayout();
   const currentWorkspace = workspaceMemberships?.find(
     (membership) => membership.workspace.slug === workspaceSlug
   );
 
   return (
     <Popover>
-      <PopoverTrigger className="-mx-3 hover:bg-stone-100 px-3 py-1.5 rounded transition-colors flex items-center justify-between">
-        <div className="flex gap-3 items-center overflow-hidden">
-          {/* TODO: Add custom icon support */}
-          <div className="text-md">🗺️</div>
-          <div className="text-left text-sm font-medium truncate">
-            {currentWorkspace?.workspace.name ?? "My Account"}
+      <div className="mt-[-1.5px] -mx-3 hover:bg-stone-100 rounded transition-colors flex items-center justify-between">
+        <PopoverTrigger className="flex-1 pl-3 py-1.5">
+          <div className="flex gap-3 items-center overflow-hidden">
+            {/* TODO: Add custom icon support */}
+            <div className="text-md">🗺️</div>
+            <div className="text-left text-sm font-medium truncate">
+              {currentWorkspace?.workspace.name ?? "My Account"}
+            </div>
+            <ChevronDown className="text-stone-500 w-4 h-4 flex-shrink-0" />
           </div>
-        </div>
-        <ChevronDown className="text-stone-500 w-4 h-4 flex-shrink-0" />
-      </PopoverTrigger>
+        </PopoverTrigger>
+        <Button
+          className="hover:bg-stone-200 mr-1"
+          onClick={() => {
+            setShowNav(false);
+          }}
+          size="icon-sm"
+          variant="ghost"
+        >
+          <ChevronsLeftIcon className="size-4" />
+        </Button>
+      </div>
       <PopoverContent className="p-0 overflow-hidden">
         <div className="px-3 py-2 border-b">
           {/* TODO: Add link to access accounts. This could open a modal possibly */}
