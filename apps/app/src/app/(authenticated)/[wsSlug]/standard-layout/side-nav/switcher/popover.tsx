@@ -8,10 +8,17 @@ import {
 import { CheckIcon, ChevronDown, LogOutIcon, PlusIcon } from "lucide-react";
 import { signOut } from "next-auth/react";
 import Link from "next/link";
-import { useStandardLayout } from "../context";
+import type { CurrentUserWorkspaceMemberships } from "~/data/workspace-memberships/get-current-user-workspace-memberships";
 
-export function Switcher() {
-  const { workspaceSlug, workspaceMemberships } = useStandardLayout();
+interface SwitcherPopoverProps {
+  workspaceSlug?: string;
+  workspaceMemberships: CurrentUserWorkspaceMemberships;
+}
+
+export function SwitcherPopover({
+  workspaceSlug,
+  workspaceMemberships,
+}: SwitcherPopoverProps) {
   const currentWorkspace = workspaceMemberships?.find(
     (membership) => membership.workspace.slug === workspaceSlug
   );

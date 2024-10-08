@@ -9,12 +9,12 @@ const bottomLinks = [
   { href: "https://todo.com", icon: ListOrderedIcon, label: "Roadmap" },
 ];
 
-export function SideNav() {
+export function SideNav({ workspaceSlug }: { workspaceSlug: string }) {
   return (
     <div className="flex flex-col gap-y-5 overflow-y-auto bg-stone-50 px-4 py-2 w-[300px] border-r">
       <nav className="flex flex-1 flex-col">
         <Suspense fallback={<Skeleton className="h-7 w-full rounded" />}>
-          <Switcher />
+          <Switcher workspaceSlug={workspaceSlug} />
         </Suspense>
         <NavTop />
         <div className="mt-auto">
