@@ -44,7 +44,7 @@ export function TopNav({ children }: { children: React.ReactNode }) {
     <div className="flex flex-col flex-1 overflow-hidden">
       <div className="flex items-center py-2 px-4 border-b h-[50px]">
         <nav className="flex flex-1 items-center">
-          <div className="mr-2 text-muted-foreground">
+          <div className="mr-2">
             <TooltipProvider delayDuration={200}>
               <Tooltip>
                 <TooltipTrigger asChild>

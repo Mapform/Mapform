@@ -1,3 +1,5 @@
+"use client";
+
 import { SquarePlusIcon } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import {
@@ -16,14 +18,12 @@ import {
 import { useMap } from "@mapform/mapform";
 import { createPage } from "~/data/pages/create-page";
 import { updatePageOrder } from "~/data/pages/update-page-order";
-import { PageBarButton } from "../page-bar-button";
-import { useProject } from "../../project-context";
-import { usePage } from "../../page-context";
+import { useProject } from "./project-context";
+// import { usePage } from "../../page-context";
 import { Item } from "./item";
 
 export function PagePicker() {
   const { optimisticProjectWithPages, updateProjectWithPages } = useProject();
-  const { setActivePage } = usePage();
   const { map } = useMap();
   const { execute: executeCreatePage, status: createPageStatus } = useAction(
     createPage,
@@ -33,7 +33,7 @@ export function PagePicker() {
 
         if (!newPageData) return;
 
-        setActivePage(newPageData);
+        // setActivePage(newPageData);
       },
     }
   );
@@ -75,7 +75,7 @@ export function PagePicker() {
   };
 
   return (
-    <div className="flex gap-4">
+    <div className="flex flex-col gap-4">
       <DndContext
         collisionDetection={closestCenter}
         onDragEnd={reorderSteps}
@@ -90,7 +90,7 @@ export function PagePicker() {
           })}
         </SortableContext>
       </DndContext>
-      <PageBarButton
+      {/* <PageBarButton
         Icon={SquarePlusIcon}
         isDisabled={createPageStatus === "executing"}
         isLoading={createPageStatus === "executing"}
@@ -118,7 +118,7 @@ export function PagePicker() {
         }}
       >
         Add Page
-      </PageBarButton>
+      </PageBarButton> */}
     </div>
   );
 }
