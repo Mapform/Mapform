@@ -1,7 +1,11 @@
 "use client";
 
 import { cn } from "@mapform/lib/classnames";
-import { useParams } from "next/navigation";
+import {
+  useParams,
+  usePathname,
+  useSelectedLayoutSegment,
+} from "next/navigation";
 import {
   createContext,
   Dispatch,
@@ -50,14 +54,21 @@ export function StandardLayoutProvider({
   }>();
   const [showNav, setShowNav] = useState(params.pId ? false : true);
   const [showDrawer, setShowDrawer] = useState(Boolean(params.pId));
+  const segment = useSelectedLayoutSegment("drawer");
+  // [...] is a catch-all which returns null
+  const nonActiveDrawerSegments = [null, "[...]"];
+  const drawerExists = !nonActiveDrawerSegments.includes(segment);
 
   return (
     <StandardLayoutContext.Provider
       value={{
         navSlot,
-        setShowNav: (prev) => {
+        setShowNav: () => {
           if (!showNav && showDrawer) {
             setShowDrawer(false);
+          }
+          if (showNav) {
+            setShowDrawer(true);
           }
           setShowNav(!showNav);
         },
@@ -78,8 +89,7 @@ export function StandardLayoutProvider({
         className={cn(
           "flex flex-1 overflow-hidden transition-all",
           !showNav && "ml-[-300px]",
-          !showDrawer && "mr-[-300px]"
-          // showNav && showDrawer && "ml-0 mr-[-300px]"
+          !showDrawer && drawerExists && "mr-[-300px]"
         )}
       >
         {children}
