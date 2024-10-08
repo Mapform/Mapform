@@ -2,7 +2,7 @@
 
 import { useStandardLayout } from "~/app/(authenticated)/[wsSlug]/standard-layout/context";
 import { Button } from "@mapform/ui/components/button";
-import { ListIcon } from "lucide-react";
+import { ChevronsRightIcon, ListIcon } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -22,7 +22,11 @@ export default function TogglePages() {
             size="icon-sm"
             variant="ghost"
           >
-            <ListIcon className="size-4" />
+            {showDrawer ? (
+              <ChevronsRightIcon className="size-4" />
+            ) : (
+              <ListIcon className="size-4" />
+            )}
           </Button>
         </TooltipTrigger>
         <TooltipContent>

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Button } from "@mapform/ui/components/button";
-import { ChevronsLeftIcon, ChevronsRightIcon } from "lucide-react";
+import { ChevronsLeftIcon, MenuIcon } from "lucide-react";
 import { useStandardLayout } from "./context";
 import {
   Tooltip,
@@ -56,7 +56,7 @@ export function TopNav({ children }: { children: React.ReactNode }) {
                     {showNav ? (
                       <ChevronsLeftIcon className="size-4" />
                     ) : (
-                      <ChevronsRightIcon className="size-4" />
+                      <MenuIcon className="size-4" />
                     )}
                   </Button>
                 </TooltipTrigger>

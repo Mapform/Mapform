@@ -5,13 +5,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@mapform/ui/components/popover";
-import {
-  CheckIcon,
-  ChevronDown,
-  LogOutIcon,
-  PlusIcon,
-  UserIcon,
-} from "lucide-react";
+import { CheckIcon, ChevronDown, LogOutIcon, PlusIcon } from "lucide-react";
 import { signOut } from "next-auth/react";
 import Link from "next/link";
 import type { CurrentUserWorkspaceMemberships } from "~/data/workspace-memberships/get-current-user-workspace-memberships";
