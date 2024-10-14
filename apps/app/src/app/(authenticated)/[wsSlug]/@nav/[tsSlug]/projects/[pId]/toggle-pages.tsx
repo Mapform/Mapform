@@ -2,7 +2,7 @@
 
 import { useStandardLayout } from "~/app/(authenticated)/[wsSlug]/standard-layout/context";
 import { Button } from "@mapform/ui/components/button";
-import { ChevronsRightIcon, ListIcon } from "lucide-react";
+import { ChevronsRightIcon, PanelRightOpenIcon } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -11,27 +11,19 @@ import {
 } from "@mapform/ui/components/tooltip";
 
 export default function TogglePages() {
-  const { showDrawer, setShowDrawer } = useStandardLayout();
+  const { showDrawer, toggleDrawer } = useStandardLayout();
+
+  if (showDrawer) return null;
 
   return (
     <TooltipProvider delayDuration={200}>
       <Tooltip>
         <TooltipTrigger asChild>
-          <Button
-            onClick={() => setShowDrawer(!showDrawer)}
-            size="icon-sm"
-            variant="ghost"
-          >
-            {showDrawer ? (
-              <ChevronsRightIcon className="size-4" />
-            ) : (
-              <ListIcon className="size-4" />
-            )}
+          <Button onClick={toggleDrawer} size="icon-xs" variant="ghost">
+            <PanelRightOpenIcon className="size-5" />
           </Button>
         </TooltipTrigger>
-        <TooltipContent>
-          {showDrawer ? "Hide Pages" : "Show Pages"}
-        </TooltipContent>
+        <TooltipContent>Show Pages</TooltipContent>
       </Tooltip>
     </TooltipProvider>
   );

@@ -2,15 +2,7 @@
 
 import { cn } from "@mapform/lib/classnames";
 import { useParams, usePathname } from "next/navigation";
-import {
-  createContext,
-  Dispatch,
-  SetStateAction,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import type { CurrentUserWorkspaceMemberships } from "~/data/workspace-memberships/get-current-user-workspace-memberships";
 import type { WorkspaceWithTeamspaces } from "~/data/workspaces/get-workspace-directory";
 
@@ -18,9 +10,9 @@ export type StandardLayoutContext = {
   drawerRef: React.RefObject<HTMLDivElement>;
   workspaceSlug: string;
   showNav: boolean;
-  setShowNav: Dispatch<SetStateAction<boolean>>;
+  toggleNav: () => void;
   showDrawer: boolean;
-  setShowDrawer: Dispatch<SetStateAction<boolean>>;
+  toggleDrawer: () => void;
   navSlot?: React.ReactNode;
   workspaceDirectory: NonNullable<WorkspaceWithTeamspaces>;
   workspaceMemberships: CurrentUserWorkspaceMemberships;
@@ -73,7 +65,7 @@ export function StandardLayoutProvider({
       value={{
         drawerRef,
         navSlot,
-        setShowNav: () => {
+        toggleNav: () => {
           if (!showNav && showDrawer) {
             setShowDrawer(false);
           }
@@ -83,7 +75,7 @@ export function StandardLayoutProvider({
           setShowNav(!showNav);
         },
         showNav,
-        setShowDrawer: () => {
+        toggleDrawer: () => {
           if (!showDrawer && showNav) {
             setShowNav(false);
           }

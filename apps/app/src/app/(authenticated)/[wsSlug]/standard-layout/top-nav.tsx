@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Button } from "@mapform/ui/components/button";
-import { ChevronsLeftIcon, MenuIcon } from "lucide-react";
+import { PanelLeftOpenIcon } from "lucide-react";
 import { useStandardLayout } from "./context";
 import {
   Tooltip,
@@ -19,7 +19,7 @@ export function TopNav({ children }: { children: React.ReactNode }) {
     pId?: string;
     dId?: string;
   }>();
-  const { showNav, setShowNav, navSlot, workspaceDirectory } =
+  const { showNav, toggleNav, navSlot, workspaceDirectory } =
     useStandardLayout();
 
   const workspace = workspaceDirectory.name;
@@ -44,28 +44,22 @@ export function TopNav({ children }: { children: React.ReactNode }) {
     <div className="flex flex-col flex-1 overflow-hidden">
       <div className="flex items-center py-2 px-4 border-b h-[50px]">
         <nav className="flex flex-1 items-center">
-          <div className="mr-2">
-            <TooltipProvider delayDuration={200}>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    onClick={() => setShowNav((prev) => !prev)}
-                    size="icon-sm"
-                    variant="ghost"
-                  >
-                    {showNav ? (
-                      <ChevronsLeftIcon className="size-4" />
-                    ) : (
-                      <MenuIcon className="size-4" />
-                    )}
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent collisionPadding={16}>
-                  {showNav ? "Hide Navigation" : "Show Navigation"}
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </div>
+          {!showNav ? (
+            <div className="mr-2 flex">
+              <TooltipProvider delayDuration={200}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button onClick={toggleNav} size="icon-xs" variant="ghost">
+                      <PanelLeftOpenIcon className="size-5" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent collisionPadding={16}>
+                    {showNav ? "Hide Navigation" : "Show Navigation"}
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
+          ) : null}
           <h3 className="flex items-center text-base font-semibold leading-6 text-stone-900">
             {pathNav.map((section, index) => {
               return (

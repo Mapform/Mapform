@@ -91,8 +91,8 @@ export function NewLayerDrawerContent() {
         <h2 className="text-base font-medium">Edit Layer</h2>
         <div className="-mr-2">
           <DrawerTrigger asChild>
-            <Button size="icon-sm" variant="ghost">
-              <ChevronsLeftIcon className="h-4 w-4" />
+            <Button size="icon-xs" variant="ghost">
+              <ChevronsLeftIcon className="size-5" />
             </Button>
           </DrawerTrigger>
         </div>

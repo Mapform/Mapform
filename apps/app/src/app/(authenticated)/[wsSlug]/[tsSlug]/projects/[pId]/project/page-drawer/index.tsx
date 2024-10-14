@@ -103,8 +103,8 @@ export function PageDrawerContent() {
         <h2 className="text-base font-medium">Edit Page</h2>
         <div className="-mr-2">
           <DrawerTrigger asChild>
-            <Button size="icon-sm" variant="ghost">
-              <ChevronsLeftIcon className="size-4" />
+            <Button size="icon-xs" variant="ghost">
+              <ChevronsLeftIcon className="size-5" />
             </Button>
           </DrawerTrigger>
         </div>
