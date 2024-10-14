@@ -25,8 +25,13 @@ import { EditBar } from "./edit-bar";
 import { useStandardLayout } from "~/app/(authenticated)/[wsSlug]/standard-layout/context";
 
 function Project() {
-  const { optimisticPage, isEditingPage, setEditMode, optimisticPageData } =
-    usePage();
+  const {
+    optimisticPage,
+    isEditingPage,
+    setEditMode,
+    optimisticPageData,
+    openMapEditor,
+  } = usePage();
 
   const { executeAsync } = useAction(updatePageAction);
 
@@ -94,6 +99,7 @@ function Project() {
             });
           }}
           pageData={optimisticPageData}
+          showBlocknote={!openMapEditor}
         >
           <div
             className={cn(

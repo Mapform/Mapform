@@ -42,24 +42,9 @@ export function Drawer() {
   if (openMapEditor) {
     return (
       <Portal.Root container={drawerRef.current}>
-        <div className="h-[50px] flex items-center gap-1 -mx-2">
+        <div className="h-[50px] flex items-center gap-1 -mr-2">
+          <h3 className="font-semibold mr-auto">Layers</h3>
           <TooltipProvider delayDuration={200}>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  onClick={() => {
-                    setOpenMapEditor(false);
-                  }}
-                  variant="ghost"
-                  size="icon-sm"
-                >
-                  <ChevronsRightIcon className="size-5" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Close Map Editor</TooltipContent>
-            </Tooltip>
-
-            <h3 className="font-semibold mr-auto">Layers</h3>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button onClick={() => {}} variant="ghost" size="icon-sm">

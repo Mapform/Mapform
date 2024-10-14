@@ -5,7 +5,6 @@ import React, { useState } from "react";
 import type { Page } from "@mapform/db/schema";
 import { Form, useForm, zodResolver } from "@mapform/ui/components/form";
 import type { z } from "zod";
-import type { MapboxEvent } from "mapbox-gl";
 import { cn } from "@mapform/lib/classnames";
 import type { FormSchema } from "@mapform/lib/schemas/form-step-schema";
 import { CustomBlockContext } from "@mapform/blocknote";
@@ -39,6 +38,7 @@ interface MapFormProps {
   currentPage: Page;
   defaultFormValues?: Record<string, string>;
   contentViewType?: "full" | "partial" | "closed";
+  showBlocknote?: boolean;
   onPrev?: () => void;
   onLoad?: () => void;
   onTitleChange?: (content: string) => void;
@@ -64,6 +64,7 @@ export function MapForm({
   onImageUpload,
   defaultFormValues,
   onDescriptionChange,
+  showBlocknote = true,
 }: MapFormProps) {
   const [showMapMobile, setShowMapMobile] = useState(false);
   const blocknoteStepSchema = getFormSchemaFromBlockNote(
@@ -129,101 +130,103 @@ export function MapForm({
             setIsSelectingPinLocationFor,
           }}
         >
-          <div
-            className={cn(
-              "group absolute bg-background z-10 w-full overflow-hidden",
-              currentPage.contentViewType === "text"
-                ? "h-full z-10"
-                : currentPage.contentViewType === "split"
-                  ? `h-full ${contentWidth}`
-                  : `h-initial ${contentWidth} rounded-lg shadow-lg md:m-2`
-            )}
-            ref={drawerRef}
-          >
+          {showBlocknote ? (
             <div
               className={cn(
-                "h-full w-full flex flex-col prose max-md:max-w-full mx-auto relative",
-                {
-                  "px-9": editable && currentPage.contentViewType === "text",
-                  "pl-9": editable && currentPage.contentViewType !== "text",
-                  "max-h-[300px]": currentPage.contentViewType === "map",
-                }
+                "group absolute bg-background z-10 w-full overflow-hidden",
+                currentPage.contentViewType === "text"
+                  ? "h-full z-10"
+                  : currentPage.contentViewType === "split"
+                    ? `h-full ${contentWidth}`
+                    : `h-initial ${contentWidth} rounded-lg shadow-lg md:m-2`
               )}
+              ref={drawerRef}
             >
-              {/* MOBILE MAP */}
-              {showMapMobile ? (
-                <div className="relative flex flex-1 md:hidden">
-                  {renderMap()}
-                </div>
-              ) : null}
-
               <div
-                className={cn("overflow-y-auto", {
-                  "hidden md:block": showMapMobile,
-                  "md:p-2 md:pb-0": currentPage.contentViewType === "split",
-                })}
+                className={cn(
+                  "h-full w-full flex flex-col prose max-md:max-w-full mx-auto relative",
+                  {
+                    "px-9": editable && currentPage.contentViewType === "text",
+                    "pl-9": editable && currentPage.contentViewType !== "text",
+                    "max-h-[300px]": currentPage.contentViewType === "map",
+                  }
+                )}
               >
-                <Blocknote
-                  currentPage={currentPage}
-                  description={currentPage.content ?? undefined}
-                  editable={editable}
-                  isPage
-                  key={currentPage.id}
-                  onDescriptionChange={onDescriptionChange}
-                  onPrev={onPrev}
-                  onTitleChange={onTitleChange}
-                  title={currentPage.title}
-                />
-              </div>
-              <div className="mt-auto flex justify-between px-4 py-2">
-                <div className="gap-2">
+                {/* MOBILE MAP */}
+                {showMapMobile ? (
+                  <div className="relative flex flex-1 md:hidden">
+                    {renderMap()}
+                  </div>
+                ) : null}
+
+                <div
+                  className={cn("overflow-y-auto", {
+                    "hidden md:block": showMapMobile,
+                    "md:p-2 md:pb-0": currentPage.contentViewType === "split",
+                  })}
+                >
+                  <Blocknote
+                    currentPage={currentPage}
+                    description={currentPage.content ?? undefined}
+                    editable={editable}
+                    isPage
+                    key={currentPage.id}
+                    onDescriptionChange={onDescriptionChange}
+                    onPrev={onPrev}
+                    onTitleChange={onTitleChange}
+                    title={currentPage.title}
+                  />
+                </div>
+                <div className="mt-auto flex justify-between px-4 py-2">
+                  <div className="gap-2">
+                    <Button
+                      disabled={editable}
+                      onClick={onPrev}
+                      size="icon"
+                      type="button"
+                      variant="ghost"
+                    >
+                      <ArrowLeftIcon />
+                    </Button>
+                  </div>
+                  <div
+                    className={
+                      currentPage.contentViewType === "text"
+                        ? "block"
+                        : "md:hidden"
+                    }
+                  >
+                    <Button
+                      onClick={() => {
+                        setShowMapMobile((prev) => !prev);
+                      }}
+                      variant="secondary"
+                    >
+                      {showMapMobile ? (
+                        <>
+                          <LetterTextIcon className="size-5 mr-2" />
+                          Show Text
+                        </>
+                      ) : (
+                        <>
+                          <MapIcon className="size-5 mr-2" />
+                          Show Map
+                        </>
+                      )}
+                    </Button>
+                  </div>
                   <Button
                     disabled={editable}
-                    onClick={onPrev}
                     size="icon"
-                    type="button"
+                    type="submit"
                     variant="ghost"
                   >
-                    <ArrowLeftIcon />
+                    <ArrowRightIcon />
                   </Button>
                 </div>
-                <div
-                  className={
-                    currentPage.contentViewType === "text"
-                      ? "block"
-                      : "md:hidden"
-                  }
-                >
-                  <Button
-                    onClick={() => {
-                      setShowMapMobile((prev) => !prev);
-                    }}
-                    variant="secondary"
-                  >
-                    {showMapMobile ? (
-                      <>
-                        <LetterTextIcon className="size-5 mr-2" />
-                        Show Text
-                      </>
-                    ) : (
-                      <>
-                        <MapIcon className="size-5 mr-2" />
-                        Show Map
-                      </>
-                    )}
-                  </Button>
-                </div>
-                <Button
-                  disabled={editable}
-                  size="icon"
-                  type="submit"
-                  variant="ghost"
-                >
-                  <ArrowRightIcon />
-                </Button>
               </div>
             </div>
-          </div>
+          ) : null}
 
           {/* MARKER EDITOR */}
           {/* {searchLocation ? (
