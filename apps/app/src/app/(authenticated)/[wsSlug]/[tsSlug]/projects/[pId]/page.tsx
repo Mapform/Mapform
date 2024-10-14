@@ -9,6 +9,7 @@ import { listAvailableDatasets } from "~/data/datasets/list-available-datasets";
 import { ProjectProvider } from "./project-context";
 import Project from "./project";
 import { PageProvider } from "./page-context";
+import { Drawer } from "./drawer";
 
 const fetchProjectWithPages = cache(async (id: string) => {
   const projectWithPagesResponse = await getProjectWithPages({
@@ -104,6 +105,7 @@ export default async function ProjectPage({
           <div className="-m-4 flex flex-col flex-1 overflow-hidden bg-background">
             <Project />
           </div>
+          <Drawer />
         </PageProvider>
       </ProjectProvider>
     </MapProvider>

@@ -1,22 +1,22 @@
 "use client";
 
 import { cn } from "@mapform/lib/classnames";
-import {
-  useParams,
-  usePathname,
-  useSelectedLayoutSegment,
-} from "next/navigation";
+import { useParams } from "next/navigation";
 import {
   createContext,
   Dispatch,
   SetStateAction,
   useContext,
+  useRef,
   useState,
 } from "react";
 import type { CurrentUserWorkspaceMemberships } from "~/data/workspace-memberships/get-current-user-workspace-memberships";
 import type { WorkspaceWithTeamspaces } from "~/data/workspaces/get-workspace-directory";
 
 export type StandardLayoutContext = {
+  drawerExists: boolean;
+  setDrawerExists: Dispatch<SetStateAction<boolean>>;
+  drawerRef: React.RefObject<HTMLDivElement>;
   workspaceSlug: string;
   showNav: boolean;
   setShowNav: Dispatch<SetStateAction<boolean>>;
@@ -52,17 +52,18 @@ export function StandardLayoutProvider({
   const params = useParams<{
     pId?: string;
   }>();
+  const drawerRef = useRef<HTMLDivElement | null>(null);
+  const [drawerExists, setDrawerExists] = useState(false);
   const [showNav, setShowNav] = useState(params.pId ? false : true);
-  const [showDrawer, setShowDrawer] = useState(Boolean(params.pId));
-  const segment = useSelectedLayoutSegment("drawer");
-  // [...] is a catch-all which returns null
-  const nonActiveDrawerSegments = [null, "[...]"];
-  const drawerExists = !nonActiveDrawerSegments.includes(segment);
+  const [showDrawer, setShowDrawer] = useState(true);
 
   return (
     <StandardLayoutContext.Provider
       value={{
+        drawerRef,
         navSlot,
+        drawerExists,
+        setDrawerExists,
         setShowNav: () => {
           if (!showNav && showDrawer) {
             setShowDrawer(false);
@@ -93,6 +94,8 @@ export function StandardLayoutProvider({
         )}
       >
         {children}
+
+        <div id="drawer" ref={drawerRef} />
       </div>
     </StandardLayoutContext.Provider>
   );

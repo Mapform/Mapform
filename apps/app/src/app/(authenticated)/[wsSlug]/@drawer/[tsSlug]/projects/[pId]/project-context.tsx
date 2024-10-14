@@ -65,6 +65,40 @@ export function ProjectProvider({
     }
   }, [page, projectWithPages.pages, pathname, router, createQueryString]);
 
+  const setActivePage = (page?: {
+    id: string;
+    center: { x: number; y: number };
+    zoom: number;
+    pitch: number;
+    bearing: number;
+  }) => {
+    // Get current search params
+    const current = new URLSearchParams(Array.from(searchParams.entries()));
+
+    // Clear the param if value is not provided
+    if (!page?.id) {
+      current.delete("page");
+    } else {
+      current.set("page", page.id);
+
+      // map?.flyTo({
+      //   center: [page.center.x, page.center.y],
+      //   zoom: page.zoom,
+      //   pitch: page.pitch,
+      //   bearing: page.bearing,
+      //   duration: 1000,
+      // });
+    }
+
+    // Remove editMode
+    current.delete("edit");
+
+    const search = current.toString();
+    const query = search ? `?${search}` : "";
+
+    router.push(`${pathname}${query}`);
+  };
+
   return (
     <ProjectContext.Provider
       value={{
