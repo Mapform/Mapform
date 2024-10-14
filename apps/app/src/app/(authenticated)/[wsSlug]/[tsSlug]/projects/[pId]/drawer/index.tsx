@@ -21,7 +21,7 @@ import { useProject } from "../project-context";
 export function Drawer() {
   const { map } = useMap();
   const isClient = useIsClient();
-  const { setActivePage } = usePage();
+  const { setActivePage, openMapEditor, setOpenMapEditor } = usePage();
   const { optimisticProjectWithPages, updateProjectWithPages } = useProject();
   const { drawerRef, toggleDrawer } = useStandardLayout();
   const { execute: executeCreatePage, status: createPageStatus } = useAction(
@@ -38,6 +38,41 @@ export function Drawer() {
   );
 
   if (!isClient) return null;
+
+  if (openMapEditor) {
+    return (
+      <Portal.Root container={drawerRef.current}>
+        <div className="h-[50px] flex items-center gap-1 -mx-2">
+          <TooltipProvider delayDuration={200}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  onClick={() => {
+                    setOpenMapEditor(false);
+                  }}
+                  variant="ghost"
+                  size="icon-sm"
+                >
+                  <ChevronsRightIcon className="size-5" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Close Map Editor</TooltipContent>
+            </Tooltip>
+
+            <h3 className="font-semibold mr-auto">Layers</h3>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button onClick={() => {}} variant="ghost" size="icon-sm">
+                  <PlusIcon className="size-5" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>New Layer</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
+      </Portal.Root>
+    );
+  }
 
   return (
     <Portal.Root container={drawerRef.current}>

@@ -17,6 +17,7 @@ import { SearchLocationMarker as MapMarker } from "@mapform/mapform";
 import { SearchLocationMarker } from "./search-location-marker";
 import { usePage } from "../../page-context";
 import { CommandSearch } from "./command-search";
+import { useStandardLayout } from "~/app/(authenticated)/[wsSlug]/standard-layout/context";
 
 interface EditBarProps {
   updatePageServer: (args: {
@@ -54,9 +55,9 @@ export function EditBar({ updatePageServer }: EditBarProps) {
 
 function EditBarInner({ optimisticPage, updatePageServer }: EditBarInnerProps) {
   const { map } = useMap();
-  const [openEditor, setOpenEditor] = useState(false);
   const [openSearch, setOpenSearch] = useState(false);
-  const { updatePage } = usePage();
+  const { updatePage, openMapEditor, setOpenMapEditor } = usePage();
+  const { showDrawer, toggleDrawer } = useStandardLayout();
 
   const [movedCoords, setMovedCoords] = useState<{
     lat: number;
@@ -121,11 +122,14 @@ function EditBarInner({ optimisticPage, updatePageServer }: EditBarInnerProps) {
     movedCoords.pitch !== optimisticPage.pitch ||
     movedCoords.bearing !== optimisticPage.bearing;
 
-  if (!openEditor) {
+  if (!openMapEditor) {
     return (
       <Button
         onClick={() => {
-          setOpenEditor(true);
+          if (!showDrawer) {
+            toggleDrawer();
+          }
+          setOpenMapEditor(true);
         }}
         size="sm"
       >
@@ -229,7 +233,7 @@ function EditBarInner({ optimisticPage, updatePageServer }: EditBarInnerProps) {
           </TooltipTrigger>
           <TooltipContent>Save Map Position</TooltipContent>
         </Tooltip>
-        <Button onClick={() => setOpenEditor(false)} size="sm">
+        <Button onClick={() => setOpenMapEditor(false)} size="sm">
           Cancel
         </Button>
       </TooltipProvider>
