@@ -1,6 +1,6 @@
 "use client";
 
-import { PanelLeftIcon } from "lucide-react";
+import { EllipsisIcon, FileIcon } from "lucide-react";
 import {
   ContextMenu,
   ContextMenuContent,
@@ -15,7 +15,6 @@ import { deletePage } from "~/data/pages/delete-page";
 import { usePage } from "../page-context";
 import { useProject } from "../project-context";
 import { startTransition } from "react";
-import { Button } from "@mapform/ui/components/button";
 
 interface ItemProps {
   page: ProjectWithPages["pages"][number];
@@ -68,7 +67,16 @@ export function Item({ page }: ItemProps) {
       <ContextMenu>
         <ContextMenuTrigger>
           <DragHandle id={page.id}>
-            <Button>{page.title || "Untitled"}</Button>
+            {/* <Button>{page.title || "Untitled"}</Button> */}
+            <div className="-mx-3 hover:bg-stone-100 px-3 py-1.5 rounded transition-colors flex items-center justify-between mb-[2px] group">
+              <div className="flex flex-1 items-center gap-2 overflow-hidden">
+                <FileIcon className="size-4 flex items-center justify-center flex-shrink-0" />
+                <span className="truncate mr-auto">
+                  {page.title || "Untitled"}
+                </span>
+                <EllipsisIcon className="size-4 flex items-center justify-center flex-shrink-0 invisible transition-opacity group-hover:visible" />
+              </div>
+            </div>
             {/* <PageBarButton
               Icon={PanelLeftIcon}
               isActive={isActive}

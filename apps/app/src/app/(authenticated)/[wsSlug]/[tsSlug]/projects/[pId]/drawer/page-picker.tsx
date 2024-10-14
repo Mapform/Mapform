@@ -75,7 +75,7 @@ export function PagePicker() {
   };
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col">
       <DndContext
         collisionDetection={closestCenter}
         onDragEnd={reorderSteps}
