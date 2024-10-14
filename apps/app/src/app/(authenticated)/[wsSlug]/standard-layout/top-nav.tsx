@@ -43,13 +43,18 @@ export function TopNav({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex flex-col flex-1 overflow-hidden">
       <div className="flex items-center py-2 px-4 border-b h-[50px]">
-        <nav className="flex flex-1 items-center">
+        <nav className="flex flex-1 items-center -mr-2">
           {!showNav ? (
             <div className="mr-2 flex">
               <TooltipProvider delayDuration={200}>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button onClick={toggleNav} size="icon-xs" variant="ghost">
+                    <Button
+                      className="-ml-2"
+                      onClick={toggleNav}
+                      size="icon-sm"
+                      variant="ghost"
+                    >
                       <PanelLeftOpenIcon className="size-5" />
                     </Button>
                   </TooltipTrigger>

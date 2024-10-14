@@ -1,6 +1,5 @@
 "use client";
 
-import { SquarePlusIcon } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import {
   DndContext,
@@ -12,17 +11,18 @@ import {
 import type { DragEndEvent } from "@dnd-kit/core";
 import {
   arrayMove,
-  horizontalListSortingStrategy,
   SortableContext,
+  verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { useMap } from "@mapform/mapform";
 import { createPage } from "~/data/pages/create-page";
 import { updatePageOrder } from "~/data/pages/update-page-order";
 import { useProject } from "../project-context";
-// import { usePage } from "../../page-context";
+import { usePage } from "../page-context";
 import { Item } from "./item";
 
 export function PagePicker() {
+  const { setActivePage } = usePage();
   const { optimisticProjectWithPages, updateProjectWithPages } = useProject();
   const { map } = useMap();
   const { execute: executeCreatePage, status: createPageStatus } = useAction(
@@ -33,7 +33,7 @@ export function PagePicker() {
 
         if (!newPageData) return;
 
-        // setActivePage(newPageData);
+        setActivePage(newPageData);
       },
     }
   );
@@ -83,7 +83,7 @@ export function PagePicker() {
       >
         <SortableContext
           items={dragPages}
-          strategy={horizontalListSortingStrategy}
+          strategy={verticalListSortingStrategy}
         >
           {dragPages.map((page) => {
             return <Item key={page.id} page={page} />;

@@ -19,7 +19,7 @@ export default function TogglePages() {
     <TooltipProvider delayDuration={200}>
       <Tooltip>
         <TooltipTrigger asChild>
-          <Button onClick={toggleDrawer} size="icon-xs" variant="ghost">
+          <Button onClick={toggleDrawer} size="icon-sm" variant="ghost">
             <PanelRightOpenIcon className="size-5" />
           </Button>
         </TooltipTrigger>

@@ -22,6 +22,7 @@ import { AddLocationDropdown } from "./add-location-dropdown";
 import { SearchLocationMarker } from "./edit-bar/search-location-marker";
 import { cn } from "@mapform/lib/classnames";
 import { EditBar } from "./edit-bar";
+import { useStandardLayout } from "~/app/(authenticated)/[wsSlug]/standard-layout/context";
 
 function Project() {
   const { optimisticPage, isEditingPage, setEditMode, optimisticPageData } =
