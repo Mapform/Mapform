@@ -64,82 +64,51 @@ function Project() {
 
   return (
     <div className="p-4 flex-1 flex justify-center overflow-hidden">
-      <div className="flex flex-col flex-1 overflow-hidden">
-        <div className="flex justify-between mb-4 overflow-hidden">
-          <div className="flex overflow-x-auto no-scrollbar">
-            <PagePicker />
-          </div>
-          {/* Edit controls */}
-          <div className="flex gap-1">
-            <PageDrawerRoot
-              key={optimisticPage.id}
-              onOpenChange={(isOpen) => {
-                setEditMode(isOpen);
-              }}
-              open={isEditingPage}
-            >
-              <PageDrawerTrigger asChild>
-                <PageBarButton
-                  Icon={Settings2Icon}
-                  isActive={isEditingPage}
-                  onClick={() => {
-                    setEditMode(!isEditingPage);
-                  }}
-                >
-                  Edit Page
-                </PageBarButton>
-              </PageDrawerTrigger>
-              <PageDrawerContent />
-            </PageDrawerRoot>
-          </div>
-        </div>
+      <div className="flex-1 flex">
+        <MapForm
+          currentPage={optimisticPage}
+          editFields={{
+            AddLocationDropdown,
+          }}
+          editable
+          mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
+          onDescriptionChange={(content: { content: CustomBlock[] }) => {
+            void debouncedUpdatePageServer({ content });
+          }}
+          onImageUpload={async (file: File) => {
+            const formData = new FormData();
+            formData.append("image", file);
 
-        <div className="flex-1 flex">
-          <MapForm
-            currentPage={optimisticPage}
-            editFields={{
-              AddLocationDropdown,
-            }}
-            editable
-            mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
-            onDescriptionChange={(content: { content: CustomBlock[] }) => {
-              void debouncedUpdatePageServer({ content });
-            }}
-            onImageUpload={async (file: File) => {
-              const formData = new FormData();
-              formData.append("image", file);
+            const { success, error } = await uploadImage(formData);
 
-              const { success, error } = await uploadImage(formData);
+            if (error) {
+              toast(error);
+              return null;
+            }
 
-              if (error) {
-                toast(error);
-                return null;
-              }
-
-              return success?.url || null;
-            }}
-            onTitleChange={(title: string) => {
-              void debouncedUpdatePageServer({
-                title,
-              });
-            }}
-            pageData={optimisticPageData}
+            return success?.url || null;
+          }}
+          onTitleChange={(title: string) => {
+            void debouncedUpdatePageServer({
+              title,
+            });
+          }}
+          pageData={optimisticPageData}
+        >
+          <div
+            className={cn(
+              "flex items-center bg-primary rounded-lg px-2 py-0 absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10",
+              optimisticPage.contentViewType === "split"
+                ? "left-1/2 md:left-[calc(50%+180px)]"
+                : "left-1/2"
+            )}
           >
-            <div
-              className={cn(
-                "flex items-center bg-primary rounded-lg px-2 py-0 absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10",
-                optimisticPage.contentViewType === "split"
-                  ? "left-1/2 md:left-[calc(50%+180px)]"
-                  : "left-1/2"
-              )}
-            >
-              <EditBar
-                key={optimisticPage.id}
-                updatePageServer={updatePageServer}
-              />
-            </div>
-          </MapForm>
-        </div>
+            <EditBar
+              key={optimisticPage.id}
+              updatePageServer={updatePageServer}
+            />
+          </div>
+        </MapForm>
       </div>
     </div>
   );
