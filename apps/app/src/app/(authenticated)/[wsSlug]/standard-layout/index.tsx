@@ -11,7 +11,6 @@ import {
 
 export async function StandardLayout({
   children,
-  drawer,
   workspaceSlug,
   ...rest
 }: {
@@ -24,7 +23,6 @@ export async function StandardLayout({
 
   return (
     <StandardLayoutProvider
-      drawer={drawer}
       workspaceSlug={workspaceSlug}
       workspaceDirectory={workspaceDirectory}
       workspaceMemberships={workspaceMemberships}

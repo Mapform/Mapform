@@ -12,8 +12,8 @@ import type { ProjectWithPages } from "~/data/projects/get-project-with-pages";
 // import { PageBarButton } from "../page-bar-button";
 import { useAction } from "next-safe-action/hooks";
 import { deletePage } from "~/data/pages/delete-page";
-// import { usePage } from "../../page-context";
-import { useProject } from "./project-context";
+import { usePage } from "../page-context";
+import { useProject } from "../project-context";
 import { startTransition } from "react";
 import { Button } from "@mapform/ui/components/button";
 
@@ -22,7 +22,7 @@ interface ItemProps {
 }
 
 export function Item({ page }: ItemProps) {
-  // const { setActivePage, optimisticPage } = usePage();
+  const { setActivePage, optimisticPage } = usePage();
   const { optimisticProjectWithPages, updateProjectWithPages } = useProject();
   const { execute: executeDeletePage } = useAction(deletePage);
 
@@ -52,7 +52,7 @@ export function Item({ page }: ItemProps) {
 
       console.log("nextPage", nextPage);
 
-      // nextPage && setActivePage(nextPage);
+      nextPage && setActivePage(nextPage);
     }
 
     startTransition(() => {

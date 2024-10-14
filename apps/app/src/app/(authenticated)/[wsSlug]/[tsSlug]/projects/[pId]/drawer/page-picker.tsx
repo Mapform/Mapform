@@ -18,7 +18,7 @@ import {
 import { useMap } from "@mapform/mapform";
 import { createPage } from "~/data/pages/create-page";
 import { updatePageOrder } from "~/data/pages/update-page-order";
-import { useProject } from "./project-context";
+import { useProject } from "../project-context";
 // import { usePage } from "../../page-context";
 import { Item } from "./item";
 
