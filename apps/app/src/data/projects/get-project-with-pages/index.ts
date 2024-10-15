@@ -46,6 +46,7 @@ export const getProjectWithPages = authAction
           zoom: true,
           pitch: true,
           bearing: true,
+          contentViewType: true,
         },
         orderBy: (_pages2, { asc }) => [asc(_pages2.position)],
       }),

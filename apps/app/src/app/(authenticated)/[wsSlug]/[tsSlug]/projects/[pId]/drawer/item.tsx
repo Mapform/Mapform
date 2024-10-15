@@ -47,6 +47,10 @@ export function Item({ page }: ItemProps) {
   const { execute: executeDeletePage } = useAction(deletePage);
   const { execute: executeUpdatePage } = useAction(updatePageAction);
 
+  const currentPage = optimisticProjectWithPages.pages.find(
+    (p) => p.id === page.id
+  );
+
   const isLastPage = optimisticProjectWithPages.pages.length <= 1;
   const isActive = page.id === optimisticPage?.id;
 
@@ -86,17 +90,19 @@ export function Item({ page }: ItemProps) {
 
   const handleUpdatePage = (value: string) => {
     const contentViewType = value as UpdatePageSchema["contentViewType"];
-    if (!contentViewType || !optimisticPage) {
+    if (!contentViewType || !currentPage || !optimisticPage) {
       return;
     }
 
-    updatePage({
-      ...optimisticPage,
-      contentViewType,
-    });
+    if (optimisticPage.id === currentPage.id) {
+      updatePage({
+        ...optimisticPage,
+        contentViewType,
+      });
+    }
 
     executeUpdatePage({
-      id: optimisticPage.id,
+      id: currentPage.id,
       contentViewType,
     });
   };
@@ -142,7 +148,7 @@ export function Item({ page }: ItemProps) {
                         <DropdownMenuGroup>
                           <DropdownMenuLabel>Layout</DropdownMenuLabel>
                           <DropdownMenuRadioGroup
-                            value={optimisticPage?.contentViewType}
+                            value={currentPage?.contentViewType}
                             onValueChange={handleUpdatePage}
                           >
                             <DropdownMenuRadioItem value="map">
