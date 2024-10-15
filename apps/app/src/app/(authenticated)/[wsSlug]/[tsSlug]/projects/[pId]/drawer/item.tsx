@@ -15,6 +15,8 @@ import {
   DropdownMenuGroup,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
 } from "@mapform/ui/components/dropdown-menu";
 import { DragItem, DragHandle } from "~/components/draggable";
 import type { ProjectWithPages } from "~/data/projects/get-project-with-pages";
@@ -117,13 +119,33 @@ export function Item({ page }: ItemProps) {
                         </DropdownMenuTrigger>
                       </TooltipTrigger>
                       <DropdownMenuContent className="w-[200px] overflow-hidden">
-                        <DropdownMenuItem
-                          className="flex items-center gap-2"
-                          onClick={onDelete}
-                        >
-                          <Trash2Icon className="size-4 flex-shrink-0" />
-                          Delete
-                        </DropdownMenuItem>
+                        <DropdownMenuGroup>
+                          <DropdownMenuLabel>Layout</DropdownMenuLabel>
+                          <DropdownMenuRadioGroup
+                            value="top"
+                            // onValueChange={setPosition}
+                          >
+                            <DropdownMenuRadioItem value="top">
+                              Map view
+                            </DropdownMenuRadioItem>
+                            <DropdownMenuRadioItem value="bottom">
+                              Split view
+                            </DropdownMenuRadioItem>
+                            <DropdownMenuRadioItem value="right">
+                              Text view
+                            </DropdownMenuRadioItem>
+                          </DropdownMenuRadioGroup>
+                        </DropdownMenuGroup>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuGroup>
+                          <DropdownMenuItem
+                            className="flex items-center gap-2"
+                            onClick={onDelete}
+                          >
+                            <Trash2Icon className="size-4 flex-shrink-0" />
+                            Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuGroup>
                       </DropdownMenuContent>
                       <TooltipContent side="bottom">
                         Delete or edit page
