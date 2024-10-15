@@ -98,7 +98,9 @@ export function Item({ page }: ItemProps) {
                   onClick={() => setActivePage(page)}
                 >
                   <FileIcon className="size-4 flex items-center justify-center flex-shrink-0" />
-                  <span className="truncate">{page.title || "Untitled"}</span>
+                  <span className="truncate text-sm">
+                    {page.title || "Untitled"}
+                  </span>
                 </button>
                 <DropdownMenu>
                   <TooltipProvider delayDuration={200}>
