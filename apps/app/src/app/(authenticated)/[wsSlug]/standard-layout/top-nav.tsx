@@ -11,6 +11,7 @@ import {
   TooltipTrigger,
 } from "@mapform/ui/components/tooltip";
 import { useParams } from "next/navigation";
+import { Suspense } from "react";
 
 export function TopNav({ children }: { children: React.ReactNode }) {
   const params = useParams<{
@@ -84,7 +85,9 @@ export function TopNav({ children }: { children: React.ReactNode }) {
           <div className="ml-8 flex-1">{navSlot}</div>
         </nav>
       </div>
-      <div className="flex flex-col flex-1 p-4 overflow-hidden">{children}</div>
+      <div className="flex flex-col flex-1 p-4 overflow-hidden">
+        <Suspense fallback={<div>Loading...</div>}>{children}</Suspense>
+      </div>
     </div>
   );
 }
