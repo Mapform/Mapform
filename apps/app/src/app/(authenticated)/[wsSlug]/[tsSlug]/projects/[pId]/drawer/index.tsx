@@ -17,6 +17,7 @@ import { useAction } from "next-safe-action/hooks";
 import { usePage } from "../page-context";
 import { useMap } from "@mapform/mapform";
 import { useProject } from "../project-context";
+import { Spinner } from "@mapform/ui/components/spinner";
 
 export function Drawer() {
   const { map } = useMap();
@@ -88,6 +89,7 @@ export function Drawer() {
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
+                disabled={createPageStatus === "executing"}
                 onClick={() => {
                   const loc = map?.getCenter();
                   const zoom = map?.getZoom();
@@ -113,7 +115,11 @@ export function Drawer() {
                 variant="ghost"
                 size="icon-sm"
               >
-                <PlusIcon className="size-5" />
+                {createPageStatus === "executing" ? (
+                  <Spinner className="size-5" variant="dark" />
+                ) : (
+                  <PlusIcon className="size-5" />
+                )}
               </Button>
             </TooltipTrigger>
             <TooltipContent>New Page</TooltipContent>
