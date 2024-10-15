@@ -88,7 +88,13 @@ export default async function ProjectPage({
       fetchPageData(searchParams?.page),
     ]);
 
+  const fallbackPage = projectWithPages.pages[0]?.id;
+
   if (!pageWithLayers) {
+    if (!fallbackPage) {
+      return notFound();
+    }
+
     redirect(
       `/${params.wsSlug}/${params.tsSlug}/projects/${pId}?page=${projectWithPages.pages[0]?.id}`
     );

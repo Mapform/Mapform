@@ -32,7 +32,7 @@ export const columns = pgTable(
 
     // These fields are only used when the dataset belongs to a form
     blockNoteId: text("block_note_id").unique(),
-    pageId: uuid("page_id").references(() => pages.id),
+    pageId: uuid("page_id").references(() => pages.id, { onDelete: "cascade" }),
 
     createdAt: timestamp("created_at", { withTimezone: true })
       .defaultNow()

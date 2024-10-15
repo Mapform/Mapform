@@ -4,7 +4,7 @@
   "main": "index.ts",
   "scripts": {
     "db:drop": "drizzle-kit drop",
-    "db:push": "drizzle-kit push",
+    "db:push": "drizzle-kit push --strict --verbose --force",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio",

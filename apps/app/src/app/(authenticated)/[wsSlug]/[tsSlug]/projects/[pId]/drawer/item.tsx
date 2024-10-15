@@ -52,11 +52,6 @@ export function Item({ page }: ItemProps) {
       (p) => p.id !== page.id
     );
 
-    executeDeletePage({
-      pageId: page.id,
-      projectId: optimisticProjectWithPages.id,
-    });
-
     if (isActive) {
       const pageIndex = optimisticProjectWithPages.pages.findIndex(
         (p) => p.id === page.id
@@ -70,6 +65,11 @@ export function Item({ page }: ItemProps) {
 
       nextPage && setActivePage(nextPage);
     }
+
+    executeDeletePage({
+      pageId: page.id,
+      projectId: optimisticProjectWithPages.id,
+    });
 
     startTransition(() => {
       updateProjectWithPages({
