@@ -3,7 +3,7 @@
 import * as Portal from "@radix-ui/react-portal";
 import { useIsClient } from "@mapform/lib/hooks/use-is-client";
 import { useStandardLayout } from "../../../../standard-layout/context";
-import { PagePicker } from "./page-picker";
+import { PageList } from "./page-list";
 import { createPage } from "~/data/pages/create-page";
 import { Button } from "@mapform/ui/components/button";
 import { ChevronsRightIcon, PlusIcon } from "lucide-react";
@@ -126,7 +126,7 @@ export function Drawer() {
           </Tooltip>
         </TooltipProvider>
       </div>
-      <PagePicker />
+      <PageList />
     </Portal.Root>
   );
 }

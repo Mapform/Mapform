@@ -14,29 +14,13 @@ import {
   SortableContext,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { useMap } from "@mapform/mapform";
-import { createPage } from "~/data/pages/create-page";
 import { updatePageOrder } from "~/data/pages/update-page-order";
 import { useProject } from "../project-context";
-import { usePage } from "../page-context";
 import { Item } from "./item";
 
-export function PagePicker() {
-  const { setActivePage } = usePage();
+export function PageList() {
   const { optimisticProjectWithPages, updateProjectWithPages } = useProject();
-  const { map } = useMap();
-  const { execute: executeCreatePage, status: createPageStatus } = useAction(
-    createPage,
-    {
-      onSuccess: (newPage) => {
-        const newPageData = newPage.data;
 
-        if (!newPageData) return;
-
-        setActivePage(newPageData);
-      },
-    }
-  );
   const dragPages = optimisticProjectWithPages.pages;
   const { executeAsync: updatePageOrderAsync } = useAction(updatePageOrder);
 
@@ -90,35 +74,6 @@ export function PagePicker() {
           })}
         </SortableContext>
       </DndContext>
-      {/* <PageBarButton
-        Icon={SquarePlusIcon}
-        isDisabled={createPageStatus === "executing"}
-        isLoading={createPageStatus === "executing"}
-        onClick={() => {
-          const loc = map?.getCenter();
-          const zoom = map?.getZoom();
-          const pitch = map?.getPitch();
-          const bearing = map?.getBearing();
-
-          if (
-            !loc ||
-            zoom === undefined ||
-            pitch === undefined ||
-            bearing === undefined
-          )
-            return;
-
-          executeCreatePage({
-            projectId: optimisticProjectWithPages.id,
-            center: { x: loc.lng, y: loc.lat },
-            zoom,
-            pitch,
-            bearing,
-          });
-        }}
-      >
-        Add Page
-      </PageBarButton> */}
     </div>
   );
 }
