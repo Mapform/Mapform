@@ -23,6 +23,7 @@ import type { ProjectWithPages } from "~/data/projects/get-project-with-pages";
 // import { PageBarButton } from "../page-bar-button";
 import { useAction } from "next-safe-action/hooks";
 import { deletePage } from "~/data/pages/delete-page";
+import { updatePage as updatePageAction } from "~/data/pages/update-page";
 import { usePage } from "../page-context";
 import { useProject } from "../project-context";
 import { startTransition } from "react";
@@ -34,20 +35,22 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@mapform/ui/components/tooltip";
+import { UpdatePageSchema } from "~/data/pages/update-page/schema";
 
 interface ItemProps {
   page: ProjectWithPages["pages"][number];
 }
 
 export function Item({ page }: ItemProps) {
-  const { setActivePage, optimisticPage } = usePage();
+  const { setActivePage, optimisticPage, updatePage } = usePage();
   const { optimisticProjectWithPages, updateProjectWithPages } = useProject();
   const { execute: executeDeletePage } = useAction(deletePage);
+  const { execute: executeUpdatePage } = useAction(updatePageAction);
 
   const isLastPage = optimisticProjectWithPages.pages.length <= 1;
   const isActive = page.id === optimisticPage?.id;
 
-  const onDelete = () => {
+  const handleDelete = () => {
     if (isLastPage) return;
 
     const newPages = optimisticProjectWithPages.pages.filter(
@@ -81,6 +84,23 @@ export function Item({ page }: ItemProps) {
     });
   };
 
+  const handleUpdatePage = (value: string) => {
+    const contentViewType = value as UpdatePageSchema["contentViewType"];
+    if (!contentViewType || !optimisticPage) {
+      return;
+    }
+
+    updatePage({
+      ...optimisticPage,
+      contentViewType,
+    });
+
+    executeUpdatePage({
+      id: optimisticPage.id,
+      contentViewType,
+    });
+  };
+
   return (
     <DragItem id={page.id} key={page.id}>
       <ContextMenu>
@@ -110,7 +130,7 @@ export function Item({ page }: ItemProps) {
                       <TooltipTrigger asChild>
                         <DropdownMenuTrigger asChild>
                           <Button
-                            className="hover:bg-stone-200 !ring-0"
+                            className="hover:bg-stone-200 !ring-0 !ring-offset-0 !ring-transparent !ring-opacity-0"
                             variant="ghost"
                             size="icon-xs"
                           >
@@ -122,16 +142,16 @@ export function Item({ page }: ItemProps) {
                         <DropdownMenuGroup>
                           <DropdownMenuLabel>Layout</DropdownMenuLabel>
                           <DropdownMenuRadioGroup
-                            value="top"
-                            // onValueChange={setPosition}
+                            value={optimisticPage?.contentViewType}
+                            onValueChange={handleUpdatePage}
                           >
-                            <DropdownMenuRadioItem value="top">
+                            <DropdownMenuRadioItem value="map">
                               Map view
                             </DropdownMenuRadioItem>
-                            <DropdownMenuRadioItem value="bottom">
+                            <DropdownMenuRadioItem value="split">
                               Split view
                             </DropdownMenuRadioItem>
-                            <DropdownMenuRadioItem value="right">
+                            <DropdownMenuRadioItem value="text">
                               Text view
                             </DropdownMenuRadioItem>
                           </DropdownMenuRadioGroup>
@@ -140,7 +160,7 @@ export function Item({ page }: ItemProps) {
                         <DropdownMenuGroup>
                           <DropdownMenuItem
                             className="flex items-center gap-2"
-                            onClick={onDelete}
+                            onClick={handleDelete}
                           >
                             <Trash2Icon className="size-4 flex-shrink-0" />
                             Delete
@@ -158,7 +178,7 @@ export function Item({ page }: ItemProps) {
           </DragHandle>
         </ContextMenuTrigger>
         <ContextMenuContent>
-          <ContextMenuItem disabled={isLastPage} onClick={onDelete}>
+          <ContextMenuItem disabled={isLastPage} onClick={handleDelete}>
             Delete
           </ContextMenuItem>
         </ContextMenuContent>
