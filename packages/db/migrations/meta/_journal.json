@@ -43,6 +43,13 @@
       "when": 1727380158379,
       "tag": "0005_glossy_bug",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1729119806540,
+      "tag": "0006_gray_virginia_dare",
+      "breakpoints": true
     }
   ]
 }

@@ -85,7 +85,7 @@ export function PageList() {
   };
 
   return (
-    <div className="">
+    <div>
       <div className="flex justify-between items-center">
         <h3 className="text-xs font-semibold leading-6 text-stone-400">
           Pages

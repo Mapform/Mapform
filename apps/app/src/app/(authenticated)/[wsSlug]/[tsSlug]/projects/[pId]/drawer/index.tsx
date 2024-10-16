@@ -12,7 +12,13 @@ import {
   TooltipContent,
 } from "@mapform/ui/components/tooltip";
 import { useMap } from "@mapform/mapform";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@mapform/ui/components/resizable";
 import { useStandardLayout } from "../../../../standard-layout/context";
+import { LayerList } from "./layer-list";
 
 export function Drawer() {
   const { map } = useMap();
@@ -22,8 +28,8 @@ export function Drawer() {
   if (!isClient) return null;
 
   return (
-    <Portal.Root container={drawerRef.current}>
-      <div className="h-[50px] flex items-center gap-1 -mx-2">
+    <Portal.Root className="flex-1" container={drawerRef.current}>
+      <div className="h-[50px] flex items-center gap-1 -mx-2 px-4">
         <TooltipProvider delayDuration={200}>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -47,7 +53,20 @@ export function Drawer() {
           </Tooltip>
         </TooltipProvider>
       </div>
-      <PageList />
+
+      <ResizablePanelGroup direction="vertical">
+        <ResizablePanel>
+          <div className="px-4">
+            <PageList />
+          </div>
+        </ResizablePanel>
+        <ResizableHandle />
+        <ResizablePanel>
+          <div className="p-4">
+            <LayerList />
+          </div>
+        </ResizablePanel>
+      </ResizablePanelGroup>
     </Portal.Root>
   );
 }

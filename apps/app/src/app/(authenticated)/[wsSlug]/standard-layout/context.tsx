@@ -98,7 +98,7 @@ export function StandardLayoutProvider({
 
         {hasDrawer ? (
           <div
-            className="flex flex-col w-[300px] flex-shrink-0 px-4 pb-2 border-l"
+            className="flex flex-col w-[300px] flex-shrink-0 pb-2 border-l"
             ref={drawerRef}
           ></div>
         ) : null}

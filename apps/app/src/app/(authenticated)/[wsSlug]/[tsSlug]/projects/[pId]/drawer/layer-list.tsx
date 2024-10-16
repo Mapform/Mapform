@@ -68,22 +68,29 @@ export function LayerList() {
   };
 
   return (
-    <div className="flex flex-col mt-4">
-      <DndContext
-        collisionDetection={closestCenter}
-        onDragEnd={reorderSteps}
-        sensors={sensors}
-      >
-        <SortableContext
-          items={dragPageLayers.map((pageLayer) => pageLayer.layerId)}
-          strategy={verticalListSortingStrategy}
+    <div className="">
+      <div className="flex justify-between items-center">
+        <h3 className="text-xs font-semibold leading-6 text-stone-400">
+          Layers
+        </h3>
+      </div>
+      <div className="flex flex-col mt-4">
+        <DndContext
+          collisionDetection={closestCenter}
+          onDragEnd={reorderSteps}
+          sensors={sensors}
         >
-          {dragPageLayers.map((pageLayer) => {
-            // return <Item key={pageLayer.layerId} page={page} />;
-            return <div>{pageLayer.layer.name}</div>;
-          })}
-        </SortableContext>
-      </DndContext>
+          <SortableContext
+            items={dragPageLayers.map((pageLayer) => pageLayer.layerId)}
+            strategy={verticalListSortingStrategy}
+          >
+            {dragPageLayers.map((pageLayer) => {
+              // return <Item key={pageLayer.layerId} page={page} />;
+              return <div>{pageLayer.layer.name}</div>;
+            })}
+          </SortableContext>
+        </DndContext>
+      </div>
     </div>
   );
 }
