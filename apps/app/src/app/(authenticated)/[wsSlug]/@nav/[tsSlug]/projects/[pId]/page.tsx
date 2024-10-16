@@ -35,7 +35,7 @@ export default async function Nav({
                 Share
               </Button>
             </PopoverTrigger>
-            <PopoverContent collisionPadding={16}>
+            <PopoverContent>
               <ShareContent
                 isDirty={project.isDirty}
                 numberOfVersions={project.childProjects.length}

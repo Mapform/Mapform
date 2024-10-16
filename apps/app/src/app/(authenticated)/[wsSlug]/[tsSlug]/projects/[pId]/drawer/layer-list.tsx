@@ -15,8 +15,16 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { updateLayerOrder } from "~/data/layers/update-layer-order";
-import { Item } from "./item";
 import { usePage } from "../page-context";
+import { Button } from "@mapform/ui/components/button";
+import {
+  TooltipProvider,
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from "@mapform/ui/components/tooltip";
+import { PlusIcon } from "lucide-react";
+import { LayerPopover } from "../layer-popover";
 
 export function LayerList() {
   const { optimisticPage, updatePage } = usePage();
@@ -73,6 +81,23 @@ export function LayerList() {
         <h3 className="text-xs font-semibold leading-6 text-stone-400">
           Layers
         </h3>
+        <TooltipProvider delayDuration={200}>
+          <Tooltip>
+            <LayerPopover>
+              <TooltipTrigger asChild>
+                <Button
+                  className="ml-auto -mr-2"
+                  onClick={() => {}}
+                  variant="ghost"
+                  size="icon-sm"
+                >
+                  <PlusIcon className="size-4" />
+                </Button>
+              </TooltipTrigger>
+            </LayerPopover>
+            <TooltipContent>New Layer</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </div>
       <div className="flex flex-col mt-4">
         <DndContext

@@ -59,7 +59,7 @@ export function TopNav({ children }: { children: React.ReactNode }) {
                       <PanelLeftOpenIcon className="size-5" />
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent collisionPadding={16}>
+                  <TooltipContent>
                     {showNav ? "Hide Navigation" : "Show Navigation"}
                   </TooltipContent>
                 </Tooltip>
