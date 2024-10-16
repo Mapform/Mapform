@@ -101,6 +101,13 @@ export function Item({ page }: ItemProps) {
       });
     }
 
+    updateProjectWithPages({
+      ...optimisticProjectWithPages,
+      pages: optimisticProjectWithPages.pages.map((p) =>
+        p.id === currentPage.id ? { ...p, contentViewType } : p
+      ),
+    });
+
     executeUpdatePage({
       id: currentPage.id,
       contentViewType,
@@ -148,7 +155,7 @@ export function Item({ page }: ItemProps) {
                         <DropdownMenuGroup>
                           <DropdownMenuLabel>Layout</DropdownMenuLabel>
                           <DropdownMenuRadioGroup
-                            value={currentPage?.contentViewType}
+                            value={page?.contentViewType}
                             onValueChange={handleUpdatePage}
                           >
                             <DropdownMenuRadioItem value="map">
