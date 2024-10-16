@@ -11,19 +11,13 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuGroup,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
 } from "@mapform/ui/components/dropdown-menu";
 import { DragItem, DragHandle } from "~/components/draggable";
 import type { ProjectWithPages } from "~/data/projects/get-project-with-pages";
-// import { PageBarButton } from "../page-bar-button";
 import { useAction } from "next-safe-action/hooks";
 import { deletePage } from "~/data/pages/delete-page";
-import { updatePage as updatePageAction } from "~/data/pages/update-page";
 import { usePage } from "../page-context";
 import { useProject } from "../project-context";
 import { startTransition } from "react";
@@ -35,21 +29,15 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@mapform/ui/components/tooltip";
-import { UpdatePageSchema } from "~/data/pages/update-page/schema";
 
 interface ItemProps {
   page: ProjectWithPages["pages"][number];
 }
 
 export function Item({ page }: ItemProps) {
-  const { setActivePage, optimisticPage, updatePage } = usePage();
+  const { setActivePage, optimisticPage } = usePage();
   const { optimisticProjectWithPages, updateProjectWithPages } = useProject();
   const { execute: executeDeletePage } = useAction(deletePage);
-  const { execute: executeUpdatePage } = useAction(updatePageAction);
-
-  const currentPage = optimisticProjectWithPages.pages.find(
-    (p) => p.id === page.id
-  );
 
   const isLastPage = optimisticProjectWithPages.pages.length <= 1;
   const isActive = page.id === optimisticPage?.id;
@@ -85,32 +73,6 @@ export function Item({ page }: ItemProps) {
         ...optimisticProjectWithPages,
         pages: newPages,
       });
-    });
-  };
-
-  const handleUpdatePage = (value: string) => {
-    const contentViewType = value as UpdatePageSchema["contentViewType"];
-    if (!contentViewType || !currentPage || !optimisticPage) {
-      return;
-    }
-
-    if (optimisticPage.id === currentPage.id) {
-      updatePage({
-        ...optimisticPage,
-        contentViewType,
-      });
-    }
-
-    updateProjectWithPages({
-      ...optimisticProjectWithPages,
-      pages: optimisticProjectWithPages.pages.map((p) =>
-        p.id === currentPage.id ? { ...p, contentViewType } : p
-      ),
-    });
-
-    executeUpdatePage({
-      id: currentPage.id,
-      contentViewType,
     });
   };
 
@@ -153,24 +115,6 @@ export function Item({ page }: ItemProps) {
                       </TooltipTrigger>
                       <DropdownMenuContent className="w-[200px] overflow-hidden">
                         <DropdownMenuGroup>
-                          <DropdownMenuLabel>Layout</DropdownMenuLabel>
-                          <DropdownMenuRadioGroup
-                            value={page?.contentViewType}
-                            onValueChange={handleUpdatePage}
-                          >
-                            <DropdownMenuRadioItem value="map">
-                              Map view
-                            </DropdownMenuRadioItem>
-                            <DropdownMenuRadioItem value="split">
-                              Split view
-                            </DropdownMenuRadioItem>
-                            <DropdownMenuRadioItem value="text">
-                              Text view
-                            </DropdownMenuRadioItem>
-                          </DropdownMenuRadioGroup>
-                        </DropdownMenuGroup>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuGroup>
                           <DropdownMenuItem
                             className="flex items-center gap-2"
                             onClick={handleDelete}
@@ -181,7 +125,7 @@ export function Item({ page }: ItemProps) {
                         </DropdownMenuGroup>
                       </DropdownMenuContent>
                       <TooltipContent side="bottom">
-                        Delete or edit page
+                        Delete or duplicate
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
