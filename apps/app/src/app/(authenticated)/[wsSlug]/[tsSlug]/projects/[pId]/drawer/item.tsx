@@ -83,7 +83,7 @@ export function Item({ page }: ItemProps) {
           <DragHandle id={page.id}>
             <div
               className={cn(
-                "-mx-3 hover:bg-stone-100 rounded transition-colors flex items-center justify-between mb-[2px] group pr-3 cursor-pointer",
+                "-mx-2 hover:bg-stone-100 rounded transition-colors flex items-center justify-between mb-[2px] group pr-2 cursor-pointer",
                 {
                   "bg-stone-100": isActive,
                 }
@@ -91,7 +91,7 @@ export function Item({ page }: ItemProps) {
             >
               <div className="flex flex-1 items-center overflow-hidden -mr-1">
                 <button
-                  className="flex flex-1 items-center gap-2 overflow-hidden py-1.5 pl-3"
+                  className="flex flex-1 items-center gap-2 overflow-hidden py-1.5 pl-2"
                   onClick={() => setActivePage(page)}
                 >
                   <FileIcon className="size-4 flex items-center justify-center flex-shrink-0" />

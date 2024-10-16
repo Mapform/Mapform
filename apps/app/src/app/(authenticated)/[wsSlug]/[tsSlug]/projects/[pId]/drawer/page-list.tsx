@@ -17,12 +17,38 @@ import {
 import { updatePageOrder } from "~/data/pages/update-page-order";
 import { useProject } from "../project-context";
 import { Item } from "./item";
+import { Button } from "@mapform/ui/components/button";
+import { Spinner } from "@mapform/ui/components/spinner";
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipProvider,
+} from "@mapform/ui/components/tooltip";
+import { useMap } from "@mapform/mapform";
+import { PlusIcon } from "lucide-react";
+import { createPage } from "~/data/pages/create-page";
+import { usePage } from "../page-context";
 
 export function PageList() {
+  const { map } = useMap();
+  const { setActivePage } = usePage();
   const { optimisticProjectWithPages, updateProjectWithPages } = useProject();
 
   const dragPages = optimisticProjectWithPages.pages;
   const { executeAsync: updatePageOrderAsync } = useAction(updatePageOrder);
+  const { execute: executeCreatePage, status: createPageStatus } = useAction(
+    createPage,
+    {
+      onSuccess: (newPage) => {
+        const newPageData = newPage.data;
+
+        if (!newPageData) return;
+
+        setActivePage(newPageData);
+      },
+    }
+  );
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -59,21 +85,70 @@ export function PageList() {
   };
 
   return (
-    <div className="flex flex-col mt-4">
-      <DndContext
-        collisionDetection={closestCenter}
-        onDragEnd={reorderSteps}
-        sensors={sensors}
-      >
-        <SortableContext
-          items={dragPages}
-          strategy={verticalListSortingStrategy}
+    <div className="">
+      <div className="flex justify-between items-center">
+        <h3 className="text-xs font-semibold leading-6 text-stone-400">
+          Pages
+        </h3>
+        <TooltipProvider delayDuration={200}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                className="ml-auto -mr-2"
+                disabled={createPageStatus === "executing"}
+                onClick={() => {
+                  const loc = map?.getCenter();
+                  const zoom = map?.getZoom();
+                  const pitch = map?.getPitch();
+                  const bearing = map?.getBearing();
+
+                  if (
+                    !loc ||
+                    zoom === undefined ||
+                    pitch === undefined ||
+                    bearing === undefined
+                  )
+                    return;
+
+                  executeCreatePage({
+                    projectId: optimisticProjectWithPages.id,
+                    center: { x: loc.lng, y: loc.lat },
+                    zoom,
+                    pitch,
+                    bearing,
+                  });
+                }}
+                variant="ghost"
+                size="icon-sm"
+              >
+                {createPageStatus === "executing" ? (
+                  <Spinner className="size-4" variant="dark" />
+                ) : (
+                  <PlusIcon className="size-4" />
+                )}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>New Page</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </div>
+
+      <div className="flex flex-col mt-1">
+        <DndContext
+          collisionDetection={closestCenter}
+          onDragEnd={reorderSteps}
+          sensors={sensors}
         >
-          {dragPages.map((page) => {
-            return <Item key={page.id} page={page} />;
-          })}
-        </SortableContext>
-      </DndContext>
+          <SortableContext
+            items={dragPages}
+            strategy={verticalListSortingStrategy}
+          >
+            {dragPages.map((page) => {
+              return <Item key={page.id} page={page} />;
+            })}
+          </SortableContext>
+        </DndContext>
+      </div>
     </div>
   );
 }

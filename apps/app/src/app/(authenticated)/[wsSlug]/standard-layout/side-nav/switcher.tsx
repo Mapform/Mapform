@@ -32,7 +32,7 @@ export function Switcher() {
 
   return (
     <Popover>
-      <div className="-mx-3 hover:bg-stone-100 rounded transition-colors flex items-center">
+      <div className="-mx-2 hover:bg-stone-100 rounded transition-colors flex items-center">
         <PopoverTrigger className="flex items-center gap-1 mr-auto flex-1 py-1 pl-3">
           <div className="flex gap-3 items-center overflow-hidden">
             {/* TODO: Add custom icon support */}

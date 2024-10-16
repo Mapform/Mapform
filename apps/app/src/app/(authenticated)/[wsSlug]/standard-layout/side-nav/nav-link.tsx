@@ -12,7 +12,7 @@ export function NavLink(link: {
   return (
     <Link
       className={cn(
-        "-mx-3 hover:bg-stone-100 px-3 py-1.5 rounded transition-colors flex items-center justify-between mb-[2px]",
+        "-mx-2 hover:bg-stone-100 px-3 py-1.5 rounded transition-colors flex items-center justify-between mb-[2px]",
         {
           "bg-stone-100 text-stone-900": link.isActive,
         }
