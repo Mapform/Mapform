@@ -9,6 +9,7 @@ import { usePage } from "../page-context";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -27,6 +28,13 @@ import { Input } from "@mapform/ui/components/input";
 import { DatasetPopover } from "./dataset-popover";
 import { Button } from "@mapform/ui/components/button";
 import { ChevronDown } from "lucide-react";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@mapform/ui/components/select";
 
 interface LayerPopoverProps {
   // The trigger
@@ -77,22 +85,52 @@ export function LayerPopover({ children }: LayerPopoverProps) {
                 render={({ field }) => (
                   <>
                     <FormLabel>Name</FormLabel>
+                    <div className="flex-1">
+                      <FormControl>
+                        <Input
+                          disabled={field.disabled}
+                          name={field.name}
+                          onChange={field.onChange}
+                          placeholder="New Layer"
+                          ref={field.ref}
+                          value={field.value ?? ""}
+                          variant="filled"
+                          s="sm"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </div>
+                  </>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="type"
+                render={({ field }) => (
+                  <>
+                    <FormLabel htmlFor="layerType">Type</FormLabel>
                     <FormControl>
-                      <Input
-                        disabled={field.disabled}
+                      <Select
                         name={field.name}
-                        onChange={field.onChange}
-                        placeholder="New Layer"
-                        ref={field.ref}
-                        value={field.value ?? ""}
-                        variant="filled"
-                        s="sm"
-                      />
+                        onValueChange={field.onChange}
+                        value={field.value}
+                      >
+                        <SelectTrigger className="mt-1.5" id="layerType">
+                          <SelectValue placeholder="Select a layer type" />
+                        </SelectTrigger>
+                        <SelectContent ref={field.ref}>
+                          <SelectItem className="capitalize" value="point">
+                            Point
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
                     </FormControl>
                     <FormMessage />
                   </>
                 )}
               />
+
               <FormLabel>Dataset</FormLabel>
               <div className="flex w-full flex-shrink-0 justify-end">
                 <DatasetPopover>

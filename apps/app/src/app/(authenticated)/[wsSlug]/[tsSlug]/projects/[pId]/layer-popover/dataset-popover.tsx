@@ -12,6 +12,7 @@ import {
   PopoverTrigger,
 } from "@mapform/ui/components/popover";
 import { useState } from "react";
+import { useStandardLayout } from "~/app/(authenticated)/[wsSlug]/standard-layout/context";
 
 interface DatasetPopoverProps {
   // The trigger
@@ -21,6 +22,11 @@ interface DatasetPopoverProps {
 export function DatasetPopover({ children }: DatasetPopoverProps) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const { workspaceDirectory } = useStandardLayout();
+
+  const availableDatasets = workspaceDirectory.teamspaces.flatMap(
+    (ts) => ts.datasets
+  );
 
   return (
     <Popover modal open={open} onOpenChange={setOpen}>
@@ -59,6 +65,17 @@ export function DatasetPopover({ children }: DatasetPopoverProps) {
                   </p>
                 </CommandItem>
               ) : null}
+              {availableDatasets.map((dataset) => (
+                <CommandItem
+                  key={dataset.id}
+                  value={dataset.id}
+                  onSelect={() => {
+                    setOpen(false);
+                  }}
+                >
+                  {dataset.name}
+                </CommandItem>
+              ))}
             </CommandGroup>
           </CommandList>
         </Command>
