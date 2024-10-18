@@ -5,7 +5,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@mapform/ui/components/popover";
-import { usePage } from "./page-context";
+import { usePage } from "../page-context";
 import {
   Form,
   FormControl,
@@ -24,6 +24,9 @@ import { toast } from "@mapform/ui/components/toaster";
 import { useAction } from "next-safe-action/hooks";
 import { createLayer } from "~/data/layers/create-layer";
 import { Input } from "@mapform/ui/components/input";
+import { DatasetPopover } from "./dataset-popover";
+import { Button } from "@mapform/ui/components/button";
+import { ChevronDown } from "lucide-react";
 
 interface LayerPopoverProps {
   // The trigger
@@ -67,7 +70,7 @@ export function LayerPopover({ children }: LayerPopoverProps) {
             className="flex flex-col flex-1"
             onSubmit={form.handleSubmit(onSubmit)}
           >
-            <div className="grid grid-cols-[auto_1fr] gap-6 auto-cols-auto items-center">
+            <div className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-3 auto-cols-auto items-center">
               <FormField
                 control={form.control}
                 name="name"
@@ -90,6 +93,18 @@ export function LayerPopover({ children }: LayerPopoverProps) {
                   </>
                 )}
               />
+              <FormLabel>Dataset</FormLabel>
+              <div className="flex w-full flex-shrink-0 justify-end">
+                <DatasetPopover>
+                  <Button
+                    className="basis-[min-content] px-2"
+                    size="icon-xs"
+                    variant="ghost"
+                  >
+                    Dataset <ChevronDown className="size-4 ml-2" />
+                  </Button>
+                </DatasetPopover>
+              </div>
             </div>
           </form>
         </Form>
