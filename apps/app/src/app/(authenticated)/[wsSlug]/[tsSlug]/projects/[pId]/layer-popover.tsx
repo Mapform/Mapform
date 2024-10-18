@@ -82,6 +82,7 @@ export function LayerPopover({ children }: LayerPopoverProps) {
                         placeholder="New Layer"
                         ref={field.ref}
                         value={field.value ?? ""}
+                        variant="filled"
                         s="sm"
                       />
                     </FormControl>

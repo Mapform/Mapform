@@ -8,6 +8,7 @@ const inputVariants = cva(
     variants: {
       variant: {
         default: "border-input bg-background",
+        filled: "border-0 bg-stone-100",
       },
       s: {
         default: "h-9 px-3 py-1",
