@@ -9,6 +9,27 @@ import {
 } from "lucide-react";
 import * as SelectPrimitive from "@radix-ui/react-select";
 import { cn } from "@mapform/lib/classnames";
+import { cva, type VariantProps } from "class-variance-authority";
+
+const selectVariants = cva(
+  "flex w-full items-center justify-between whitespace-nowrap rounded-md border text-sm shadow-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1",
+  {
+    variants: {
+      variant: {
+        default: "border-input bg-background",
+        filled: "border-0 bg-stone-100",
+      },
+      s: {
+        default: "h-9 px-3 py-2",
+        sm: "h-7 px-2 py-0.5",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+      s: "default",
+    },
+  }
+);
 
 const Select = SelectPrimitive.Root;
 
@@ -16,15 +37,16 @@ const SelectGroup = SelectPrimitive.Group;
 
 const SelectValue = SelectPrimitive.Value;
 
+export interface SelectProps
+  extends React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger>,
+    VariantProps<typeof selectVariants> {}
+
 const SelectTrigger = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Trigger>,
-  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger>
->(({ className, children, ...props }, ref) => (
+  SelectProps
+>(({ className, variant, s, children, ...props }, ref) => (
   <SelectPrimitive.Trigger
-    className={cn(
-      "flex h-9 w-full items-center justify-between whitespace-nowrap rounded-md border border-input px-3 py-2 text-sm shadow-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1 bg-background",
-      className
-    )}
+    className={cn(selectVariants({ variant, s, className }))}
     ref={ref}
     {...props}
   >

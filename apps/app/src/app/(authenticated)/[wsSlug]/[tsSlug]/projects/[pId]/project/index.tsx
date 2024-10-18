@@ -6,32 +6,16 @@ import { toast } from "@mapform/ui/components/toaster";
 import type { CustomBlock } from "@mapform/blocknote";
 import { useAction } from "next-safe-action/hooks";
 import { debounce } from "@mapform/lib/lodash";
-import { Settings2Icon } from "lucide-react";
 import { uploadImage } from "~/data/images";
 import { updatePage as updatePageAction } from "~/data/pages/update-page";
 import { env } from "~/env.mjs";
 import { usePage } from "../page-context";
-import {
-  PageDrawerRoot,
-  PageDrawerTrigger,
-  PageDrawerContent,
-} from "./page-drawer";
-import { PagePicker } from "./page-picker";
-import { PageBarButton } from "./page-bar-button";
 import { AddLocationDropdown } from "./add-location-dropdown";
-import { SearchLocationMarker } from "./edit-bar/search-location-marker";
 import { cn } from "@mapform/lib/classnames";
 import { EditBar } from "./edit-bar";
-import { useStandardLayout } from "~/app/(authenticated)/[wsSlug]/standard-layout/context";
 
 function Project() {
-  const {
-    optimisticPage,
-    isEditingPage,
-    setEditMode,
-    optimisticPageData,
-    openMapEditor,
-  } = usePage();
+  const { optimisticPage, optimisticPageData, openMapEditor } = usePage();
 
   const { executeAsync } = useAction(updatePageAction);
 

@@ -35,6 +35,7 @@ import {
   SelectContent,
   SelectItem,
 } from "@mapform/ui/components/select";
+import { TypePopover } from "./type-popover";
 
 interface LayerPopoverProps {
   // The trigger
@@ -104,32 +105,8 @@ export function LayerPopover({ children }: LayerPopoverProps) {
                 )}
               />
 
-              <FormField
-                control={form.control}
-                name="type"
-                render={({ field }) => (
-                  <>
-                    <FormLabel htmlFor="layerType">Type</FormLabel>
-                    <FormControl>
-                      <Select
-                        name={field.name}
-                        onValueChange={field.onChange}
-                        value={field.value}
-                      >
-                        <SelectTrigger className="mt-1.5" id="layerType">
-                          <SelectValue placeholder="Select a layer type" />
-                        </SelectTrigger>
-                        <SelectContent ref={field.ref}>
-                          <SelectItem className="capitalize" value="point">
-                            Point
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </FormControl>
-                    <FormMessage />
-                  </>
-                )}
-              />
+              <FormLabel>Type</FormLabel>
+              <TypePopover form={form} />
 
               <FormLabel>Dataset</FormLabel>
               <div className="flex w-full flex-shrink-0 justify-end">
