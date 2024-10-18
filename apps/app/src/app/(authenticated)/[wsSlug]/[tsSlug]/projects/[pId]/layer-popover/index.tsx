@@ -27,7 +27,7 @@ import { createLayer } from "~/data/layers/create-layer";
 import { Input } from "@mapform/ui/components/input";
 import { DatasetPopover } from "./dataset-popover";
 import { Button } from "@mapform/ui/components/button";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, ChevronsUpDownIcon } from "lucide-react";
 import {
   Select,
   SelectTrigger,
@@ -112,11 +112,12 @@ export function LayerPopover({ children }: LayerPopoverProps) {
               <div className="flex w-full flex-shrink-0 justify-end">
                 <DatasetPopover>
                   <Button
-                    className="basis-[min-content] px-2"
+                    className="flex w-full h-7 px-2 py-0.5 border-0 font-normal bg-stone-100 items-center justify-between whitespace-nowrap rounded-md text-sm shadow-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
                     size="icon-xs"
                     variant="ghost"
                   >
-                    Dataset <ChevronDown className="size-4 ml-2" />
+                    Select
+                    <ChevronsUpDownIcon className="size-4 opacity-50" />
                   </Button>
                 </DatasetPopover>
               </div>
