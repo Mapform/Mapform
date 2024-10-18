@@ -30,12 +30,7 @@ export function TypePopover({ form }: TypePopoverProps) {
               onValueChange={field.onChange}
               value={field.value}
             >
-              <SelectTrigger
-                className="mt-1.5"
-                id="layerType"
-                s="sm"
-                variant="filled"
-              >
+              <SelectTrigger id="layerType" s="sm" variant="filled">
                 <SelectValue placeholder="Select" />
               </SelectTrigger>
               <SelectContent ref={field.ref}>

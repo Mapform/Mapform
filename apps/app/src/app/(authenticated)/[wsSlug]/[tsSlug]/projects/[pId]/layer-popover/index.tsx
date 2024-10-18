@@ -108,19 +108,7 @@ export function LayerPopover({ children }: LayerPopoverProps) {
               <FormLabel>Type</FormLabel>
               <TypePopover form={form} />
 
-              <FormLabel>Dataset</FormLabel>
-              <div className="flex w-full flex-shrink-0 justify-end">
-                <DatasetPopover>
-                  <Button
-                    className="flex w-full h-7 px-2 py-0.5 border-0 font-normal bg-stone-100 items-center justify-between whitespace-nowrap rounded-md text-sm shadow-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
-                    size="icon-xs"
-                    variant="ghost"
-                  >
-                    Select
-                    <ChevronsUpDownIcon className="size-4 opacity-50" />
-                  </Button>
-                </DatasetPopover>
-              </div>
+              <DatasetPopover />
             </div>
           </form>
         </Form>
