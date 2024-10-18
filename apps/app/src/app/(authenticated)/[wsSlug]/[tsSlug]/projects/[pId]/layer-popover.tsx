@@ -67,12 +67,12 @@ export function LayerPopover({ children }: LayerPopoverProps) {
             className="flex flex-col flex-1"
             onSubmit={form.handleSubmit(onSubmit)}
           >
-            <div className="space-y-2">
+            <div className="grid grid-cols-[auto_1fr] gap-6 auto-cols-auto items-center">
               <FormField
                 control={form.control}
                 name="name"
                 render={({ field }) => (
-                  <FormItem className="flex-1">
+                  <>
                     <FormLabel>Name</FormLabel>
                     <FormControl>
                       <Input
@@ -82,10 +82,11 @@ export function LayerPopover({ children }: LayerPopoverProps) {
                         placeholder="New Layer"
                         ref={field.ref}
                         value={field.value ?? ""}
+                        s="sm"
                       />
                     </FormControl>
                     <FormMessage />
-                  </FormItem>
+                  </>
                 )}
               />
             </div>
