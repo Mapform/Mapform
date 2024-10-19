@@ -23,7 +23,7 @@ interface DatasetPopoverProps {
   form: UseFormReturn<CreateLayerSchema>;
 }
 
-export function DatasetPopover({}: DatasetPopoverProps) {
+export function DatasetPopover({ form }: DatasetPopoverProps) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [value, setValue] = useState("");
@@ -35,11 +35,12 @@ export function DatasetPopover({}: DatasetPopoverProps) {
 
   return (
     <Popover modal onOpenChange={setOpen} open={open}>
-      <FormLabel>Dataset</FormLabel>
+      <FormLabel htmlFor="datasetSelect">Dataset</FormLabel>
       <div className="flex w-full flex-shrink-0 justify-end">
         <PopoverTrigger asChild>
           <Button
             className="ring-offset-background placeholder:text-muted-foreground focus:ring-ring flex h-7 w-full items-center justify-between whitespace-nowrap rounded-md border-0 bg-stone-100 px-2 py-0.5 text-sm font-normal shadow-sm focus:outline-none focus:ring-1 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
+            id="datasetSelect"
             size="icon-xs"
             variant="ghost"
           >
@@ -52,8 +53,8 @@ export function DatasetPopover({}: DatasetPopoverProps) {
         <PopoverContent align="start" className="w-[200px] p-0" side="right">
           <Command>
             <CommandInput
-              onValueChange={(value: string) => {
-                setQuery(value);
+              onValueChange={(v: string) => {
+                setQuery(v);
               }}
               placeholder="Search datasets..."
               value={query}

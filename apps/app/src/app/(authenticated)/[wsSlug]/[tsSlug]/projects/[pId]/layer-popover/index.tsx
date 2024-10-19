@@ -76,10 +76,10 @@ export function LayerPopover({ children }: LayerPopoverProps) {
       <PopoverContent>
         <Form {...form}>
           <form
-            className="flex flex-col flex-1"
+            className="flex flex-1 flex-col"
             onSubmit={form.handleSubmit(onSubmit)}
           >
-            <div className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-3 auto-cols-auto items-center">
+            <div className="grid auto-cols-auto grid-cols-[auto_1fr] items-center gap-x-6 gap-y-3">
               <FormField
                 control={form.control}
                 name="name"
@@ -105,10 +105,9 @@ export function LayerPopover({ children }: LayerPopoverProps) {
                 )}
               />
 
-              <FormLabel>Type</FormLabel>
               <TypePopover form={form} />
 
-              <DatasetPopover />
+              <DatasetPopover form={form} />
             </div>
           </form>
         </Form>

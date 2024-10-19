@@ -1,5 +1,6 @@
 import {
   FormField,
+  FormLabel,
   FormControl,
   FormMessage,
   type UseFormReturn,
@@ -24,13 +25,14 @@ export function TypePopover({ form }: TypePopoverProps) {
       name="type"
       render={({ field }) => (
         <>
+          <FormLabel htmlFor="layerSelect">Type</FormLabel>
           <FormControl>
             <Select
               name={field.name}
               onValueChange={field.onChange}
               value={field.value}
             >
-              <SelectTrigger id="layerType" s="sm" variant="filled">
+              <SelectTrigger id="layerSelect" s="sm" variant="filled">
                 <SelectValue placeholder="Select type..." />
               </SelectTrigger>
               <SelectContent ref={field.ref}>
