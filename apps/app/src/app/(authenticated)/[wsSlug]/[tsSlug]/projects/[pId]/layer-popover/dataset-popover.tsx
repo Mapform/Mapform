@@ -1,3 +1,4 @@
+import { cn } from "@mapform/lib/classnames";
 import { Button } from "@mapform/ui/components/button";
 import {
   Command,
@@ -7,21 +8,25 @@ import {
   CommandGroup,
   CommandItem,
 } from "@mapform/ui/components/command";
-import { FormLabel } from "@mapform/ui/components/form";
+import { FormLabel, type UseFormReturn } from "@mapform/ui/components/form";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@mapform/ui/components/popover";
-import { ChevronsUpDownIcon } from "lucide-react";
+import { CheckIcon, ChevronsUpDownIcon } from "lucide-react";
 import { useState } from "react";
 import { useStandardLayout } from "~/app/(authenticated)/[wsSlug]/standard-layout/context";
+import type { CreateLayerSchema } from "~/data/layers/create-layer/schema";
 
-interface DatasetPopoverProps {}
+interface DatasetPopoverProps {
+  form: UseFormReturn<CreateLayerSchema>;
+}
 
 export function DatasetPopover({}: DatasetPopoverProps) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const [value, setValue] = useState("");
   const { workspaceDirectory } = useStandardLayout();
 
   const availableDatasets = workspaceDirectory.teamspaces.flatMap(
@@ -29,7 +34,7 @@ export function DatasetPopover({}: DatasetPopoverProps) {
   );
 
   return (
-    <Popover modal open={open} onOpenChange={setOpen}>
+    <Popover modal onOpenChange={setOpen} open={open}>
       <FormLabel>Dataset</FormLabel>
       <div className="flex w-full flex-shrink-0 justify-end">
         <PopoverTrigger asChild>
@@ -38,16 +43,20 @@ export function DatasetPopover({}: DatasetPopoverProps) {
             size="icon-xs"
             variant="ghost"
           >
-            Select
+            {value
+              ? availableDatasets.find((dataset) => dataset.id === value)?.name
+              : "Select dataset..."}
             <ChevronsUpDownIcon className="size-4 opacity-50" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent align="start" side="right" className="w-[200px] p-0">
+        <PopoverContent align="start" className="w-[200px] p-0" side="right">
           <Command>
             <CommandInput
+              onValueChange={(value: string) => {
+                setQuery(value);
+              }}
               placeholder="Search datasets..."
               value={query}
-              onValueChange={(value: string) => setQuery(value)}
             />
             <CommandList>
               <CommandEmpty
@@ -79,13 +88,20 @@ export function DatasetPopover({}: DatasetPopoverProps) {
                 {availableDatasets.map((dataset) => (
                   <CommandItem
                     key={dataset.id}
-                    value={dataset.id}
                     keywords={[dataset.name]}
-                    onSelect={() => {
+                    onSelect={(currentValue) => {
+                      setValue(currentValue === value ? "" : currentValue);
                       setOpen(false);
                     }}
+                    value={dataset.id}
                   >
                     {dataset.name}
+                    <CheckIcon
+                      className={cn(
+                        "ml-auto size-4",
+                        value === dataset.id ? "opacity-100" : "opacity-0"
+                      )}
+                    />
                   </CommandItem>
                 ))}
               </CommandGroup>

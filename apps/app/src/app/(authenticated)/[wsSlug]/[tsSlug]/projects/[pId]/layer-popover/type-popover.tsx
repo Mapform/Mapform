@@ -31,7 +31,7 @@ export function TypePopover({ form }: TypePopoverProps) {
               value={field.value}
             >
               <SelectTrigger id="layerType" s="sm" variant="filled">
-                <SelectValue placeholder="Select" />
+                <SelectValue placeholder="Select type..." />
               </SelectTrigger>
               <SelectContent ref={field.ref}>
                 <SelectItem className="capitalize" value="point">
