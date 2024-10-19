@@ -5,7 +5,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@mapform/ui/components/popover";
-import { usePage } from "../page-context";
 import {
   Form,
   FormControl,
@@ -17,15 +16,9 @@ import {
   useForm,
   zodResolver,
 } from "@mapform/ui/components/form";
-import {
-  CreateLayerSchema,
-  createLayerSchema,
-} from "~/data/layers/create-layer/schema";
 import { toast } from "@mapform/ui/components/toaster";
 import { useAction } from "next-safe-action/hooks";
-import { createLayer } from "~/data/layers/create-layer";
 import { Input } from "@mapform/ui/components/input";
-import { DatasetPopover } from "./dataset-popover";
 import { Button } from "@mapform/ui/components/button";
 import { ChevronDown, ChevronsUpDownIcon } from "lucide-react";
 import {
@@ -35,7 +28,13 @@ import {
   SelectContent,
   SelectItem,
 } from "@mapform/ui/components/select";
+import { createLayerSchema } from "~/data/layers/create-layer/schema";
+import type { CreateLayerSchema } from "~/data/layers/create-layer/schema";
+import { createLayer } from "~/data/layers/create-layer";
+import { usePage } from "../page-context";
+import { DatasetPopover } from "./dataset-popover";
 import { TypePopover } from "./type-popover";
+import { PointProperties } from "./point-properties";
 
 interface LayerPopoverProps {
   // The trigger
@@ -49,6 +48,7 @@ export function LayerPopover({ children }: LayerPopoverProps) {
   const form = useForm<CreateLayerSchema>({
     defaultValues: {
       pageId: optimisticPage.id,
+      type: "point",
     },
     resolver: zodResolver(createLayerSchema),
   });
@@ -68,6 +68,17 @@ export function LayerPopover({ children }: LayerPopoverProps) {
 
   const onSubmit = (values: CreateLayerSchema) => {
     execute(values);
+  };
+
+  const renderProperties = () => {
+    const datasetId = form.watch("datasetId");
+    const type = form.watch("type");
+
+    if (!datasetId) {
+      return null;
+    }
+
+    if (type === "point") return <PointProperties form={form} />;
   };
 
   return (
@@ -94,9 +105,9 @@ export function LayerPopover({ children }: LayerPopoverProps) {
                           onChange={field.onChange}
                           placeholder="New Layer"
                           ref={field.ref}
+                          s="sm"
                           value={field.value ?? ""}
                           variant="filled"
-                          s="sm"
                         />
                       </FormControl>
                       <FormMessage />
@@ -108,6 +119,8 @@ export function LayerPopover({ children }: LayerPopoverProps) {
               <TypePopover form={form} />
 
               <DatasetPopover form={form} />
+
+              {renderProperties()}
             </div>
           </form>
         </Form>
