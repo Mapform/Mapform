@@ -30,7 +30,7 @@ export function DatasetPopover({}: DatasetPopoverProps) {
   const { workspaceDirectory } = useStandardLayout();
 
   const availableDatasets = workspaceDirectory.teamspaces.flatMap(
-    (ts) => ts.datasets
+    (ts) => ts.datasets,
   );
 
   return (
@@ -39,7 +39,7 @@ export function DatasetPopover({}: DatasetPopoverProps) {
       <div className="flex w-full flex-shrink-0 justify-end">
         <PopoverTrigger asChild>
           <Button
-            className="flex w-full h-7 px-2 py-0.5 border-0 font-normal bg-stone-100 items-center justify-between whitespace-nowrap rounded-md text-sm shadow-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
+            className="ring-offset-background placeholder:text-muted-foreground focus:ring-ring flex h-7 w-full items-center justify-between whitespace-nowrap rounded-md border-0 bg-stone-100 px-2 py-0.5 text-sm font-normal shadow-sm focus:outline-none focus:ring-1 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
             size="icon-xs"
             variant="ghost"
           >
@@ -60,14 +60,14 @@ export function DatasetPopover({}: DatasetPopoverProps) {
             />
             <CommandList>
               <CommandEmpty
-                className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none data-[disabled=true]:pointer-events-none data-[selected=true]:bg-accent data-[selected=true]:text-accent-foreground data-[disabled=true]:opacity-50 m-1"
+                className="data-[selected=true]:bg-accent data-[selected=true]:text-accent-foreground relative m-1 flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50"
                 onClick={() => {
                   setQuery("");
                   setOpen(false);
                 }}
               >
                 <p>Create: </p>
-                <p className="block max-w-48 truncate font-semibold text-primary ml-1">
+                <p className="text-primary ml-1 block max-w-48 truncate font-semibold">
                   {query}
                 </p>
               </CommandEmpty>
@@ -80,7 +80,7 @@ export function DatasetPopover({}: DatasetPopoverProps) {
                     }}
                   >
                     <p>Create: </p>
-                    <p className="block max-w-48 truncate font-semibold text-primary ml-1">
+                    <p className="text-primary ml-1 block max-w-48 truncate font-semibold">
                       {query}
                     </p>
                   </CommandItem>
@@ -99,7 +99,7 @@ export function DatasetPopover({}: DatasetPopoverProps) {
                     <CheckIcon
                       className={cn(
                         "ml-auto size-4",
-                        value === dataset.id ? "opacity-100" : "opacity-0"
+                        value === dataset.id ? "opacity-100" : "opacity-0",
                       )}
                     />
                   </CommandItem>
