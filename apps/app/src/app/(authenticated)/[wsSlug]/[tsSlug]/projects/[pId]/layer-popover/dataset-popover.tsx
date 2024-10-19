@@ -36,8 +36,10 @@ export function DatasetPopover({ form }: DatasetPopoverProps) {
   const { optimisticProjectWithPages } = useProject();
   const { workspaceDirectory } = useStandardLayout();
   const { executeAsync, status } = useAction(createEmptyDataset, {
-    onSuccess: () => {
-      form.setValue("datasetId", "");
+    onSuccess: ({ data }) => {
+      if (!data) return;
+
+      form.setValue("datasetId", data.id);
     },
   });
 
@@ -82,7 +84,7 @@ export function DatasetPopover({ form }: DatasetPopoverProps) {
                   value={query}
                 />
                 <CommandList>
-                  <CommandEmpty
+                  {/* <CommandEmpty
                     className="data-[selected=true]:bg-accent data-[selected=true]:text-accent-foreground relative m-1 flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50"
                     onClick={async () => {
                       console.log(11111);
@@ -98,18 +100,16 @@ export function DatasetPopover({ form }: DatasetPopoverProps) {
                     <p className="text-primary ml-1 block max-w-48 truncate font-semibold">
                       {query}
                     </p>
-                  </CommandEmpty>
+                  </CommandEmpty> */}
                   <CommandGroup>
                     {query.length ? (
                       <CommandItem
                         disabled={status === "executing"}
-                        onClick={async () => {
-                          console.log(22222);
+                        onSelect={async () => {
                           await executeAsync({
                             name: query,
                             teamspaceId: optimisticProjectWithPages.teamspaceId,
                           });
-                          console.log(33333);
                           setQuery("");
                           setOpen(false);
                         }}

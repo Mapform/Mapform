@@ -9,10 +9,15 @@ import { createEmptyDatasetSchema } from "./schema";
 export const createEmptyDataset = authAction
   .schema(createEmptyDatasetSchema)
   .action(async ({ parsedInput: { name, teamspaceId } }) => {
-    await db.insert(datasets).values({
-      name,
-      teamspaceId,
-    });
+    const [dataset] = await db
+      .insert(datasets)
+      .values({
+        name,
+        teamspaceId,
+      })
+      .returning();
 
     revalidatePath("/[wsSlug]/[tsSlug]/projects/[pId]/project", "page");
+
+    return dataset;
   });
