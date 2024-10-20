@@ -1,6 +1,6 @@
 "use client";
 
-import { useRootLayout } from "~/app/(authenticated)/[wsSlug]/standard-layout/context";
+import { useRootLayout } from "~/app/(authenticated)/[wsSlug]/root-layout/context";
 import { Button } from "@mapform/ui/components/button";
 import { ChevronsRightIcon, PanelRightOpenIcon } from "lucide-react";
 import {

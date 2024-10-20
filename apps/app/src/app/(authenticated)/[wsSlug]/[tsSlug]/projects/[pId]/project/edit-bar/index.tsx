@@ -17,7 +17,7 @@ import { SearchLocationMarker as MapMarker } from "@mapform/mapform";
 import { SearchLocationMarker } from "./search-location-marker";
 import { usePage } from "../../page-context";
 import { CommandSearch } from "./command-search";
-import { useRootLayout } from "~/app/(authenticated)/[wsSlug]/standard-layout/context";
+import { useRootLayout } from "~/app/(authenticated)/[wsSlug]/root-layout/context";
 
 interface EditBarProps {
   updatePageServer: (args: {

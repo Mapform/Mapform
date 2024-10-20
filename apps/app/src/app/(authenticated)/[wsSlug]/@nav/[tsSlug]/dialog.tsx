@@ -29,7 +29,7 @@ import {
   createProjectSchema,
   type CreateProjectSchema,
 } from "~/data/projects/create-project/schema";
-import { useRootLayout } from "../../standard-layout/context";
+import { useRootLayout } from "../../root-layout/context";
 
 export function CreateDialog({ tsSlug }: { tsSlug: string }) {
   const [open, setOpen] = useState(false);

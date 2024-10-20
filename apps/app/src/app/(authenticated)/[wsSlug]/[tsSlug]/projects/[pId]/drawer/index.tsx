@@ -17,7 +17,7 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@mapform/ui/components/resizable";
-import { useRootLayout } from "../../../../standard-layout/context";
+import { useRootLayout } from "../../../../root-layout/context";
 import { LayerList } from "./layer-list";
 
 export function Drawer() {
