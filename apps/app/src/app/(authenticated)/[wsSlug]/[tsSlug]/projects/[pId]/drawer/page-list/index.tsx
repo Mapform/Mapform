@@ -14,9 +14,6 @@ import {
   SortableContext,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { updatePageOrder } from "~/data/pages/update-page-order";
-import { useProject } from "../project-context";
-import { Item } from "./item";
 import { Button } from "@mapform/ui/components/button";
 import { Spinner } from "@mapform/ui/components/spinner";
 import {
@@ -27,8 +24,11 @@ import {
 } from "@mapform/ui/components/tooltip";
 import { useMap } from "@mapform/mapform";
 import { PlusIcon } from "lucide-react";
+import { updatePageOrder } from "~/data/pages/update-page-order";
 import { createPage } from "~/data/pages/create-page";
-import { usePage } from "../page-context";
+import { useProject } from "../../project-context";
+import { usePage } from "../../page-context";
+import { Item } from "./item";
 
 export function PageList() {
   const { map } = useMap();
@@ -47,7 +47,7 @@ export function PageList() {
 
         setActivePage(newPageData);
       },
-    }
+    },
   );
 
   const sensors = useSensors(
@@ -55,7 +55,7 @@ export function PageList() {
       activationConstraint: {
         distance: 8,
       },
-    })
+    }),
   );
 
   const reorderSteps = async (e: DragEndEvent) => {
@@ -63,10 +63,10 @@ export function PageList() {
 
     if (e.active.id !== e.over.id) {
       const activeStepIndex = dragPages.findIndex(
-        (page) => page.id === e.active.id
+        (page) => page.id === e.active.id,
       );
       const overStepIndex = dragPages.findIndex(
-        (page) => page.id === e.over?.id
+        (page) => page.id === e.over?.id,
       );
 
       if (activeStepIndex < 0 || overStepIndex < 0) return;
@@ -86,7 +86,7 @@ export function PageList() {
 
   return (
     <div>
-      <div className="flex justify-between items-center">
+      <div className="flex items-center justify-between">
         <h3 className="text-xs font-semibold leading-6 text-stone-400">
           Pages
         </h3>
@@ -94,7 +94,7 @@ export function PageList() {
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
-                className="ml-auto -mr-2"
+                className="-mr-2 ml-auto"
                 disabled={createPageStatus === "executing"}
                 onClick={() => {
                   const loc = map?.getCenter();
@@ -118,8 +118,8 @@ export function PageList() {
                     bearing,
                   });
                 }}
-                variant="ghost"
                 size="icon-sm"
+                variant="ghost"
               >
                 {createPageStatus === "executing" ? (
                   <Spinner className="size-4" variant="dark" />
@@ -133,7 +133,7 @@ export function PageList() {
         </TooltipProvider>
       </div>
 
-      <div className="flex flex-col mt-1">
+      <div className="mt-1 flex flex-col">
         <DndContext
           collisionDetection={closestCenter}
           onDragEnd={reorderSteps}

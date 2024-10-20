@@ -14,8 +14,6 @@ import {
   SortableContext,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { updateLayerOrder } from "~/data/layers/update-layer-order";
-import { usePage } from "../page-context";
 import { Button } from "@mapform/ui/components/button";
 import {
   TooltipProvider,
@@ -24,7 +22,9 @@ import {
   TooltipContent,
 } from "@mapform/ui/components/tooltip";
 import { PlusIcon } from "lucide-react";
-import { LayerPopover } from "../layer-popover";
+import { updateLayerOrder } from "~/data/layers/update-layer-order";
+import { usePage } from "../../page-context";
+import { LayerPopover } from "../../layer-popover";
 
 export function LayerList() {
   const { optimisticPage, updatePage } = usePage();
@@ -41,18 +41,18 @@ export function LayerList() {
       activationConstraint: {
         distance: 8,
       },
-    })
+    }),
   );
 
   const reorderSteps = async (e: DragEndEvent) => {
     if (!e.over) return;
 
     if (e.active.id !== e.over.id) {
-      const activeStepIndex = dragPageLayers?.findIndex(
-        (pageLayer) => pageLayer.layerId === e.active.id
+      const activeStepIndex = dragPageLayers.findIndex(
+        (pageLayer) => pageLayer.layerId === e.active.id,
       );
-      const overStepIndex = dragPageLayers?.findIndex(
-        (pageLayer) => pageLayer.layerId === e.over?.id
+      const overStepIndex = dragPageLayers.findIndex(
+        (pageLayer) => pageLayer.layerId === e.over?.id,
       );
 
       if (activeStepIndex < 0 || overStepIndex < 0) return;
@@ -60,7 +60,7 @@ export function LayerList() {
       const newPageLayerList = arrayMove(
         dragPageLayers,
         activeStepIndex,
-        overStepIndex
+        overStepIndex,
       );
 
       updatePage({
@@ -77,7 +77,7 @@ export function LayerList() {
 
   return (
     <div className="">
-      <div className="flex justify-between items-center">
+      <div className="flex items-center justify-between">
         <h3 className="text-xs font-semibold leading-6 text-stone-400">
           Layers
         </h3>
@@ -86,10 +86,10 @@ export function LayerList() {
             <LayerPopover>
               <TooltipTrigger asChild>
                 <Button
-                  className="ml-auto -mr-2"
+                  className="-mr-2 ml-auto"
                   onClick={() => {}}
-                  variant="ghost"
                   size="icon-sm"
+                  variant="ghost"
                 >
                   <PlusIcon className="size-4" />
                 </Button>
@@ -99,7 +99,7 @@ export function LayerList() {
           </Tooltip>
         </TooltipProvider>
       </div>
-      <div className="flex flex-col mt-4">
+      <div className="mt-4 flex flex-col">
         <DndContext
           collisionDetection={closestCenter}
           onDragEnd={reorderSteps}

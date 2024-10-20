@@ -2,7 +2,6 @@
 
 import * as Portal from "@radix-ui/react-portal";
 import { useIsClient } from "@mapform/lib/hooks/use-is-client";
-import { PageList } from "./page-list";
 import { Button } from "@mapform/ui/components/button";
 import { ChevronsRightIcon } from "lucide-react";
 import {
@@ -19,6 +18,7 @@ import {
 } from "@mapform/ui/components/resizable";
 import { useRootLayout } from "../../../../root-layout/context";
 import { LayerList } from "./layer-list";
+import { PageList } from "./page-list";
 
 export function Drawer() {
   const { map } = useMap();

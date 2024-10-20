@@ -14,12 +14,7 @@ import {
   DropdownMenuGroup,
   DropdownMenuTrigger,
 } from "@mapform/ui/components/dropdown-menu";
-import { DragItem, DragHandle } from "~/components/draggable";
-import type { ProjectWithPages } from "~/data/projects/get-project-with-pages";
 import { useAction } from "next-safe-action/hooks";
-import { deletePage } from "~/data/pages/delete-page";
-import { usePage } from "../page-context";
-import { useProject } from "../project-context";
 import { startTransition } from "react";
 import { Button } from "@mapform/ui/components/button";
 import { cn } from "@mapform/lib/classnames";
@@ -29,6 +24,11 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@mapform/ui/components/tooltip";
+import { DragItem, DragHandle } from "~/components/draggable";
+import type { ProjectWithPages } from "~/data/projects/get-project-with-pages";
+import { deletePage } from "~/data/pages/delete-page";
+import { usePage } from "../../page-context";
+import { useProject } from "../../project-context";
 
 interface ItemProps {
   page: ProjectWithPages["pages"][number];
@@ -46,12 +46,12 @@ export function Item({ page }: ItemProps) {
     if (isLastPage) return;
 
     const newPages = optimisticProjectWithPages.pages.filter(
-      (p) => p.id !== page.id
+      (p) => p.id !== page.id,
     );
 
     if (isActive) {
       const pageIndex = optimisticProjectWithPages.pages.findIndex(
-        (p) => p.id === page.id
+        (p) => p.id === page.id,
       );
 
       const nextPage =
@@ -83,18 +83,20 @@ export function Item({ page }: ItemProps) {
           <DragHandle id={page.id}>
             <div
               className={cn(
-                "-mx-2 hover:bg-stone-100 rounded transition-colors flex items-center justify-between mb-[2px] group pr-2 cursor-pointer",
+                "group -mx-2 mb-[2px] flex cursor-pointer items-center justify-between rounded pr-2 transition-colors hover:bg-stone-100",
                 {
                   "bg-stone-100": isActive,
-                }
+                },
               )}
             >
-              <div className="flex flex-1 items-center overflow-hidden -mr-1">
+              <div className="-mr-1 flex flex-1 items-center overflow-hidden">
                 <button
                   className="flex flex-1 items-center gap-2 overflow-hidden py-1.5 pl-2"
-                  onClick={() => setActivePage(page)}
+                  onClick={() => {
+                    setActivePage(page);
+                  }}
                 >
-                  <FileIcon className="size-4 flex items-center justify-center flex-shrink-0" />
+                  <FileIcon className="flex size-4 flex-shrink-0 items-center justify-center" />
                   <span className="truncate text-sm">
                     {page.title || "Untitled"}
                   </span>
@@ -105,11 +107,11 @@ export function Item({ page }: ItemProps) {
                       <TooltipTrigger asChild>
                         <DropdownMenuTrigger asChild>
                           <Button
-                            className="hover:bg-stone-200 !ring-0 !ring-offset-0 !ring-transparent !ring-opacity-0"
-                            variant="ghost"
+                            className="!ring-0 !ring-transparent !ring-opacity-0 !ring-offset-0 hover:bg-stone-200"
                             size="icon-xs"
+                            variant="ghost"
                           >
-                            <EllipsisIcon className="size-4 flex items-center justify-center flex-shrink-0 invisible transition-opacity group-hover:visible" />
+                            <EllipsisIcon className="invisible flex size-4 flex-shrink-0 items-center justify-center transition-opacity group-hover:visible" />
                           </Button>
                         </DropdownMenuTrigger>
                       </TooltipTrigger>
