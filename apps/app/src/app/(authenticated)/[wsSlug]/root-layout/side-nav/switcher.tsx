@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { signOut } from "next-auth/react";
 import Link from "next/link";
-import { useStandardLayout } from "../context";
+import { useRootLayout } from "../context";
 import { Button } from "@mapform/ui/components/button";
 import {
   Tooltip,
@@ -24,30 +24,29 @@ import {
 } from "@mapform/ui/components/tooltip";
 
 export function Switcher() {
-  const { workspaceSlug, workspaceMemberships, toggleNav } =
-    useStandardLayout();
+  const { workspaceSlug, workspaceMemberships, toggleNav } = useRootLayout();
   const currentWorkspace = workspaceMemberships?.find(
-    (membership) => membership.workspace.slug === workspaceSlug
+    (membership) => membership.workspace.slug === workspaceSlug,
   );
 
   return (
     <Popover>
-      <div className="-mx-2 hover:bg-stone-100 rounded transition-colors flex items-center">
-        <PopoverTrigger className="flex items-center gap-1 mr-auto flex-1 py-1 pl-3">
-          <div className="flex gap-3 items-center overflow-hidden">
+      <div className="-mx-2 flex items-center rounded transition-colors hover:bg-stone-100">
+        <PopoverTrigger className="mr-auto flex flex-1 items-center gap-1 py-1 pl-3">
+          <div className="flex items-center gap-3 overflow-hidden">
             {/* TODO: Add custom icon support */}
             <div className="text-md">🗺️</div>
-            <div className="text-left text-sm font-medium truncate">
+            <div className="truncate text-left text-sm font-medium">
               {currentWorkspace?.workspace.name ?? "My Account"}
             </div>
           </div>
-          <ChevronDown className="text-stone-500 w-4 h-4 flex-shrink-0" />
+          <ChevronDown className="h-4 w-4 flex-shrink-0 text-stone-500" />
         </PopoverTrigger>
         <TooltipProvider delayDuration={200}>
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
-                className="hover:bg-stone-200 mr-2"
+                className="mr-2 hover:bg-stone-200"
                 onClick={toggleNav}
                 variant="ghost"
                 size="icon-xs"
@@ -59,8 +58,8 @@ export function Switcher() {
           </Tooltip>
         </TooltipProvider>
       </div>
-      <PopoverContent className="p-0 overflow-hidden">
-        <div className="px-3 py-2 border-b">
+      <PopoverContent className="overflow-hidden p-0">
+        <div className="border-b px-3 py-2">
           {/* TODO: Add link to access accounts. This could open a modal possibly */}
           {/* <div className="w-full flex flex-col mb-2">
             <Link
@@ -80,21 +79,21 @@ export function Switcher() {
               )}
             </Link>
           </div> */}
-          <h3 className="text-xs font-semibold leading-6 text-stone-400 mb-1">
+          <h3 className="mb-1 text-xs font-semibold leading-6 text-stone-400">
             Workspaces
           </h3>
           <ul className="text-sm">
             {workspaceMemberships?.map((membership) => (
               <li
-                className="w-full flex flex-col"
+                className="flex w-full flex-col"
                 key={membership.workspace.id}
               >
                 <Link
-                  className="flex items-center justify-between hover:bg-stone-100 py-1.5 px-2 -mx-2 transition-colors rounded"
+                  className="-mx-2 flex items-center justify-between rounded px-2 py-1.5 transition-colors hover:bg-stone-100"
                   href={`/${membership.workspace.slug}`}
                 >
                   <div className="flex items-center gap-2 overflow-hidden">
-                    <div className="h-4 w-4 flex items-center justify-center flex-shrink-0">
+                    <div className="flex h-4 w-4 flex-shrink-0 items-center justify-center">
                       🗺️
                     </div>
                     <span className="truncate">
@@ -103,38 +102,38 @@ export function Switcher() {
                   </div>
                   {currentWorkspace?.workspace.id ===
                     membership.workspace.id && (
-                    <div className="h-4 w-4 flex items-center justify-center">
+                    <div className="flex h-4 w-4 items-center justify-center">
                       <CheckIcon className="h-4 w-4 flex-shrink-0" />
                     </div>
                   )}
                 </Link>
               </li>
             ))}
-            <li className="w-full flex flex-col">
+            <li className="flex w-full flex-col">
               <button
-                className="appearance-none flex gap-2 items-center text-stone-500 text-left hover:bg-stone-100 py-1.5 px-2 -mx-2 transition-colors rounded cursor-not-allowed"
+                className="-mx-2 flex cursor-not-allowed appearance-none items-center gap-2 rounded px-2 py-1.5 text-left text-stone-500 transition-colors hover:bg-stone-100"
                 disabled
                 type="button"
               >
-                <div className="h-4 w-4 flex items-center justify-center">
-                  <PlusIcon className="h-4 w-4 text-stone-500 flex-shrink-0" />
+                <div className="flex h-4 w-4 items-center justify-center">
+                  <PlusIcon className="h-4 w-4 flex-shrink-0 text-stone-500" />
                 </div>
                 Create workspace (Coming soon)
               </button>
             </li>
           </ul>
         </div>
-        <div className="px-3 py-2 bg-stone-50">
-          <h3 className="text-xs font-semibold leading-6 text-stone-400 mb-1 truncate">
+        <div className="bg-stone-50 px-3 py-2">
+          <h3 className="mb-1 truncate text-xs font-semibold leading-6 text-stone-400">
             Signed in as {currentWorkspace?.user.email}
           </h3>
-          <div className="w-full flex flex-col">
+          <div className="flex w-full flex-col">
             <button
-              className="appearance-none flex gap-2 items-center text-left hover:bg-stone-100 py-1.5 px-2 -mx-2 transition-colors rounded"
+              className="-mx-2 flex appearance-none items-center gap-2 rounded px-2 py-1.5 text-left transition-colors hover:bg-stone-100"
               onClick={() => signOut()}
               type="button"
             >
-              <div className="h-4 w-4 flex items-center justify-center">
+              <div className="flex h-4 w-4 items-center justify-center">
                 <LogOutIcon className="h-4 w-4 flex-shrink-0" />
               </div>
               Sign out

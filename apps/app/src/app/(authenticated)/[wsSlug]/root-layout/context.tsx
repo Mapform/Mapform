@@ -6,7 +6,7 @@ import { createContext, useContext, useEffect, useRef, useState } from "react";
 import type { CurrentUserWorkspaceMemberships } from "~/data/workspace-memberships/get-current-user-workspace-memberships";
 import type { WorkspaceWithTeamspaces } from "~/data/workspaces/get-workspace-directory";
 
-export type StandardLayoutContext = {
+export type RootLayoutContext = {
   drawerRef: React.RefObject<HTMLDivElement>;
   workspaceSlug: string;
   showNav: boolean;
@@ -18,18 +18,18 @@ export type StandardLayoutContext = {
   workspaceMemberships: CurrentUserWorkspaceMemberships;
 };
 
-export type StandardLayoutProviderProps = {
+export type RootLayoutProviderProps = {
   children: React.ReactNode;
   workspaceSlug: string;
   navSlot?: React.ReactNode;
 };
 
-export const StandardLayoutContext = createContext<StandardLayoutContext>(
-  {} as StandardLayoutContext
+export const RootLayoutContext = createContext<RootLayoutContext>(
+  {} as RootLayoutContext,
 );
-export const useStandardLayout = () => useContext(StandardLayoutContext);
+export const useRootLayout = () => useContext(RootLayoutContext);
 
-export function StandardLayoutProvider({
+export function RootLayoutProvider({
   children,
   workspaceSlug,
   navSlot,
@@ -38,7 +38,7 @@ export function StandardLayoutProvider({
 }: {
   workspaceMemberships: CurrentUserWorkspaceMemberships;
   workspaceDirectory: NonNullable<WorkspaceWithTeamspaces>;
-} & StandardLayoutProviderProps) {
+} & RootLayoutProviderProps) {
   const params = useParams<{
     pId?: string;
   }>();
@@ -61,7 +61,7 @@ export function StandardLayoutProvider({
   }, [pathname]);
 
   return (
-    <StandardLayoutContext.Provider
+    <RootLayoutContext.Provider
       value={{
         drawerRef,
         navSlot,
@@ -91,18 +91,18 @@ export function StandardLayoutProvider({
         className={cn(
           "flex flex-1 overflow-hidden transition-all",
           !showNav && "ml-[-300px]",
-          !showDrawer && hasDrawer && "mr-[-300px]"
+          !showDrawer && hasDrawer && "mr-[-300px]",
         )}
       >
         {children}
 
         {hasDrawer ? (
           <div
-            className="flex flex-col w-[300px] flex-shrink-0 pb-2 border-l"
+            className="flex w-[300px] flex-shrink-0 flex-col border-l pb-2"
             ref={drawerRef}
           ></div>
         ) : null}
       </div>
-    </StandardLayoutContext.Provider>
+    </RootLayoutContext.Provider>
   );
 }

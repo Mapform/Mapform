@@ -21,7 +21,7 @@ import {
 import { CheckIcon, ChevronsUpDownIcon } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import { useState } from "react";
-import { useStandardLayout } from "~/app/(authenticated)/[wsSlug]/standard-layout/context";
+import { useRootLayout } from "~/app/(authenticated)/[wsSlug]/root-layout/context";
 import { createEmptyDataset } from "~/data/datasets/create-empty-dataset";
 import type { CreateLayerSchema } from "~/data/layers/create-layer/schema";
 import { useProject } from "../project-context";
@@ -34,7 +34,7 @@ export function DatasetPopover({ form }: DatasetPopoverProps) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const { optimisticProjectWithPages } = useProject();
-  const { workspaceDirectory } = useStandardLayout();
+  const { workspaceDirectory } = useRootLayout();
   const { executeAsync, status } = useAction(createEmptyDataset, {
     onSuccess: ({ data, input }) => {
       if (!data?.dataset) return;

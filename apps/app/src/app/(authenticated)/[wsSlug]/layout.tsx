@@ -1,4 +1,4 @@
-import { StandardLayout } from "./standard-layout";
+import { RootLayout } from "./root-layout";
 
 export default async function WorkspaceLayout({
   params,
@@ -10,8 +10,8 @@ export default async function WorkspaceLayout({
   nav?: React.ReactNode;
 }) {
   return (
-    <StandardLayout workspaceSlug={params.wsSlug} navSlot={nav}>
+    <RootLayout workspaceSlug={params.wsSlug} navSlot={nav}>
       {children}
-    </StandardLayout>
+    </RootLayout>
   );
 }

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Button } from "@mapform/ui/components/button";
 import { PanelLeftOpenIcon } from "lucide-react";
-import { useStandardLayout } from "./context";
+import { useRootLayout } from "./context";
 import {
   Tooltip,
   TooltipContent,
@@ -20,12 +20,11 @@ export function TopNav({ children }: { children: React.ReactNode }) {
     pId?: string;
     dId?: string;
   }>();
-  const { showNav, toggleNav, navSlot, workspaceDirectory } =
-    useStandardLayout();
+  const { showNav, toggleNav, navSlot, workspaceDirectory } = useRootLayout();
 
   const workspace = workspaceDirectory.name;
   const teamspaces = workspaceDirectory.teamspaces.find(
-    (ts) => ts.slug === params.tsSlug
+    (ts) => ts.slug === params.tsSlug,
   );
   const project = teamspaces?.projects.find((p) => p.id === params.pId);
   const dataset = teamspaces?.datasets.find((d) => d.id === params.dId);
@@ -42,9 +41,9 @@ export function TopNav({ children }: { children: React.ReactNode }) {
     : [{ name: "Home", href: `/${params.wsSlug}` }];
 
   return (
-    <div className="flex flex-col flex-1 overflow-hidden">
-      <div className="flex items-center py-2 px-4 border-b h-[50px]">
-        <nav className="flex flex-1 items-center -mr-2">
+    <div className="flex flex-1 flex-col overflow-hidden">
+      <div className="flex h-[50px] items-center border-b px-4 py-2">
+        <nav className="-mr-2 flex flex-1 items-center">
           {!showNav ? (
             <div className="mr-2 flex">
               <TooltipProvider delayDuration={200}>
@@ -76,7 +75,7 @@ export function TopNav({ children }: { children: React.ReactNode }) {
                     section.name
                   )}
                   {index < pathNav.length - 1 && (
-                    <span className="mx-3 text-stone-200 text-sm">/</span>
+                    <span className="mx-3 text-sm text-stone-200">/</span>
                   )}
                 </div>
               );
@@ -85,7 +84,7 @@ export function TopNav({ children }: { children: React.ReactNode }) {
           <div className="ml-8 flex-1">{navSlot}</div>
         </nav>
       </div>
-      <div className="flex flex-col flex-1 p-4 overflow-hidden">
+      <div className="flex flex-1 flex-col overflow-hidden p-4">
         <Suspense fallback={<div>Loading...</div>}>{children}</Suspense>
       </div>
     </div>

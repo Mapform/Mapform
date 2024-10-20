@@ -5,12 +5,12 @@ import { AccordionPrimitive } from "@mapform/ui/components/accordion";
 import { HomeIcon, SettingsIcon, ChevronDownIcon, MapIcon } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { NavLink } from "./nav-link";
-import { useStandardLayout } from "../context";
+import { useRootLayout } from "../context";
 
 export function NavTop() {
   const router = useRouter();
   const pathname = usePathname();
-  const { workspaceDirectory, workspaceSlug } = useStandardLayout();
+  const { workspaceDirectory, workspaceSlug } = useRootLayout();
 
   const topLinks = [
     { href: `/${workspaceSlug}`, icon: HomeIcon, label: "Home" },
@@ -28,13 +28,13 @@ export function NavTop() {
   const defaultOpenTeamspaces = workspaceDirectory.teamspaces
     .filter((teamspace) => {
       return teamspace.projects.some((project) =>
-        isProjectActive(teamspace.slug, project.id)
+        isProjectActive(teamspace.slug, project.id),
       );
     })
     .map((workspace) => workspace.id);
 
   return (
-    <div className="text-sm text-stone-700 space-y-4 mt-4">
+    <div className="mt-4 space-y-4 text-sm text-stone-700">
       <section>
         {topLinks.map((link) => (
           <NavLink
@@ -45,7 +45,7 @@ export function NavTop() {
         ))}
       </section>
       <section>
-        <h3 className="text-xs font-semibold leading-6 text-stone-400 mb-1">
+        <h3 className="mb-1 text-xs font-semibold leading-6 text-stone-400">
           Teamspaces
         </h3>
         <AccordionPrimitive.Root
@@ -57,12 +57,12 @@ export function NavTop() {
               <AccordionPrimitive.Item key={teamspace.id} value={teamspace.id}>
                 <div
                   className={cn(
-                    "-mx-2 hover:bg-stone-100 p-1 rounded transition-colors flex items-center justify-between mb-[2px] cursor-pointer",
+                    "-mx-2 mb-[2px] flex cursor-pointer items-center justify-between rounded p-1 transition-colors hover:bg-stone-100",
                     {
                       "bg-stone-100 text-stone-900": pathname.includes(
-                        `/${workspaceSlug}/${teamspace.slug}`
+                        `/${workspaceSlug}/${teamspace.slug}`,
                       ),
-                    }
+                    },
                   )}
                   // We use an on click event handler instead of a Link so that the nested e.stopPropagation() works
                   onClick={() => {
@@ -78,7 +78,7 @@ export function NavTop() {
                 >
                   <div className="flex items-center gap-1 overflow-hidden">
                     <AccordionPrimitive.Trigger
-                      className="flex rounded items-center justify-center flex-shrink-0 p-1 [&[data-state=closed]>svg]:-rotate-90 [&[data-state=open]>svg]:rotate-0 hover:bg-stone-200"
+                      className="flex flex-shrink-0 items-center justify-center rounded p-1 hover:bg-stone-200 [&[data-state=closed]>svg]:-rotate-90 [&[data-state=open]>svg]:rotate-0"
                       onClick={(e) => {
                         e.stopPropagation();
                       }}

@@ -17,7 +17,7 @@ import { SearchLocationMarker as MapMarker } from "@mapform/mapform";
 import { SearchLocationMarker } from "./search-location-marker";
 import { usePage } from "../../page-context";
 import { CommandSearch } from "./command-search";
-import { useStandardLayout } from "~/app/(authenticated)/[wsSlug]/standard-layout/context";
+import { useRootLayout } from "~/app/(authenticated)/[wsSlug]/standard-layout/context";
 
 interface EditBarProps {
   updatePageServer: (args: {
@@ -57,7 +57,7 @@ function EditBarInner({ optimisticPage, updatePageServer }: EditBarInnerProps) {
   const { map } = useMap();
   const [openSearch, setOpenSearch] = useState(false);
   const { updatePage, openMapEditor, setOpenMapEditor } = usePage();
-  const { showDrawer, toggleDrawer } = useStandardLayout();
+  const { showDrawer, toggleDrawer } = useRootLayout();
 
   const [movedCoords, setMovedCoords] = useState<{
     lat: number;
@@ -133,7 +133,7 @@ function EditBarInner({ optimisticPage, updatePageServer }: EditBarInnerProps) {
         }}
         size="sm"
       >
-        <EditIcon className="size-4 mr-2 -ml-1" /> Edit Map
+        <EditIcon className="-ml-1 mr-2 size-4" /> Edit Map
       </Button>
     );
   }
@@ -181,7 +181,7 @@ function EditBarInner({ optimisticPage, updatePageServer }: EditBarInnerProps) {
               }}
               size="icon-sm"
             >
-              <Undo2Icon className="w-4 h-4" />
+              <Undo2Icon className="h-4 w-4" />
             </Button>
           </TooltipTrigger>
           <TooltipContent>Undo</TooltipContent>

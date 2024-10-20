@@ -1,6 +1,6 @@
 "use client";
 
-import { useStandardLayout } from "~/app/(authenticated)/[wsSlug]/standard-layout/context";
+import { useRootLayout } from "~/app/(authenticated)/[wsSlug]/standard-layout/context";
 import { Button } from "@mapform/ui/components/button";
 import { ChevronsRightIcon, PanelRightOpenIcon } from "lucide-react";
 import {
@@ -11,7 +11,7 @@ import {
 } from "@mapform/ui/components/tooltip";
 
 export default function TogglePages() {
-  const { showDrawer, toggleDrawer } = useStandardLayout();
+  const { showDrawer, toggleDrawer } = useRootLayout();
 
   if (showDrawer) return null;
 

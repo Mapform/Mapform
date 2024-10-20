@@ -29,13 +29,13 @@ import {
   createProjectSchema,
   type CreateProjectSchema,
 } from "~/data/projects/create-project/schema";
-import { useStandardLayout } from "../../standard-layout/context";
+import { useRootLayout } from "../../standard-layout/context";
 
 export function CreateDialog({ tsSlug }: { tsSlug: string }) {
   const [open, setOpen] = useState(false);
-  const { workspaceDirectory } = useStandardLayout();
+  const { workspaceDirectory } = useRootLayout();
   const teamspaceId = workspaceDirectory?.teamspaces.find(
-    (ts) => ts.slug === tsSlug
+    (ts) => ts.slug === tsSlug,
   )?.id;
   const form = useForm<CreateProjectSchema>({
     defaultValues: {

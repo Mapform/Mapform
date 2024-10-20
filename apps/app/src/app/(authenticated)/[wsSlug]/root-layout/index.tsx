@@ -1,38 +1,35 @@
-import { getWorkspaceDirectory } from "~/data/workspaces/get-workspace-directory";
-import { getCurrentUserWorkspaceMemberships } from "~/data/workspace-memberships/get-current-user-workspace-memberships";
 import { notFound } from "next/navigation";
 import { cache } from "react";
+import { getWorkspaceDirectory } from "~/data/workspaces/get-workspace-directory";
+import { getCurrentUserWorkspaceMemberships } from "~/data/workspace-memberships/get-current-user-workspace-memberships";
 import { TopNav } from "./top-nav";
 import { SideNav } from "./side-nav";
-import {
-  StandardLayoutProvider,
-  type StandardLayoutProviderProps,
-} from "./context";
+import { RootLayoutProvider, type RootLayoutProviderProps } from "./context";
 
-export async function StandardLayout({
+export async function RootLayout({
   children,
   workspaceSlug,
   ...rest
 }: {
   children: React.ReactNode;
-} & StandardLayoutProviderProps) {
+} & RootLayoutProviderProps) {
   const [workspaceDirectory, workspaceMemberships] = await Promise.all([
     fetchWorkspaceDirectory(workspaceSlug),
     fetchWorkspaceMemberships(),
   ]);
 
   return (
-    <StandardLayoutProvider
-      workspaceSlug={workspaceSlug}
+    <RootLayoutProvider
       workspaceDirectory={workspaceDirectory}
       workspaceMemberships={workspaceMemberships}
+      workspaceSlug={workspaceSlug}
       {...rest}
     >
-      <div className="flex-1 overflow-hidden flex">
+      <div className="flex flex-1 overflow-hidden">
         <SideNav />
         <TopNav>{children}</TopNav>
       </div>
-    </StandardLayoutProvider>
+    </RootLayoutProvider>
   );
 }
 

@@ -17,19 +17,19 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@mapform/ui/components/resizable";
-import { useStandardLayout } from "../../../../standard-layout/context";
+import { useRootLayout } from "../../../../standard-layout/context";
 import { LayerList } from "./layer-list";
 
 export function Drawer() {
   const { map } = useMap();
   const isClient = useIsClient();
-  const { drawerRef, toggleDrawer } = useStandardLayout();
+  const { drawerRef, toggleDrawer } = useRootLayout();
 
   if (!isClient) return null;
 
   return (
     <Portal.Root className="flex-1" container={drawerRef.current}>
-      <div className="h-[50px] flex items-center gap-1 -mx-2 px-4">
+      <div className="-mx-2 flex h-[50px] items-center gap-1 px-4">
         <TooltipProvider delayDuration={200}>
           <Tooltip>
             <TooltipTrigger asChild>
