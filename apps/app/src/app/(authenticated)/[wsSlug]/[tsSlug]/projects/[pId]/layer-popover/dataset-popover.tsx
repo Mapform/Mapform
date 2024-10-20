@@ -36,10 +36,27 @@ export function DatasetPopover({ form }: DatasetPopoverProps) {
   const { optimisticProjectWithPages } = useProject();
   const { workspaceDirectory } = useStandardLayout();
   const { executeAsync, status } = useAction(createEmptyDataset, {
-    onSuccess: ({ data }) => {
-      if (!data) return;
+    onSuccess: ({ data, input }) => {
+      if (!data?.dataset) return;
 
-      form.setValue("datasetId", data.id);
+      form.setValue("datasetId", data.dataset.id);
+
+      if (input.layerType === "point") {
+        form.setValue(
+          "pointProperties.pointColumnId",
+          data.columns?.find((c) => c.type === "point")?.id ?? "",
+        );
+
+        form.setValue(
+          "pointProperties.titleColumnId",
+          data.columns?.find((c) => c.type === "string")?.id ?? "",
+        );
+
+        form.setValue(
+          "pointProperties.descriptionColumnId",
+          data.columns?.find((c) => c.type === "richtext")?.id ?? "",
+        );
+      }
     },
   });
 
@@ -104,11 +121,12 @@ export function DatasetPopover({ form }: DatasetPopoverProps) {
                   <CommandGroup>
                     {query.length ? (
                       <CommandItem
-                        disabled={status === "executing"}
+                        disabled={status === "executing" || !form.watch("type")}
                         onSelect={async () => {
                           await executeAsync({
                             name: query,
                             teamspaceId: optimisticProjectWithPages.teamspaceId,
+                            layerType: form.watch("type"),
                           });
                           setQuery("");
                           setOpen(false);

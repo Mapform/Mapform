@@ -1,7 +1,6 @@
 import type { UseFormReturn } from "@mapform/ui/components/form";
 import {
   FormField,
-  FormItem,
   FormLabel,
   FormControl,
   FormMessage,
@@ -13,6 +12,7 @@ import {
   SelectContent,
   SelectItem,
 } from "@mapform/ui/components/select";
+import type { Column } from "@mapform/db/schema";
 import type { CreateLayerSchema } from "~/data/layers/create-layer/schema";
 import { usePage } from "../page-context";
 
@@ -23,7 +23,7 @@ interface PointPropertiesProps {
 export function PointProperties({ form }: PointPropertiesProps) {
   const { availableDatasets } = usePage();
 
-  const getAvailableColumns = () => {
+  const getAvailableColumns = (t: Column["type"]) => {
     const type = form.watch("type");
     const datasetId = form.watch("datasetId");
     const dataset = availableDatasets.find((ds) => ds.id === datasetId);
@@ -33,11 +33,9 @@ export function PointProperties({ form }: PointPropertiesProps) {
     }
 
     return dataset.columns.filter((column) => {
-      return column.type === type;
+      return column.type === t;
     });
   };
-
-  const availableCols = getAvailableColumns();
 
   return (
     <>
@@ -62,7 +60,7 @@ export function PointProperties({ form }: PointPropertiesProps) {
                   <SelectValue placeholder="Select a column" />
                 </SelectTrigger>
                 <SelectContent ref={field.ref}>
-                  {availableCols?.map((column) => (
+                  {getAvailableColumns("point")?.map((column) => (
                     <SelectItem key={column.id} value={column.id}>
                       {column.name}
                     </SelectItem>
@@ -90,7 +88,35 @@ export function PointProperties({ form }: PointPropertiesProps) {
                   <SelectValue placeholder="Select a column" />
                 </SelectTrigger>
                 <SelectContent ref={field.ref}>
-                  {availableCols?.map((column) => (
+                  {getAvailableColumns("string")?.map((column) => (
+                    <SelectItem key={column.id} value={column.id}>
+                      {column.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </FormControl>
+            <FormMessage />
+          </>
+        )}
+      />
+      <FormField
+        control={form.control}
+        name="pointProperties.descriptionColumnId"
+        render={({ field }) => (
+          <>
+            <FormLabel htmlFor="locationSelect">Description</FormLabel>
+            <FormControl>
+              <Select
+                name={field.name}
+                onValueChange={field.onChange}
+                value={field.value}
+              >
+                <SelectTrigger id="locationSelect" s="sm" variant="filled">
+                  <SelectValue placeholder="Select a column" />
+                </SelectTrigger>
+                <SelectContent ref={field.ref}>
+                  {getAvailableColumns("richtext")?.map((column) => (
                     <SelectItem key={column.id} value={column.id}>
                       {column.name}
                     </SelectItem>
