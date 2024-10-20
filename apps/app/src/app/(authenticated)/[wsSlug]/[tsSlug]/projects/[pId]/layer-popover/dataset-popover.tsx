@@ -101,13 +101,13 @@ export function DatasetPopover({ form }: DatasetPopoverProps) {
                   value={query}
                 />
                 <CommandList>
-                  {/* <CommandEmpty
+                  <CommandEmpty
                     className="data-[selected=true]:bg-accent data-[selected=true]:text-accent-foreground relative m-1 flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50"
                     onClick={async () => {
-                      console.log(11111);
                       await executeAsync({
                         name: query,
                         teamspaceId: optimisticProjectWithPages.teamspaceId,
+                        layerType: form.watch("type"),
                       });
                       setQuery("");
                       setOpen(false);
@@ -117,7 +117,7 @@ export function DatasetPopover({ form }: DatasetPopoverProps) {
                     <p className="text-primary ml-1 block max-w-48 truncate font-semibold">
                       {query}
                     </p>
-                  </CommandEmpty> */}
+                  </CommandEmpty>
                   <CommandGroup>
                     {query.length ? (
                       <CommandItem

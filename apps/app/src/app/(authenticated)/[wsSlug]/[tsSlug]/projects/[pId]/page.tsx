@@ -75,7 +75,6 @@ export default async function ProjectPage({
   params: { wsSlug: string; tsSlug: string; pId: string };
   searchParams?: {
     page?: string;
-    edit?: string;
   };
 }) {
   const { pId } = params;
@@ -84,7 +83,7 @@ export default async function ProjectPage({
     await Promise.all([
       fetchProjectWithPages(pId),
       fetchPageWithLayers(searchParams?.page),
-      searchParams?.edit ? fetchAvailableDatasets(pId) : undefined,
+      fetchAvailableDatasets(pId),
       fetchPageData(searchParams?.page),
     ]);
 
@@ -96,7 +95,7 @@ export default async function ProjectPage({
     }
 
     redirect(
-      `/${params.wsSlug}/${params.tsSlug}/projects/${pId}?page=${projectWithPages.pages[0]?.id}`
+      `/${params.wsSlug}/${params.tsSlug}/projects/${pId}?page=${projectWithPages.pages[0]?.id}`,
     );
   }
 
@@ -108,7 +107,7 @@ export default async function ProjectPage({
           pageData={pageData}
           pageWithLayers={pageWithLayers}
         >
-          <div className="-m-4 flex flex-col flex-1 overflow-hidden bg-background">
+          <div className="bg-background -m-4 flex flex-1 flex-col overflow-hidden">
             <Project />
           </div>
           <Drawer />

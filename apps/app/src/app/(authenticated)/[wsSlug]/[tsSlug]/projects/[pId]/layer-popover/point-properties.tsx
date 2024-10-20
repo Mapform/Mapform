@@ -41,7 +41,7 @@ export function PointProperties({ form }: PointPropertiesProps) {
     <>
       <div className="col-span-2 mt-1 w-full border-t pt-3">
         <h3 className="-mb-2 text-xs font-semibold leading-6 text-stone-400">
-          Properties
+          Data
         </h3>
       </div>
       <FormField
@@ -77,14 +77,14 @@ export function PointProperties({ form }: PointPropertiesProps) {
         name="pointProperties.titleColumnId"
         render={({ field }) => (
           <>
-            <FormLabel htmlFor="locationSelect">Title</FormLabel>
+            <FormLabel htmlFor="titleSelect">Title</FormLabel>
             <FormControl>
               <Select
                 name={field.name}
                 onValueChange={field.onChange}
                 value={field.value}
               >
-                <SelectTrigger id="locationSelect" s="sm" variant="filled">
+                <SelectTrigger id="titleSelect" s="sm" variant="filled">
                   <SelectValue placeholder="Select a column" />
                 </SelectTrigger>
                 <SelectContent ref={field.ref}>
@@ -105,14 +105,14 @@ export function PointProperties({ form }: PointPropertiesProps) {
         name="pointProperties.descriptionColumnId"
         render={({ field }) => (
           <>
-            <FormLabel htmlFor="locationSelect">Description</FormLabel>
+            <FormLabel htmlFor="descriptionSelect">Description</FormLabel>
             <FormControl>
               <Select
                 name={field.name}
                 onValueChange={field.onChange}
                 value={field.value}
               >
-                <SelectTrigger id="locationSelect" s="sm" variant="filled">
+                <SelectTrigger id="descriptionSelect" s="sm" variant="filled">
                   <SelectValue placeholder="Select a column" />
                 </SelectTrigger>
                 <SelectContent ref={field.ref}>
