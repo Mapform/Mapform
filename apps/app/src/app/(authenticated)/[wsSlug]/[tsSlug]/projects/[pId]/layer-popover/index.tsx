@@ -122,7 +122,12 @@ export function LayerPopover({ children }: LayerPopoverProps) {
 
               {renderProperties()}
 
-              <Button className="col-span-2" size="sm">
+              <Button
+                className="col-span-2"
+                disabled={status === "executing"}
+                size="sm"
+                type="submit"
+              >
                 Create Layer
               </Button>
             </div>

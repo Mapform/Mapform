@@ -21,10 +21,10 @@ import {
 import { CheckIcon, ChevronsUpDownIcon } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import { useState } from "react";
-import { useRootLayout } from "~/app/(authenticated)/[wsSlug]/root-layout/context";
 import { createEmptyDataset } from "~/data/datasets/create-empty-dataset";
 import type { CreateLayerSchema } from "~/data/layers/create-layer/schema";
 import { useProject } from "../project-context";
+import { usePage } from "../page-context";
 
 interface DatasetPopoverProps {
   form: UseFormReturn<CreateLayerSchema>;
@@ -33,8 +33,8 @@ interface DatasetPopoverProps {
 export function DatasetPopover({ form }: DatasetPopoverProps) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const { availableDatasets } = usePage();
   const { optimisticProjectWithPages } = useProject();
-  const { workspaceDirectory } = useRootLayout();
   const { executeAsync, status } = useAction(createEmptyDataset, {
     onSuccess: ({ data, input }) => {
       if (!data?.dataset) return;
@@ -59,10 +59,6 @@ export function DatasetPopover({ form }: DatasetPopoverProps) {
       }
     },
   });
-
-  const availableDatasets = workspaceDirectory.teamspaces.flatMap(
-    (ts) => ts.datasets,
-  );
 
   return (
     <FormField
