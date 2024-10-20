@@ -25,6 +25,7 @@ import { PlusIcon } from "lucide-react";
 import { updateLayerOrder } from "~/data/layers/update-layer-order";
 import { usePage } from "../../page-context";
 import { LayerPopover } from "../../layer-popover";
+import { Item } from "./item";
 
 export function LayerList() {
   const { optimisticPage, updatePage } = usePage();
@@ -110,8 +111,7 @@ export function LayerList() {
             strategy={verticalListSortingStrategy}
           >
             {dragPageLayers.map((pageLayer) => {
-              // return <Item key={pageLayer.layerId} page={page} />;
-              return <div>{pageLayer.layer.name}</div>;
+              return <Item key={pageLayer.layerId} layer={pageLayer.layer} />;
             })}
           </SortableContext>
         </DndContext>

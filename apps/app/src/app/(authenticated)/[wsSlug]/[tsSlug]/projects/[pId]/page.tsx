@@ -75,6 +75,7 @@ export default async function ProjectPage({
   params: { wsSlug: string; tsSlug: string; pId: string };
   searchParams?: {
     page?: string;
+    layer?: string;
   };
 }) {
   const { pId } = params;
