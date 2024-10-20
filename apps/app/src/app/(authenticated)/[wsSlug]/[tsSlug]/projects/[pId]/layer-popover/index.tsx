@@ -121,6 +121,10 @@ export function LayerPopover({ children }: LayerPopoverProps) {
               <DatasetPopover form={form} />
 
               {renderProperties()}
+
+              <Button className="col-span-2" size="sm">
+                Create Layer
+              </Button>
             </div>
           </form>
         </Form>

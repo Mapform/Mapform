@@ -1,8 +1,9 @@
 import { z } from "zod";
-import { insertDatasetSchema } from "@mapform/db/schema";
+import { insertDatasetSchema, insertLayerSchema } from "@mapform/db/schema";
 
 export const createEmptyDatasetSchema = z.object({
   name: insertDatasetSchema.shape.name,
+  layerType: insertLayerSchema.shape.type.default("point"),
   teamspaceId: insertDatasetSchema.shape.teamspaceId,
 });
 

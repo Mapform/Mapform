@@ -42,7 +42,7 @@ export function PointProperties({ form }: PointPropertiesProps) {
   return (
     <>
       <div className="col-span-2 mt-1 w-full border-t pt-3">
-        <h3 className="text-xs font-semibold leading-6 text-stone-400">
+        <h3 className="-mb-2 text-xs font-semibold leading-6 text-stone-400">
           Properties
         </h3>
       </div>
