@@ -10,7 +10,13 @@ export const createLayerSchema = z.object({
   pageId: insertLayersToPagesSchema.shape.pageId,
   name: insertLayerSchema.shape.name,
   type: insertLayerSchema.shape.type,
-  pointColumnId: insertPointLayerSchema.shape.pointColumnId.optional(),
+  pointProperties: z
+    .object({
+      pointColumnId: insertPointLayerSchema.shape.pointColumnId,
+      titleColumnId: insertPointLayerSchema.shape.titleColumnId,
+      descriptionColumnId: insertPointLayerSchema.shape.descriptionColumnId,
+    })
+    .optional(),
 });
 
 export type CreateLayerSchema = z.infer<typeof createLayerSchema>;

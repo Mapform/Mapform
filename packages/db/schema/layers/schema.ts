@@ -46,6 +46,12 @@ export const pointLayers = pgTable("point_layer", {
   pointColumnId: uuid("point_column_id")
     .notNull()
     .references(() => columns.id, { onDelete: "cascade" }),
+  titleColumnId: uuid("title_column_id")
+    .notNull()
+    .references(() => columns.id),
+  descriptionColumnId: uuid("description_column_id")
+    .notNull()
+    .references(() => columns.id),
 
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()

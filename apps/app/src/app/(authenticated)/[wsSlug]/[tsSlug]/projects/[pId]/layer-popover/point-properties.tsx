@@ -48,10 +48,38 @@ export function PointProperties({ form }: PointPropertiesProps) {
       </div>
       <FormField
         control={form.control}
-        name="pointColumnId"
+        name="pointProperties.pointColumnId"
         render={({ field }) => (
           <>
             <FormLabel htmlFor="locationSelect">Location</FormLabel>
+            <FormControl>
+              <Select
+                name={field.name}
+                onValueChange={field.onChange}
+                value={field.value}
+              >
+                <SelectTrigger id="locationSelect" s="sm" variant="filled">
+                  <SelectValue placeholder="Select a column" />
+                </SelectTrigger>
+                <SelectContent ref={field.ref}>
+                  {availableCols?.map((column) => (
+                    <SelectItem key={column.id} value={column.id}>
+                      {column.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </FormControl>
+            <FormMessage />
+          </>
+        )}
+      />
+      <FormField
+        control={form.control}
+        name="pointProperties.titleColumnId"
+        render={({ field }) => (
+          <>
+            <FormLabel htmlFor="locationSelect">Title</FormLabel>
             <FormControl>
               <Select
                 name={field.name}

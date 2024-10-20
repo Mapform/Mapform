@@ -32,6 +32,11 @@ export const createEmptyDataset = authAction
             name: "Title",
             type: "string",
           },
+          {
+            datasetId: dataset.id,
+            name: "Description",
+            type: "richtext",
+          },
         ]);
       }
 

@@ -2,17 +2,16 @@
 
 import { db } from "@mapform/db";
 import { eq } from "@mapform/db/utils";
+import { revalidatePath } from "next/cache";
 import { layers, layersToPages, pointLayers } from "@mapform/db/schema";
-// import { revalidatePath } from "next/cache";
 import { authAction } from "~/lib/safe-action";
 import { createLayerSchema } from "./schema";
-import { revalidatePath } from "next/cache";
 
 export const createLayer = authAction
   .schema(createLayerSchema)
   .action(
     async ({
-      parsedInput: { datasetId, pageId, name, type, pointColumnId },
+      parsedInput: { datasetId, pageId, name, type, pointProperties },
     }) => {
       const existingPageLayers = await db.query.layersToPages.findMany({
         where: eq(layersToPages.pageId, pageId),
@@ -41,14 +40,16 @@ export const createLayer = authAction
           })
           .returning();
 
-        if (type === "point" && pointColumnId) {
+        if (type === "point" && pointProperties) {
           await tx.insert(pointLayers).values({
             layerId: layer.id,
-            pointColumnId,
+            pointColumnId: pointProperties.pointColumnId,
+            titleColumnId: pointProperties.titleColumnId,
+            descriptionColumnId: pointProperties.descriptionColumnId,
           });
         }
       });
 
       revalidatePath("/[wsSlug]/[tsSlug]/projects/[pId]/project", "page");
-    }
+    },
   );
