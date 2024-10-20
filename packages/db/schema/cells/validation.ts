@@ -1,5 +1,5 @@
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
-import type { z } from "zod";
+import { z } from "zod";
 import {
   cells,
   dateCells,
@@ -7,7 +7,10 @@ import {
   numberCells,
   stringCells,
   booleanCells,
+  richtextCells,
 } from "./schema";
+import { blockSchema } from "../blocks/validation";
+import type { DocumentContent } from "@mapform/blocknote";
 
 /**
  * CELLS
@@ -56,3 +59,28 @@ export const insertBooleanCellSchema = createInsertSchema(booleanCells);
 export const selectBooleanCellSchema = createSelectSchema(booleanCells);
 export type InsertBooleanCell = z.infer<typeof insertBooleanCellSchema>;
 export type BooleanCell = typeof booleanCells.$inferSelect;
+
+/**
+ * RICHTEXT CELLS
+ */
+export const insertRichtextCellSchema = createInsertSchema(richtextCells, {
+  value: z.object({
+    content: blockSchema.array(),
+  }),
+});
+export const selectRichtextCellSchema = createSelectSchema(richtextCells, {
+  value: z.object({
+    content: blockSchema.array(),
+  }),
+});
+export type InsertRichtextCell = Modify<
+  z.infer<typeof insertRichtextCellSchema>,
+  {
+    content?: {
+      content: DocumentContent;
+    };
+  }
+>;
+export type RichtextCell = typeof richtextCells.$inferSelect;
+
+type Modify<T, R> = Omit<T, keyof R> & R;

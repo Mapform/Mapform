@@ -18,6 +18,7 @@ export const columnTypeEnum = pgEnum("column_type", [
   "number",
   "date",
   "point",
+  "richtext",
 ]);
 
 export const columns = pgTable(
@@ -44,7 +45,7 @@ export const columns = pgTable(
   },
   (t) => ({
     unq: unique().on(t.datasetId, t.name),
-  })
+  }),
 );
 
 export const columnsRelations = relations(columns, ({ one, many }) => ({

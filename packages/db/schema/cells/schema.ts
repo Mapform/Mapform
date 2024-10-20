@@ -3,7 +3,7 @@ import {
   pgTable,
   uuid,
   text,
-  pgEnum,
+  jsonb,
   unique,
   boolean,
   numeric,
@@ -12,6 +12,7 @@ import {
 import { relations } from "drizzle-orm";
 import { rows } from "../rows";
 import { columns } from "../columns";
+import { DocumentContent } from "@mapform/blocknote";
 
 /**
  * PARENT CELL
@@ -38,7 +39,7 @@ export const cells = pgTable(
   },
   (t) => ({
     unq: unique().on(t.rowId, t.columnId),
-  })
+  }),
 );
 
 export const cellsRelations = relations(cells, ({ one }) => ({
@@ -55,6 +56,7 @@ export const cellsRelations = relations(cells, ({ one }) => ({
   booleanCell: one(booleanCells),
   pointCell: one(pointCells),
   dateCell: one(dateCells),
+  richtextCell: one(richtextCells),
 }));
 
 /**
@@ -148,6 +150,25 @@ export const dateCells = pgTable("date_cell", {
 export const dateCellsRelations = relations(dateCells, ({ one }) => ({
   cell: one(cells, {
     fields: [dateCells.cellId],
+    references: [cells.id],
+  }),
+}));
+
+/**
+ * RICHTEXT CELL
+ */
+export const richtextCells = pgTable("richtext_cell", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  value: jsonb("content").$type<{ content: DocumentContent }>(),
+
+  cellId: uuid("cell_id")
+    .notNull()
+    .references(() => cells.id, { onDelete: "cascade" }),
+});
+
+export const richtextCellsRelations = relations(richtextCells, ({ one }) => ({
+  cell: one(cells, {
+    fields: [richtextCells.cellId],
     references: [cells.id],
   }),
 }));
