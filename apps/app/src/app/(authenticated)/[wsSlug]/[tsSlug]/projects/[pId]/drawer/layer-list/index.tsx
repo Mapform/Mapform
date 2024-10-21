@@ -30,12 +30,8 @@ import { Item } from "./item";
 export function LayerList() {
   const { optimisticPage, updatePage } = usePage();
 
-  const dragPageLayers = optimisticPage?.layersToPages;
+  const dragLayers = optimisticPage?.layersToPages.map((ltp) => ltp.layer);
   const { executeAsync } = useAction(updateLayerOrder);
-
-  if (!dragPageLayers) {
-    return null;
-  }
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -45,34 +41,43 @@ export function LayerList() {
     }),
   );
 
-  const reorderSteps = async (e: DragEndEvent) => {
-    if (!e.over) return;
+  if (!dragLayers) {
+    return null;
+  }
+
+  const reorderLayers = async (e: DragEndEvent) => {
+    if (!e.over || !optimisticPage?.id) return;
 
     if (e.active.id !== e.over.id) {
-      const activeStepIndex = dragPageLayers.findIndex(
-        (pageLayer) => pageLayer.layerId === e.active.id,
+      const activeLayerIndex = dragLayers.findIndex(
+        (layer) => layer.id === e.active.id,
       );
-      const overStepIndex = dragPageLayers.findIndex(
-        (pageLayer) => pageLayer.layerId === e.over?.id,
+      const overLayerIndex = dragLayers.findIndex(
+        (layer) => layer.id === e.over?.id,
       );
 
-      if (activeStepIndex < 0 || overStepIndex < 0) return;
+      if (activeLayerIndex < 0 || overLayerIndex < 0) return;
 
-      const newPageLayerList = arrayMove(
-        dragPageLayers,
-        activeStepIndex,
-        overStepIndex,
+      const newLayerList = arrayMove(
+        dragLayers,
+        activeLayerIndex,
+        overLayerIndex,
       );
 
       updatePage({
         ...optimisticPage,
-        // layersToPages: newPageLayerList,
+        layersToPages: optimisticPage.layersToPages.sort((a, b) => {
+          const aIndex = newLayerList.findIndex((l) => l.id === a.layer.id);
+          const bIndex = newLayerList.findIndex((l) => l.id === b.layer.id);
+
+          return aIndex - bIndex;
+        }),
       });
 
-      // await updatePageOrderAsync({
-      //   projectId: optimisticProjectWithPages.id,
-      //   pageOrder: newPageList.map((page) => page.id),
-      // });
+      await executeAsync({
+        pageId: optimisticPage.id,
+        layerOrder: newLayerList.map((layer) => layer.id),
+      });
     }
   };
 
@@ -103,15 +108,15 @@ export function LayerList() {
       <div className="mt-4 flex flex-col">
         <DndContext
           collisionDetection={closestCenter}
-          onDragEnd={reorderSteps}
+          onDragEnd={reorderLayers}
           sensors={sensors}
         >
           <SortableContext
-            items={dragPageLayers.map((pageLayer) => pageLayer.layerId)}
+            items={dragLayers}
             strategy={verticalListSortingStrategy}
           >
-            {dragPageLayers.map((pageLayer) => {
-              return <Item key={pageLayer.layerId} layer={pageLayer.layer} />;
+            {dragLayers.map((layer) => {
+              return <Item key={layer.id} layer={layer} />;
             })}
           </SortableContext>
         </DndContext>
