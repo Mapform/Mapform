@@ -2,7 +2,6 @@
 
 import {
   EllipsisIcon,
-  FileIcon,
   Layers2Icon,
   Trash2Icon,
   UnlinkIcon,
@@ -20,6 +19,17 @@ import {
   DropdownMenuGroup,
   DropdownMenuTrigger,
 } from "@mapform/ui/components/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@mapform/ui/components/alert-dialog";
 import { useAction } from "next-safe-action/hooks";
 import { startTransition } from "react";
 import { Button } from "@mapform/ui/components/button";
@@ -136,13 +146,36 @@ export function Item({ layer }: ItemProps) {
                             <UnlinkIcon className="size-4 flex-shrink-0" />
                             Remove from page
                           </DropdownMenuItem>
-                          <DropdownMenuItem
-                            className="flex items-center gap-2"
-                            onClick={handleDelete}
-                          >
-                            <Trash2Icon className="size-4 flex-shrink-0" />
-                            Delete
-                          </DropdownMenuItem>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <DropdownMenuItem
+                                className="flex items-center gap-2"
+                                onSelect={(e) => {
+                                  e.preventDefault();
+                                }}
+                              >
+                                <Trash2Icon className="size-4 flex-shrink-0" />
+                                Delete
+                              </DropdownMenuItem>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>
+                                  Are you sure?
+                                </AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  This layer will be permanently deleted on
+                                  every page.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction onClick={handleDelete}>
+                                  Continue
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
                         </DropdownMenuGroup>
                       </DropdownMenuContent>
                       <TooltipContent side="bottom">
