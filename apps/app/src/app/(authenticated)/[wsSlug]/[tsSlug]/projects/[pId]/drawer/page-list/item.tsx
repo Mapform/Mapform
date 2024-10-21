@@ -127,7 +127,7 @@ export function Item({ page }: ItemProps) {
                         </DropdownMenuGroup>
                       </DropdownMenuContent>
                       <TooltipContent side="bottom">
-                        Delete or duplicate
+                        Delete or edit
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
