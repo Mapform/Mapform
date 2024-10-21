@@ -58,8 +58,6 @@ export function Item({ page }: ItemProps) {
         optimisticProjectWithPages.pages[pageIndex + 1] ||
         optimisticProjectWithPages.pages[pageIndex - 1];
 
-      console.log("nextPage", nextPage);
-
       nextPage && setActivePage(nextPage);
     }
 

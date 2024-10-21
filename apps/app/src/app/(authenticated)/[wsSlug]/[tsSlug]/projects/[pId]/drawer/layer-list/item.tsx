@@ -24,9 +24,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@mapform/ui/components/tooltip";
+import { deleteLayer } from "~/data/layers/delete-layer";
 import { DragItem, DragHandle } from "~/components/draggable";
-import type { ProjectWithPages } from "~/data/projects/get-project-with-pages";
-import { deletePage } from "~/data/pages/delete-page";
 import { usePage } from "../../page-context";
 import { useProject } from "../../project-context";
 
@@ -35,14 +34,31 @@ interface ItemProps {
 }
 
 export function Item({ layer }: ItemProps) {
-  const { setActivePage, optimisticPage } = usePage();
-  const { optimisticProjectWithPages, updateProjectWithPages } = useProject();
-  const { execute: executeDeletePage } = useAction(deletePage);
+  const { optimisticPage, updatePage } = usePage();
+  const { optimisticProjectWithPages } = useProject();
+  const { execute: executeDeleteLayer } = useAction(deleteLayer);
 
   const isLastPage = optimisticProjectWithPages.pages.length <= 1;
   // const isActive = page.id === optimisticPage?.id;
 
-  const handleDelete = () => {};
+  const handleDelete = () => {
+    if (!optimisticPage) return;
+
+    const newLayers = optimisticPage.layersToPages.filter(
+      (pageLayer) => pageLayer.layerId !== layer.id,
+    );
+
+    executeDeleteLayer({
+      layerId: layer.id,
+    });
+
+    startTransition(() => {
+      updatePage({
+        ...optimisticPage,
+        layersToPages: newLayers,
+      });
+    });
+  };
 
   return (
     <DragItem id={layer.id} key={layer.id}>

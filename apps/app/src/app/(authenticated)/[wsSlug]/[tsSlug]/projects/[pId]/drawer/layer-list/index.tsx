@@ -93,7 +93,6 @@ export function LayerList() {
               <TooltipTrigger asChild>
                 <Button
                   className="-mr-2 ml-auto"
-                  onClick={() => {}}
                   size="icon-sm"
                   variant="ghost"
                 >
