@@ -1,6 +1,12 @@
 "use client";
 
-import { EllipsisIcon, FileIcon, Layers2Icon, Trash2Icon } from "lucide-react";
+import {
+  EllipsisIcon,
+  FileIcon,
+  Layers2Icon,
+  Trash2Icon,
+  UnlinkIcon,
+} from "lucide-react";
 import {
   ContextMenu,
   ContextMenuContent,
@@ -25,6 +31,7 @@ import {
   TooltipTrigger,
 } from "@mapform/ui/components/tooltip";
 import { deleteLayer } from "~/data/layers/delete-layer";
+import { deletePageLayer } from "~/data/layers-to-pages/delete-page-layer";
 import { DragItem, DragHandle } from "~/components/draggable";
 import { usePage } from "../../page-context";
 import { useProject } from "../../project-context";
@@ -37,6 +44,7 @@ export function Item({ layer }: ItemProps) {
   const { optimisticPage, updatePage } = usePage();
   const { optimisticProjectWithPages } = useProject();
   const { execute: executeDeleteLayer } = useAction(deleteLayer);
+  const { execute: executeDeletePageLayer } = useAction(deletePageLayer);
 
   const isLastPage = optimisticProjectWithPages.pages.length <= 1;
   // const isActive = page.id === optimisticPage?.id;
@@ -50,6 +58,26 @@ export function Item({ layer }: ItemProps) {
 
     executeDeleteLayer({
       layerId: layer.id,
+    });
+
+    startTransition(() => {
+      updatePage({
+        ...optimisticPage,
+        layersToPages: newLayers,
+      });
+    });
+  };
+
+  const handleRemoveFromPage = () => {
+    if (!optimisticPage) return;
+
+    const newLayers = optimisticPage.layersToPages.filter(
+      (pageLayer) => pageLayer.layerId !== layer.id,
+    );
+
+    executeDeletePageLayer({
+      layerId: layer.id,
+      pageId: optimisticPage.id,
     });
 
     startTransition(() => {
@@ -101,6 +129,13 @@ export function Item({ layer }: ItemProps) {
                       </TooltipTrigger>
                       <DropdownMenuContent className="w-[200px] overflow-hidden">
                         <DropdownMenuGroup>
+                          <DropdownMenuItem
+                            className="flex items-center gap-2"
+                            onClick={handleRemoveFromPage}
+                          >
+                            <UnlinkIcon className="size-4 flex-shrink-0" />
+                            Remove from page
+                          </DropdownMenuItem>
                           <DropdownMenuItem
                             className="flex items-center gap-2"
                             onClick={handleDelete}
