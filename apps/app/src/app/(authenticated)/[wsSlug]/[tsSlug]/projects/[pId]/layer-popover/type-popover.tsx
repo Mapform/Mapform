@@ -12,10 +12,10 @@ import {
   SelectContent,
   SelectItem,
 } from "@mapform/ui/components/select";
-import type { CreateLayerSchema } from "~/data/layers/create-layer/schema";
+import type { UpsertLayerSchema } from "~/data/layers/upsert-layer/schema";
 
 interface TypePopoverProps {
-  form: UseFormReturn<CreateLayerSchema>;
+  form: UseFormReturn<UpsertLayerSchema>;
 }
 
 export function TypePopover({ form }: TypePopoverProps) {

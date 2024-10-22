@@ -32,8 +32,8 @@ import { toast } from "@mapform/ui/components/toaster";
 import {
   type CreateLayerSchema,
   createLayerSchema,
-} from "~/data/layers/create-layer/schema";
-import { createLayer } from "~/data/layers/create-layer";
+} from "~/data/layers/upsert-layer/schema";
+import { createLayer } from "~/data/layers/upsert-layer";
 import { usePage } from "../../page-context";
 
 export const NewLayerDrawerRoot = NestedDrawer;
@@ -87,7 +87,7 @@ export function NewLayerDrawerContent() {
 
   return (
     <DrawerContent>
-      <DrawerHeader className="flex justify-between items-center py-2">
+      <DrawerHeader className="flex items-center justify-between py-2">
         <h2 className="text-base font-medium">Edit Layer</h2>
         <div className="-mr-2">
           <DrawerTrigger asChild>
@@ -97,10 +97,10 @@ export function NewLayerDrawerContent() {
           </DrawerTrigger>
         </div>
       </DrawerHeader>
-      <div className="p-4 flex flex-col flex-1">
+      <div className="flex flex-1 flex-col p-4">
         <Form {...form}>
           <form
-            className="flex flex-col flex-1"
+            className="flex flex-1 flex-col"
             onSubmit={form.handleSubmit(onSubmit)}
           >
             <div className="space-y-6">

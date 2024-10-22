@@ -13,11 +13,11 @@ import {
   SelectItem,
 } from "@mapform/ui/components/select";
 import type { Column } from "@mapform/db/schema";
-import type { CreateLayerSchema } from "~/data/layers/create-layer/schema";
+import type { UpsertLayerSchema } from "~/data/layers/upsert-layer/schema";
 import { usePage } from "../page-context";
 
 interface PointPropertiesProps {
-  form: UseFormReturn<CreateLayerSchema>;
+  form: UseFormReturn<UpsertLayerSchema>;
 }
 
 export function PointProperties({ form }: PointPropertiesProps) {

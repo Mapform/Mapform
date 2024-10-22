@@ -22,7 +22,11 @@ export const getPageWithLayers = authAction
     const ltp = await db.query.layersToPages.findMany({
       where: eq(layersToPages.pageId, id),
       with: {
-        layer: true,
+        layer: {
+          with: {
+            pointLayer: true,
+          },
+        },
       },
     });
 

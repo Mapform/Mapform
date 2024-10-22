@@ -5,7 +5,7 @@ import { db } from "@mapform/db";
 import { eq } from "@mapform/db/utils";
 import { pages } from "@mapform/db/schema";
 import { authAction } from "~/lib/safe-action";
-import { createLayer } from "~/data/layers/create-layer";
+import { createLayer } from "~/data/layers/upsert-layer";
 import { createDatasetFromGeojson } from "~/data/datasets/create-from-geojson";
 import { quickCreateDataLayerSchema } from "./schema";
 

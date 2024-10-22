@@ -5,7 +5,8 @@ import {
   insertPointLayerSchema,
 } from "@mapform/db/schema";
 
-export const createLayerSchema = z.object({
+export const upsertLayerSchema = z.object({
+  id: z.string().optional(),
   datasetId: insertLayerSchema.shape.datasetId,
   pageId: insertLayersToPagesSchema.shape.pageId,
   name: insertLayerSchema.shape.name,
@@ -19,4 +20,4 @@ export const createLayerSchema = z.object({
     .optional(),
 });
 
-export type CreateLayerSchema = z.infer<typeof createLayerSchema>;
+export type UpsertLayerSchema = z.infer<typeof upsertLayerSchema>;

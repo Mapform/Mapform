@@ -18,9 +18,10 @@ import { toast } from "@mapform/ui/components/toaster";
 import { useAction } from "next-safe-action/hooks";
 import { Input } from "@mapform/ui/components/input";
 import { Button } from "@mapform/ui/components/button";
-import { createLayerSchema } from "~/data/layers/create-layer/schema";
-import type { CreateLayerSchema } from "~/data/layers/create-layer/schema";
-import { createLayer } from "~/data/layers/create-layer";
+import { upsertLayerSchema } from "~/data/layers/upsert-layer/schema";
+import type { UpsertLayerSchema } from "~/data/layers/upsert-layer/schema";
+import { upsertLayer } from "~/data/layers/upsert-layer";
+import type { PageWithLayers } from "~/data/pages/get-page-with-layers";
 import { usePage } from "../page-context";
 import { DatasetPopover } from "./dataset-popover";
 import { TypePopover } from "./type-popover";
@@ -29,22 +30,34 @@ import { PointProperties } from "./point-properties";
 interface LayerPopoverProps {
   // The trigger
   children: React.ReactNode;
+  // Puts form into edit mode
+  layerToEdit?: PageWithLayers["layersToPages"][number]["layer"];
 }
 
-export function LayerPopover({ children }: LayerPopoverProps) {
+export function LayerPopover({ children, layerToEdit }: LayerPopoverProps) {
   const { ...rest } = usePage();
   const optimisticPage = rest.optimisticPage!;
 
-  const form = useForm<CreateLayerSchema>({
+  const form = useForm<UpsertLayerSchema>({
     defaultValues: {
       pageId: optimisticPage.id,
       type: "point",
+      ...layerToEdit,
+      pointProperties: layerToEdit?.pointLayer
+        ? {
+            ...layerToEdit.pointLayer,
+          }
+        : undefined,
     },
-    resolver: zodResolver(createLayerSchema),
+    resolver: zodResolver(upsertLayerSchema),
   });
-  const { execute, status } = useAction(createLayer, {
+  const { execute, status } = useAction(upsertLayer, {
     onSuccess: () => {
-      toast("Layer created successfully.");
+      toast(
+        layerToEdit
+          ? "Layer updated successfully."
+          : "Layer created successfully.",
+      );
     },
     onError: ({ error }) => {
       if (error.serverError) {
@@ -56,7 +69,7 @@ export function LayerPopover({ children }: LayerPopoverProps) {
     },
   });
 
-  const onSubmit = (values: CreateLayerSchema) => {
+  const onSubmit = (values: UpsertLayerSchema) => {
     execute(values);
   };
 
@@ -118,7 +131,7 @@ export function LayerPopover({ children }: LayerPopoverProps) {
                 size="sm"
                 type="submit"
               >
-                Create Layer
+                {layerToEdit ? "Update Layer" : "Create Layer"}
               </Button>
             </div>
           </form>

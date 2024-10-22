@@ -22,12 +22,12 @@ import { CheckIcon, ChevronsUpDownIcon } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import { useState } from "react";
 import { createEmptyDataset } from "~/data/datasets/create-empty-dataset";
-import type { CreateLayerSchema } from "~/data/layers/create-layer/schema";
+import type { UpsertLayerSchema } from "~/data/layers/upsert-layer/schema";
 import { useProject } from "../project-context";
 import { usePage } from "../page-context";
 
 interface DatasetPopoverProps {
-  form: UseFormReturn<CreateLayerSchema>;
+  form: UseFormReturn<UpsertLayerSchema>;
 }
 
 export function DatasetPopover({ form }: DatasetPopoverProps) {

@@ -23,11 +23,11 @@ import { useAction } from "next-safe-action/hooks";
 import { toast } from "@mapform/ui/components/toaster";
 import { Input } from "@mapform/ui/components/input";
 import type { GeoJson } from "@infra-blocks/zod-utils/geojson";
-import { createLayer } from "~/data/layers/create-layer";
+import { createLayer } from "~/data/layers/upsert-layer";
 import {
   createLayerSchema,
   CreateLayerSchema,
-} from "~/data/layers/create-layer/schema";
+} from "~/data/layers/upsert-layer/schema";
 import { usePage } from "../../page-context";
 import { DatasetPicker } from "./dataset-picker";
 
