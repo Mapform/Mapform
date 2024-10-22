@@ -2,12 +2,9 @@
 
 import {
   createContext,
-  Dispatch,
-  SetStateAction,
   useContext,
   // eslint-disable-next-line import/named -- It will work when React 19 is released
   useOptimistic,
-  useState,
 } from "react";
 import { useMap } from "@mapform/mapform";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
@@ -20,18 +17,16 @@ export interface PageContextProps {
   optimisticPage: PageWithLayers | undefined;
   optimisticPageData: PageData | undefined;
   availableDatasets: ListAvailableDatasets;
-  openMapEditor: boolean;
-  setOpenMapEditor: Dispatch<SetStateAction<boolean>>;
   updatePage: (action: PageWithLayers) => void;
   updatePageData: (action: PageData) => void;
   setActivePage: (
-    page?: Pick<PageWithLayers, "id" | "center" | "zoom" | "pitch" | "bearing">
+    page?: Pick<PageWithLayers, "id" | "center" | "zoom" | "pitch" | "bearing">,
   ) => void;
   setEditMode: (open: boolean) => void;
 }
 
 export const PageContext = createContext<PageContextProps>(
-  {} as PageContextProps
+  {} as PageContextProps,
 );
 export const usePage = () => useContext(PageContext);
 
@@ -50,7 +45,6 @@ export function PageProvider({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const [openMapEditor, setOpenMapEditor] = useState(false);
   const [optimisticPage, updatePage] = useOptimistic<
     PageWithLayers | undefined,
     PageWithLayers
@@ -120,8 +114,6 @@ export function PageProvider({
   return (
     <PageContext.Provider
       value={{
-        openMapEditor,
-        setOpenMapEditor,
         updatePage,
         setEditMode,
         isEditingPage,

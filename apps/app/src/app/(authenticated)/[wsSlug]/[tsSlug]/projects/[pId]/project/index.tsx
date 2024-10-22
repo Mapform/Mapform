@@ -6,16 +6,16 @@ import { toast } from "@mapform/ui/components/toaster";
 import type { CustomBlock } from "@mapform/blocknote";
 import { useAction } from "next-safe-action/hooks";
 import { debounce } from "@mapform/lib/lodash";
+import { cn } from "@mapform/lib/classnames";
 import { uploadImage } from "~/data/images";
 import { updatePage as updatePageAction } from "~/data/pages/update-page";
 import { env } from "~/env.mjs";
 import { usePage } from "../page-context";
 import { AddLocationDropdown } from "./add-location-dropdown";
-import { cn } from "@mapform/lib/classnames";
 import { EditBar } from "./edit-bar";
 
 function Project() {
-  const { optimisticPage, optimisticPageData, openMapEditor } = usePage();
+  const { optimisticPage, optimisticPageData } = usePage();
 
   const { executeAsync } = useAction(updatePageAction);
 
@@ -52,8 +52,8 @@ function Project() {
   const debouncedUpdatePageServer = debounce(updatePageServer, 1000);
 
   return (
-    <div className="p-4 flex-1 flex justify-center overflow-hidden">
-      <div className="flex-1 flex">
+    <div className="flex flex-1 justify-center overflow-hidden p-4">
+      <div className="flex flex-1">
         <MapForm
           currentPage={optimisticPage}
           editFields={{
@@ -83,14 +83,13 @@ function Project() {
             });
           }}
           pageData={optimisticPageData}
-          showBlocknote={!openMapEditor}
         >
           <div
             className={cn(
-              "flex items-center bg-primary rounded-lg px-2 py-0 absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10",
+              "bg-primary absolute bottom-8 left-1/2 z-10 flex -translate-x-1/2 transform items-center rounded-lg px-2 py-0",
               optimisticPage.contentViewType === "split"
                 ? "left-1/2 md:left-[calc(50%+180px)]"
-                : "left-1/2"
+                : "left-1/2",
             )}
           >
             <EditBar

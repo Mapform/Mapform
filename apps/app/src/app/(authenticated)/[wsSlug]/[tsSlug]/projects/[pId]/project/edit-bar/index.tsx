@@ -1,5 +1,5 @@
 import { Button } from "@mapform/ui/components/button";
-import { EditIcon, SaveIcon, SearchIcon, Undo2Icon } from "lucide-react";
+import { SaveIcon, SearchIcon, Undo2Icon } from "lucide-react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { CommandDialog } from "@mapform/ui/components/command";
@@ -10,14 +10,13 @@ import {
   TooltipTrigger,
 } from "@mapform/ui/components/tooltip";
 import { useMap, type MapboxEvent } from "@mapform/mapform";
-import { CustomBlock } from "@mapform/blocknote";
-import type { PageWithLayers } from "~/data/pages/get-page-with-layers";
+import type { CustomBlock } from "@mapform/blocknote";
 import { toast } from "@mapform/ui/components/toaster";
 import { SearchLocationMarker as MapMarker } from "@mapform/mapform";
-import { SearchLocationMarker } from "./search-location-marker";
+import type { PageWithLayers } from "~/data/pages/get-page-with-layers";
 import { usePage } from "../../page-context";
+import { SearchLocationMarker } from "./search-location-marker";
 import { CommandSearch } from "./command-search";
-import { useRootLayout } from "~/app/(authenticated)/[wsSlug]/root-layout/context";
 
 interface EditBarProps {
   updatePageServer: (args: {
@@ -56,8 +55,7 @@ export function EditBar({ updatePageServer }: EditBarProps) {
 function EditBarInner({ optimisticPage, updatePageServer }: EditBarInnerProps) {
   const { map } = useMap();
   const [openSearch, setOpenSearch] = useState(false);
-  const { updatePage, openMapEditor, setOpenMapEditor } = usePage();
-  const { showDrawer, toggleDrawer } = useRootLayout();
+  const { updatePage } = usePage();
 
   const [movedCoords, setMovedCoords] = useState<{
     lat: number;
@@ -122,22 +120,6 @@ function EditBarInner({ optimisticPage, updatePageServer }: EditBarInnerProps) {
     movedCoords.pitch !== optimisticPage.pitch ||
     movedCoords.bearing !== optimisticPage.bearing;
 
-  if (!openMapEditor) {
-    return (
-      <Button
-        onClick={() => {
-          if (!showDrawer) {
-            toggleDrawer();
-          }
-          setOpenMapEditor(true);
-        }}
-        size="sm"
-      >
-        <EditIcon className="-ml-1 mr-2 size-4" /> Edit Map
-      </Button>
-    );
-  }
-
   return (
     <>
       <TooltipProvider delayDuration={200}>
@@ -155,10 +137,10 @@ function EditBarInner({ optimisticPage, updatePageServer }: EditBarInnerProps) {
           <TooltipContent>Search Locations</TooltipContent>
         </Tooltip>
         <CommandDialog
+          dialogContentClassName="-translate-y-[150px]"
           onOpenChange={setOpenSearch}
           open={openSearch}
           shouldFilter={false}
-          dialogContentClassName="-translate-y-[150px]"
         >
           <CommandSearch
             setOpenSearch={setOpenSearch}
@@ -190,7 +172,7 @@ function EditBarInner({ optimisticPage, updatePageServer }: EditBarInnerProps) {
           <TooltipTrigger asChild>
             <Button
               disabled={!hasMoved}
-              onClick={async () => {
+              onClick={() => {
                 const center = map?.getCenter();
                 const zoom = map?.getZoom();
                 const pitch = map?.getPitch();
@@ -233,9 +215,6 @@ function EditBarInner({ optimisticPage, updatePageServer }: EditBarInnerProps) {
           </TooltipTrigger>
           <TooltipContent>Save Map Position</TooltipContent>
         </Tooltip>
-        <Button onClick={() => setOpenMapEditor(false)} size="sm">
-          Cancel
-        </Button>
       </TooltipProvider>
       {searchLocation ? (
         <MapMarker
