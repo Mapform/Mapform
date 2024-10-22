@@ -43,8 +43,8 @@ export function Drawer() {
                     clearInterval(interval);
                   }, 200);
                 }}
-                variant="ghost"
                 size="icon-sm"
+                variant="ghost"
               >
                 <ChevronsRightIcon className="size-5" />
               </Button>

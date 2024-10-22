@@ -1,5 +1,6 @@
 "use client";
 
+import { startTransition } from "react";
 import { useAction } from "next-safe-action/hooks";
 import {
   DndContext,
@@ -21,17 +22,31 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from "@mapform/ui/components/tooltip";
-import { PlusIcon } from "lucide-react";
+import { LinkIcon, PlusIcon } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuPortal,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from "@mapform/ui/components/dropdown-menu";
 import { updateLayerOrder } from "~/data/layers/update-layer-order";
+import { createPageLayer } from "~/data/layers-to-pages/create-page-layer";
 import { usePage } from "../../page-context";
+import { useProject } from "../../project-context";
 import { LayerPopover } from "../../layer-popover";
 import { Item } from "./item";
 
 export function LayerList() {
+  const { optimisticProjectWithPages } = useProject();
   const { optimisticPage, updatePage } = usePage();
 
   const dragLayers = optimisticPage?.layersToPages.map((ltp) => ltp.layer);
   const { executeAsync } = useAction(updateLayerOrder);
+  const { execute: executeCreatePageLayer } = useAction(createPageLayer);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -40,6 +55,10 @@ export function LayerList() {
       },
     }),
   );
+
+  const layersFromOtherPages = optimisticProjectWithPages.layers
+    .filter((l) => l.pageId !== optimisticPage?.id)
+    .filter((l) => !dragLayers?.find((dl) => dl.id === l.id));
 
   if (!dragLayers) {
     return null;
@@ -81,6 +100,15 @@ export function LayerList() {
     }
   };
 
+  const handleCreatePageLayer = (layerId: string) => {
+    if (!optimisticPage) return;
+
+    executeCreatePageLayer({
+      layerId,
+      pageId: optimisticPage.id,
+    });
+  };
+
   return (
     <div className="">
       <div className="flex items-center justify-between">
@@ -89,18 +117,59 @@ export function LayerList() {
         </h3>
         <TooltipProvider delayDuration={200}>
           <Tooltip>
-            <LayerPopover>
-              <TooltipTrigger asChild>
-                <Button
-                  className="-mr-2 ml-auto"
-                  size="icon-sm"
-                  variant="ghost"
-                >
-                  <PlusIcon className="size-4" />
-                </Button>
-              </TooltipTrigger>
-            </LayerPopover>
-            <TooltipContent>New Layer</TooltipContent>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <TooltipTrigger asChild>
+                  <Button
+                    className="-mr-2 ml-auto"
+                    size="icon-sm"
+                    variant="ghost"
+                  >
+                    <PlusIcon className="size-4" />
+                  </Button>
+                </TooltipTrigger>
+              </DropdownMenuTrigger>
+              <TooltipContent>New Layer</TooltipContent>
+              <DropdownMenuContent>
+                <LayerPopover>
+                  <DropdownMenuItem
+                    className="flex items-center gap-2"
+                    onSelect={(e) => {
+                      e.preventDefault();
+                    }}
+                  >
+                    <PlusIcon className="size-4 flex-shrink-0" />
+                    Create new layer
+                  </DropdownMenuItem>
+                </LayerPopover>
+                <DropdownMenuSub>
+                  <DropdownMenuSubTrigger
+                    className="flex items-center gap-2"
+                    disabled={!layersFromOtherPages.length}
+                  >
+                    <LinkIcon className="size-4 flex-shrink-0" />
+                    Connect existing layer
+                  </DropdownMenuSubTrigger>
+                  <DropdownMenuPortal>
+                    <DropdownMenuSubContent>
+                      {layersFromOtherPages.map((layer) => {
+                        return (
+                          <DropdownMenuItem
+                            className="flex items-center gap-2"
+                            key={layer.id}
+                            onSelect={() => {
+                              handleCreatePageLayer(layer.id);
+                            }}
+                          >
+                            {layer.name || "Untitled"}
+                          </DropdownMenuItem>
+                        );
+                      })}
+                    </DropdownMenuSubContent>
+                  </DropdownMenuPortal>
+                </DropdownMenuSub>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </Tooltip>
         </TooltipProvider>
       </div>

@@ -43,11 +43,12 @@ import {
 import { deleteLayer } from "~/data/layers/delete-layer";
 import { deletePageLayer } from "~/data/layers-to-pages/delete-page-layer";
 import { DragItem, DragHandle } from "~/components/draggable";
+import type { PageWithLayers } from "~/data/pages/get-page-with-layers";
 import { usePage } from "../../page-context";
 import { useProject } from "../../project-context";
 
 interface ItemProps {
-  layer: any;
+  layer: PageWithLayers["layersToPages"][number]["layer"];
 }
 
 export function Item({ layer }: ItemProps) {
@@ -57,7 +58,6 @@ export function Item({ layer }: ItemProps) {
   const { execute: executeDeletePageLayer } = useAction(deletePageLayer);
 
   const isLastPage = optimisticProjectWithPages.pages.length <= 1;
-  // const isActive = page.id === optimisticPage?.id;
 
   const handleDelete = () => {
     if (!optimisticPage) return;
@@ -141,7 +141,7 @@ export function Item({ layer }: ItemProps) {
                         <DropdownMenuGroup>
                           <DropdownMenuItem
                             className="flex items-center gap-2"
-                            onClick={handleRemoveFromPage}
+                            onSelect={handleRemoveFromPage}
                           >
                             <UnlinkIcon className="size-4 flex-shrink-0" />
                             Remove from page

@@ -2,7 +2,7 @@
 
 import { db } from "@mapform/db";
 import { eq, and, isNull } from "@mapform/db/utils";
-import { projects, pages } from "@mapform/db/schema";
+import { projects, pages, layers, layersToPages } from "@mapform/db/schema";
 import { authAction } from "~/lib/safe-action";
 import { getProjectWithPagesSchema } from "./schema";
 
@@ -11,7 +11,7 @@ export const getProjectWithPages = authAction
   .action(async ({ parsedInput: { id } }) => {
     // TODO: Cannot use 'with' with geometry columns currently due to Drizzle bug: https://github.com/drizzle-team/drizzle-orm/issues/2526
     // Once fix is merged we can simplify this
-    const [_projects2, _pages] = await Promise.all([
+    const [_projects2, _pages, _layers] = await Promise.all([
       db.query.projects.findFirst({
         where: and(eq(projects.id, id), isNull(projects.rootProjectId)),
         with: {
@@ -48,17 +48,49 @@ export const getProjectWithPages = authAction
           bearing: true,
           contentViewType: true,
         },
+        with: {
+          layersToPages: {
+            with: {
+              layer: {
+                columns: {
+                  id: true,
+                  name: true,
+                },
+              },
+            },
+            columns: {},
+          },
+        },
         orderBy: (_pages2, { asc }) => [asc(_pages2.position)],
       }),
+
+      db
+        .select({
+          id: layers.id,
+          name: layers.name,
+          pageId: layersToPages.pageId,
+        })
+        .from(layers)
+        .leftJoin(layersToPages, eq(layers.id, layersToPages.layerId))
+        .leftJoin(pages, eq(layersToPages.pageId, pages.id))
+        .leftJoin(projects, eq(pages.projectId, projects.id)),
     ]);
 
     if (!_projects2) {
       throw new Error("Project not found");
     }
 
+    const seen = new Set();
+
     return {
       ..._projects2,
       pages: _pages,
+      // Remove dups
+      layers: _layers.filter((el) => {
+        const duplicate = seen.has(el.id);
+        seen.add(el.id);
+        return !duplicate;
+      }),
     };
   });
 

@@ -8,9 +8,7 @@ import {
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
-  FormItem,
   FormLabel,
   FormMessage,
   useForm,
@@ -20,14 +18,6 @@ import { toast } from "@mapform/ui/components/toaster";
 import { useAction } from "next-safe-action/hooks";
 import { Input } from "@mapform/ui/components/input";
 import { Button } from "@mapform/ui/components/button";
-import { ChevronDown, ChevronsUpDownIcon } from "lucide-react";
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from "@mapform/ui/components/select";
 import { createLayerSchema } from "~/data/layers/create-layer/schema";
 import type { CreateLayerSchema } from "~/data/layers/create-layer/schema";
 import { createLayer } from "~/data/layers/create-layer";
@@ -42,7 +32,7 @@ interface LayerPopoverProps {
 }
 
 export function LayerPopover({ children }: LayerPopoverProps) {
-  const { availableDatasets, ...rest } = usePage();
+  const { ...rest } = usePage();
   const optimisticPage = rest.optimisticPage!;
 
   const form = useForm<CreateLayerSchema>({
