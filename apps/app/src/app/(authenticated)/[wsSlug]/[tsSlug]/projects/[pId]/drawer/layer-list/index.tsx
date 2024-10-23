@@ -172,7 +172,7 @@ export function LayerList() {
           </Tooltip>
         </TooltipProvider>
       </div>
-      <div className="mt-4 flex flex-col">
+      <div className="mt-1 flex flex-col">
         <DndContext
           collisionDetection={closestCenter}
           onDragEnd={reorderLayers}

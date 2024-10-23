@@ -127,7 +127,7 @@ export function LayerPopover({ children, layerToEdit }: LayerPopoverProps) {
 
               <Button
                 className="col-span-2"
-                disabled={status === "executing"}
+                disabled={status === "executing" || !form.formState.isValid}
                 size="sm"
                 type="submit"
               >

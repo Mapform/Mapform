@@ -157,7 +157,7 @@ export function Item({ layer }: ItemProps) {
                             onSelect={handleRemoveFromPage}
                           >
                             <UnlinkIcon className="size-4 flex-shrink-0" />
-                            Remove From Page
+                            Disconnect
                           </DropdownMenuItem>
                           <AlertDialog>
                             <AlertDialogTrigger asChild>
