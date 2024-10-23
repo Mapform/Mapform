@@ -13,6 +13,7 @@ import mapboxgl from "mapbox-gl";
 import { cn } from "@mapform/lib/classnames";
 import type { FeatureCollection } from "geojson";
 import type { PageData, ViewState } from "@mapform/map-utils/types";
+import { useMeasure } from "@mapform/lib/hooks/use-measure";
 import ReactDOM from "react-dom";
 import type { CustomBlock } from "@mapform/blocknote";
 import { usePrevious } from "@mapform/lib/hooks/use-previous";
@@ -69,10 +70,11 @@ export function Map({
   onLoad,
   children,
 }: MapProps) {
-  const mapContainer = useRef<HTMLDivElement>(null);
+  // const mapContainer = useRef<HTMLDivElement>(null);
   const { map, setMap } = useMap();
   // Condition in usePrevious resolves issue where map padding is not updated on first render
   const prevMapPadding = usePrevious(map ? mapPadding : undefined);
+  const { ref: mapContainer, bounds } = useMeasure<HTMLDivElement>();
 
   const geojson: FeatureCollection = useMemo(
     () => ({
@@ -111,6 +113,8 @@ export function Map({
         bearing: initialViewState.bearing,
         maxZoom: 20,
         logoPosition: "bottom-right",
+        // We override the internal resize observer because we are using our own
+        trackResize: false,
         // fitBoundsOptions: {
         //   padding: { top: 10, bottom: 25, left: 800, right: 5 },
         // },
@@ -141,6 +145,12 @@ export function Map({
       });
     }
   }, [map, mapPadding, prevMapPadding]);
+
+  useEffect(() => {
+    if (map) {
+      map.resize();
+    }
+  }, [map, bounds]);
 
   /**
    * Update layers

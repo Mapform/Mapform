@@ -36,12 +36,6 @@ export function Drawer() {
               <Button
                 onClick={() => {
                   toggleDrawer();
-                  const interval = setInterval(() => {
-                    map?.resize();
-                  }, 5);
-                  setTimeout(() => {
-                    clearInterval(interval);
-                  }, 200);
                 }}
                 size="icon-sm"
                 variant="ghost"
