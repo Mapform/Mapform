@@ -44,7 +44,7 @@ export function Blocknote({
   locationEditorProps,
 }: BlocknoteProps) {
   const [uncontrolledTitle, setUncontrolledTitle] = useState<string>(
-    title || ""
+    title || "",
   );
 
   const editor = useCreateBlockNote({
@@ -93,10 +93,10 @@ export function Blocknote({
 
   // Renders the editor instance using a React component.
   return (
-    <div className="flex-1 flex flex-col overflow-y-auto">
+    <div className="flex h-full flex-1 flex-col overflow-y-auto">
       {locationEditorProps ? (
         <Button
-          className="absolute top-2 right-2"
+          className="absolute right-2 top-2"
           onClick={locationEditorProps.onClose}
           size="icon-sm"
           type="button"
@@ -124,7 +124,7 @@ export function Blocknote({
             value={uncontrolledTitle}
           />
         ) : (
-          <h1 className="border-0 text-2xl font-bold w-full mb-2 p-0">
+          <h1 className="mb-2 w-full border-0 p-0 text-2xl font-bold">
             {title ?? "Untitled"}
           </h1>
         )}
@@ -155,7 +155,7 @@ export function Blocknote({
                     : []),
                   insertImage(editor),
                 ],
-                query
+                query,
               );
             }}
             triggerCharacter="/"

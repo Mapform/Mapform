@@ -26,7 +26,7 @@ interface MapProviderContextProps {
 }
 
 export const MapProviderContext = createContext<MapProviderContextProps>(
-  {} as MapProviderContextProps
+  {} as MapProviderContextProps,
 );
 export const useMap = () => useContext(MapProviderContext);
 
@@ -83,7 +83,7 @@ export function Map({
         },
       })),
     }),
-    [pageData]
+    [pageData],
   );
 
   useEffect(() => {
@@ -106,17 +106,27 @@ export function Map({
         bearing: initialViewState.bearing,
         maxZoom: 20,
         logoPosition: "bottom-right",
-        fitBoundsOptions: {
-          padding: { top: 10, bottom: 25, left: 800, right: 5 },
-        },
+        // fitBoundsOptions: {
+        //   padding: { top: 10, bottom: 25, left: 800, right: 5 },
+        // },
       });
 
-      m.setPadding({
-        top: 0,
-        bottom: 0,
-        left: 360,
-        right: 0,
+      m.easeTo({
+        padding: {
+          top: 0,
+          bottom: 0,
+          left: 360,
+          right: 0,
+        },
+        duration: 1000,
       });
+
+      // m.setPadding({
+      //   top: 0,
+      //   bottom: 0,
+      //   left: 360,
+      //   right: 0,
+      // });
 
       // Add zoom controls
       m.addControl(new mapboxgl.NavigationControl(), "top-right");
@@ -182,7 +192,7 @@ export function Map({
 /**
  * Update searchLocationMarker marker
  */
-export const SearchLocationMarker = ({
+export function SearchLocationMarker({
   searchLocationMarker,
   children,
 }: {
@@ -195,7 +205,7 @@ export const SearchLocationMarker = ({
     };
   } | null;
   children: React.ReactNode;
-}) => {
+}) {
   const { map } = useMap();
   const markerEl = useRef<mapboxgl.Marker | null>(null);
   const markerElInner = useRef<HTMLDivElement>(document.createElement("div"));
@@ -221,7 +231,7 @@ export const SearchLocationMarker = ({
     if (map && !searchLocationMarker) {
       markerEl.current?.remove();
     }
-  }, [map, searchLocationMarker]);
+  }, [map, searchLocationMarker, children]);
 
   return null;
-};
+}
