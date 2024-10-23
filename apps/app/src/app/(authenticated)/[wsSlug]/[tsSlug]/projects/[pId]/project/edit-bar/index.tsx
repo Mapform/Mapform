@@ -129,9 +129,10 @@ function EditBarInner({ optimisticPage, updatePageServer }: EditBarInnerProps) {
               onClick={() => {
                 setOpenSearch(true);
               }}
-              size="icon-sm"
+              size="icon"
+              variant="ghost"
             >
-              <SearchIcon className="size-4" />
+              <SearchIcon className="size-5" />
             </Button>
           </TooltipTrigger>
           <TooltipContent>Search Locations</TooltipContent>
@@ -161,9 +162,10 @@ function EditBarInner({ optimisticPage, updatePageServer }: EditBarInnerProps) {
                 map?.setPitch(optimisticPage.pitch);
                 map?.setBearing(optimisticPage.bearing);
               }}
-              size="icon-sm"
+              size="icon"
+              variant="ghost"
             >
-              <Undo2Icon className="h-4 w-4" />
+              <Undo2Icon className="size-5" />
             </Button>
           </TooltipTrigger>
           <TooltipContent>Undo</TooltipContent>
@@ -209,8 +211,9 @@ function EditBarInner({ optimisticPage, updatePageServer }: EditBarInnerProps) {
                 }
               }}
               size="sm"
+              variant="ghost"
             >
-              <SaveIcon className="size-4" />
+              <SaveIcon className="size-5" />
             </Button>
           </TooltipTrigger>
           <TooltipContent>Save Map Position</TooltipContent>

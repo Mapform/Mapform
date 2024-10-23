@@ -86,7 +86,7 @@ function Project() {
         >
           <div
             className={cn(
-              "bg-primary absolute bottom-8 left-1/2 z-10 flex -translate-x-1/2 transform items-center rounded-lg px-2 py-0",
+              "absolute bottom-8 left-1/2 z-10 flex -translate-x-1/2 transform items-center rounded-lg border bg-white p-1 shadow-lg",
             )}
           >
             <EditBar

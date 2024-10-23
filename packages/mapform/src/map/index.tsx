@@ -148,7 +148,7 @@ export function Map({
 
   useEffect(() => {
     if (map) {
-      map.resize();
+      map?.resize();
     }
   }, [map, bounds]);
 
