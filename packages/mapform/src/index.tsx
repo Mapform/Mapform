@@ -37,7 +37,6 @@ interface MapFormProps {
   mapboxAccessToken: string;
   currentPage: Page;
   defaultFormValues?: Record<string, string>;
-  contentViewType?: "full" | "partial" | "closed";
   showBlocknote?: boolean;
   onPrev?: () => void;
   onLoad?: () => void;
@@ -101,24 +100,10 @@ export function MapForm({
 
   const AddLocationDropdown = editFields?.AddLocationDropdown;
 
-  const renderMap = () => (
-    <Map
-      editable={editable}
-      initialViewState={initialViewState}
-      onLoad={onLoad}
-      pageData={pageData}
-    >
-      {children}
-    </Map>
-  );
-
-  // We add 36px to the width when editing to account for side padding for buttons
-  const contentWidth = editable ? "md:w-[396px]" : "md:w-[360px]";
-
   return (
     <Form {...form}>
       <form
-        className="relative flex h-full w-full"
+        className="relative flex h-full w-full overflow-hidden"
         onSubmit={form.handleSubmit(onSubmit)}
       >
         <CustomBlockContext.Provider
@@ -131,51 +116,28 @@ export function MapForm({
         >
           <div
             className={cn(
-              "bg-background group absolute z-10 w-full overflow-hidden",
-              currentPage.contentViewType === "text"
-                ? "z-10 h-full"
-                : currentPage.contentViewType === "split"
-                  ? `h-full ${contentWidth}`
-                  : `h-initial ${contentWidth} rounded-lg shadow-lg md:m-2`,
+              "bg-background prose group absolute z-10 h-full overflow-hidden rounded-r-lg shadow-lg",
+              editable && "pl-8",
             )}
             ref={drawerRef}
           >
-            <div
-              className={cn(
-                "prose relative mx-auto flex h-full w-full flex-col max-md:max-w-full",
-                {
-                  "px-9": editable && currentPage.contentViewType === "text",
-                  "pl-9": editable && currentPage.contentViewType !== "text",
-                  "max-h-[300px]": currentPage.contentViewType === "map",
-                },
-              )}
-            >
-              {/* MOBILE MAP */}
-              {showMapMobile ? (
-                <div className="relative flex flex-1 md:hidden">
-                  {renderMap()}
-                </div>
-              ) : null}
-
+            <div className="flex h-full w-[360px] flex-col">
+              <Blocknote
+                currentPage={currentPage}
+                description={currentPage.content ?? undefined}
+                editable={editable}
+                isPage
+                key={currentPage.id}
+                onDescriptionChange={onDescriptionChange}
+                onPrev={onPrev}
+                onTitleChange={onTitleChange}
+                title={currentPage.title}
+              />
               <div
-                className={cn("overflow-y-auto", {
-                  "hidden md:block": showMapMobile,
-                  "md:p-2 md:pb-0": currentPage.contentViewType === "split",
+                className={cn("mt-auto flex justify-between px-4 py-2", {
+                  hidden: editable,
                 })}
               >
-                <Blocknote
-                  currentPage={currentPage}
-                  description={currentPage.content ?? undefined}
-                  editable={editable}
-                  isPage
-                  key={currentPage.id}
-                  onDescriptionChange={onDescriptionChange}
-                  onPrev={onPrev}
-                  onTitleChange={onTitleChange}
-                  title={currentPage.title}
-                />
-              </div>
-              <div className="mt-auto flex justify-between px-4 py-2">
                 <div className="gap-2">
                   <Button
                     disabled={editable}
@@ -224,88 +186,14 @@ export function MapForm({
               </div>
             </div>
           </div>
-
-          {/* MARKER EDITOR */}
-          {/* {searchLocation ? (
-            <div
-              className={cn(
-                "group absolute bg-background z-10 w-full overflow-hidden",
-                currentPage.contentViewType === "text"
-                  ? "h-full z-10"
-                  : currentPage.contentViewType === "split"
-                    ? `h-full ${contentWidth}`
-                    : `h-initial ${contentWidth} rounded-lg shadow-lg md:m-2`
-              )}
-              ref={drawerRef}
-            >
-              <div
-                className={cn(
-                  "h-full w-full flex flex-col prose max-md:max-w-full mx-auto relative",
-                  {
-                    "px-9": editable && currentPage.contentViewType === "text",
-                    "pl-9": editable && currentPage.contentViewType !== "text",
-                    "max-h-[300px]": currentPage.contentViewType === "map",
-                  }
-                )}
-              >
-                <Blocknote
-                  currentPage={currentPage}
-                  description={searchLocation.description ?? undefined}
-                  // Need key to force re-render, otherwise Blocknote state doesn't
-                  // change when changing steps
-                  editable={editable}
-                  key={searchLocation.id}
-                  locationEditorProps={{
-                    onClose: () => {
-                      setSearchLocation(null);
-                    },
-                  }}
-                  onDescriptionChange={(val) => {
-                    setSearchLocation((prev) => ({
-                      id: prev?.id ?? "",
-                      description: val,
-                      name: prev?.name ?? "",
-                      latitude: prev?.latitude ?? 0,
-                      longitude: prev?.longitude ?? 0,
-                    }));
-                  }}
-                  onTitleChange={(val) => {
-                    setSearchLocation((prev) => ({
-                      ...prev,
-                      name: val,
-                      id: prev?.id ?? "",
-                      latitude: prev?.latitude ?? 0,
-                      longitude: prev?.longitude ?? 0,
-                    }));
-                  }}
-                  title={searchLocation.name}
-                />
-                {editable && AddLocationDropdown && currentPage.projectId ? (
-                  <div className="p-4 ml-auto">
-                    <AddLocationDropdown
-                      data={{
-                        type: "Feature",
-                        geometry: {
-                          type: "Point",
-                          coordinates: [
-                            searchLocation.longitude,
-                            searchLocation.latitude,
-                          ],
-                        },
-                        properties: {},
-                      }}
-                    />
-                  </div>
-                ) : null}
-              </div>
-            </div>
-          ) : null} */}
-
-          {currentPage.contentViewType !== "text" ? (
-            <div className="relative hidden flex-1 overflow-hidden md:flex">
-              {renderMap()}
-            </div>
-          ) : null}
+          <Map
+            editable={editable}
+            initialViewState={initialViewState}
+            onLoad={onLoad}
+            pageData={pageData}
+          >
+            {children}
+          </Map>
         </CustomBlockContext.Provider>
       </form>
     </Form>
@@ -317,3 +205,78 @@ MapForm.displayName = "MapForm";
 export { MapProvider, useMap, SearchLocationMarker };
 export type { ViewState, MBMap };
 export type { MapboxEvent } from "mapbox-gl";
+
+/* {searchLocation ? (
+  <div
+    className={cn(
+      "group absolute bg-background z-10 w-full overflow-hidden",
+      currentPage.contentViewType === "text"
+        ? "h-full z-10"
+        : currentPage.contentViewType === "split"
+          ? `h-full ${contentWidth}`
+          : `h-initial ${contentWidth} rounded-lg shadow-lg md:m-2`
+    )}
+    ref={drawerRef}
+  >
+    <div
+      className={cn(
+        "h-full w-full flex flex-col prose max-md:max-w-full mx-auto relative",
+        {
+          "px-9": editable && currentPage.contentViewType === "text",
+          "pl-9": editable && currentPage.contentViewType !== "text",
+          "max-h-[300px]": currentPage.contentViewType === "map",
+        }
+      )}
+    >
+      <Blocknote
+        currentPage={currentPage}
+        description={searchLocation.description ?? undefined}
+        // Need key to force re-render, otherwise Blocknote state doesn't
+        // change when changing steps
+        editable={editable}
+        key={searchLocation.id}
+        locationEditorProps={{
+          onClose: () => {
+            setSearchLocation(null);
+          },
+        }}
+        onDescriptionChange={(val) => {
+          setSearchLocation((prev) => ({
+            id: prev?.id ?? "",
+            description: val,
+            name: prev?.name ?? "",
+            latitude: prev?.latitude ?? 0,
+            longitude: prev?.longitude ?? 0,
+          }));
+        }}
+        onTitleChange={(val) => {
+          setSearchLocation((prev) => ({
+            ...prev,
+            name: val,
+            id: prev?.id ?? "",
+            latitude: prev?.latitude ?? 0,
+            longitude: prev?.longitude ?? 0,
+          }));
+        }}
+        title={searchLocation.name}
+      />
+      {editable && AddLocationDropdown && currentPage.projectId ? (
+        <div className="p-4 ml-auto">
+          <AddLocationDropdown
+            data={{
+              type: "Feature",
+              geometry: {
+                type: "Point",
+                coordinates: [
+                  searchLocation.longitude,
+                  searchLocation.latitude,
+                ],
+              },
+              properties: {},
+            }}
+          />
+        </div>
+      ) : null}
+    </div>
+  </div>
+) : null} */
