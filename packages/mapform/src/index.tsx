@@ -22,6 +22,8 @@ import {
   ArrowRightIcon,
   MapIcon,
   LetterTextIcon,
+  ChevronsLeftIcon,
+  ChevronsRightIcon,
 } from "lucide-react";
 import { Blocknote } from "./block-note";
 import {
@@ -122,10 +124,26 @@ export function MapForm({
             setIsSelectingPinLocationFor,
           }}
         >
+          <Button
+            className={cn(
+              "absolute left-2 top-2 z-10 shadow-sm transition-opacity delay-300 duration-300",
+              {
+                "opacity-0": drawerOpen,
+              },
+            )}
+            onClick={() => {
+              setDrawerOpen(true);
+            }}
+            size="icon-sm"
+            variant="outline"
+          >
+            <ChevronsRightIcon className="size-5" />
+          </Button>
           {rootEl.current ? (
             <DrawerPrimitive.Root
               container={rootEl.current}
               direction="left"
+              dismissible={false}
               modal={false}
               onOpenChange={setDrawerOpen}
               open={drawerOpen}
@@ -133,11 +151,21 @@ export function MapForm({
               <DrawerPrimitive.Portal>
                 <DrawerPrimitive.Content
                   className={cn(
-                    "bg-background prose group absolute bottom-0 top-0 h-full overflow-hidden rounded-r-lg shadow-lg",
+                    "bg-background prose group absolute bottom-0 top-0 z-50 h-full rounded-r-lg shadow-lg outline-none",
                     editable ? "w-[392px] pl-8" : "w-[360px]",
                   )}
                   ref={drawerRef}
                 >
+                  <Button
+                    className="absolute right-2 top-2"
+                    onClick={() => {
+                      setDrawerOpen(false);
+                    }}
+                    size="icon-sm"
+                    variant="ghost"
+                  >
+                    <ChevronsLeftIcon className="size-5" />
+                  </Button>
                   <Blocknote
                     currentPage={currentPage}
                     description={currentPage.content ?? undefined}
