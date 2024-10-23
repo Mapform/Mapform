@@ -52,8 +52,6 @@ interface MapFormProps {
   };
 }
 
-const snapPoints = [0, 1];
-
 export function MapForm({
   editable = false,
   onPrev,
@@ -80,7 +78,7 @@ export function MapForm({
     string | null
   >(null);
   const isClient = useIsClient();
-  const [snap, setSnap] = useState<number | string | null>(1);
+  const [drawerOpen, setDrawerOpen] = useState(true);
   const { ref: drawerRef } = useMeasure<HTMLDivElement>();
   const rootEl = useRef<HTMLFormElement | null>(null);
   const initialViewState = {
@@ -126,86 +124,81 @@ export function MapForm({
         >
           {rootEl.current ? (
             <DrawerPrimitive.Root
-              activeSnapPoint={snap}
               container={rootEl.current}
               direction="left"
               modal={false}
-              open
-              setActiveSnapPoint={setSnap}
-              snapPoints={snapPoints}
-              snapToSequentialPoint
+              onOpenChange={setDrawerOpen}
+              open={drawerOpen}
             >
               <DrawerPrimitive.Portal>
                 <DrawerPrimitive.Content
                   className={cn(
-                    "bg-background prose group absolute bottom-0 top-0 h-full w-[360px] overflow-hidden rounded-r-lg shadow-lg",
-                    editable && "pl-8",
+                    "bg-background prose group absolute bottom-0 top-0 h-full overflow-hidden rounded-r-lg shadow-lg",
+                    editable ? "w-[392px] pl-8" : "w-[360px]",
                   )}
                   ref={drawerRef}
                 >
-                  <div className="flex h-full w-[360px] flex-col">
-                    <Blocknote
-                      currentPage={currentPage}
-                      description={currentPage.content ?? undefined}
-                      editable={editable}
-                      isPage
-                      key={currentPage.id}
-                      onDescriptionChange={onDescriptionChange}
-                      onPrev={onPrev}
-                      onTitleChange={onTitleChange}
-                      title={currentPage.title}
-                    />
-                    <div
-                      className={cn("mt-auto flex justify-between px-4 py-2", {
-                        hidden: editable,
-                      })}
-                    >
-                      <div className="gap-2">
-                        <Button
-                          disabled={editable}
-                          onClick={onPrev}
-                          size="icon"
-                          type="button"
-                          variant="ghost"
-                        >
-                          <ArrowLeftIcon />
-                        </Button>
-                      </div>
-                      <div
-                        className={
-                          currentPage.contentViewType === "text"
-                            ? "block"
-                            : "md:hidden"
-                        }
-                      >
-                        <Button
-                          onClick={() => {
-                            setShowMapMobile((prev) => !prev);
-                          }}
-                          variant="secondary"
-                        >
-                          {showMapMobile ? (
-                            <>
-                              <LetterTextIcon className="mr-2 size-5" />
-                              Show Text
-                            </>
-                          ) : (
-                            <>
-                              <MapIcon className="mr-2 size-5" />
-                              Show Map
-                            </>
-                          )}
-                        </Button>
-                      </div>
+                  <Blocknote
+                    currentPage={currentPage}
+                    description={currentPage.content ?? undefined}
+                    editable={editable}
+                    isPage
+                    key={currentPage.id}
+                    onDescriptionChange={onDescriptionChange}
+                    onPrev={onPrev}
+                    onTitleChange={onTitleChange}
+                    title={currentPage.title}
+                  />
+                  <div
+                    className={cn("mt-auto flex justify-between px-4 py-2", {
+                      hidden: editable,
+                    })}
+                  >
+                    <div className="gap-2">
                       <Button
                         disabled={editable}
+                        onClick={onPrev}
                         size="icon"
-                        type="submit"
+                        type="button"
                         variant="ghost"
                       >
-                        <ArrowRightIcon />
+                        <ArrowLeftIcon />
                       </Button>
                     </div>
+                    <div
+                      className={
+                        currentPage.contentViewType === "text"
+                          ? "block"
+                          : "md:hidden"
+                      }
+                    >
+                      <Button
+                        onClick={() => {
+                          setShowMapMobile((prev) => !prev);
+                        }}
+                        variant="secondary"
+                      >
+                        {showMapMobile ? (
+                          <>
+                            <LetterTextIcon className="mr-2 size-5" />
+                            Show Text
+                          </>
+                        ) : (
+                          <>
+                            <MapIcon className="mr-2 size-5" />
+                            Show Map
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                    <Button
+                      disabled={editable}
+                      size="icon"
+                      type="submit"
+                      variant="ghost"
+                    >
+                      <ArrowRightIcon />
+                    </Button>
                   </div>
                 </DrawerPrimitive.Content>
               </DrawerPrimitive.Portal>
