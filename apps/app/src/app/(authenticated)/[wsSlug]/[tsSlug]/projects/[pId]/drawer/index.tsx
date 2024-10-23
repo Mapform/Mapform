@@ -33,13 +33,7 @@ export function Drawer() {
         <TooltipProvider delayDuration={200}>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button
-                onClick={() => {
-                  toggleDrawer();
-                }}
-                size="icon-sm"
-                variant="ghost"
-              >
+              <Button onClick={toggleDrawer} size="icon-sm" variant="ghost">
                 <ChevronsRightIcon className="size-5" />
               </Button>
             </TooltipTrigger>
