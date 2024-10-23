@@ -15,6 +15,7 @@ import type { FeatureCollection } from "geojson";
 import type { PageData, ViewState } from "@mapform/map-utils/types";
 import ReactDOM from "react-dom";
 import type { CustomBlock } from "@mapform/blocknote";
+import { usePrevious } from "@mapform/lib/hooks/use-previous";
 
 const accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
 
@@ -48,6 +49,7 @@ export function MapProvider({ children }: { children: React.ReactNode }) {
 interface MapProps {
   pageData?: PageData;
   editable?: boolean;
+  mapPadding: ViewState["padding"];
   onLoad?: () => void;
   initialViewState: ViewState;
   children?: React.ReactNode;
@@ -62,12 +64,14 @@ interface MapProps {
 export function Map({
   initialViewState,
   editable = false,
+  mapPadding,
   pageData,
   onLoad,
   children,
 }: MapProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const { map, setMap } = useMap();
+  const prevMapPadding = usePrevious(mapPadding);
 
   const geojson: FeatureCollection = useMemo(
     () => ({
@@ -111,23 +115,6 @@ export function Map({
         // },
       });
 
-      m.easeTo({
-        padding: {
-          top: 0,
-          bottom: 0,
-          left: 360,
-          right: 0,
-        },
-        duration: 1000,
-      });
-
-      // m.setPadding({
-      //   top: 0,
-      //   bottom: 0,
-      //   left: 360,
-      //   right: 0,
-      // });
-
       // Add zoom controls
       m.addControl(new mapboxgl.NavigationControl(), "top-right");
 
@@ -144,6 +131,15 @@ export function Map({
       };
     }
   }, []);
+
+  useEffect(() => {
+    if (map && JSON.stringify(prevMapPadding) !== JSON.stringify(mapPadding)) {
+      map.easeTo({
+        padding: mapPadding,
+        duration: 750,
+      });
+    }
+  }, [map, mapPadding, prevMapPadding]);
 
   /**
    * Update layers

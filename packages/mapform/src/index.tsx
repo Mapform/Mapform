@@ -13,10 +13,8 @@ import {
   type CustomBlock,
   getFormSchemaFromBlockNote,
 } from "@mapform/blocknote";
-import { useMeasure } from "@mapform/lib/hooks/use-measure";
 import type { PageData, ViewState } from "@mapform/map-utils/types";
 import { Button } from "@mapform/ui/components/button";
-import { useIsClient } from "@mapform/lib/hooks/use-is-client";
 import {
   ArrowLeftIcon,
   ArrowRightIcon,
@@ -79,9 +77,7 @@ export function MapForm({
   const [isSelectingPinLocationFor, setIsSelectingPinLocationFor] = useState<
     string | null
   >(null);
-  const isClient = useIsClient();
   const [drawerOpen, setDrawerOpen] = useState(true);
-  const { ref: drawerRef } = useMeasure<HTMLDivElement>();
   const rootEl = useRef<HTMLFormElement | null>(null);
   const initialViewState = {
     longitude: currentPage.center.x,
@@ -97,17 +93,16 @@ export function MapForm({
     },
   };
 
-  if (!isClient) return null;
-
   const onSubmit = (data: FormSchema) => {
     onStepSubmit?.(data);
   };
 
-  const pinBlocks = currentPage.content?.content.filter((c) => {
-    return c.type === "pin";
-  });
-
-  const AddLocationDropdown = editFields?.AddLocationDropdown;
+  const mapPadding = {
+    top: 0,
+    bottom: 0,
+    left: drawerOpen ? (editable ? 392 : 360) : 0,
+    right: 0,
+  };
 
   return (
     <Form {...form}>
@@ -154,7 +149,6 @@ export function MapForm({
                     "bg-background prose group absolute bottom-0 top-0 z-50 h-full rounded-r-lg shadow-lg outline-none",
                     editable ? "w-[392px] pl-8" : "w-[360px]",
                   )}
-                  ref={drawerRef}
                 >
                   <Button
                     className="absolute right-2 top-2"
@@ -235,6 +229,7 @@ export function MapForm({
           <Map
             editable={editable}
             initialViewState={initialViewState}
+            mapPadding={mapPadding}
             onLoad={onLoad}
             pageData={pageData}
           >
@@ -251,6 +246,12 @@ MapForm.displayName = "MapForm";
 export { MapProvider, useMap, SearchLocationMarker };
 export type { ViewState, MBMap };
 export type { MapboxEvent } from "mapbox-gl";
+
+// const pinBlocks = currentPage.content?.content.filter((c) => {
+//   return c.type === "pin";
+// });
+
+// const AddLocationDropdown = editFields?.AddLocationDropdown;
 
 /* {searchLocation ? (
   <div
