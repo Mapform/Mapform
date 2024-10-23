@@ -1,8 +1,9 @@
 "use client";
 
 import "mapbox-gl/dist/mapbox-gl.css";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import type { Page } from "@mapform/db/schema";
+import { DrawerPrimitive } from "@mapform/ui/components/drawer";
 import { Form, useForm, zodResolver } from "@mapform/ui/components/form";
 import type { z } from "zod";
 import { cn } from "@mapform/lib/classnames";
@@ -15,6 +16,7 @@ import {
 import { useMeasure } from "@mapform/lib/hooks/use-measure";
 import type { PageData, ViewState } from "@mapform/map-utils/types";
 import { Button } from "@mapform/ui/components/button";
+import { useIsClient } from "@mapform/lib/hooks/use-is-client";
 import {
   ArrowLeftIcon,
   ArrowRightIcon,
@@ -50,6 +52,8 @@ interface MapFormProps {
   };
 }
 
+const snapPoints = [0, 1];
+
 export function MapForm({
   editable = false,
   onPrev,
@@ -75,7 +79,10 @@ export function MapForm({
   const [isSelectingPinLocationFor, setIsSelectingPinLocationFor] = useState<
     string | null
   >(null);
+  const isClient = useIsClient();
+  const [snap, setSnap] = useState<number | string | null>(1);
   const { ref: drawerRef } = useMeasure<HTMLDivElement>();
+  const rootEl = useRef<HTMLFormElement | null>(null);
   const initialViewState = {
     longitude: currentPage.center.x,
     latitude: currentPage.center.y,
@@ -89,6 +96,8 @@ export function MapForm({
       right: 0,
     },
   };
+
+  if (!isClient) return null;
 
   const onSubmit = (data: FormSchema) => {
     onStepSubmit?.(data);
@@ -105,6 +114,7 @@ export function MapForm({
       <form
         className="relative flex h-full w-full overflow-hidden"
         onSubmit={form.handleSubmit(onSubmit)}
+        ref={rootEl}
       >
         <CustomBlockContext.Provider
           value={{
@@ -114,78 +124,93 @@ export function MapForm({
             setIsSelectingPinLocationFor,
           }}
         >
-          <div
-            className={cn(
-              "bg-background prose group absolute z-10 h-full overflow-hidden rounded-r-lg shadow-lg",
-              editable && "pl-8",
-            )}
-            ref={drawerRef}
-          >
-            <div className="flex h-full w-[360px] flex-col">
-              <Blocknote
-                currentPage={currentPage}
-                description={currentPage.content ?? undefined}
-                editable={editable}
-                isPage
-                key={currentPage.id}
-                onDescriptionChange={onDescriptionChange}
-                onPrev={onPrev}
-                onTitleChange={onTitleChange}
-                title={currentPage.title}
-              />
-              <div
-                className={cn("mt-auto flex justify-between px-4 py-2", {
-                  hidden: editable,
-                })}
-              >
-                <div className="gap-2">
-                  <Button
-                    disabled={editable}
-                    onClick={onPrev}
-                    size="icon"
-                    type="button"
-                    variant="ghost"
-                  >
-                    <ArrowLeftIcon />
-                  </Button>
-                </div>
-                <div
-                  className={
-                    currentPage.contentViewType === "text"
-                      ? "block"
-                      : "md:hidden"
-                  }
+          {rootEl.current ? (
+            <DrawerPrimitive.Root
+              activeSnapPoint={snap}
+              container={rootEl.current}
+              direction="left"
+              modal={false}
+              open
+              setActiveSnapPoint={setSnap}
+              snapPoints={snapPoints}
+              snapToSequentialPoint
+            >
+              <DrawerPrimitive.Portal>
+                <DrawerPrimitive.Content
+                  className={cn(
+                    "bg-background prose group absolute bottom-0 top-0 h-full w-[360px] overflow-hidden rounded-r-lg shadow-lg",
+                    editable && "pl-8",
+                  )}
+                  ref={drawerRef}
                 >
-                  <Button
-                    onClick={() => {
-                      setShowMapMobile((prev) => !prev);
-                    }}
-                    variant="secondary"
-                  >
-                    {showMapMobile ? (
-                      <>
-                        <LetterTextIcon className="mr-2 size-5" />
-                        Show Text
-                      </>
-                    ) : (
-                      <>
-                        <MapIcon className="mr-2 size-5" />
-                        Show Map
-                      </>
-                    )}
-                  </Button>
-                </div>
-                <Button
-                  disabled={editable}
-                  size="icon"
-                  type="submit"
-                  variant="ghost"
-                >
-                  <ArrowRightIcon />
-                </Button>
-              </div>
-            </div>
-          </div>
+                  <div className="flex h-full w-[360px] flex-col">
+                    <Blocknote
+                      currentPage={currentPage}
+                      description={currentPage.content ?? undefined}
+                      editable={editable}
+                      isPage
+                      key={currentPage.id}
+                      onDescriptionChange={onDescriptionChange}
+                      onPrev={onPrev}
+                      onTitleChange={onTitleChange}
+                      title={currentPage.title}
+                    />
+                    <div
+                      className={cn("mt-auto flex justify-between px-4 py-2", {
+                        hidden: editable,
+                      })}
+                    >
+                      <div className="gap-2">
+                        <Button
+                          disabled={editable}
+                          onClick={onPrev}
+                          size="icon"
+                          type="button"
+                          variant="ghost"
+                        >
+                          <ArrowLeftIcon />
+                        </Button>
+                      </div>
+                      <div
+                        className={
+                          currentPage.contentViewType === "text"
+                            ? "block"
+                            : "md:hidden"
+                        }
+                      >
+                        <Button
+                          onClick={() => {
+                            setShowMapMobile((prev) => !prev);
+                          }}
+                          variant="secondary"
+                        >
+                          {showMapMobile ? (
+                            <>
+                              <LetterTextIcon className="mr-2 size-5" />
+                              Show Text
+                            </>
+                          ) : (
+                            <>
+                              <MapIcon className="mr-2 size-5" />
+                              Show Map
+                            </>
+                          )}
+                        </Button>
+                      </div>
+                      <Button
+                        disabled={editable}
+                        size="icon"
+                        type="submit"
+                        variant="ghost"
+                      >
+                        <ArrowRightIcon />
+                      </Button>
+                    </div>
+                  </div>
+                </DrawerPrimitive.Content>
+              </DrawerPrimitive.Portal>
+            </DrawerPrimitive.Root>
+          ) : null}
           <Map
             editable={editable}
             initialViewState={initialViewState}

@@ -658,8 +658,8 @@ importers:
         specifier: ^1.0.7
         version: 1.0.7(tailwindcss@3.4.1)
       vaul:
-        specifier: ^0.9.1
-        version: 0.9.1(@types/react-dom@18.2.19)(@types/react@18.3.10)(react-dom@18.3.1)(react@19.0.0-rc-e4953922-20240919)
+        specifier: ^1.1.0
+        version: 1.1.0(@types/react-dom@18.2.19)(@types/react@18.3.10)(react-dom@18.3.1)(react@19.0.0-rc-e4953922-20240919)
       zod:
         specifier: 3.23.8
         version: 3.23.8
@@ -10529,13 +10529,13 @@ packages:
       spdx-expression-parse: 3.0.1
     dev: true
 
-  /vaul@0.9.1(@types/react-dom@18.2.19)(@types/react@18.3.10)(react-dom@18.3.1)(react@19.0.0-rc-e4953922-20240919):
-    resolution: {integrity: sha512-fAhd7i4RNMinx+WEm6pF3nOl78DFkAazcN04ElLPFF9BMCNGbY/kou8UMhIcicm0rJCNePJP0Yyza60gGOD0Jw==}
+  /vaul@1.1.0(@types/react-dom@18.2.19)(@types/react@18.3.10)(react-dom@18.3.1)(react@19.0.0-rc-e4953922-20240919):
+    resolution: {integrity: sha512-YhO/bikcauk48hzhMhvIvT+U87cuCbNbKk9fF4Ou5UkI9t2KkBMernmdP37pCzF15hrv55fcny1YhexK8h6GVQ==}
     peerDependencies:
       react: ^16.8 || ^17.0 || ^18.0
       react-dom: ^16.8 || ^17.0 || ^18.0
     dependencies:
-      '@radix-ui/react-dialog': 1.1.1(@types/react-dom@18.2.19)(@types/react@18.3.10)(react-dom@18.3.1)(react@19.0.0-rc-e4953922-20240919)
+      '@radix-ui/react-dialog': 1.1.2(@types/react-dom@18.2.19)(@types/react@18.3.10)(react-dom@18.3.1)(react@19.0.0-rc-e4953922-20240919)
       react: 19.0.0-rc-e4953922-20240919
       react-dom: 18.3.1(react@19.0.0-rc-e4953922-20240919)
     transitivePeerDependencies:
