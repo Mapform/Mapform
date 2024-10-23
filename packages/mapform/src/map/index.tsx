@@ -71,7 +71,8 @@ export function Map({
 }: MapProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const { map, setMap } = useMap();
-  const prevMapPadding = usePrevious(mapPadding);
+  // Condition in usePrevious resolves issue where map padding is not updated on first render
+  const prevMapPadding = usePrevious(map ? mapPadding : undefined);
 
   const geojson: FeatureCollection = useMemo(
     () => ({
