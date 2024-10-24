@@ -1,6 +1,5 @@
 import { cn } from "@mapform/lib/classnames";
 import { debounce } from "@mapform/lib/lodash";
-import { PlacesSearchResponse } from "@mapform/map-utils/types";
 import { useMapform } from "@mapform/mapform";
 import {
   CommandInput,
@@ -12,6 +11,7 @@ import {
 } from "@mapform/ui/components/command";
 import { useQuery } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
+import type { PlacesSearchResponse } from "@mapform/map-utils/types";
 
 export function CommandSearch({
   setOpenSearch,
@@ -27,7 +27,7 @@ export function CommandSearch({
     } | null>
   >;
 }) {
-  const { map } = useMapform();
+  const { map, setDrawerOpen } = useMapform();
   const [query, setQuery] = useState("");
   const debouncedSetQuery = debounce(setQuery, 250, {
     leading: true,
@@ -66,6 +66,7 @@ export function CommandSearch({
           },
         );
 
+        setDrawerOpen(false);
         setSearchLocation({
           id: feature.properties.place_id,
           latitude: feature.properties.lat,
@@ -100,7 +101,7 @@ export function CommandSearch({
         }
       });
     };
-  }, [data?.features, map, setOpenSearch, setSearchLocation]);
+  }, [data?.features, map, setOpenSearch, setSearchLocation, setDrawerOpen]);
 
   return (
     <>
@@ -142,6 +143,7 @@ export function CommandSearch({
                     },
                   );
 
+                  setDrawerOpen(false);
                   setSearchLocation({
                     id: feature.properties.place_id,
                     latitude: feature.properties.lat,

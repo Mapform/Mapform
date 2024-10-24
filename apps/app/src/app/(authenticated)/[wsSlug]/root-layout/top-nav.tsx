@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Button } from "@mapform/ui/components/button";
-import { PanelLeftOpenIcon } from "lucide-react";
+import { MenuIcon } from "lucide-react";
 import { useRootLayout } from "./context";
 import {
   Tooltip,
@@ -55,7 +55,7 @@ export function TopNav({ children }: { children: React.ReactNode }) {
                       size="icon-sm"
                       variant="ghost"
                     >
-                      <PanelLeftOpenIcon className="size-5" />
+                      <MenuIcon className="size-5" />
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent>

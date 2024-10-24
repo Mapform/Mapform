@@ -53,7 +53,7 @@ export function EditBar({ updatePageServer }: EditBarProps) {
 }
 
 function EditBarInner({ optimisticPage, updatePageServer }: EditBarInnerProps) {
-  const { map } = useMapform();
+  const { map, setDrawerOpen } = useMapform();
   const [openSearch, setOpenSearch] = useState(false);
   const { updatePage } = usePage();
 
@@ -122,114 +122,118 @@ function EditBarInner({ optimisticPage, updatePageServer }: EditBarInnerProps) {
 
   return (
     <>
-      <TooltipProvider delayDuration={200}>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              onClick={() => {
-                setOpenSearch(true);
-              }}
-              size="icon"
-              variant="ghost"
-            >
-              <SearchIcon className="size-5" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Search Locations</TooltipContent>
-        </Tooltip>
-        <CommandDialog
-          dialogContentClassName="-translate-y-[150px]"
-          onOpenChange={setOpenSearch}
-          open={openSearch}
-          shouldFilter={false}
-        >
-          <CommandSearch
-            setOpenSearch={setOpenSearch}
-            setSearchLocation={setSearchLocation}
-          />
-        </CommandDialog>
-
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              disabled={!hasMoved}
-              onClick={() => {
-                map?.setCenter([
-                  optimisticPage.center.x,
-                  optimisticPage.center.y,
-                ]);
-                map?.setZoom(optimisticPage.zoom);
-                map?.setPitch(optimisticPage.pitch);
-                map?.setBearing(optimisticPage.bearing);
-              }}
-              size="icon"
-              variant="ghost"
-            >
-              <Undo2Icon className="size-5" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Undo</TooltipContent>
-        </Tooltip>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              disabled={!hasMoved}
-              onClick={() => {
-                const center = map?.getCenter();
-                const zoom = map?.getZoom();
-                const pitch = map?.getPitch();
-                const bearing = map?.getBearing();
-
-                if (
-                  center !== undefined &&
-                  zoom !== undefined &&
-                  pitch !== undefined &&
-                  bearing !== undefined
-                ) {
-                  updatePage({
-                    ...optimisticPage,
-                    center: {
-                      x: center.lng,
-                      y: center.lat,
-                    },
-                    zoom,
-                    pitch,
-                    bearing,
-                  });
-
-                  updatePageServer({
-                    center: {
-                      x: center.lng,
-                      y: center.lat,
-                    },
-                    zoom,
-                    pitch,
-                    bearing,
-                  }).catch(() => {
-                    toast("There was an error saving the location");
-                  });
-                }
-              }}
-              size="sm"
-              variant="ghost"
-            >
-              <SaveIcon className="size-5" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Save Map Position</TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
       {searchLocation ? (
-        <MapMarker
-          searchLocationMarker={{
-            latitude: searchLocation.latitude,
-            longitude: searchLocation.longitude,
-            name: "Test",
+        <Button
+          onClick={() => {
+            setSearchLocation(null);
+            setDrawerOpen(true);
           }}
+          variant="ghost"
         >
-          <SearchLocationMarker title="Yolo" />
-        </MapMarker>
-      ) : null}
+          Clear Search
+        </Button>
+      ) : (
+        <TooltipProvider delayDuration={200}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                onClick={() => {
+                  setOpenSearch(true);
+                }}
+                size="icon"
+                variant="ghost"
+              >
+                <SearchIcon className="size-5" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Search Locations</TooltipContent>
+          </Tooltip>
+          <CommandDialog
+            dialogContentClassName="-translate-y-[150px]"
+            onOpenChange={setOpenSearch}
+            open={openSearch}
+            shouldFilter={false}
+          >
+            <CommandSearch
+              setOpenSearch={setOpenSearch}
+              setSearchLocation={setSearchLocation}
+            />
+          </CommandDialog>
+
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                disabled={!hasMoved}
+                onClick={() => {
+                  map?.setCenter([
+                    optimisticPage.center.x,
+                    optimisticPage.center.y,
+                  ]);
+                  map?.setZoom(optimisticPage.zoom);
+                  map?.setPitch(optimisticPage.pitch);
+                  map?.setBearing(optimisticPage.bearing);
+                }}
+                size="icon"
+                variant="ghost"
+              >
+                <Undo2Icon className="size-5" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Undo</TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                disabled={!hasMoved}
+                onClick={() => {
+                  const center = map?.getCenter();
+                  const zoom = map?.getZoom();
+                  const pitch = map?.getPitch();
+                  const bearing = map?.getBearing();
+
+                  if (
+                    center !== undefined &&
+                    zoom !== undefined &&
+                    pitch !== undefined &&
+                    bearing !== undefined
+                  ) {
+                    updatePage({
+                      ...optimisticPage,
+                      center: {
+                        x: center.lng,
+                        y: center.lat,
+                      },
+                      zoom,
+                      pitch,
+                      bearing,
+                    });
+
+                    updatePageServer({
+                      center: {
+                        x: center.lng,
+                        y: center.lat,
+                      },
+                      zoom,
+                      pitch,
+                      bearing,
+                    }).catch(() => {
+                      toast("There was an error saving the location");
+                    });
+                  }
+                }}
+                size="sm"
+                variant="ghost"
+              >
+                <SaveIcon className="size-5" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Save Map Position</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      )}
+      <MapMarker searchLocationMarker={searchLocation}>
+        <SearchLocationMarker title="Yolo" />
+      </MapMarker>
     </>
   );
 }
