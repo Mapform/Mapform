@@ -24,14 +24,9 @@ import {
   ChevronsRightIcon,
 } from "lucide-react";
 import { Blocknote } from "./block-note";
-import {
-  Map,
-  MapProvider,
-  useMap,
-  type MBMap,
-  SearchLocationMarker,
-} from "./map";
+import { Map, SearchLocationMarker } from "./map";
 import "./style.css";
+import { MapformProvider, useMapform, type MBMap } from "./context";
 
 interface MapFormProps {
   editable?: boolean;
@@ -58,7 +53,6 @@ export function MapForm({
   onLoad,
   pageData,
   children,
-  editFields,
   currentPage,
   onStepSubmit,
   onTitleChange,
@@ -66,6 +60,7 @@ export function MapForm({
   defaultFormValues,
   onDescriptionChange,
 }: MapFormProps) {
+  const { drawerOpen, setDrawerOpen } = useMapform();
   const [showMapMobile, setShowMapMobile] = useState(false);
   const blocknoteStepSchema = getFormSchemaFromBlockNote(
     currentPage.content?.content || [],
@@ -77,7 +72,6 @@ export function MapForm({
   const [isSelectingPinLocationFor, setIsSelectingPinLocationFor] = useState<
     string | null
   >(null);
-  const [drawerOpen, setDrawerOpen] = useState(true);
   const rootEl = useRef<HTMLFormElement | null>(null);
   const initialViewState = {
     longitude: currentPage.center.x,
@@ -254,7 +248,7 @@ export function MapForm({
 
 MapForm.displayName = "MapForm";
 
-export { MapProvider, useMap, SearchLocationMarker };
+export { MapformProvider, useMapform, SearchLocationMarker };
 export type { ViewState, MBMap };
 export type { MapboxEvent } from "mapbox-gl";
 

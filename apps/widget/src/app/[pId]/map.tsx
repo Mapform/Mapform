@@ -1,6 +1,6 @@
 "use client";
 
-import { MapForm, useMap } from "@mapform/mapform";
+import { MapForm, useMapform } from "@mapform/mapform";
 import { useAction } from "next-safe-action/hooks";
 import React, { useEffect, useState } from "react";
 import type { PageData } from "@mapform/map-utils/types";
@@ -38,7 +38,7 @@ export function Map({
     router.push(`${pathname}?${createQueryString("p", page.id)}`);
   };
 
-  const { map } = useMap();
+  const { map } = useMapform();
 
   const [currentSession, setCurrentSession] = useState<string | null>(null);
 
@@ -80,7 +80,7 @@ export function Map({
       const firstStep = projectWithPages.pages[0];
 
       router.push(
-        `${pathname}?${createQueryString("p", projectWithPages.pages[0].id)}`
+        `${pathname}?${createQueryString("p", projectWithPages.pages[0].id)}`,
       );
 
       map?.flyTo({
@@ -104,7 +104,7 @@ export function Map({
   const pageValues = (currentPage?.content?.content ?? []).reduce(
     (acc: Record<string, string>, block) => {
       const cellValue = formValues.find(
-        (v) => v.column.blockNoteId === block.id
+        (v) => v.column.blockNoteId === block.id,
       );
       const value = cellValue?.stringCell?.value ?? cellValue?.pointCell?.value;
 
@@ -115,7 +115,7 @@ export function Map({
 
       return acc;
     },
-    {}
+    {},
   );
 
   if (!currentSession || !currentPage) {
@@ -130,7 +130,7 @@ export function Map({
       onPrev={() => {
         const prevPageIndex =
           projectWithPages.pages.findIndex(
-            (page) => page.id === currentPage.id
+            (page) => page.id === currentPage.id,
           ) - 1;
         const prevStep = projectWithPages.pages[prevPageIndex];
 
@@ -147,7 +147,7 @@ export function Map({
 
         const nextPageIndex =
           projectWithPages.pages.findIndex(
-            (page) => page.id === currentPage.id
+            (page) => page.id === currentPage.id,
           ) + 1;
         const nextStep = projectWithPages.pages[nextPageIndex];
 

@@ -22,7 +22,7 @@ import {
   TooltipContent,
   TooltipProvider,
 } from "@mapform/ui/components/tooltip";
-import { useMap } from "@mapform/mapform";
+import { useMapform } from "@mapform/mapform";
 import { PlusIcon } from "lucide-react";
 import { updatePageOrder } from "~/data/pages/update-page-order";
 import { createPage } from "~/data/pages/create-page";
@@ -31,7 +31,7 @@ import { usePage } from "../../page-context";
 import { Item } from "./item";
 
 export function PageList() {
-  const { map } = useMap();
+  const { map } = useMapform();
   const { setActivePage } = usePage();
   const { optimisticProjectWithPages, updateProjectWithPages } = useProject();
 

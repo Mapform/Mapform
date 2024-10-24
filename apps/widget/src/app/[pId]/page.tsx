@@ -1,7 +1,7 @@
 // eslint-disable-next-line import/named -- It will work when React 19 is released
 import React, { cache } from "react";
 import { cookies } from "next/headers";
-import { MapProvider } from "@mapform/mapform";
+import { MapformProvider } from "@mapform/mapform";
 import { type Row } from "@mapform/db/schema";
 import { getSession } from "~/data/get-session";
 import { getPageData } from "~/data/get-page-data";
@@ -80,7 +80,7 @@ export default async function Page({
   }
 
   return (
-    <MapProvider>
+    <MapformProvider>
       <Map
         formValues={formValues}
         pageData={pageData}
@@ -88,6 +88,6 @@ export default async function Page({
         // We clear the session id if the form id doesn't match the current form
         sessionId={!projectVersionMismatch && session ? session.id : null}
       />
-    </MapProvider>
+    </MapformProvider>
   );
 }

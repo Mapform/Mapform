@@ -9,7 +9,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@mapform/ui/components/tooltip";
-import { useMap, type MapboxEvent } from "@mapform/mapform";
+import { useMapform, type MapboxEvent } from "@mapform/mapform";
 import type { CustomBlock } from "@mapform/blocknote";
 import { toast } from "@mapform/ui/components/toaster";
 import { SearchLocationMarker as MapMarker } from "@mapform/mapform";
@@ -53,7 +53,7 @@ export function EditBar({ updatePageServer }: EditBarProps) {
 }
 
 function EditBarInner({ optimisticPage, updatePageServer }: EditBarInnerProps) {
-  const { map } = useMap();
+  const { map } = useMapform();
   const [openSearch, setOpenSearch] = useState(false);
   const { updatePage } = usePage();
 

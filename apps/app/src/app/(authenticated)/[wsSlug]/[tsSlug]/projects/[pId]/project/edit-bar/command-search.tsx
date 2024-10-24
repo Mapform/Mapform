@@ -1,7 +1,7 @@
 import { cn } from "@mapform/lib/classnames";
 import { debounce } from "@mapform/lib/lodash";
 import { PlacesSearchResponse } from "@mapform/map-utils/types";
-import { useMap } from "@mapform/mapform";
+import { useMapform } from "@mapform/mapform";
 import {
   CommandInput,
   CommandList,
@@ -27,7 +27,7 @@ export function CommandSearch({
     } | null>
   >;
 }) {
-  const { map } = useMap();
+  const { map } = useMapform();
   const [query, setQuery] = useState("");
   const debouncedSetQuery = debounce(setQuery, 250, {
     leading: true,
@@ -43,7 +43,7 @@ export function CommandSearch({
     const down = (
       key: string,
       feature: PlacesSearchResponse["features"][number],
-      e: KeyboardEvent
+      e: KeyboardEvent,
     ) => {
       if (e.key === key.toString() && (e.metaKey || e.ctrlKey)) {
         const bbox = feature.bbox;
@@ -63,7 +63,7 @@ export function CommandSearch({
           ],
           {
             duration: 0,
-          }
+          },
         );
 
         setSearchLocation({
@@ -82,7 +82,7 @@ export function CommandSearch({
         document.addEventListener(
           "keydown",
 
-          down.bind(null, key.toString(), feature)
+          down.bind(null, key.toString(), feature),
         );
       }
     });
@@ -95,7 +95,7 @@ export function CommandSearch({
           document.removeEventListener(
             "keydown",
 
-            down.bind(null, key.toString(), feature)
+            down.bind(null, key.toString(), feature),
           );
         }
       });
@@ -113,7 +113,7 @@ export function CommandSearch({
         value={query}
       />
       <CommandList className={cn(isFetching && "animate-pulse")}>
-        <CommandEmpty className="bg-gray-100 rounded m-2 mb-0 p-8 text-center text-muted-foreground">
+        <CommandEmpty className="text-muted-foreground m-2 mb-0 rounded bg-gray-100 p-8 text-center">
           {isFetching ? "Searching..." : "No results found."}
         </CommandEmpty>
         <CommandGroup>
@@ -139,7 +139,7 @@ export function CommandSearch({
                     ],
                     {
                       duration: 0,
-                    }
+                    },
                   );
 
                   setSearchLocation({
@@ -157,7 +157,7 @@ export function CommandSearch({
                     {feature.properties.name ??
                       feature.properties.address_line1}
                   </span>
-                  <span className="text-sm text-muted-foreground ml-2">
+                  <span className="text-muted-foreground ml-2 text-sm">
                     {feature.properties.address_line2}
                   </span>
                 </span>
