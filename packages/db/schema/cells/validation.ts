@@ -23,8 +23,18 @@ export type Cell = typeof cells.$inferSelect;
 /**
  * POINT CELLS
  */
-export const insertPointCellSchema = createInsertSchema(pointCells);
-export const selectPointCellSchema = createSelectSchema(pointCells);
+export const insertPointCellSchema = createInsertSchema(pointCells, {
+  value: z.object({
+    x: z.number(),
+    y: z.number(),
+  }),
+});
+export const selectPointCellSchema = createSelectSchema(pointCells, {
+  value: z.object({
+    x: z.number(),
+    y: z.number(),
+  }),
+});
 export type InsertPointCell = z.infer<typeof insertPointCellSchema>;
 export type PointCell = typeof pointCells.$inferSelect;
 

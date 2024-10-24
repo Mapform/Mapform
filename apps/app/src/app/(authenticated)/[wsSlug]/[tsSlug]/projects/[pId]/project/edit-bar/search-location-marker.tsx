@@ -28,7 +28,9 @@ import {
   Layers2Icon,
 } from "lucide-react";
 import { type SetStateAction, useState } from "react";
+import { useAction } from "next-safe-action/hooks";
 import type { ProjectWithPages } from "~/data/projects/get-project-with-pages";
+import { createPoint } from "~/data/datasets/create-point";
 
 const frameworks = [
   {
@@ -86,9 +88,20 @@ export function SearchLocationMarker({
   const { ref, bounds } = useMeasure<HTMLDivElement>();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState<string>("");
+  const { execute: executeCreatePoint, status: statusCreatePoint } =
+    useAction(createPoint);
+
+  if (!searchLocation?.properties?.lon || !searchLocation.properties.lat)
+    return null;
+
   const Icon =
-    searchLocationIcons[searchLocation?.properties?.result_type ?? "unknown"] ??
-    MapPinIcon;
+    searchLocationIcons[searchLocation.properties.result_type] ?? MapPinIcon;
+
+  const title =
+    searchLocation.properties.name ?? searchLocation.properties.address_line1;
+
+  const x = searchLocation.properties.lon;
+  const y = searchLocation.properties.lat;
 
   return (
     <div
@@ -111,11 +124,7 @@ export function SearchLocationMarker({
       </Button>
       <div className="flex flex-col">
         <Icon className="mb-2 size-5" />
-        <h1 className="text-lg font-semibold">
-          {searchLocation?.properties?.name ??
-            searchLocation?.properties?.address_line1 ??
-            "New Location"}
-        </h1>
+        <h1 className="text-lg font-semibold">{title}</h1>
         <div className="mt-8 flex">
           <Popover onOpenChange={setOpen} open={open}>
             <PopoverTrigger asChild>
@@ -179,6 +188,15 @@ export function SearchLocationMarker({
                         key={layer.id}
                         keywords={[layer.name ?? "Untitled"]}
                         onSelect={() => {
+                          executeCreatePoint({
+                            layerId: layer.id,
+                            title,
+                            description: null,
+                            location: {
+                              x,
+                              y,
+                            },
+                          });
                           setOpen(false);
                         }}
                         value={layer.id}
