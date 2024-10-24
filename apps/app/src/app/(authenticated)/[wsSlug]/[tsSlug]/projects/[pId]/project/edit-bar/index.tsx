@@ -232,7 +232,10 @@ function EditBarInner({ optimisticPage, updatePageServer }: EditBarInnerProps) {
         </TooltipProvider>
       )}
       <MapMarker searchLocationMarker={searchLocation}>
-        <SearchLocationMarker title="Yolo" />
+        <SearchLocationMarker
+          searchLocation={searchLocation}
+          setSearchLocation={setSearchLocation}
+        />
       </MapMarker>
     </>
   );

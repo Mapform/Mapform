@@ -1,3 +1,4 @@
+import type { CustomBlock } from "@mapform/blocknote";
 import { useMeasure } from "@mapform/lib/hooks/use-measure";
 import { Button } from "@mapform/ui/components/button";
 import {
@@ -13,8 +14,8 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from "@mapform/ui/components/popover";
-import { ChevronRightIcon, TriangleIcon } from "lucide-react";
-import { useState } from "react";
+import { ChevronRightIcon, TriangleIcon, XIcon } from "lucide-react";
+import { type SetStateAction, useState } from "react";
 
 const frameworks = [
   {
@@ -39,7 +40,25 @@ const frameworks = [
   },
 ];
 
-export function SearchLocationMarker({ title }: { title: string }) {
+type SearchLocation = {
+  id: string;
+  latitude: number;
+  longitude: number;
+  name: string;
+  description?: {
+    content: CustomBlock[];
+  };
+} | null;
+
+interface SearchLocationMarkerProps {
+  searchLocation: SearchLocation;
+  setSearchLocation: (value: SetStateAction<SearchLocation>) => void;
+}
+
+export function SearchLocationMarker({
+  searchLocation,
+  setSearchLocation,
+}: SearchLocationMarkerProps) {
   const { ref, bounds } = useMeasure<HTMLDivElement>();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState<string>("");
@@ -52,8 +71,20 @@ export function SearchLocationMarker({ title }: { title: string }) {
         transform: `translateY(-${bounds.height / 2 + 16 + 8}px)`,
       }}
     >
+      <Button
+        className="absolute right-2 top-2"
+        onClick={() => {
+          setSearchLocation(null);
+        }}
+        size="icon-sm"
+        variant="ghost"
+      >
+        <XIcon className="size-5" />
+      </Button>
       <div className="flex flex-col">
-        <h1 className="text-base font-semibold">{title}</h1>
+        <h1 className="text-base font-semibold">
+          {searchLocation?.name ?? "New Location"}
+        </h1>
         <div className="mt-8 flex">
           <Popover onOpenChange={setOpen} open={open}>
             <PopoverTrigger asChild>

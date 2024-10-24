@@ -46,7 +46,7 @@ export function NavTop() {
       </section>
       <section>
         <h3 className="mb-1 text-xs font-semibold leading-6 text-stone-400">
-          Teamspaces
+          Spaces
         </h3>
         <AccordionPrimitive.Root
           defaultValue={defaultOpenTeamspaces}
