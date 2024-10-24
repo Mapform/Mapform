@@ -68,6 +68,7 @@ export const getProjectWithPages = authAction
         .select({
           id: layers.id,
           name: layers.name,
+          type: layers.type,
           pageId: layersToPages.pageId,
         })
         .from(layers)

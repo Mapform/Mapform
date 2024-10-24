@@ -4,9 +4,9 @@ import {
   Command,
   CommandInput,
   CommandList,
-  CommandEmpty,
   CommandGroup,
   CommandItem,
+  CommandSeparator,
 } from "@mapform/ui/components/command";
 import {
   Popover,
@@ -23,9 +23,12 @@ import {
   BuildingIcon,
   Building2Icon,
   MailboxIcon,
-  EarthIcon,
+  MapPinIcon,
+  PlusIcon,
+  Layers2Icon,
 } from "lucide-react";
 import { type SetStateAction, useState } from "react";
+import type { ProjectWithPages } from "~/data/projects/get-project-with-pages";
 
 const frameworks = [
   {
@@ -51,6 +54,7 @@ const frameworks = [
 ];
 
 interface SearchLocationMarkerProps {
+  pageLayers: ProjectWithPages["layers"];
   searchLocation: PlacesSearchResponse["features"][number] | null;
   setDrawerOpen: (value: SetStateAction<boolean>) => void;
   setSearchLocation: (
@@ -70,10 +74,11 @@ const searchLocationIcons: Partial<
   building: BuildingIcon,
   city: Building2Icon,
   postcode: MailboxIcon,
-  unknown: EarthIcon,
+  unknown: MapPinIcon,
 };
 
 export function SearchLocationMarker({
+  pageLayers,
   setDrawerOpen,
   searchLocation,
   setSearchLocation,
@@ -83,7 +88,7 @@ export function SearchLocationMarker({
   const [query, setQuery] = useState<string>("");
   const Icon =
     searchLocationIcons[searchLocation?.properties?.result_type ?? "unknown"] ??
-    EarthIcon;
+    MapPinIcon;
 
   return (
     <div
@@ -129,50 +134,59 @@ export function SearchLocationMarker({
               className="w-[200px] p-0"
               side="right"
             >
-              <Command>
+              <Command
+                filter={(value, search) => {
+                  if (value.includes("Create")) return 1;
+                  if (
+                    value
+                      .toLocaleLowerCase()
+                      .includes(search.toLocaleLowerCase())
+                  )
+                    return 1;
+                  return 0;
+                }}
+              >
                 <CommandInput
                   onValueChange={(value: string) => {
                     setQuery(value);
                   }}
-                  placeholder="Search layers..."
+                  placeholder="Search..."
                   value={query}
                 />
                 <CommandList>
-                  <CommandEmpty
-                    className="data-[selected=true]:bg-accent data-[selected=true]:text-accent-foreground relative m-1 flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50"
-                    onClick={() => {
-                      setQuery("");
-                      setOpen(false);
-                    }}
-                  >
-                    <p>Create: </p>
-                    <p className="text-primary ml-1 block max-w-48 truncate font-semibold">
-                      {query}
-                    </p>
-                  </CommandEmpty>
                   <CommandGroup>
-                    {query.length ? (
-                      <CommandItem
-                        onClick={() => {
-                          setQuery("");
-                          setOpen(false);
-                        }}
-                      >
-                        <p>Create: </p>
-                        <p className="text-primary ml-1 block max-w-48 truncate font-semibold">
+                    <CommandItem
+                      onSelect={() => {
+                        setQuery("");
+                        setOpen(false);
+                      }}
+                    >
+                      <div className="flex items-center overflow-hidden">
+                        <p className="flex items-center font-semibold">
+                          <PlusIcon className="mr-2 size-4" />
+                          Create
+                        </p>
+                        <p className="text-primary ml-1 block truncate">
                           {query}
                         </p>
-                      </CommandItem>
-                    ) : null}
-                    {frameworks.map((framework) => (
+                      </div>
+                    </CommandItem>
+                  </CommandGroup>
+                  <CommandSeparator />
+                  <CommandGroup heading="Layers">
+                    {pageLayers.map((layer) => (
                       <CommandItem
-                        key={framework.value}
+                        key={layer.id}
+                        keywords={[layer.name ?? "Untitled"]}
                         onSelect={() => {
                           setOpen(false);
                         }}
-                        value={framework.value}
+                        value={layer.id}
                       >
-                        {framework.label}
+                        <div className="flex items-center overflow-hidden truncate">
+                          <Layers2Icon className="mr-2 size-4" />
+                          {layer.name ?? "Untitled"}
+                        </div>
                       </CommandItem>
                     ))}
                   </CommandGroup>

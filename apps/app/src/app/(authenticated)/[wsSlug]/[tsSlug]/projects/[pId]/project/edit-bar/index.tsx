@@ -18,6 +18,7 @@ import type { PageWithLayers } from "~/data/pages/get-page-with-layers";
 import { usePage } from "../../page-context";
 import { SearchLocationMarker } from "./search-location-marker";
 import { CommandSearch } from "./command-search";
+import { useProject } from "../../project-context";
 
 interface EditBarProps {
   updatePageServer: (args: {
@@ -55,6 +56,7 @@ export function EditBar({ updatePageServer }: EditBarProps) {
 
 function EditBarInner({ optimisticPage, updatePageServer }: EditBarInnerProps) {
   const { map, setDrawerOpen } = useMapform();
+  const { optimisticProjectWithPages } = useProject();
   const [openSearch, setOpenSearch] = useState(false);
   const { updatePage } = usePage();
 
@@ -114,6 +116,10 @@ function EditBarInner({ optimisticPage, updatePageServer }: EditBarInnerProps) {
     movedCoords.zoom !== optimisticPage.zoom ||
     movedCoords.pitch !== optimisticPage.pitch ||
     movedCoords.bearing !== optimisticPage.bearing;
+
+  const pageLayers = optimisticProjectWithPages.layers.filter(
+    (layer) => layer.pageId === optimisticPage.id && layer.type === "point",
+  );
 
   return (
     <TooltipProvider delayDuration={200}>
@@ -227,6 +233,7 @@ function EditBarInner({ optimisticPage, updatePageServer }: EditBarInnerProps) {
 
       <MapMarker searchLocationMarker={searchLocation}>
         <SearchLocationMarker
+          pageLayers={pageLayers}
           searchLocation={searchLocation}
           setDrawerOpen={setDrawerOpen}
           setSearchLocation={setSearchLocation}
