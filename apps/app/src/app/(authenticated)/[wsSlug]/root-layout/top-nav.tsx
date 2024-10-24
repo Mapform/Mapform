@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { Button } from "@mapform/ui/components/button";
 import { MenuIcon } from "lucide-react";
-import { useRootLayout } from "./context";
 import {
   Tooltip,
   TooltipContent,
@@ -12,6 +11,7 @@ import {
 } from "@mapform/ui/components/tooltip";
 import { useParams } from "next/navigation";
 import { Suspense } from "react";
+import { useRootLayout } from "./context";
 
 export function TopNav({ children }: { children: React.ReactNode }) {
   const params = useParams<{
@@ -22,7 +22,6 @@ export function TopNav({ children }: { children: React.ReactNode }) {
   }>();
   const { showNav, toggleNav, navSlot, workspaceDirectory } = useRootLayout();
 
-  const workspace = workspaceDirectory.name;
   const teamspaces = workspaceDirectory.teamspaces.find(
     (ts) => ts.slug === params.tsSlug,
   );
@@ -31,7 +30,7 @@ export function TopNav({ children }: { children: React.ReactNode }) {
 
   const pathNav = teamspaces
     ? [
-        { name: teamspaces?.name, href: `/${params.wsSlug}/${params.tsSlug}` },
+        { name: teamspaces.name, href: `/${params.wsSlug}/${params.tsSlug}` },
         {
           name: project?.name,
           href: `/${params.wsSlug}/${params.tsSlug}/${params.pId}`,
@@ -58,9 +57,7 @@ export function TopNav({ children }: { children: React.ReactNode }) {
                       <MenuIcon className="size-5" />
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent>
-                    {showNav ? "Hide Navigation" : "Show Navigation"}
-                  </TooltipContent>
+                  <TooltipContent>Show Navigation</TooltipContent>
                 </Tooltip>
               </TooltipProvider>
             </div>
