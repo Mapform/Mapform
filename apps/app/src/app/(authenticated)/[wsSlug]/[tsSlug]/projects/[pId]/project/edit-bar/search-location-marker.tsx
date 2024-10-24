@@ -1,4 +1,3 @@
-import type { CustomBlock } from "@mapform/blocknote";
 import { useMeasure } from "@mapform/lib/hooks/use-measure";
 import { Button } from "@mapform/ui/components/button";
 import {
@@ -14,6 +13,7 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from "@mapform/ui/components/popover";
+import type { PlacesSearchResponse } from "@mapform/map-utils/types";
 import { ChevronRightIcon, TriangleIcon, XIcon } from "lucide-react";
 import { type SetStateAction, useState } from "react";
 
@@ -40,19 +40,11 @@ const frameworks = [
   },
 ];
 
-type SearchLocation = {
-  id: string;
-  latitude: number;
-  longitude: number;
-  name: string;
-  description?: {
-    content: CustomBlock[];
-  };
-} | null;
-
 interface SearchLocationMarkerProps {
-  searchLocation: SearchLocation;
-  setSearchLocation: (value: SetStateAction<SearchLocation>) => void;
+  searchLocation: PlacesSearchResponse["features"][number] | null;
+  setSearchLocation: (
+    value: SetStateAction<PlacesSearchResponse["features"][number] | null>,
+  ) => void;
 }
 
 export function SearchLocationMarker({
@@ -83,7 +75,7 @@ export function SearchLocationMarker({
       </Button>
       <div className="flex flex-col">
         <h1 className="text-base font-semibold">
-          {searchLocation?.name ?? "New Location"}
+          {searchLocation?.properties?.name ?? "New Location"}
         </h1>
         <div className="mt-8 flex">
           <Popover onOpenChange={setOpen} open={open}>

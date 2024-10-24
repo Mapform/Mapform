@@ -1,7 +1,7 @@
-import type { CustomBlock } from "@mapform/blocknote";
 import type mapboxgl from "mapbox-gl";
 import { Marker } from "mapbox-gl";
 import { useRef, useEffect } from "react";
+import type { PlacesSearchResponse } from "@mapform/map-utils/types";
 import ReactDOM from "react-dom";
 import { useMapform } from "../context";
 
@@ -12,14 +12,7 @@ export function SearchLocationMarker({
   searchLocationMarker,
   children,
 }: {
-  searchLocationMarker: {
-    latitude: number;
-    longitude: number;
-    name: string;
-    description?: {
-      content: CustomBlock[];
-    };
-  } | null;
+  searchLocationMarker: PlacesSearchResponse["features"][number] | null;
   children: React.ReactNode;
 }) {
   const { map } = useMapform();
@@ -30,16 +23,16 @@ export function SearchLocationMarker({
     const currentLngLat = markerEl.current?.getLngLat();
     if (
       map &&
-      searchLocationMarker &&
-      currentLngLat?.lat !== searchLocationMarker.latitude &&
-      currentLngLat?.lng !== searchLocationMarker.longitude
+      searchLocationMarker?.properties &&
+      currentLngLat?.lat !== searchLocationMarker.properties.lat &&
+      currentLngLat?.lng !== searchLocationMarker.properties.lon
     ) {
       ReactDOM.render(<>{children}</>, markerElInner.current);
       markerEl.current?.remove();
       markerEl.current = new Marker(markerElInner.current)
         .setLngLat([
-          searchLocationMarker.longitude,
-          searchLocationMarker.latitude,
+          searchLocationMarker.properties.lon,
+          searchLocationMarker.properties.lat,
         ])
         .addTo(map);
     }

@@ -34,7 +34,18 @@ export interface PlacesSearchResponse {
       city: string;
       lon: number;
       lat: number;
-      result_type: string;
+      result_type:
+        | "unknown"
+        | "amenity"
+        | "building"
+        | "street"
+        | "suburb"
+        | "district"
+        | "postcode"
+        | "city"
+        | "county"
+        | "state"
+        | "country";
       formatted: string;
       address_line1: string;
       address_line2: string;

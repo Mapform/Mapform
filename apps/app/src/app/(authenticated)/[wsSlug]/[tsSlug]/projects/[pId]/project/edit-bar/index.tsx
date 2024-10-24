@@ -12,6 +12,7 @@ import {
 import { useMapform, type MapboxEvent } from "@mapform/mapform";
 import type { CustomBlock } from "@mapform/blocknote";
 import { toast } from "@mapform/ui/components/toaster";
+import type { PlacesSearchResponse } from "@mapform/map-utils/types";
 import { SearchLocationMarker as MapMarker } from "@mapform/mapform";
 import type { PageWithLayers } from "~/data/pages/get-page-with-layers";
 import { usePage } from "../../page-context";
@@ -70,15 +71,9 @@ function EditBarInner({ optimisticPage, updatePageServer }: EditBarInnerProps) {
     pitch: optimisticPage.pitch,
     bearing: optimisticPage.bearing,
   });
-  const [searchLocation, setSearchLocation] = useState<{
-    id: string;
-    latitude: number;
-    longitude: number;
-    name: string;
-    description?: {
-      content: CustomBlock[];
-    };
-  } | null>(null);
+  const [searchLocation, setSearchLocation] = useState<
+    PlacesSearchResponse["features"][number] | null
+  >(null);
 
   const handleOnMove = (e: MapboxEvent) => {
     setMovedCoords({
