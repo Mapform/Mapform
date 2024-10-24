@@ -14,7 +14,17 @@ import {
   PopoverContent,
 } from "@mapform/ui/components/popover";
 import type { PlacesSearchResponse } from "@mapform/map-utils/types";
-import { ChevronRightIcon, TriangleIcon, XIcon } from "lucide-react";
+import {
+  XIcon,
+  StoreIcon,
+  TriangleIcon,
+  ChevronRightIcon,
+  type LucideIcon,
+  BuildingIcon,
+  Building2Icon,
+  MailboxIcon,
+  EarthIcon,
+} from "lucide-react";
 import { type SetStateAction, useState } from "react";
 
 const frameworks = [
@@ -42,18 +52,38 @@ const frameworks = [
 
 interface SearchLocationMarkerProps {
   searchLocation: PlacesSearchResponse["features"][number] | null;
+  setDrawerOpen: (value: SetStateAction<boolean>) => void;
   setSearchLocation: (
     value: SetStateAction<PlacesSearchResponse["features"][number] | null>,
   ) => void;
 }
 
+const searchLocationIcons: Partial<
+  Record<
+    NonNullable<
+      PlacesSearchResponse["features"][number]["properties"]
+    >["result_type"],
+    LucideIcon
+  >
+> = {
+  amenity: StoreIcon,
+  building: BuildingIcon,
+  city: Building2Icon,
+  postcode: MailboxIcon,
+  unknown: EarthIcon,
+};
+
 export function SearchLocationMarker({
+  setDrawerOpen,
   searchLocation,
   setSearchLocation,
 }: SearchLocationMarkerProps) {
   const { ref, bounds } = useMeasure<HTMLDivElement>();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState<string>("");
+  const Icon =
+    searchLocationIcons[searchLocation?.properties?.result_type ?? "unknown"] ??
+    EarthIcon;
 
   return (
     <div
@@ -66,6 +96,7 @@ export function SearchLocationMarker({
       <Button
         className="absolute right-2 top-2"
         onClick={() => {
+          setDrawerOpen(true);
           setSearchLocation(null);
         }}
         size="icon-sm"
@@ -74,8 +105,11 @@ export function SearchLocationMarker({
         <XIcon className="size-5" />
       </Button>
       <div className="flex flex-col">
-        <h1 className="text-base font-semibold">
-          {searchLocation?.properties?.name ?? "New Location"}
+        <Icon className="mb-2 size-5" />
+        <h1 className="text-lg font-semibold">
+          {searchLocation?.properties?.name ??
+            searchLocation?.properties?.address_line1 ??
+            "New Location"}
         </h1>
         <div className="mt-8 flex">
           <Popover onOpenChange={setOpen} open={open}>

@@ -40,12 +40,12 @@ function Project() {
   }) => {
     await executeAsync({
       id: optimisticPage.id,
-      ...(content && { content }),
-      ...(title && { title }),
-      ...(zoom && { zoom }),
-      ...(pitch && { pitch }),
-      ...(bearing && { bearing }),
-      ...(center && { center }),
+      ...(content !== undefined && { content }),
+      ...(title !== undefined && { title }),
+      ...(zoom !== undefined && { zoom }),
+      ...(pitch !== undefined && { pitch }),
+      ...(bearing !== undefined && { bearing }),
+      ...(center !== undefined && { center }),
     });
   };
 
