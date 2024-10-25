@@ -31,6 +31,7 @@ import { type SetStateAction, useState } from "react";
 import { useAction } from "next-safe-action/hooks";
 import type { ProjectWithPages } from "~/data/projects/get-project-with-pages";
 import { createPoint } from "~/data/datasets/create-point";
+import { LayerPopover } from "../../layer-popover";
 
 const frameworks = [
   {
@@ -164,22 +165,24 @@ export function SearchLocationMarker({
                 />
                 <CommandList>
                   <CommandGroup>
-                    <CommandItem
-                      onSelect={() => {
-                        setQuery("");
-                        setOpen(false);
-                      }}
-                    >
-                      <div className="flex items-center overflow-hidden">
-                        <p className="flex items-center font-semibold">
-                          <PlusIcon className="mr-2 size-4" />
-                          Create
-                        </p>
-                        <p className="text-primary ml-1 block truncate">
-                          {query}
-                        </p>
-                      </div>
-                    </CommandItem>
+                    <LayerPopover>
+                      <CommandItem
+                        onSelect={() => {
+                          // setQuery("");
+                          // setOpen(false);
+                        }}
+                      >
+                        <div className="flex items-center overflow-hidden">
+                          <p className="flex items-center font-semibold">
+                            <PlusIcon className="mr-2 size-4" />
+                            Create
+                          </p>
+                          <p className="text-primary ml-1 block truncate">
+                            {query}
+                          </p>
+                        </div>
+                      </CommandItem>
+                    </LayerPopover>
                   </CommandGroup>
                   <CommandSeparator />
                   <CommandGroup heading="Layers">

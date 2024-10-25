@@ -16,9 +16,9 @@ import type { PlacesSearchResponse } from "@mapform/map-utils/types";
 import { SearchLocationMarker as MapMarker } from "@mapform/mapform";
 import type { PageWithLayers } from "~/data/pages/get-page-with-layers";
 import { usePage } from "../../page-context";
+import { useProject } from "../../project-context";
 import { SearchLocationMarker } from "./search-location-marker";
 import { CommandSearch } from "./command-search";
-import { useProject } from "../../project-context";
 
 interface EditBarProps {
   updatePageServer: (args: {
