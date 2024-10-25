@@ -159,7 +159,7 @@ export function SearchLocationMarker({
                   onValueChange={(value: string) => {
                     setQuery(value);
                   }}
-                  placeholder="Search..."
+                  placeholder="Create or search..."
                   value={query}
                 />
                 <CommandList>
@@ -182,31 +182,33 @@ export function SearchLocationMarker({
                     </CommandItem>
                   </CommandGroup>
                   <CommandSeparator />
-                  <CommandGroup heading="Layers">
-                    {pageLayers.map((layer) => (
-                      <CommandItem
-                        key={layer.id}
-                        keywords={[layer.name ?? "Untitled"]}
-                        onSelect={() => {
-                          executeCreatePoint({
-                            layerId: layer.id,
-                            title,
-                            description: null,
-                            location: {
-                              x,
-                              y,
-                            },
-                          });
-                        }}
-                        value={layer.id}
-                      >
-                        <div className="flex items-center overflow-hidden truncate">
-                          <Layers2Icon className="mr-2 size-4" />
-                          {layer.name ?? "Untitled"}
-                        </div>
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
+                  {pageLayers.length > 0 ? (
+                    <CommandGroup heading="Layers">
+                      {pageLayers.map((layer) => (
+                        <CommandItem
+                          key={layer.id}
+                          keywords={[layer.name ?? "Untitled"]}
+                          onSelect={() => {
+                            executeCreatePoint({
+                              layerId: layer.id,
+                              title,
+                              description: null,
+                              location: {
+                                x,
+                                y,
+                              },
+                            });
+                          }}
+                          value={layer.id}
+                        >
+                          <div className="flex items-center overflow-hidden truncate">
+                            <Layers2Icon className="mr-2 size-4" />
+                            {layer.name ?? "Untitled"}
+                          </div>
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  ) : null}
                 </CommandList>
               </Command>
             </PopoverContent>

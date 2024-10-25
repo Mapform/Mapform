@@ -161,6 +161,7 @@ export function LayerList() {
             >
               <Command
                 filter={(value, search) => {
+                  console.log(1111, value, search);
                   if (value.includes("Create")) return 1;
                   if (
                     value
@@ -175,7 +176,7 @@ export function LayerList() {
                   onValueChange={(value: string) => {
                     setQuery(value);
                   }}
-                  placeholder="Search..."
+                  placeholder="Create or search..."
                   value={query}
                 />
                 <CommandList>
@@ -198,23 +199,25 @@ export function LayerList() {
                     </CommandItem>
                   </CommandGroup>
                   <CommandSeparator />
-                  <CommandGroup heading="Layers">
-                    {layersFromOtherPages.map((layer) => (
-                      <CommandItem
-                        key={layer.id}
-                        keywords={[layer.name ?? "Untitled"]}
-                        onSelect={() => {
-                          handleCreatePageLayer(layer.id);
-                        }}
-                        value={layer.id}
-                      >
-                        <div className="flex items-center overflow-hidden truncate">
-                          <Layers2Icon className="mr-2 size-4" />
-                          {layer.name ?? "Untitled"}
-                        </div>
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
+                  {layersFromOtherPages.length > 0 ? (
+                    <CommandGroup heading="Layers">
+                      {layersFromOtherPages.map((layer) => (
+                        <CommandItem
+                          key={layer.id}
+                          keywords={[layer.name ?? "Untitled"]}
+                          onSelect={() => {
+                            handleCreatePageLayer(layer.id);
+                          }}
+                          value={layer.id}
+                        >
+                          <div className="flex items-center overflow-hidden truncate">
+                            <Layers2Icon className="mr-2 size-4" />
+                            {layer.name ?? "Untitled"}
+                          </div>
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  ) : null}
                 </CommandList>
               </Command>
             </PopoverContent>
