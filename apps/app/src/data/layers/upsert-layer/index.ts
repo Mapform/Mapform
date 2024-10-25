@@ -13,7 +13,7 @@ export const upsertLayer = authAction
     async ({
       parsedInput: { id, datasetId, pageId, name, type, pointProperties },
     }) => {
-      await db.transaction(async (tx) => {
+      const newLayer = await db.transaction(async (tx) => {
         const [layer] = await tx
           .insert(layers)
           .values({
@@ -69,8 +69,12 @@ export const upsertLayer = authAction
             });
           }
         }
+
+        return layer;
       });
 
       revalidatePath("/[wsSlug]/[tsSlug]/projects/[pId]/project", "page");
+
+      return newLayer;
     },
   );

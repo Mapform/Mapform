@@ -33,6 +33,7 @@ import { useAction } from "next-safe-action/hooks";
 import type { ProjectWithPages } from "~/data/projects/get-project-with-pages";
 import { createPoint } from "~/data/datasets/create-point";
 import { LayerPopoverContent, LayerPopoverRoot } from "../../layer-popover";
+import { toast } from "@mapform/ui/components/toaster";
 
 interface SearchLocationMarkerProps {
   pageLayers: ProjectWithPages["layers"];
@@ -68,7 +69,14 @@ export function SearchLocationMarker({
   const [open, setOpen] = useState(false);
   const [layerPopoverOpen, setLayerPopoverOpen] = useState(false);
   const [query, setQuery] = useState<string>("");
-  const { execute: executeCreatePoint } = useAction(createPoint);
+  const { execute: executeCreatePoint } = useAction(createPoint, {
+    onSuccess: () => {
+      setDrawerOpen(true);
+      setOpen(false);
+      setLayerPopoverOpen(false);
+      toast("Point created!");
+    },
+  });
 
   if (!searchLocation?.properties?.lon || !searchLocation.properties.lat)
     return null;
@@ -185,7 +193,6 @@ export function SearchLocationMarker({
                               y,
                             },
                           });
-                          setOpen(false);
                         }}
                         value={layer.id}
                       >
@@ -210,6 +217,17 @@ export function SearchLocationMarker({
               align="start"
               initialName={query}
               key={query}
+              onSuccess={(layerId) => {
+                executeCreatePoint({
+                  layerId,
+                  title,
+                  description: null,
+                  location: {
+                    x,
+                    y,
+                  },
+                });
+              }}
               side="right"
             />
           </LayerPopoverRoot>

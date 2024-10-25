@@ -31,12 +31,13 @@ import { PointProperties } from "./point-properties";
 interface LayerPopoverProps {
   initialName?: string;
   layerToEdit?: PageWithLayers["layersToPages"][number]["layer"];
+  onSuccess?: (layerId: string) => void;
 }
 
 export const LayerPopoverContent = forwardRef<
   React.ElementRef<typeof PopoverContent>,
   React.ComponentPropsWithoutRef<typeof PopoverContent> & LayerPopoverProps
->(({ layerToEdit, initialName, ...props }, ref) => {
+>(({ layerToEdit, initialName, onSuccess, ...props }, ref) => {
   const { ...rest } = usePage();
   const optimisticPage = rest.optimisticPage!;
 
@@ -55,7 +56,12 @@ export const LayerPopoverContent = forwardRef<
     resolver: zodResolver(upsertLayerSchema),
   });
   const { execute, status } = useAction(upsertLayer, {
-    onSuccess: () => {
+    onSuccess: ({ data }) => {
+      if (onSuccess && data?.id) {
+        onSuccess(data.id);
+        return;
+      }
+
       toast(
         layerToEdit
           ? "Layer updated successfully."
