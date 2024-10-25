@@ -121,6 +121,7 @@ export function DatasetPopover({ form }: DatasetPopoverProps) {
                 <CommandList>
                   <CommandGroup>
                     <CommandItem
+                      disabled={query.length === 0}
                       onSelect={async () => {
                         await executeAsync({
                           name: query,
