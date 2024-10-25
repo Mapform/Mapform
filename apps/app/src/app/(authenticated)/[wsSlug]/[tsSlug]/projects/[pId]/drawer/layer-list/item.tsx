@@ -124,6 +124,7 @@ export function Item({ layer }: ItemProps) {
                   className="flex flex-1 items-center gap-2 overflow-hidden py-1.5 pl-2"
                   onClick={() => {
                     // setActivePage(page);
+                    setLayerPopoverOpen(true);
                   }}
                 >
                   <Layers2Icon className="flex size-4 flex-shrink-0 items-center justify-center" />
