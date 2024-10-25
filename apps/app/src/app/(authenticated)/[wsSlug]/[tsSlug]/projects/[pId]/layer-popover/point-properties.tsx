@@ -1,17 +1,5 @@
 import type { UseFormReturn } from "@mapform/ui/components/form";
-import {
-  FormField,
-  FormLabel,
-  FormControl,
-  FormMessage,
-} from "@mapform/ui/components/form";
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from "@mapform/ui/components/select";
+import { FormField, FormLabel } from "@mapform/ui/components/form";
 import { useCallback, useEffect, useState } from "react";
 import type { Column } from "@mapform/db/schema";
 import { cn } from "@mapform/lib/classnames";
@@ -30,9 +18,12 @@ import {
   PopoverContent,
 } from "@mapform/ui/components/popover";
 import { ChevronsUpDownIcon, PlusIcon, CheckIcon } from "lucide-react";
+import { useAction } from "next-safe-action/hooks";
 import type { UpsertLayerSchema } from "~/data/layers/upsert-layer/schema";
 import type { ListAvailableDatasets } from "~/data/datasets/list-available-datasets";
+import { createColumn } from "~/data/datasets/create-column";
 import { usePage } from "../page-context";
+import { toast } from "@mapform/ui/components/toaster";
 
 interface PointPropertiesProps {
   form: UseFormReturn<UpsertLayerSchema>;
@@ -94,18 +85,21 @@ export function PointProperties({ form }: PointPropertiesProps) {
         form={form}
         label="Location"
         name="pointProperties.pointColumnId"
+        type="point"
       />
       <DataColField
         availableColumns={availableStringColumns ?? []}
         form={form}
         label="Title"
         name="pointProperties.titleColumnId"
+        type="string"
       />
       <DataColField
         availableColumns={availableRichtextColumns ?? []}
         form={form}
         label="Description"
         name="pointProperties.descriptionColumnId"
+        type="richtext"
       />
     </>
   );
@@ -115,15 +109,35 @@ function DataColField({
   name,
   form,
   label,
+  type,
   availableColumns,
 }: {
   name: any;
   form: UseFormReturn<UpsertLayerSchema>;
   label: string;
+  type: Column["type"];
   availableColumns: ListAvailableDatasets[number]["columns"];
 }) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const { executeAsync } = useAction(createColumn, {
+    onSuccess: ({ data, input }) => {
+      if (!data?.id) return;
+
+      input.type === "point" &&
+        form.setValue("pointProperties.pointColumnId", data.id);
+
+      input.type === "string" &&
+        form.setValue("pointProperties.titleColumnId", data.id);
+
+      input.type === "richtext" &&
+        form.setValue("pointProperties.descriptionColumnId", data.id);
+    },
+
+    onError: () => {
+      toast("Failed to create column.");
+    },
+  });
 
   return (
     <FormField
@@ -182,11 +196,11 @@ function DataColField({
                     <CommandItem
                       disabled={query.length === 0}
                       onSelect={async () => {
-                        // await executeAsync({
-                        //   name: query,
-                        //   teamspaceId: optimisticProjectWithPages.teamspaceId,
-                        //   layerType: form.watch("type"),
-                        // });
+                        await executeAsync({
+                          name: query,
+                          datasetId: form.watch("datasetId"),
+                          type,
+                        });
                         setQuery("");
                         setOpen(false);
                       }}
