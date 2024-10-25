@@ -5,6 +5,7 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
+  PopoverAnchor,
 } from "@mapform/ui/components/popover";
 import {
   Form,
@@ -149,4 +150,8 @@ export const LayerPopoverContent = forwardRef<
 
 LayerPopoverContent.displayName = "LayerPopoverContent";
 
-export { Popover as LayerPopoverRoot, PopoverTrigger as LayerPopoverTrigger };
+export {
+  Popover as LayerPopoverRoot,
+  PopoverTrigger as LayerPopoverTrigger,
+  PopoverAnchor as LayerPopoverAnchor,
+};

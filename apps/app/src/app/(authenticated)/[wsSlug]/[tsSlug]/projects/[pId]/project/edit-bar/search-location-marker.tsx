@@ -12,7 +12,6 @@ import {
   Popover,
   PopoverTrigger,
   PopoverContent,
-  PopoverAnchor,
 } from "@mapform/ui/components/popover";
 import type { PlacesSearchResponse } from "@mapform/map-utils/types";
 import {
@@ -30,10 +29,14 @@ import {
 } from "lucide-react";
 import { type SetStateAction, useState } from "react";
 import { useAction } from "next-safe-action/hooks";
+import { toast } from "@mapform/ui/components/toaster";
 import type { ProjectWithPages } from "~/data/projects/get-project-with-pages";
 import { createPoint } from "~/data/datasets/create-point";
-import { LayerPopoverContent, LayerPopoverRoot } from "../../layer-popover";
-import { toast } from "@mapform/ui/components/toaster";
+import {
+  LayerPopoverContent,
+  LayerPopoverRoot,
+  LayerPopoverAnchor,
+} from "../../layer-popover";
 
 interface SearchLocationMarkerProps {
   pageLayers: ProjectWithPages["layers"];
@@ -71,6 +74,7 @@ export function SearchLocationMarker({
   const [query, setQuery] = useState<string>("");
   const { execute: executeCreatePoint } = useAction(createPoint, {
     onSuccess: () => {
+      setSearchLocation(null);
       setDrawerOpen(true);
       setOpen(false);
       setLayerPopoverOpen(false);
@@ -212,7 +216,7 @@ export function SearchLocationMarker({
             onOpenChange={setLayerPopoverOpen}
             open={layerPopoverOpen}
           >
-            <PopoverAnchor />
+            <LayerPopoverAnchor />
             <LayerPopoverContent
               align="start"
               initialName={query}

@@ -32,7 +32,7 @@ import {
   AlertDialogTrigger,
 } from "@mapform/ui/components/alert-dialog";
 import { useAction } from "next-safe-action/hooks";
-import { startTransition } from "react";
+import { startTransition, useState } from "react";
 import { Button } from "@mapform/ui/components/button";
 import { cn } from "@mapform/lib/classnames";
 import {
@@ -49,8 +49,8 @@ import { usePage } from "../../page-context";
 import { useProject } from "../../project-context";
 import {
   LayerPopoverRoot,
-  LayerPopoverTrigger,
   LayerPopoverContent,
+  LayerPopoverAnchor,
 } from "../../layer-popover";
 
 interface ItemProps {
@@ -60,6 +60,8 @@ interface ItemProps {
 export function Item({ layer }: ItemProps) {
   const { optimisticPage, updatePage } = usePage();
   const { optimisticProjectWithPages } = useProject();
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [layerPopoverOpen, setLayerPopoverOpen] = useState(false);
   const { execute: executeDeleteLayer } = useAction(deleteLayer);
   const { execute: executeDeletePageLayer } = useAction(deletePageLayer);
 
@@ -129,7 +131,11 @@ export function Item({ layer }: ItemProps) {
                     {layer.name || "Untitled"}
                   </span>
                 </button>
-                <DropdownMenu>
+                <DropdownMenu
+                  modal
+                  onOpenChange={setDropdownOpen}
+                  open={dropdownOpen}
+                >
                   <TooltipProvider delayDuration={200}>
                     <Tooltip>
                       <TooltipTrigger asChild>
@@ -145,20 +151,17 @@ export function Item({ layer }: ItemProps) {
                       </TooltipTrigger>
                       <DropdownMenuContent className="w-[200px] overflow-hidden">
                         <DropdownMenuGroup>
-                          <LayerPopoverRoot>
-                            <LayerPopoverTrigger>
-                              <DropdownMenuItem
-                                className="flex items-center gap-2"
-                                onSelect={(e) => {
-                                  e.preventDefault();
-                                }}
-                              >
-                                <Settings2Icon className="size-4 flex-shrink-0" />
-                                Edit
-                              </DropdownMenuItem>
-                            </LayerPopoverTrigger>
-                            <LayerPopoverContent layerToEdit={layer} />
-                          </LayerPopoverRoot>
+                          <DropdownMenuItem
+                            className="flex items-center gap-2"
+                            onSelect={(e) => {
+                              e.preventDefault();
+                              setDropdownOpen(false);
+                              setLayerPopoverOpen(true);
+                            }}
+                          >
+                            <Settings2Icon className="size-4 flex-shrink-0" />
+                            Edit
+                          </DropdownMenuItem>
                           <DropdownMenuItem
                             className="flex items-center gap-2"
                             onSelect={handleRemoveFromPage}
@@ -214,6 +217,14 @@ export function Item({ layer }: ItemProps) {
           </ContextMenuItem>
         </ContextMenuContent>
       </ContextMenu>
+      <LayerPopoverRoot
+        modal
+        onOpenChange={setLayerPopoverOpen}
+        open={layerPopoverOpen}
+      >
+        <LayerPopoverAnchor />
+        <LayerPopoverContent layerToEdit={layer} />
+      </LayerPopoverRoot>
     </DragItem>
   );
 }
