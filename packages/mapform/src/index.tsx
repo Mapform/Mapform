@@ -42,9 +42,9 @@ interface MapFormProps {
   onStepSubmit?: (data: Record<string, string>) => void;
   onImageUpload?: (file: File) => Promise<string | null>;
   pageData?: PageData;
-  editFields?: {
-    AddLocationDropdown: (input: { data: any }) => JSX.Element;
-  };
+  // editFields?: {
+  //   AddLocationDropdown: (input: { data: any }) => JSX.Element;
+  // };
 }
 
 export function MapForm({

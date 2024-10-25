@@ -99,6 +99,7 @@ export function Map({
         setMap(undefined);
       };
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Just run on initial render
   }, []);
 
   useEffect(() => {
@@ -112,7 +113,7 @@ export function Map({
 
   useEffect(() => {
     if (map) {
-      map?.resize();
+      map.resize();
     }
   }, [map, bounds]);
 
