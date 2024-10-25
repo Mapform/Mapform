@@ -1,6 +1,6 @@
 "use client";
 
-import { forwardRef } from "react";
+import { forwardRef, useEffect } from "react";
 import {
   Popover,
   PopoverContent,
@@ -18,16 +18,16 @@ import {
 } from "@mapform/ui/components/form";
 import { toast } from "@mapform/ui/components/toaster";
 import { useAction } from "next-safe-action/hooks";
-import { Input } from "@mapform/ui/components/input";
 import { Button } from "@mapform/ui/components/button";
+import { Input } from "@mapform/ui/components/input";
 import { upsertLayerSchema } from "~/data/layers/upsert-layer/schema";
 import type { UpsertLayerSchema } from "~/data/layers/upsert-layer/schema";
 import { upsertLayer } from "~/data/layers/upsert-layer";
 import type { PageWithLayers } from "~/data/pages/get-page-with-layers";
 import { usePage } from "../page-context";
+import { PointProperties } from "./point-properties";
 import { DatasetPopover } from "./dataset-popover";
 import { TypePopover } from "./type-popover";
-import { PointProperties } from "./point-properties";
 
 interface LayerPopoverProps {
   initialName?: string;
@@ -56,6 +56,7 @@ export const LayerPopoverContent = forwardRef<
     },
     resolver: zodResolver(upsertLayerSchema),
   });
+
   const { execute, status } = useAction(upsertLayer, {
     onSuccess: ({ data }) => {
       if (onSuccess && data?.id) {

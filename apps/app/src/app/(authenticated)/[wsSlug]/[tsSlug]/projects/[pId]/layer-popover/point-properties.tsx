@@ -12,6 +12,7 @@ import {
   SelectContent,
   SelectItem,
 } from "@mapform/ui/components/select";
+import { useCallback, useEffect } from "react";
 import type { Column } from "@mapform/db/schema";
 import type { UpsertLayerSchema } from "~/data/layers/upsert-layer/schema";
 import { usePage } from "../page-context";
@@ -22,20 +23,43 @@ interface PointPropertiesProps {
 
 export function PointProperties({ form }: PointPropertiesProps) {
   const { availableDatasets } = usePage();
+  const datasetId = form.watch("datasetId");
+  const type = form.watch("type");
+  const dataset = availableDatasets.find((ds) => ds.id === datasetId);
 
-  const getAvailableColumns = (t: Column["type"]) => {
-    const type = form.watch("type");
-    const datasetId = form.watch("datasetId");
-    const dataset = availableDatasets.find((ds) => ds.id === datasetId);
+  const getAvailableColumns = useCallback(
+    (t: Column["type"]) => {
+      if (!dataset || !type) {
+        return null;
+      }
 
-    if (!dataset || !type) {
-      return null;
+      return dataset.columns.filter((column) => {
+        return column.type === t;
+      });
+    },
+    [dataset, type],
+  );
+
+  useEffect(() => {
+    if (type === "point") {
+      form.setValue(
+        "pointProperties.pointColumnId",
+        getAvailableColumns("point")?.find((c) => c.type === "point")?.id ?? "",
+      );
+
+      form.setValue(
+        "pointProperties.titleColumnId",
+        getAvailableColumns("string")?.find((c) => c.type === "string")?.id ??
+          "",
+      );
+
+      form.setValue(
+        "pointProperties.descriptionColumnId",
+        getAvailableColumns("richtext")?.find((c) => c.type === "richtext")
+          ?.id ?? "",
+      );
     }
-
-    return dataset.columns.filter((column) => {
-      return column.type === t;
-    });
-  };
+  }, [dataset, form, type, getAvailableColumns]);
 
   return (
     <>

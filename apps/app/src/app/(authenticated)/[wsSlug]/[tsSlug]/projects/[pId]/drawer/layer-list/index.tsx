@@ -161,7 +161,6 @@ export function LayerList() {
             >
               <Command
                 filter={(value, search) => {
-                  console.log(1111, value, search);
                   if (value.includes("Create")) return 1;
                   if (
                     value

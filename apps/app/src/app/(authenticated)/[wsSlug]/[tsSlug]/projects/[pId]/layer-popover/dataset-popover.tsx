@@ -18,6 +18,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@mapform/ui/components/popover";
+import { toast } from "@mapform/ui/components/toaster";
 import { CheckIcon, ChevronsUpDownIcon } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import { useState } from "react";
@@ -39,6 +40,7 @@ export function DatasetPopover({ form }: DatasetPopoverProps) {
     onSuccess: ({ data, input }) => {
       if (!data?.dataset) return;
 
+      toast("Dataset created!");
       form.setValue("datasetId", data.dataset.id);
 
       if (input.layerType === "point") {
