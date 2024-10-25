@@ -21,35 +21,46 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from "@mapform/ui/components/tooltip";
-import { LinkIcon, PlusIcon } from "lucide-react";
+import { Layers2Icon, PlusIcon } from "lucide-react";
+import { useState } from "react";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuPortal,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
-  DropdownMenuTrigger,
-} from "@mapform/ui/components/dropdown-menu";
+  Command,
+  CommandInput,
+  CommandList,
+  CommandGroup,
+  CommandItem,
+  CommandSeparator,
+} from "@mapform/ui/components/command";
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@mapform/ui/components/popover";
 import { updateLayerOrder } from "~/data/layers/update-layer-order";
 import { createPageLayer } from "~/data/layers-to-pages/create-page-layer";
 import { usePage } from "../../page-context";
 import { useProject } from "../../project-context";
 import {
   LayerPopoverRoot,
-  LayerPopoverTrigger,
   LayerPopoverContent,
+  LayerPopoverAnchor,
 } from "../../layer-popover";
 import { Item } from "./item";
 
 export function LayerList() {
   const { optimisticProjectWithPages } = useProject();
   const { optimisticPage, updatePage } = usePage();
+  const [open, setOpen] = useState(false);
+  const [layerPopoverOpen, setLayerPopoverOpen] = useState(false);
+  const [query, setQuery] = useState<string>("");
 
   const dragLayers = optimisticPage?.layersToPages.map((ltp) => ltp.layer);
   const { executeAsync } = useAction(updateLayerOrder);
-  const { execute: executeCreatePageLayer } = useAction(createPageLayer);
+  const { execute: executeCreatePageLayer } = useAction(createPageLayer, {
+    onSuccess: () => {
+      setLayerPopoverOpen(false);
+    },
+  });
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -119,10 +130,19 @@ export function LayerList() {
           Layers
         </h3>
         <TooltipProvider delayDuration={200}>
-          <Tooltip>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <TooltipTrigger asChild>
+          <Popover
+            modal
+            onOpenChange={(val) => {
+              setOpen(val);
+              if (val) {
+                setQuery("");
+              }
+            }}
+            open={open}
+          >
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <PopoverTrigger asChild>
                   <Button
                     className="-mr-2 ml-auto"
                     size="icon-sm"
@@ -130,53 +150,83 @@ export function LayerList() {
                   >
                     <PlusIcon className="size-4" />
                   </Button>
-                </TooltipTrigger>
-              </DropdownMenuTrigger>
+                </PopoverTrigger>
+              </TooltipTrigger>
               <TooltipContent>New Layer</TooltipContent>
-              <DropdownMenuContent>
-                <LayerPopoverRoot>
-                  <LayerPopoverTrigger asChild>
-                    <DropdownMenuItem
-                      className="flex items-center gap-2"
-                      onSelect={(e) => {
-                        e.preventDefault();
+            </Tooltip>
+            <PopoverContent
+              align="start"
+              className="w-[200px] p-0"
+              side="right"
+            >
+              <Command
+                filter={(value, search) => {
+                  if (value.includes("Create")) return 1;
+                  if (
+                    value
+                      .toLocaleLowerCase()
+                      .includes(search.toLocaleLowerCase())
+                  )
+                    return 1;
+                  return 0;
+                }}
+              >
+                <CommandInput
+                  onValueChange={(value: string) => {
+                    setQuery(value);
+                  }}
+                  placeholder="Search..."
+                  value={query}
+                />
+                <CommandList>
+                  <CommandGroup>
+                    <CommandItem
+                      onSelect={() => {
+                        setLayerPopoverOpen(true);
+                        setOpen(false);
                       }}
                     >
-                      <PlusIcon className="size-4 flex-shrink-0" />
-                      Create new layer
-                    </DropdownMenuItem>
-                  </LayerPopoverTrigger>
-                  <LayerPopoverContent />
-                </LayerPopoverRoot>
-                <DropdownMenuSub>
-                  <DropdownMenuSubTrigger
-                    className="flex items-center gap-2"
-                    disabled={!layersFromOtherPages.length}
-                  >
-                    <LinkIcon className="size-4 flex-shrink-0" />
-                    Connect existing layer
-                  </DropdownMenuSubTrigger>
-                  <DropdownMenuPortal>
-                    <DropdownMenuSubContent>
-                      {layersFromOtherPages.map((layer) => {
-                        return (
-                          <DropdownMenuItem
-                            className="flex items-center gap-2"
-                            key={layer.id}
-                            onSelect={() => {
-                              handleCreatePageLayer(layer.id);
-                            }}
-                          >
-                            {layer.name || "Untitled"}
-                          </DropdownMenuItem>
-                        );
-                      })}
-                    </DropdownMenuSubContent>
-                  </DropdownMenuPortal>
-                </DropdownMenuSub>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </Tooltip>
+                      <div className="flex items-center overflow-hidden">
+                        <p className="flex items-center font-semibold">
+                          <PlusIcon className="mr-2 size-4" />
+                          Create
+                        </p>
+                        <p className="text-primary ml-1 block truncate">
+                          {query}
+                        </p>
+                      </div>
+                    </CommandItem>
+                  </CommandGroup>
+                  <CommandSeparator />
+                  <CommandGroup heading="Layers">
+                    {layersFromOtherPages.map((layer) => (
+                      <CommandItem
+                        key={layer.id}
+                        keywords={[layer.name ?? "Untitled"]}
+                        onSelect={() => {
+                          handleCreatePageLayer(layer.id);
+                        }}
+                        value={layer.id}
+                      >
+                        <div className="flex items-center overflow-hidden truncate">
+                          <Layers2Icon className="mr-2 size-4" />
+                          {layer.name ?? "Untitled"}
+                        </div>
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                </CommandList>
+              </Command>
+            </PopoverContent>
+          </Popover>
+          <LayerPopoverRoot
+            modal
+            onOpenChange={setLayerPopoverOpen}
+            open={layerPopoverOpen}
+          >
+            <LayerPopoverAnchor />
+            <LayerPopoverContent initialName={query} key={query} />
+          </LayerPopoverRoot>
         </TooltipProvider>
       </div>
       <div className="mt-1 flex flex-col">
