@@ -12,6 +12,7 @@ import {
   Popover,
   PopoverTrigger,
   PopoverContent,
+  PopoverAnchor,
 } from "@mapform/ui/components/popover";
 import type { PlacesSearchResponse } from "@mapform/map-utils/types";
 import {
@@ -31,30 +32,7 @@ import { type SetStateAction, useState } from "react";
 import { useAction } from "next-safe-action/hooks";
 import type { ProjectWithPages } from "~/data/projects/get-project-with-pages";
 import { createPoint } from "~/data/datasets/create-point";
-import { LayerPopover } from "../../layer-popover";
-
-const frameworks = [
-  {
-    value: "next.js",
-    label: "Next.js",
-  },
-  {
-    value: "sveltekit",
-    label: "SvelteKit",
-  },
-  {
-    value: "nuxt.js",
-    label: "Nuxt.js",
-  },
-  {
-    value: "remix",
-    label: "Remix",
-  },
-  {
-    value: "astro",
-    label: "Astro",
-  },
-];
+import { LayerPopoverContent, LayerPopoverRoot } from "../../layer-popover";
 
 interface SearchLocationMarkerProps {
   pageLayers: ProjectWithPages["layers"];
@@ -88,9 +66,9 @@ export function SearchLocationMarker({
 }: SearchLocationMarkerProps) {
   const { ref, bounds } = useMeasure<HTMLDivElement>();
   const [open, setOpen] = useState(false);
+  const [layerPopoverOpen, setLayerPopoverOpen] = useState(false);
   const [query, setQuery] = useState<string>("");
-  const { execute: executeCreatePoint, status: statusCreatePoint } =
-    useAction(createPoint);
+  const { execute: executeCreatePoint } = useAction(createPoint);
 
   if (!searchLocation?.properties?.lon || !searchLocation.properties.lat)
     return null;
@@ -127,7 +105,7 @@ export function SearchLocationMarker({
         <Icon className="mb-2 size-5" />
         <h1 className="text-lg font-semibold">{title}</h1>
         <div className="mt-8 flex">
-          <Popover onOpenChange={setOpen} open={open}>
+          <Popover modal onOpenChange={setOpen} open={open}>
             <PopoverTrigger asChild>
               <Button
                 aria-expanded={open}
@@ -165,24 +143,23 @@ export function SearchLocationMarker({
                 />
                 <CommandList>
                   <CommandGroup>
-                    <LayerPopover>
-                      <CommandItem
-                        onSelect={() => {
-                          // setQuery("");
-                          // setOpen(false);
-                        }}
-                      >
-                        <div className="flex items-center overflow-hidden">
-                          <p className="flex items-center font-semibold">
-                            <PlusIcon className="mr-2 size-4" />
-                            Create
-                          </p>
-                          <p className="text-primary ml-1 block truncate">
-                            {query}
-                          </p>
-                        </div>
-                      </CommandItem>
-                    </LayerPopover>
+                    <CommandItem
+                      onSelect={() => {
+                        setLayerPopoverOpen(true);
+                        setQuery("");
+                        setOpen(false);
+                      }}
+                    >
+                      <div className="flex items-center overflow-hidden">
+                        <p className="flex items-center font-semibold">
+                          <PlusIcon className="mr-2 size-4" />
+                          Create
+                        </p>
+                        <p className="text-primary ml-1 block truncate">
+                          {query}
+                        </p>
+                      </div>
+                    </CommandItem>
                   </CommandGroup>
                   <CommandSeparator />
                   <CommandGroup heading="Layers">
@@ -215,6 +192,14 @@ export function SearchLocationMarker({
               </Command>
             </PopoverContent>
           </Popover>
+          <LayerPopoverRoot
+            modal
+            onOpenChange={setLayerPopoverOpen}
+            open={layerPopoverOpen}
+          >
+            <PopoverAnchor />
+            <LayerPopoverContent align="start" side="right" />
+          </LayerPopoverRoot>
         </div>
       </div>
 

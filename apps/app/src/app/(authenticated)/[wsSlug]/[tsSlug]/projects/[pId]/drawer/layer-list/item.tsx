@@ -47,7 +47,11 @@ import { DragItem, DragHandle } from "~/components/draggable";
 import type { PageWithLayers } from "~/data/pages/get-page-with-layers";
 import { usePage } from "../../page-context";
 import { useProject } from "../../project-context";
-import { LayerPopover } from "../../layer-popover";
+import {
+  LayerPopoverRoot,
+  LayerPopoverTrigger,
+  LayerPopoverContent,
+} from "../../layer-popover";
 
 interface ItemProps {
   layer: PageWithLayers["layersToPages"][number]["layer"];
@@ -141,17 +145,20 @@ export function Item({ layer }: ItemProps) {
                       </TooltipTrigger>
                       <DropdownMenuContent className="w-[200px] overflow-hidden">
                         <DropdownMenuGroup>
-                          <LayerPopover layerToEdit={layer}>
-                            <DropdownMenuItem
-                              className="flex items-center gap-2"
-                              onSelect={(e) => {
-                                e.preventDefault();
-                              }}
-                            >
-                              <Settings2Icon className="size-4 flex-shrink-0" />
-                              Edit
-                            </DropdownMenuItem>
-                          </LayerPopover>
+                          <LayerPopoverRoot>
+                            <LayerPopoverTrigger>
+                              <DropdownMenuItem
+                                className="flex items-center gap-2"
+                                onSelect={(e) => {
+                                  e.preventDefault();
+                                }}
+                              >
+                                <Settings2Icon className="size-4 flex-shrink-0" />
+                                Edit
+                              </DropdownMenuItem>
+                            </LayerPopoverTrigger>
+                            <LayerPopoverContent layerToEdit={layer} />
+                          </LayerPopoverRoot>
                           <DropdownMenuItem
                             className="flex items-center gap-2"
                             onSelect={handleRemoveFromPage}

@@ -1,5 +1,6 @@
 "use client";
 
+import { forwardRef } from "react";
 import {
   Popover,
   PopoverContent,
@@ -28,13 +29,13 @@ import { TypePopover } from "./type-popover";
 import { PointProperties } from "./point-properties";
 
 interface LayerPopoverProps {
-  // The trigger
-  children: React.ReactNode;
-  // Puts form into edit mode
   layerToEdit?: PageWithLayers["layersToPages"][number]["layer"];
 }
 
-export function LayerPopover({ children, layerToEdit }: LayerPopoverProps) {
+export const LayerPopoverContent = forwardRef<
+  React.ElementRef<typeof PopoverContent>,
+  React.ComponentPropsWithoutRef<typeof PopoverContent> & LayerPopoverProps
+>(({ layerToEdit, ...props }, ref) => {
   const { ...rest } = usePage();
   const optimisticPage = rest.optimisticPage!;
 
@@ -85,58 +86,59 @@ export function LayerPopover({ children, layerToEdit }: LayerPopoverProps) {
   };
 
   return (
-    <Popover>
-      <PopoverTrigger asChild>{children}</PopoverTrigger>
-      <PopoverContent>
-        <Form {...form}>
-          <form
-            className="flex flex-1 flex-col"
-            onSubmit={form.handleSubmit(onSubmit)}
-          >
-            <div className="grid auto-cols-auto grid-cols-[auto_1fr] items-center gap-x-6 gap-y-3">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <>
-                    <FormLabel>Name</FormLabel>
-                    <div className="flex-1">
-                      <FormControl>
-                        <Input
-                          disabled={field.disabled}
-                          name={field.name}
-                          onChange={field.onChange}
-                          placeholder="New Layer"
-                          ref={field.ref}
-                          s="sm"
-                          value={field.value ?? ""}
-                          variant="filled"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </div>
-                  </>
-                )}
-              />
+    <PopoverContent ref={ref} {...props}>
+      <Form {...form}>
+        <form
+          className="flex flex-1 flex-col"
+          onSubmit={form.handleSubmit(onSubmit)}
+        >
+          <div className="grid auto-cols-auto grid-cols-[auto_1fr] items-center gap-x-6 gap-y-3">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <>
+                  <FormLabel>Name</FormLabel>
+                  <div className="flex-1">
+                    <FormControl>
+                      <Input
+                        disabled={field.disabled}
+                        name={field.name}
+                        onChange={field.onChange}
+                        placeholder="New Layer"
+                        ref={field.ref}
+                        s="sm"
+                        value={field.value ?? ""}
+                        variant="filled"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </div>
+                </>
+              )}
+            />
 
-              <TypePopover form={form} />
+            <TypePopover form={form} />
 
-              <DatasetPopover form={form} />
+            <DatasetPopover form={form} />
 
-              {renderProperties()}
+            {renderProperties()}
 
-              <Button
-                className="col-span-2"
-                disabled={status === "executing" || !form.formState.isValid}
-                size="sm"
-                type="submit"
-              >
-                {layerToEdit ? "Update Layer" : "Create Layer"}
-              </Button>
-            </div>
-          </form>
-        </Form>
-      </PopoverContent>
-    </Popover>
+            <Button
+              className="col-span-2"
+              disabled={status === "executing" || !form.formState.isValid}
+              size="sm"
+              type="submit"
+            >
+              {layerToEdit ? "Update Layer" : "Create Layer"}
+            </Button>
+          </div>
+        </form>
+      </Form>
+    </PopoverContent>
   );
-}
+});
+
+LayerPopoverContent.displayName = "LayerPopoverContent";
+
+export { Popover as LayerPopoverRoot, PopoverTrigger as LayerPopoverTrigger };

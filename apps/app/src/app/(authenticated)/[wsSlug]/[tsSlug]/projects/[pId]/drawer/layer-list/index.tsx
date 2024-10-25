@@ -36,7 +36,11 @@ import { updateLayerOrder } from "~/data/layers/update-layer-order";
 import { createPageLayer } from "~/data/layers-to-pages/create-page-layer";
 import { usePage } from "../../page-context";
 import { useProject } from "../../project-context";
-import { LayerPopover } from "../../layer-popover";
+import {
+  LayerPopoverRoot,
+  LayerPopoverTrigger,
+  LayerPopoverContent,
+} from "../../layer-popover";
 import { Item } from "./item";
 
 export function LayerList() {
@@ -130,17 +134,20 @@ export function LayerList() {
               </DropdownMenuTrigger>
               <TooltipContent>New Layer</TooltipContent>
               <DropdownMenuContent>
-                <LayerPopover>
-                  <DropdownMenuItem
-                    className="flex items-center gap-2"
-                    onSelect={(e) => {
-                      e.preventDefault();
-                    }}
-                  >
-                    <PlusIcon className="size-4 flex-shrink-0" />
-                    Create new layer
-                  </DropdownMenuItem>
-                </LayerPopover>
+                <LayerPopoverRoot>
+                  <LayerPopoverTrigger asChild>
+                    <DropdownMenuItem
+                      className="flex items-center gap-2"
+                      onSelect={(e) => {
+                        e.preventDefault();
+                      }}
+                    >
+                      <PlusIcon className="size-4 flex-shrink-0" />
+                      Create new layer
+                    </DropdownMenuItem>
+                  </LayerPopoverTrigger>
+                  <LayerPopoverContent />
+                </LayerPopoverRoot>
                 <DropdownMenuSub>
                   <DropdownMenuSubTrigger
                     className="flex items-center gap-2"
