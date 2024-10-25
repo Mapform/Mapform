@@ -144,12 +144,20 @@ export function SearchLocationMarker({
               side="right"
             >
               <Command
-                filter={(value, search) => {
+                filter={(value, search, keywords) => {
                   if (value.includes("Create")) return 1;
                   if (
                     value
                       .toLocaleLowerCase()
                       .includes(search.toLocaleLowerCase())
+                  )
+                    return 1;
+                  if (
+                    keywords?.some((k) =>
+                      k
+                        .toLocaleLowerCase()
+                        .includes(search.toLocaleLowerCase()),
+                    )
                   )
                     return 1;
                   return 0;

@@ -7,6 +7,7 @@ import {
   CommandEmpty,
   CommandGroup,
   CommandItem,
+  CommandSeparator,
 } from "@mapform/ui/components/command";
 import {
   FormField,
@@ -19,7 +20,7 @@ import {
   PopoverTrigger,
 } from "@mapform/ui/components/popover";
 import { toast } from "@mapform/ui/components/toaster";
-import { CheckIcon, ChevronsUpDownIcon } from "lucide-react";
+import { CheckIcon, ChevronsUpDownIcon, PlusIcon } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import { useState } from "react";
 import { createEmptyDataset } from "~/data/datasets/create-empty-dataset";
@@ -36,7 +37,7 @@ export function DatasetPopover({ form }: DatasetPopoverProps) {
   const [query, setQuery] = useState("");
   const { availableDatasets } = usePage();
   const { optimisticProjectWithPages } = useProject();
-  const { executeAsync, status } = useAction(createEmptyDataset, {
+  const { executeAsync } = useAction(createEmptyDataset, {
     onSuccess: ({ data, input }) => {
       if (!data?.dataset) return;
 
@@ -90,77 +91,86 @@ export function DatasetPopover({ form }: DatasetPopoverProps) {
               className="w-[200px] p-0"
               side="right"
             >
-              <Command>
+              <Command
+                filter={(value, search, keywords) => {
+                  if (value.includes("Create")) return 1;
+                  if (
+                    value
+                      .toLocaleLowerCase()
+                      .includes(search.toLocaleLowerCase())
+                  )
+                    return 1;
+                  if (
+                    keywords?.some((k) =>
+                      k
+                        .toLocaleLowerCase()
+                        .includes(search.toLocaleLowerCase()),
+                    )
+                  )
+                    return 1;
+                  return 0;
+                }}
+              >
                 <CommandInput
                   onValueChange={(v: string) => {
                     setQuery(v);
                   }}
-                  placeholder="Search datasets..."
+                  placeholder="Create or search..."
                   value={query}
                 />
                 <CommandList>
-                  <CommandEmpty
-                    className="data-[selected=true]:bg-accent data-[selected=true]:text-accent-foreground relative m-1 flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50"
-                    onClick={async () => {
-                      await executeAsync({
-                        name: query,
-                        teamspaceId: optimisticProjectWithPages.teamspaceId,
-                        layerType: form.watch("type"),
-                      });
-                      setQuery("");
-                      setOpen(false);
-                    }}
-                  >
-                    <p>Create: </p>
-                    <p className="text-primary ml-1 block max-w-48 truncate font-semibold">
-                      {query}
-                    </p>
-                  </CommandEmpty>
                   <CommandGroup>
-                    {query.length ? (
-                      <CommandItem
-                        disabled={status === "executing" || !form.watch("type")}
-                        onSelect={async () => {
-                          await executeAsync({
-                            name: query,
-                            teamspaceId: optimisticProjectWithPages.teamspaceId,
-                            layerType: form.watch("type"),
-                          });
-                          setQuery("");
-                          setOpen(false);
-                        }}
-                      >
-                        <p>Create: </p>
-                        <p className="text-primary ml-1 block max-w-48 truncate font-semibold">
+                    <CommandItem
+                      onSelect={async () => {
+                        await executeAsync({
+                          name: query,
+                          teamspaceId: optimisticProjectWithPages.teamspaceId,
+                          layerType: form.watch("type"),
+                        });
+                        setQuery("");
+                        setOpen(false);
+                      }}
+                    >
+                      <div className="flex items-center overflow-hidden">
+                        <p className="flex items-center font-semibold">
+                          <PlusIcon className="mr-2 size-4" />
+                          Create
+                        </p>
+                        <p className="text-primary ml-1 block truncate">
                           {query}
                         </p>
-                      </CommandItem>
-                    ) : null}
-                    {availableDatasets.map((dataset) => (
-                      <CommandItem
-                        key={dataset.id}
-                        keywords={[dataset.name]}
-                        onSelect={(currentValue) => {
-                          form.setValue(
-                            "datasetId",
-                            currentValue === field.value ? "" : currentValue,
-                          );
-                          setOpen(false);
-                        }}
-                        value={dataset.id}
-                      >
-                        {dataset.name}
-                        <CheckIcon
-                          className={cn(
-                            "ml-auto size-4",
-                            field.value === dataset.id
-                              ? "opacity-100"
-                              : "opacity-0",
-                          )}
-                        />
-                      </CommandItem>
-                    ))}
+                      </div>
+                    </CommandItem>
                   </CommandGroup>
+                  <CommandSeparator />
+                  {availableDatasets.length > 0 ? (
+                    <CommandGroup heading="Datasets">
+                      {availableDatasets.map((dataset) => (
+                        <CommandItem
+                          key={dataset.id}
+                          keywords={[dataset.name]}
+                          onSelect={(currentValue) => {
+                            form.setValue(
+                              "datasetId",
+                              currentValue === field.value ? "" : currentValue,
+                            );
+                            setOpen(false);
+                          }}
+                          value={dataset.id}
+                        >
+                          {dataset.name}
+                          <CheckIcon
+                            className={cn(
+                              "ml-auto size-4",
+                              field.value === dataset.id
+                                ? "opacity-100"
+                                : "opacity-0",
+                            )}
+                          />
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  ) : null}
                 </CommandList>
               </Command>
             </PopoverContent>
