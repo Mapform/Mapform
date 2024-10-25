@@ -29,18 +29,20 @@ import { TypePopover } from "./type-popover";
 import { PointProperties } from "./point-properties";
 
 interface LayerPopoverProps {
+  initialName?: string;
   layerToEdit?: PageWithLayers["layersToPages"][number]["layer"];
 }
 
 export const LayerPopoverContent = forwardRef<
   React.ElementRef<typeof PopoverContent>,
   React.ComponentPropsWithoutRef<typeof PopoverContent> & LayerPopoverProps
->(({ layerToEdit, ...props }, ref) => {
+>(({ layerToEdit, initialName, ...props }, ref) => {
   const { ...rest } = usePage();
   const optimisticPage = rest.optimisticPage!;
 
   const form = useForm<UpsertLayerSchema>({
     defaultValues: {
+      name: initialName ?? "",
       pageId: optimisticPage.id,
       type: "point",
       ...layerToEdit,

@@ -105,7 +105,16 @@ export function SearchLocationMarker({
         <Icon className="mb-2 size-5" />
         <h1 className="text-lg font-semibold">{title}</h1>
         <div className="mt-8 flex">
-          <Popover modal onOpenChange={setOpen} open={open}>
+          <Popover
+            modal
+            onOpenChange={(val) => {
+              setOpen(val);
+              if (val) {
+                setQuery("");
+              }
+            }}
+            open={open}
+          >
             <PopoverTrigger asChild>
               <Button
                 aria-expanded={open}
@@ -146,7 +155,6 @@ export function SearchLocationMarker({
                     <CommandItem
                       onSelect={() => {
                         setLayerPopoverOpen(true);
-                        setQuery("");
                         setOpen(false);
                       }}
                     >
@@ -198,7 +206,12 @@ export function SearchLocationMarker({
             open={layerPopoverOpen}
           >
             <PopoverAnchor />
-            <LayerPopoverContent align="start" side="right" />
+            <LayerPopoverContent
+              align="start"
+              initialName={query}
+              key={query}
+              side="right"
+            />
           </LayerPopoverRoot>
         </div>
       </div>
