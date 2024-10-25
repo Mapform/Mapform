@@ -1,5 +1,5 @@
 {
-  "id": "91a23ad4-777f-4d96-95dc-6f7387bf6c71",
+  "id": "95720098-dec4-4b6a-9501-9b68016dad2d",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -617,6 +617,12 @@
           "primaryKey": false,
           "notNull": false
         },
+        "dataset_id": {
+          "name": "dataset_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
         "created_at": {
           "name": "created_at",
           "type": "timestamp with time zone",
@@ -640,6 +646,19 @@
           "tableTo": "teamspace",
           "columnsFrom": [
             "teamspace_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "project_dataset_id_dataset_id_fk": {
+          "name": "project_dataset_id_dataset_id_fk",
+          "tableFrom": "project",
+          "tableTo": "dataset",
+          "columnsFrom": [
+            "dataset_id"
           ],
           "columnsTo": [
             "id"
@@ -859,6 +878,18 @@
           "primaryKey": false,
           "notNull": true
         },
+        "title_column_id": {
+          "name": "title_column_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description_column_id": {
+          "name": "description_column_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
         "created_at": {
           "name": "created_at",
           "type": "timestamp with time zone",
@@ -900,6 +931,32 @@
             "id"
           ],
           "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "point_layer_title_column_id_column_id_fk": {
+          "name": "point_layer_title_column_id_column_id_fk",
+          "tableFrom": "point_layer",
+          "tableTo": "column",
+          "columnsFrom": [
+            "title_column_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "point_layer_description_column_id_column_id_fk": {
+          "name": "point_layer_description_column_id_column_id_fk",
+          "tableFrom": "point_layer",
+          "tableTo": "column",
+          "columnsFrom": [
+            "description_column_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
           "onUpdate": "no action"
         }
       },
@@ -1005,6 +1062,14 @@
           "type": "varchar(256)",
           "primaryKey": false,
           "notNull": false
+        },
+        "type": {
+          "name": "type",
+          "type": "dataset_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'default'"
         },
         "teamspace_id": {
           "name": "teamspace_id",
@@ -1179,7 +1244,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
@@ -1453,8 +1518,51 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "public.strint_cell": {
-      "name": "strint_cell",
+    "public.richtext_cell": {
+      "name": "richtext_cell",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "content": {
+          "name": "content",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cell_id": {
+          "name": "cell_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "richtext_cell_cell_id_cell_id_fk": {
+          "name": "richtext_cell_cell_id_cell_id_fk",
+          "tableFrom": "richtext_cell",
+          "tableTo": "cell",
+          "columnsFrom": [
+            "cell_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.string_cell": {
+      "name": "string_cell",
       "schema": "",
       "columns": {
         "id": {
@@ -1479,82 +1587,12 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "strint_cell_cell_id_cell_id_fk": {
-          "name": "strint_cell_cell_id_cell_id_fk",
-          "tableFrom": "strint_cell",
+        "string_cell_cell_id_cell_id_fk": {
+          "name": "string_cell_cell_id_cell_id_fk",
+          "tableFrom": "string_cell",
           "tableTo": "cell",
           "columnsFrom": [
             "cell_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
-    },
-    "public.submission": {
-      "name": "submission",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "uuid",
-          "primaryKey": true,
-          "notNull": true,
-          "default": "gen_random_uuid()"
-        },
-        "project_id": {
-          "name": "project_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "row_id": {
-          "name": "row_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "submission_project_id_project_id_fk": {
-          "name": "submission_project_id_project_id_fk",
-          "tableFrom": "submission",
-          "tableTo": "project",
-          "columnsFrom": [
-            "project_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "submission_row_id_row_id_fk": {
-          "name": "submission_row_id_row_id_fk",
-          "tableFrom": "submission",
-          "tableTo": "row",
-          "columnsFrom": [
-            "row_id"
           ],
           "columnsTo": [
             "id"
@@ -1608,6 +1646,14 @@
         "point"
       ]
     },
+    "public.dataset_type": {
+      "name": "dataset_type",
+      "schema": "public",
+      "values": [
+        "default",
+        "submissions"
+      ]
+    },
     "public.column_type": {
       "name": "column_type",
       "schema": "public",
@@ -1616,7 +1662,8 @@
         "bool",
         "number",
         "date",
-        "point"
+        "point",
+        "richtext"
       ]
     }
   },

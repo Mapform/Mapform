@@ -1,11 +1,11 @@
 "use client";
 
 import "mapbox-gl/dist/mapbox-gl.css";
-import React, { useEffect, useState } from "react";
+import React, { useRef, useState } from "react";
 import type { Page } from "@mapform/db/schema";
+import { DrawerPrimitive } from "@mapform/ui/components/drawer";
 import { Form, useForm, zodResolver } from "@mapform/ui/components/form";
 import type { z } from "zod";
-import type { MapboxEvent } from "mapbox-gl";
 import { cn } from "@mapform/lib/classnames";
 import type { FormSchema } from "@mapform/lib/schemas/form-step-schema";
 import { CustomBlockContext } from "@mapform/blocknote";
@@ -13,7 +13,6 @@ import {
   type CustomBlock,
   getFormSchemaFromBlockNote,
 } from "@mapform/blocknote";
-import { useMeasure } from "@mapform/lib/hooks/use-measure";
 import type { PageData, ViewState } from "@mapform/map-utils/types";
 import { Button } from "@mapform/ui/components/button";
 import {
@@ -21,29 +20,31 @@ import {
   ArrowRightIcon,
   MapIcon,
   LetterTextIcon,
+  ChevronsLeftIcon,
+  ChevronsRightIcon,
 } from "lucide-react";
 import { Blocknote } from "./block-note";
-import { Map, MapProvider, useMap, type MBMap } from "./map";
-import { EditBar } from "./edit-bar";
+import { Map, SearchLocationMarker } from "./map";
 import "./style.css";
+import { MapformProvider, useMapform, type MBMap } from "./context";
 
 interface MapFormProps {
   editable?: boolean;
+  children?: React.ReactNode;
   mapboxAccessToken: string;
   currentPage: Page;
   defaultFormValues?: Record<string, string>;
-  contentViewType?: "full" | "partial" | "closed";
+  showBlocknote?: boolean;
   onPrev?: () => void;
   onLoad?: () => void;
   onTitleChange?: (content: string) => void;
   onDescriptionChange?: (content: { content: CustomBlock[] }) => void;
   onStepSubmit?: (data: Record<string, string>) => void;
   onImageUpload?: (file: File) => Promise<string | null>;
-  onLocationSave?: (location: ViewState) => Promise<{ success: boolean }>;
   pageData?: PageData;
-  editFields?: {
-    AddLocationDropdown: (input: { data: any }) => JSX.Element;
-  };
+  // editFields?: {
+  //   AddLocationDropdown: (input: { data: any }) => JSX.Element;
+  // };
 }
 
 export function MapForm({
@@ -51,19 +52,18 @@ export function MapForm({
   onPrev,
   onLoad,
   pageData,
-  editFields,
+  children,
   currentPage,
   onStepSubmit,
   onTitleChange,
   onImageUpload,
-  onLocationSave,
   defaultFormValues,
   onDescriptionChange,
 }: MapFormProps) {
-  const { map } = useMap();
+  const { drawerOpen, setDrawerOpen } = useMapform();
   const [showMapMobile, setShowMapMobile] = useState(false);
   const blocknoteStepSchema = getFormSchemaFromBlockNote(
-    currentPage.content?.content || []
+    currentPage.content?.content || [],
   );
   const form = useForm<z.infer<typeof blocknoteStepSchema>>({
     resolver: zodResolver(blocknoteStepSchema),
@@ -72,7 +72,7 @@ export function MapForm({
   const [isSelectingPinLocationFor, setIsSelectingPinLocationFor] = useState<
     string | null
   >(null);
-  const { ref: drawerRef } = useMeasure<HTMLDivElement>();
+  const rootEl = useRef<HTMLFormElement | null>(null);
   const initialViewState = {
     longitude: currentPage.center.x,
     latitude: currentPage.center.y,
@@ -86,125 +86,24 @@ export function MapForm({
       right: 0,
     },
   };
-  const [movedCoords, setMovedCoords] = useState<{
-    lat: number;
-    lng: number;
-    zoom: number;
-    pitch: number;
-    bearing: number;
-  }>({
-    lat: currentPage.center.y,
-    lng: currentPage.center.x,
-    zoom: currentPage.zoom,
-    pitch: currentPage.pitch,
-    bearing: currentPage.bearing,
-  });
-  const [searchLocation, setSearchLocation] = useState<{
-    id: string;
-    latitude: number;
-    longitude: number;
-    name: string;
-    description?: {
-      content: CustomBlock[];
-    };
-  } | null>(null);
 
   const onSubmit = (data: FormSchema) => {
     onStepSubmit?.(data);
   };
 
-  const handleOnMove = (e: MapboxEvent) => {
-    setMovedCoords({
-      lat: e.target.getCenter().lat,
-      lng: e.target.getCenter().lng,
-      zoom: e.target.getZoom(),
-      pitch: e.target.getPitch(),
-      bearing: e.target.getBearing(),
-    });
+  const mapPadding = {
+    top: 0,
+    bottom: 0,
+    left: drawerOpen ? (editable ? 392 : 360) : 0,
+    right: 0,
   };
-
-  useEffect(() => {
-    if (map) {
-      map.on("moveend", handleOnMove);
-
-      return () => {
-        map.off("moveend", handleOnMove);
-      };
-    }
-  }, [map, currentPage]);
-
-  // Update movedCoords when the step changes
-  useEffect(() => {
-    setMovedCoords({
-      lat: currentPage.center.y,
-      lng: currentPage.center.x,
-      zoom: currentPage.zoom,
-      pitch: currentPage.pitch,
-      bearing: currentPage.bearing,
-    });
-  }, [currentPage]);
-
-  const pinBlocks = currentPage.content?.content.filter((c) => {
-    return c.type === "pin";
-  });
-
-  const roundLocation = (num: number) => Math.round(num * 1000000) / 1000000;
-
-  const hasMoved =
-    roundLocation(movedCoords.lat) !== roundLocation(currentPage.center.y) ||
-    roundLocation(movedCoords.lng) !== roundLocation(currentPage.center.x) ||
-    movedCoords.zoom !== currentPage.zoom ||
-    movedCoords.pitch !== currentPage.pitch ||
-    movedCoords.bearing !== currentPage.bearing;
-
-  const AddLocationDropdown = editFields?.AddLocationDropdown;
-
-  const renderMap = () => (
-    <>
-      <Map
-        editable={editable}
-        initialViewState={initialViewState}
-        marker={
-          searchLocation
-            ? {
-                latitude: searchLocation.latitude,
-                longitude: searchLocation.longitude,
-              }
-            : undefined
-        }
-        onLoad={onLoad}
-        pageData={pageData}
-      />
-
-      {/* Edit bar */}
-      {editable ? (
-        <div
-          className={cn(
-            "flex items-center bg-primary rounded-lg px-2 py-0 absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10",
-            currentPage.contentViewType === "split"
-              ? "left-1/2 md:left-[calc(50%+180px)]"
-              : "left-1/2"
-          )}
-        >
-          <EditBar
-            hasMoved={hasMoved}
-            initialViewState={initialViewState}
-            onLocationSave={onLocationSave}
-            setSearchLocation={setSearchLocation}
-          />
-        </div>
-      ) : null}
-    </>
-  );
-
-  // We add 36px to the width when editing to account for side padding for buttons
-  const contentWidth = editable ? "md:w-[396px]" : "md:w-[360px]";
 
   return (
     <Form {...form}>
       <form
-        className="relative w-full h-full flex"
+        className="relative flex h-full w-full overflow-hidden"
         onSubmit={form.handleSubmit(onSubmit)}
+        ref={rootEl}
       >
         <CustomBlockContext.Provider
           value={{
@@ -214,183 +113,133 @@ export function MapForm({
             setIsSelectingPinLocationFor,
           }}
         >
-          <div
+          <Button
             className={cn(
-              "group absolute bg-background z-10 w-full overflow-hidden",
-              currentPage.contentViewType === "text"
-                ? "h-full z-10"
-                : currentPage.contentViewType === "split"
-                  ? `h-full ${contentWidth}`
-                  : `h-initial ${contentWidth} rounded-lg shadow-lg md:m-2`
+              "absolute left-2 top-2 z-10 shadow-sm transition-opacity delay-300 duration-300",
+              {
+                "opacity-0": drawerOpen,
+              },
             )}
-            ref={drawerRef}
+            onClick={() => {
+              setDrawerOpen(true);
+            }}
+            size="icon-sm"
+            variant="outline"
+          >
+            <ChevronsRightIcon className="size-5" />
+          </Button>
+          {rootEl.current ? (
+            <DrawerPrimitive.Root
+              container={rootEl.current}
+              direction="left"
+              dismissible={false}
+              modal={false}
+              onOpenChange={setDrawerOpen}
+              open={drawerOpen}
+            >
+              <DrawerPrimitive.Portal>
+                <DrawerPrimitive.Content
+                  className={cn(
+                    "bg-background prose group absolute bottom-0 top-0 z-50 h-full rounded-r-lg shadow-lg outline-none",
+                    editable ? "w-[392px] pl-8" : "w-[360px]",
+                  )}
+                >
+                  <Button
+                    className="absolute right-2 top-2"
+                    onClick={() => {
+                      setDrawerOpen(false);
+                    }}
+                    size="icon-sm"
+                    variant="ghost"
+                  >
+                    <ChevronsLeftIcon className="size-5" />
+                  </Button>
+                  <Blocknote
+                    currentPage={currentPage}
+                    description={currentPage.content ?? undefined}
+                    editable={editable}
+                    isPage
+                    key={currentPage.id}
+                    onDescriptionChange={onDescriptionChange}
+                    onPrev={onPrev}
+                    onTitleChange={onTitleChange}
+                    title={currentPage.title}
+                  />
+                  <div
+                    className={cn("mt-auto flex justify-between px-4 py-2", {
+                      hidden: editable,
+                    })}
+                  >
+                    <div className="gap-2">
+                      <Button
+                        disabled={editable}
+                        onClick={onPrev}
+                        size="icon"
+                        type="button"
+                        variant="ghost"
+                      >
+                        <ArrowLeftIcon />
+                      </Button>
+                    </div>
+                    <div
+                      className={
+                        currentPage.contentViewType === "text"
+                          ? "block"
+                          : "md:hidden"
+                      }
+                    >
+                      <Button
+                        onClick={() => {
+                          setShowMapMobile((prev) => !prev);
+                        }}
+                        variant="secondary"
+                      >
+                        {showMapMobile ? (
+                          <>
+                            <LetterTextIcon className="mr-2 size-5" />
+                            Show Text
+                          </>
+                        ) : (
+                          <>
+                            <MapIcon className="mr-2 size-5" />
+                            Show Map
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                    <Button
+                      disabled={editable}
+                      size="icon"
+                      type="submit"
+                      variant="ghost"
+                    >
+                      <ArrowRightIcon />
+                    </Button>
+                  </div>
+                </DrawerPrimitive.Content>
+              </DrawerPrimitive.Portal>
+            </DrawerPrimitive.Root>
+          ) : null}
+          <Map
+            editable={editable}
+            initialViewState={initialViewState}
+            mapPadding={mapPadding}
+            onLoad={onLoad}
+            pageData={pageData}
           >
             <div
               className={cn(
-                "h-full w-full flex flex-col prose max-md:max-w-full mx-auto relative",
-                {
-                  "px-9": editable && currentPage.contentViewType === "text",
-                  "pl-9": editable && currentPage.contentViewType !== "text",
-                  "max-h-[300px]": currentPage.contentViewType === "map",
-                }
+                "absolute bottom-0 right-0 top-0 transition-[width] duration-200",
+                drawerOpen
+                  ? editable
+                    ? "w-[calc(100%-392px)]"
+                    : "w-[calc(100%-360px)]"
+                  : "w-full",
               )}
             >
-              {/* MOBILE MAP */}
-              {showMapMobile ? (
-                <div className="relative flex flex-1 md:hidden">
-                  {renderMap()}
-                </div>
-              ) : null}
-
-              <div
-                className={cn("overflow-y-auto", {
-                  "hidden md:block": showMapMobile,
-                  "md:p-2 md:pb-0": currentPage.contentViewType === "split",
-                })}
-              >
-                <Blocknote
-                  currentPage={currentPage}
-                  description={currentPage.content ?? undefined}
-                  editable={editable}
-                  isPage
-                  key={currentPage.id}
-                  onDescriptionChange={onDescriptionChange}
-                  onPrev={onPrev}
-                  onTitleChange={onTitleChange}
-                  title={currentPage.title}
-                />
-              </div>
-              <div className="mt-auto flex justify-between px-4 py-2">
-                <div className="gap-2">
-                  <Button
-                    disabled={editable}
-                    onClick={onPrev}
-                    size="icon"
-                    type="button"
-                    variant="ghost"
-                  >
-                    <ArrowLeftIcon />
-                  </Button>
-                </div>
-                <div
-                  className={
-                    currentPage.contentViewType === "text"
-                      ? "block"
-                      : "md:hidden"
-                  }
-                >
-                  <Button
-                    onClick={() => {
-                      setShowMapMobile((prev) => !prev);
-                    }}
-                    variant="secondary"
-                  >
-                    {showMapMobile ? (
-                      <>
-                        <LetterTextIcon className="size-5 mr-2" />
-                        Show Text
-                      </>
-                    ) : (
-                      <>
-                        <MapIcon className="size-5 mr-2" />
-                        Show Map
-                      </>
-                    )}
-                  </Button>
-                </div>
-                <Button
-                  disabled={editable}
-                  size="icon"
-                  type="submit"
-                  variant="ghost"
-                >
-                  <ArrowRightIcon />
-                </Button>
-              </div>
+              {children}
             </div>
-          </div>
-
-          {/* MARKER EDITOR */}
-          {searchLocation ? (
-            <div
-              className={cn(
-                "group absolute bg-background z-10 w-full overflow-hidden",
-                currentPage.contentViewType === "text"
-                  ? "h-full z-10"
-                  : currentPage.contentViewType === "split"
-                    ? `h-full ${contentWidth}`
-                    : `h-initial ${contentWidth} rounded-lg shadow-lg md:m-2`
-              )}
-              ref={drawerRef}
-            >
-              <div
-                className={cn(
-                  "h-full w-full flex flex-col prose max-md:max-w-full mx-auto relative",
-                  {
-                    "px-9": editable && currentPage.contentViewType === "text",
-                    "pl-9": editable && currentPage.contentViewType !== "text",
-                    "max-h-[300px]": currentPage.contentViewType === "map",
-                  }
-                )}
-              >
-                <Blocknote
-                  currentPage={currentPage}
-                  description={searchLocation.description ?? undefined}
-                  // Need key to force re-render, otherwise Blocknote state doesn't
-                  // change when changing steps
-                  editable={editable}
-                  key={searchLocation.id}
-                  locationEditorProps={{
-                    onClose: () => {
-                      setSearchLocation(null);
-                    },
-                  }}
-                  onDescriptionChange={(val) => {
-                    setSearchLocation((prev) => ({
-                      id: prev?.id ?? "",
-                      description: val,
-                      name: prev?.name ?? "",
-                      latitude: prev?.latitude ?? 0,
-                      longitude: prev?.longitude ?? 0,
-                    }));
-                  }}
-                  onTitleChange={(val) => {
-                    setSearchLocation((prev) => ({
-                      ...prev,
-                      name: val,
-                      id: prev?.id ?? "",
-                      latitude: prev?.latitude ?? 0,
-                      longitude: prev?.longitude ?? 0,
-                    }));
-                  }}
-                  title={searchLocation.name}
-                />
-                {editable && AddLocationDropdown && currentPage.projectId ? (
-                  <div className="p-4 ml-auto">
-                    <AddLocationDropdown
-                      data={{
-                        type: "Feature",
-                        geometry: {
-                          type: "Point",
-                          coordinates: [
-                            searchLocation.longitude,
-                            searchLocation.latitude,
-                          ],
-                        },
-                        properties: {},
-                      }}
-                    />
-                  </div>
-                ) : null}
-              </div>
-            </div>
-          ) : null}
-
-          {currentPage.contentViewType !== "text" ? (
-            <div className="relative flex-1 overflow-hidden hidden md:flex">
-              {renderMap()}
-            </div>
-          ) : null}
+          </Map>
         </CustomBlockContext.Provider>
       </form>
     </Form>
@@ -399,5 +248,87 @@ export function MapForm({
 
 MapForm.displayName = "MapForm";
 
-export { MapProvider, useMap };
+export { MapformProvider, useMapform, SearchLocationMarker };
 export type { ViewState, MBMap };
+export type { MapboxEvent } from "mapbox-gl";
+
+// const pinBlocks = currentPage.content?.content.filter((c) => {
+//   return c.type === "pin";
+// });
+
+// const AddLocationDropdown = editFields?.AddLocationDropdown;
+
+/* {searchLocation ? (
+  <div
+    className={cn(
+      "group absolute bg-background z-10 w-full overflow-hidden",
+      currentPage.contentViewType === "text"
+        ? "h-full z-10"
+        : currentPage.contentViewType === "split"
+          ? `h-full ${contentWidth}`
+          : `h-initial ${contentWidth} rounded-lg shadow-lg md:m-2`
+    )}
+    ref={drawerRef}
+  >
+    <div
+      className={cn(
+        "h-full w-full flex flex-col prose max-md:max-w-full mx-auto relative",
+        {
+          "px-9": editable && currentPage.contentViewType === "text",
+          "pl-9": editable && currentPage.contentViewType !== "text",
+          "max-h-[300px]": currentPage.contentViewType === "map",
+        }
+      )}
+    >
+      <Blocknote
+        currentPage={currentPage}
+        description={searchLocation.description ?? undefined}
+        // Need key to force re-render, otherwise Blocknote state doesn't
+        // change when changing steps
+        editable={editable}
+        key={searchLocation.id}
+        locationEditorProps={{
+          onClose: () => {
+            setSearchLocation(null);
+          },
+        }}
+        onDescriptionChange={(val) => {
+          setSearchLocation((prev) => ({
+            id: prev?.id ?? "",
+            description: val,
+            name: prev?.name ?? "",
+            latitude: prev?.latitude ?? 0,
+            longitude: prev?.longitude ?? 0,
+          }));
+        }}
+        onTitleChange={(val) => {
+          setSearchLocation((prev) => ({
+            ...prev,
+            name: val,
+            id: prev?.id ?? "",
+            latitude: prev?.latitude ?? 0,
+            longitude: prev?.longitude ?? 0,
+          }));
+        }}
+        title={searchLocation.name}
+      />
+      {editable && AddLocationDropdown && currentPage.projectId ? (
+        <div className="p-4 ml-auto">
+          <AddLocationDropdown
+            data={{
+              type: "Feature",
+              geometry: {
+                type: "Point",
+                coordinates: [
+                  searchLocation.longitude,
+                  searchLocation.latitude,
+                ],
+              },
+              properties: {},
+            }}
+          />
+        </div>
+      ) : null}
+    </div>
+  </div>
+) : null} */

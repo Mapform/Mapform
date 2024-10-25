@@ -4,7 +4,7 @@ import "@mapform/ui/globals.css";
 import { cn } from "@mapform/lib/classnames";
 import Providers from "~/components/providers";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ["latin"], display: "swap" });
 
 export const metadata: Metadata = {
   title: "Create Next App",

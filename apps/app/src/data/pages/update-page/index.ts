@@ -19,7 +19,7 @@ import { authAction } from "~/lib/safe-action";
 import { updatePageSchema } from "./schema";
 
 const mapBlockTypeToDataType = (
-  blockType: InputCustomBlockTypes
+  blockType: InputCustomBlockTypes,
 ): Column["type"] => {
   switch (blockType) {
     case "textInput":
@@ -33,7 +33,7 @@ const mapBlockTypeToDataType = (
 
 const flattenBlockNoteContent = (
   content: DocumentContent,
-  flatBlocks: CustomBlock[] = []
+  flatBlocks: CustomBlock[] = [],
 ) => {
   for (const block of content) {
     flatBlocks.push(block);
@@ -171,14 +171,14 @@ export const updatePage = authAction
           tx.delete(columns).where(
             inArray(
               columns.id,
-              inputBlocksToDelete.map((col) => col.columnId)
-            )
+              inputBlocksToDelete.map((col) => col.columnId),
+            ),
           ),
         ]);
       });
 
       revalidatePath(
-        `/${page.project.teamspace.workspace.id}/${page.project.teamspace.id}/projects/${page.project.id}`
+        `/${page.project.teamspace.workspace.id}/${page.project.teamspace.id}/projects/${page.project.id}`,
       );
-    }
+    },
   );

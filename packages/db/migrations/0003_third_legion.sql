@@ -1,1 +1,0 @@
-ALTER TABLE "project" ALTER COLUMN "dataset_id" DROP NOT NULL;

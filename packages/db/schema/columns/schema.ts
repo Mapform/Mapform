@@ -18,6 +18,7 @@ export const columnTypeEnum = pgEnum("column_type", [
   "number",
   "date",
   "point",
+  "richtext",
 ]);
 
 export const columns = pgTable(
@@ -32,7 +33,7 @@ export const columns = pgTable(
 
     // These fields are only used when the dataset belongs to a form
     blockNoteId: text("block_note_id").unique(),
-    pageId: uuid("page_id").references(() => pages.id),
+    pageId: uuid("page_id").references(() => pages.id, { onDelete: "cascade" }),
 
     createdAt: timestamp("created_at", { withTimezone: true })
       .defaultNow()
@@ -44,7 +45,7 @@ export const columns = pgTable(
   },
   (t) => ({
     unq: unique().on(t.datasetId, t.name),
-  })
+  }),
 );
 
 export const columnsRelations = relations(columns, ({ one, many }) => ({

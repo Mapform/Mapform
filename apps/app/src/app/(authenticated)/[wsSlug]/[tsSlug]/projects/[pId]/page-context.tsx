@@ -6,7 +6,7 @@ import {
   // eslint-disable-next-line import/named -- It will work when React 19 is released
   useOptimistic,
 } from "react";
-import { useMap } from "@mapform/mapform";
+import { useMapform } from "@mapform/mapform";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import type { PageData } from "~/data/datalayer/get-page-data";
 import type { PageWithLayers } from "~/data/pages/get-page-with-layers";
@@ -20,13 +20,13 @@ export interface PageContextProps {
   updatePage: (action: PageWithLayers) => void;
   updatePageData: (action: PageData) => void;
   setActivePage: (
-    page?: Pick<PageWithLayers, "id" | "center" | "zoom" | "pitch" | "bearing">
+    page?: Pick<PageWithLayers, "id" | "center" | "zoom" | "pitch" | "bearing">,
   ) => void;
   setEditMode: (open: boolean) => void;
 }
 
 export const PageContext = createContext<PageContextProps>(
-  {} as PageContextProps
+  {} as PageContextProps,
 );
 export const usePage = () => useContext(PageContext);
 
@@ -41,7 +41,7 @@ export function PageProvider({
   availableDatasets: ListAvailableDatasets;
   children: React.ReactNode;
 }) {
-  const { map } = useMap();
+  const { map } = useMapform();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();

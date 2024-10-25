@@ -1,7 +1,6 @@
 // eslint-disable-next-line import/named -- It will work when React 19 is released
 import { cache } from "react";
-import { cn } from "@mapform/lib/classnames";
-import { MapProvider } from "@mapform/mapform";
+import { MapformProvider } from "@mapform/mapform";
 import { notFound, redirect } from "next/navigation";
 import { getPageData } from "~/data/datalayer/get-page-data";
 import { getPageWithLayers } from "~/data/pages/get-page-with-layers";
@@ -10,6 +9,7 @@ import { listAvailableDatasets } from "~/data/datasets/list-available-datasets";
 import { ProjectProvider } from "./project-context";
 import Project from "./project";
 import { PageProvider } from "./page-context";
+import { Drawer } from "./drawer";
 
 const fetchProjectWithPages = cache(async (id: string) => {
   const projectWithPagesResponse = await getProjectWithPages({
@@ -75,7 +75,7 @@ export default async function ProjectPage({
   params: { wsSlug: string; tsSlug: string; pId: string };
   searchParams?: {
     page?: string;
-    edit?: string;
+    layer?: string;
   };
 }) {
   const { pId } = params;
@@ -84,35 +84,36 @@ export default async function ProjectPage({
     await Promise.all([
       fetchProjectWithPages(pId),
       fetchPageWithLayers(searchParams?.page),
-      searchParams?.edit ? fetchAvailableDatasets(pId) : undefined,
+      fetchAvailableDatasets(pId),
       fetchPageData(searchParams?.page),
     ]);
 
+  const fallbackPage = projectWithPages.pages[0]?.id;
+
   if (!pageWithLayers) {
+    if (!fallbackPage) {
+      return notFound();
+    }
+
     redirect(
-      `/${params.wsSlug}/${params.tsSlug}/projects/${pId}?page=${projectWithPages.pages[0]?.id}`
+      `/${params.wsSlug}/${params.tsSlug}/projects/${pId}?page=${projectWithPages.pages[0]?.id}`,
     );
   }
 
   return (
-    <div className="-m-4 flex flex-col flex-1 overflow-hidden">
-      <MapProvider>
-        <ProjectProvider projectWithPages={projectWithPages}>
-          <PageProvider
-            availableDatasets={availableDatasets ?? []}
-            pageData={pageData}
-            pageWithLayers={pageWithLayers}
-          >
-            <div
-              className={cn(
-                "flex flex-col flex-1 overflow-hidden bg-background"
-              )}
-            >
-              <Project />
-            </div>
-          </PageProvider>
-        </ProjectProvider>
-      </MapProvider>
-    </div>
+    <MapformProvider>
+      <ProjectProvider projectWithPages={projectWithPages}>
+        <PageProvider
+          availableDatasets={availableDatasets ?? []}
+          pageData={pageData}
+          pageWithLayers={pageWithLayers}
+        >
+          <div className="bg-background -m-4 flex flex-1 flex-col overflow-hidden">
+            <Project />
+          </div>
+          <Drawer />
+        </PageProvider>
+      </ProjectProvider>
+    </MapformProvider>
   );
 }

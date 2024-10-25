@@ -13,6 +13,7 @@
   "include": [
     "src",
     "global.d.ts",
+    "./tailwind.config.ts"
   ],
   "exclude": [
     "node_modules",

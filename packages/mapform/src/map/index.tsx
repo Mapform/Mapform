@@ -1,57 +1,23 @@
 /* eslint-disable import/no-named-as-default-member -- It's cool yo */
-import {
-  useRef,
-  useState,
-  useEffect,
-  useContext,
-  createContext,
-  type Dispatch,
-  type SetStateAction,
-  useMemo,
-} from "react";
+import { useEffect, useMemo } from "react";
 import mapboxgl from "mapbox-gl";
 import { cn } from "@mapform/lib/classnames";
 import type { FeatureCollection } from "geojson";
 import type { PageData, ViewState } from "@mapform/map-utils/types";
+import { useMeasure } from "@mapform/lib/hooks/use-measure";
+import { usePrevious } from "@mapform/lib/hooks/use-previous";
+import { useMapform } from "../context";
+import { SearchLocationMarker } from "./search-location-marker";
 
 const accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
-
-export type MBMap = mapboxgl.Map;
-
-interface MapProviderContextProps {
-  map?: MBMap;
-  setMap: Dispatch<SetStateAction<MBMap | undefined>>;
-}
-
-export const MapProviderContext = createContext<MapProviderContextProps>(
-  {} as MapProviderContextProps
-);
-export const useMap = () => useContext(MapProviderContext);
-
-export function MapProvider({ children }: { children: React.ReactNode }) {
-  const [map, setMap] = useState<MBMap>();
-
-  return (
-    <MapProviderContext.Provider
-      value={{
-        map,
-        setMap,
-      }}
-    >
-      {children}
-    </MapProviderContext.Provider>
-  );
-}
 
 interface MapProps {
   pageData?: PageData;
   editable?: boolean;
+  mapPadding: ViewState["padding"];
   onLoad?: () => void;
   initialViewState: ViewState;
-  marker?: {
-    latitude: number;
-    longitude: number;
-  };
+  children?: React.ReactNode;
 }
 
 /**
@@ -63,13 +29,16 @@ interface MapProps {
 export function Map({
   initialViewState,
   editable = false,
+  mapPadding,
   pageData,
   onLoad,
-  marker,
+  children,
 }: MapProps) {
-  const mapContainer = useRef<HTMLDivElement>(null);
-  const { map, setMap } = useMap();
-  const markerEl = useRef<mapboxgl.Marker | null>(null);
+  // const mapContainer = useRef<HTMLDivElement>(null);
+  const { map, setMap } = useMapform();
+  // Condition in usePrevious resolves issue where map padding is not updated on first render
+  const prevMapPadding = usePrevious(map ? mapPadding : undefined);
+  const { ref: mapContainer, bounds } = useMeasure<HTMLDivElement>();
 
   const geojson: FeatureCollection = useMemo(
     () => ({
@@ -85,7 +54,7 @@ export function Map({
         },
       })),
     }),
-    [pageData]
+    [pageData],
   );
 
   useEffect(() => {
@@ -108,16 +77,11 @@ export function Map({
         bearing: initialViewState.bearing,
         maxZoom: 20,
         logoPosition: "bottom-right",
-        fitBoundsOptions: {
-          padding: { top: 10, bottom: 25, left: 800, right: 5 },
-        },
-      });
-
-      m.setPadding({
-        top: 0,
-        bottom: 0,
-        left: 360,
-        right: 0,
+        // We override the internal resize observer because we are using our own
+        trackResize: false,
+        // fitBoundsOptions: {
+        //   padding: { top: 10, bottom: 25, left: 800, right: 5 },
+        // },
       });
 
       // Add zoom controls
@@ -135,7 +99,23 @@ export function Map({
         setMap(undefined);
       };
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Just run on initial render
   }, []);
+
+  useEffect(() => {
+    if (map && JSON.stringify(prevMapPadding) !== JSON.stringify(mapPadding)) {
+      map.easeTo({
+        padding: mapPadding,
+        duration: 750,
+      });
+    }
+  }, [map, mapPadding, prevMapPadding]);
+
+  useEffect(() => {
+    if (map) {
+      map.resize();
+    }
+  }, [map, bounds]);
 
   /**
    * Update layers
@@ -169,34 +149,16 @@ export function Map({
     }
   }, [map, geojson]);
 
-  /**
-   * Update marker
-   */
-  useEffect(() => {
-    const currentLngLat = markerEl.current?.getLngLat();
-    if (
-      map &&
-      marker &&
-      currentLngLat?.lat !== marker.latitude &&
-      currentLngLat?.lng !== marker.longitude
-    ) {
-      markerEl.current?.remove();
-      markerEl.current = new mapboxgl.Marker()
-        .setLngLat([marker.longitude, marker.latitude])
-        .addTo(map);
-    }
-
-    if (map && !marker) {
-      markerEl.current?.remove();
-    }
-  }, [map, marker]);
-
   return (
     <div
       className={cn("flex-1", {
         "rounded-md": editable,
       })}
       ref={mapContainer}
-    />
+    >
+      {children}
+    </div>
   );
 }
+
+export { SearchLocationMarker };

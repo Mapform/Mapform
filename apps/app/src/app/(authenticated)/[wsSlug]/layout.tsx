@@ -1,36 +1,17 @@
-import { notFound } from "next/navigation";
-import { StandardLayout } from "~/components/standard-layout";
-import { getWorkspaceWithTeamspaces } from "~/data/workspaces/get-workspace-with-teamspaces";
-import { BottomContent, TopContent } from "./layout-content";
+import { RootLayout } from "./root-layout";
 
-export default async function Layout({
-  children,
+export default async function WorkspaceLayout({
   params,
+  children,
+  nav,
 }: {
-  children: React.ReactNode;
   params: { wsSlug: string };
+  children: React.ReactNode;
+  nav?: React.ReactNode;
 }) {
-  const getWorkspaceWithTeamspacesResponse = await getWorkspaceWithTeamspaces({
-    slug: params.wsSlug,
-  });
-  const workspaceWithTeamspaces = getWorkspaceWithTeamspacesResponse?.data;
-
-  if (!workspaceWithTeamspaces) {
-    return notFound();
-  }
-
   return (
-    <StandardLayout
-      bottomContent={<BottomContent />}
-      currentWorkspaceSlug={params.wsSlug}
-      topContent={
-        <TopContent
-          workspaceSlug={params.wsSlug}
-          workspaceWithTeamspaces={workspaceWithTeamspaces}
-        />
-      }
-    >
+    <RootLayout workspaceSlug={params.wsSlug} navSlot={nav}>
       {children}
-    </StandardLayout>
+    </RootLayout>
   );
 }

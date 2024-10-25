@@ -10,31 +10,12 @@ function Drawer({
 }: React.ComponentProps<typeof DrawerPrimitive.Root>) {
   return (
     <DrawerPrimitive.Root
-      direction="left"
-      // Allows interacting with content outside the drawer
-      modal={false}
       shouldScaleBackground={shouldScaleBackground}
       {...props}
     />
   );
 }
 Drawer.displayName = "Drawer";
-
-function NestedDrawer({
-  shouldScaleBackground = true,
-  ...props
-}: React.ComponentProps<typeof DrawerPrimitive.Root>) {
-  return (
-    <DrawerPrimitive.NestedRoot
-      direction="left"
-      // Allows interacting with content outside the drawer
-      modal={false}
-      shouldScaleBackground={shouldScaleBackground}
-      {...props}
-    />
-  );
-}
-NestedDrawer.displayName = "NestedDrawer";
 
 const DrawerTrigger = DrawerPrimitive.Trigger;
 
@@ -59,15 +40,16 @@ const DrawerContent = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof DrawerPrimitive.Content>
 >(({ className, children, ...props }, ref) => (
   <DrawerPortal>
-    {/* <DrawerOverlay /> */}
+    <DrawerOverlay />
     <DrawerPrimitive.Content
       className={cn(
-        "z-50 bg-stone-50 flex flex-col h-full w-[300px] overflow-hidden fixed bottom-0 left-0 border-r shadow-lg",
-        className
+        "bg-background fixed inset-x-0 bottom-0 z-50 mt-24 flex h-auto flex-col rounded-t-[10px] border",
+        className,
       )}
       ref={ref}
       {...props}
     >
+      <div className="bg-muted mx-auto mt-4 h-2 w-[100px] rounded-full" />
       {children}
     </DrawerPrimitive.Content>
   </DrawerPortal>
@@ -107,7 +89,7 @@ const DrawerTitle = React.forwardRef<
   <DrawerPrimitive.Title
     className={cn(
       "text-lg font-semibold leading-none tracking-tight",
-      className
+      className,
     )}
     ref={ref}
     {...props}
@@ -120,7 +102,7 @@ const DrawerDescription = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof DrawerPrimitive.Description>
 >(({ className, ...props }, ref) => (
   <DrawerPrimitive.Description
-    className={cn("text-sm text-muted-foreground", className)}
+    className={cn("text-muted-foreground text-sm", className)}
     ref={ref}
     {...props}
   />
@@ -139,5 +121,4 @@ export {
   DrawerTitle,
   DrawerDescription,
   DrawerPrimitive,
-  NestedDrawer,
 };

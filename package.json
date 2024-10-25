@@ -13,6 +13,7 @@
     "@mapform/eslint-config": "workspace:*",
     "@mapform/typescript-config": "workspace:*",
     "prettier": "^3.2.5",
+    "prettier-plugin-tailwindcss": "^0.6.8",
     "turbo": "^2.1.2"
   },
   "packageManager": "pnpm@8.9.0",
