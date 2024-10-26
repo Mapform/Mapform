@@ -11,7 +11,7 @@ export default function Nav({
       actions={<CreateDialog tsSlug={params.tsSlug} />}
       tabs={[
         {
-          name: "Forms",
+          name: "Projects",
           href: `/${params.wsSlug}/${params.tsSlug}`,
         },
         {

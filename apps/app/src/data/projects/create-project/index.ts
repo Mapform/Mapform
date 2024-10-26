@@ -1,6 +1,7 @@
 "use server";
 
 import { db } from "@mapform/db";
+import { revalidatePath } from "next/cache";
 import { datasets, pages, projects } from "@mapform/db/schema";
 import { authAction } from "~/lib/safe-action";
 import { INITIAL_VIEW_STATE } from "~/constants/view-state";
@@ -56,6 +57,8 @@ export const createProject = authAction
           y: INITIAL_VIEW_STATE.latitude,
         },
       });
+
+      revalidatePath("/[wsSlug]/[tsSlug]", "page");
 
       return project;
     });
