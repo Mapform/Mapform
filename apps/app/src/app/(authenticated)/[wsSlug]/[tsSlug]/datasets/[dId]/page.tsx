@@ -2,8 +2,9 @@ import { format } from "date-fns";
 import { Badge } from "@mapform/ui/components/badge";
 // import { Tabs } from "~/components/tabs";
 import { getDataset } from "~/data/datasets/get-dataset";
+import { DataTable } from "./data-table";
 
-export default async function Submissions({
+export default async function DatasetPage({
   params,
 }: {
   params: { wsSlug: string; tsSlug: string; dId: string };
@@ -15,21 +16,7 @@ export default async function Submissions({
     return null;
   }
 
-  const columns = dataset.columns;
-  const rowsWithCellValues = dataset.rows.map((row) => {
-    const rowCells = row.cells;
-
-    return {
-      ...row,
-      cells: columns.map((column) => {
-        const cell = rowCells.find((rowCell) => rowCell.columnId === column.id);
-
-        return cell;
-      }),
-    };
-  });
-
-  return null;
+  return <DataTable dataset={dataset} />;
 
   // return (
   //   <Tabs

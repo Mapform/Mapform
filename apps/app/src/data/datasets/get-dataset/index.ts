@@ -34,3 +34,7 @@ export const getDataset = authAction
       },
     });
   });
+
+export type GetDataset = NonNullable<
+  NonNullable<Awaited<ReturnType<typeof getDataset>>>["data"]
+>;
