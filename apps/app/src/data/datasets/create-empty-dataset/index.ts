@@ -50,6 +50,7 @@ export const createEmptyDataset = authAction
       };
     });
 
+    revalidatePath("/[wsSlug]/[tsSlug]/datasets", "page");
     revalidatePath("/[wsSlug]/[tsSlug]/projects/[pId]/project", "page");
 
     return {

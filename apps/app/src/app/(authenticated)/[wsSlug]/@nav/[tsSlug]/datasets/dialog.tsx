@@ -24,27 +24,27 @@ import { Input } from "@mapform/ui/components/input";
 import { toast } from "@mapform/ui/components/toaster";
 import { useAction } from "next-safe-action/hooks";
 import { useState } from "react";
-import { createProject } from "~/data/projects/create-project";
+import { createEmptyDataset } from "~/data/datasets/create-empty-dataset";
 import {
-  createProjectSchema,
-  type CreateProjectSchema,
-} from "~/data/projects/create-project/schema";
+  createEmptyDatasetSchema,
+  type CreateEmptyDatasetSchema,
+} from "~/data/datasets/create-empty-dataset/schema";
 import { useRootLayout } from "../../../root-layout/context";
 
 export function CreateDialog({ tsSlug }: { tsSlug: string }) {
   const [open, setOpen] = useState(false);
   const { workspaceDirectory } = useRootLayout();
-  const teamspaceId = workspaceDirectory?.teamspaces.find(
+  const teamspaceId = workspaceDirectory.teamspaces.find(
     (ts) => ts.slug === tsSlug,
   )?.id;
-  const form = useForm<CreateProjectSchema>({
+  const form = useForm<CreateEmptyDatasetSchema>({
     defaultValues: {
       name: "",
       teamspaceId,
     },
-    resolver: zodResolver(createProjectSchema),
+    resolver: zodResolver(createEmptyDatasetSchema),
   });
-  const { execute, status } = useAction(createProject, {
+  const { execute, status } = useAction(createEmptyDataset, {
     onError: ({ error }) => {
       if (error.serverError) {
         toast(error.serverError);
@@ -52,17 +52,17 @@ export function CreateDialog({ tsSlug }: { tsSlug: string }) {
       }
 
       if (error.validationErrors) {
-        toast("There was an error creating the project");
+        toast("There was an error creating the dataset");
       }
     },
     onSuccess: () => {
       form.reset();
-      toast("Your project has been created.");
+      toast("Your dataset has been created.");
       setOpen(false);
     },
   });
 
-  const onSubmit = (values: CreateProjectSchema) => {
+  const onSubmit = (values: CreateEmptyDatasetSchema) => {
     execute(values);
   };
 
@@ -75,9 +75,9 @@ export function CreateDialog({ tsSlug }: { tsSlug: string }) {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <DialogHeader>
-              <DialogTitle>Create Project</DialogTitle>
+              <DialogTitle>Create Dataset</DialogTitle>
               <DialogDescription>
-                Collect and display location data with a new project.
+                Store geospatial and tabular data for your projects.
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4 py-6">
@@ -92,7 +92,7 @@ export function CreateDialog({ tsSlug }: { tsSlug: string }) {
                         disabled={field.disabled}
                         name={field.name}
                         onChange={field.onChange}
-                        placeholder="My MapForm"
+                        placeholder="My Dataset"
                         ref={field.ref}
                         value={field.value}
                       />
