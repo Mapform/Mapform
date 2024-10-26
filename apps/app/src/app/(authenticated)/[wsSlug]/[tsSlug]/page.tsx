@@ -20,9 +20,9 @@ export default async function WorkspaceForms({
   return (
     <ul className="flex flex-wrap gap-4">
       {teamspace.projects.map((project) => (
-        <li className="overflow-hidden rounded-xl border w-72" key={project.id}>
+        <li className="w-72 overflow-hidden rounded-xl border" key={project.id}>
           <Link
-            href={`/orgs/${params.wsSlug}/workspaces/${params.tsSlug}/forms/${project.id}`}
+            href={`/${params.wsSlug}/${params.tsSlug}/projects/${project.id}`}
           >
             <div className="flex items-center gap-x-4 border-b border-gray-900/5 bg-stone-50 p-6">
               {project.name}

@@ -1,6 +1,6 @@
 import { RootLayout } from "./root-layout";
 
-export default async function WorkspaceLayout({
+export default function WorkspaceLayout({
   params,
   children,
   nav,
@@ -10,7 +10,7 @@ export default async function WorkspaceLayout({
   nav?: React.ReactNode;
 }) {
   return (
-    <RootLayout workspaceSlug={params.wsSlug} navSlot={nav}>
+    <RootLayout navSlot={nav} workspaceSlug={params.wsSlug}>
       {children}
     </RootLayout>
   );
