@@ -1,5 +1,6 @@
 import { getDataset } from "~/data/datasets/get-dataset";
 import { DataTable } from "~/components/data-table";
+import { Modal } from "./modal";
 
 export default async function DatasetPage({
   params,
@@ -13,5 +14,9 @@ export default async function DatasetPage({
     return null;
   }
 
-  return <DataTable dataset={dataset} />;
+  return (
+    <Modal>
+      <DataTable dataset={dataset} />
+    </Modal>
+  );
 }

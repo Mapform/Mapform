@@ -163,6 +163,7 @@ export function Item({ layer }: ItemProps) {
                           >
                             <Link
                               href={`/${params.wsSlug}/${params.tsSlug}/datasets/${layer.datasetId}`}
+                              passHref
                             >
                               <ArrowUpRightIcon className="size-4 flex-shrink-0" />
                               View Database
