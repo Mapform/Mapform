@@ -17,7 +17,7 @@ export interface ProjectContextProps {
 }
 
 export const ProjectContext = createContext<ProjectContextProps>(
-  {} as ProjectContextProps
+  {} as ProjectContextProps,
 );
 export const useProject = () => useContext(ProjectContext);
 
@@ -52,7 +52,7 @@ export function ProjectProvider({
   useEffect(() => {
     if (projectWithPages.pages[0] && !page) {
       router.push(
-        `${pathname}?${createQueryString("p", projectWithPages.pages[0].id)}`
+        `${pathname}?${createQueryString("p", projectWithPages.pages[0].id)}`,
       );
     }
   }, [page, projectWithPages.pages, pathname, router, createQueryString]);
@@ -60,7 +60,7 @@ export function ProjectProvider({
   useEffect(() => {
     if (projectWithPages.pages[0] && !page) {
       router.push(
-        `${pathname}?${createQueryString("page", projectWithPages.pages[0].id)}`
+        `${pathname}?${createQueryString("page", projectWithPages.pages[0].id)}`,
       );
     }
   }, [page, projectWithPages.pages, pathname, router, createQueryString]);

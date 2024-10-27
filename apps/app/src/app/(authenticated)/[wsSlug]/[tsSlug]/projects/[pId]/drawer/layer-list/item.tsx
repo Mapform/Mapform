@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  ArrowUpRightIcon,
   EllipsisIcon,
   Layers2Icon,
   Settings2Icon,
@@ -19,6 +20,7 @@ import {
   DropdownMenuItem,
   DropdownMenuGroup,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from "@mapform/ui/components/dropdown-menu";
 import {
   AlertDialog,
@@ -41,6 +43,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@mapform/ui/components/tooltip";
+import Link from "next/link";
+import { useParams } from "next/navigation";
 import { deleteLayer } from "~/data/layers/delete-layer";
 import { deletePageLayer } from "~/data/layers-to-pages/delete-page-layer";
 import { DragItem, DragHandle } from "~/components/draggable";
@@ -64,6 +68,7 @@ export function Item({ layer }: ItemProps) {
   const [layerPopoverOpen, setLayerPopoverOpen] = useState(false);
   const { execute: executeDeleteLayer } = useAction(deleteLayer);
   const { execute: executeDeletePageLayer } = useAction(deletePageLayer);
+  const params = useParams<{ wsSlug: string; tsSlug: string; pId: string }>();
 
   const isLastPage = optimisticProjectWithPages.pages.length <= 1;
 
@@ -151,6 +156,20 @@ export function Item({ layer }: ItemProps) {
                         </DropdownMenuTrigger>
                       </TooltipTrigger>
                       <DropdownMenuContent className="w-[200px] overflow-hidden">
+                        <DropdownMenuGroup>
+                          <DropdownMenuItem
+                            asChild
+                            className="flex items-center gap-2"
+                          >
+                            <Link
+                              href={`/${params.wsSlug}/${params.tsSlug}/datasets/${layer.datasetId}`}
+                            >
+                              <ArrowUpRightIcon className="size-4 flex-shrink-0" />
+                              View Database
+                            </Link>
+                          </DropdownMenuItem>
+                        </DropdownMenuGroup>
+                        <DropdownMenuSeparator />
                         <DropdownMenuGroup>
                           <DropdownMenuItem
                             className="flex items-center gap-2"
