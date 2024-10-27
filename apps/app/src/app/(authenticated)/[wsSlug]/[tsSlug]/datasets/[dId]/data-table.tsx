@@ -1,6 +1,7 @@
 /* eslint-disable react/no-unstable-nested-components */
 "use client";
 
+import { useMemo } from "react";
 import type { ColumnDef } from "@tanstack/react-table";
 import {
   flexRender,
@@ -23,11 +24,11 @@ interface TableProps {
 }
 
 export function DataTable({ dataset }: TableProps) {
-  const columns: ColumnDef<GetDataset["columns"]>[] = dataset.columns.map(
-    (column) => {
-      const Icon = COLUMN_ICONS[column.type];
+  const columns: ColumnDef<GetDataset["columns"]>[] = useMemo(
+    () =>
+      dataset.columns.map((column) => {
+        const Icon = COLUMN_ICONS[column.type];
 
-      if (column.type === "point") {
         return {
           accessorKey: column.id,
           header: () => (
@@ -36,33 +37,28 @@ export function DataTable({ dataset }: TableProps) {
             </span>
           ),
           cell: (props) => {
-            const value =
-              props.getValue() as GetDataset["rows"][number]["cells"][number]["pointCell"];
+            const value = props.getValue();
 
-            if (!value) {
-              return null;
+            if (column.type === "point") {
+              const pointVal =
+                value as GetDataset["rows"][number]["cells"][number]["pointCell"];
+
+              if (!pointVal) {
+                return null;
+              }
+
+              return (
+                <span className="font-mono">
+                  {pointVal.x},{pointVal.y}
+                </span>
+              );
             }
 
-            return (
-              <span>
-                {value.x}
-                {", "}
-                {value.y}
-              </span>
-            );
+            return value;
           },
         };
-      }
-
-      return {
-        accessorKey: column.id,
-        header: () => (
-          <span className="flex items-center gap-1.5">
-            <Icon className="size-4" /> {column.name}
-          </span>
-        ),
-      };
-    },
+      }),
+    [dataset.columns],
   );
 
   const rows = dataset.rows.map((row) => {
