@@ -23,6 +23,7 @@ export const getDataset = authAction
                   columns: {
                     id: true,
                   },
+                  // TODO: Can remove this workaround once this is fixed: https://github.com/drizzle-team/drizzle-orm/pull/2778#issuecomment-2408519850
                   extras: {
                     x: sql<number>`ST_X(${pointCells.value})`.as("x"),
                     y: sql<number>`ST_Y(${pointCells.value})`.as("y"),

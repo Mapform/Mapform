@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unstable-nested-components */
 "use client";
 
 import type { ColumnDef } from "@tanstack/react-table";
@@ -22,31 +23,55 @@ interface TableProps {
 
 export function DataTable({ dataset }: TableProps) {
   const columns: ColumnDef<GetDataset["columns"]>[] = dataset.columns.map(
-    (column) => ({
-      accessorKey: column.id,
-      header: column.name,
-    }),
+    (column) => {
+      if (column.type === "point") {
+        return {
+          accessorKey: column.id,
+          header: column.name,
+          cell: (props) => {
+            const value =
+              props.getValue() as GetDataset["rows"][number]["cells"][number]["pointCell"];
+
+            if (!value) {
+              return null;
+            }
+
+            return (
+              <span>
+                {value.x}
+                {", "}
+                {value.y}
+              </span>
+            );
+          },
+        };
+      }
+
+      return {
+        accessorKey: column.id,
+        header: column.name,
+      };
+    },
   );
 
   const rows = dataset.rows.map((row) => {
     const rowCells = row.cells;
 
-    return rowCells.reduce<Record<string, GetDataset["rows"][0]["cells"][0]>>(
-      (acc, cell) => {
-        acc[cell.columnId] =
-          cell.stringCell?.value ??
-          cell.numberCell?.value ??
-          cell.booleanCell?.value ??
-          cell.dateCell?.value ??
-          (cell.pointCell && {
-            x: cell.pointCell.x,
-            y: cell.pointCell.y,
-          });
+    return rowCells.reduce<
+      Record<string, GetDataset["rows"][number]["cells"][number]>
+    >((acc, cell) => {
+      acc[cell.columnId] =
+        cell.stringCell?.value ??
+        cell.numberCell?.value ??
+        cell.booleanCell?.value ??
+        cell.dateCell?.value ??
+        (cell.pointCell && {
+          x: cell.pointCell.x,
+          y: cell.pointCell.y,
+        });
 
-        return acc;
-      },
-      {},
-    );
+      return acc;
+    }, {});
   });
 
   const table = useReactTable({
