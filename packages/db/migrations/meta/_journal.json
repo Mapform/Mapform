@@ -15,6 +15,13 @@
       "when": 1729942398620,
       "tag": "0001_unique_rattler",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1730024889637,
+      "tag": "0002_furry_darwin",
+      "breakpoints": true
     }
   ]
 }

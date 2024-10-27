@@ -8,6 +8,7 @@ import {
   boolean,
   numeric,
   geometry,
+  index,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { rows } from "../rows";
@@ -119,14 +120,20 @@ export const booleanCellsRelations = relations(booleanCells, ({ one }) => ({
 /**
  * POINT CELL
  */
-export const pointCells = pgTable("point_cell", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  value: geometry("value", { type: "point", mode: "xy" }).notNull(),
+export const pointCells = pgTable(
+  "point_cell",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    value: geometry("value", { type: "point", mode: "xy" }).notNull(),
 
-  cellId: uuid("cell_id")
-    .notNull()
-    .references(() => cells.id, { onDelete: "cascade" }),
-});
+    cellId: uuid("cell_id")
+      .notNull()
+      .references(() => cells.id, { onDelete: "cascade" }),
+  },
+  (t) => ({
+    spatialIndex: index("point_spatial_index").using("gist", t.value),
+  }),
+);
 
 export const pointCellsRelations = relations(pointCells, ({ one }) => ({
   cell: one(cells, {
