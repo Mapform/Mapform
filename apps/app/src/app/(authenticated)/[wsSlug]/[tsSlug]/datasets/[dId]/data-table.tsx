@@ -16,6 +16,7 @@ import {
   TableRow,
 } from "@mapform/ui/components/table";
 import type { GetDataset } from "~/data/datasets/get-dataset";
+import { COLUMN_ICONS } from "~/constants/column-icons";
 
 interface TableProps {
   dataset: GetDataset;
@@ -24,10 +25,16 @@ interface TableProps {
 export function DataTable({ dataset }: TableProps) {
   const columns: ColumnDef<GetDataset["columns"]>[] = dataset.columns.map(
     (column) => {
+      const Icon = COLUMN_ICONS[column.type];
+
       if (column.type === "point") {
         return {
           accessorKey: column.id,
-          header: column.name,
+          header: () => (
+            <span className="flex items-center gap-1.5">
+              <Icon className="size-4" /> {column.name}
+            </span>
+          ),
           cell: (props) => {
             const value =
               props.getValue() as GetDataset["rows"][number]["cells"][number]["pointCell"];
@@ -49,7 +56,11 @@ export function DataTable({ dataset }: TableProps) {
 
       return {
         accessorKey: column.id,
-        header: column.name,
+        header: () => (
+          <span className="flex items-center gap-1.5">
+            <Icon className="size-4" /> {column.name}
+          </span>
+        ),
       };
     },
   );
