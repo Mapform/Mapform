@@ -38,7 +38,10 @@ export function DataTable({ dataset }: TableProps) {
           cell.numberCell?.value ??
           cell.booleanCell?.value ??
           cell.dateCell?.value ??
-          cell.pointCell?.value;
+          (cell.pointCell && {
+            x: cell.pointCell.x,
+            y: cell.pointCell.y,
+          });
 
         return acc;
       },
