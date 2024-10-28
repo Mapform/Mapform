@@ -9,7 +9,7 @@ export default function TeamspaceLayout({
   return (
     <>
       {children}
-      {/* {modal} */}
+      {modal}
     </>
   );
 }

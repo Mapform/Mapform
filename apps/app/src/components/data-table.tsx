@@ -25,69 +25,7 @@ interface TableProps {
 }
 
 export function DataTable({ dataset }: TableProps) {
-  const columns: ColumnDef<GetDataset["columns"]>[] = useMemo(
-    () => [
-      {
-        id: "select",
-        header: ({ table }) => (
-          <Checkbox
-            aria-label="Select all"
-            checked={
-              table.getIsAllPageRowsSelected() ||
-              (table.getIsSomePageRowsSelected() && "indeterminate")
-            }
-            onCheckedChange={(value) => {
-              table.toggleAllPageRowsSelected(Boolean(value));
-            }}
-          />
-        ),
-        cell: ({ row }) => (
-          <Checkbox
-            aria-label="Select row"
-            checked={row.getIsSelected()}
-            onCheckedChange={(value) => {
-              row.toggleSelected(Boolean(value));
-            }}
-          />
-        ),
-        enableSorting: false,
-        enableHiding: false,
-      },
-      ...dataset.columns.map((column) => {
-        const Icon = COLUMN_ICONS[column.type];
-
-        return {
-          accessorKey: column.id,
-          header: () => (
-            <span className="flex items-center gap-1.5">
-              <Icon className="size-4" /> {column.name}
-            </span>
-          ),
-          cell: (props) => {
-            const value = props.getValue();
-
-            if (column.type === "point") {
-              const pointVal =
-                value as GetDataset["rows"][number]["cells"][number]["pointCell"];
-
-              if (!pointVal) {
-                return null;
-              }
-
-              return (
-                <span className="font-mono">
-                  {pointVal.x},{pointVal.y}
-                </span>
-              );
-            }
-
-            return value;
-          },
-        };
-      }),
-    ],
-    [dataset.columns],
-  );
+  const columns = getColumns(dataset);
 
   const rows = dataset.rows.map((row) => {
     const rowCells = row.cells;
@@ -162,3 +100,68 @@ export function DataTable({ dataset }: TableProps) {
     </div>
   );
 }
+
+const getColumns = (dataset: GetDataset) => {
+  return [
+    {
+      id: "select",
+      header: ({ table }) => (
+        <Checkbox
+          aria-label="Select all"
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && "indeterminate")
+          }
+          onCheckedChange={(value) => {
+            console.log(22222);
+            // table.toggleAllPageRowsSelected(Boolean(value));
+          }}
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          aria-label="Select row"
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => {
+            console.log(1111, row);
+            // row.toggleSelected(Boolean(value));
+          }}
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
+    },
+    ...dataset.columns.map((column) => {
+      const Icon = COLUMN_ICONS[column.type];
+
+      return {
+        accessorKey: column.id,
+        header: () => (
+          <span className="flex items-center gap-1.5">
+            <Icon className="size-4" /> {column.name}
+          </span>
+        ),
+        cell: (props) => {
+          const value = props.getValue();
+
+          if (column.type === "point") {
+            const pointVal =
+              value as GetDataset["rows"][number]["cells"][number]["pointCell"];
+
+            if (!pointVal) {
+              return null;
+            }
+
+            return (
+              <span className="font-mono">
+                {pointVal.x},{pointVal.y}
+              </span>
+            );
+          }
+
+          return value;
+        },
+      };
+    }),
+  ];
+};
