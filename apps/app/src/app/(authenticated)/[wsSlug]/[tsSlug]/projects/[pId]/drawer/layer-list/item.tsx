@@ -165,7 +165,7 @@ export function Item({ layer }: ItemProps) {
                               href={`/${params.wsSlug}/${params.tsSlug}/datasets/${layer.datasetId}`}
                             >
                               <ArrowUpRightIcon className="size-4 flex-shrink-0" />
-                              View Database
+                              View Dataset
                             </Link>
                           </DropdownMenuItem>
                         </DropdownMenuGroup>

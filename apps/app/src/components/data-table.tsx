@@ -16,6 +16,7 @@ import {
   TableHeader,
   TableRow,
 } from "@mapform/ui/components/table";
+import { Checkbox } from "@mapform/ui/components/checkbox";
 import type { GetDataset } from "~/data/datasets/get-dataset";
 import { COLUMN_ICONS } from "~/constants/column-icons";
 
@@ -25,8 +26,34 @@ interface TableProps {
 
 export function DataTable({ dataset }: TableProps) {
   const columns: ColumnDef<GetDataset["columns"]>[] = useMemo(
-    () =>
-      dataset.columns.map((column) => {
+    () => [
+      {
+        id: "select",
+        header: ({ table }) => (
+          <Checkbox
+            aria-label="Select all"
+            checked={
+              table.getIsAllPageRowsSelected() ||
+              (table.getIsSomePageRowsSelected() && "indeterminate")
+            }
+            onCheckedChange={(value) => {
+              table.toggleAllPageRowsSelected(Boolean(value));
+            }}
+          />
+        ),
+        cell: ({ row }) => (
+          <Checkbox
+            aria-label="Select row"
+            checked={row.getIsSelected()}
+            onCheckedChange={(value) => {
+              row.toggleSelected(Boolean(value));
+            }}
+          />
+        ),
+        enableSorting: false,
+        enableHiding: false,
+      },
+      ...dataset.columns.map((column) => {
         const Icon = COLUMN_ICONS[column.type];
 
         return {
@@ -58,6 +85,7 @@ export function DataTable({ dataset }: TableProps) {
           },
         };
       }),
+    ],
     [dataset.columns],
   );
 
