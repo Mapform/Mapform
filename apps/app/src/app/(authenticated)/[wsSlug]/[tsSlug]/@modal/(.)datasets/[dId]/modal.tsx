@@ -16,7 +16,15 @@ export function Modal({ children }: { children: React.ReactNode }) {
       }}
       open
     >
-      <DialogContent>{children}</DialogContent>
+      <DialogContent
+        className="max-w-screen max-h-fit"
+        style={{
+          height: "calc(100vh - 40px)",
+          width: "calc(100vw - 40px)",
+        }}
+      >
+        {children}
+      </DialogContent>
     </Dialog>
   );
 }
