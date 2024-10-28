@@ -17,7 +17,7 @@ export const createProject = authAction
       const [dataset] = await tx
         .insert(datasets)
         .values({
-          name: "Submissions",
+          name: `Responses for ${name}`,
           teamspaceId,
           type: "submissions",
         })

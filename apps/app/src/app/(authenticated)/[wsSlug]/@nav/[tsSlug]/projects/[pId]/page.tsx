@@ -54,7 +54,7 @@ export default async function Nav({
         ...(projectResponse.data?.submissionsDataset.id
           ? [
               {
-                name: "Submissions",
+                name: "Responses",
                 href: `/${params.wsSlug}/${params.tsSlug}/datasets/${projectResponse.data.submissionsDataset.id}`,
               },
             ]
