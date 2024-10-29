@@ -16,10 +16,7 @@ export default async function DatasetPage({
 
   return (
     <Modal>
-      <div className="">
-        <h1>{dataset.name}</h1>
-        <DataTable dataset={dataset} />
-      </div>
+      <DataTable dataset={dataset} />
     </Modal>
   );
 }

@@ -17,14 +17,19 @@ import {
   TableRow,
 } from "@mapform/ui/components/table";
 import { Checkbox } from "@mapform/ui/components/checkbox";
-import type { GetDataset } from "~/data/datasets/get-dataset";
+import { Button } from "@mapform/ui/components/button";
+import { Trash2Icon } from "lucide-react";
+import { useAction } from "next-safe-action/hooks";
+import { deleteRows } from "~/data/rows/delete-rows";
 import { COLUMN_ICONS } from "~/constants/column-icons";
+import type { GetDataset } from "~/data/datasets/get-dataset";
 
 interface TableProps {
   dataset: GetDataset;
 }
 
 export const DataTable = memo(function DataTable({ dataset }: TableProps) {
+  const { execute } = useAction(deleteRows);
   const columns = useMemo(() => getColumns(dataset), [dataset]);
   const rows = useMemo(
     () =>
@@ -34,6 +39,7 @@ export const DataTable = memo(function DataTable({ dataset }: TableProps) {
         return rowCells.reduce<
           Record<string, GetDataset["rows"][number]["cells"][number]>
         >((acc, cell) => {
+          acc["rowId"] = row.id;
           acc[cell.columnId] =
             cell.stringCell?.value ??
             cell.numberCell?.value ??
@@ -54,52 +60,85 @@ export const DataTable = memo(function DataTable({ dataset }: TableProps) {
     data: rows,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    getRowId: (row) => {
+      return row.rowId;
+    },
   });
 
   return (
-    <div className="rounded-md border">
-      <Table>
-        <TableHeader>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => {
-                return (
-                  <TableHead key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
-                  </TableHead>
-                );
-              })}
-            </TableRow>
-          ))}
-        </TableHeader>
-        <TableBody>
-          {table.getRowModel().rows.length ? (
-            table.getRowModel().rows.map((row) => (
-              <TableRow
-                data-state={row.getIsSelected() && "selected"}
-                key={row.id}
-              >
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
-                ))}
+    <div className="">
+      {/* Top bar */}
+      <div className="mb-2 flex items-center gap-2">
+        <div className="text-muted-foreground flex-1 text-sm">
+          {table.getFilteredSelectedRowModel().rows.length} of{" "}
+          {table.getFilteredRowModel().rows.length} row(s) selected.
+        </div>
+        <Button
+          onClick={() => {
+            const selectedRowIds = table
+              .getFilteredSelectedRowModel()
+              .flatRows.map((row) => row.id);
+
+            execute({
+              rowIds: selectedRowIds,
+            });
+          }}
+          size="icon-sm"
+          variant="outline"
+        >
+          <Trash2Icon className="size-4" />
+        </Button>
+      </div>
+      <div className="rounded-md border">
+        <Table>
+          <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => {
+                  return (
+                    <TableHead key={header.id}>
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext(),
+                          )}
+                    </TableHead>
+                  );
+                })}
               </TableRow>
-            ))
-          ) : (
-            <TableRow>
-              <TableCell className="h-24 text-center" colSpan={columns.length}>
-                No results.
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {table.getRowModel().rows.length ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow
+                  data-state={row.getIsSelected() && "selected"}
+                  key={row.id}
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext(),
+                      )}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell
+                  className="h-24 text-center"
+                  colSpan={columns.length}
+                >
+                  No results.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
     </div>
   );
 });
