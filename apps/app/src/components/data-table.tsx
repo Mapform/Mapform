@@ -1,7 +1,7 @@
 /* eslint-disable react/no-unstable-nested-components */
 "use client";
 
-import { useMemo } from "react";
+import { memo, useMemo } from "react";
 import type { ColumnDef } from "@tanstack/react-table";
 import {
   flexRender,
@@ -24,28 +24,31 @@ interface TableProps {
   dataset: GetDataset;
 }
 
-export function DataTable({ dataset }: TableProps) {
-  const columns = getColumns(dataset);
+export const DataTable = memo(function DataTable({ dataset }: TableProps) {
+  const columns = useMemo(() => getColumns(dataset), [dataset]);
+  const rows = useMemo(
+    () =>
+      dataset.rows.map((row) => {
+        const rowCells = row.cells;
 
-  const rows = dataset.rows.map((row) => {
-    const rowCells = row.cells;
+        return rowCells.reduce<
+          Record<string, GetDataset["rows"][number]["cells"][number]>
+        >((acc, cell) => {
+          acc[cell.columnId] =
+            cell.stringCell?.value ??
+            cell.numberCell?.value ??
+            cell.booleanCell?.value ??
+            cell.dateCell?.value ??
+            (cell.pointCell && {
+              x: cell.pointCell.x,
+              y: cell.pointCell.y,
+            });
 
-    return rowCells.reduce<
-      Record<string, GetDataset["rows"][number]["cells"][number]>
-    >((acc, cell) => {
-      acc[cell.columnId] =
-        cell.stringCell?.value ??
-        cell.numberCell?.value ??
-        cell.booleanCell?.value ??
-        cell.dateCell?.value ??
-        (cell.pointCell && {
-          x: cell.pointCell.x,
-          y: cell.pointCell.y,
-        });
-
-      return acc;
-    }, {});
-  });
+          return acc;
+        }, {});
+      }),
+    [dataset.rows],
+  );
 
   const table = useReactTable({
     data: rows,
@@ -99,7 +102,7 @@ export function DataTable({ dataset }: TableProps) {
       </Table>
     </div>
   );
-}
+});
 
 const getColumns = (dataset: GetDataset) => {
   return [
@@ -113,8 +116,7 @@ const getColumns = (dataset: GetDataset) => {
             (table.getIsSomePageRowsSelected() && "indeterminate")
           }
           onCheckedChange={(value) => {
-            console.log(22222);
-            // table.toggleAllPageRowsSelected(Boolean(value));
+            table.toggleAllPageRowsSelected(Boolean(value));
           }}
         />
       ),
@@ -123,8 +125,7 @@ const getColumns = (dataset: GetDataset) => {
           aria-label="Select row"
           checked={row.getIsSelected()}
           onCheckedChange={(value) => {
-            console.log(1111, row);
-            // row.toggleSelected(Boolean(value));
+            row.toggleSelected(Boolean(value));
           }}
         />
       ),
