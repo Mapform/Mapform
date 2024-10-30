@@ -1,7 +1,6 @@
-/* eslint-disable react/no-unstable-nested-components */
 "use client";
 
-import { memo, useMemo } from "react";
+import { memo, useMemo, useState } from "react";
 import {
   flexRender,
   getCoreRowModel,
@@ -19,18 +18,25 @@ import { Checkbox } from "@mapform/ui/components/checkbox";
 import { Button } from "@mapform/ui/components/button";
 import { CopyIcon, PlusIcon, Trash2Icon } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
+import { clearAllModuleContexts } from "next/dist/server/lib/render-server";
 import { deleteRows } from "~/data/rows/delete-rows";
 import { duplicateRows } from "~/data/rows/duplicate-rows";
 import { COLUMN_ICONS } from "~/constants/column-icons";
 import type { GetDataset } from "~/data/datasets/get-dataset";
 import { ColumnAdder } from "./column-adder";
-import { clearAllModuleContexts } from "next/dist/server/lib/render-server";
+import {
+  CellAnchor,
+  CellPopover,
+  CellPopoverContent,
+  CellPopoverTrigger,
+} from "./cell-popover";
 
 interface TableProps {
   dataset: GetDataset;
 }
 
 export const DataTable = memo(function DataTable({ dataset }: TableProps) {
+  const [activeCell, setActiveCell] = useState<string | null>(null);
   const { execute: executeDeleteRows } = useAction(deleteRows);
   const { execute: executeDuplicateRows } = useAction(duplicateRows);
   const columns = useMemo(() => getColumns(dataset), [dataset]);
@@ -42,7 +48,7 @@ export const DataTable = memo(function DataTable({ dataset }: TableProps) {
         return rowCells.reduce<
           Record<string, GetDataset["rows"][number]["cells"][number]>
         >((acc, cell) => {
-          acc["rowId"] = row.id;
+          acc.rowId = row.id;
           acc[cell.columnId] =
             cell.stringCell?.value ??
             cell.numberCell?.value ??
@@ -145,15 +151,30 @@ export const DataTable = memo(function DataTable({ dataset }: TableProps) {
                 key={row.id}
               >
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell id={cell.id} key={cell.id}>
-                    <>
-                      {console.log(11111, cell.id)}
+                  <CellPopover
+                    key={cell.id}
+                    onOpenChange={(val) => {
+                      if (val) {
+                        setActiveCell(cell.id);
+                      } else {
+                        setActiveCell(null);
+                      }
+                    }}
+                    open={activeCell === cell.id}
+                  >
+                    <TableCell
+                      onClick={() => {
+                        setActiveCell(cell.id);
+                      }}
+                    >
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext(),
                       )}
-                    </>
-                  </TableCell>
+                      <CellAnchor />
+                    </TableCell>
+                    <CellPopoverContent />
+                  </CellPopover>
                 ))}
               </TableRow>
             ))
