@@ -16,20 +16,14 @@ import {
 } from "@mapform/ui/components/table";
 import { Checkbox } from "@mapform/ui/components/checkbox";
 import { Button } from "@mapform/ui/components/button";
-import { CopyIcon, PlusIcon, Trash2Icon } from "lucide-react";
+import { CopyIcon, Trash2Icon } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
-import { clearAllModuleContexts } from "next/dist/server/lib/render-server";
 import { deleteRows } from "~/data/rows/delete-rows";
 import { duplicateRows } from "~/data/rows/duplicate-rows";
 import { COLUMN_ICONS } from "~/constants/column-icons";
 import type { GetDataset } from "~/data/datasets/get-dataset";
 import { ColumnAdder } from "./column-adder";
-import {
-  CellAnchor,
-  CellPopover,
-  CellPopoverContent,
-  CellPopoverTrigger,
-} from "./cell-popover";
+import { CellAnchor, CellPopover, CellPopoverContent } from "./cell-popover";
 
 interface TableProps {
   dataset: GetDataset;
@@ -173,7 +167,7 @@ export const DataTable = memo(function DataTable({ dataset }: TableProps) {
                       )}
                       <CellAnchor />
                     </TableCell>
-                    <CellPopoverContent />
+                    <CellPopoverContent cell={cell} dataset={dataset} />
                   </CellPopover>
                 ))}
               </TableRow>
