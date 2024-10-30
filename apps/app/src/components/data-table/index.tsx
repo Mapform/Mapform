@@ -23,6 +23,7 @@ import { deleteRows } from "~/data/rows/delete-rows";
 import { duplicateRows } from "~/data/rows/duplicate-rows";
 import { COLUMN_ICONS } from "~/constants/column-icons";
 import type { GetDataset } from "~/data/datasets/get-dataset";
+import { ColumnAdder } from "./column-adder";
 
 interface TableProps {
   dataset: GetDataset;
@@ -226,11 +227,7 @@ const getColumns = (dataset: GetDataset) => {
     // Add column
     {
       id: "select",
-      header: ({ table }) => (
-        <Button size="icon-xs" variant="ghost">
-          <PlusIcon className="size-4" />
-        </Button>
-      ),
+      header: ({ table }) => <ColumnAdder datasetId={dataset.id} />,
       enableSorting: false,
       enableHiding: false,
     },
