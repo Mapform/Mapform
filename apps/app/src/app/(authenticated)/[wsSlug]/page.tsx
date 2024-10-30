@@ -1,6 +1,6 @@
+import { notFound } from "next/navigation";
 import { ConstructionIcon } from "lucide-react";
 import { getWorkspaceDirectory } from "~/data/workspaces/get-workspace-directory";
-import { notFound } from "next/navigation";
 
 export default async function HomePage({
   params,
@@ -17,8 +17,8 @@ export default async function HomePage({
   }
 
   return (
-    <div className="flex justify-center items-center w-full">
-      <div className="text-muted-foreground flex flex-col gap-2 items-center">
+    <div className="flex w-full items-center justify-center p-4">
+      <div className="text-muted-foreground flex flex-col items-center gap-2">
         <ConstructionIcon className="size-6" />
         <p>This page is under construction</p>
       </div>

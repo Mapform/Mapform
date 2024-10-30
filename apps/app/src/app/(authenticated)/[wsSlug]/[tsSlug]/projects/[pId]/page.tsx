@@ -100,19 +100,21 @@ export default async function ProjectPage({
   }
 
   return (
-    <MapformProvider>
-      <ProjectProvider projectWithPages={projectWithPages}>
-        <PageProvider
-          availableDatasets={availableDatasets ?? []}
-          pageData={pageData}
-          pageWithLayers={pageWithLayers}
-        >
-          <div className="bg-background -m-4 flex flex-1 flex-col overflow-hidden">
-            <Project />
-          </div>
-          <Drawer />
-        </PageProvider>
-      </ProjectProvider>
-    </MapformProvider>
+    <div className="flex flex-1 flex-col overflow-hidden p-4">
+      <MapformProvider>
+        <ProjectProvider projectWithPages={projectWithPages}>
+          <PageProvider
+            availableDatasets={availableDatasets ?? []}
+            pageData={pageData}
+            pageWithLayers={pageWithLayers}
+          >
+            <div className="bg-background -m-4 flex flex-1 flex-col overflow-hidden">
+              <Project />
+            </div>
+            <Drawer />
+          </PageProvider>
+        </ProjectProvider>
+      </MapformProvider>
+    </div>
   );
 }
