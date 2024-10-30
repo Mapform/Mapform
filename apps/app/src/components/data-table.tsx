@@ -70,9 +70,9 @@ export const DataTable = memo(function DataTable({ dataset }: TableProps) {
   const totalNumberOfRows = table.getFilteredRowModel().rows.length;
 
   return (
-    <div className="relative flex flex-1 flex-col p-4 pt-0">
+    <div className="relative flex flex-1 flex-col overflow-auto bg-white p-4 pt-0">
       {/* Top bar */}
-      <div className="box-content flex h-8 items-center gap-2 border-b bg-white pb-2 pt-4">
+      <div className="sticky top-0 z-10 -mb-1 box-content flex h-8 flex-shrink-0 items-center gap-2 border-b bg-white pb-2 pt-4">
         <div className="text-muted-foreground text-sm">
           {numberOfSelectedRows} of {totalNumberOfRows} row(s) selected.
         </div>
@@ -112,9 +112,14 @@ export const DataTable = memo(function DataTable({ dataset }: TableProps) {
         ) : null}
       </div>
       <Table>
-        <TableHeader className="z-10 border-b bg-white">
+        <TableHeader
+          className="sticky top-[53px] z-10 bg-white"
+          style={{
+            boxShadow: "inset 0 -1px 0 #e5e7eb",
+          }}
+        >
           {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
+            <TableRow className="border-none" key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
                 return (
                   <TableHead key={header.id}>
