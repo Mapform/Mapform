@@ -70,97 +70,89 @@ export const DataTable = memo(function DataTable({ dataset }: TableProps) {
   const totalNumberOfRows = table.getFilteredRowModel().rows.length;
 
   return (
-    <div className="">
-      {/* Top bar */}
-      <div className="mb-2 flex h-8 items-center gap-2">
-        <div className="text-muted-foreground text-sm">
-          {numberOfSelectedRows} of {totalNumberOfRows} row(s) selected.
-        </div>
-        {numberOfSelectedRows > 0 ? (
-          <>
-            <Button
-              onClick={() => {
-                const selectedRowIds = table
-                  .getFilteredSelectedRowModel()
-                  .flatRows.map((row) => row.id);
+    <div className="relative flex flex-1 flex-col overflow-auto p-4 pt-0">
+      <Table>
+        {/* Top bar */}
+        {/* <div className="sticky-0 box-content flex h-8 items-center gap-2 border-b bg-white pb-2 pt-4">
+          <div className="text-muted-foreground text-sm">
+            {numberOfSelectedRows} of {totalNumberOfRows} row(s) selected.
+          </div>
+          {numberOfSelectedRows > 0 ? (
+            <>
+              <Button
+                onClick={() => {
+                  const selectedRowIds = table
+                    .getFilteredSelectedRowModel()
+                    .flatRows.map((row) => row.id);
 
-                executeDeleteRows({
-                  rowIds: selectedRowIds,
-                });
-              }}
-              size="sm"
-              variant="outline"
-            >
-              <Trash2Icon className="mr-2 size-4" /> Delete
-            </Button>
-            <Button
-              onClick={() => {
-                const selectedRowIds = table
-                  .getFilteredSelectedRowModel()
-                  .flatRows.map((row) => row.id);
+                  executeDeleteRows({
+                    rowIds: selectedRowIds,
+                  });
+                }}
+                size="sm"
+                variant="outline"
+              >
+                <Trash2Icon className="mr-2 size-4" /> Delete
+              </Button>
+              <Button
+                onClick={() => {
+                  const selectedRowIds = table
+                    .getFilteredSelectedRowModel()
+                    .flatRows.map((row) => row.id);
 
-                executeDuplicateRows({
-                  rowIds: selectedRowIds,
-                });
-              }}
-              size="sm"
-              variant="outline"
-            >
-              <CopyIcon className="mr-2 size-4" /> Duplicate
-            </Button>
-          </>
-        ) : null}
-      </div>
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
-                    </TableHead>
-                  );
-                })}
+                  executeDuplicateRows({
+                    rowIds: selectedRowIds,
+                  });
+                }}
+                size="sm"
+                variant="outline"
+              >
+                <CopyIcon className="mr-2 size-4" /> Duplicate
+              </Button>
+            </>
+          ) : null}
+        </div> */}
+        <TableHeader className="sticky top-0 z-10 border-b bg-white">
+          {table.getHeaderGroups().map((headerGroup) => (
+            <TableRow key={headerGroup.id}>
+              {headerGroup.headers.map((header) => {
+                return (
+                  <TableHead key={header.id}>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext(),
+                        )}
+                  </TableHead>
+                );
+              })}
+            </TableRow>
+          ))}
+        </TableHeader>
+        <TableBody>
+          {table.getRowModel().rows.length ? (
+            table.getRowModel().rows.map((row) => (
+              <TableRow
+                data-state={row.getIsSelected() && "selected"}
+                key={row.id}
+              >
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell key={cell.id}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TableCell>
+                ))}
               </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  data-state={row.getIsSelected() && "selected"}
-                  key={row.id}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  className="h-24 text-center"
-                  colSpan={columns.length}
-                >
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell className="h-24 text-center" colSpan={columns.length}>
+                No results.
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
     </div>
   );
 });
