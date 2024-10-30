@@ -24,6 +24,7 @@ import { duplicateRows } from "~/data/rows/duplicate-rows";
 import { COLUMN_ICONS } from "~/constants/column-icons";
 import type { GetDataset } from "~/data/datasets/get-dataset";
 import { ColumnAdder } from "./column-adder";
+import { clearAllModuleContexts } from "next/dist/server/lib/render-server";
 
 interface TableProps {
   dataset: GetDataset;
@@ -144,8 +145,14 @@ export const DataTable = memo(function DataTable({ dataset }: TableProps) {
                 key={row.id}
               >
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  <TableCell id={cell.id} key={cell.id}>
+                    <>
+                      {console.log(11111, cell.id)}
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext(),
+                      )}
+                    </>
                   </TableCell>
                 ))}
               </TableRow>
@@ -226,7 +233,7 @@ const getColumns = (dataset: GetDataset) => {
 
     // Add column
     {
-      id: "select",
+      id: "create-column",
       header: ({ table }) => <ColumnAdder datasetId={dataset.id} />,
       enableSorting: false,
       enableHiding: false,
