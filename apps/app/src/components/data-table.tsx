@@ -2,7 +2,6 @@
 "use client";
 
 import { memo, useMemo } from "react";
-import type { ColumnDef } from "@tanstack/react-table";
 import {
   flexRender,
   getCoreRowModel,
@@ -18,9 +17,10 @@ import {
 } from "@mapform/ui/components/table";
 import { Checkbox } from "@mapform/ui/components/checkbox";
 import { Button } from "@mapform/ui/components/button";
-import { Trash2Icon } from "lucide-react";
+import { CopyIcon, Trash2Icon } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import { deleteRows } from "~/data/rows/delete-rows";
+import { duplicateRows } from "~/data/rows/duplicate-rows";
 import { COLUMN_ICONS } from "~/constants/column-icons";
 import type { GetDataset } from "~/data/datasets/get-dataset";
 
@@ -29,7 +29,8 @@ interface TableProps {
 }
 
 export const DataTable = memo(function DataTable({ dataset }: TableProps) {
-  const { execute } = useAction(deleteRows);
+  const { execute: executeDeleteRows } = useAction(deleteRows);
+  const { execute: executeDuplicateRows } = useAction(duplicateRows);
   const columns = useMemo(() => getColumns(dataset), [dataset]);
   const rows = useMemo(
     () =>
@@ -65,29 +66,50 @@ export const DataTable = memo(function DataTable({ dataset }: TableProps) {
     },
   });
 
+  const numberOfSelectedRows = table.getFilteredSelectedRowModel().rows.length;
+  const totalNumberOfRows = table.getFilteredRowModel().rows.length;
+
   return (
     <div className="">
       {/* Top bar */}
-      <div className="mb-2 flex items-center gap-2">
-        <div className="text-muted-foreground flex-1 text-sm">
-          {table.getFilteredSelectedRowModel().rows.length} of{" "}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
+      <div className="mb-2 flex h-8 items-center gap-2">
+        <div className="text-muted-foreground text-sm">
+          {numberOfSelectedRows} of {totalNumberOfRows} row(s) selected.
         </div>
-        <Button
-          onClick={() => {
-            const selectedRowIds = table
-              .getFilteredSelectedRowModel()
-              .flatRows.map((row) => row.id);
+        {numberOfSelectedRows > 0 ? (
+          <>
+            <Button
+              onClick={() => {
+                const selectedRowIds = table
+                  .getFilteredSelectedRowModel()
+                  .flatRows.map((row) => row.id);
 
-            execute({
-              rowIds: selectedRowIds,
-            });
-          }}
-          size="icon-sm"
-          variant="outline"
-        >
-          <Trash2Icon className="size-4" />
-        </Button>
+                executeDeleteRows({
+                  rowIds: selectedRowIds,
+                });
+              }}
+              size="sm"
+              variant="outline"
+            >
+              <Trash2Icon className="mr-2 size-4" /> Delete
+            </Button>
+            <Button
+              onClick={() => {
+                const selectedRowIds = table
+                  .getFilteredSelectedRowModel()
+                  .flatRows.map((row) => row.id);
+
+                executeDuplicateRows({
+                  rowIds: selectedRowIds,
+                });
+              }}
+              size="sm"
+              variant="outline"
+            >
+              <CopyIcon className="mr-2 size-4" /> Duplicate
+            </Button>
+          </>
+        ) : null}
       </div>
       <div className="rounded-md border">
         <Table>
