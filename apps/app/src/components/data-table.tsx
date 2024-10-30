@@ -17,7 +17,7 @@ import {
 } from "@mapform/ui/components/table";
 import { Checkbox } from "@mapform/ui/components/checkbox";
 import { Button } from "@mapform/ui/components/button";
-import { CopyIcon, Trash2Icon } from "lucide-react";
+import { CopyIcon, PlusIcon, Trash2Icon } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import { deleteRows } from "~/data/rows/delete-rows";
 import { duplicateRows } from "~/data/rows/duplicate-rows";
@@ -222,5 +222,17 @@ const getColumns = (dataset: GetDataset) => {
         },
       };
     }),
+
+    // Add column
+    {
+      id: "select",
+      header: ({ table }) => (
+        <Button size="icon-xs" variant="ghost">
+          <PlusIcon className="size-4" />
+        </Button>
+      ),
+      enableSorting: false,
+      enableHiding: false,
+    },
   ];
 };
