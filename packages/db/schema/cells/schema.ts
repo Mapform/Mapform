@@ -9,6 +9,7 @@ import {
   numeric,
   geometry,
   index,
+  uniqueIndex,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { rows } from "../rows";
@@ -63,14 +64,20 @@ export const cellsRelations = relations(cells, ({ one }) => ({
 /**
  * STRING CELL
  */
-export const stringCells = pgTable("string_cell", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  value: text("value").notNull(),
+export const stringCells = pgTable(
+  "string_cell",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    value: text("value").notNull(),
 
-  cellId: uuid("cell_id")
-    .notNull()
-    .references(() => cells.id, { onDelete: "cascade" }),
-});
+    cellId: uuid("cell_id")
+      .notNull()
+      .references(() => cells.id, { onDelete: "cascade" }),
+  },
+  (t) => ({
+    unq: unique("string_cell_unq").on(t.cellId),
+  }),
+);
 
 export const stringCellsRelations = relations(stringCells, ({ one }) => ({
   cell: one(cells, {
@@ -82,14 +89,20 @@ export const stringCellsRelations = relations(stringCells, ({ one }) => ({
 /**
  * NUMBER CELL
  */
-export const numberCells = pgTable("number_cell", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  value: numeric("value").notNull(),
+export const numberCells = pgTable(
+  "number_cell",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    value: numeric("value").notNull(),
 
-  cellId: uuid("cell_id")
-    .notNull()
-    .references(() => cells.id, { onDelete: "cascade" }),
-});
+    cellId: uuid("cell_id")
+      .notNull()
+      .references(() => cells.id, { onDelete: "cascade" }),
+  },
+  (t) => ({
+    unq: unique("number_cell_unq").on(t.cellId),
+  }),
+);
 
 export const numberCellsRelations = relations(numberCells, ({ one }) => ({
   cell: one(cells, {
@@ -101,14 +114,20 @@ export const numberCellsRelations = relations(numberCells, ({ one }) => ({
 /**
  * BOOLEAN CELL
  */
-export const booleanCells = pgTable("boolean_cell", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  value: boolean("value").notNull(),
+export const booleanCells = pgTable(
+  "boolean_cell",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    value: boolean("value").notNull(),
 
-  cellId: uuid("cell_id")
-    .notNull()
-    .references(() => cells.id, { onDelete: "cascade" }),
-});
+    cellId: uuid("cell_id")
+      .notNull()
+      .references(() => cells.id, { onDelete: "cascade" }),
+  },
+  (t) => ({
+    unq: unique("bool_cell_unq").on(t.cellId),
+  }),
+);
 
 export const booleanCellsRelations = relations(booleanCells, ({ one }) => ({
   cell: one(cells, {
@@ -132,6 +151,7 @@ export const pointCells = pgTable(
   },
   (t) => ({
     spatialIndex: index("point_spatial_index").using("gist", t.value),
+    unq: unique("point_cell_unq").on(t.cellId),
   }),
 );
 
@@ -145,14 +165,20 @@ export const pointCellsRelations = relations(pointCells, ({ one }) => ({
 /**
  * DATE CELL
  */
-export const dateCells = pgTable("date_cell", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  value: timestamp("value", { withTimezone: true }).notNull(),
+export const dateCells = pgTable(
+  "date_cell",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    value: timestamp("value", { withTimezone: true }).notNull(),
 
-  cellId: uuid("cell_id")
-    .notNull()
-    .references(() => cells.id, { onDelete: "cascade" }),
-});
+    cellId: uuid("cell_id")
+      .notNull()
+      .references(() => cells.id, { onDelete: "cascade" }),
+  },
+  (t) => ({
+    unq: unique("date_cell_unq").on(t.cellId),
+  }),
+);
 
 export const dateCellsRelations = relations(dateCells, ({ one }) => ({
   cell: one(cells, {
@@ -164,14 +190,20 @@ export const dateCellsRelations = relations(dateCells, ({ one }) => ({
 /**
  * RICHTEXT CELL
  */
-export const richtextCells = pgTable("richtext_cell", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  value: jsonb("content").$type<{ content: DocumentContent }>(),
+export const richtextCells = pgTable(
+  "richtext_cell",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    value: jsonb("content").$type<{ content: DocumentContent }>(),
 
-  cellId: uuid("cell_id")
-    .notNull()
-    .references(() => cells.id, { onDelete: "cascade" }),
-});
+    cellId: uuid("cell_id")
+      .notNull()
+      .references(() => cells.id, { onDelete: "cascade" }),
+  },
+  (t) => ({
+    unq: unique("richtext_cell_unq").on(t.cellId),
+  }),
+);
 
 export const richtextCellsRelations = relations(richtextCells, ({ one }) => ({
   cell: one(cells, {

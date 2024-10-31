@@ -33,15 +33,15 @@ export const upsertCellSchema = z.discriminatedUnion("type", [
     type: z.literal(columnTypeEnum.enumValues[3]),
     value: insertDateCellSchema.shape.value,
   }),
-  // richtext
-  commonCellSchema.extend({
-    type: z.literal(columnTypeEnum.enumValues[4]),
-    value: insertRichtextCellSchema.shape.value,
-  }),
   // point
   commonCellSchema.extend({
-    type: z.literal(columnTypeEnum.enumValues[5]),
+    type: z.literal(columnTypeEnum.enumValues[4]),
     value: insertPointCellSchema.shape.value,
+  }),
+  // richtext
+  commonCellSchema.extend({
+    type: z.literal(columnTypeEnum.enumValues[5]),
+    value: insertRichtextCellSchema.shape.value,
   }),
 ]);
 
