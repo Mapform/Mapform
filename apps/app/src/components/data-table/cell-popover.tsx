@@ -35,7 +35,7 @@ export function CellPopoverContent({
   }
 
   return (
-    <PopoverContent align="start" className="p-0">
+    <PopoverContent align="start" className="p-0" side="bottom">
       {/* {value ? value.toString() : null} {type} */}
       <Input
         className="border-none outline-0 !ring-0 !ring-transparent !ring-opacity-0 !ring-offset-0"
