@@ -174,6 +174,7 @@ export function CellPopover({
           onSubmit={form.handleSubmit(onSubmit)}
         >
           <Popover
+            modal
             onOpenChange={(val) => {
               setOpen(val);
               const formVal = form.getValues();
