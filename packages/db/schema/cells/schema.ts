@@ -68,7 +68,7 @@ export const stringCells = pgTable(
   "string_cell",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    value: text("value").notNull(),
+    value: text("value"),
 
     cellId: uuid("cell_id")
       .notNull()
@@ -93,7 +93,7 @@ export const numberCells = pgTable(
   "number_cell",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    value: numeric("value").notNull(),
+    value: numeric("value"),
 
     cellId: uuid("cell_id")
       .notNull()
@@ -118,7 +118,7 @@ export const booleanCells = pgTable(
   "boolean_cell",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    value: boolean("value").notNull(),
+    value: boolean("value"),
 
     cellId: uuid("cell_id")
       .notNull()
@@ -143,7 +143,7 @@ export const pointCells = pgTable(
   "point_cell",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    value: geometry("value", { type: "point", mode: "xy" }).notNull(),
+    value: geometry("value", { type: "point", mode: "xy" }),
 
     cellId: uuid("cell_id")
       .notNull()
@@ -169,7 +169,7 @@ export const dateCells = pgTable(
   "date_cell",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    value: timestamp("value", { withTimezone: true }).notNull(),
+    value: timestamp("value", { withTimezone: true }),
 
     cellId: uuid("cell_id")
       .notNull()

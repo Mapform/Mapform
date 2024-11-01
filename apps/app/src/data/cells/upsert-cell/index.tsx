@@ -37,11 +37,11 @@ export const upsertCell = authAction
           .insert(stringCells)
           .values({
             cellId: cell.id,
-            value,
+            value: value || null,
           })
           .onConflictDoUpdate({
             target: stringCells.cellId,
-            set: { value },
+            set: { value: value || null },
           })
           .returning();
       }
@@ -51,11 +51,11 @@ export const upsertCell = authAction
           .insert(numberCells)
           .values({
             cellId: cell.id,
-            value,
+            value: value || null,
           })
           .onConflictDoUpdate({
             target: numberCells.cellId,
-            set: { value },
+            set: { value: value || null },
           })
           .returning();
       }
