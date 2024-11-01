@@ -90,5 +90,5 @@ export const upsertCell = authAction
       // }
     });
 
-    revalidatePath("/[wsSlug]/[tsSlug]/datasets/[dId]/", "page");
+    // revalidatePath("/[wsSlug]/[tsSlug]/datasets/[dId]/", "page");
   });

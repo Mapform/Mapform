@@ -161,8 +161,10 @@ export function CellPopover({
         {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions -- it's good */}
         <form
           onKeyDown={(e) => {
-            e.key === "Enter" && onSubmit(form.getValues());
-            cellEl.current?.focus();
+            if (e.key === "Enter") {
+              onSubmit(form.getValues());
+              cellEl.current?.focus();
+            }
           }}
           onSubmit={form.handleSubmit(onSubmit)}
         >
