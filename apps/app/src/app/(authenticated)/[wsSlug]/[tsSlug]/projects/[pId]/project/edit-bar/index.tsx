@@ -117,7 +117,7 @@ function EditBarInner({ optimisticPage, updatePageServer }: EditBarInnerProps) {
     movedCoords.pitch !== optimisticPage.pitch ||
     movedCoords.bearing !== optimisticPage.bearing;
 
-  const pageLayers = optimisticProjectWithPages.layers.filter(
+  const pageLayers = optimisticProjectWithPages.pageLayers.filter(
     (layer) => layer.pageId === optimisticPage.id && layer.type === "point",
   );
 

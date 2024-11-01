@@ -70,9 +70,9 @@ export function LayerList() {
     }),
   );
 
-  const layersFromOtherPages = optimisticProjectWithPages.layers
+  const layersFromOtherPages = optimisticProjectWithPages.pageLayers
     .filter((l) => l.pageId !== optimisticPage?.id)
-    .filter((l) => !dragLayers?.find((dl) => dl.id === l.id));
+    .filter((l) => !dragLayers?.find((dl) => dl.id === l.layerId));
 
   if (!dragLayers) {
     return null;
@@ -210,12 +210,12 @@ export function LayerList() {
                     <CommandGroup heading="Layers">
                       {layersFromOtherPages.map((layer) => (
                         <CommandItem
-                          key={layer.id}
+                          key={layer.layerId}
                           keywords={[layer.name ?? "Untitled"]}
                           onSelect={() => {
-                            handleCreatePageLayer(layer.id);
+                            handleCreatePageLayer(layer.layerId);
                           }}
-                          value={layer.id}
+                          value={layer.layerId}
                         >
                           <div className="flex items-center overflow-hidden truncate">
                             <Layers2Icon className="mr-2 size-4" />

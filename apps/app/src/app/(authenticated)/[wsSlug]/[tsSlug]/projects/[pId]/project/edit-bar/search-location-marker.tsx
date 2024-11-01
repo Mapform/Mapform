@@ -39,7 +39,7 @@ import {
 } from "../../layer-popover";
 
 interface SearchLocationMarkerProps {
-  pageLayers: ProjectWithPages["layers"];
+  pageLayers: ProjectWithPages["pageLayers"];
   searchLocation: PlacesSearchResponse["features"][number] | null;
   setDrawerOpen: (value: SetStateAction<boolean>) => void;
   setSearchLocation: (
@@ -192,13 +192,13 @@ export function SearchLocationMarker({
                   <CommandSeparator />
                   {pageLayers.length > 0 ? (
                     <CommandGroup heading="Layers">
-                      {pageLayers.map((layer) => (
+                      {pageLayers.map((pageLayer) => (
                         <CommandItem
-                          key={layer.id}
-                          keywords={[layer.name ?? "Untitled"]}
+                          key={pageLayer.layerId}
+                          keywords={[pageLayer.name ?? "Untitled"]}
                           onSelect={() => {
                             executeCreatePoint({
-                              layerId: layer.id,
+                              layerId: pageLayer.layerId,
                               title,
                               description: null,
                               location: {
@@ -207,11 +207,11 @@ export function SearchLocationMarker({
                               },
                             });
                           }}
-                          value={layer.id}
+                          value={pageLayer.layerId}
                         >
                           <div className="flex items-center overflow-hidden truncate">
                             <Layers2Icon className="mr-2 size-4" />
-                            {layer.name ?? "Untitled"}
+                            {pageLayer.name ?? "Untitled"}
                           </div>
                         </CommandItem>
                       ))}

@@ -16,9 +16,9 @@ import {
 } from "@mapform/ui/components/table";
 import { Checkbox } from "@mapform/ui/components/checkbox";
 import { Button } from "@mapform/ui/components/button";
-import { Switch } from "@mapform/ui/components/switch";
-import { CopyIcon, Trash2Icon } from "lucide-react";
+import { CopyIcon, PlusIcon, Trash2Icon } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
+import { createRow } from "~/data/rows/create-row";
 import { deleteRows } from "~/data/rows/delete-rows";
 import { duplicateRows } from "~/data/rows/duplicate-rows";
 import { COLUMN_ICONS } from "~/constants/column-icons";
@@ -33,6 +33,7 @@ interface TableProps {
 export const DataTable = memo(function DataTable({ dataset }: TableProps) {
   const { execute: executeDeleteRows } = useAction(deleteRows);
   const { execute: executeDuplicateRows } = useAction(duplicateRows);
+  const { execute: executeCreateRow } = useAction(createRow);
   const columns = useMemo(() => getColumns(dataset), [dataset]);
   const rows = useMemo(
     () =>
@@ -58,6 +59,8 @@ export const DataTable = memo(function DataTable({ dataset }: TableProps) {
       }),
     [dataset.rows],
   );
+
+  console.log(22222, rows);
 
   const table = useReactTable({
     data: rows,
@@ -158,6 +161,16 @@ export const DataTable = memo(function DataTable({ dataset }: TableProps) {
           )}
         </TableBody>
       </Table>
+      <button
+        className="hover:bg-muted/50 flex items-center border-t p-2 text-left text-sm"
+        onClick={() => {
+          executeCreateRow({ datasetId: dataset.id });
+        }}
+        type="button"
+      >
+        <PlusIcon className="mr-2 size-4" />
+        Add row
+      </button>
     </div>
   );
 });
