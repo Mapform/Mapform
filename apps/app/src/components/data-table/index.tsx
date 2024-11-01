@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, useMemo, useState } from "react";
+import { memo, useMemo } from "react";
 import {
   flexRender,
   getCoreRowModel,
