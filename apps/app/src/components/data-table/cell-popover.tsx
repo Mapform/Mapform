@@ -63,13 +63,26 @@ export function CellPopover({
     );
   }
 
+  const renderField = () => {
+    if (type === "string") {
+      return <StringInput form={form} />;
+    }
+
+    if (type === "number") {
+      return <NumberInput form={form} />;
+    }
+  };
+
   return (
     <Popover
       onOpenChange={(val) => {
         setOpen(val);
+        const formVal = form.getValues();
 
         if (!val) {
-          executeUpsertCell(form.getValues());
+          if (type === "string" || type === "number") {
+            executeUpsertCell(formVal);
+          }
         }
       }}
       open={open}
@@ -84,9 +97,7 @@ export function CellPopover({
       </TableCell>
       <PopoverContent align="start" className="p-0" side="top">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
-            {type === "string" && <StringInput form={form} />}
-          </form>
+          <form onSubmit={form.handleSubmit(onSubmit)}>{renderField()}</form>
         </Form>
       </PopoverContent>
     </Popover>
@@ -117,25 +128,27 @@ function StringInput({ form }: { form: UseFormReturn<UpsertCellSchema> }) {
   );
 }
 
-function NumberInput({ cell }: { cell: Cell<unknown, unknown> }) {
-  const initialValue = cell.getValue()?.toString() ?? "";
-  const [value, setValue] = useState<string>(initialValue);
-  const { execute: executeUpsertCell } = useAction(upsertCell);
-
+function NumberInput({ form }: { form: UseFormReturn<UpsertCellSchema> }) {
   return (
-    <Input
-      className="border-none outline-0 !ring-0 !ring-transparent !ring-opacity-0 !ring-offset-0"
-      onChange={(e) => {
-        setValue(e.target.value);
-        executeUpsertCell({
-          rowId: cell.row.id,
-          columnId: cell.column.id,
-          value: e.target.value,
-          type: "string",
-        });
-      }}
-      type="number"
-      value={value}
+    <FormField
+      control={form.control}
+      name="value"
+      render={({ field }) => (
+        <FormItem className="flex-1">
+          <FormControl>
+            <Input
+              className="5 border-none outline-0 !ring-0 !ring-transparent !ring-opacity-0 !ring-offset-0 [-moz-appearance:_textfield] [&::-webkit-inner-spin-button]:m-0 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-outer-spin-button]:appearance-none"
+              disabled={field.disabled}
+              name={field.name}
+              onChange={field.onChange}
+              ref={field.ref}
+              type="number"
+              value={field.value as string}
+            />
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      )}
     />
   );
 }

@@ -2,7 +2,13 @@
 
 import { db } from "@mapform/db";
 import { revalidatePath } from "next/cache";
-import { cells, columns, pointCells, stringCells } from "@mapform/db/schema";
+import {
+  cells,
+  columns,
+  numberCells,
+  pointCells,
+  stringCells,
+} from "@mapform/db/schema";
 import { authAction } from "~/lib/safe-action";
 import { upsertCellSchema } from "./schema";
 
@@ -27,7 +33,7 @@ export const upsertCell = authAction
       }
 
       if (type === "string") {
-        const x = await tx
+        return tx
           .insert(stringCells)
           .values({
             cellId: cell.id,
@@ -35,6 +41,20 @@ export const upsertCell = authAction
           })
           .onConflictDoUpdate({
             target: stringCells.cellId,
+            set: { value },
+          })
+          .returning();
+      }
+
+      if (type === "number") {
+        return tx
+          .insert(numberCells)
+          .values({
+            cellId: cell.id,
+            value,
+          })
+          .onConflictDoUpdate({
+            target: numberCells.cellId,
             set: { value },
           })
           .returning();
