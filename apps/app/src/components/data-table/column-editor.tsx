@@ -25,16 +25,21 @@ import {
 
 interface ColumnEditorProps {
   columnId: string;
+  columnName: string;
   children: React.ReactNode;
 }
 
-export function ColumnEditor({ columnId, children }: ColumnEditorProps) {
+export function ColumnEditor({
+  columnId,
+  columnName,
+  children,
+}: ColumnEditorProps) {
   const { execute, status } = useAction(deleteColumn);
-  const { execute: executeEditColumn, status: statusEditColumn } =
-    useAction(editColumn);
+  const { execute: executeEditColumn } = useAction(editColumn);
   const form = useForm<EditColumnSchema>({
     defaultValues: {
       id: columnId,
+      name: columnName,
     },
     resolver: zodResolver(editColumnSchema),
   });
@@ -44,7 +49,15 @@ export function ColumnEditor({ columnId, children }: ColumnEditorProps) {
   };
 
   return (
-    <Popover>
+    <Popover
+      onOpenChange={(val) => {
+        if (!val) {
+          const formValues = form.getValues();
+          executeEditColumn({ id: columnId, name: formValues.name });
+          form.reset();
+        }
+      }}
+    >
       <PopoverTrigger>{children}</PopoverTrigger>
       <PopoverContent align="start" className="w-[240px]" side="right">
         <Form {...form}>

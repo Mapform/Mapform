@@ -9,7 +9,6 @@ import { createRowSchema } from "./schema";
 export const createRow = authAction
   .schema(createRowSchema)
   .action(async ({ parsedInput: { datasetId } }) => {
-    console.log(11111, datasetId);
     const [newRow] = await db
       .insert(rows)
       .values({

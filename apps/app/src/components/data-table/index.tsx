@@ -223,7 +223,7 @@ const getColumns = (dataset: GetDataset) => {
       return {
         accessorKey: column.id,
         header: () => (
-          <ColumnEditor columnId={column.id}>
+          <ColumnEditor columnId={column.id} columnName={column.name}>
             <span className="flex items-center gap-1.5">
               <Icon className="size-4" /> {column.name}
             </span>
