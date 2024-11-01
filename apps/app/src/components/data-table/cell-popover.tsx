@@ -78,14 +78,9 @@ export function CellPopover({
 
   if (type === "bool") {
     return (
-      <TableCell
-        onClick={() => {
-          const formVal = form.getValues();
-          executeUpsertCell(formVal);
-        }}
-      >
+      <TableCell>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
+          <form>
             <FormField
               control={form.control}
               name="value"
@@ -95,7 +90,12 @@ export function CellPopover({
                     <Switch
                       checked={Boolean(field.value)}
                       name={field.name}
-                      onCheckedChange={field.onChange}
+                      onCheckedChange={(e) => {
+                        field.onChange(e);
+                        const formVal = form.getValues();
+                        executeUpsertCell(formVal);
+                      }}
+                      size="sm"
                     />
                   </FormControl>
                 </FormItem>
