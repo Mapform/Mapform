@@ -31,9 +31,11 @@ interface TableProps {
 }
 
 export const DataTable = memo(function DataTable({ dataset }: TableProps) {
-  const { execute: executeDeleteRows } = useAction(deleteRows);
-  const { execute: executeDuplicateRows } = useAction(duplicateRows);
-  const { execute: executeCreateRow, status: executeStatus } =
+  const { execute: executeDeleteRows, status: statusDeleteRows } =
+    useAction(deleteRows);
+  const { execute: executeDuplicateRows, status: statusDuplicateRows } =
+    useAction(duplicateRows);
+  const { execute: executeCreateRow, status: statusCreateRow } =
     useAction(createRow);
   const columns = useMemo(() => getColumns(dataset), [dataset]);
   const rows = useMemo(
@@ -87,6 +89,7 @@ export const DataTable = memo(function DataTable({ dataset }: TableProps) {
         {numberOfSelectedRows > 0 ? (
           <>
             <Button
+              disabled={statusDeleteRows === "executing"}
               onClick={() => {
                 const selectedRowIds = table
                   .getFilteredSelectedRowModel()
@@ -102,6 +105,7 @@ export const DataTable = memo(function DataTable({ dataset }: TableProps) {
               <Trash2Icon className="mr-2 size-4" /> Delete
             </Button>
             <Button
+              disabled={statusDuplicateRows === "executing"}
               onClick={() => {
                 const selectedRowIds = table
                   .getFilteredSelectedRowModel()
@@ -166,7 +170,7 @@ export const DataTable = memo(function DataTable({ dataset }: TableProps) {
       </Table>
       <button
         className="hover:bg-muted/50 flex items-center border-t p-2 text-left text-sm disabled:pointer-events-none disabled:opacity-50"
-        disabled={executeStatus === "executing"}
+        disabled={statusCreateRow === "executing"}
         onClick={() => {
           executeCreateRow({ datasetId: dataset.id });
         }}
