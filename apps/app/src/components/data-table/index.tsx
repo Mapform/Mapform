@@ -25,6 +25,12 @@ import { COLUMN_ICONS } from "~/constants/column-icons";
 import type { GetDataset } from "~/data/datasets/get-dataset";
 import { ColumnAdder } from "./column-adder";
 import { CellPopover } from "./cell-popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@mapform/ui/components/popover";
+import { ColumnEditor } from "./column-editor";
 
 interface TableProps {
   dataset: GetDataset;
@@ -217,9 +223,11 @@ const getColumns = (dataset: GetDataset) => {
       return {
         accessorKey: column.id,
         header: () => (
-          <span className="flex items-center gap-1.5">
-            <Icon className="size-4" /> {column.name}
-          </span>
+          <ColumnEditor columnId={column.id}>
+            <span className="flex items-center gap-1.5">
+              <Icon className="size-4" /> {column.name}
+            </span>
+          </ColumnEditor>
         ),
       };
     }),
