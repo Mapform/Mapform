@@ -33,7 +33,8 @@ interface TableProps {
 export const DataTable = memo(function DataTable({ dataset }: TableProps) {
   const { execute: executeDeleteRows } = useAction(deleteRows);
   const { execute: executeDuplicateRows } = useAction(duplicateRows);
-  const { execute: executeCreateRow } = useAction(createRow);
+  const { execute: executeCreateRow, status: executeStatus } =
+    useAction(createRow);
   const columns = useMemo(() => getColumns(dataset), [dataset]);
   const rows = useMemo(
     () =>
@@ -42,25 +43,27 @@ export const DataTable = memo(function DataTable({ dataset }: TableProps) {
 
         return rowCells.reduce<
           Record<string, GetDataset["rows"][number]["cells"][number]>
-        >((acc, cell) => {
-          acc.rowId = row.id;
-          acc[cell.columnId] =
-            cell.stringCell?.value ??
-            cell.numberCell?.value ??
-            cell.booleanCell?.value ??
-            cell.dateCell?.value ??
-            (cell.pointCell && {
-              x: cell.pointCell.x,
-              y: cell.pointCell.y,
-            });
+        >(
+          (acc, cell) => {
+            acc[cell.columnId] =
+              cell.stringCell?.value ??
+              cell.numberCell?.value ??
+              cell.booleanCell?.value ??
+              cell.dateCell?.value ??
+              (cell.pointCell && {
+                x: cell.pointCell.x,
+                y: cell.pointCell.y,
+              });
 
-          return acc;
-        }, {});
+            return acc;
+          },
+          {
+            rowId: row.id,
+          },
+        );
       }),
     [dataset.rows],
   );
-
-  console.log(22222, rows);
 
   const table = useReactTable({
     data: rows,
@@ -162,7 +165,8 @@ export const DataTable = memo(function DataTable({ dataset }: TableProps) {
         </TableBody>
       </Table>
       <button
-        className="hover:bg-muted/50 flex items-center border-t p-2 text-left text-sm"
+        className="hover:bg-muted/50 flex items-center border-t p-2 text-left text-sm disabled:pointer-events-none disabled:opacity-50"
+        disabled={executeStatus === "executing"}
         onClick={() => {
           executeCreateRow({ datasetId: dataset.id });
         }}

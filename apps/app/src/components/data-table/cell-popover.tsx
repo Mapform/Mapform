@@ -62,7 +62,17 @@ export function CellPopover({
 
   const renderCellContent = useCallback(() => {
     const v = form.getValues();
-    const { type: parsedType, value } = upsertCellSchema.parse(v);
+
+    const { success, data } = upsertCellSchema.safeParse(v);
+
+    // This shouldn't ever happen
+    if (!success) {
+      console.error("Failed to parse form values", v);
+      return null;
+    }
+
+    const parsedType = data.type;
+    const value = data.value;
 
     if (parsedType === "point") {
       if (!value) {
