@@ -3,7 +3,6 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormMessage,
   useForm,
   zodResolver,
   type UseFormReturn,
@@ -13,13 +12,13 @@ import {
   Popover,
   PopoverAnchor,
   PopoverContent,
+  PopoverTrigger,
 } from "@mapform/ui/components/popover";
 import { Switch } from "@mapform/ui/components/switch";
 import { TableCell } from "@mapform/ui/components/table";
 import { flexRender, type Cell } from "@tanstack/react-table";
-import { set } from "date-fns";
 import { useAction } from "next-safe-action/hooks";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { upsertCell } from "~/data/cells/upsert-cell";
 import type { UpsertCellSchema } from "~/data/cells/upsert-cell/schema";
 import { upsertCellSchema } from "~/data/cells/upsert-cell/schema";
@@ -40,7 +39,10 @@ export function CellPopover({
     defaultValues: {
       rowId: cell.row.id,
       columnId: cell.column.id,
-      value: cell.getValue() as any,
+      value:
+        type === "number"
+          ? cell.getValue()?.toString()
+          : (cell.getValue() as any),
       type,
     },
     resolver: zodResolver(upsertCellSchema),
@@ -57,6 +59,41 @@ export function CellPopover({
     executeUpsertCell(values);
   };
 
+  const renderCellContent = useCallback(() => {
+    const v = form.getValues();
+    const { type: parsedType, value } = upsertCellSchema.parse(v);
+
+    if (parsedType === "point") {
+      if (!value) {
+        return null;
+      }
+
+      return (
+        <span className="font-mono">
+          {value.x},{value.y}
+        </span>
+      );
+    }
+
+    if (parsedType === "richtext") {
+      if (!value) {
+        return null;
+      }
+
+      return <span>TODO: rich text</span>;
+    }
+
+    if (parsedType === "date") {
+      if (!value) {
+        return null;
+      }
+
+      return <span>{new Date(value).toLocaleDateString()}</span>;
+    }
+
+    return value;
+  }, [form]);
+
   // Used for radio buttons
   if (!type) {
     return (
@@ -65,16 +102,6 @@ export function CellPopover({
       </TableCell>
     );
   }
-
-  const renderField = () => {
-    if (type === "string") {
-      return <StringInput form={form} />;
-    }
-
-    if (type === "number") {
-      return <NumberInput form={form} />;
-    }
-  };
 
   if (type === "bool") {
     return (
@@ -107,57 +134,56 @@ export function CellPopover({
     );
   }
 
-  const renderCellContent = () => {
-    const value = form.getValues().value;
-
-    if (type === "point") {
-      const pointVal =
-        value as GetDataset["rows"][number]["cells"][number]["pointCell"];
-
-      if (!pointVal) {
-        return null;
-      }
-
-      return (
-        <span className="font-mono">
-          {pointVal.x},{pointVal.y}
-        </span>
-      );
+  const renderField = () => {
+    if (type === "string") {
+      return <StringInput form={form} />;
     }
 
-    return value;
+    if (type === "number") {
+      return <NumberInput form={form} />;
+    }
   };
 
   return (
-    <Popover
-      onOpenChange={(val) => {
-        setOpen(val);
-        const formVal = form.getValues();
-
-        if (!val) {
-          if (type === "string" || type === "number") {
-            executeUpsertCell(formVal);
-          }
-        }
+    <TableCell
+      onClick={() => {
+        setOpen(true);
       }}
-      open={open}
+      onKeyDown={(e) => {
+        e.key === "Enter" && setOpen(true);
+      }}
+      tabIndex={0}
     >
-      <TableCell
-        onClick={() => {
-          setOpen(true);
-        }}
-      >
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
+      <Form {...form}>
+        {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions -- it's good */}
+        <form
+          onKeyDown={(e) => {
+            e.key === "Enter" && onSubmit(form.getValues());
+          }}
+          onSubmit={form.handleSubmit(onSubmit)}
+        >
+          <Popover
+            onOpenChange={(val) => {
+              setOpen(val);
+              const formVal = form.getValues();
+
+              if (!val) {
+                if (type === "string" || type === "number") {
+                  onSubmit(formVal);
+                }
+              }
+            }}
+            open={open}
+          >
             {renderCellContent()}
             <PopoverAnchor />
             <PopoverContent align="start" className="p-0" side="top">
               {renderField()}
             </PopoverContent>
-          </form>
-        </Form>
-      </TableCell>
-    </Popover>
+          </Popover>
+        </form>
+      </Form>
+    </TableCell>
   );
 }
 
@@ -171,7 +197,6 @@ function StringInput({ form }: { form: UseFormReturn<UpsertCellSchema> }) {
           <FormControl>
             <Input
               className="border-none outline-0 !ring-0 !ring-transparent !ring-opacity-0 !ring-offset-0"
-              disabled={field.disabled}
               name={field.name}
               onChange={field.onChange}
               ref={field.ref}
@@ -194,7 +219,6 @@ function NumberInput({ form }: { form: UseFormReturn<UpsertCellSchema> }) {
           <FormControl>
             <Input
               className="5 border-none outline-0 !ring-0 !ring-transparent !ring-opacity-0 !ring-offset-0 [-moz-appearance:_textfield] [&::-webkit-inner-spin-button]:m-0 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-outer-spin-button]:appearance-none"
-              disabled={field.disabled}
               name={field.name}
               onChange={field.onChange}
               ref={field.ref}
