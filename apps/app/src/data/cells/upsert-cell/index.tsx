@@ -10,7 +10,6 @@ export const upsertCell = authAction
   .schema(upsertCellSchema)
   .action(async ({ parsedInput: { rowId, columnId, type, value } }) => {
     await db.transaction(async (tx) => {
-      console.log(1111, value);
       const [cell] = await tx
         .insert(cells)
         .values({
@@ -28,7 +27,6 @@ export const upsertCell = authAction
       }
 
       if (type === "string") {
-        console.log(22222, value);
         const x = await tx
           .insert(stringCells)
           .values({
@@ -40,7 +38,6 @@ export const upsertCell = authAction
             set: { value },
           })
           .returning();
-        console.log(3333, x);
       }
 
       // if (type === "point") {

@@ -31,6 +31,7 @@ export const getDataset = authAction
                 },
                 numberCell: true,
                 dateCell: true,
+                richtextCell: true,
               },
             },
           },

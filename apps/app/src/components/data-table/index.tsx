@@ -23,7 +23,7 @@ import { duplicateRows } from "~/data/rows/duplicate-rows";
 import { COLUMN_ICONS } from "~/constants/column-icons";
 import type { GetDataset } from "~/data/datasets/get-dataset";
 import { ColumnAdder } from "./column-adder";
-import { CellAnchor, CellPopover, CellPopoverContent } from "./cell-popover";
+import { CellPopover } from "./cell-popover";
 
 interface TableProps {
   dataset: GetDataset;
@@ -145,30 +145,31 @@ export const DataTable = memo(function DataTable({ dataset }: TableProps) {
                 key={row.id}
               >
                 {row.getVisibleCells().map((cell) => (
-                  <CellPopover
-                    key={cell.id}
-                    onOpenChange={(val) => {
-                      if (val) {
-                        setActiveCell(cell.id);
-                      } else {
-                        setActiveCell(null);
-                      }
-                    }}
-                    open={activeCell === cell.id}
-                  >
-                    <TableCell
-                      onClick={() => {
-                        setActiveCell(cell.id);
-                      }}
-                    >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
-                      <CellAnchor />
-                    </TableCell>
-                    <CellPopoverContent cell={cell} dataset={dataset} />
-                  </CellPopover>
+                  <CellPopover cell={cell} dataset={dataset} key={cell.id} />
+                  // <CellPopover
+                  //   key={cell.id}
+                  //   onOpenChange={(val) => {
+                  //     if (val) {
+                  //       setActiveCell(cell.id);
+                  //     } else {
+                  //       setActiveCell(null);
+                  //     }
+                  //   }}
+                  //   open={activeCell === cell.id}
+                  // >
+                  //   <TableCell
+                  //     onClick={() => {
+                  //       setActiveCell(cell.id);
+                  //     }}
+                  //   >
+                  //     {flexRender(
+                  //       cell.column.columnDef.cell,
+                  //       cell.getContext(),
+                  //     )}
+                  //     <CellAnchor />
+                  //   </TableCell>
+                  //   <CellPopoverContent cell={cell} dataset={dataset} />
+                  // </CellPopover>
                 ))}
               </TableRow>
             ))
