@@ -16,6 +16,7 @@ import {
 } from "@mapform/ui/components/table";
 import { Checkbox } from "@mapform/ui/components/checkbox";
 import { Button } from "@mapform/ui/components/button";
+import { Switch } from "@mapform/ui/components/switch";
 import { CopyIcon, Trash2Icon } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import { deleteRows } from "~/data/rows/delete-rows";
@@ -240,6 +241,13 @@ const getColumns = (dataset: GetDataset) => {
                 {pointVal.x},{pointVal.y}
               </span>
             );
+          }
+
+          if (column.type === "bool") {
+            const boolVal = value as NonNullable<
+              GetDataset["rows"][number]["cells"][number]["booleanCell"]
+            >["value"];
+            return <Switch checked={Boolean(boolVal)} />;
           }
 
           return value;

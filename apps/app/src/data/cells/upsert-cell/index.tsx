@@ -8,6 +8,7 @@ import {
   numberCells,
   pointCells,
   stringCells,
+  booleanCells,
 } from "@mapform/db/schema";
 import { authAction } from "~/lib/safe-action";
 import { upsertCellSchema } from "./schema";
@@ -56,6 +57,20 @@ export const upsertCell = authAction
           .onConflictDoUpdate({
             target: numberCells.cellId,
             set: { value: value || null },
+          })
+          .returning();
+      }
+
+      if (type === "bool") {
+        return tx
+          .insert(booleanCells)
+          .values({
+            cellId: cell.id,
+            value,
+          })
+          .onConflictDoUpdate({
+            target: booleanCells.cellId,
+            set: { value },
           })
           .returning();
       }

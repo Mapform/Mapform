@@ -75,6 +75,26 @@ export function CellPopover({
     }
   };
 
+  if (type === "bool") {
+    return (
+      <TableCell
+        onClick={() => {
+          const formVal = form.getValues() as boolean | null;
+          console.log(1111, formVal);
+
+          executeUpsertCell({
+            type: "bool",
+            rowId: cell.row.id,
+            columnId: cell.column.id,
+            value: !formVal,
+          });
+        }}
+      >
+        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+      </TableCell>
+    );
+  }
+
   return (
     <Popover
       onOpenChange={(val) => {
