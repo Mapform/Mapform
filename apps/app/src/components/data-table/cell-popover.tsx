@@ -15,6 +15,7 @@ import {
 } from "@mapform/ui/components/popover";
 import { Switch } from "@mapform/ui/components/switch";
 import { TableCell } from "@mapform/ui/components/table";
+import { DateTimePicker } from "@mapform/ui/components/datetime-picker";
 import { flexRender, type Cell } from "@tanstack/react-table";
 import { useAction } from "next-safe-action/hooks";
 import { useCallback, useRef, useState } from "react";
@@ -142,6 +143,10 @@ export function CellPopover({
     if (type === "number") {
       return <NumberInput form={form} />;
     }
+
+    if (type === "date") {
+      return <DateInput form={form} />;
+    }
   };
 
   return (
@@ -231,6 +236,28 @@ function NumberInput({ form }: { form: UseFormReturn<UpsertCellSchema> }) {
               type="number"
               value={(field.value as string | null) || ""}
             />
+          </FormControl>
+        </FormItem>
+      )}
+    />
+  );
+}
+
+function DateInput({ form }: { form: UseFormReturn<UpsertCellSchema> }) {
+  return (
+    <FormField
+      control={form.control}
+      name="value"
+      render={({ field }) => (
+        <FormItem className="flex-1">
+          <FormControl>
+            {/* <Input
+              className="border-none outline-0 !ring-0 !ring-transparent !ring-opacity-0 !ring-offset-0"
+              name={field.name}
+              onChange={field.onChange}
+              ref={field.ref}
+              value={(field.value as string | null) || ""}
+            /> */}
           </FormControl>
         </FormItem>
       )}

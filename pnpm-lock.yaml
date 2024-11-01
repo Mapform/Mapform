@@ -648,12 +648,18 @@ importers:
       cmdk:
         specifier: ^1.0.0
         version: 1.0.0(@types/react-dom@18.2.19)(@types/react@18.3.10)(react-dom@18.3.1)(react@19.0.0-rc-e4953922-20240919)
+      date-fns:
+        specifier: ^3.6.0
+        version: 3.6.0
       lucide-react:
         specifier: ^0.354.0
         version: 0.354.0(react@19.0.0-rc-e4953922-20240919)
       next-themes:
         specifier: ^0.3.0
         version: 0.3.0(react-dom@18.3.1)(react@19.0.0-rc-e4953922-20240919)
+      react-day-picker:
+        specifier: ^9.2.1
+        version: 9.2.1(react@19.0.0-rc-e4953922-20240919)
       react-hook-form:
         specifier: ^7.51.3
         version: 7.51.3(react@19.0.0-rc-e4953922-20240919)
@@ -1088,6 +1094,10 @@ packages:
     dependencies:
       '@jridgewell/trace-mapping': 0.3.9
     dev: true
+
+  /@date-fns/tz@1.2.0:
+    resolution: {integrity: sha512-LBrd7MiJZ9McsOgxqWX7AaxrDjcFVjWH/tIKJd7pnR7McaslGYOP1QmmiBXdJH/H/yLCT+rcQ7FaPBUxRGUtrg==}
+    dev: false
 
   /@dnd-kit/accessibility@3.1.0(react@19.0.0-rc-e4953922-20240919):
     resolution: {integrity: sha512-ea7IkhKvlJUv9iSHJOnxinBcoOI3ppGnnL+VDJ75O45Nss6HtZd8IdN8touXPDtASfeI2T2LImb8VOZcL47wjQ==}
@@ -5421,6 +5431,10 @@ packages:
     resolution: {integrity: sha512-fRHTG8g/Gif+kSh50gaGEdToemgfj74aRX3swtiouboip5JDLAyDE9F11nHMIcvOaXeOC6D7SpNhi7uFyB7Uww==}
     dev: false
 
+  /date-fns@4.1.0:
+    resolution: {integrity: sha512-Ukq0owbQXxa/U3EGtsdVBkR1w7KOQ5gIBqdH2hkvknzZPYvBxb/aa6E8L7tmjFtkwZBu3UXBbjIgPo/Ez4xaNg==}
+    dev: false
+
   /debug@3.2.7:
     resolution: {integrity: sha512-CFjzYYAi4ThfiQvizrFQevTTXHtnCqWfe7x1AhgEscTz6ZbLbfoLRLPugTQyBth6f8ZERVUSyWHFD/7Wu4t1XQ==}
     peerDependencies:
@@ -9216,6 +9230,17 @@ packages:
 
   /quickselect@2.0.0:
     resolution: {integrity: sha512-RKJ22hX8mHe3Y6wH/N3wCM6BWtjaxIyyUIkpHOvfFnxdI4yD4tBXEBKSbriGujF6jnSVkJrffuo6vxACiSSxIw==}
+    dev: false
+
+  /react-day-picker@9.2.1(react@19.0.0-rc-e4953922-20240919):
+    resolution: {integrity: sha512-rCoK4oJi9NBXt1nNdQFSa7gBG+hWsqVCtoLFLxvMzkVxDp+rSqsuUQ0LccJyLigwp/hX8XnAokTsT03+5lbjyA==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      react: '>=16.8.0'
+    dependencies:
+      '@date-fns/tz': 1.2.0
+      date-fns: 4.1.0
+      react: 19.0.0-rc-e4953922-20240919
     dev: false
 
   /react-dom@18.3.1(react@19.0.0-rc-e4953922-20240919):
