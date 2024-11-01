@@ -12,13 +12,12 @@ import {
   Popover,
   PopoverAnchor,
   PopoverContent,
-  PopoverTrigger,
 } from "@mapform/ui/components/popover";
 import { Switch } from "@mapform/ui/components/switch";
 import { TableCell } from "@mapform/ui/components/table";
 import { flexRender, type Cell } from "@tanstack/react-table";
 import { useAction } from "next-safe-action/hooks";
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { upsertCell } from "~/data/cells/upsert-cell";
 import type { UpsertCellSchema } from "~/data/cells/upsert-cell/schema";
 import { upsertCellSchema } from "~/data/cells/upsert-cell/schema";
@@ -31,6 +30,7 @@ export function CellPopover({
   cell: Cell<unknown, unknown>;
   dataset: GetDataset;
 }) {
+  const cellEl = useRef<HTMLTableCellElement>(null);
   const type = dataset.columns.find(
     (column) => column.id === cell.column.id,
   )?.type;
@@ -150,8 +150,11 @@ export function CellPopover({
         setOpen(true);
       }}
       onKeyDown={(e) => {
-        e.key === "Enter" && setOpen(true);
+        if (!open) {
+          e.key === "Enter" && setOpen(true);
+        }
       }}
+      ref={cellEl}
       tabIndex={0}
     >
       <Form {...form}>
@@ -159,6 +162,7 @@ export function CellPopover({
         <form
           onKeyDown={(e) => {
             e.key === "Enter" && onSubmit(form.getValues());
+            cellEl.current?.focus();
           }}
           onSubmit={form.handleSubmit(onSubmit)}
         >
