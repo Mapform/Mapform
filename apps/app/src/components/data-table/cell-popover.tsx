@@ -107,6 +107,27 @@ export function CellPopover({
     );
   }
 
+  const renderCellContent = () => {
+    const value = form.getValues().value;
+
+    if (type === "point") {
+      const pointVal =
+        value as GetDataset["rows"][number]["cells"][number]["pointCell"];
+
+      if (!pointVal) {
+        return null;
+      }
+
+      return (
+        <span className="font-mono">
+          {pointVal.x},{pointVal.y}
+        </span>
+      );
+    }
+
+    return value;
+  };
+
   return (
     <Popover
       onOpenChange={(val) => {
@@ -126,14 +147,16 @@ export function CellPopover({
           setOpen(true);
         }}
       >
-        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-        <PopoverAnchor />
-      </TableCell>
-      <PopoverContent align="start" className="p-0" side="top">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>{renderField()}</form>
+          <form onSubmit={form.handleSubmit(onSubmit)}>
+            {renderCellContent()}
+            <PopoverAnchor />
+            <PopoverContent align="start" className="p-0" side="top">
+              {renderField()}
+            </PopoverContent>
+          </form>
         </Form>
-      </PopoverContent>
+      </TableCell>
     </Popover>
   );
 }
@@ -152,7 +175,7 @@ function StringInput({ form }: { form: UseFormReturn<UpsertCellSchema> }) {
               name={field.name}
               onChange={field.onChange}
               ref={field.ref}
-              value={field.value as string}
+              value={(field.value as string | null) || ""}
             />
           </FormControl>
         </FormItem>
@@ -176,7 +199,7 @@ function NumberInput({ form }: { form: UseFormReturn<UpsertCellSchema> }) {
               onChange={field.onChange}
               ref={field.ref}
               type="number"
-              value={field.value as string}
+              value={(field.value as string | null) || ""}
             />
           </FormControl>
         </FormItem>

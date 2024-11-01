@@ -200,33 +200,33 @@ const getColumns = (dataset: GetDataset) => {
             <Icon className="size-4" /> {column.name}
           </span>
         ),
-        cell: (props) => {
-          const value = props.getValue();
+        // cell: (props) => {
+        //   const value = props.getValue();
 
-          if (column.type === "point") {
-            const pointVal =
-              value as GetDataset["rows"][number]["cells"][number]["pointCell"];
+        // if (column.type === "point") {
+        //   const pointVal =
+        //     value as GetDataset["rows"][number]["cells"][number]["pointCell"];
 
-            if (!pointVal) {
-              return null;
-            }
+        //   if (!pointVal) {
+        //     return null;
+        //   }
 
-            return (
-              <span className="font-mono">
-                {pointVal.x},{pointVal.y}
-              </span>
-            );
-          }
+        //   return (
+        //     <span className="font-mono">
+        //       {pointVal.x},{pointVal.y}
+        //     </span>
+        //   );
+        // }
 
-          // if (column.type === "bool") {
-          //   const boolVal = value as NonNullable<
-          //     GetDataset["rows"][number]["cells"][number]["booleanCell"]
-          //   >["value"];
-          //   return <Switch checked={Boolean(boolVal)} />;
-          // }
+        // if (column.type === "bool") {
+        //   const boolVal = value as NonNullable<
+        //     GetDataset["rows"][number]["cells"][number]["booleanCell"]
+        //   >["value"];
+        //   return <Switch checked={Boolean(boolVal)} />;
+        // }
 
-          return value;
-        },
+        //   return value;
+        // },
       };
     }),
 
