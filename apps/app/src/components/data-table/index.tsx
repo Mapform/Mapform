@@ -31,7 +31,6 @@ interface TableProps {
 }
 
 export const DataTable = memo(function DataTable({ dataset }: TableProps) {
-  const [activeCell, setActiveCell] = useState<string | null>(null);
   const { execute: executeDeleteRows } = useAction(deleteRows);
   const { execute: executeDuplicateRows } = useAction(duplicateRows);
   const columns = useMemo(() => getColumns(dataset), [dataset]);
@@ -147,30 +146,6 @@ export const DataTable = memo(function DataTable({ dataset }: TableProps) {
               >
                 {row.getVisibleCells().map((cell) => (
                   <CellPopover cell={cell} dataset={dataset} key={cell.id} />
-                  // <CellPopover
-                  //   key={cell.id}
-                  //   onOpenChange={(val) => {
-                  //     if (val) {
-                  //       setActiveCell(cell.id);
-                  //     } else {
-                  //       setActiveCell(null);
-                  //     }
-                  //   }}
-                  //   open={activeCell === cell.id}
-                  // >
-                  //   <TableCell
-                  //     onClick={() => {
-                  //       setActiveCell(cell.id);
-                  //     }}
-                  //   >
-                  //     {flexRender(
-                  //       cell.column.columnDef.cell,
-                  //       cell.getContext(),
-                  //     )}
-                  //     <CellAnchor />
-                  //   </TableCell>
-                  //   <CellPopoverContent cell={cell} dataset={dataset} />
-                  // </CellPopover>
                 ))}
               </TableRow>
             ))
@@ -243,12 +218,12 @@ const getColumns = (dataset: GetDataset) => {
             );
           }
 
-          if (column.type === "bool") {
-            const boolVal = value as NonNullable<
-              GetDataset["rows"][number]["cells"][number]["booleanCell"]
-            >["value"];
-            return <Switch checked={Boolean(boolVal)} />;
-          }
+          // if (column.type === "bool") {
+          //   const boolVal = value as NonNullable<
+          //     GetDataset["rows"][number]["cells"][number]["booleanCell"]
+          //   >["value"];
+          //   return <Switch checked={Boolean(boolVal)} />;
+          // }
 
           return value;
         },

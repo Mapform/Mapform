@@ -14,6 +14,7 @@ import {
   PopoverAnchor,
   PopoverContent,
 } from "@mapform/ui/components/popover";
+import { Switch } from "@mapform/ui/components/switch";
 import { TableCell } from "@mapform/ui/components/table";
 import { flexRender, type Cell } from "@tanstack/react-table";
 import { set } from "date-fns";
@@ -79,18 +80,29 @@ export function CellPopover({
     return (
       <TableCell
         onClick={() => {
-          const formVal = form.getValues() as boolean | null;
-          console.log(1111, formVal);
-
-          executeUpsertCell({
-            type: "bool",
-            rowId: cell.row.id,
-            columnId: cell.column.id,
-            value: !formVal,
-          });
+          const formVal = form.getValues();
+          executeUpsertCell(formVal);
         }}
       >
-        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)}>
+            <FormField
+              control={form.control}
+              name="value"
+              render={({ field }) => (
+                <FormItem className="flex-1">
+                  <FormControl>
+                    <Switch
+                      checked={Boolean(field.value)}
+                      name={field.name}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          </form>
+        </Form>
       </TableCell>
     );
   }
@@ -143,7 +155,6 @@ function StringInput({ form }: { form: UseFormReturn<UpsertCellSchema> }) {
               value={field.value as string}
             />
           </FormControl>
-          <FormMessage />
         </FormItem>
       )}
     />
@@ -168,7 +179,6 @@ function NumberInput({ form }: { form: UseFormReturn<UpsertCellSchema> }) {
               value={field.value as string}
             />
           </FormControl>
-          <FormMessage />
         </FormItem>
       )}
     />
