@@ -16,6 +16,7 @@ import {
 } from "@mapform/ui/components/popover";
 import { TableCell } from "@mapform/ui/components/table";
 import { flexRender, type Cell } from "@tanstack/react-table";
+import { set } from "date-fns";
 import { useAction } from "next-safe-action/hooks";
 import { useState } from "react";
 import { upsertCell } from "~/data/cells/upsert-cell";
@@ -51,6 +52,7 @@ export function CellPopover({
   const [open, setOpen] = useState(false);
 
   const onSubmit = (values: UpsertCellSchema) => {
+    setOpen(false);
     executeUpsertCell(values);
   };
 
