@@ -86,7 +86,7 @@ export function CellPopover({
 
       return (
         <span className="font-mono">
-          {value.x},{value.y}
+          {value.x.toFixed(4)},{value.y.toFixed(4)}
         </span>
       );
     }
@@ -186,6 +186,17 @@ export function CellPopover({
         <form
           onKeyDown={(e) => {
             if (e.key === "Enter") {
+              onSubmit(form.getValues());
+              cellEl.current?.focus();
+            }
+
+            if (e.key === "Escape") {
+              setOpen(false);
+              cellEl.current?.focus();
+            }
+
+            if (type === "point" && e.key === "Backspace") {
+              form.setValue("value", null);
               onSubmit(form.getValues());
               cellEl.current?.focus();
             }
@@ -289,7 +300,7 @@ function DateInput({ form }: { form: UseFormReturn<UpsertCellSchema> }) {
   );
 }
 
-const INITIAL_CENTER = [-74.0242, 40.6941];
+const INITIAL_CENTER = [0, 0];
 
 function PointInput({ form }: { form: UseFormReturn<UpsertCellSchema> }) {
   const mapContainerRef = useRef<HTMLElement | null>(null);
@@ -298,6 +309,10 @@ function PointInput({ form }: { form: UseFormReturn<UpsertCellSchema> }) {
   useEffect(() => {
     mapboxgl.accessToken = accessToken;
     const map = new mapboxgl.Map({
+      center: {
+        lng: form.getValues().value?.x || INITIAL_CENTER[0]!,
+        lat: form.getValues().value?.y || INITIAL_CENTER[1]!,
+      },
       container: mapContainerRef.current ?? "",
       pitchWithRotate: false,
       dragRotate: false,
@@ -310,6 +325,10 @@ function PointInput({ form }: { form: UseFormReturn<UpsertCellSchema> }) {
 
       // update state
       setCenter([mapCenter.lng, mapCenter.lat]);
+      form.setValue("value", {
+        x: mapCenter.lng,
+        y: mapCenter.lat,
+      });
     });
 
     return () => {

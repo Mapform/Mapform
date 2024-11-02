@@ -75,19 +75,19 @@ export const upsertCell = authAction
           .returning();
       }
 
-      // if (type === "point") {
-      //   await tx
-      //     .insert(pointCells)
-      //     .values({
-      //       cellId: cell.id,
-      //       value,
-      //     })
-      //     .onConflictDoUpdate({
-      //       target: pointCells.cellId,
-      //       set: { value },
-      //     })
-      //     .returning();
-      // }
+      if (type === "point") {
+        await tx
+          .insert(pointCells)
+          .values({
+            cellId: cell.id,
+            value,
+          })
+          .onConflictDoUpdate({
+            target: pointCells.cellId,
+            set: { value },
+          })
+          .returning();
+      }
     });
 
     // revalidatePath("/[wsSlug]/[tsSlug]/datasets/[dId]/", "page");
