@@ -211,18 +211,23 @@ const getColumns = (dataset: GetDataset) => {
       enableSorting: false,
       enableHiding: false,
     },
-    ...dataset.columns.map((column) => {
-      return {
-        accessorKey: column.id,
-        header: () => (
-          <ColumnEditor
-            columnId={column.id}
-            columnName={column.name}
-            columnType={column.type}
-          />
-        ),
-      };
-    }),
+    ...dataset.columns
+      .sort(
+        (a, b) =>
+          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+      )
+      .map((column) => {
+        return {
+          accessorKey: column.id,
+          header: () => (
+            <ColumnEditor
+              columnId={column.id}
+              columnName={column.name}
+              columnType={column.type}
+            />
+          ),
+        };
+      }),
 
     // Add column
     {
