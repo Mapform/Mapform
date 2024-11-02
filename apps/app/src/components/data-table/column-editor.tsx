@@ -15,6 +15,7 @@ import {
   PopoverTrigger,
 } from "@mapform/ui/components/popover";
 import { Trash2Icon } from "lucide-react";
+import type { Column } from "@mapform/db/schema";
 import { useAction } from "next-safe-action/hooks";
 import { editColumn } from "~/data/columns/edit-column";
 import { deleteColumn } from "~/data/columns/delete-column";
@@ -23,7 +24,6 @@ import {
   editColumnSchema,
   type EditColumnSchema,
 } from "~/data/columns/edit-column/schema";
-import type { Column } from "@mapform/db/schema";
 
 interface ColumnEditorProps {
   columnId: string;
@@ -56,12 +56,13 @@ export function ColumnEditor({
   return (
     <Popover
       onOpenChange={(val) => {
+        setOpen(val);
         if (!val) {
           const formValues = form.getValues();
-          executeEditColumn({ id: columnId, name: formValues.name });
-          form.reset();
+          if (formValues.name !== columnName) {
+            executeEditColumn({ id: columnId, name: formValues.name });
+          }
         }
-        setOpen(val);
       }}
       open={open}
     >

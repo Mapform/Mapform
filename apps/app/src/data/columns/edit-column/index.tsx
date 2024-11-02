@@ -16,7 +16,5 @@ export const editColumn = authAction
       .where(eq(columns.id, id))
       .returning();
 
-    revalidatePath("/[wsSlug]/[tsSlug]/datasets/[dId]", "page");
-
     return col;
   });
