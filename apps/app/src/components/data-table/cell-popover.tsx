@@ -21,12 +21,13 @@ import { DateTimePicker } from "@mapform/ui/components/datetime-picker";
 import { flexRender, type Cell } from "@tanstack/react-table";
 import { useAction } from "next-safe-action/hooks";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { CircleDot, MapPin } from "lucide-react";
 import { upsertCell } from "~/data/cells/upsert-cell";
 import type { UpsertCellSchema } from "~/data/cells/upsert-cell/schema";
 import { upsertCellSchema } from "~/data/cells/upsert-cell/schema";
 import type { GetDataset } from "~/data/datasets/get-dataset";
 
-const accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
+const accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN!;
 
 export function CellPopover({
   cell,
@@ -289,27 +290,26 @@ function DateInput({ form }: { form: UseFormReturn<UpsertCellSchema> }) {
 }
 
 const INITIAL_CENTER = [-74.0242, 40.6941];
-const INITIAL_ZOOM = 10.12;
 
 function PointInput({ form }: { form: UseFormReturn<UpsertCellSchema> }) {
-  const mapContainerRef = useRef<HTMLDivElement | null>(null);
+  const mapContainerRef = useRef<HTMLElement | null>(null);
   const [center, setCenter] = useState(INITIAL_CENTER);
-  const [zoom, setZoom] = useState(INITIAL_ZOOM);
 
   useEffect(() => {
     mapboxgl.accessToken = accessToken;
     const map = new mapboxgl.Map({
-      container: mapContainerRef.current,
+      container: mapContainerRef.current ?? "",
+      pitchWithRotate: false,
+      dragRotate: false,
+      touchZoomRotate: false,
     });
 
     map.on("move", () => {
       // get the current center coordinates and zoom level from the map
       const mapCenter = map.getCenter();
-      const mapZoom = map.getZoom();
 
       // update state
       setCenter([mapCenter.lng, mapCenter.lat]);
-      setZoom(mapZoom);
     });
 
     return () => {
@@ -322,6 +322,11 @@ function PointInput({ form }: { form: UseFormReturn<UpsertCellSchema> }) {
       <div className="absolute left-2 right-2 top-2 z-10 rounded bg-white/70 px-4 py-2 font-mono text-xs backdrop-blur-md">
         Lng: {center[0]?.toFixed(4)} | Lat: {center[1]?.toFixed(4)}
       </div>
+      {/* <CircleDot className="pointer-events-none absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2 transform animate-ping text-red-600" /> */}
+      <span className="pointer-events-none absolute left-1/2 top-1/2 z-10 flex size-3 -translate-x-1/2 -translate-y-1/2 transform">
+        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75" />
+        <span className="relative inline-flex size-3 rounded-full bg-red-500" />
+      </span>
       <div className="h-full w-full" ref={mapContainerRef} />
     </div>
   );
