@@ -313,6 +313,7 @@ function PointInput({ form }: { form: UseFormReturn<UpsertCellSchema> }) {
         lng: form.getValues().value?.x || INITIAL_CENTER[0]!,
         lat: form.getValues().value?.y || INITIAL_CENTER[1]!,
       },
+      zoom: form.getValues().value ? 9 : 0,
       container: mapContainerRef.current ?? "",
       pitchWithRotate: false,
       dragRotate: false,
