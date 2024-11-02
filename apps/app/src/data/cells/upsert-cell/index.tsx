@@ -1,15 +1,15 @@
 "use server";
 
 import { db } from "@mapform/db";
-import { revalidatePath } from "next/cache";
 import {
   cells,
-  columns,
   numberCells,
   pointCells,
   stringCells,
   booleanCells,
+  richtextCells,
 } from "@mapform/db/schema";
+import type { DocumentContent } from "@mapform/blocknote";
 import { authAction } from "~/lib/safe-action";
 import { upsertCellSchema } from "./schema";
 
@@ -87,6 +87,23 @@ export const upsertCell = authAction
             set: { value },
           })
           .returning();
+      }
+
+      if (type === "richtext") {
+        console.log(7777, value);
+        const [x] = await tx
+          .insert(richtextCells)
+          .values({
+            cellId: cell.id,
+            value: value as unknown as { content: DocumentContent },
+          })
+          .onConflictDoUpdate({
+            target: richtextCells.cellId,
+            set: { value: value as unknown as { content: DocumentContent } },
+          })
+          .returning();
+
+        console.log(8888, x?.value);
       }
     });
 

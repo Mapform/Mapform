@@ -66,6 +66,7 @@ export function CellPopover({
   const [open, setOpen] = useState(false);
 
   const onSubmit = (values: UpsertCellSchema) => {
+    console.log("Submitting", values);
     setOpen(false);
     executeUpsertCell(values);
   };
@@ -217,9 +218,7 @@ export function CellPopover({
               const formVal = form.getValues();
 
               if (!val) {
-                if (type === "string" || type === "number") {
-                  onSubmit(formVal);
-                }
+                onSubmit(formVal);
               }
             }}
             open={open}
@@ -309,7 +308,7 @@ function DateInput({ form }: { form: UseFormReturn<UpsertCellSchema> }) {
 
 function RichtextInput({ form }: { form: UseFormReturn<UpsertCellSchema> }) {
   const editor = useCreateBlockNote({
-    initialContent: null,
+    initialContent: form.getValues().value,
     placeholders: {
       default: "Write, or press '/' for commands...",
     },
@@ -328,11 +327,7 @@ function RichtextInput({ form }: { form: UseFormReturn<UpsertCellSchema> }) {
                 editor={editor}
                 includeFormBlocks={false}
                 onChange={() => {
-                  console.log(1111, editor.document);
-                  // onDescriptionChange &&
-                  //   onDescriptionChange({
-                  //     content: editor.document,
-                  //   });
+                  field.onChange({ content: editor.document });
                 }}
               />
             </FormControl>
