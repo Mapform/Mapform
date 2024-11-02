@@ -212,10 +212,7 @@ const getColumns = (dataset: GetDataset) => {
       enableHiding: false,
     },
     ...dataset.columns
-      .sort(
-        (a, b) =>
-          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
-      )
+      .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
       .map((column) => {
         return {
           accessorKey: column.id,

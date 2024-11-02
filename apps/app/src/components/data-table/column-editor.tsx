@@ -18,6 +18,17 @@ import {
 import { Trash2Icon } from "lucide-react";
 import type { Column } from "@mapform/db/schema";
 import { useAction } from "next-safe-action/hooks";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@mapform/ui/components/alert-dialog";
 import { editColumn } from "~/data/columns/edit-column";
 import { deleteColumn } from "~/data/columns/delete-column";
 import { COLUMN_ICONS } from "~/constants/column-icons";
@@ -106,22 +117,43 @@ export function ColumnEditor({
                   )}
                 />
               </div>
+              {/* So that hitting enter submits the form */}
               <button className="hidden" type="submit">
                 Submit
               </button>
             </form>
           </Form>
           <div className="border-t p-1">
-            <button
-              className="hover:bg-accent hover:text-accent-foreground flex w-full cursor-default items-center rounded-sm px-2 py-1.5 text-left text-sm outline-none transition-colors"
-              disabled={status === "executing"}
-              onClick={() => {
-                execute({ id: columnId });
-              }}
-              type="button"
-            >
-              <Trash2Icon className="mr-2 size-4" /> Delete
-            </button>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <button
+                  className="hover:bg-accent hover:text-accent-foreground flex w-full cursor-default items-center rounded-sm px-2 py-1.5 text-left text-sm outline-none transition-colors"
+                  disabled={status === "executing"}
+                  type="button"
+                >
+                  <Trash2Icon className="mr-2 size-4" /> Delete
+                </button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    All data in this column will be lost.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction
+                    disabled={status === "executing"}
+                    onClick={() => {
+                      execute({ id: columnId });
+                    }}
+                  >
+                    Continue
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
         </div>
       </PopoverContent>
