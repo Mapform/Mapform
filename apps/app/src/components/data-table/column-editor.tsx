@@ -11,7 +11,6 @@ import {
 import { Input } from "@mapform/ui/components/input";
 import {
   Popover,
-  PopoverAnchor,
   PopoverContent,
   PopoverTrigger,
 } from "@mapform/ui/components/popover";
@@ -78,7 +77,6 @@ export function ColumnEditor({
       }}
       open={open}
     >
-      <PopoverAnchor />
       <PopoverTrigger>
         <span className="flex items-center gap-1.5">
           <Icon className="size-4" /> {form.watch("name")}
