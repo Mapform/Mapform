@@ -8,10 +8,12 @@ import {
   stringCells,
   booleanCells,
   richtextCells,
+  dateCells,
 } from "@mapform/db/schema";
 import type { DocumentContent } from "@mapform/blocknote";
 import { authAction } from "~/lib/safe-action";
 import { upsertCellSchema } from "./schema";
+import { revalidatePath } from "next/cache";
 
 export const upsertCell = authAction
   .schema(upsertCellSchema)
@@ -43,8 +45,7 @@ export const upsertCell = authAction
           .onConflictDoUpdate({
             target: stringCells.cellId,
             set: { value: value || null },
-          })
-          .returning();
+          });
       }
 
       if (type === "number") {
@@ -57,8 +58,7 @@ export const upsertCell = authAction
           .onConflictDoUpdate({
             target: numberCells.cellId,
             set: { value: value || null },
-          })
-          .returning();
+          });
       }
 
       if (type === "bool") {
@@ -71,8 +71,7 @@ export const upsertCell = authAction
           .onConflictDoUpdate({
             target: booleanCells.cellId,
             set: { value },
-          })
-          .returning();
+          });
       }
 
       if (type === "point") {
@@ -85,8 +84,7 @@ export const upsertCell = authAction
           .onConflictDoUpdate({
             target: pointCells.cellId,
             set: { value },
-          })
-          .returning();
+          });
       }
 
       if (type === "richtext") {
@@ -99,10 +97,22 @@ export const upsertCell = authAction
           .onConflictDoUpdate({
             target: richtextCells.cellId,
             set: { value: value as unknown as { content: DocumentContent } },
+          });
+      }
+
+      if (type === "date") {
+        await tx
+          .insert(dateCells)
+          .values({
+            cellId: cell.id,
+            value,
           })
-          .returning();
+          .onConflictDoUpdate({
+            target: dateCells.cellId,
+            set: { value },
+          });
       }
     });
 
-    // revalidatePath("/[wsSlug]/[tsSlug]/datasets/[dId]/", "page");
+    revalidatePath("/[wsSlug]/[tsSlug]/projects/[pId]/", "page");
   });

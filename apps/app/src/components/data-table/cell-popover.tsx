@@ -18,6 +18,7 @@ import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { Switch } from "@mapform/ui/components/switch";
 import { TableCell } from "@mapform/ui/components/table";
+import { DateTimePicker } from "@mapform/ui/components/datetime-picker";
 import { flexRender, type Cell } from "@tanstack/react-table";
 import { useAction } from "next-safe-action/hooks";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -26,6 +27,8 @@ import {
   BlocknoteEditor,
   useCreateBlockNote,
 } from "@mapform/blocknote";
+import { format } from "date-fns";
+import { enUS } from "date-fns/locale";
 import { upsertCell } from "~/data/cells/upsert-cell";
 import type { UpsertCellSchema } from "~/data/cells/upsert-cell/schema";
 import { upsertCellSchema } from "~/data/cells/upsert-cell/schema";
@@ -112,7 +115,7 @@ export function CellPopover({
         return null;
       }
 
-      return <span>{new Date(value).toLocaleDateString()}</span>;
+      return format(new Date(value), "PP hh:mm b", { locale: enUS });
     }
 
     return value;
@@ -294,13 +297,7 @@ function DateInput({ form }: { form: UseFormReturn<UpsertCellSchema> }) {
       render={({ field }) => (
         <FormItem className="flex-1">
           <FormControl>
-            {/* <Input
-              className="border-none outline-0 !ring-0 !ring-transparent !ring-opacity-0 !ring-offset-0"
-              name={field.name}
-              onChange={field.onChange}
-              ref={field.ref}
-              value={(field.value as string | null) || ""}
-            /> */}
+            <DateTimePicker onChange={field.onChange} value={field.value} />
           </FormControl>
         </FormItem>
       )}

@@ -1,12 +1,7 @@
 import { cn } from "@mapform/lib/classnames";
 import { add, format } from "date-fns";
 import { type Locale, enUS } from "date-fns/locale";
-import {
-  Calendar as CalendarIcon,
-  ChevronLeft,
-  ChevronRight,
-  Clock,
-} from "lucide-react";
+import { ChevronLeft, ChevronRight, Clock } from "lucide-react";
 import * as React from "react";
 import { useImperativeHandle, useRef } from "react";
 import { DayPicker } from "react-day-picker";
@@ -17,10 +12,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./select";
-import { Popover, PopoverContent, PopoverTrigger } from "./popover";
 import { Input } from "./input";
 import type { CalendarProps } from "./calendar";
-import { Button, buttonVariants } from "./button";
+import { buttonVariants } from "./button";
 
 // ---------- utils start ----------
 /**
@@ -711,11 +705,7 @@ const DateTimePicker = React.forwardRef<
       onChange,
       hourCycle = 24,
       yearRange = 50,
-      disabled = false,
-      displayFormat,
       granularity = "second",
-      placeholder = "Pick a date",
-      className,
       ...props
     },
     ref,
@@ -749,30 +739,62 @@ const DateTimePicker = React.forwardRef<
       [value],
     );
 
-    const initHourFormat = {
-      hour24:
-        displayFormat?.hour24 ??
-        `PPP HH:mm${!granularity || granularity === "second" ? ":ss" : ""}`,
-      hour12:
-        displayFormat?.hour12 ??
-        `PP hh:mm${!granularity || granularity === "second" ? ":ss" : ""} b`,
-    };
-
-    let loc = enUS;
-    const { options, localize, formatLong } = locale;
-    if (options && localize && formatLong) {
-      loc = {
-        ...enUS,
-        options,
-        localize,
-        formatLong,
-      };
-    }
-
     return (
-      <Popover>
-        <PopoverTrigger asChild disabled={disabled}>
-          <Button
+      <div>
+        <Calendar
+          locale={locale}
+          mode="single"
+          month={month}
+          onMonthChange={handleSelect}
+          onSelect={(d) => {
+            handleSelect(d);
+          }}
+          selected={value}
+          yearRange={yearRange}
+          {...props}
+        />
+        {granularity !== "day" && (
+          <div className="border-border border-t p-3">
+            <TimePicker
+              date={value}
+              granularity={granularity}
+              hourCycle={hourCycle}
+              onChange={onChange}
+            />
+          </div>
+        )}
+      </div>
+    );
+  },
+);
+
+DateTimePicker.displayName = "DateTimePicker";
+
+export { DateTimePicker, TimePickerInput, TimePicker };
+export type { TimePickerType, DateTimePickerProps, DateTimePickerRef };
+
+// const initHourFormat = {
+//   hour24:
+//     displayFormat?.hour24 ??
+//     `PPP HH:mm${!granularity || granularity === "second" ? ":ss" : ""}`,
+//   hour12:
+//     displayFormat?.hour12 ??
+//     `PP hh:mm${!granularity || granularity === "second" ? ":ss" : ""} b`,
+// };
+
+// let loc = enUS;
+// const { options, localize, formatLong } = locale;
+// if (options && localize && formatLong) {
+//   loc = {
+//     ...enUS,
+//     options,
+//     localize,
+//     formatLong,
+//   };
+// }
+
+{
+  /* <Button
             className={cn(
               "w-full justify-start text-left font-normal",
               !value && "text-muted-foreground",
@@ -795,38 +817,5 @@ const DateTimePicker = React.forwardRef<
             ) : (
               <span>{placeholder}</span>
             )}
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-auto p-0">
-          <Calendar
-            locale={locale}
-            mode="single"
-            month={month}
-            onMonthChange={handleSelect}
-            onSelect={(d) => {
-              handleSelect(d);
-            }}
-            selected={value}
-            yearRange={yearRange}
-            {...props}
-          />
-          {granularity !== "day" && (
-            <div className="border-border border-t p-3">
-              <TimePicker
-                date={value}
-                granularity={granularity}
-                hourCycle={hourCycle}
-                onChange={onChange}
-              />
-            </div>
-          )}
-        </PopoverContent>
-      </Popover>
-    );
-  },
-);
-
-DateTimePicker.displayName = "DateTimePicker";
-
-export { DateTimePicker, TimePickerInput, TimePicker };
-export type { TimePickerType, DateTimePickerProps, DateTimePickerRef };
+          </Button> */
+}
