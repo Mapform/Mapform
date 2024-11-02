@@ -31,7 +31,6 @@ interface TableProps {
 }
 
 export const DataTable = memo(function DataTable({ dataset }: TableProps) {
-  console.log(11111, dataset);
   const { execute: executeDeleteRows, status: statusDeleteRows } =
     useAction(deleteRows);
   const { execute: executeDuplicateRows, status: statusDuplicateRows } =

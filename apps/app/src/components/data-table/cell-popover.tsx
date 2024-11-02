@@ -8,6 +8,7 @@ import {
   type UseFormReturn,
 } from "@mapform/ui/components/form";
 import { Input } from "@mapform/ui/components/input";
+import { Badge } from "@mapform/ui/components/badge";
 import {
   Popover,
   PopoverAnchor,
@@ -99,7 +100,11 @@ export function CellPopover({
         return null;
       }
 
-      return <span>TODO: rich text</span>;
+      return (
+        <Badge className="cursor-pointer" variant="secondary">
+          Click to view
+        </Badge>
+      );
     }
 
     if (parsedType === "date") {
