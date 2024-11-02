@@ -66,6 +66,7 @@ export function ColumnEditor({
 
   return (
     <Popover
+      modal
       onOpenChange={(val) => {
         setOpen(val);
         if (!val) {

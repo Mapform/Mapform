@@ -48,7 +48,7 @@ export function ColumnAdder({ datasetId }: ColumnAdderProps) {
   };
 
   return (
-    <Popover>
+    <Popover modal>
       <PopoverTrigger asChild>
         <Button size="icon-xs" variant="ghost">
           <PlusIcon className="size-4" />
