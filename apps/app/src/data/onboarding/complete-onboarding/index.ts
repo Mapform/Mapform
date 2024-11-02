@@ -68,7 +68,7 @@ export const completeOnboarding = authAction
         .values({
           slug: teamspaceSlug,
           name: teamspaceName,
-          workspaceId: workspace.id,
+          workspaceSlug: workspacelug,
         })
         .returning();
 

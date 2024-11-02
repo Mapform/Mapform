@@ -1,8 +1,8 @@
 "server-only";
 
 import { db } from "@mapform/db";
-import { eq } from "@mapform/db/utils";
-import { datasets } from "@mapform/db/schema";
+import { eq, sql } from "@mapform/db/utils";
+import { datasets, pointCells } from "@mapform/db/schema";
 import { authAction } from "~/lib/safe-action";
 import { getDatasetSchema } from "./schema";
 
@@ -19,9 +19,19 @@ export const getDataset = authAction
               with: {
                 stringCell: true,
                 booleanCell: true,
-                pointCell: true,
+                pointCell: {
+                  columns: {
+                    id: true,
+                  },
+                  // TODO: Can remove this workaround once this is fixed: https://github.com/drizzle-team/drizzle-orm/pull/2778#issuecomment-2408519850
+                  extras: {
+                    x: sql<number>`ST_X(${pointCells.value})`.as("x"),
+                    y: sql<number>`ST_Y(${pointCells.value})`.as("y"),
+                  },
+                },
                 numberCell: true,
                 dateCell: true,
+                richtextCell: true,
               },
             },
           },
@@ -34,3 +44,7 @@ export const getDataset = authAction
       },
     });
   });
+
+export type GetDataset = NonNullable<
+  NonNullable<Awaited<ReturnType<typeof getDataset>>>["data"]
+>;

@@ -1,4 +1,3 @@
-import { NavSlot } from "~/components/nav-slot";
 import { Button } from "@mapform/ui/components/button";
 import {
   Popover,
@@ -6,6 +5,7 @@ import {
   PopoverTrigger,
 } from "@mapform/ui/components/popover";
 import { SendIcon } from "lucide-react";
+import { NavSlot } from "~/components/nav-slot";
 import { getProjectWithTeamspace } from "~/data/projects/get-project-with-teamspace";
 import { ShareContent } from "./share-content";
 import TogglePages from "./toggle-pages";
@@ -27,11 +27,11 @@ export default async function Nav({
   return (
     <NavSlot
       actions={
-        <div className="flex gap-1 items-center">
+        <div className="flex items-center gap-1">
           <Popover>
             <PopoverTrigger asChild>
               <Button size="sm" variant="ghost">
-                <SendIcon className="h-4 w-4 mr-2" />
+                <SendIcon className="mr-2 h-4 w-4" />
                 Share
               </Button>
             </PopoverTrigger>
@@ -51,10 +51,14 @@ export default async function Nav({
           name: "Create",
           href: `/${params.wsSlug}/${params.tsSlug}/projects/${params.pId}`,
         },
-        {
-          name: "Submissions",
-          href: `/${params.wsSlug}/${params.tsSlug}/datasets`,
-        },
+        ...(projectResponse.data?.submissionsDataset.id
+          ? [
+              {
+                name: "Responses",
+                href: `/${params.wsSlug}/${params.tsSlug}/datasets/${projectResponse.data.submissionsDataset.id}`,
+              },
+            ]
+          : []),
       ]}
     />
   );

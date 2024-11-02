@@ -35,6 +35,18 @@ export const createPoint = authAction
           throw new Error("Layer is not a point layer");
         }
 
+        if (!layer.pointLayer.titleColumnId) {
+          throw new Error("Layer does not have a title column");
+        }
+
+        if (!layer.pointLayer.descriptionColumnId) {
+          throw new Error("Layer does not have a description column");
+        }
+
+        if (!layer.pointLayer.pointColumnId) {
+          throw new Error("Layer does not have a point column");
+        }
+
         const [row] = await tx
           .insert(rows)
           .values({

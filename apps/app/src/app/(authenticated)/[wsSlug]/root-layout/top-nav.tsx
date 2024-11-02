@@ -81,9 +81,8 @@ export function TopNav({ children }: { children: React.ReactNode }) {
           <div className="ml-8 flex-1">{navSlot}</div>
         </nav>
       </div>
-      <div className="flex flex-1 flex-col overflow-hidden p-4">
-        <Suspense fallback={<div>Loading...</div>}>{children}</Suspense>
-      </div>
+
+      <Suspense fallback={<div>Loading...</div>}>{children}</Suspense>
     </div>
   );
 }

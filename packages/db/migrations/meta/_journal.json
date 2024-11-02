@@ -8,6 +8,69 @@
       "when": 1729410707531,
       "tag": "0000_worthless_deathbird",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1729942398620,
+      "tag": "0001_unique_rattler",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1730024889637,
+      "tag": "0002_furry_darwin",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1730342052902,
+      "tag": "0003_dashing_gauntlet",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1730342183737,
+      "tag": "0004_aromatic_doctor_doom",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1730466675631,
+      "tag": "0005_charming_grandmaster",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1730556891308,
+      "tag": "0006_glossy_triathlon",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1730557103412,
+      "tag": "0007_daffy_smiling_tiger",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1730557652721,
+      "tag": "0008_redundant_naoko",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1730570902272,
+      "tag": "0009_open_joystick",
+      "breakpoints": true
     }
   ]
 }

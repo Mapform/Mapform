@@ -42,16 +42,17 @@ export const pointLayers = pgTable("point_layer", {
   id: uuid("id").primaryKey().defaultRandom(),
   layerId: uuid("layer_id")
     .notNull()
-    .references(() => layers.id, { onDelete: "cascade" }),
-  pointColumnId: uuid("point_column_id")
-    .notNull()
-    .references(() => columns.id, { onDelete: "cascade" }),
-  titleColumnId: uuid("title_column_id")
-    .notNull()
-    .references(() => columns.id),
-  descriptionColumnId: uuid("description_column_id")
-    .notNull()
-    .references(() => columns.id),
+    .references(() => layers.id),
+  pointColumnId: uuid("point_column_id").references(() => columns.id, {
+    onDelete: "set null",
+  }),
+  titleColumnId: uuid("title_column_id").references(() => columns.id, {
+    onDelete: "set null",
+  }),
+  descriptionColumnId: uuid("description_column_id").references(
+    () => columns.id,
+    { onDelete: "set null" },
+  ),
 
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()

@@ -11,7 +11,7 @@ export const getProjectWithPages = authAction
   .action(async ({ parsedInput: { id } }) => {
     // TODO: Cannot use 'with' with geometry columns currently due to Drizzle bug: https://github.com/drizzle-team/drizzle-orm/issues/2526
     // Once fix is merged we can simplify this
-    const [_projects2, _pages, _layers] = await Promise.all([
+    const [_projects2, _pages, _pageLayers] = await Promise.all([
       db.query.projects.findFirst({
         where: and(eq(projects.id, id), isNull(projects.rootProjectId)),
         with: {
@@ -66,9 +66,9 @@ export const getProjectWithPages = authAction
 
       db
         .select({
-          id: layers.id,
           name: layers.name,
           type: layers.type,
+          layerId: layers.id,
           pageId: layersToPages.pageId,
         })
         .from(layers)
@@ -81,17 +81,10 @@ export const getProjectWithPages = authAction
       throw new Error("Project not found");
     }
 
-    const seen = new Set();
-
     return {
       ..._projects2,
       pages: _pages,
-      // Remove dups
-      layers: _layers.filter((el) => {
-        const duplicate = seen.has(el.id);
-        seen.add(el.id);
-        return !duplicate;
-      }),
+      pageLayers: _pageLayers,
     };
   });
 

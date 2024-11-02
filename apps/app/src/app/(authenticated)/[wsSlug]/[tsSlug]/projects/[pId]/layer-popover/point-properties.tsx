@@ -19,17 +19,18 @@ import {
 } from "@mapform/ui/components/popover";
 import { ChevronsUpDownIcon, PlusIcon, CheckIcon } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
-import type { UpsertLayerSchema } from "~/data/layers/upsert-layer/schema";
-import type { ListAvailableDatasets } from "~/data/datasets/list-available-datasets";
-import { createColumn } from "~/data/datasets/create-column";
-import { usePage } from "../page-context";
 import { toast } from "@mapform/ui/components/toaster";
+import type { UpsertLayerSchema } from "~/data/layers/upsert-layer/schema";
+import type { ListTeamspaceDatasets } from "~/data/datasets/list-teamspace-datasets";
+import { createColumn } from "~/data/columns/create-column";
+import { usePage } from "../page-context";
 
 interface PointPropertiesProps {
   form: UseFormReturn<UpsertLayerSchema>;
+  isEditing: boolean;
 }
 
-export function PointProperties({ form }: PointPropertiesProps) {
+export function PointProperties({ form, isEditing }: PointPropertiesProps) {
   const { availableDatasets } = usePage();
   const datasetId = form.watch("datasetId");
   const type = form.watch("type");
@@ -49,7 +50,7 @@ export function PointProperties({ form }: PointPropertiesProps) {
   );
 
   useEffect(() => {
-    if (type === "point") {
+    if (!isEditing && type === "point") {
       form.setValue(
         "pointProperties.pointColumnId",
         getAvailableColumns("point")?.find((c) => c.type === "point")?.id ?? "",
@@ -67,7 +68,7 @@ export function PointProperties({ form }: PointPropertiesProps) {
           ?.id ?? "",
       );
     }
-  }, [dataset, form, type, getAvailableColumns]);
+  }, [dataset, form, type, getAvailableColumns, isEditing]);
 
   const availablePointColumns = getAvailableColumns("point");
   const availableStringColumns = getAvailableColumns("string");
@@ -116,7 +117,7 @@ function DataColField({
   form: UseFormReturn<UpsertLayerSchema>;
   label: string;
   type: Column["type"];
-  availableColumns: ListAvailableDatasets[number]["columns"];
+  availableColumns: ListTeamspaceDatasets[number]["columns"];
 }) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");

@@ -18,9 +18,9 @@ export const teamspaces = pgTable(
     id: uuid("id").primaryKey().defaultRandom(),
     slug: varchar("slug", { length: 256 }).notNull(),
     name: varchar("name", { length: 256 }).notNull(),
-    workspaceId: uuid("workspace_id")
+    workspaceSlug: varchar("workspace_slug")
       .notNull()
-      .references(() => workspaces.id, { onDelete: "cascade" }),
+      .references(() => workspaces.slug, { onDelete: "cascade" }),
 
     createdAt: timestamp("created_at", { withTimezone: true })
       .defaultNow()
@@ -31,8 +31,8 @@ export const teamspaces = pgTable(
       .notNull(),
   },
   (t) => ({
-    unq: unique().on(t.workspaceId, t.slug),
-  })
+    unq: unique().on(t.workspaceSlug, t.slug),
+  }),
 );
 
 export const teamspacesRelations = relations(teamspaces, ({ one, many }) => ({
@@ -40,7 +40,7 @@ export const teamspacesRelations = relations(teamspaces, ({ one, many }) => ({
   datasets: many(datasets),
   teamspaceMemberships: many(teamspaceMemberships),
   workspace: one(workspaces, {
-    fields: [teamspaces.workspaceId],
-    references: [workspaces.id],
+    fields: [teamspaces.workspaceSlug],
+    references: [workspaces.slug],
   }),
 }));
