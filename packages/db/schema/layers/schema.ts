@@ -42,10 +42,10 @@ export const pointLayers = pgTable("point_layer", {
   id: uuid("id").primaryKey().defaultRandom(),
   layerId: uuid("layer_id")
     .notNull()
-    .references(() => layers.id, { onDelete: "cascade" }),
+    .references(() => layers.id),
   pointColumnId: uuid("point_column_id")
     .notNull()
-    .references(() => columns.id, { onDelete: "cascade" }),
+    .references(() => columns.id),
   titleColumnId: uuid("title_column_id")
     .notNull()
     .references(() => columns.id),

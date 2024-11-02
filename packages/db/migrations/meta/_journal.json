@@ -43,6 +43,13 @@
       "when": 1730466675631,
       "tag": "0005_charming_grandmaster",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1730556891308,
+      "tag": "0006_glossy_triathlon",
+      "breakpoints": true
     }
   ]
 }
