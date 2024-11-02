@@ -13,4 +13,5 @@ export const deleteColumn = authAction
     await db.delete(columns).where(eq(columns.id, id));
 
     revalidatePath("/[wsSlug]/[tsSlug]/datasets/[dId]", "page");
+    revalidatePath("/[wsSlug]/[tsSlug]/projects/[pId]/project", "page");
   });

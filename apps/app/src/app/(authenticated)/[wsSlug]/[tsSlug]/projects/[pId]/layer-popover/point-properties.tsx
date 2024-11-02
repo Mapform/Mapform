@@ -27,9 +27,10 @@ import { usePage } from "../page-context";
 
 interface PointPropertiesProps {
   form: UseFormReturn<UpsertLayerSchema>;
+  isEditing: boolean;
 }
 
-export function PointProperties({ form }: PointPropertiesProps) {
+export function PointProperties({ form, isEditing }: PointPropertiesProps) {
   const { availableDatasets } = usePage();
   const datasetId = form.watch("datasetId");
   const type = form.watch("type");
@@ -49,7 +50,7 @@ export function PointProperties({ form }: PointPropertiesProps) {
   );
 
   useEffect(() => {
-    if (type === "point") {
+    if (!isEditing && type === "point") {
       form.setValue(
         "pointProperties.pointColumnId",
         getAvailableColumns("point")?.find((c) => c.type === "point")?.id ?? "",
@@ -67,7 +68,7 @@ export function PointProperties({ form }: PointPropertiesProps) {
           ?.id ?? "",
       );
     }
-  }, [dataset, form, type, getAvailableColumns]);
+  }, [dataset, form, type, getAvailableColumns, isEditing]);
 
   const availablePointColumns = getAvailableColumns("point");
   const availableStringColumns = getAvailableColumns("string");
