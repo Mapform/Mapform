@@ -1,22 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import "@blocknote/core/fonts/inter.css";
-import { filterSuggestionItems, insertOrUpdateBlock } from "@blocknote/core";
 import {
-  SideMenuController,
-  SuggestionMenuController,
-  getDefaultReactSlashMenuItems,
+  schema,
+  type CustomBlock,
+  BlocknoteEditor,
   useCreateBlockNote,
-} from "@blocknote/react";
-import "@blocknote/mantine/style.css";
-import { BlockNoteView } from "@blocknote/mantine";
-import { TextIcon, ImageIcon, MapPinIcon, XIcon } from "lucide-react";
+} from "@mapform/blocknote";
+import { XIcon } from "lucide-react";
 import { Button } from "@mapform/ui/components/button";
 import type { Page } from "@mapform/db/schema";
-import { schema, type CustomBlock } from "@mapform/blocknote";
 import { AutoSizeTextArea } from "../components/autosize-text-area";
-import { CustomSideMenu } from "../components/side-menu";
 
 interface BlocknoteProps {
   editable: boolean;
@@ -53,42 +47,6 @@ export function Blocknote({
       default: editable ? "Write, or press '/' for commands..." : "",
     },
     schema,
-  });
-
-  const insertPin = (edtr: typeof schema.BlockNoteEditor) => ({
-    title: "Pin",
-    onItemClick: () => {
-      insertOrUpdateBlock(edtr, {
-        type: "pin",
-      });
-    },
-    aliases: ["location", "pins"],
-    group: "Inputs",
-    icon: <MapPinIcon />,
-  });
-
-  const insertTextInput = (edtr: typeof schema.BlockNoteEditor) => ({
-    title: "Text Input",
-    onItemClick: () => {
-      insertOrUpdateBlock(edtr, {
-        type: "textInput",
-      });
-    },
-    aliases: ["input", "short-text"],
-    group: "Inputs",
-    icon: <TextIcon />,
-  });
-
-  const insertImage = (edtr: typeof schema.BlockNoteEditor) => ({
-    title: "Image",
-    onItemClick: () => {
-      insertOrUpdateBlock(edtr, {
-        type: "image",
-      });
-    },
-    aliases: ["photo"],
-    group: "Media",
-    icon: <ImageIcon />,
   });
 
   // Renders the editor instance using a React component.
@@ -130,38 +88,17 @@ export function Blocknote({
         )}
 
         {/* Description */}
-        <BlockNoteView
-          className="flex-1"
+        <BlocknoteEditor
           editable={editable}
           editor={editor}
+          includeFormBlocks={!isPage}
           onChange={() => {
             onDescriptionChange &&
               onDescriptionChange({
                 content: editor.document,
               });
           }}
-          sideMenu={false}
-          slashMenu={false}
-        >
-          <SuggestionMenuController
-            // eslint-disable-next-line @typescript-eslint/require-await -- Needs to return a Promise
-            getItems={async (query) => {
-              return filterSuggestionItems(
-                [
-                  ...getDefaultReactSlashMenuItems(editor),
-                  // Only provide inputs for pages
-                  ...(isPage
-                    ? [insertTextInput(editor), insertPin(editor)]
-                    : []),
-                  insertImage(editor),
-                ],
-                query,
-              );
-            }}
-            triggerCharacter="/"
-          />
-          <SideMenuController sideMenu={CustomSideMenu} />
-        </BlockNoteView>
+        />
       </div>
       {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions -- Disable a11y checks here */}
       <div

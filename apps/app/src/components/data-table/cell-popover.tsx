@@ -26,6 +26,11 @@ import { upsertCell } from "~/data/cells/upsert-cell";
 import type { UpsertCellSchema } from "~/data/cells/upsert-cell/schema";
 import { upsertCellSchema } from "~/data/cells/upsert-cell/schema";
 import type { GetDataset } from "~/data/datasets/get-dataset";
+import {
+  schema,
+  BlocknoteEditor,
+  useCreateBlockNote,
+} from "@mapform/blocknote";
 
 const accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN!;
 
@@ -166,6 +171,8 @@ export function CellPopover({
     if (type === "point") {
       return <PointInput form={form} />;
     }
+
+    return <RichtextInput form={form} />;
   };
 
   return (
@@ -185,7 +192,7 @@ export function CellPopover({
         {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions -- it's good */}
         <form
           onKeyDown={(e) => {
-            if (e.key === "Enter") {
+            if (type !== "richtext" && e.key === "Enter") {
               onSubmit(form.getValues());
               cellEl.current?.focus();
             }
@@ -297,6 +304,42 @@ function DateInput({ form }: { form: UseFormReturn<UpsertCellSchema> }) {
         </FormItem>
       )}
     />
+  );
+}
+
+function RichtextInput({ form }: { form: UseFormReturn<UpsertCellSchema> }) {
+  const editor = useCreateBlockNote({
+    initialContent: null,
+    placeholders: {
+      default: "Write, or press '/' for commands...",
+    },
+    schema,
+  });
+
+  return (
+    <div className="h-[300px] w-full">
+      <FormField
+        control={form.control}
+        name="value"
+        render={({ field }) => (
+          <FormItem className="flex-1">
+            <FormControl>
+              <BlocknoteEditor
+                editor={editor}
+                includeFormBlocks={false}
+                onChange={() => {
+                  console.log(1111, editor.document);
+                  // onDescriptionChange &&
+                  //   onDescriptionChange({
+                  //     content: editor.document,
+                  //   });
+                }}
+              />
+            </FormControl>
+          </FormItem>
+        )}
+      />
+    </div>
   );
 }
 
