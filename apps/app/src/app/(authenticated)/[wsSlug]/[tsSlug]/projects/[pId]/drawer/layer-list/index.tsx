@@ -217,9 +217,11 @@ export function LayerList() {
                           }}
                           value={layer.layerId}
                         >
-                          <div className="flex items-center overflow-hidden truncate">
-                            <Layers2Icon className="mr-2 size-4" />
-                            {layer.name ?? "Untitled"}
+                          <div className="flex items-center overflow-hidden">
+                            <Layers2Icon className="mr-2 size-4 flex-shrink-0" />
+                            <span className="truncate">
+                              {layer.name ?? "Untitled"}
+                            </span>
                           </div>
                         </CommandItem>
                       ))}

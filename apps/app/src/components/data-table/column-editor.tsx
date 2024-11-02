@@ -1,4 +1,4 @@
-import { Button } from "@mapform/ui/components/button";
+import { useState } from "react";
 import {
   useForm,
   zodResolver,
@@ -18,22 +18,26 @@ import { Trash2Icon } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import { editColumn } from "~/data/columns/edit-column";
 import { deleteColumn } from "~/data/columns/delete-column";
+import { COLUMN_ICONS } from "~/constants/column-icons";
 import {
   editColumnSchema,
   type EditColumnSchema,
 } from "~/data/columns/edit-column/schema";
+import type { Column } from "@mapform/db/schema";
 
 interface ColumnEditorProps {
   columnId: string;
   columnName: string;
-  children: React.ReactNode;
+  columnType: Column["type"];
 }
 
 export function ColumnEditor({
   columnId,
   columnName,
-  children,
+  columnType,
 }: ColumnEditorProps) {
+  const Icon = COLUMN_ICONS[columnType];
+  const [open, setOpen] = useState(false);
   const { execute, status } = useAction(deleteColumn);
   const { execute: executeEditColumn } = useAction(editColumn);
   const form = useForm<EditColumnSchema>({
@@ -45,7 +49,8 @@ export function ColumnEditor({
   });
 
   const onSubmit = (values: EditColumnSchema) => {
-    execute(values);
+    setOpen(false);
+    executeEditColumn(values);
   };
 
   return (
@@ -56,55 +61,66 @@ export function ColumnEditor({
           executeEditColumn({ id: columnId, name: formValues.name });
           form.reset();
         }
+        setOpen(val);
       }}
+      open={open}
     >
-      <PopoverTrigger>{children}</PopoverTrigger>
-      <PopoverContent align="start" className="w-[240px]" side="right">
-        <Form {...form}>
-          <form
-            className="flex flex-1 flex-col"
-            onSubmit={form.handleSubmit(onSubmit)}
-          >
-            <div className="grid auto-cols-auto grid-cols-[auto_1fr] items-center gap-x-6 gap-y-3">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <>
-                    <FormLabel>Name</FormLabel>
-                    <div className="flex-1">
-                      <FormControl>
-                        <Input
-                          disabled={field.disabled}
-                          name={field.name}
-                          onChange={field.onChange}
-                          placeholder="New Column"
-                          ref={field.ref}
-                          s="sm"
-                          value={field.value}
-                          variant="filled"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </div>
-                  </>
-                )}
-              />
-              <Button
-                className="col-span-2"
-                disabled={status === "executing"}
-                onClick={() => {
-                  execute({ id: columnId });
-                }}
-                size="sm"
-                type="button"
-                variant="ghost"
-              >
-                <Trash2Icon className="mr-2 size-4" /> Delete
-              </Button>
-            </div>
-          </form>
-        </Form>
+      <PopoverTrigger>
+        <span className="flex items-center gap-1.5">
+          <Icon className="size-4" /> {form.watch("name")}
+        </span>
+      </PopoverTrigger>
+      <PopoverContent align="start" className="w-[240px] p-0" side="right">
+        <div className="flex flex-col">
+          <Form {...form}>
+            <form
+              className="flex flex-1 flex-col px-3 py-2.5"
+              onSubmit={form.handleSubmit(onSubmit)}
+            >
+              <div className="grid auto-cols-auto grid-cols-[auto_1fr] items-center gap-x-6 gap-y-3">
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <>
+                      <FormLabel>Name</FormLabel>
+                      <div className="flex-1">
+                        <FormControl>
+                          <Input
+                            disabled={field.disabled}
+                            name={field.name}
+                            onChange={field.onChange}
+                            placeholder="New Column"
+                            ref={field.ref}
+                            s="sm"
+                            value={field.value}
+                            variant="filled"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </div>
+                    </>
+                  )}
+                />
+              </div>
+              <button className="hidden" type="submit">
+                Submit
+              </button>
+            </form>
+          </Form>
+          <div className="border-t p-1">
+            <button
+              className="hover:bg-accent hover:text-accent-foreground flex w-full cursor-default items-center rounded-sm px-2 py-1.5 text-left text-sm outline-none transition-colors"
+              disabled={status === "executing"}
+              onClick={() => {
+                execute({ id: columnId });
+              }}
+              type="button"
+            >
+              <Trash2Icon className="mr-2 size-4" /> Delete
+            </button>
+          </div>
+        </div>
       </PopoverContent>
     </Popover>
   );

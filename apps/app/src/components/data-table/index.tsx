@@ -21,15 +21,9 @@ import { useAction } from "next-safe-action/hooks";
 import { createRow } from "~/data/rows/create-row";
 import { deleteRows } from "~/data/rows/delete-rows";
 import { duplicateRows } from "~/data/rows/duplicate-rows";
-import { COLUMN_ICONS } from "~/constants/column-icons";
 import type { GetDataset } from "~/data/datasets/get-dataset";
 import { ColumnAdder } from "./column-adder";
 import { CellPopover } from "./cell-popover";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@mapform/ui/components/popover";
 import { ColumnEditor } from "./column-editor";
 
 interface TableProps {
@@ -218,16 +212,14 @@ const getColumns = (dataset: GetDataset) => {
       enableHiding: false,
     },
     ...dataset.columns.map((column) => {
-      const Icon = COLUMN_ICONS[column.type];
-
       return {
         accessorKey: column.id,
         header: () => (
-          <ColumnEditor columnId={column.id} columnName={column.name}>
-            <span className="flex items-center gap-1.5">
-              <Icon className="size-4" /> {column.name}
-            </span>
-          </ColumnEditor>
+          <ColumnEditor
+            columnId={column.id}
+            columnName={column.name}
+            columnType={column.type}
+          />
         ),
       };
     }),
