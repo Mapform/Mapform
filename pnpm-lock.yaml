@@ -80,6 +80,9 @@ importers:
       '@tanstack/react-virtual':
         specifier: ^3.10.8
         version: 3.10.8(react-dom@19.0.0-rc-e4953922-20240919)(react@19.0.0-rc-e4953922-20240919)
+      '@types/mapbox-gl':
+        specifier: ^3.1.0
+        version: 3.1.0
       '@vercel/blob':
         specifier: ^0.23.3
         version: 0.23.3
@@ -89,6 +92,9 @@ importers:
       lucide-react:
         specifier: ^0.354.0
         version: 0.354.0(react@19.0.0-rc-e4953922-20240919)
+      mapbox-gl:
+        specifier: ^3.2.0
+        version: 3.2.0
       next:
         specifier: 14.2.5
         version: 14.2.5(react-dom@19.0.0-rc-e4953922-20240919)(react@19.0.0-rc-e4953922-20240919)

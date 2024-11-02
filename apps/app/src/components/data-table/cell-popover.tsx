@@ -13,16 +13,20 @@ import {
   PopoverAnchor,
   PopoverContent,
 } from "@mapform/ui/components/popover";
+import mapboxgl from "mapbox-gl";
+import "mapbox-gl/dist/mapbox-gl.css";
 import { Switch } from "@mapform/ui/components/switch";
 import { TableCell } from "@mapform/ui/components/table";
 import { DateTimePicker } from "@mapform/ui/components/datetime-picker";
 import { flexRender, type Cell } from "@tanstack/react-table";
 import { useAction } from "next-safe-action/hooks";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { upsertCell } from "~/data/cells/upsert-cell";
 import type { UpsertCellSchema } from "~/data/cells/upsert-cell/schema";
 import { upsertCellSchema } from "~/data/cells/upsert-cell/schema";
 import type { GetDataset } from "~/data/datasets/get-dataset";
+
+const accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
 
 export function CellPopover({
   cell,
@@ -157,6 +161,10 @@ export function CellPopover({
     if (type === "date") {
       return <DateInput form={form} />;
     }
+
+    if (type === "point") {
+      return <PointInput form={form} />;
+    }
   };
 
   return (
@@ -199,7 +207,11 @@ export function CellPopover({
           >
             {renderCellContent()}
             <PopoverAnchor />
-            <PopoverContent align="start" className="p-0" side="top">
+            <PopoverContent
+              align="start"
+              className="overflow-hidden p-0"
+              side="top"
+            >
               {renderField()}
             </PopoverContent>
           </Popover>
@@ -273,5 +285,44 @@ function DateInput({ form }: { form: UseFormReturn<UpsertCellSchema> }) {
         </FormItem>
       )}
     />
+  );
+}
+
+const INITIAL_CENTER = [-74.0242, 40.6941];
+const INITIAL_ZOOM = 10.12;
+
+function PointInput({ form }: { form: UseFormReturn<UpsertCellSchema> }) {
+  const mapContainerRef = useRef<HTMLDivElement | null>(null);
+  const [center, setCenter] = useState(INITIAL_CENTER);
+  const [zoom, setZoom] = useState(INITIAL_ZOOM);
+
+  useEffect(() => {
+    mapboxgl.accessToken = accessToken;
+    const map = new mapboxgl.Map({
+      container: mapContainerRef.current,
+    });
+
+    map.on("move", () => {
+      // get the current center coordinates and zoom level from the map
+      const mapCenter = map.getCenter();
+      const mapZoom = map.getZoom();
+
+      // update state
+      setCenter([mapCenter.lng, mapCenter.lat]);
+      setZoom(mapZoom);
+    });
+
+    return () => {
+      map.remove();
+    };
+  }, []);
+
+  return (
+    <div className="relative h-[280px] w-full">
+      <div className="absolute left-2 right-2 top-2 z-10 rounded bg-white/70 px-4 py-2 font-mono text-xs backdrop-blur-md">
+        Lng: {center[0]?.toFixed(4)} | Lat: {center[1]?.toFixed(4)}
+      </div>
+      <div className="h-full w-full" ref={mapContainerRef} />
+    </div>
   );
 }
