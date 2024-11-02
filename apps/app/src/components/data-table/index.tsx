@@ -31,6 +31,7 @@ interface TableProps {
 }
 
 export const DataTable = memo(function DataTable({ dataset }: TableProps) {
+  console.log(11111, dataset);
   const { execute: executeDeleteRows, status: statusDeleteRows } =
     useAction(deleteRows);
   const { execute: executeDuplicateRows, status: statusDuplicateRows } =
@@ -51,6 +52,7 @@ export const DataTable = memo(function DataTable({ dataset }: TableProps) {
               cell.stringCell?.value ??
               cell.numberCell?.value ??
               cell.booleanCell?.value ??
+              cell.richtextCell?.value ??
               cell.dateCell?.value ??
               (cell.pointCell && {
                 x: cell.pointCell.x,

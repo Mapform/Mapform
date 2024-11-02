@@ -194,7 +194,7 @@ export const richtextCells = pgTable(
   "richtext_cell",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    value: jsonb("content").$type<{ content: DocumentContent }>(),
+    value: jsonb("value").$type<{ content: DocumentContent }>(),
 
     cellId: uuid("cell_id")
       .notNull()

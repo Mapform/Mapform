@@ -17,20 +17,18 @@ import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { Switch } from "@mapform/ui/components/switch";
 import { TableCell } from "@mapform/ui/components/table";
-import { DateTimePicker } from "@mapform/ui/components/datetime-picker";
 import { flexRender, type Cell } from "@tanstack/react-table";
 import { useAction } from "next-safe-action/hooks";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { CircleDot, MapPin } from "lucide-react";
-import { upsertCell } from "~/data/cells/upsert-cell";
-import type { UpsertCellSchema } from "~/data/cells/upsert-cell/schema";
-import { upsertCellSchema } from "~/data/cells/upsert-cell/schema";
-import type { GetDataset } from "~/data/datasets/get-dataset";
 import {
   schema,
   BlocknoteEditor,
   useCreateBlockNote,
 } from "@mapform/blocknote";
+import { upsertCell } from "~/data/cells/upsert-cell";
+import type { UpsertCellSchema } from "~/data/cells/upsert-cell/schema";
+import { upsertCellSchema } from "~/data/cells/upsert-cell/schema";
+import type { GetDataset } from "~/data/datasets/get-dataset";
 
 const accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN!;
 
@@ -66,7 +64,6 @@ export function CellPopover({
   const [open, setOpen] = useState(false);
 
   const onSubmit = (values: UpsertCellSchema) => {
-    console.log("Submitting", values);
     setOpen(false);
     executeUpsertCell(values);
   };
@@ -308,7 +305,7 @@ function DateInput({ form }: { form: UseFormReturn<UpsertCellSchema> }) {
 
 function RichtextInput({ form }: { form: UseFormReturn<UpsertCellSchema> }) {
   const editor = useCreateBlockNote({
-    initialContent: form.getValues().value,
+    initialContent: form.getValues().value?.content,
     placeholders: {
       default: "Write, or press '/' for commands...",
     },

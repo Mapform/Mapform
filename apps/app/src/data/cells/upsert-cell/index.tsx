@@ -90,8 +90,7 @@ export const upsertCell = authAction
       }
 
       if (type === "richtext") {
-        console.log(7777, value);
-        const [x] = await tx
+        await tx
           .insert(richtextCells)
           .values({
             cellId: cell.id,
@@ -102,8 +101,6 @@ export const upsertCell = authAction
             set: { value: value as unknown as { content: DocumentContent } },
           })
           .returning();
-
-        console.log(8888, x?.value);
       }
     });
 
