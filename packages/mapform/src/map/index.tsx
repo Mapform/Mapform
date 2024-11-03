@@ -52,6 +52,7 @@ export function Map({
         properties: {
           id: point.id,
           color: point.color ?? "#3b82f6",
+          icon: "cafe.svg",
         },
       })),
     }),
@@ -90,8 +91,18 @@ export function Map({
 
       // Add your custom markers and lines here
       m.on("load", () => {
-        setMap(m);
-        onLoad && onLoad();
+        m.loadImage(
+          "https://docs.mapbox.com/mapbox-gl-js/assets/cat.png",
+          (error, image) => {
+            if (!m.hasImage("cafe")) {
+              console.log(11111, image);
+              m.addImage("cafe", image as any);
+            }
+
+            setMap(m);
+            onLoad && onLoad();
+          },
+        );
       });
 
       // Clean up on unmount
@@ -148,6 +159,30 @@ export function Map({
             "circle-stroke-width": 2,
           },
         });
+
+        map.addLayer({
+          id: "emoji-layer",
+          type: "symbol",
+          source: "points",
+          layout: {
+            "icon-image": "cafe",
+            "icon-size": 1,
+          },
+        });
+
+        // map.addLayer({
+        //   id: "points",
+        //   type: "symbol",
+        //   source: "points",
+        //   layout: {
+        //     "icon-image": "custom-marker",
+        //     // get the title name from the source's "title" property
+        //     "text-field": ["get", "title"],
+        //     "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
+        //     "text-offset": [0, 1.25],
+        //     "text-anchor": "top",
+        //   },
+        // });
       }
     }
   }, [map, geojson]);
