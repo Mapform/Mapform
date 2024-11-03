@@ -534,6 +534,9 @@ importers:
       lucide-react:
         specifier: ^0.446.0
         version: 0.446.0(react@19.0.0-rc-e4953922-20240919)
+      lucide-static:
+        specifier: ^0.454.0
+        version: 0.454.0
       mapbox-gl:
         specifier: ^3.2.0
         version: 3.2.0
@@ -7700,6 +7703,10 @@ packages:
       react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0-rc
     dependencies:
       react: 19.0.0-rc-e4953922-20240919
+    dev: false
+
+  /lucide-static@0.454.0:
+    resolution: {integrity: sha512-Jr6Xbn/WOXUy5ULRp191s+JUEqoHxEBIG6tlqEZw7sHnRVIgfIKF8T5VsoOb63p/oODGdEA4BRZ+qtaVFXt/6A==}
     dev: false
 
   /magic-string@0.30.11:

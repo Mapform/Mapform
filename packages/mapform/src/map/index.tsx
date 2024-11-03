@@ -6,6 +6,7 @@ import type { FeatureCollection } from "geojson";
 import type { PageData, ViewState } from "@mapform/map-utils/types";
 import { useMeasure } from "@mapform/lib/hooks/use-measure";
 import { usePrevious } from "@mapform/lib/hooks/use-previous";
+import globeSvg from "lucide-static/icons/globe.svg";
 import { useMapform } from "../context";
 import { SearchLocationMarker } from "./search-location-marker";
 
@@ -91,18 +92,13 @@ export function Map({
 
       // Add your custom markers and lines here
       m.on("load", () => {
-        m.loadImage(
-          "https://docs.mapbox.com/mapbox-gl-js/assets/cat.png",
-          (error, image) => {
-            if (!m.hasImage("cafe")) {
-              console.log(11111, image);
-              m.addImage("cafe", image as any);
-            }
-
-            setMap(m);
-            onLoad && onLoad();
-          },
-        );
+        const img = new Image(20, 20);
+        img.src = globeSvg.src;
+        img.onload = () => {
+          m.addImage("cafe", img);
+        };
+        setMap(m);
+        onLoad && onLoad();
       });
 
       // Clean up on unmount
@@ -166,7 +162,7 @@ export function Map({
           source: "points",
           layout: {
             "icon-image": "cafe",
-            "icon-size": 1,
+            "icon-size": 0.5,
           },
         });
 
