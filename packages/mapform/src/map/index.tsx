@@ -51,6 +51,7 @@ export function Map({
         },
         properties: {
           id: point.id,
+          color: point.color ?? "#3b82f6",
         },
       })),
     }),
@@ -141,8 +142,10 @@ export function Map({
           type: "circle",
           source: "points",
           paint: {
-            "circle-radius": 10,
-            "circle-color": "#007cbf",
+            "circle-radius": 8,
+            "circle-color": ["get", "color"],
+            "circle-stroke-color": "#fff",
+            "circle-stroke-width": 2,
           },
         });
       }

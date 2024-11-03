@@ -102,6 +102,12 @@ export function PointProperties({ form, isEditing }: PointPropertiesProps) {
         name="pointProperties.descriptionColumnId"
         type="richtext"
       />
+      <div className="col-span-2 mt-1 w-full border-t pt-3">
+        <h3 className="-mb-2 text-xs font-semibold leading-6 text-stone-400">
+          Styles
+        </h3>
+      </div>
+      <ColorField form={form} label="Color" />
     </>
   );
 }
@@ -248,6 +254,77 @@ function DataColField({
                   ) : null}
                 </CommandList>
               </Command>
+            </PopoverContent>
+          </div>
+        </Popover>
+      )}
+    />
+  );
+}
+
+const colorOptions = [
+  { value: "#3b82f6", label: "Blue" },
+  { value: "#0ea5e9", label: "Sky" },
+  { value: "#6366f1", label: "Indigo" },
+  { value: "#22c55e", label: "Green" },
+  { value: "#14b8a6", label: "Teal" },
+  { value: "#ef4444", label: "Red" },
+  { value: "#ec4899", label: "Pink" },
+  { value: "#f43f5e", label: "Rose" },
+  { value: "#f97316", label: "Orange" },
+  { value: "#f59e0b", label: "Amber" },
+  { value: "#a855f7", label: "Purple" },
+  { value: "#78716c", label: "Stone" },
+];
+
+function ColorField({
+  form,
+  label,
+}: {
+  form: UseFormReturn<UpsertLayerSchema>;
+  label: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const formColor = form.watch("pointProperties.color") ?? "#3b82f6";
+
+  return (
+    <FormField
+      control={form.control}
+      name="pointProperties.color"
+      render={() => (
+        <Popover modal onOpenChange={setOpen} open={open}>
+          <FormLabel htmlFor="color">{label}</FormLabel>
+          <div className="flex w-full flex-shrink-0 justify-end">
+            <PopoverTrigger asChild>
+              <div
+                className="flex h-[28px] w-full cursor-pointer items-center justify-center rounded-md text-sm text-white shadow-sm"
+                style={{
+                  backgroundColor: formColor,
+                }}
+              >
+                {formColor}
+              </div>
+            </PopoverTrigger>
+            <PopoverContent
+              align="start"
+              className="flex w-[200px] flex-wrap justify-evenly gap-2"
+              side="right"
+            >
+              {colorOptions.map((color) => (
+                <button
+                  className={cn("size-8 rounded-full", {
+                    "border-[3px] border-white border-opacity-70":
+                      formColor === color.value,
+                  })}
+                  key={color.value}
+                  onClick={() => {
+                    form.setValue("pointProperties.color", color.value);
+                    setOpen(false);
+                  }}
+                  style={{ backgroundColor: color.value }}
+                  type="button"
+                />
+              ))}
             </PopoverContent>
           </div>
         </Popover>

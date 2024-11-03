@@ -54,18 +54,12 @@ export const upsertLayer = authAction
           if (id) {
             await tx
               .update(pointLayers)
-              .set({
-                pointColumnId: pointProperties.pointColumnId,
-                titleColumnId: pointProperties.titleColumnId,
-                descriptionColumnId: pointProperties.descriptionColumnId,
-              })
+              .set(pointProperties)
               .where(eq(pointLayers.layerId, id));
           } else {
             await tx.insert(pointLayers).values({
               layerId: layer.id,
-              pointColumnId: pointProperties.pointColumnId,
-              titleColumnId: pointProperties.titleColumnId,
-              descriptionColumnId: pointProperties.descriptionColumnId,
+              ...pointProperties,
             });
           }
         }

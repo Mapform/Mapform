@@ -1,7 +1,15 @@
-import type { PointCell } from "@mapform/db/schema";
-
+// TODO: This directory is dumb. All data fetching and response types should be
+// refactored into its own package
 export type PageData = {
-  pointData: PointCell[];
+  pointData: {
+    color: string | null | undefined;
+    value: {
+      x: number;
+      y: number;
+    };
+    id: string;
+    cellId: string;
+  }[];
 };
 
 export type PaddingOptions = {

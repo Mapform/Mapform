@@ -13,6 +13,7 @@ export const upsertLayerSchema = z.object({
   type: insertLayerSchema.shape.type,
   pointProperties: z
     .object({
+      color: insertPointLayerSchema.shape.color,
       pointColumnId: insertPointLayerSchema.shape.pointColumnId,
       titleColumnId: insertPointLayerSchema.shape.titleColumnId,
       descriptionColumnId: insertPointLayerSchema.shape.descriptionColumnId,

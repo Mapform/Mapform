@@ -56,9 +56,9 @@ function Project() {
       <div className="flex flex-1">
         <MapForm
           currentPage={optimisticPage}
-          editFields={{
-            AddLocationDropdown,
-          }}
+          // editFields={{
+          //   AddLocationDropdown,
+          // }}
           editable
           mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
           onDescriptionChange={(content: { content: CustomBlock[] }) => {
