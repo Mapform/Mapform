@@ -22,6 +22,7 @@ import {
   LetterTextIcon,
   ChevronsLeftIcon,
   ChevronsRightIcon,
+  XIcon,
 } from "lucide-react";
 import { Blocknote } from "./block-note";
 import { Map, SearchLocationMarker } from "./map";
@@ -60,8 +61,8 @@ export function MapForm({
   defaultFormValues,
   onDescriptionChange,
 }: MapFormProps) {
-  const { drawerOpen, setDrawerOpen } = useMapform();
-  const [showMapMobile, setShowMapMobile] = useState(false);
+  const { drawerOpen, setDrawerOpen, activePoint, setActivePoint } =
+    useMapform();
   const blocknoteStepSchema = getFormSchemaFromBlockNote(
     currentPage.content?.content || [],
   );
@@ -94,7 +95,7 @@ export function MapForm({
   const mapPadding = {
     top: 0,
     bottom: 0,
-    left: drawerOpen ? (editable ? 392 : 360) : 0,
+    left: drawerOpen || Boolean(activePoint) ? (editable ? 392 : 360) : 0,
     right: 0,
   };
 
@@ -129,96 +130,113 @@ export function MapForm({
             <ChevronsRightIcon className="size-5" />
           </Button>
           {rootEl.current ? (
-            <DrawerPrimitive.Root
-              container={rootEl.current}
-              direction="left"
-              dismissible={false}
-              modal={false}
-              onOpenChange={setDrawerOpen}
-              open={drawerOpen}
-            >
-              <DrawerPrimitive.Portal>
-                <DrawerPrimitive.Content
-                  className={cn(
-                    "bg-background prose group absolute bottom-0 top-0 z-50 h-full rounded-r-lg shadow-lg outline-none",
-                    editable ? "w-[392px] pl-8" : "w-[360px]",
-                  )}
-                >
-                  <Button
-                    className="absolute right-2 top-2"
-                    onClick={() => {
-                      setDrawerOpen(false);
-                    }}
-                    size="icon-sm"
-                    variant="ghost"
+            <>
+              <DrawerPrimitive.Root
+                container={rootEl.current}
+                direction="left"
+                dismissible={false}
+                modal={false}
+                onOpenChange={setDrawerOpen}
+                open={drawerOpen}
+              >
+                <DrawerPrimitive.Portal>
+                  <DrawerPrimitive.Content
+                    className={cn(
+                      "bg-background prose group absolute bottom-0 top-0 z-40 h-full rounded-r-lg shadow-lg outline-none",
+                      editable ? "w-[392px] pl-8" : "w-[360px]",
+                    )}
                   >
-                    <ChevronsLeftIcon className="size-5" />
-                  </Button>
-                  <Blocknote
-                    currentPage={currentPage}
-                    description={currentPage.content ?? undefined}
-                    editable={editable}
-                    isPage
-                    key={currentPage.id}
-                    onDescriptionChange={onDescriptionChange}
-                    onPrev={onPrev}
-                    onTitleChange={onTitleChange}
-                    title={currentPage.title}
-                  />
-                  <div
-                    className={cn("mt-auto flex justify-between px-4 py-2", {
-                      hidden: editable,
-                    })}
-                  >
-                    <div className="gap-2">
-                      <Button
-                        disabled={editable}
-                        onClick={onPrev}
-                        size="icon"
-                        type="button"
-                        variant="ghost"
-                      >
-                        <ArrowLeftIcon />
-                      </Button>
-                    </div>
-                    <div
-                      className={
-                        currentPage.contentViewType === "text"
-                          ? "block"
-                          : "md:hidden"
-                      }
-                    >
-                      <Button
-                        onClick={() => {
-                          setShowMapMobile((prev) => !prev);
-                        }}
-                        variant="secondary"
-                      >
-                        {showMapMobile ? (
-                          <>
-                            <LetterTextIcon className="mr-2 size-5" />
-                            Show Text
-                          </>
-                        ) : (
-                          <>
-                            <MapIcon className="mr-2 size-5" />
-                            Show Map
-                          </>
-                        )}
-                      </Button>
-                    </div>
                     <Button
-                      disabled={editable}
-                      size="icon"
-                      type="submit"
+                      className="absolute right-2 top-2"
+                      onClick={() => {
+                        setDrawerOpen(false);
+                      }}
+                      size="icon-sm"
                       variant="ghost"
                     >
-                      <ArrowRightIcon />
+                      <ChevronsLeftIcon className="size-5" />
                     </Button>
-                  </div>
-                </DrawerPrimitive.Content>
-              </DrawerPrimitive.Portal>
-            </DrawerPrimitive.Root>
+                    <Blocknote
+                      currentPage={currentPage}
+                      description={currentPage.content ?? undefined}
+                      editable={editable}
+                      isPage
+                      key={currentPage.id}
+                      onDescriptionChange={onDescriptionChange}
+                      onPrev={onPrev}
+                      onTitleChange={onTitleChange}
+                      title={currentPage.title}
+                    />
+                    <div
+                      className={cn("mt-auto flex justify-between px-4 py-2", {
+                        hidden: editable,
+                      })}
+                    >
+                      <div className="gap-2">
+                        <Button
+                          disabled={editable}
+                          onClick={onPrev}
+                          size="icon"
+                          type="button"
+                          variant="ghost"
+                        >
+                          <ArrowLeftIcon />
+                        </Button>
+                      </div>
+                      <Button
+                        disabled={editable}
+                        size="icon"
+                        type="submit"
+                        variant="ghost"
+                      >
+                        <ArrowRightIcon />
+                      </Button>
+                    </div>
+                  </DrawerPrimitive.Content>
+                </DrawerPrimitive.Portal>
+              </DrawerPrimitive.Root>
+              <DrawerPrimitive.NestedRoot
+                container={rootEl.current}
+                direction="left"
+                dismissible={false}
+                modal={false}
+                onOpenChange={(val) => {
+                  setActivePoint(val ? activePoint : null);
+                }}
+                open={Boolean(activePoint)}
+              >
+                <DrawerPrimitive.Portal>
+                  <DrawerPrimitive.Content
+                    className={cn(
+                      "bg-background prose group absolute bottom-0 top-0 z-50 h-full rounded-r-lg shadow-lg outline-none",
+                      editable ? "w-[392px] pl-8" : "w-[360px]",
+                    )}
+                  >
+                    <Button
+                      className="absolute right-2 top-2"
+                      onClick={() => {
+                        setActivePoint(null);
+                      }}
+                      size="icon-sm"
+                      variant="ghost"
+                    >
+                      <XIcon className="size-5" />
+                    </Button>
+                    <Blocknote
+                      currentPage={currentPage}
+                      description={currentPage.content ?? undefined}
+                      editable={editable}
+                      isPage
+                      key={currentPage.id}
+                      onDescriptionChange={onDescriptionChange}
+                      onPrev={onPrev}
+                      onTitleChange={onTitleChange}
+                      title={currentPage.title}
+                    />
+                  </DrawerPrimitive.Content>
+                </DrawerPrimitive.Portal>
+              </DrawerPrimitive.NestedRoot>
+            </>
           ) : null}
           <Map
             editable={editable}

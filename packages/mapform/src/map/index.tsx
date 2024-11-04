@@ -6,7 +6,6 @@ import type { FeatureCollection } from "geojson";
 import type { PageData, ViewState } from "@mapform/map-utils/types";
 import { useMeasure } from "@mapform/lib/hooks/use-measure";
 import { usePrevious } from "@mapform/lib/hooks/use-previous";
-import globeSvg from "lucide-static/icons/globe.svg";
 import { useMapform } from "../context";
 import { SearchLocationMarker } from "./search-location-marker";
 
@@ -36,7 +35,7 @@ export function Map({
   children,
 }: MapProps) {
   // const mapContainer = useRef<HTMLDivElement>(null);
-  const { map, setMap } = useMapform();
+  const { map, setMap, setActivePoint } = useMapform();
   // Condition in usePrevious resolves issue where map padding is not updated on first render
   const prevMapPadding = usePrevious(map ? mapPadding : undefined);
   const { ref: mapContainer, bounds } = useMeasure<HTMLDivElement>();
@@ -52,8 +51,9 @@ export function Map({
         },
         properties: {
           id: point.id,
+          type: "point",
           color: point.color ?? "#3b82f6",
-          icon: "cafe.svg",
+          // icon: "...",
         },
       })),
     }),
@@ -92,11 +92,11 @@ export function Map({
 
       // Add your custom markers and lines here
       m.on("load", () => {
-        const img = new Image(20, 20);
-        img.src = globeSvg.src;
-        img.onload = () => {
-          m.addImage("cafe", img);
-        };
+        // const img = new Image(20, 20);
+        // img.src = globeSvg.src;
+        // img.onload = () => {
+        //   m.addImage("cafe", img);
+        // };
         setMap(m);
         onLoad && onLoad();
       });
@@ -156,27 +156,27 @@ export function Map({
           },
         });
 
-        map.addLayer({
-          id: "emoji-layer",
-          type: "symbol",
-          source: "points",
-          layout: {
-            "icon-image": "cafe",
-            "icon-size": 0.5,
-          },
+        map.on("click", "points", (e) => {
+          const feature = e.features?.[0];
+
+          console.log("Cliced feature:", feature);
+          if (feature) {
+            setActivePoint({
+              id: feature.properties?.id,
+              color: feature.properties?.color,
+              title: "Title",
+              description: "Description",
+            });
+          }
         });
 
         // map.addLayer({
-        //   id: "points",
+        //   id: "emoji-layer",
         //   type: "symbol",
         //   source: "points",
         //   layout: {
-        //     "icon-image": "custom-marker",
-        //     // get the title name from the source's "title" property
-        //     "text-field": ["get", "title"],
-        //     "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
-        //     "text-offset": [0, 1.25],
-        //     "text-anchor": "top",
+        //     "icon-image": "cafe",
+        //     "icon-size": 0.5,
         //   },
         // });
       }

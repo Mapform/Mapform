@@ -10,10 +10,10 @@ import {
   richtextCells,
   dateCells,
 } from "@mapform/db/schema";
+import { revalidatePath } from "next/cache";
 import type { DocumentContent } from "@mapform/blocknote";
 import { authAction } from "~/lib/safe-action";
 import { upsertCellSchema } from "./schema";
-import { revalidatePath } from "next/cache";
 
 export const upsertCell = authAction
   .schema(upsertCellSchema)
