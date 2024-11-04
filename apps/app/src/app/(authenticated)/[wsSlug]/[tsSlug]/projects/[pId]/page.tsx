@@ -67,6 +67,19 @@ const fetchPageData = cache(async (id?: string) => {
   return pageData;
 });
 
+const fetchPointCell = cache(async (id?: string) => {
+  if (!id) {
+    return undefined;
+  }
+
+  const pageDataResponse = await getPageData({
+    pageId: id,
+  });
+  const pageData = pageDataResponse?.data;
+
+  return pageData;
+});
+
 export default async function ProjectPage({
   params,
   searchParams,

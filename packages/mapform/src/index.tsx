@@ -231,7 +231,7 @@ export function MapForm({
                       onDescriptionChange={onDescriptionChange}
                       onPrev={onPrev}
                       onTitleChange={onTitleChange}
-                      title={currentPage.title}
+                      title="Some POI Title"
                     />
                   </DrawerPrimitive.Content>
                 </DrawerPrimitive.Portal>
@@ -248,7 +248,7 @@ export function MapForm({
             <div
               className={cn(
                 "absolute bottom-0 right-0 top-0 transition-[width] duration-200",
-                drawerOpen
+                drawerOpen || Boolean(activePoint)
                   ? editable
                     ? "w-[calc(100%-392px)]"
                     : "w-[calc(100%-360px)]"
