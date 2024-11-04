@@ -43,6 +43,7 @@ interface MapFormProps {
   onStepSubmit?: (data: Record<string, string>) => void;
   onImageUpload?: (file: File) => Promise<string | null>;
   pageData?: PageData;
+  activePoint?: any;
   // editFields?: {
   //   AddLocationDropdown: (input: { data: any }) => JSX.Element;
   // };
@@ -54,6 +55,7 @@ export function MapForm({
   onLoad,
   pageData,
   children,
+  activePoint,
   currentPage,
   onStepSubmit,
   onTitleChange,
@@ -61,8 +63,7 @@ export function MapForm({
   defaultFormValues,
   onDescriptionChange,
 }: MapFormProps) {
-  const { drawerOpen, setDrawerOpen, activePoint, setActivePoint } =
-    useMapform();
+  const { drawerOpen, setDrawerOpen } = useMapform();
   const blocknoteStepSchema = getFormSchemaFromBlockNote(
     currentPage.content?.content || [],
   );
@@ -201,7 +202,7 @@ export function MapForm({
                 dismissible={false}
                 modal={false}
                 onOpenChange={(val) => {
-                  setActivePoint(val ? activePoint : null);
+                  // setActivePoint(val ? activePoint : null);
                 }}
                 open={Boolean(activePoint)}
               >
@@ -215,7 +216,7 @@ export function MapForm({
                     <Button
                       className="absolute right-2 top-2"
                       onClick={() => {
-                        setActivePoint(null);
+                        // setActivePoint(null);
                       }}
                       size="icon-sm"
                       variant="ghost"
@@ -224,14 +225,14 @@ export function MapForm({
                     </Button>
                     <Blocknote
                       currentPage={currentPage}
-                      description={currentPage.content ?? undefined}
+                      description={activePoint?.description ?? undefined}
                       editable={editable}
                       isPage
                       key={currentPage.id}
                       onDescriptionChange={onDescriptionChange}
                       onPrev={onPrev}
                       onTitleChange={onTitleChange}
-                      title="Some POI Title"
+                      title={activePoint?.title}
                     />
                   </DrawerPrimitive.Content>
                 </DrawerPrimitive.Portal>

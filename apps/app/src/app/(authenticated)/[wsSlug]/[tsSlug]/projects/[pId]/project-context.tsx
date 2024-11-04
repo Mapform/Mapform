@@ -12,6 +12,7 @@ import { useCreateQueryString } from "@mapform/lib/hooks/use-create-query-string
 import type { ProjectWithPages } from "~/data/projects/get-project-with-pages";
 
 export interface ProjectContextProps {
+  layerPoint: any;
   optimisticProjectWithPages: ProjectWithPages;
   updateProjectWithPages: (action: ProjectWithPages) => void;
 }
@@ -27,9 +28,11 @@ export const useProject = () => useContext(ProjectContext);
  */
 export function ProjectProvider({
   projectWithPages,
+  layerPoint,
   children,
 }: {
   projectWithPages: ProjectWithPages;
+  layerPoint: any;
   children: React.ReactNode;
 }) {
   const router = useRouter();
@@ -68,6 +71,7 @@ export function ProjectProvider({
   return (
     <ProjectContext.Provider
       value={{
+        layerPoint,
         updateProjectWithPages,
         optimisticProjectWithPages,
       }}
