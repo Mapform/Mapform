@@ -26,7 +26,7 @@ export const getPageData = authAction
 
     const pointCellsResponse = await Promise.all(
       pointLayers.map(async (pl) => {
-        if (!pl.layer.pointLayer?.pointColumnId) {
+        if (!pl.layer.pointLayer?.pointColumnId || !pl.layer.pointLayer.id) {
           return [];
         }
 
@@ -40,6 +40,8 @@ export const getPageData = authAction
         return cellsResponse.map((c) => ({
           ...c,
           color: pl.layer.pointLayer?.color,
+          rowId: c.cell.rowId,
+          pointLayerId: pl.layer.pointLayer.id,
         }));
       }),
     );
@@ -48,7 +50,12 @@ export const getPageData = authAction
       pointData: pointCellsResponse
         .flat()
         .filter((pc) => pc.point_cell?.value)
-        .map((pc) => ({ ...pc.point_cell, color: pc.color })),
+        .map((pc) => ({
+          ...pc.point_cell,
+          color: pc.color,
+          rowId: pc.rowId,
+          pointLayerId: pc.pointLayerId,
+        })),
     };
   });
 

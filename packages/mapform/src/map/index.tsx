@@ -6,6 +6,7 @@ import type { FeatureCollection } from "geojson";
 import type { PageData, ViewState } from "@mapform/map-utils/types";
 import { useMeasure } from "@mapform/lib/hooks/use-measure";
 import { usePrevious } from "@mapform/lib/hooks/use-previous";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useMapform } from "../context";
 import { SearchLocationMarker } from "./search-location-marker";
 
@@ -34,7 +35,9 @@ export function Map({
   onLoad,
   children,
 }: MapProps) {
-  // const mapContainer = useRef<HTMLDivElement>(null);
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const { map, setMap, setActivePoint } = useMapform();
   // Condition in usePrevious resolves issue where map padding is not updated on first render
   const prevMapPadding = usePrevious(map ? mapPadding : undefined);
@@ -53,6 +56,8 @@ export function Map({
           id: point.id,
           type: "point",
           color: point.color ?? "#3b82f6",
+          rowId: point.rowId,
+          pointLayerId: point.pointLayerId,
           // icon: "...",
         },
       })),
@@ -161,12 +166,26 @@ export function Map({
 
           console.log("Cliced feature:", feature);
           if (feature) {
-            setActivePoint({
-              id: feature.properties?.id,
-              color: feature.properties?.color,
-              title: "Title",
-              description: "Description",
-            });
+            const current = new URLSearchParams(
+              Array.from(searchParams.entries()),
+            );
+
+            current.set(
+              "layer_point",
+              `${feature.properties.rowId}_${feature.properties.pointLayerId}`,
+            );
+
+            const search = current.toString();
+            const query = search ? `?${search}` : "";
+
+            router.push(`${pathname}${query}`);
+
+            // setActivePoint({
+            //   id: feature.properties?.id,
+            //   color: feature.properties?.color,
+            //   title: "Title",
+            //   description: "Description",
+            // });
           }
         });
 

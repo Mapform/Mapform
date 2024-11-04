@@ -10,6 +10,7 @@ import { ProjectProvider } from "./project-context";
 import Project from "./project";
 import { PageProvider } from "./page-context";
 import { Drawer } from "./drawer";
+import { getLayerPoint } from "~/data/datalayer/get-layer-point";
 
 const fetchProjectWithPages = cache(async (id: string) => {
   const projectWithPagesResponse = await getProjectWithPages({
@@ -67,17 +68,25 @@ const fetchPageData = cache(async (id?: string) => {
   return pageData;
 });
 
-const fetchPointCell = cache(async (id?: string) => {
-  if (!id) {
+const fetchLayerPoint = cache(async (layer_point?: string) => {
+  if (!layer_point) {
     return undefined;
   }
 
-  const pageDataResponse = await getPageData({
-    pageId: id,
-  });
-  const pageData = pageDataResponse?.data;
+  const [rowId, pointLayerId] = layer_point.split("_");
 
-  return pageData;
+  if (!rowId || !pointLayerId) {
+    return undefined;
+  }
+
+  const layerPointResponse = await getLayerPoint({
+    rowId,
+    pointLayerId,
+  });
+
+  const layerPoint = layerPointResponse?.data;
+
+  return layerPoint;
 });
 
 export default async function ProjectPage({
@@ -88,17 +97,24 @@ export default async function ProjectPage({
   searchParams?: {
     page?: string;
     layer?: string;
+    layer_point?: string;
   };
 }) {
   const { pId } = params;
 
-  const [projectWithPages, pageWithLayers, availableDatasets, pageData] =
-    await Promise.all([
-      fetchProjectWithPages(pId),
-      fetchPageWithLayers(searchParams?.page),
-      fetchAvailableDatasets(params.wsSlug, params.tsSlug),
-      fetchPageData(searchParams?.page),
-    ]);
+  const [
+    projectWithPages,
+    pageWithLayers,
+    availableDatasets,
+    pageData,
+    layerPoint,
+  ] = await Promise.all([
+    fetchProjectWithPages(pId),
+    fetchPageWithLayers(searchParams?.page),
+    fetchAvailableDatasets(params.wsSlug, params.tsSlug),
+    fetchPageData(searchParams?.page),
+    fetchLayerPoint(searchParams?.layer_point),
+  ]);
 
   const fallbackPage = projectWithPages.pages[0]?.id;
 
@@ -111,6 +127,8 @@ export default async function ProjectPage({
       `/${params.wsSlug}/${params.tsSlug}/projects/${pId}?page=${projectWithPages.pages[0]?.id}`,
     );
   }
+
+  console.log(11111, layerPoint);
 
   return (
     <div className="flex flex-1 flex-col overflow-hidden p-4">

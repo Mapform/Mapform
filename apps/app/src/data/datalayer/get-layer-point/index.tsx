@@ -6,6 +6,9 @@ import { rows, pointLayers, pointCells } from "@mapform/db/schema";
 import { authAction } from "~/lib/safe-action";
 import { getLayerPointSchema } from "./schema";
 
+/**
+ * Returns a single point (a row) from a point layer
+ */
 export const getLayerPoint = authAction
   .schema(getLayerPointSchema)
   .action(async ({ parsedInput: { rowId, pointLayerId } }) => {
