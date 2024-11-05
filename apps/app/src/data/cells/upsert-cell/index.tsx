@@ -18,7 +18,6 @@ import { upsertCellSchema } from "./schema";
 export const upsertCell = authAction
   .schema(upsertCellSchema)
   .action(async ({ parsedInput: { rowId, columnId, type, value } }) => {
-    console.log(1111, rowId, columnId, type, value);
     await db.transaction(async (tx) => {
       const [cell] = await tx
         .insert(cells)
@@ -31,8 +30,6 @@ export const upsertCell = authAction
           set: { updatedAt: new Date() },
         })
         .returning();
-
-      console.log(22222);
 
       if (!cell) {
         throw new Error("Failed to create or update cell");
@@ -117,5 +114,5 @@ export const upsertCell = authAction
       }
     });
 
-    revalidatePath("/[wsSlug]/[tsSlug]/projects/[pId]/", "page");
+    // revalidatePath("/[wsSlug]/[tsSlug]/projects/[pId]/", "page");
   });
