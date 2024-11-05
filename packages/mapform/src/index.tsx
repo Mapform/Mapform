@@ -235,7 +235,10 @@ export function MapForm({
                     </Button>
                     <Blocknote
                       currentPage={currentPage}
-                      description={activePoint?.description?.value ?? undefined}
+                      description={
+                        activePoint?.description?.richtextCell?.value ??
+                        undefined
+                      }
                       editable={editable}
                       isPage
                       key={currentPage.id}
@@ -244,13 +247,21 @@ export function MapForm({
                           onPoiCellChange({
                             type: "richtext",
                             rowId: activePoint.rowId,
-                            columnId: activePoint.description.id,
+                            columnId: activePoint?.description?.columnId,
                             value: val,
                           });
                       }}
                       onPrev={onPrev}
-                      onTitleChange={onTitleChange}
-                      title={activePoint?.title?.value}
+                      onTitleChange={(val) => {
+                        onPoiCellChange &&
+                          onPoiCellChange({
+                            type: "string",
+                            rowId: activePoint.rowId,
+                            columnId: activePoint?.title?.columnId,
+                            value: val,
+                          });
+                      }}
+                      title={activePoint?.title?.stringCell?.value}
                     />
                   </DrawerPrimitive.Content>
                 </DrawerPrimitive.Portal>

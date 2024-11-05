@@ -32,6 +32,8 @@ export const upsertCell = authAction
         })
         .returning();
 
+      console.log(22222);
+
       if (!cell) {
         throw new Error("Failed to create or update cell");
       }

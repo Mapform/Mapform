@@ -53,13 +53,11 @@ export const getLayerPoint = authAction
     return {
       rowId,
       pointLayerId,
-      title: row.cells.find((c) => c.columnId === pointLayer.titleColumnId)
-        ?.stringCell,
+      title: row.cells.find((c) => c.columnId === pointLayer.titleColumnId),
       description: row.cells.find(
         (c) => c.columnId === pointLayer.descriptionColumnId,
-      )?.richtextCell,
-      location: row.cells.find((c) => c.columnId === pointLayer.pointColumnId)
-        ?.pointCell,
+      ),
+      location: row.cells.find((c) => c.columnId === pointLayer.pointColumnId),
       cells: row.cells.filter(
         (c) =>
           c.columnId !== pointLayer.pointColumnId &&
