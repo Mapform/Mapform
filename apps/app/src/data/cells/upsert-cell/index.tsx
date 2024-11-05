@@ -18,6 +18,7 @@ import { upsertCellSchema } from "./schema";
 export const upsertCell = authAction
   .schema(upsertCellSchema)
   .action(async ({ parsedInput: { rowId, columnId, type, value } }) => {
+    console.log(1111, rowId, columnId, type, value);
     await db.transaction(async (tx) => {
       const [cell] = await tx
         .insert(cells)

@@ -51,6 +51,8 @@ export const getLayerPoint = authAction
     }
 
     return {
+      rowId,
+      pointLayerId,
       title: row.cells.find((c) => c.columnId === pointLayer.titleColumnId)
         ?.stringCell,
       description: row.cells.find(

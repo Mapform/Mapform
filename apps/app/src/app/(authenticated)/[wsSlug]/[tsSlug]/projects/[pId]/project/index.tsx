@@ -9,17 +9,18 @@ import { debounce } from "@mapform/lib/lodash";
 import { cn } from "@mapform/lib/classnames";
 import { uploadImage } from "~/data/images";
 import { updatePage as updatePageAction } from "~/data/pages/update-page";
+import { upsertCell } from "~/data/cells/upsert-cell";
 import { env } from "~/env.mjs";
 import { usePage } from "../page-context";
-import { AddLocationDropdown } from "./add-location-dropdown";
-import { EditBar } from "./edit-bar";
 import { useProject } from "../project-context";
+import { EditBar } from "./edit-bar";
 
 function Project() {
   const { layerPoint } = useProject();
   const { optimisticPage, optimisticPageData } = usePage();
 
   const { executeAsync } = useAction(updatePageAction);
+  const { execute: executeUpsertCell } = useAction(upsertCell);
 
   if (!optimisticPage) {
     return null;
@@ -53,8 +54,6 @@ function Project() {
 
   const debouncedUpdatePageServer = debounce(updatePageServer, 1000);
 
-  console.log(1111, layerPoint);
-
   return (
     <div className="flex flex-1 justify-center overflow-hidden p-4">
       <div className="flex flex-1">
@@ -87,6 +86,10 @@ function Project() {
             });
           }}
           activePoint={layerPoint}
+          onPoiCellChange={(cell) => {
+            console.log(9999, cell);
+            executeUpsertCell(cell);
+          }}
           pageData={optimisticPageData}
         >
           <div

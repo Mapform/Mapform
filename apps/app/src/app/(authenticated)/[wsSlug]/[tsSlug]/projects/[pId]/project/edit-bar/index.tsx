@@ -1,5 +1,5 @@
 import { Button } from "@mapform/ui/components/button";
-import { SaveIcon, SearchIcon, Undo2Icon } from "lucide-react";
+import { PinIcon, SearchIcon, Undo2Icon } from "lucide-react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { CommandDialog } from "@mapform/ui/components/command";
@@ -168,7 +168,7 @@ function EditBarInner({ optimisticPage, updatePageServer }: EditBarInnerProps) {
             <Undo2Icon className="size-5" />
           </Button>
         </TooltipTrigger>
-        <TooltipContent>Undo</TooltipContent>
+        <TooltipContent>Go Back To Last Pinned Location</TooltipContent>
       </Tooltip>
       <Tooltip>
         <TooltipTrigger asChild>
@@ -213,10 +213,10 @@ function EditBarInner({ optimisticPage, updatePageServer }: EditBarInnerProps) {
             size="sm"
             variant="ghost"
           >
-            <SaveIcon className="size-5" />
+            <PinIcon className="size-5" />
           </Button>
         </TooltipTrigger>
-        <TooltipContent>Save Map Position</TooltipContent>
+        <TooltipContent>Pin Map Position</TooltipContent>
       </Tooltip>
 
       {searchLocation ? (

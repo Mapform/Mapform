@@ -39,6 +39,7 @@ interface MapFormProps {
   onLoad?: () => void;
   onTitleChange?: (content: string) => void;
   onDescriptionChange?: (content: { content: CustomBlock[] }) => void;
+  onPoiCellChange?: (val: any) => void;
   onStepSubmit?: (data: Record<string, string>) => void;
   onImageUpload?: (file: File) => Promise<string | null>;
   pageData?: PageData;
@@ -61,6 +62,7 @@ export function MapForm({
   onImageUpload,
   defaultFormValues,
   onDescriptionChange,
+  onPoiCellChange,
 }: MapFormProps) {
   const setQueryString = useSetQueryString();
   const { drawerOpen, setDrawerOpen } = useMapform();
@@ -196,7 +198,7 @@ export function MapForm({
                   </DrawerPrimitive.Content>
                 </DrawerPrimitive.Portal>
               </DrawerPrimitive.Root>
-              <DrawerPrimitive.NestedRoot
+              <DrawerPrimitive.Root
                 container={rootEl.current}
                 direction="left"
                 dismissible={false}
@@ -237,14 +239,22 @@ export function MapForm({
                       editable={editable}
                       isPage
                       key={currentPage.id}
-                      onDescriptionChange={onDescriptionChange}
+                      onDescriptionChange={(val) => {
+                        onPoiCellChange &&
+                          onPoiCellChange({
+                            type: "richtext",
+                            rowId: activePoint.rowId,
+                            columnId: activePoint.description.id,
+                            value: val,
+                          });
+                      }}
                       onPrev={onPrev}
                       onTitleChange={onTitleChange}
                       title={activePoint?.title?.value}
                     />
                   </DrawerPrimitive.Content>
                 </DrawerPrimitive.Portal>
-              </DrawerPrimitive.NestedRoot>
+              </DrawerPrimitive.Root>
             </>
           ) : null}
           <Map
