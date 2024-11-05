@@ -19,6 +19,7 @@
     "@geoapify/geocoder-autocomplete": "^2.0.1",
     "@headlessui/react": "^1.7.18",
     "@infra-blocks/zod-utils": "^0.4.5",
+    "@mapform/backend": "workspace:*",
     "@mapform/blocknote": "workspace:*",
     "@mapform/db": "workspace:*",
     "@mapform/lib": "workspace:*",

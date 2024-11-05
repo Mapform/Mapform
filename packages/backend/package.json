@@ -1,0 +1,17 @@
+{
+  "name": "@mapform/backend",
+  "version": "0.1.0",
+  "dependencies": {
+    "zod": "3.23.8",
+    "@mapform/db": "workspace:*",
+    "next-safe-action": "^7.9.3"
+  },
+  "devDependencies": {
+    "@mapform/blocknote": "workspace:*",
+    "@mapform/eslint-config": "workspace:*",
+    "@mapform/typescript-config": "workspace:*",
+    "@types/node": "^20.8.10",
+    "eslint": "^8.57.0",
+    "typescript": "^5.6.2"
+  }
+}
