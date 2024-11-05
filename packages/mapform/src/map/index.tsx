@@ -36,7 +36,7 @@ export function Map({
   children,
 }: MapProps) {
   const setQueryString = useSetQueryString();
-  const { map, setMap, setActivePoint } = useMapform();
+  const { map, setMap } = useMapform();
   // Condition in usePrevious resolves issue where map padding is not updated on first render
   const prevMapPadding = usePrevious(map ? mapPadding : undefined);
   const { ref: mapContainer, bounds } = useMeasure<HTMLDivElement>();
@@ -162,7 +162,6 @@ export function Map({
         map.on("click", "points", (e) => {
           const feature = e.features?.[0];
 
-          console.log("Cliced feature:", feature);
           if (feature) {
             setQueryString({
               key: "layer_point",
