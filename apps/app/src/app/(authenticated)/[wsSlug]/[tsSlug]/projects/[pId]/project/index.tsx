@@ -9,7 +9,7 @@ import { debounce } from "@mapform/lib/lodash";
 import { cn } from "@mapform/lib/classnames";
 import { uploadImage } from "~/data/images";
 import { updatePage as updatePageAction } from "~/data/pages/update-page";
-import { upsertCell } from "~/data/cells/upsert-cell";
+import { upsertCellAction } from "~/data/cells/upsert-cell";
 import { env } from "~/env.mjs";
 import { usePage } from "../page-context";
 import { useProject } from "../project-context";
@@ -20,7 +20,7 @@ function Project() {
   const { optimisticPage, optimisticPageData } = usePage();
 
   const { executeAsync } = useAction(updatePageAction);
-  const { execute: executeUpsertCell } = useAction(upsertCell);
+  const { execute: executeUpsertCell } = useAction(upsertCellAction);
 
   if (!optimisticPage) {
     return null;

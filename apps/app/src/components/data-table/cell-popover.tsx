@@ -29,9 +29,11 @@ import {
 } from "@mapform/blocknote";
 import { format } from "date-fns";
 import { enUS } from "date-fns/locale";
-import { upsertCell } from "~/data/cells/upsert-cell";
-import type { UpsertCellSchema } from "~/data/cells/upsert-cell/schema";
-import { upsertCellSchema } from "~/data/cells/upsert-cell/schema";
+import {
+  upsertCellSchema,
+  type UpsertCellSchema,
+} from "@mapform/backend/cells/upsert-cell/schema";
+import { upsertCellAction } from "~/data/cells/upsert-cell";
 import type { GetDataset } from "~/data/datasets/get-dataset";
 
 const accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN!;
@@ -60,7 +62,7 @@ export function CellPopover({
     },
     resolver: zodResolver(upsertCellSchema),
   });
-  const { execute: executeUpsertCell } = useAction(upsertCell, {
+  const { execute: executeUpsertCell } = useAction(upsertCellAction, {
     onError: (error) => {
       console.error("Failed to upsert cell", error);
     },
