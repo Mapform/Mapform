@@ -6,7 +6,7 @@ import type { FeatureCollection } from "geojson";
 import type { PageData, ViewState } from "@mapform/map-utils/types";
 import { useMeasure } from "@mapform/lib/hooks/use-measure";
 import { usePrevious } from "@mapform/lib/hooks/use-previous";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useSetQueryString } from "@mapform/lib/hooks/use-set-query-string";
 import { useMapform } from "../context";
 import { SearchLocationMarker } from "./search-location-marker";
 
@@ -35,9 +35,7 @@ export function Map({
   onLoad,
   children,
 }: MapProps) {
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
+  const setQueryString = useSetQueryString();
   const { map, setMap, setActivePoint } = useMapform();
   // Condition in usePrevious resolves issue where map padding is not updated on first render
   const prevMapPadding = usePrevious(map ? mapPadding : undefined);
@@ -166,19 +164,10 @@ export function Map({
 
           console.log("Cliced feature:", feature);
           if (feature) {
-            const current = new URLSearchParams(
-              Array.from(searchParams.entries()),
-            );
-
-            current.set(
-              "layer_point",
-              `${feature.properties.rowId}_${feature.properties.pointLayerId}`,
-            );
-
-            const search = current.toString();
-            const query = search ? `?${search}` : "";
-
-            router.push(`${pathname}${query}`);
+            setQueryString({
+              key: "layer_point",
+              value: `${feature.properties.rowId}_${feature.properties.pointLayerId}`,
+            });
 
             // setActivePoint({
             //   id: feature.properties?.id,

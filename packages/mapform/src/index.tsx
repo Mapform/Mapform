@@ -8,6 +8,7 @@ import { Form, useForm, zodResolver } from "@mapform/ui/components/form";
 import type { z } from "zod";
 import { cn } from "@mapform/lib/classnames";
 import type { FormSchema } from "@mapform/lib/schemas/form-step-schema";
+import { useSetQueryString } from "@mapform/lib/hooks/use-set-query-string";
 import { CustomBlockContext } from "@mapform/blocknote";
 import {
   type CustomBlock,
@@ -18,8 +19,6 @@ import { Button } from "@mapform/ui/components/button";
 import {
   ArrowLeftIcon,
   ArrowRightIcon,
-  MapIcon,
-  LetterTextIcon,
   ChevronsLeftIcon,
   ChevronsRightIcon,
   XIcon,
@@ -63,6 +62,7 @@ export function MapForm({
   defaultFormValues,
   onDescriptionChange,
 }: MapFormProps) {
+  const setQueryString = useSetQueryString();
   const { drawerOpen, setDrawerOpen } = useMapform();
   const blocknoteStepSchema = getFormSchemaFromBlockNote(
     currentPage.content?.content || [],
@@ -202,7 +202,12 @@ export function MapForm({
                 dismissible={false}
                 modal={false}
                 onOpenChange={(val) => {
-                  // setActivePoint(val ? activePoint : null);
+                  if (!val) {
+                    setQueryString({
+                      key: "layer_point",
+                      value: null,
+                    });
+                  }
                 }}
                 open={Boolean(activePoint)}
               >
@@ -216,7 +221,10 @@ export function MapForm({
                     <Button
                       className="absolute right-2 top-2"
                       onClick={() => {
-                        // setActivePoint(null);
+                        setQueryString({
+                          key: "layer_point",
+                          value: null,
+                        });
                       }}
                       size="icon-sm"
                       variant="ghost"
@@ -225,14 +233,14 @@ export function MapForm({
                     </Button>
                     <Blocknote
                       currentPage={currentPage}
-                      description={activePoint?.description ?? undefined}
+                      description={activePoint?.description?.value ?? undefined}
                       editable={editable}
                       isPage
                       key={currentPage.id}
                       onDescriptionChange={onDescriptionChange}
                       onPrev={onPrev}
                       onTitleChange={onTitleChange}
-                      title={activePoint?.title}
+                      title={activePoint?.title?.value}
                     />
                   </DrawerPrimitive.Content>
                 </DrawerPrimitive.Portal>
