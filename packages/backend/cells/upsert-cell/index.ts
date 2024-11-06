@@ -1,5 +1,3 @@
-"use server";
-
 import { db } from "@mapform/db";
 import {
   cells,

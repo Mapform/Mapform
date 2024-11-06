@@ -22,7 +22,7 @@ import { useAction } from "next-safe-action/hooks";
 import { toast } from "@mapform/ui/components/toaster";
 import type { UpsertLayerSchema } from "~/data/layers/upsert-layer/schema";
 import type { ListTeamspaceDatasets } from "~/data/datasets/list-teamspace-datasets";
-import { createColumn } from "~/data/columns/create-column";
+import { createColumnAction } from "~/data/columns/create-column";
 import { usePage } from "../page-context";
 
 interface PointPropertiesProps {
@@ -127,7 +127,7 @@ function DataColField({
 }) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
-  const { executeAsync } = useAction(createColumn, {
+  const { executeAsync } = useAction(createColumnAction, {
     onSuccess: ({ data, input }) => {
       if (!data?.id) return;
 

@@ -22,20 +22,20 @@ import {
   SelectContent,
   SelectItem,
 } from "@mapform/ui/components/select";
-import { PlusIcon } from "lucide-react";
-import { useAction } from "next-safe-action/hooks";
-import { createColumn } from "~/data/columns/create-column";
 import {
   createColumnSchema,
   type CreateColumnSchema,
-} from "~/data/columns/create-column/schema";
+} from "@mapform/backend/columns/create-column/schema";
+import { PlusIcon } from "lucide-react";
+import { useAction } from "next-safe-action/hooks";
+import { createColumnAction } from "~/data/columns/create-column";
 
 interface ColumnAdderProps {
   datasetId: string;
 }
 
 export function ColumnAdder({ datasetId }: ColumnAdderProps) {
-  const { execute, status } = useAction(createColumn);
+  const { execute, status } = useAction(createColumnAction);
   const form = useForm<CreateColumnSchema>({
     defaultValues: {
       datasetId,
