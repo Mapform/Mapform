@@ -4,7 +4,7 @@ import { cn } from "@mapform/lib/classnames";
 import { useParams, usePathname } from "next/navigation";
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import type { CurrentUserWorkspaceMemberships } from "@mapform/backend/workspace-memberships/get-current-user-workspace-memberships";
-import type { WorkspaceWithTeamspaces } from "~/data/workspaces/get-workspace-directory";
+import type { WorkspaceWithTeamspaces } from "@mapform/backend/workspaces/get-workspace-directory";
 
 export interface IRootLayoutContext {
   drawerRef: React.RefObject<HTMLDivElement>;

@@ -1,20 +1,14 @@
 "use server";
 
-import { db } from "@mapform/db";
 import { revalidatePath } from "next/cache";
-import { rows } from "@mapform/db/schema";
+import { createRow } from "@mapform/backend/rows/create-row";
+import { createRowSchema } from "@mapform/backend/rows/create-row/schema";
 import { authAction } from "~/lib/safe-action";
-import { createRowSchema } from "./schema";
 
-export const createRow = authAction
+export const createRowAction = authAction
   .schema(createRowSchema)
   .action(async ({ parsedInput: { datasetId } }) => {
-    const [newRow] = await db
-      .insert(rows)
-      .values({
-        datasetId,
-      })
-      .returning();
+    const newRow = await createRow({ datasetId });
 
     revalidatePath("/[wsSlug]/[tsSlug]/datasets/[dId]", "page");
 

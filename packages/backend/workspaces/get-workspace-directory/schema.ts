@@ -4,6 +4,6 @@ export const getWorkspaceDirectorySchema = z.object({
   slug: z.string(),
 });
 
-export type getWorkspaceDirectorySchema = z.infer<
+export type GetWorkspaceDirectorySchema = z.infer<
   typeof getWorkspaceDirectorySchema
 >;

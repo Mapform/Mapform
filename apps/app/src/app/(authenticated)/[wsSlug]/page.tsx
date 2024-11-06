@@ -1,13 +1,13 @@
 import { notFound } from "next/navigation";
 import { ConstructionIcon } from "lucide-react";
-import { getWorkspaceDirectory } from "~/data/workspaces/get-workspace-directory";
+import { getWorkspaceDirectoryAction } from "~/data/workspaces/get-workspace-directory";
 
 export default async function HomePage({
   params,
 }: {
   params: { wsSlug: string };
 }) {
-  const getWorkspaceDirectoryResponse = await getWorkspaceDirectory({
+  const getWorkspaceDirectoryResponse = await getWorkspaceDirectoryAction({
     slug: params.wsSlug,
   });
   const workspaceWithTeamspaces = getWorkspaceDirectoryResponse?.data;

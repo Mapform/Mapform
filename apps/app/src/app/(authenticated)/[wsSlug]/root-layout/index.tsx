@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { cache } from "react";
-import { getWorkspaceDirectory } from "~/data/workspaces/get-workspace-directory";
+import { getWorkspaceDirectoryAction } from "~/data/workspaces/get-workspace-directory";
 import { getCurrentUserWorkspaceMembershipsAction } from "~/data/workspace-memberships/get-current-user-workspace-memberships";
 import { TopNav } from "./top-nav";
 import { SideNav } from "./side-nav";
@@ -37,7 +37,7 @@ export async function RootLayout({
  * Cached fetch functions
  */
 const fetchWorkspaceDirectory = cache(async (slug: string) => {
-  const getWorkspaceDirectoryResponse = await getWorkspaceDirectory({
+  const getWorkspaceDirectoryResponse = await getWorkspaceDirectoryAction({
     slug,
   });
 

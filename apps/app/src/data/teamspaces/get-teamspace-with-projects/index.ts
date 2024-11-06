@@ -1,36 +1,9 @@
 "server-only";
 
-import { db } from "@mapform/db";
-import { teamspaces } from "@mapform/db/schema";
-import { eq, and } from "@mapform/db/utils";
+import { getTeamspaceWithProjects } from "@mapform/backend/teamspaces/get-teamspace-with-projects";
+import { getTeamspaceWithProjectsSchema } from "@mapform/backend/teamspaces/get-teamspace-with-projects/schema";
 import { authAction } from "~/lib/safe-action";
-import { getTeamspaceWithProjectsSchema } from "./schema";
 
-export const getTeamspaceWithProjects = authAction
+export const getTeamspaceWithProjectsAction = authAction
   .schema(getTeamspaceWithProjectsSchema)
-  .action(async ({ parsedInput: { teamspaceSlug, workspaceSlug } }) => {
-    return db.query.teamspaces.findFirst({
-      where: and(
-        eq(teamspaces.slug, teamspaceSlug),
-        eq(teamspaces.workspaceSlug, workspaceSlug),
-      ),
-      with: {
-        workspace: {
-          columns: {
-            name: true,
-          },
-        },
-        projects: {
-          columns: {
-            id: true,
-            name: true,
-            createdAt: true,
-          },
-        },
-      },
-    });
-  });
-
-export type TeamspaceWithProjects = NonNullable<
-  Awaited<ReturnType<typeof getTeamspaceWithProjects>>
->["data"];
+  .action(async ({ parsedInput }) => getTeamspaceWithProjects(parsedInput));
