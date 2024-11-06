@@ -45,8 +45,8 @@ import {
 } from "@mapform/ui/components/tooltip";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { deleteLayer } from "~/data/layers/delete-layer";
-import { deletePageLayer } from "~/data/layers-to-pages/delete-page-layer";
+import { deleteLayerAction } from "~/data/layers/delete-layer";
+import { deletePageLayerAction } from "~/data/layers-to-pages/delete-page-layer";
 import { DragItem, DragHandle } from "~/components/draggable";
 import type { PageWithLayers } from "~/data/pages/get-page-with-layers";
 import { usePage } from "../../page-context";
@@ -66,8 +66,8 @@ export function Item({ layer }: ItemProps) {
   const { optimisticProjectWithPages } = useProject();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [layerPopoverOpen, setLayerPopoverOpen] = useState(false);
-  const { execute: executeDeleteLayer } = useAction(deleteLayer);
-  const { execute: executeDeletePageLayer } = useAction(deletePageLayer);
+  const { execute: executeDeleteLayer } = useAction(deleteLayerAction);
+  const { execute: executeDeletePageLayer } = useAction(deletePageLayerAction);
   const params = useParams<{ wsSlug: string; tsSlug: string; pId: string }>();
 
   const isLastPage = optimisticProjectWithPages.pages.length <= 1;

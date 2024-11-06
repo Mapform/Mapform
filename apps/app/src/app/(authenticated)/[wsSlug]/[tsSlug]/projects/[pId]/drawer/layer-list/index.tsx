@@ -36,8 +36,8 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from "@mapform/ui/components/popover";
-import { updateLayerOrder } from "~/data/layers/update-layer-order";
-import { createPageLayer } from "~/data/layers-to-pages/create-page-layer";
+import { updateLayerOrderAction } from "~/data/layers/update-layer-order";
+import { createPageLayerAction } from "~/data/layers-to-pages/create-page-layer";
 import { usePage } from "../../page-context";
 import { useProject } from "../../project-context";
 import {
@@ -55,8 +55,8 @@ export function LayerList() {
   const [query, setQuery] = useState<string>("");
 
   const dragLayers = optimisticPage?.layersToPages.map((ltp) => ltp.layer);
-  const { executeAsync } = useAction(updateLayerOrder);
-  const { execute: executeCreatePageLayer } = useAction(createPageLayer, {
+  const { executeAsync } = useAction(updateLayerOrderAction);
+  const { execute: executeCreatePageLayer } = useAction(createPageLayerAction, {
     onSuccess: () => {
       setLayerPopoverOpen(false);
     },

@@ -20,9 +20,9 @@ import { toast } from "@mapform/ui/components/toaster";
 import { useAction } from "next-safe-action/hooks";
 import { Button } from "@mapform/ui/components/button";
 import { Input } from "@mapform/ui/components/input";
-import { upsertLayerSchema } from "~/data/layers/upsert-layer/schema";
-import type { UpsertLayerSchema } from "~/data/layers/upsert-layer/schema";
-import { upsertLayer } from "~/data/layers/upsert-layer";
+import { upsertLayerSchema } from "@mapform/backend/layers/upsert-layer/schema";
+import type { UpsertLayerSchema } from "@mapform/backend/layers/upsert-layer/schema";
+import { upsertLayerAction } from "~/data/layers/upsert-layer";
 import type { PageWithLayers } from "~/data/pages/get-page-with-layers";
 import { usePage } from "../page-context";
 import { PointProperties } from "./point-properties";
@@ -57,7 +57,7 @@ export const LayerPopoverContent = forwardRef<
     resolver: zodResolver(upsertLayerSchema),
   });
 
-  const { execute, status } = useAction(upsertLayer, {
+  const { execute, status } = useAction(upsertLayerAction, {
     onSuccess: ({ data }) => {
       if (onSuccess && data?.id) {
         onSuccess(data.id);
