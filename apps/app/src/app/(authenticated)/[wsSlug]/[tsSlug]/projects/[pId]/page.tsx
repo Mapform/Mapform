@@ -3,17 +3,17 @@ import { cache } from "react";
 import { MapformProvider } from "@mapform/mapform";
 import { notFound, redirect } from "next/navigation";
 import { getPageDataAction } from "~/data/datalayer/get-page-data";
-import { getPageWithLayers } from "~/data/pages/get-page-with-layers";
-import { getProjectWithPages } from "~/data/projects/get-project-with-pages";
+import { getPageWithLayersAction } from "~/data/pages/get-page-with-layers";
+import { getProjectWithPagesAction } from "~/data/projects/get-project-with-pages";
 import { listTeamspaceDatasetsAction } from "~/data/datasets/list-teamspace-datasets";
+import { getLayerPointAction } from "~/data/datalayer/get-layer-point";
 import { ProjectProvider } from "./project-context";
 import Project from "./project";
 import { PageProvider } from "./page-context";
 import { Drawer } from "./drawer";
-import { getLayerPointAction } from "~/data/datalayer/get-layer-point";
 
 const fetchProjectWithPages = cache(async (id: string) => {
-  const projectWithPagesResponse = await getProjectWithPages({
+  const projectWithPagesResponse = await getProjectWithPagesAction({
     id,
   });
 
@@ -31,7 +31,7 @@ const fetchPageWithLayers = cache(async (id?: string) => {
     return undefined;
   }
 
-  const pageWithLayersResponse = await getPageWithLayers({
+  const pageWithLayersResponse = await getPageWithLayersAction({
     id,
   });
   const pageWithLayers = pageWithLayersResponse?.data;
@@ -132,8 +132,8 @@ export default async function ProjectPage({
     <div className="flex flex-1 flex-col overflow-hidden p-4">
       <MapformProvider>
         <ProjectProvider
-          projectWithPages={projectWithPages}
           layerPoint={layerPoint}
+          projectWithPages={projectWithPages}
         >
           <PageProvider
             availableDatasets={availableDatasets ?? []}

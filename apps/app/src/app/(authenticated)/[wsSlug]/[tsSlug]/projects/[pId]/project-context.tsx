@@ -9,7 +9,7 @@ import {
   useOptimistic,
 } from "react";
 import { useCreateQueryString } from "@mapform/lib/hooks/use-create-query-string";
-import type { ProjectWithPages } from "~/data/projects/get-project-with-pages";
+import type { ProjectWithPages } from "@mapform/backend/projects/get-project-with-pages";
 
 export interface ProjectContextProps {
   layerPoint: any;

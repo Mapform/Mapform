@@ -18,7 +18,7 @@ import {
   completeOnboardingSchema,
   type CompleteOnboardingSchema,
 } from "~/data/onboarding/complete-onboarding/schema";
-import { completeOnboarding } from "~/data/onboarding/complete-onboarding";
+import { completeOnboardingAction } from "~/data/onboarding/complete-onboarding";
 
 export function OnboardingForm() {
   const form = useForm<CompleteOnboardingSchema>({
@@ -28,7 +28,7 @@ export function OnboardingForm() {
     resolver: zodResolver(completeOnboardingSchema),
   });
 
-  const { execute, status } = useAction(completeOnboarding, {
+  const { execute, status } = useAction(completeOnboardingAction, {
     onSuccess: () => {
       toast("Your account has been created. Welcome to Mapform! 🎉");
     },
@@ -74,7 +74,7 @@ export function OnboardingForm() {
           )}
         />
         <Button
-          className="w-full mt-8"
+          className="mt-8 w-full"
           disabled={status === "executing" || !form.formState.isValid}
           type="submit"
         >

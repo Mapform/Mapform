@@ -43,12 +43,12 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@mapform/ui/components/tooltip";
+import type { PageWithLayers } from "@mapform/backend/pages/get-page-with-layers";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { deleteLayerAction } from "~/data/layers/delete-layer";
 import { deletePageLayerAction } from "~/data/layers-to-pages/delete-page-layer";
 import { DragItem, DragHandle } from "~/components/draggable";
-import type { PageWithLayers } from "~/data/pages/get-page-with-layers";
 import { usePage } from "../../page-context";
 import { useProject } from "../../project-context";
 import {

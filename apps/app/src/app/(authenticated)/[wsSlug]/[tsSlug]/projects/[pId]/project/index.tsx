@@ -8,7 +8,7 @@ import { useAction } from "next-safe-action/hooks";
 import { debounce } from "@mapform/lib/lodash";
 import { cn } from "@mapform/lib/classnames";
 import { uploadImageAction } from "~/data/images";
-import { updatePage as updatePageAction } from "~/data/pages/update-page";
+import { updatePageAction as updatePageAction } from "~/data/pages/update-page";
 import { upsertCellAction } from "~/data/cells/upsert-cell";
 import { env } from "~/env.mjs";
 import { usePage } from "../page-context";

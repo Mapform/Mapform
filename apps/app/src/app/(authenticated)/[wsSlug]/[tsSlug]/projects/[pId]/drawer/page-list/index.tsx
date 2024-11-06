@@ -24,8 +24,8 @@ import {
 } from "@mapform/ui/components/tooltip";
 import { useMapform } from "@mapform/mapform";
 import { PlusIcon } from "lucide-react";
-import { updatePageOrder } from "~/data/pages/update-page-order";
-import { createPage } from "~/data/pages/create-page";
+import { updatePageOrderAction } from "~/data/pages/update-page-order";
+import { createPageAction } from "~/data/pages/create-page";
 import { useProject } from "../../project-context";
 import { usePage } from "../../page-context";
 import { Item } from "./item";
@@ -36,9 +36,11 @@ export function PageList() {
   const { optimisticProjectWithPages, updateProjectWithPages } = useProject();
 
   const dragPages = optimisticProjectWithPages.pages;
-  const { executeAsync: updatePageOrderAsync } = useAction(updatePageOrder);
+  const { executeAsync: updatePageOrderAsync } = useAction(
+    updatePageOrderAction,
+  );
   const { execute: executeCreatePage, status: createPageStatus } = useAction(
-    createPage,
+    createPageAction,
     {
       onSuccess: (newPage) => {
         const newPageData = newPage.data;

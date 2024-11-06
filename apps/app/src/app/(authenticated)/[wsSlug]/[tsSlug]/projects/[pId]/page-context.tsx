@@ -10,7 +10,7 @@ import { useMapform } from "@mapform/mapform";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import type { PageData } from "@mapform/backend/datalayer/get-page-data";
 import type { ListTeamspaceDatasets } from "@mapform/backend/datasets/list-teamspace-datasets";
-import type { PageWithLayers } from "~/data/pages/get-page-with-layers";
+import type { PageWithLayers } from "@mapform/backend/pages/get-page-with-layers";
 
 export interface PageContextProps {
   isEditingPage: boolean;
