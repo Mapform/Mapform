@@ -33,8 +33,8 @@ import {
   upsertCellSchema,
   type UpsertCellSchema,
 } from "@mapform/backend/cells/upsert-cell/schema";
+import type { GetDataset } from "@mapform/backend/datasets/get-dataset";
 import { upsertCellAction } from "~/data/cells/upsert-cell";
-import type { GetDataset } from "~/data/datasets/get-dataset";
 
 const accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN!;
 

@@ -16,12 +16,12 @@ import {
 } from "@mapform/ui/components/table";
 import { Checkbox } from "@mapform/ui/components/checkbox";
 import { Button } from "@mapform/ui/components/button";
+import type { GetDataset } from "@mapform/backend/datasets/get-dataset";
 import { CopyIcon, PlusIcon, Trash2Icon } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import { createRow } from "~/data/rows/create-row";
 import { deleteRows } from "~/data/rows/delete-rows";
 import { duplicateRows } from "~/data/rows/duplicate-rows";
-import type { GetDataset } from "~/data/datasets/get-dataset";
 import { ColumnAdder } from "./column-adder";
 import { CellPopover } from "./cell-popover";
 import { ColumnEditor } from "./column-editor";

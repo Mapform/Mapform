@@ -17,11 +17,11 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from "@mapform/ui/components/popover";
+import type { ListTeamspaceDatasets } from "@mapform/backend/datasets/list-teamspace-datasets";
 import { ChevronsUpDownIcon, PlusIcon, CheckIcon } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import { toast } from "@mapform/ui/components/toaster";
 import type { UpsertLayerSchema } from "~/data/layers/upsert-layer/schema";
-import type { ListTeamspaceDatasets } from "~/data/datasets/list-teamspace-datasets";
 import { createColumnAction } from "~/data/columns/create-column";
 import { usePage } from "../page-context";
 

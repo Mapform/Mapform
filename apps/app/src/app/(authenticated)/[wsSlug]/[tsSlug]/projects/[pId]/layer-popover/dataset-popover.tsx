@@ -23,7 +23,7 @@ import { toast } from "@mapform/ui/components/toaster";
 import { CheckIcon, ChevronsUpDownIcon, PlusIcon } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import { useState } from "react";
-import { createEmptyDataset } from "~/data/datasets/create-empty-dataset";
+import { createEmptyDatasetAction } from "~/data/datasets/create-empty-dataset";
 import type { UpsertLayerSchema } from "~/data/layers/upsert-layer/schema";
 import { useProject } from "../project-context";
 import { usePage } from "../page-context";
@@ -37,7 +37,7 @@ export function DatasetPopover({ form }: DatasetPopoverProps) {
   const [query, setQuery] = useState("");
   const { availableDatasets } = usePage();
   const { optimisticProjectWithPages } = useProject();
-  const { executeAsync } = useAction(createEmptyDataset, {
+  const { executeAsync } = useAction(createEmptyDatasetAction, {
     onSuccess: ({ data, input }) => {
       if (!data?.dataset) return;
 

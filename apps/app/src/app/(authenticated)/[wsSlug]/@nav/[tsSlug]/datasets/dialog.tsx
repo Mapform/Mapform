@@ -24,7 +24,7 @@ import { Input } from "@mapform/ui/components/input";
 import { toast } from "@mapform/ui/components/toaster";
 import { useAction } from "next-safe-action/hooks";
 import { useState } from "react";
-import { createEmptyDataset } from "~/data/datasets/create-empty-dataset";
+import { createEmptyDatasetAction } from "~/data/datasets/create-empty-dataset";
 import {
   createEmptyDatasetSchema,
   type CreateEmptyDatasetSchema,
@@ -44,7 +44,7 @@ export function CreateDialog({ tsSlug }: { tsSlug: string }) {
     },
     resolver: zodResolver(createEmptyDatasetSchema),
   });
-  const { execute, status } = useAction(createEmptyDataset, {
+  const { execute, status } = useAction(createEmptyDatasetAction, {
     onError: ({ error }) => {
       if (error.serverError) {
         toast(error.serverError);

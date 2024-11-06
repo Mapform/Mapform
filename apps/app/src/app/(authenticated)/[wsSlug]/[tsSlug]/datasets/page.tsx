@@ -1,13 +1,13 @@
 import Link from "next/link";
 import { format } from "date-fns";
-import { listTeamspaceDatasets } from "~/data/datasets/list-teamspace-datasets";
+import { listTeamspaceDatasetsAction } from "~/data/datasets/list-teamspace-datasets";
 
 export default async function DatasetsPage({
   params,
 }: {
   params: { wsSlug: string; tsSlug: string };
 }) {
-  const teamspaceDatasets = await listTeamspaceDatasets({
+  const teamspaceDatasets = await listTeamspaceDatasetsAction({
     workspaceSlug: params.wsSlug,
     teamspaceSlug: params.tsSlug,
   });
