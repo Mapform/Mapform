@@ -7,7 +7,7 @@ import type { CustomBlock } from "@mapform/blocknote";
 import { useAction } from "next-safe-action/hooks";
 import { debounce } from "@mapform/lib/lodash";
 import { cn } from "@mapform/lib/classnames";
-import { uploadImage } from "~/data/images";
+import { uploadImageAction } from "~/data/images";
 import { updatePage as updatePageAction } from "~/data/pages/update-page";
 import { upsertCellAction } from "~/data/cells/upsert-cell";
 import { env } from "~/env.mjs";
@@ -19,8 +19,10 @@ function Project() {
   const { layerPoint } = useProject();
   const { optimisticPage, optimisticPageData } = usePage();
 
-  const { executeAsync } = useAction(updatePageAction);
+  const { executeAsync: executeAsyncUpdatePage } = useAction(updatePageAction);
   const { execute: executeUpsertCell } = useAction(upsertCellAction);
+  const { executeAsync: executeAsyncUploadImage } =
+    useAction(uploadImageAction);
 
   if (!optimisticPage) {
     return null;
@@ -41,7 +43,7 @@ function Project() {
     bearing?: number;
     center?: { x: number; y: number };
   }) => {
-    await executeAsync({
+    await executeAsyncUpdatePage({
       id: optimisticPage.id,
       ...(content !== undefined && { content }),
       ...(title !== undefined && { title }),
@@ -71,14 +73,14 @@ function Project() {
             const formData = new FormData();
             formData.append("image", file);
 
-            const { success, error } = await uploadImage(formData);
+            const response = await executeAsyncUploadImage(formData);
 
-            if (error) {
-              toast(error);
+            if (response?.serverError) {
+              toast("There was an error uploading the image.");
               return null;
             }
 
-            return success?.url || null;
+            return response?.data?.url || null;
           }}
           onTitleChange={(title: string) => {
             void debouncedUpdatePageServer({
