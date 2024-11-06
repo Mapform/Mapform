@@ -21,7 +21,6 @@
     "@infra-blocks/zod-utils": "^0.4.5",
     "@mapform/backend": "workspace:*",
     "@mapform/blocknote": "workspace:*",
-    "@mapform/db": "workspace:*",
     "@mapform/lib": "workspace:*",
     "@mapform/map-utils": "workspace:*",
     "@mapform/mapform": "workspace:*",

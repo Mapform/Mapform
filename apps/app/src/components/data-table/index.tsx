@@ -19,7 +19,7 @@ import { Button } from "@mapform/ui/components/button";
 import type { GetDataset } from "@mapform/backend/datasets/get-dataset";
 import { CopyIcon, PlusIcon, Trash2Icon } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
-import { createRow } from "~/data/rows/create-row";
+import { createRowAction } from "~/data/rows/create-row";
 import { deleteRowsAction } from "~/data/rows/delete-rows";
 import { duplicateRowsAction } from "~/data/rows/duplicate-rows";
 import { ColumnAdder } from "./column-adder";
@@ -36,7 +36,7 @@ export const DataTable = memo(function DataTable({ dataset }: TableProps) {
   const { execute: executeDuplicateRows, status: statusDuplicateRows } =
     useAction(duplicateRowsAction);
   const { execute: executeCreateRow, status: statusCreateRow } =
-    useAction(createRow);
+    useAction(createRowAction);
   const columns = useMemo(() => getColumns(dataset), [dataset]);
   const rows = useMemo(
     () =>

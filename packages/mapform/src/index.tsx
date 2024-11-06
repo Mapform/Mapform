@@ -10,11 +10,13 @@ import { cn } from "@mapform/lib/classnames";
 import type { FormSchema } from "@mapform/lib/schemas/form-step-schema";
 import { useSetQueryString } from "@mapform/lib/hooks/use-set-query-string";
 import { CustomBlockContext } from "@mapform/blocknote";
+import type { GetLayerPoint } from "@mapform/backend/datalayer/get-layer-point";
 import {
   type CustomBlock,
   getFormSchemaFromBlockNote,
 } from "@mapform/blocknote";
-import type { PageData, ViewState } from "@mapform/map-utils/types";
+import type { ViewState } from "@mapform/map-utils/types";
+import type { PageData } from "@mapform/backend/datalayer/get-page-data";
 import { Button } from "@mapform/ui/components/button";
 import {
   ArrowLeftIcon,
@@ -43,7 +45,7 @@ interface MapFormProps {
   onStepSubmit?: (data: Record<string, string>) => void;
   onImageUpload?: (file: File) => Promise<string | null>;
   pageData?: PageData;
-  activePoint?: any;
+  activePoint?: GetLayerPoint;
   // editFields?: {
   //   AddLocationDropdown: (input: { data: any }) => JSX.Element;
   // };
@@ -243,17 +245,19 @@ export function MapForm({
                       isPage
                       key={currentPage.id}
                       onDescriptionChange={(val) => {
-                        onPoiCellChange &&
+                        activePoint &&
+                          onPoiCellChange &&
                           onPoiCellChange({
                             type: "richtext",
                             rowId: activePoint.rowId,
-                            columnId: activePoint?.description?.columnId,
+                            columnId: activePoint.description?.columnId,
                             value: val,
                           });
                       }}
                       onPrev={onPrev}
                       onTitleChange={(val) => {
-                        onPoiCellChange &&
+                        activePoint &&
+                          onPoiCellChange &&
                           onPoiCellChange({
                             type: "string",
                             rowId: activePoint.rowId,

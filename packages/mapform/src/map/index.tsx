@@ -3,7 +3,8 @@ import { useEffect, useMemo } from "react";
 import mapboxgl from "mapbox-gl";
 import { cn } from "@mapform/lib/classnames";
 import type { FeatureCollection } from "geojson";
-import type { PageData, ViewState } from "@mapform/map-utils/types";
+import type { ViewState } from "@mapform/map-utils/types";
+import type { PageData } from "@mapform/backend/datalayer/get-page-data";
 import { useMeasure } from "@mapform/lib/hooks/use-measure";
 import { usePrevious } from "@mapform/lib/hooks/use-previous";
 import { useSetQueryString } from "@mapform/lib/hooks/use-set-query-string";
@@ -48,7 +49,7 @@ export function Map({
         type: "Feature",
         geometry: {
           type: "Point",
-          coordinates: [point.value.x, point.value.y],
+          coordinates: [point.value!.x, point.value!.y],
         },
         properties: {
           id: point.id,
@@ -162,7 +163,7 @@ export function Map({
         map.on("click", "points", (e) => {
           const feature = e.features?.[0];
 
-          if (feature) {
+          if (feature?.properties) {
             setQueryString({
               key: "layer_point",
               value: `${feature.properties.rowId}_${feature.properties.pointLayerId}`,
@@ -188,7 +189,7 @@ export function Map({
         // });
       }
     }
-  }, [map, geojson]);
+  }, [map, geojson, setQueryString]);
 
   return (
     <div

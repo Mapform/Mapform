@@ -12,6 +12,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@mapform/backend": "workspace:*",
     "@mapform/blocknote": "workspace:*",
     "@mapform/db": "workspace:*",
     "@mapform/lib": "workspace:*",

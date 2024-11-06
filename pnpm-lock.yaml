@@ -53,9 +53,6 @@ importers:
       '@mapform/blocknote':
         specifier: workspace:*
         version: link:../../packages/blocknote
-      '@mapform/db':
-        specifier: workspace:*
-        version: link:../../packages/db
       '@mapform/lib':
         specifier: workspace:*
         version: link:../../packages/lib
@@ -565,6 +562,9 @@ importers:
 
   packages/mapform:
     dependencies:
+      '@mapform/backend':
+        specifier: workspace:*
+        version: link:../backend
       '@mapform/blocknote':
         specifier: workspace:*
         version: link:../blocknote

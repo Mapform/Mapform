@@ -8,7 +8,7 @@ import { useAction } from "next-safe-action/hooks";
 import { debounce } from "@mapform/lib/lodash";
 import { cn } from "@mapform/lib/classnames";
 import { uploadImageAction } from "~/data/images";
-import { updatePageAction as updatePageAction } from "~/data/pages/update-page";
+import { updatePageAction } from "~/data/pages/update-page";
 import { upsertCellAction } from "~/data/cells/upsert-cell";
 import { env } from "~/env.mjs";
 import { usePage } from "../page-context";
@@ -60,10 +60,8 @@ function Project() {
     <div className="flex flex-1 justify-center overflow-hidden p-4">
       <div className="flex flex-1">
         <MapForm
+          activePoint={layerPoint}
           currentPage={optimisticPage}
-          // editFields={{
-          //   AddLocationDropdown,
-          // }}
           editable
           mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
           onDescriptionChange={(content: { content: CustomBlock[] }) => {
@@ -82,15 +80,14 @@ function Project() {
 
             return response?.data?.url || null;
           }}
+          onPoiCellChange={(cell) => {
+            console.log(9999, cell);
+            executeUpsertCell(cell);
+          }}
           onTitleChange={(title: string) => {
             void debouncedUpdatePageServer({
               title,
             });
-          }}
-          activePoint={layerPoint}
-          onPoiCellChange={(cell) => {
-            console.log(9999, cell);
-            executeUpsertCell(cell);
           }}
           pageData={optimisticPageData}
         >

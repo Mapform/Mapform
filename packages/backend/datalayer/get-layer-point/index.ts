@@ -64,3 +64,5 @@ export const getLayerPoint = async ({
     ),
   };
 };
+
+export type GetLayerPoint = Awaited<ReturnType<typeof getLayerPoint>>;
