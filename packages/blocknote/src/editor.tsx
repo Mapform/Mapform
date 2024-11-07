@@ -107,13 +107,23 @@ function CustomDragMenu(props: DragHandleMenuProps) {
     return null;
   }
 
+  const renderBlock = (block: DragHandleMenuProps["block"]) => {
+    // @ts-ignore -- TS might have a bug, need to ignore
+    if (block.type === "textInput") {
+      return <TextInputMenu blockId={props.block.id} />;
+    }
+
+    // @ts-ignore -- TS might have a bug, need to ignore
+    if (block.type === "pin") {
+      return <PinMenu blockId={props.block.id} />;
+    }
+
+    return null;
+  };
+
   return (
     <DragHandleMenu {...props}>
-      {props.block.type === "textInput" ? (
-        <TextInputMenu blockId={props.block.id} />
-      ) : props.block.type === "pin" ? (
-        <PinMenu blockId={props.block.id} />
-      ) : null}
+      {renderBlock(props.block)}
       <RemoveBlockItem {...props}>Delete</RemoveBlockItem>
     </DragHandleMenu>
   );
