@@ -4,7 +4,7 @@
   "scripts": {
     "build": "turbo build",
     "db:deploy": "turbo db:deploy",
-    "vercel-build": "turbo vercel-build",
+    "vercel-build-app": "turbo db:deploy && turbo build --filter=@upfront/app",
     "clean": "turbo clean",
     "dev": "turbo dev",
     "lint": "turbo lint",
