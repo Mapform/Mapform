@@ -55,6 +55,7 @@ function Project() {
   };
 
   const debouncedUpdatePageServer = debounce(updatePageServer, 1000);
+  const debouncedUpsertCell = debounce(executeUpsertCell, 1000);
 
   return (
     <div className="flex flex-1 justify-center overflow-hidden p-4">
@@ -81,8 +82,7 @@ function Project() {
             return response?.data?.url || null;
           }}
           onPoiCellChange={(cell) => {
-            console.log(9999, cell);
-            executeUpsertCell(cell);
+            debouncedUpsertCell(cell);
           }}
           onTitleChange={(title: string) => {
             void debouncedUpdatePageServer({
