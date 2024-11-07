@@ -3,19 +3,19 @@
   "private": true,
   "scripts": {
     "build": "turbo build",
+    "clean": "turbo clean",
     "dev": "turbo dev",
     "lint": "turbo lint",
     "typecheck": "turbo typecheck",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "clean": "turbo clean"
+    "validate": "turbo validate"
   },
   "devDependencies": {
     "@mapform/eslint-config": "workspace:*",
     "@mapform/typescript-config": "workspace:*",
     "prettier": "^3.2.5",
     "prettier-plugin-tailwindcss": "^0.6.8",
-    "turbo": "^2.1.2",
-    "typescript": "^5.6.3"
+    "turbo": "^2.1.3"
   },
   "packageManager": "pnpm@8.9.0",
   "engines": {

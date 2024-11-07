@@ -2,7 +2,8 @@
   "extends": "@mapform/typescript-config/react-library.json",
   "include": [
     "src",
-    "tailwind.config.ts"
+    "tailwind.config.ts",
+    "postcss.config.js"
   ],
   "exclude": [
     "node_modules",
