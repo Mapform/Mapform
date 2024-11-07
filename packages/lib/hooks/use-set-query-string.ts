@@ -4,7 +4,6 @@ import { useCallback } from "react";
 export const useSetQueryString = () => {
   const router = useRouter();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
 
   return useCallback(
     ({
@@ -16,7 +15,7 @@ export const useSetQueryString = () => {
       value: string | null;
       replace?: boolean;
     }) => {
-      const current = new URLSearchParams(Array.from(searchParams.entries()));
+      const current = new URLSearchParams(window.location.search);
 
       // Clear the param if value is not provided
       if (!value) {
@@ -34,6 +33,6 @@ export const useSetQueryString = () => {
         router.push(`${pathname}${query}`);
       }
     },
-    [searchParams],
+    [pathname, router],
   );
 };

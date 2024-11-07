@@ -205,6 +205,7 @@ export function MapForm({
                 container={rootEl.current}
                 direction="left"
                 dismissible={false}
+                key={activePoint?.rowId}
                 modal={false}
                 onOpenChange={(val) => {
                   if (!val) {
