@@ -2,8 +2,16 @@
   "$schema": "https://turbo.build/schema.json",
   "globalEnv": [
     "NODE_ENV",
+    "VERCEL_ENV",
+    "VERCEL_CUSTOM_URL",
+    "NEXT_RUNTIME",
+
+    "DATABASE_URL",
+
     "NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN",
-    "GEOAPIFY_API_KEY"
+    "GEOAPIFY_API_KEY",
+
+    "RESEND_API_KEY"
   ],
   "globalDependencies": ["**/.env.*local"],
   "tasks": {
