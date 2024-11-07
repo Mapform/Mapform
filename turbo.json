@@ -23,6 +23,9 @@
     },
     "clean": {
       "dependsOn": ["^clean"]
+    },
+    "db:deploy": {
+      "dependsOn": ["^db:deploy"]
     }
   }
 }
