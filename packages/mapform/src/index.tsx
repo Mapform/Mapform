@@ -11,6 +11,7 @@ import type { FormSchema } from "@mapform/lib/schemas/form-step-schema";
 import { useSetQueryString } from "@mapform/lib/hooks/use-set-query-string";
 import { CustomBlockContext } from "@mapform/blocknote";
 import type { GetLayerPoint } from "@mapform/backend/datalayer/get-layer-point";
+import type { UpsertCellSchema } from "@mapform/backend/cells/upsert-cell/schema";
 import {
   type CustomBlock,
   getFormSchemaFromBlockNote,
@@ -41,7 +42,7 @@ interface MapFormProps {
   onLoad?: () => void;
   onTitleChange?: (content: string) => void;
   onDescriptionChange?: (content: { content: CustomBlock[] }) => void;
-  onPoiCellChange?: (val: any) => void;
+  onPoiCellChange?: (val: UpsertCellSchema) => void;
   onStepSubmit?: (data: Record<string, string>) => void;
   onImageUpload?: (file: File) => Promise<string | null>;
   pageData?: PageData;
@@ -245,23 +246,23 @@ export function MapForm({
                       isPage
                       key={currentPage.id}
                       onDescriptionChange={(val) => {
-                        activePoint &&
+                        activePoint?.description &&
                           onPoiCellChange &&
                           onPoiCellChange({
                             type: "richtext",
                             rowId: activePoint.rowId,
-                            columnId: activePoint.description?.columnId,
-                            value: val,
+                            columnId: activePoint.description.columnId,
+                            value: val as any,
                           });
                       }}
                       onPrev={onPrev}
                       onTitleChange={(val) => {
-                        activePoint &&
+                        activePoint?.title &&
                           onPoiCellChange &&
                           onPoiCellChange({
                             type: "string",
                             rowId: activePoint.rowId,
-                            columnId: activePoint?.title?.columnId,
+                            columnId: activePoint.title.columnId,
                             value: val,
                           });
                       }}
