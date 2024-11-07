@@ -68,12 +68,12 @@ const fetchPageData = cache(async (id?: string) => {
   return pageData;
 });
 
-const fetchLayerPoint = cache(async (layer_point?: string) => {
-  if (!layer_point) {
+const fetchLayerPoint = cache(async (param?: string) => {
+  if (!param) {
     return undefined;
   }
 
-  const [rowId, pointLayerId] = layer_point.split("_");
+  const [rowId, pointLayerId] = param.split("_");
 
   if (!rowId || !pointLayerId) {
     return undefined;

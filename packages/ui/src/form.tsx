@@ -16,7 +16,7 @@ interface FormFieldContextValue<
 }
 
 const FormFieldContext = React.createContext<FormFieldContextValue>(
-  {} as FormFieldContextValue
+  {} as FormFieldContextValue,
 );
 
 function FormField<
@@ -58,7 +58,7 @@ interface FormItemContextValue {
 }
 
 const FormItemContext = React.createContext<FormItemContextValue>(
-  {} as FormItemContextValue
+  {} as FormItemContextValue,
 );
 
 const FormItem = React.forwardRef<
@@ -123,7 +123,7 @@ const FormDescription = React.forwardRef<
 
   return (
     <p
-      className={cn("text-sm text-muted-foreground", className)}
+      className={cn("text-muted-foreground text-sm", className)}
       id={formDescriptionId}
       ref={ref}
       {...props}
@@ -145,7 +145,7 @@ const FormMessage = React.forwardRef<
 
   return (
     <p
-      className={cn("text-sm font-medium text-destructive", className)}
+      className={cn("text-destructive text-sm font-medium", className)}
       id={formMessageId}
       ref={ref}
       {...props}
@@ -171,5 +171,6 @@ export {
   useController,
   useFormContext,
   type UseFormReturn,
+  type FieldPath,
 } from "react-hook-form";
 export { zodResolver } from "@hookform/resolvers/zod";

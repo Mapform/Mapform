@@ -1,6 +1,6 @@
 "use client";
 
-import { forwardRef, useEffect } from "react";
+import { forwardRef } from "react";
 import {
   Popover,
   PopoverContent,
@@ -22,8 +22,8 @@ import { Button } from "@mapform/ui/components/button";
 import { Input } from "@mapform/ui/components/input";
 import { upsertLayerSchema } from "@mapform/backend/layers/upsert-layer/schema";
 import type { UpsertLayerSchema } from "@mapform/backend/layers/upsert-layer/schema";
+import type { PageWithLayers } from "@mapform/backend/pages/get-page-with-layers";
 import { upsertLayerAction } from "~/data/layers/upsert-layer";
-import type { PageWithLayers } from "~/data/pages/get-page-with-layers";
 import { usePage } from "../page-context";
 import { PointProperties } from "./point-properties";
 import { DatasetPopover } from "./dataset-popover";
@@ -92,6 +92,7 @@ export const LayerPopoverContent = forwardRef<
       return null;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- Once we add more layer types this won't error anymore
     if (type === "point")
       return <PointProperties form={form} isEditing={Boolean(layerToEdit)} />;
   };

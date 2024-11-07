@@ -24,11 +24,11 @@ import { Input } from "@mapform/ui/components/input";
 import { toast } from "@mapform/ui/components/toaster";
 import { useAction } from "next-safe-action/hooks";
 import { useState } from "react";
-import { createEmptyDatasetAction } from "~/data/datasets/create-empty-dataset";
 import {
   createEmptyDatasetSchema,
   type CreateEmptyDatasetSchema,
-} from "~/data/datasets/create-empty-dataset/schema";
+} from "@mapform/backend/datasets/create-empty-dataset/schema";
+import { createEmptyDatasetAction } from "~/data/datasets/create-empty-dataset";
 import { useRootLayout } from "../../../root-layout/context";
 
 export function CreateDialog({ tsSlug }: { tsSlug: string }) {

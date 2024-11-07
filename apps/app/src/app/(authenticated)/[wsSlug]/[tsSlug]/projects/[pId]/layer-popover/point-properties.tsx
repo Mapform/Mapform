@@ -1,4 +1,4 @@
-import type { UseFormReturn } from "@mapform/ui/components/form";
+import type { UseFormReturn, FieldPath } from "@mapform/ui/components/form";
 import { FormField, FormLabel } from "@mapform/ui/components/form";
 import { useCallback, useEffect, useState } from "react";
 import type { Column } from "@mapform/db/schema";
@@ -20,8 +20,8 @@ import {
 import type { ListTeamspaceDatasets } from "@mapform/backend/datasets/list-teamspace-datasets";
 import { ChevronsUpDownIcon, PlusIcon, CheckIcon } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
+import type { UpsertLayerSchema } from "@mapform/backend/layers/upsert-layer/schema";
 import { toast } from "@mapform/ui/components/toaster";
-import type { UpsertLayerSchema } from "~/data/layers/upsert-layer/schema";
 import { createColumnAction } from "~/data/columns/create-column";
 import { usePage } from "../page-context";
 
@@ -38,6 +38,7 @@ export function PointProperties({ form, isEditing }: PointPropertiesProps) {
 
   const getAvailableColumns = useCallback(
     (t: Column["type"]) => {
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- Once we add more layer types this won't error anymore
       if (!dataset || !type) {
         return null;
       }
@@ -50,6 +51,7 @@ export function PointProperties({ form, isEditing }: PointPropertiesProps) {
   );
 
   useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- Once we add more layer types this won't error anymore
     if (!isEditing && type === "point") {
       form.setValue(
         "pointProperties.pointColumnId",
@@ -119,7 +121,7 @@ function DataColField({
   type,
   availableColumns,
 }: {
-  name: any;
+  name: FieldPath<UpsertLayerSchema>;
   form: UseFormReturn<UpsertLayerSchema>;
   label: string;
   type: Column["type"];
