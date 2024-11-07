@@ -3,7 +3,7 @@
 import { MapForm, useMapform } from "@mapform/mapform";
 import { useAction } from "next-safe-action/hooks";
 import React, { useEffect, useState } from "react";
-import type { PageData } from "@mapform/map-utils/types";
+import type { PageData } from "@mapform/backend/datalayer/get-page-data";
 import { useCreateQueryString } from "@mapform/lib/hooks/use-create-query-string";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import { submitPage } from "~/data/submit-page";

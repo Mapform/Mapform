@@ -18,7 +18,9 @@ export function TextInputMenu({ blockId }: { blockId: string }) {
     <Components.Generic.Menu.Item
       onClick={() => {
         editor.updateBlock(block, {
+          // @ts-ignore -- This breaks when running ts in the terminal for now apparent reason
           type: "textInput",
+          // @ts-ignore -- This breaks when running ts in the terminal for now apparent reason
           props: { required: !block.props.required },
         });
       }}

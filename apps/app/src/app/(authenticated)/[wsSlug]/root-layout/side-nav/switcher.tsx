@@ -14,7 +14,6 @@ import {
 } from "lucide-react";
 import { signOut } from "next-auth/react";
 import Link from "next/link";
-import { useRootLayout } from "../context";
 import { Button } from "@mapform/ui/components/button";
 import {
   Tooltip,
@@ -22,10 +21,11 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@mapform/ui/components/tooltip";
+import { useRootLayout } from "../context";
 
 export function Switcher() {
   const { workspaceSlug, workspaceMemberships, toggleNav } = useRootLayout();
-  const currentWorkspace = workspaceMemberships?.find(
+  const currentWorkspace = workspaceMemberships.find(
     (membership) => membership.workspace.slug === workspaceSlug,
   );
 
@@ -48,8 +48,8 @@ export function Switcher() {
               <Button
                 className="mr-2 hover:bg-stone-200"
                 onClick={toggleNav}
-                variant="ghost"
                 size="icon-xs"
+                variant="ghost"
               >
                 <ChevronsLeftIcon className="size-5 flex-shrink-0" />
               </Button>
@@ -83,7 +83,7 @@ export function Switcher() {
             Workspaces
           </h3>
           <ul className="text-sm">
-            {workspaceMemberships?.map((membership) => (
+            {workspaceMemberships.map((membership) => (
               <li
                 className="flex w-full flex-col"
                 key={membership.workspace.id}

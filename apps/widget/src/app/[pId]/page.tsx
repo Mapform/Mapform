@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 import { MapformProvider } from "@mapform/mapform";
 import { type Row } from "@mapform/db/schema";
 import { getSession } from "~/data/get-session";
-import { getPageData } from "~/data/get-page-data";
+import { getPageDataAction } from "~/data/get-page-data";
 import { getProjectWithPages } from "~/data/get-project-with-pages";
 import { type Responses, getResponses } from "~/data/get-responses.ts";
 import { Map } from "./map";
@@ -24,7 +24,7 @@ const fetchPageData = cache(async (id?: string) => {
     return undefined;
   }
 
-  const pageDataResponse = await getPageData({
+  const pageDataResponse = await getPageDataAction({
     pageId: id,
   });
   const pageData = pageDataResponse?.data;

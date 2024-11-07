@@ -12,7 +12,6 @@ import { DrizzleAdapter } from "@auth/drizzle-adapter";
 export const BASE_PATH = "/api/auth";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  // @ts-ignore -- This is fine
   adapter: DrizzleAdapter(db, {
     usersTable: users,
     accountsTable: accounts,

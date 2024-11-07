@@ -7,6 +7,7 @@ export async function GET(request: Request) {
 
   try {
     const searchParams = new URLSearchParams({
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- We know this is set
       apiKey: process.env.GEOAPIFY_API_KEY!,
       text,
     }).toString();
@@ -18,7 +19,7 @@ export async function GET(request: Request) {
         headers: {
           accept: "application/json",
         },
-      }
+      },
     );
 
     if (!response.ok) {
