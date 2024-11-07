@@ -7,17 +7,22 @@ import type { CustomBlock } from "@mapform/blocknote";
 import { useAction } from "next-safe-action/hooks";
 import { debounce } from "@mapform/lib/lodash";
 import { cn } from "@mapform/lib/classnames";
-import { uploadImage } from "~/data/images";
-import { updatePage as updatePageAction } from "~/data/pages/update-page";
+import { uploadImageAction } from "~/data/images";
+import { updatePageAction } from "~/data/pages/update-page";
+import { upsertCellAction } from "~/data/cells/upsert-cell";
 import { env } from "~/env.mjs";
 import { usePage } from "../page-context";
-import { AddLocationDropdown } from "./add-location-dropdown";
+import { useProject } from "../project-context";
 import { EditBar } from "./edit-bar";
 
 function Project() {
+  const { layerPoint } = useProject();
   const { optimisticPage, optimisticPageData } = usePage();
 
-  const { executeAsync } = useAction(updatePageAction);
+  const { executeAsync: executeAsyncUpdatePage } = useAction(updatePageAction);
+  const { execute: executeUpsertCell } = useAction(upsertCellAction);
+  const { executeAsync: executeAsyncUploadImage } =
+    useAction(uploadImageAction);
 
   if (!optimisticPage) {
     return null;
@@ -38,7 +43,7 @@ function Project() {
     bearing?: number;
     center?: { x: number; y: number };
   }) => {
-    await executeAsync({
+    await executeAsyncUpdatePage({
       id: optimisticPage.id,
       ...(content !== undefined && { content }),
       ...(title !== undefined && { title }),
@@ -50,15 +55,14 @@ function Project() {
   };
 
   const debouncedUpdatePageServer = debounce(updatePageServer, 1000);
+  const debouncedUpsertCell = debounce(executeUpsertCell, 1000);
 
   return (
     <div className="flex flex-1 justify-center overflow-hidden p-4">
       <div className="flex flex-1">
         <MapForm
+          activePoint={layerPoint}
           currentPage={optimisticPage}
-          editFields={{
-            AddLocationDropdown,
-          }}
           editable
           mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
           onDescriptionChange={(content: { content: CustomBlock[] }) => {
@@ -68,14 +72,17 @@ function Project() {
             const formData = new FormData();
             formData.append("image", file);
 
-            const { success, error } = await uploadImage(formData);
+            const response = await executeAsyncUploadImage(formData);
 
-            if (error) {
-              toast(error);
+            if (response?.serverError) {
+              toast("There was an error uploading the image.");
               return null;
             }
 
-            return success?.url || null;
+            return response?.data?.url || null;
+          }}
+          onPoiCellChange={(cell) => {
+            debouncedUpsertCell(cell);
           }}
           onTitleChange={(title: string) => {
             void debouncedUpdatePageServer({

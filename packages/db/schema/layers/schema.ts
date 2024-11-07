@@ -5,6 +5,7 @@ import { layersToPages } from "../layers-to-pages";
 import { columns } from "../columns";
 
 export const layerTypeEnum = pgEnum("layer_type", ["point"]);
+export const colorEnum = pgEnum("color", ["black", "gray", ""]);
 
 /**
  * PARENT LAYER
@@ -53,6 +54,7 @@ export const pointLayers = pgTable("point_layer", {
     () => columns.id,
     { onDelete: "set null" },
   ),
+  color: text("color"),
 
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()

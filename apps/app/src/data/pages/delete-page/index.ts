@@ -1,29 +1,14 @@
 "use server";
 
-import { db } from "@mapform/db";
 import { revalidatePath } from "next/cache";
-import { pages } from "@mapform/db/schema";
+import { deletePage } from "@mapform/backend/pages/delete-page";
+import { deletePageSchema } from "@mapform/backend/pages/delete-page/schema";
 import { authAction } from "~/lib/safe-action";
-import { deletePageSchema } from "./schema";
-import { count, eq } from "@mapform/db/utils";
 
-export const deletePage = authAction
+export const deletePageAction = authAction
   .schema(deletePageSchema)
-  .action(async ({ parsedInput: { pageId, projectId } }) => {
-    const [pageCount] = await db
-      .select({ count: count() })
-      .from(pages)
-      .where(eq(pages.projectId, projectId));
-
-    if (!pageCount) {
-      throw new Error("Page not found");
-    }
-
-    if (pageCount?.count <= 1) {
-      throw new Error("Cannot delete the last page");
-    }
-
-    await db.delete(pages).where(eq(pages.id, pageId));
+  .action(async ({ parsedInput }) => {
+    await deletePage(parsedInput);
 
     revalidatePath("/[wsSlug]/[tsSlug]/projects/[pId]/project", "page");
   });

@@ -20,12 +20,12 @@ import {
 } from "@mapform/ui/components/select";
 import { useAction } from "next-safe-action/hooks";
 import { useCallback, useEffect } from "react";
-import type { PageWithLayers } from "~/data/pages/get-page-with-layers";
+import type { PageWithLayers } from "@mapform/backend/pages/get-page-with-layers";
 import {
   updatePageSchema,
   type UpdatePageSchema,
-} from "~/data/pages/update-page/schema";
-import { updatePage as updatePageAction } from "~/data/pages/update-page";
+} from "@mapform/backend/pages/update-page/schema";
+import { updatePageAction } from "~/data/pages/update-page";
 import { usePage } from "../../page-context";
 
 interface GeneralFormProps {
@@ -60,7 +60,7 @@ export function GeneralForm({ optimisticPage }: GeneralFormProps) {
         contentViewType: data.contentViewType,
       });
     },
-    [optimisticPage, execute, updatePage]
+    [optimisticPage, execute, updatePage],
   );
 
   useEffect(() => {

@@ -31,7 +31,7 @@ import { type SetStateAction, useState } from "react";
 import { useAction } from "next-safe-action/hooks";
 import { toast } from "@mapform/ui/components/toaster";
 import type { ProjectWithPages } from "~/data/projects/get-project-with-pages";
-import { createPoint } from "~/data/datasets/create-point";
+import { createPointAction } from "~/data/datasets/create-point";
 import {
   LayerPopoverContent,
   LayerPopoverRoot,
@@ -72,7 +72,7 @@ export function SearchLocationMarker({
   const [open, setOpen] = useState(false);
   const [layerPopoverOpen, setLayerPopoverOpen] = useState(false);
   const [query, setQuery] = useState<string>("");
-  const { execute: executeCreatePoint } = useAction(createPoint, {
+  const { execute: executeCreatePoint } = useAction(createPointAction, {
     onSuccess: () => {
       setSearchLocation(null);
       setDrawerOpen(true);

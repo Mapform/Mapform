@@ -24,7 +24,7 @@ import { Input } from "@mapform/ui/components/input";
 import { toast } from "@mapform/ui/components/toaster";
 import { useAction } from "next-safe-action/hooks";
 import { useState } from "react";
-import { createProject } from "~/data/projects/create-project";
+import { createProjectAction } from "~/data/projects/create-project";
 import {
   createProjectSchema,
   type CreateProjectSchema,
@@ -44,7 +44,7 @@ export function CreateDialog({ tsSlug }: { tsSlug: string }) {
     },
     resolver: zodResolver(createProjectSchema),
   });
-  const { execute, status } = useAction(createProject, {
+  const { execute, status } = useAction(createProjectAction, {
     onError: ({ error }) => {
       if (error.serverError) {
         toast(error.serverError);

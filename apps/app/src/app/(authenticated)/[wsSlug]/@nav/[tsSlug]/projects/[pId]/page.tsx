@@ -6,7 +6,7 @@ import {
 } from "@mapform/ui/components/popover";
 import { SendIcon } from "lucide-react";
 import { NavSlot } from "~/components/nav-slot";
-import { getProjectWithTeamspace } from "~/data/projects/get-project-with-teamspace";
+import { getProjectWithTeamspaceAction } from "~/data/projects/get-project-with-teamspace";
 import { ShareContent } from "./share-content";
 import TogglePages from "./toggle-pages";
 
@@ -15,7 +15,7 @@ export default async function Nav({
 }: {
   params: { wsSlug: string; tsSlug: string; pId: string };
 }) {
-  const projectResponse = await getProjectWithTeamspace({
+  const projectResponse = await getProjectWithTeamspaceAction({
     id: params.pId,
   });
   const project = projectResponse?.data;

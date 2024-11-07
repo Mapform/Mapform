@@ -4,7 +4,7 @@ import { eq } from "@mapform/db/utils";
 import { NextResponse } from "next/server";
 import { auth, BASE_PATH } from "~/lib/auth";
 
-const publicAppPaths = ["/onboarding"];
+const publicAppPaths = ["/onboarding", "/static"];
 
 // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- This shows an ugly TS error otherwise
 export default auth(async (req) => {
@@ -13,17 +13,17 @@ export default auth(async (req) => {
   const pathname = req.nextUrl.pathname;
 
   const isPublicAppPath = publicAppPaths.some((path) =>
-    pathname.startsWith(path)
+    pathname.startsWith(path),
   );
 
   if (!req.auth) {
     return NextResponse.redirect(
       new URL(
         `${BASE_PATH}/signin?callbackUrl=${encodeURIComponent(
-          reqUrl.pathname
+          reqUrl.pathname,
         )}`,
-        req.url
-      )
+        req.url,
+      ),
     );
   }
 
@@ -41,13 +41,13 @@ export default auth(async (req) => {
       .innerJoin(users, eq(users.id, workspaceMemberships.userId))
       .innerJoin(
         workspaces,
-        eq(workspaces.id, workspaceMemberships.workspaceId)
+        eq(workspaces.id, workspaceMemberships.workspaceId),
       )
       .where(eq(users.id, req.auth.user.id));
 
     if (hasWorkspaceSlug) {
       const hasAccessToWorkspace = allowedWorkspaces.find(
-        ({ workspace }) => workspace.slug === workspaceSlug
+        ({ workspace }) => workspace.slug === workspaceSlug,
       );
 
       if (!hasAccessToWorkspace) {
@@ -58,7 +58,7 @@ export default auth(async (req) => {
 
       if (firstWorkspace) {
         return NextResponse.redirect(
-          new URL(`/${firstWorkspace.slug}`, req.url)
+          new URL(`/${firstWorkspace.slug}`, req.url),
         );
       }
 

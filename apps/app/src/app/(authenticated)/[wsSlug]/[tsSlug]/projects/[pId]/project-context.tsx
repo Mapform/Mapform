@@ -8,10 +8,12 @@ import {
   // eslint-disable-next-line import/named -- It will work when React 19 is released
   useOptimistic,
 } from "react";
+import type { GetLayerPoint } from "@mapform/backend/datalayer/get-layer-point";
 import { useCreateQueryString } from "@mapform/lib/hooks/use-create-query-string";
-import type { ProjectWithPages } from "~/data/projects/get-project-with-pages";
+import type { ProjectWithPages } from "@mapform/backend/projects/get-project-with-pages";
 
 export interface ProjectContextProps {
+  layerPoint?: GetLayerPoint;
   optimisticProjectWithPages: ProjectWithPages;
   updateProjectWithPages: (action: ProjectWithPages) => void;
 }
@@ -27,9 +29,11 @@ export const useProject = () => useContext(ProjectContext);
  */
 export function ProjectProvider({
   projectWithPages,
+  layerPoint,
   children,
 }: {
   projectWithPages: ProjectWithPages;
+  layerPoint?: GetLayerPoint;
   children: React.ReactNode;
 }) {
   const router = useRouter();
@@ -68,6 +72,7 @@ export function ProjectProvider({
   return (
     <ProjectContext.Provider
       value={{
+        layerPoint,
         updateProjectWithPages,
         optimisticProjectWithPages,
       }}

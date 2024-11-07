@@ -8,15 +8,15 @@ import {
 } from "react";
 import { useMapform } from "@mapform/mapform";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
-import type { PageData } from "~/data/datalayer/get-page-data";
-import type { PageWithLayers } from "~/data/pages/get-page-with-layers";
-import type { ListAvailableDatasets } from "~/data/datasets/list-available-datasets";
+import type { PageData } from "@mapform/backend/datalayer/get-page-data";
+import type { ListTeamspaceDatasets } from "@mapform/backend/datasets/list-teamspace-datasets";
+import type { PageWithLayers } from "@mapform/backend/pages/get-page-with-layers";
 
 export interface PageContextProps {
   isEditingPage: boolean;
   optimisticPage: PageWithLayers | undefined;
   optimisticPageData: PageData | undefined;
-  availableDatasets: ListAvailableDatasets;
+  availableDatasets: ListTeamspaceDatasets;
   updatePage: (action: PageWithLayers) => void;
   updatePageData: (action: PageData) => void;
   setActivePage: (
@@ -38,7 +38,7 @@ export function PageProvider({
 }: {
   pageData?: PageData;
   pageWithLayers?: PageWithLayers;
-  availableDatasets: ListAvailableDatasets;
+  availableDatasets: ListTeamspaceDatasets;
   children: React.ReactNode;
 }) {
   const { map } = useMapform();

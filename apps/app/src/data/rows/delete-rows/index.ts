@@ -1,16 +1,14 @@
 "use server";
 
-import { db } from "@mapform/db";
 import { revalidatePath } from "next/cache";
-import { inArray } from "@mapform/db/utils";
-import { rows } from "@mapform/db/schema";
+import { deleteRows } from "@mapform/backend/rows/delete-rows";
+import { deleteRowsSchema } from "@mapform/backend/rows/delete-rows/schema";
 import { authAction } from "~/lib/safe-action";
-import { deleteRowsSchema } from "./schema";
 
-export const deleteRows = authAction
+export const deleteRowsAction = authAction
   .schema(deleteRowsSchema)
-  .action(async ({ parsedInput: { rowIds } }) => {
-    await db.delete(rows).where(inArray(rows.id, rowIds));
+  .action(async ({ parsedInput }) => {
+    await deleteRows(parsedInput);
 
     revalidatePath("/[wsSlug]/[tsSlug]/datasets/[dId]", "page");
   });

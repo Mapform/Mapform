@@ -26,7 +26,7 @@ import {
 } from "@mapform/ui/components/tooltip";
 import { DragItem, DragHandle } from "~/components/draggable";
 import type { ProjectWithPages } from "~/data/projects/get-project-with-pages";
-import { deletePage } from "~/data/pages/delete-page";
+import { deletePageAction } from "~/data/pages/delete-page";
 import { usePage } from "../../page-context";
 import { useProject } from "../../project-context";
 
@@ -37,7 +37,7 @@ interface ItemProps {
 export function Item({ page }: ItemProps) {
   const { setActivePage, optimisticPage } = usePage();
   const { optimisticProjectWithPages, updateProjectWithPages } = useProject();
-  const { execute: executeDeletePage } = useAction(deletePage);
+  const { execute: executeDeletePage } = useAction(deletePageAction);
 
   const isLastPage = optimisticProjectWithPages.pages.length <= 1;
   const isActive = page.id === optimisticPage?.id;

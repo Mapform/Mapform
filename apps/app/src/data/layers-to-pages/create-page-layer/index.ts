@@ -1,27 +1,14 @@
 "use server";
 
-import { db } from "@mapform/db";
 import { revalidatePath } from "next/cache";
-import { eq } from "@mapform/db/utils";
-import { layersToPages } from "@mapform/db/schema";
+import { createPageLayer } from "@mapform/backend/layers-to-pages/create-page-layer";
+import { createPageLayerSchema } from "@mapform/backend/layers-to-pages/create-page-layer/schema";
 import { authAction } from "~/lib/safe-action";
-import { createPageLayerSchema } from "./schema";
 
-export const createPageLayer = authAction
+export const createPageLayerAction = authAction
   .schema(createPageLayerSchema)
-  .action(async ({ parsedInput: { layerId, pageId } }) => {
-    const existingPageLayers = await db.query.layersToPages.findMany({
-      where: eq(layersToPages.layerId, layerId),
-    });
-
-    await db
-      .insert(layersToPages)
-      .values({
-        layerId,
-        pageId,
-        position: existingPageLayers.length + 1,
-      })
-      .returning();
+  .action(async ({ parsedInput }) => {
+    await createPageLayer(parsedInput);
 
     revalidatePath("/[wsSlug]/[tsSlug]/projects/[pId]/project", "page");
   });

@@ -10,6 +10,12 @@ import {
 import type mapboxgl from "mapbox-gl";
 
 export type MBMap = mapboxgl.Map;
+export interface ActivePoint {
+  id: string;
+  color: string;
+  title: string;
+  description?: string;
+}
 
 interface MapformProviderContextProps {
   map?: MBMap;

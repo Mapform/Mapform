@@ -29,7 +29,7 @@ import {
 import { cn } from "@mapform/lib/classnames";
 import { useAction } from "next-safe-action/hooks";
 import { DragHandle, DragItem } from "~/components/draggable";
-import { updateLayerOrder } from "~/data/layers/update-layer-order";
+import { updateLayerOrderAction } from "~/data/layers/update-layer-order";
 import { usePage } from "../../page-context";
 import { GeneralForm } from "./general-form";
 import {
@@ -50,13 +50,15 @@ export function PageDrawerContent() {
       activationConstraint: {
         distance: 8,
       },
-    })
+    }),
   );
 
-  const { executeAsync: updateLayerOrderAsync } = useAction(updateLayerOrder);
+  const { executeAsync: updateLayerOrderAsync } = useAction(
+    updateLayerOrderAction,
+  );
 
   if (!optimisticPage) {
-    return <div className="bg-white w-[400px] border-l" />;
+    return <div className="w-[400px] border-l bg-white" />;
   }
 
   const dragLayers = optimisticPage.layersToPages.map((ltp) => ltp.layer);
@@ -66,10 +68,10 @@ export function PageDrawerContent() {
 
     if (e.active.id !== e.over.id) {
       const activeLayerIndex = dragLayers.findIndex(
-        (layer) => layer.id === e.active.id
+        (layer) => layer.id === e.active.id,
       );
       const overLayerIndex = dragLayers.findIndex(
-        (layer) => layer.id === e.over?.id
+        (layer) => layer.id === e.over?.id,
       );
 
       if (activeLayerIndex < 0 || overLayerIndex < 0) return;
@@ -77,7 +79,7 @@ export function PageDrawerContent() {
       const newLayerList = arrayMove(
         dragLayers,
         activeLayerIndex,
-        overLayerIndex
+        overLayerIndex,
       );
 
       updatePage({
@@ -99,7 +101,7 @@ export function PageDrawerContent() {
 
   return (
     <DrawerContent>
-      <DrawerHeader className="flex justify-between items-center py-2">
+      <DrawerHeader className="flex items-center justify-between py-2">
         <h2 className="text-base font-medium">Edit Page</h2>
         <div className="-mr-2">
           <DrawerTrigger asChild>
@@ -129,7 +131,7 @@ export function PageDrawerContent() {
                 <span
                   className={cn(
                     buttonVariants({ variant: "ghost", size: "icon-xs" }),
-                    "mr-2 text-muted-foreground hover:bg-stone-200"
+                    "text-muted-foreground mr-2 hover:bg-stone-200",
                   )}
                 >
                   <PlusIcon className="size-4" />
@@ -154,7 +156,7 @@ export function PageDrawerContent() {
                       <DragItem id={layer.id} key={layer.id}>
                         <div className="flex items-center py-1">
                           <DragHandle id={layer.id}>
-                            <div className="mr-2 flex items-center justify-center flex-shrink-0">
+                            <div className="mr-2 flex flex-shrink-0 items-center justify-center">
                               <GripVerticalIcon className="h-4 w-4 flex-shrink-0" />
                             </div>
                           </DragHandle>

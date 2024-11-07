@@ -8,7 +8,7 @@ import {
   DropdownMenuTrigger,
 } from "@mapform/ui/components/dropdown-menu";
 import { useAction } from "next-safe-action/hooks";
-import { deleteLayer } from "~/data/layers/delete-layer";
+import { deleteLayerAction } from "~/data/layers/delete-layer";
 import { usePage } from "../../page-context";
 import { toast } from "@mapform/ui/components/toaster";
 
@@ -18,7 +18,7 @@ interface LayerSubmenuProps {
 
 export function LayerSubmenu({ layerId }: LayerSubmenuProps) {
   const { optimisticPage, updatePage } = usePage();
-  const { execute } = useAction(deleteLayer, {
+  const { execute } = useAction(deleteLayerAction, {
     onSuccess: () => {
       toast.success("Layer deleted");
 
@@ -34,7 +34,7 @@ export function LayerSubmenu({ layerId }: LayerSubmenuProps) {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
-          className="ml-auto hover:bg-stone-200 data-[state=open]:bg-stone-200 -mr-1"
+          className="-mr-1 ml-auto hover:bg-stone-200 data-[state=open]:bg-stone-200"
           size="icon-xs"
           variant="ghost"
         >
@@ -58,7 +58,7 @@ export function LayerSubmenu({ layerId }: LayerSubmenuProps) {
               updatePage({
                 ...optimisticPage,
                 layersToPages: optimisticPage.layersToPages.filter(
-                  (ltp) => ltp.layerId !== layerId
+                  (ltp) => ltp.layerId !== layerId,
                 ),
               });
             });

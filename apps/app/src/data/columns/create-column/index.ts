@@ -1,22 +1,14 @@
 "use server";
 
-import { db } from "@mapform/db";
 import { revalidatePath } from "next/cache";
-import { columns } from "@mapform/db/schema";
+import { createColumn } from "@mapform/backend/columns/create-column";
+import { createColumnSchema } from "@mapform/backend/columns/create-column/schema";
 import { authAction } from "~/lib/safe-action";
-import { createColumnSchema } from "./schema";
 
-export const createColumn = authAction
+export const createColumnAction = authAction
   .schema(createColumnSchema)
-  .action(async ({ parsedInput: { name, datasetId, type } }) => {
-    const [newColumn] = await db
-      .insert(columns)
-      .values({
-        name,
-        datasetId,
-        type,
-      })
-      .returning();
+  .action(async ({ parsedInput }) => {
+    const newColumn = await createColumn(parsedInput);
 
     revalidatePath("/[wsSlug]/[tsSlug]/projects/[pId]/project", "page");
 

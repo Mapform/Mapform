@@ -1,9 +1,3 @@
-import type { PointCell } from "@mapform/db/schema";
-
-export type PageData = {
-  pointData: PointCell[];
-};
-
 export type PaddingOptions = {
   top: number;
   bottom: number;

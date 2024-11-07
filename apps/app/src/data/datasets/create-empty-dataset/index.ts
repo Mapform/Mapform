@@ -1,60 +1,17 @@
 "use server";
 
-import { db } from "@mapform/db";
 import { revalidatePath } from "next/cache";
-import { columns, datasets } from "@mapform/db/schema";
+import { createEmptyDataset } from "@mapform/backend/datasets/create-empty-dataset";
+import { createEmptyDatasetSchema } from "@mapform/backend/datasets/create-empty-dataset/schema";
 import { authAction } from "~/lib/safe-action";
-import { createEmptyDatasetSchema } from "./schema";
 
-export const createEmptyDataset = authAction
+export const createEmptyDatasetAction = authAction
   .schema(createEmptyDatasetSchema)
-  .action(async ({ parsedInput: { name, layerType, teamspaceId } }) => {
-    // We collect the layerType so that we can create columns for the intended layer
-
-    const response = await db.transaction(async (tx) => {
-      let cols;
-      const [ds] = await tx
-        .insert(datasets)
-        .values({
-          name,
-          teamspaceId,
-        })
-        .returning();
-
-      if (layerType === "point" && ds) {
-        cols = await tx
-          .insert(columns)
-          .values([
-            {
-              datasetId: ds.id,
-              name: "Location",
-              type: "point",
-            },
-            {
-              datasetId: ds.id,
-              name: "Title",
-              type: "string",
-            },
-            {
-              datasetId: ds.id,
-              name: "Description",
-              type: "richtext",
-            },
-          ])
-          .returning();
-      }
-
-      return {
-        ds,
-        cols,
-      };
-    });
+  .action(async ({ parsedInput }) => {
+    const response = await createEmptyDataset(parsedInput);
 
     revalidatePath("/[wsSlug]/[tsSlug]/datasets", "page");
     revalidatePath("/[wsSlug]/[tsSlug]/projects/[pId]/project", "page");
 
-    return {
-      dataset: response.ds,
-      columns: response.cols,
-    };
+    return response;
   });

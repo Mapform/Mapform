@@ -3,9 +3,11 @@ import { useEffect, useMemo } from "react";
 import mapboxgl from "mapbox-gl";
 import { cn } from "@mapform/lib/classnames";
 import type { FeatureCollection } from "geojson";
-import type { PageData, ViewState } from "@mapform/map-utils/types";
+import type { ViewState } from "@mapform/map-utils/types";
+import type { PageData } from "@mapform/backend/datalayer/get-page-data";
 import { useMeasure } from "@mapform/lib/hooks/use-measure";
 import { usePrevious } from "@mapform/lib/hooks/use-previous";
+import { useSetQueryString } from "@mapform/lib/hooks/use-set-query-string";
 import { useMapform } from "../context";
 import { SearchLocationMarker } from "./search-location-marker";
 
@@ -34,7 +36,7 @@ export function Map({
   onLoad,
   children,
 }: MapProps) {
-  // const mapContainer = useRef<HTMLDivElement>(null);
+  const setQueryString = useSetQueryString();
   const { map, setMap } = useMapform();
   // Condition in usePrevious resolves issue where map padding is not updated on first render
   const prevMapPadding = usePrevious(map ? mapPadding : undefined);
@@ -47,10 +49,15 @@ export function Map({
         type: "Feature",
         geometry: {
           type: "Point",
-          coordinates: [point.value.x, point.value.y],
+          coordinates: [point.value!.x, point.value!.y],
         },
         properties: {
           id: point.id,
+          type: "point",
+          color: point.color ?? "#3b82f6",
+          rowId: point.rowId,
+          pointLayerId: point.pointLayerId,
+          // icon: "...",
         },
       })),
     }),
@@ -89,6 +96,11 @@ export function Map({
 
       // Add your custom markers and lines here
       m.on("load", () => {
+        // const img = new Image(20, 20);
+        // img.src = globeSvg.src;
+        // img.onload = () => {
+        //   m.addImage("cafe", img);
+        // };
         setMap(m);
         onLoad && onLoad();
       });
@@ -141,13 +153,43 @@ export function Map({
           type: "circle",
           source: "points",
           paint: {
-            "circle-radius": 10,
-            "circle-color": "#007cbf",
+            "circle-radius": 8,
+            "circle-color": ["get", "color"],
+            "circle-stroke-color": "#fff",
+            "circle-stroke-width": 2,
           },
         });
+
+        map.on("click", "points", (e) => {
+          const feature = e.features?.[0];
+
+          if (feature?.properties) {
+            setQueryString({
+              key: "layer_point",
+              value: `${feature.properties.rowId}_${feature.properties.pointLayerId}`,
+            });
+
+            // setActivePoint({
+            //   id: feature.properties?.id,
+            //   color: feature.properties?.color,
+            //   title: "Title",
+            //   description: "Description",
+            // });
+          }
+        });
+
+        // map.addLayer({
+        //   id: "emoji-layer",
+        //   type: "symbol",
+        //   source: "points",
+        //   layout: {
+        //     "icon-image": "cafe",
+        //     "icon-size": 0.5,
+        //   },
+        // });
       }
     }
-  }, [map, geojson]);
+  }, [map, geojson, setQueryString]);
 
   return (
     <div

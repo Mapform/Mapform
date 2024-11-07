@@ -3,10 +3,10 @@
 import { cn } from "@mapform/lib/classnames";
 import { useParams, usePathname } from "next/navigation";
 import { createContext, useContext, useEffect, useRef, useState } from "react";
-import type { CurrentUserWorkspaceMemberships } from "~/data/workspace-memberships/get-current-user-workspace-memberships";
-import type { WorkspaceWithTeamspaces } from "~/data/workspaces/get-workspace-directory";
+import type { CurrentUserWorkspaceMemberships } from "@mapform/backend/workspace-memberships/get-current-user-workspace-memberships";
+import type { WorkspaceWithTeamspaces } from "@mapform/backend/workspaces/get-workspace-directory";
 
-export type RootLayoutContext = {
+export interface IRootLayoutContext {
   drawerRef: React.RefObject<HTMLDivElement>;
   workspaceSlug: string;
   showNav: boolean;
@@ -16,16 +16,16 @@ export type RootLayoutContext = {
   navSlot?: React.ReactNode;
   workspaceDirectory: NonNullable<WorkspaceWithTeamspaces>;
   workspaceMemberships: CurrentUserWorkspaceMemberships;
-};
+}
 
-export type RootLayoutProviderProps = {
+export interface RootLayoutProviderProps {
   children: React.ReactNode;
   workspaceSlug: string;
   navSlot?: React.ReactNode;
-};
+}
 
-export const RootLayoutContext = createContext<RootLayoutContext>(
-  {} as RootLayoutContext,
+export const RootLayoutContext = createContext<IRootLayoutContext>(
+  {} as IRootLayoutContext,
 );
 export const useRootLayout = () => useContext(RootLayoutContext);
 
@@ -100,7 +100,7 @@ export function RootLayoutProvider({
           <div
             className="flex w-[300px] flex-shrink-0 flex-col border-l pb-2"
             ref={drawerRef}
-          ></div>
+          />
         ) : null}
       </div>
     </RootLayoutContext.Provider>

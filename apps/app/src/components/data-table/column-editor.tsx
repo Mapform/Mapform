@@ -28,13 +28,13 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@mapform/ui/components/alert-dialog";
-import { editColumn } from "~/data/columns/edit-column";
-import { deleteColumn } from "~/data/columns/delete-column";
-import { COLUMN_ICONS } from "~/constants/column-icons";
 import {
   editColumnSchema,
   type EditColumnSchema,
-} from "~/data/columns/edit-column/schema";
+} from "@mapform/backend/columns/edit-column/schema";
+import { editColumnAction } from "~/data/columns/edit-column";
+import { deleteColumnAction } from "~/data/columns/delete-column";
+import { COLUMN_ICONS } from "~/constants/column-icons";
 
 interface ColumnEditorProps {
   columnId: string;
@@ -49,8 +49,8 @@ export function ColumnEditor({
 }: ColumnEditorProps) {
   const Icon = COLUMN_ICONS[columnType];
   const [open, setOpen] = useState(false);
-  const { execute, status } = useAction(deleteColumn);
-  const { execute: executeEditColumn } = useAction(editColumn);
+  const { execute, status } = useAction(deleteColumnAction);
+  const { execute: executeEditColumn } = useAction(editColumnAction);
   const form = useForm<EditColumnSchema>({
     defaultValues: {
       id: columnId,

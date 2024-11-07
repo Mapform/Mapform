@@ -2,17 +2,18 @@
 import { cache } from "react";
 import { MapformProvider } from "@mapform/mapform";
 import { notFound, redirect } from "next/navigation";
-import { getPageData } from "~/data/datalayer/get-page-data";
-import { getPageWithLayers } from "~/data/pages/get-page-with-layers";
-import { getProjectWithPages } from "~/data/projects/get-project-with-pages";
-import { listTeamspaceDatasets } from "~/data/datasets/list-teamspace-datasets";
+import { getPageDataAction } from "~/data/datalayer/get-page-data";
+import { getPageWithLayersAction } from "~/data/pages/get-page-with-layers";
+import { getProjectWithPagesAction } from "~/data/projects/get-project-with-pages";
+import { listTeamspaceDatasetsAction } from "~/data/datasets/list-teamspace-datasets";
+import { getLayerPointAction } from "~/data/datalayer/get-layer-point";
 import { ProjectProvider } from "./project-context";
 import Project from "./project";
 import { PageProvider } from "./page-context";
 import { Drawer } from "./drawer";
 
 const fetchProjectWithPages = cache(async (id: string) => {
-  const projectWithPagesResponse = await getProjectWithPages({
+  const projectWithPagesResponse = await getProjectWithPagesAction({
     id,
   });
 
@@ -30,7 +31,7 @@ const fetchPageWithLayers = cache(async (id?: string) => {
     return undefined;
   }
 
-  const pageWithLayersResponse = await getPageWithLayers({
+  const pageWithLayersResponse = await getPageWithLayersAction({
     id,
   });
   const pageWithLayers = pageWithLayersResponse?.data;
@@ -44,7 +45,7 @@ const fetchPageWithLayers = cache(async (id?: string) => {
 
 const fetchAvailableDatasets = cache(
   async (workspaceSlug: string, teamspaceSlug: string) => {
-    const availableDatasetsResponse = await listTeamspaceDatasets({
+    const availableDatasetsResponse = await listTeamspaceDatasetsAction({
       workspaceSlug,
       teamspaceSlug,
     });
@@ -59,12 +60,33 @@ const fetchPageData = cache(async (id?: string) => {
     return undefined;
   }
 
-  const pageDataResponse = await getPageData({
+  const pageDataResponse = await getPageDataAction({
     pageId: id,
   });
   const pageData = pageDataResponse?.data;
 
   return pageData;
+});
+
+const fetchLayerPoint = cache(async (layer_point?: string) => {
+  if (!layer_point) {
+    return undefined;
+  }
+
+  const [rowId, pointLayerId] = layer_point.split("_");
+
+  if (!rowId || !pointLayerId) {
+    return undefined;
+  }
+
+  const layerPointResponse = await getLayerPointAction({
+    rowId,
+    pointLayerId,
+  });
+
+  const layerPoint = layerPointResponse?.data;
+
+  return layerPoint;
 });
 
 export default async function ProjectPage({
@@ -75,17 +97,24 @@ export default async function ProjectPage({
   searchParams?: {
     page?: string;
     layer?: string;
+    layer_point?: string;
   };
 }) {
   const { pId } = params;
 
-  const [projectWithPages, pageWithLayers, availableDatasets, pageData] =
-    await Promise.all([
-      fetchProjectWithPages(pId),
-      fetchPageWithLayers(searchParams?.page),
-      fetchAvailableDatasets(params.wsSlug, params.tsSlug),
-      fetchPageData(searchParams?.page),
-    ]);
+  const [
+    projectWithPages,
+    pageWithLayers,
+    availableDatasets,
+    pageData,
+    layerPoint,
+  ] = await Promise.all([
+    fetchProjectWithPages(pId),
+    fetchPageWithLayers(searchParams?.page),
+    fetchAvailableDatasets(params.wsSlug, params.tsSlug),
+    fetchPageData(searchParams?.page),
+    fetchLayerPoint(searchParams?.layer_point),
+  ]);
 
   const fallbackPage = projectWithPages.pages[0]?.id;
 
@@ -102,7 +131,10 @@ export default async function ProjectPage({
   return (
     <div className="flex flex-1 flex-col overflow-hidden p-4">
       <MapformProvider>
-        <ProjectProvider projectWithPages={projectWithPages}>
+        <ProjectProvider
+          layerPoint={layerPoint}
+          projectWithPages={projectWithPages}
+        >
           <PageProvider
             availableDatasets={availableDatasets ?? []}
             pageData={pageData}

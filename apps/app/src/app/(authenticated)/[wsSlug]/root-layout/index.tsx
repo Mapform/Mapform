@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { cache } from "react";
-import { getWorkspaceDirectory } from "~/data/workspaces/get-workspace-directory";
-import { getCurrentUserWorkspaceMemberships } from "~/data/workspace-memberships/get-current-user-workspace-memberships";
+import { getWorkspaceDirectoryAction } from "~/data/workspaces/get-workspace-directory";
+import { getCurrentUserWorkspaceMembershipsAction } from "~/data/workspace-memberships/get-current-user-workspace-memberships";
 import { TopNav } from "./top-nav";
 import { SideNav } from "./side-nav";
 import { RootLayoutProvider, type RootLayoutProviderProps } from "./context";
@@ -37,7 +37,7 @@ export async function RootLayout({
  * Cached fetch functions
  */
 const fetchWorkspaceDirectory = cache(async (slug: string) => {
-  const getWorkspaceDirectoryResponse = await getWorkspaceDirectory({
+  const getWorkspaceDirectoryResponse = await getWorkspaceDirectoryAction({
     slug,
   });
 
@@ -52,7 +52,7 @@ const fetchWorkspaceDirectory = cache(async (slug: string) => {
 
 const fetchWorkspaceMemberships = cache(async () => {
   const workspaceMembershipsResponse =
-    await getCurrentUserWorkspaceMemberships();
+    await getCurrentUserWorkspaceMembershipsAction();
 
   const workspaceMemberships = workspaceMembershipsResponse?.data;
 
