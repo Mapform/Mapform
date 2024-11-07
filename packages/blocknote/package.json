@@ -2,6 +2,7 @@
   "name": "@mapform/blocknote",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "main": "./src/index.ts",
   "exports": {
     ".": "./src/index.ts"
@@ -30,6 +31,6 @@
     "react": "19.0.0-rc-e4953922-20240919",
     "react-dom": "19.0.0-rc-e4953922-20240919",
     "tailwindcss": "^3.3.0",
-    "typescript": "^5.6.2"
+    "typescript": "^5.6.3"
   }
 }

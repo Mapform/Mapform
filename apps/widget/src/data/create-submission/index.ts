@@ -21,10 +21,6 @@ export const createSubmission = action
       throw new Error("Project not found");
     }
 
-    if (!project.submissionsDataset) {
-      throw new Error("Project has no dataset");
-    }
-
     const [row] = await db
       .insert(rows)
       .values({

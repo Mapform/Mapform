@@ -18,9 +18,7 @@ export function PinMenu({ blockId }: { blockId: string }) {
     <Components.Generic.Menu.Item
       onClick={() => {
         editor.updateBlock(block, {
-          // @ts-ignore -- This throws an error, but the type is actually fine
           type: "pin",
-          // @ts-ignore -- This throws an error, but the type is actually fine
           props: { required: !block.props.required },
         });
       }}

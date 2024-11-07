@@ -51,7 +51,6 @@ export default async function Page({
   const submissionCookie = cookieStore.get("mapform-submission");
   const projectCookie = cookieStore.get("mapform-project-id");
   const formValues: NonNullable<Responses>["cells"] = [];
-  const s = searchParams?.p;
 
   let session: Row | undefined;
 
