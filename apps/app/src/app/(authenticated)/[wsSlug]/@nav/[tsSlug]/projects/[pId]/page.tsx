@@ -10,11 +10,9 @@ import { getProjectWithTeamspaceAction } from "~/data/projects/get-project-with-
 import { ShareContent } from "./share-content";
 import TogglePages from "./toggle-pages";
 
-export default async function Nav(
-  props: {
-    params: Promise<{ wsSlug: string; tsSlug: string; pId: string }>;
-  }
-) {
+export default async function Nav(props: {
+  params: Promise<{ wsSlug: string; tsSlug: string; pId: string }>;
+}) {
   const params = await props.params;
   const projectResponse = await getProjectWithTeamspaceAction({
     id: params.pId,
