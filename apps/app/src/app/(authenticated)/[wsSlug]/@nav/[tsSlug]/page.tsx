@@ -1,11 +1,12 @@
 import { NavSlot } from "~/components/nav-slot";
 import { CreateDialog } from "./dialog";
 
-export default function Nav({
-  params,
-}: {
-  params: { wsSlug: string; tsSlug: string };
-}) {
+export default async function Nav(
+  props: {
+    params: Promise<{ wsSlug: string; tsSlug: string }>;
+  }
+) {
+  const params = await props.params;
   return (
     <NavSlot
       actions={<CreateDialog tsSlug={params.tsSlug} />}

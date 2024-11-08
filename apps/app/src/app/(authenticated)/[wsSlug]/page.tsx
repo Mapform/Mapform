@@ -2,11 +2,12 @@ import { notFound } from "next/navigation";
 import { ConstructionIcon } from "lucide-react";
 import { getWorkspaceDirectoryAction } from "~/data/workspaces/get-workspace-directory";
 
-export default async function HomePage({
-  params,
-}: {
-  params: { wsSlug: string };
-}) {
+export default async function HomePage(
+  props: {
+    params: Promise<{ wsSlug: string }>;
+  }
+) {
+  const params = await props.params;
   const getWorkspaceDirectoryResponse = await getWorkspaceDirectoryAction({
     slug: params.wsSlug,
   });

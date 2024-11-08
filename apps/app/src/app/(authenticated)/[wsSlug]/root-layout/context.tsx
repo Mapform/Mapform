@@ -7,7 +7,7 @@ import type { CurrentUserWorkspaceMemberships } from "@mapform/backend/workspace
 import type { WorkspaceWithTeamspaces } from "@mapform/backend/workspaces/get-workspace-directory";
 
 export interface RootLayoutContextInterface {
-  drawerRef: React.RefObject<HTMLDivElement>;
+  drawerRef: React.RefObject<HTMLDivElement | null>;
   workspaceSlug: string;
   showNav: boolean;
   toggleNav: () => void;

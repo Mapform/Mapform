@@ -33,21 +33,22 @@ const fetchPageData = cache(async (id?: string) => {
 });
 
 // The root Project Id
-export default async function Page({
-  params,
-  searchParams,
-}: {
-  params: { pId: string };
-  searchParams?: {
-    p?: string;
-  };
-}) {
+export default async function Page(
+  props: {
+    params: Promise<{ pId: string }>;
+    searchParams?: Promise<{
+      p?: string;
+    }>;
+  }
+) {
+  const searchParams = await props.searchParams;
+  const params = await props.params;
   const [projectWithPages, pageData] = await Promise.all([
     fetchProjectWithPages(params.pId),
     fetchPageData(searchParams?.p),
   ]);
 
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const submissionCookie = cookieStore.get("mapform-submission");
   const projectCookie = cookieStore.get("mapform-project-id");
   const formValues: NonNullable<Responses>["cells"] = [];

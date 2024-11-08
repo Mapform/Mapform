@@ -32,8 +32,8 @@ export const createSubmission = action
       throw new Error("Failed to create submission");
     }
 
-    cookies().set("mapform-submission", row.id);
-    cookies().set("mapform-project-id", projectId);
+    (await cookies()).set("mapform-submission", row.id);
+    (await cookies()).set("mapform-project-id", projectId);
 
     return row.id;
   });

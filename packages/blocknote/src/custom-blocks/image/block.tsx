@@ -69,7 +69,7 @@ export const Image = createReactBlockSpec(
         return (
           <Popover defaultOpen>
             <PopoverTrigger className="w-full">
-              <div className="w-full p-2 bg-gray-100 rounded-md text-stone-500 text-sm flex gap-2 items-center font-medium">
+              <div className="flex w-full items-center gap-2 rounded-md bg-gray-100 p-2 text-sm font-medium text-stone-500">
                 <ImageIcon />
                 <span>Add an image</span>
               </div>
@@ -87,7 +87,7 @@ export const Image = createReactBlockSpec(
 
       if (!block.props.imageUrl) {
         return (
-          <div className="w-full p-2 bg-gray-100 rounded text-stone-500 text-sm flex justify-center">
+          <div className="flex w-full justify-center rounded bg-gray-100 p-2 text-sm text-stone-500">
             <ImageOffIcon />
           </div>
         );
@@ -95,5 +95,5 @@ export const Image = createReactBlockSpec(
 
       return renderImage();
     },
-  }
+  },
 );

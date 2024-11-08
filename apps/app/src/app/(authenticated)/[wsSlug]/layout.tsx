@@ -1,14 +1,19 @@
 import { RootLayout } from "./root-layout";
 
-export default function WorkspaceLayout({
-  params,
-  children,
-  nav,
-}: {
-  params: { wsSlug: string };
-  children: React.ReactNode;
-  nav?: React.ReactNode;
-}) {
+export default async function WorkspaceLayout(
+  props: {
+    params: Promise<{ wsSlug: string }>;
+    children: React.ReactNode;
+    nav?: React.ReactNode;
+  }
+) {
+  const params = await props.params;
+
+  const {
+    children,
+    nav
+  } = props;
+
   return (
     <RootLayout navSlot={nav} workspaceSlug={params.wsSlug}>
       {children}
