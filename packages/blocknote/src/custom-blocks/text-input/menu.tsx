@@ -2,7 +2,7 @@ import { useBlockNoteEditor, useComponentsContext } from "@blocknote/react";
 import type { TextInputBlock } from "./types";
 
 export function TextInputMenu({ blockId }: { blockId: string }) {
-  const editor = useBlockNoteEditor();
+  const editor = useBlockNoteEditor<any>();
   const Components = useComponentsContext();
   const block = editor.getBlock(blockId) as TextInputBlock | undefined;
 

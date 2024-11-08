@@ -3,14 +3,14 @@
 import { MapForm, useMapform } from "@mapform/mapform";
 import { useAction } from "next-safe-action/hooks";
 import React, { useEffect, useState } from "react";
-import type { PageData } from "@mapform/map-utils/types";
+import type { PageData } from "@mapform/backend/datalayer/get-page-data";
 import { useCreateQueryString } from "@mapform/lib/hooks/use-create-query-string";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import { submitPage } from "~/data/submit-page";
 import { createSubmission } from "~/data/create-submission";
 import type { Responses } from "~/data/get-responses.ts";
 import type { ProjectWithPages } from "~/data/get-project-with-pages";
-import { env } from "../env.mjs";
+import { env } from "~/env.mjs";
 
 interface MapProps {
   pageData: PageData | undefined;

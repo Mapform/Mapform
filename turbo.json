@@ -1,6 +1,21 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "globalEnv": ["NODE_ENV", "NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN"],
+  "globalEnv": [
+    "NODE_ENV",
+    "VERCEL_ENV",
+    "VERCEL_CUSTOM_URL",
+    "NEXT_RUNTIME",
+    "BLOB_READ_WRITE_TOKEN",
+
+    "DATABASE_URL",
+
+    "AUTH_SECRET",
+
+    "NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN",
+    "GEOAPIFY_API_KEY",
+
+    "AUTH_RESEND_KEY"
+  ],
   "globalDependencies": ["**/.env.*local"],
   "tasks": {
     "build": {
@@ -19,6 +34,9 @@
     },
     "clean": {
       "dependsOn": ["^clean"]
+    },
+    "db:deploy": {
+      "dependsOn": ["^db:deploy"]
     }
   }
 }

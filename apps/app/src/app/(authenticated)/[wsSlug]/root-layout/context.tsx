@@ -6,7 +6,7 @@ import { createContext, useContext, useEffect, useRef, useState } from "react";
 import type { CurrentUserWorkspaceMemberships } from "@mapform/backend/workspace-memberships/get-current-user-workspace-memberships";
 import type { WorkspaceWithTeamspaces } from "@mapform/backend/workspaces/get-workspace-directory";
 
-export interface IRootLayoutContext {
+export interface RootLayoutContextInterface {
   drawerRef: React.RefObject<HTMLDivElement>;
   workspaceSlug: string;
   showNav: boolean;
@@ -24,8 +24,8 @@ export interface RootLayoutProviderProps {
   navSlot?: React.ReactNode;
 }
 
-export const RootLayoutContext = createContext<IRootLayoutContext>(
-  {} as IRootLayoutContext,
+export const RootLayoutContext = createContext<RootLayoutContextInterface>(
+  {} as RootLayoutContextInterface,
 );
 export const useRootLayout = () => useContext(RootLayoutContext);
 
@@ -58,7 +58,7 @@ export function RootLayoutProvider({
   useEffect(() => {
     setShowNav(!hasDrawer);
     setShowDrawer(hasDrawer);
-  }, [pathname]);
+  }, [hasDrawer, pathname]);
 
   return (
     <RootLayoutContext.Provider

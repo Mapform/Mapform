@@ -131,6 +131,7 @@ export function Item({ layer }: ItemProps) {
                     // setActivePage(page);
                     setLayerPopoverOpen(true);
                   }}
+                  type="button"
                 >
                   <Layers2Icon className="flex size-4 flex-shrink-0 items-center justify-center" />
                   <span className="truncate text-sm">

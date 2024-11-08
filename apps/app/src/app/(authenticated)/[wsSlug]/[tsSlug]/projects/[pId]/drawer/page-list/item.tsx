@@ -18,6 +18,7 @@ import { useAction } from "next-safe-action/hooks";
 import { startTransition } from "react";
 import { Button } from "@mapform/ui/components/button";
 import { cn } from "@mapform/lib/classnames";
+import type { ProjectWithPages } from "@mapform/backend/projects/get-project-with-pages";
 import {
   Tooltip,
   TooltipContent,
@@ -25,7 +26,6 @@ import {
   TooltipTrigger,
 } from "@mapform/ui/components/tooltip";
 import { DragItem, DragHandle } from "~/components/draggable";
-import type { ProjectWithPages } from "~/data/projects/get-project-with-pages";
 import { deletePageAction } from "~/data/pages/delete-page";
 import { usePage } from "../../page-context";
 import { useProject } from "../../project-context";
@@ -93,6 +93,7 @@ export function Item({ page }: ItemProps) {
                   onClick={() => {
                     setActivePage(page);
                   }}
+                  type="button"
                 >
                   <FileIcon className="flex size-4 flex-shrink-0 items-center justify-center" />
                   <span className="truncate text-sm">

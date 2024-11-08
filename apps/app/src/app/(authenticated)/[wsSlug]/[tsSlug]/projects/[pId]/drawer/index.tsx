@@ -10,7 +10,6 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from "@mapform/ui/components/tooltip";
-import { useMapform } from "@mapform/mapform";
 import {
   ResizableHandle,
   ResizablePanel,
@@ -21,7 +20,6 @@ import { LayerList } from "./layer-list";
 import { PageList } from "./page-list";
 
 export function Drawer() {
-  const { map } = useMapform();
   const isClient = useIsClient();
   const { drawerRef, toggleDrawer } = useRootLayout();
 

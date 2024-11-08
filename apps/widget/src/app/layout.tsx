@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "@mapform/ui/globals.css";
 import { cn } from "@mapform/lib/classnames";
-import Providers from "~/components/providers";
+import { RootProviders } from "~/components/root-providers";
 
 const inter = Inter({ subsets: ["latin"], display: "swap" });
 
@@ -19,7 +19,7 @@ export default function RootLayout({
   return (
     <html className="h-full" lang="en">
       <body className={cn("h-full", inter.className)}>
-        <Providers>{children}</Providers>
+        <RootProviders>{children}</RootProviders>
       </body>
     </html>
   );

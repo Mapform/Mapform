@@ -1,8 +1,4 @@
 import { z } from "zod";
-import {
-  insertStringCellSchema,
-  insertPointCellSchema,
-} from "@mapform/db/schema";
 
 export const submitPageSchema = z.object({
   pageId: z.string(),

@@ -17,7 +17,7 @@ import { useAction } from "next-safe-action/hooks";
 import {
   completeOnboardingSchema,
   type CompleteOnboardingSchema,
-} from "~/data/onboarding/complete-onboarding/schema";
+} from "@mapform/backend/onboarding/complete-onboarding/schema";
 import { completeOnboardingAction } from "~/data/onboarding/complete-onboarding";
 
 export function OnboardingForm() {

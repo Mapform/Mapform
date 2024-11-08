@@ -4,7 +4,7 @@ export default function TeamspaceLayout({
 }: {
   params: { wsSlug: string };
   children: React.ReactNode;
-  modal?: React.ReactNode;
+  modal: React.ReactNode;
 }) {
   return (
     <>

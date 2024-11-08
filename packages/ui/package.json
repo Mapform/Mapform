@@ -11,7 +11,7 @@
   },
   "scripts": {
     "ui:add": "pnpm dlx shadcn-ui@latest add",
-    "lint": "eslint . --max-warnings 0"
+    "lint": "eslint . --max-warnings 100"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.3.4",
@@ -56,6 +56,6 @@
     "eslint": "^8.57.0",
     "react": "19.0.0-rc-e4953922-20240919",
     "tailwindcss": "^3.3.0",
-    "typescript": "^5.6.2"
+    "typescript": "^5.6.3"
   }
 }

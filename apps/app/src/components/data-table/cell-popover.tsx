@@ -1,3 +1,4 @@
+/* eslint-disable import/no-named-as-default-member -- This is fine */
 import {
   Form,
   FormControl,
@@ -36,13 +37,15 @@ import {
 import type { GetDataset } from "@mapform/backend/datasets/get-dataset";
 import { upsertCellAction } from "~/data/cells/upsert-cell";
 
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- it's fine
 const accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN!;
 
 export function CellPopover({
   cell,
   dataset,
 }: {
-  cell: Cell<unknown, unknown>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- We don't need the full cell definition
+  cell: Cell<any, any>;
   dataset: GetDataset;
 }) {
   const cellEl = useRef<HTMLTableCellElement>(null);
@@ -54,19 +57,12 @@ export function CellPopover({
     defaultValues: {
       rowId: cell.row.id,
       columnId: cell.column.id,
-      value:
-        type === "number"
-          ? cell.getValue()?.toString()
-          : (cell.getValue() as any),
+      value: type === "number" ? cell.getValue()?.toString() : cell.getValue(),
       type,
     },
     resolver: zodResolver(upsertCellSchema),
   });
-  const { execute: executeUpsertCell } = useAction(upsertCellAction, {
-    onError: (error) => {
-      console.error("Failed to upsert cell", error);
-    },
-  });
+  const { execute: executeUpsertCell } = useAction(upsertCellAction);
   const [open, setOpen] = useState(false);
 
   const onSubmit = (values: UpsertCellSchema) => {
@@ -76,17 +72,7 @@ export function CellPopover({
 
   const renderCellContent = useCallback(() => {
     const v = form.getValues();
-
-    const { success, data } = upsertCellSchema.safeParse(v);
-
-    // This shouldn't ever happen
-    if (!success) {
-      console.error("Failed to parse form values", v);
-      return null;
-    }
-
-    const parsedType = data.type;
-    const value = data.value;
+    const { type: parsedType, value } = upsertCellSchema.parse(v);
 
     if (parsedType === "point") {
       if (!value) {
@@ -165,22 +151,52 @@ export function CellPopover({
 
   const renderField = () => {
     if (type === "string") {
-      return <StringInput form={form} />;
+      return (
+        <StringInput
+          form={
+            form as UseFormReturn<Extract<UpsertCellSchema, { type: "string" }>>
+          }
+        />
+      );
     }
 
     if (type === "number") {
-      return <NumberInput form={form} />;
+      return (
+        <NumberInput
+          form={
+            form as UseFormReturn<Extract<UpsertCellSchema, { type: "number" }>>
+          }
+        />
+      );
     }
 
     if (type === "date") {
-      return <DateInput form={form} />;
+      return (
+        <DateInput
+          form={
+            form as UseFormReturn<Extract<UpsertCellSchema, { type: "date" }>>
+          }
+        />
+      );
     }
 
     if (type === "point") {
-      return <PointInput form={form} />;
+      return (
+        <PointInput
+          form={
+            form as UseFormReturn<Extract<UpsertCellSchema, { type: "point" }>>
+          }
+        />
+      );
     }
 
-    return <RichtextInput form={form} />;
+    return (
+      <RichtextInput
+        form={
+          form as UseFormReturn<Extract<UpsertCellSchema, { type: "richtext" }>>
+        }
+      />
+    );
   };
 
   return (
@@ -246,7 +262,11 @@ export function CellPopover({
   );
 }
 
-function StringInput({ form }: { form: UseFormReturn<UpsertCellSchema> }) {
+function StringInput({
+  form,
+}: {
+  form: UseFormReturn<Extract<UpsertCellSchema, { type: "string" }>>;
+}) {
   return (
     <FormField
       control={form.control}
@@ -268,7 +288,11 @@ function StringInput({ form }: { form: UseFormReturn<UpsertCellSchema> }) {
   );
 }
 
-function NumberInput({ form }: { form: UseFormReturn<UpsertCellSchema> }) {
+function NumberInput({
+  form,
+}: {
+  form: UseFormReturn<Extract<UpsertCellSchema, { type: "number" }>>;
+}) {
   return (
     <FormField
       control={form.control}
@@ -291,7 +315,11 @@ function NumberInput({ form }: { form: UseFormReturn<UpsertCellSchema> }) {
   );
 }
 
-function DateInput({ form }: { form: UseFormReturn<UpsertCellSchema> }) {
+function DateInput({
+  form,
+}: {
+  form: UseFormReturn<Extract<UpsertCellSchema, { type: "date" }>>;
+}) {
   return (
     <FormField
       control={form.control}
@@ -299,7 +327,10 @@ function DateInput({ form }: { form: UseFormReturn<UpsertCellSchema> }) {
       render={({ field }) => (
         <FormItem className="flex-1">
           <FormControl>
-            <DateTimePicker onChange={field.onChange} value={field.value} />
+            <DateTimePicker
+              onChange={field.onChange}
+              value={field.value ?? undefined}
+            />
           </FormControl>
         </FormItem>
       )}
@@ -307,9 +338,14 @@ function DateInput({ form }: { form: UseFormReturn<UpsertCellSchema> }) {
   );
 }
 
-function RichtextInput({ form }: { form: UseFormReturn<UpsertCellSchema> }) {
+function RichtextInput({
+  form,
+}: {
+  form: UseFormReturn<Extract<UpsertCellSchema, { type: "richtext" }>>;
+}) {
   const editor = useCreateBlockNote({
-    initialContent: form.getValues().value?.content,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Block types still need work
+    initialContent: form.getValues().value?.content as any,
     placeholders: {
       default: "Write, or press '/' for commands...",
     },
@@ -339,18 +375,20 @@ function RichtextInput({ form }: { form: UseFormReturn<UpsertCellSchema> }) {
   );
 }
 
-const INITIAL_CENTER = [0, 0];
-
-function PointInput({ form }: { form: UseFormReturn<UpsertCellSchema> }) {
-  const mapContainerRef = useRef<HTMLElement | null>(null);
-  const [center, setCenter] = useState(INITIAL_CENTER);
+function PointInput({
+  form,
+}: {
+  form: UseFormReturn<Extract<UpsertCellSchema, { type: "point" }>>;
+}) {
+  const mapContainerRef = useRef<HTMLDivElement | null>(null);
+  const [center, setCenter] = useState([0, 0]);
 
   useEffect(() => {
     mapboxgl.accessToken = accessToken;
     const map = new mapboxgl.Map({
       center: {
-        lng: form.getValues().value?.x || INITIAL_CENTER[0]!,
-        lat: form.getValues().value?.y || INITIAL_CENTER[1]!,
+        lng: form.getValues().value?.x || 0,
+        lat: form.getValues().value?.y || 0,
       },
       zoom: form.getValues().value ? 9 : 0,
       container: mapContainerRef.current ?? "",
@@ -374,7 +412,7 @@ function PointInput({ form }: { form: UseFormReturn<UpsertCellSchema> }) {
     return () => {
       map.remove();
     };
-  }, []);
+  }, [form]);
 
   return (
     <div className="relative h-[280px] w-full">

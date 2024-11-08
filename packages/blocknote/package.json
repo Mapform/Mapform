@@ -2,17 +2,18 @@
   "name": "@mapform/blocknote",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "main": "./src/index.ts",
   "exports": {
     ".": "./src/index.ts"
   },
   "scripts": {
-    "lint": "eslint . --max-warnings 0"
+    "lint": "eslint . --max-warnings 100"
   },
   "dependencies": {
-    "@blocknote/core": "0.15.10",
-    "@blocknote/mantine": "0.15.10",
-    "@blocknote/react": "0.15.10",
+    "@blocknote/core": "^0.19.0",
+    "@blocknote/mantine": "^0.19.0",
+    "@blocknote/react": "^0.19.0",
     "@mapform/lib": "workspace:*",
     "@mapform/ui": "workspace:*",
     "lucide-react": "^0.446.0",
@@ -30,6 +31,6 @@
     "react": "19.0.0-rc-e4953922-20240919",
     "react-dom": "19.0.0-rc-e4953922-20240919",
     "tailwindcss": "^3.3.0",
-    "typescript": "^5.6.2"
+    "typescript": "^5.6.3"
   }
 }

@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+// eslint-disable-next-line import/named -- It will work when React 19 is released
 import { cache } from "react";
 import { getWorkspaceDirectoryAction } from "~/data/workspaces/get-workspace-directory";
 import { getCurrentUserWorkspaceMembershipsAction } from "~/data/workspace-memberships/get-current-user-workspace-memberships";

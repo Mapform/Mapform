@@ -14,7 +14,7 @@ import type { CustomBlock } from "@mapform/blocknote";
 import { toast } from "@mapform/ui/components/toaster";
 import type { PlacesSearchResponse } from "@mapform/map-utils/types";
 import { SearchLocationMarker as MapMarker } from "@mapform/mapform";
-import type { PageWithLayers } from "~/data/pages/get-page-with-layers";
+import type { PageWithLayers } from "@mapform/backend/pages/get-page-with-layers";
 import { usePage } from "../../page-context";
 import { useProject } from "../../project-context";
 import { SearchLocationMarker } from "./search-location-marker";
@@ -118,6 +118,7 @@ function EditBarInner({ optimisticPage, updatePageServer }: EditBarInnerProps) {
     movedCoords.bearing !== optimisticPage.bearing;
 
   const pageLayers = optimisticProjectWithPages.pageLayers.filter(
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- Once we add more layer types this won't error anymore
     (layer) => layer.pageId === optimisticPage.id && layer.type === "point",
   );
 

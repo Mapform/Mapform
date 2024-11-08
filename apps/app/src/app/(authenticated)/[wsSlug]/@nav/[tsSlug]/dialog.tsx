@@ -24,17 +24,17 @@ import { Input } from "@mapform/ui/components/input";
 import { toast } from "@mapform/ui/components/toaster";
 import { useAction } from "next-safe-action/hooks";
 import { useState } from "react";
-import { createProjectAction } from "~/data/projects/create-project";
 import {
   createProjectSchema,
   type CreateProjectSchema,
-} from "~/data/projects/create-project/schema";
+} from "@mapform/backend/projects/create-project/schema";
+import { createProjectAction } from "~/data/projects/create-project";
 import { useRootLayout } from "../../root-layout/context";
 
 export function CreateDialog({ tsSlug }: { tsSlug: string }) {
   const [open, setOpen] = useState(false);
   const { workspaceDirectory } = useRootLayout();
-  const teamspaceId = workspaceDirectory?.teamspaces.find(
+  const teamspaceId = workspaceDirectory.teamspaces.find(
     (ts) => ts.slug === tsSlug,
   )?.id;
   const form = useForm<CreateProjectSchema>({

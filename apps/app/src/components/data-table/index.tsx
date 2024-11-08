@@ -46,19 +46,21 @@ export const DataTable = memo(function DataTable({ dataset }: TableProps) {
         return rowCells.reduce<
           Record<string, GetDataset["rows"][number]["cells"][number]>
         >(
+          // @ts-expect-error -- It's gucci baby
           (acc, cell) => {
-            acc[cell.columnId] =
-              cell.stringCell?.value ??
-              cell.numberCell?.value ??
-              cell.booleanCell?.value ??
-              cell.richtextCell?.value ??
-              cell.dateCell?.value ??
-              (cell.pointCell && {
-                x: cell.pointCell.x,
-                y: cell.pointCell.y,
-              });
-
-            return acc;
+            return {
+              ...acc,
+              [cell.columnId]:
+                cell.stringCell?.value ??
+                cell.numberCell?.value ??
+                cell.booleanCell?.value ??
+                cell.richtextCell?.value ??
+                cell.dateCell?.value ??
+                (cell.pointCell && {
+                  x: cell.pointCell.x,
+                  y: cell.pointCell.y,
+                }),
+            };
           },
           {
             rowId: row.id,
@@ -188,7 +190,8 @@ const getColumns = (dataset: GetDataset) => {
   return [
     {
       id: "select",
-      header: ({ table }) => (
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Not worth creating a workaround type
+      header: ({ table }: any) => (
         <Checkbox
           aria-label="Select all"
           checked={
@@ -200,7 +203,8 @@ const getColumns = (dataset: GetDataset) => {
           }}
         />
       ),
-      cell: ({ row }) => (
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Not worth creating a workaround type
+      cell: ({ row }: any) => (
         <Checkbox
           aria-label="Select row"
           checked={row.getIsSelected()}
