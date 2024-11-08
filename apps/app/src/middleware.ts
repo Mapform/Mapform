@@ -2,14 +2,12 @@ import { db } from "@mapform/db";
 import { users, workspaceMemberships, workspaces } from "@mapform/db/schema";
 import { eq } from "@mapform/db/utils";
 import { NextResponse } from "next/server";
-import { env } from "~/env.mjs";
 import { auth, BASE_PATH } from "~/lib/auth";
 
 const publicAppPaths = ["/onboarding", "/static"];
 
 // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- This shows an ugly TS error otherwise
 export default auth(async (req) => {
-  console.log(11111, env.DATABASE_URL);
   const reqUrl = new URL(req.url);
 
   const pathname = req.nextUrl.pathname;
