@@ -35,35 +35,35 @@ export default auth(async (req) => {
     const hasWorkspaceSlug =
       Boolean(workspaceSlug) && workspaceSlug?.trim() !== "";
 
-    const allowedWorkspaces = await db
-      .select()
-      .from(workspaceMemberships)
-      .innerJoin(users, eq(users.id, workspaceMemberships.userId))
-      .innerJoin(
-        workspaces,
-        eq(workspaces.id, workspaceMemberships.workspaceId),
-      )
-      .where(eq(users.id, req.auth.user.id));
+    // const allowedWorkspaces = await db
+    //   .select()
+    //   .from(workspaceMemberships)
+    //   .innerJoin(users, eq(users.id, workspaceMemberships.userId))
+    //   .innerJoin(
+    //     workspaces,
+    //     eq(workspaces.id, workspaceMemberships.workspaceId),
+    //   )
+    //   .where(eq(users.id, req.auth.user.id));
 
-    if (hasWorkspaceSlug) {
-      const hasAccessToWorkspace = allowedWorkspaces.find(
-        ({ workspace }) => workspace.slug === workspaceSlug,
-      );
+    // if (hasWorkspaceSlug) {
+    //   const hasAccessToWorkspace = allowedWorkspaces.find(
+    //     ({ workspace }) => workspace.slug === workspaceSlug,
+    //   );
 
-      if (!hasAccessToWorkspace) {
-        return NextResponse.redirect(new URL("/", req.url));
-      }
-    } else if (allowedWorkspaces.length > 0) {
-      const firstWorkspace = allowedWorkspaces[0]?.workspace;
+    //   if (!hasAccessToWorkspace) {
+    //     return NextResponse.redirect(new URL("/", req.url));
+    //   }
+    // } else if (allowedWorkspaces.length > 0) {
+    //   const firstWorkspace = allowedWorkspaces[0]?.workspace;
 
-      if (firstWorkspace) {
-        return NextResponse.redirect(
-          new URL(`/${firstWorkspace.slug}`, req.url),
-        );
-      }
+    //   if (firstWorkspace) {
+    //     return NextResponse.redirect(
+    //       new URL(`/${firstWorkspace.slug}`, req.url),
+    //     );
+    //   }
 
-      return NextResponse.redirect(new URL(`/account`, req.url));
-    }
+    //   return NextResponse.redirect(new URL(`/account`, req.url));
+    // }
   }
 
   /**
