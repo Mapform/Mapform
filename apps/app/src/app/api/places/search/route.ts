@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import type { PlacesSearchResponse } from "@mapform/map-utils/types";
+import { env } from "~/env.mjs";
 
 // TODO: We may want to rate limit this, and / or cache the results
 export async function GET(request: Request) {
@@ -7,8 +8,7 @@ export async function GET(request: Request) {
 
   try {
     const searchParams = new URLSearchParams({
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- We know this is set
-      apiKey: process.env.GEOAPIFY_API_KEY!,
+      apiKey: env.GEOAPIFY_API_KEY,
       text,
     }).toString();
 
