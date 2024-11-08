@@ -10,7 +10,7 @@ import { submitPage } from "~/data/submit-page";
 import { createSubmission } from "~/data/create-submission";
 import type { Responses } from "~/data/get-responses.ts";
 import type { ProjectWithPages } from "~/data/get-project-with-pages";
-import { env } from "../env.mjs";
+import { env } from "~/env.mjs";
 
 interface MapProps {
   pageData: PageData | undefined;
