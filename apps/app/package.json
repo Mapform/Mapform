@@ -39,7 +39,7 @@
     "lucide-react": "^0.354.0",
     "mapbox-gl": "^3.2.0",
     "next": "15.0.3",
-    "next-auth": "5.0.0-beta.21",
+    "next-auth": "5.0.0-beta.25",
     "next-safe-action": "^7.9.3",
     "papaparse": "^5.4.1",
     "react": "19.0.0-rc-66855b96-20241106",

@@ -4,10 +4,12 @@ import { z } from "zod";
 export const env = createEnv({
   server: {
     DATABASE_URL: z.string().url().min(1),
+    DATABASE_URL_UNPOOLED: z.string().url().min(1),
   },
   client: {},
   runtimeEnv: {
     DATABASE_URL: process.env.DATABASE_URL,
+    DATABASE_URL_UNPOOLED: process.env.DATABASE_URL_UNPOOLED,
     VERCEL_ENV: process.env.VERCEL_ENV,
   },
 });
