@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "@mapform/ui/globals.css";
 import { cn } from "@mapform/lib/classnames";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { RootProviders } from "~/components/root-providers";
 
 const inter = Inter({ subsets: ["latin"], display: "swap" });
@@ -19,7 +20,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={cn("bg-white", inter.className)}>
-        <RootProviders>{children}</RootProviders>
+        <RootProviders>
+          {children}
+          <SpeedInsights />
+        </RootProviders>
       </body>
     </html>
   );

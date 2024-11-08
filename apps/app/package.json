@@ -34,6 +34,7 @@
     "@tanstack/react-virtual": "^3.10.8",
     "@types/mapbox-gl": "^3.1.0",
     "@vercel/blob": "^0.23.3",
+    "@vercel/speed-insights": "^1.1.0",
     "date-fns": "^3.6.0",
     "lucide-react": "^0.354.0",
     "mapbox-gl": "^3.2.0",

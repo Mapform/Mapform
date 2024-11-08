@@ -92,6 +92,9 @@ importers:
       '@vercel/blob':
         specifier: ^0.23.3
         version: 0.23.3
+      '@vercel/speed-insights':
+        specifier: ^1.1.0
+        version: 1.1.0(next@14.2.5)(react@19.0.0-rc-e4953922-20240919)
       date-fns:
         specifier: ^3.6.0
         version: 3.6.0
@@ -4927,6 +4930,34 @@ packages:
       bytes: 3.1.2
       is-buffer: 2.0.5
       undici: 5.28.4
+    dev: false
+
+  /@vercel/speed-insights@1.1.0(next@14.2.5)(react@19.0.0-rc-e4953922-20240919):
+    resolution: {integrity: sha512-rAXxuhhO4mlRGC9noa5F7HLMtGg8YF1zAN6Pjd1Ny4pII4cerhtwSG4vympbCl+pWkH7nBS9kVXRD4FAn54dlg==}
+    requiresBuild: true
+    peerDependencies:
+      '@sveltejs/kit': ^1 || ^2
+      next: '>= 13'
+      react: ^18 || ^19 || ^19.0.0-rc
+      svelte: '>= 4'
+      vue: ^3
+      vue-router: ^4
+    peerDependenciesMeta:
+      '@sveltejs/kit':
+        optional: true
+      next:
+        optional: true
+      react:
+        optional: true
+      svelte:
+        optional: true
+      vue:
+        optional: true
+      vue-router:
+        optional: true
+    dependencies:
+      next: 14.2.5(react-dom@19.0.0-rc-e4953922-20240919)(react@19.0.0-rc-e4953922-20240919)
+      react: 19.0.0-rc-e4953922-20240919
     dev: false
 
   /@vercel/style-guide@5.2.0(eslint@8.57.1)(prettier@3.2.5)(typescript@5.6.3):
