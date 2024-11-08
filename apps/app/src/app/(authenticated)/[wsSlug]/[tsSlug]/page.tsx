@@ -2,11 +2,12 @@ import Link from "next/link";
 import { format } from "date-fns";
 import { getTeamspaceWithProjectsAction } from "~/data/teamspaces/get-teamspace-with-projects";
 
-export default async function WorkspaceForms({
-  params,
-}: {
-  params: { wsSlug: string; tsSlug: string };
-}) {
+export default async function WorkspaceForms(
+  props: {
+    params: Promise<{ wsSlug: string; tsSlug: string }>;
+  }
+) {
+  const params = await props.params;
   const teamspaceResponse = await getTeamspaceWithProjectsAction({
     workspaceSlug: params.wsSlug,
     teamspaceSlug: params.tsSlug,

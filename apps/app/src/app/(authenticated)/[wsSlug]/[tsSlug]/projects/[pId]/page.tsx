@@ -89,17 +89,18 @@ const fetchLayerPoint = cache(async (param?: string) => {
   return layerPoint;
 });
 
-export default async function ProjectPage({
-  params,
-  searchParams,
-}: {
-  params: { wsSlug: string; tsSlug: string; pId: string };
-  searchParams?: {
-    page?: string;
-    layer?: string;
-    layer_point?: string;
-  };
-}) {
+export default async function ProjectPage(
+  props: {
+    params: Promise<{ wsSlug: string; tsSlug: string; pId: string }>;
+    searchParams?: Promise<{
+      page?: string;
+      layer?: string;
+      layer_point?: string;
+    }>;
+  }
+) {
+  const searchParams = await props.searchParams;
+  const params = await props.params;
   const { pId } = params;
 
   const [
