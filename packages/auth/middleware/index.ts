@@ -9,8 +9,9 @@ import {
  * Manage auth cookie and protect against CSRF attacks by checking the `Origin` header against the `Host` header.
  * More: https://lucia-auth.com/sessions/cookies/nextjs
  */
-export const withAuth = (next: NextMiddleware) => {
+export const withCSRF = (next: NextMiddleware) => {
   return async (request: NextRequest, _next: NextFetchEvent) => {
+    console.log("CSRF middleware");
     if (request.method === "GET") {
       const response = NextResponse.next();
       const token = request.cookies.get("session")?.value ?? null;
@@ -26,6 +27,8 @@ export const withAuth = (next: NextMiddleware) => {
           secure: process.env.NODE_ENV === "production",
         });
       }
+
+      console.log(1111);
 
       return response;
     }
