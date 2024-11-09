@@ -1,0 +1,13 @@
+{
+  "name": "@mapform/auth",
+  "version": "0.1.0",
+  "dependencies": {
+  },
+  "devDependencies": {
+    "@mapform/eslint-config": "workspace:*",
+    "@mapform/typescript-config": "workspace:*",
+    "@types/node": "^20.8.10",
+    "eslint": "^8.57.0",
+    "typescript": "^5.6.3"
+  }
+}
