@@ -10,6 +10,5 @@ export const env = createEnv({
   runtimeEnv: {
     DATABASE_URL: process.env.DATABASE_URL,
     DATABASE_URL_UNPOOLED: process.env.DATABASE_URL_UNPOOLED,
-    VERCEL_ENV: process.env.VERCEL_ENV,
   },
 });
