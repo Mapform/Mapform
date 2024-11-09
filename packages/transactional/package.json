@@ -1,0 +1,35 @@
+{
+  "name": "@mapform/transactional",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "email dev -p 3002",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@mapform/ui": "workspace:*",
+    "@react-email/components": "0.0.28",
+    "@t3-oss/env-nextjs": "^0.11.1",
+    "react": "19.0.0-rc-66855b96-20241106",
+    "react-dom": "19.0.0-rc-66855b96-20241106",
+    "resend": "4.0.1-alpha.0",
+    "zod": "3.23.8"
+  },
+  "devDependencies": {
+    "@mapform/eslint-config": "workspace:*",
+    "@mapform/typescript-config": "workspace:*",
+    "@types/node": "^20.8.10",
+    "@types/react": "npm:types-react@19.0.0-rc.1",
+    "@types/react-dom": "npm:types-react-dom@19.0.0-rc.1",
+    "eslint": "^8.57.0",
+    "react-email": "3.0.2",
+    "typescript": "^5.6.3"
+  },
+  "pnpm": {
+    "overrides": {
+      "@types/react": "npm:types-react@19.0.0-rc.1",
+      "@types/react-dom": "npm:types-react-dom@19.0.0-rc.1"
+    }
+  }
+}

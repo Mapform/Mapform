@@ -1,0 +1,21 @@
+{
+  "extends": "@mapform/typescript-config/react-library.json",
+  "ts-node": {
+    "compilerOptions": {
+    "module": "es2015",
+      "moduleResolution": "node"
+    }
+  },
+  "compilerOptions": {
+    "strict": true,
+    "strictNullChecks": true,
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.cjs",
+    "**/*.mjs",
+    ".eslintrc.cjs"
+  ],
+  "exclude": ["dist", "build", "node_modules"]
+}
