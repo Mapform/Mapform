@@ -1,5 +1,5 @@
 {
-  "extends": "@mapform/typescript-config/react-library.json",
+  "extends": "@mapform/typescript-config/nextjs.json",
   "ts-node": {
     "compilerOptions": {
     "module": "es2015",

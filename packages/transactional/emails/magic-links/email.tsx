@@ -1,17 +1,19 @@
 import { Button, Html } from "@react-email/components";
 import * as React from "react";
 
-export const MyEmail = () => {
+export interface EmailProps {
+  link: string;
+}
+
+export const Email = ({ link }: EmailProps) => {
   return (
     <Html>
       <Button
-        href="https://example.com"
+        href={link}
         style={{ background: "#000", color: "#fff", padding: "12px 20px" }}
       >
-        Click me
+        Log in
       </Button>
     </Html>
   );
-}
-
-export default MyEmail;
+};

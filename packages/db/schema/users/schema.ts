@@ -28,11 +28,11 @@ export const sessions = pgTable("session", {
   userId: uuid("userId")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
-  expires: timestamp("expires", { mode: "date" }).notNull(),
+  expires: timestamp("expires", { mode: "date", withTimezone: true }).notNull(),
 });
 
 export const magicLinks = pgTable("magic_link", {
-  id: uuid("id").primaryKey(),
+  token: text("token").notNull().primaryKey(),
   email: text("email").notNull(),
-  token: text("token").notNull(),
+  expires: timestamp("expires", { mode: "date", withTimezone: true }).notNull(),
 });

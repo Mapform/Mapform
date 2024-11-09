@@ -1,7 +1,6 @@
 {
   "name": "@mapform/transactional",
   "version": "0.1.0",
-  "type": "module",
   "scripts": {
     "dev": "email dev -p 3002",
     "lint": "eslint .",
