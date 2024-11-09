@@ -1,7 +1,11 @@
 {
   "name": "@mapform/auth",
   "version": "0.1.0",
+  "type": "module",
   "dependencies": {
+    "@mapform/db": "workspace:*",
+    "@oslojs/crypto": "^1.0.1",
+    "@oslojs/encoding": "^1.1.0"
   },
   "devDependencies": {
     "@mapform/eslint-config": "workspace:*",

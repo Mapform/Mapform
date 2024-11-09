@@ -279,6 +279,16 @@ importers:
         version: 5.6.3
 
   packages/auth:
+    dependencies:
+      '@mapform/db':
+        specifier: workspace:*
+        version: link:../db
+      '@oslojs/crypto':
+        specifier: ^1.0.1
+        version: 1.0.1
+      '@oslojs/encoding':
+        specifier: ^1.1.0
+        version: 1.1.0
     devDependencies:
       '@mapform/eslint-config':
         specifier: workspace:*
@@ -420,12 +430,6 @@ importers:
       '@neondatabase/serverless':
         specifier: ^0.9.0
         version: 0.9.0
-      '@oslojs/crypto':
-        specifier: ^1.0.1
-        version: 1.0.1
-      '@oslojs/encoding':
-        specifier: ^1.1.0
-        version: 1.1.0
       '@t3-oss/env-nextjs':
         specifier: ^0.11.1
         version: 0.11.1(typescript@5.6.3)(zod@3.23.8)
@@ -434,10 +438,10 @@ importers:
         version: 16.4.5
       drizzle-orm:
         specifier: ^0.36.1
-        version: 0.36.1(@neondatabase/serverless@0.9.0)(@types/pg@8.11.10)(@types/react@18.3.10)(pg@8.13.0)(react@19.0.0-rc-e4953922-20240919)
+        version: 0.36.1(@neondatabase/serverless@0.9.0)(@types/pg@8.11.10)(@types/react@18.3.10)(pg@8.13.0)
       drizzle-zod:
         specifier: ^0.5.1
-        version: 0.5.1(drizzle-orm@0.36.1(@neondatabase/serverless@0.9.0)(@types/pg@8.11.10)(@types/react@18.3.10)(pg@8.13.0)(react@19.0.0-rc-e4953922-20240919))(zod@3.23.8)
+        version: 0.5.1(drizzle-orm@0.36.1(@neondatabase/serverless@0.9.0)(@types/pg@8.11.10)(@types/react@18.3.10)(pg@8.13.0))(zod@3.23.8)
       pg:
         specifier: ^8.13.0
         version: 8.13.0
@@ -479,9 +483,6 @@ importers:
       eslint:
         specifier: ^8.57.0
         version: 8.57.1
-      next-auth:
-        specifier: 5.0.0-beta.25
-        version: 5.0.0-beta.25(next@15.0.3(react-dom@19.0.0-rc-e4953922-20240919(react@19.0.0-rc-e4953922-20240919))(react@19.0.0-rc-e4953922-20240919))(react@19.0.0-rc-e4953922-20240919)
       ts-node:
         specifier: ^10.9.2
         version: 10.9.2(@types/node@20.11.24)(typescript@5.6.3)
@@ -9866,17 +9867,16 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  drizzle-orm@0.36.1(@neondatabase/serverless@0.9.0)(@types/pg@8.11.10)(@types/react@18.3.10)(pg@8.13.0)(react@19.0.0-rc-e4953922-20240919):
+  drizzle-orm@0.36.1(@neondatabase/serverless@0.9.0)(@types/pg@8.11.10)(@types/react@18.3.10)(pg@8.13.0):
     optionalDependencies:
       '@neondatabase/serverless': 0.9.0
       '@types/pg': 8.11.10
       '@types/react': 18.3.10
       pg: 8.13.0
-      react: 19.0.0-rc-e4953922-20240919
 
-  drizzle-zod@0.5.1(drizzle-orm@0.36.1(@neondatabase/serverless@0.9.0)(@types/pg@8.11.10)(@types/react@18.3.10)(pg@8.13.0)(react@19.0.0-rc-e4953922-20240919))(zod@3.23.8):
+  drizzle-zod@0.5.1(drizzle-orm@0.36.1(@neondatabase/serverless@0.9.0)(@types/pg@8.11.10)(@types/react@18.3.10)(pg@8.13.0))(zod@3.23.8):
     dependencies:
-      drizzle-orm: 0.36.1(@neondatabase/serverless@0.9.0)(@types/pg@8.11.10)(@types/react@18.3.10)(pg@8.13.0)(react@19.0.0-rc-e4953922-20240919)
+      drizzle-orm: 0.36.1(@neondatabase/serverless@0.9.0)(@types/pg@8.11.10)(@types/react@18.3.10)(pg@8.13.0)
       zod: 3.23.8
 
   earcut@2.2.4: {}
@@ -10161,7 +10161,7 @@ snapshots:
       eslint: 8.57.0
       eslint-import-resolver-node: 0.3.9
       eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@7.1.0(eslint@8.57.0)(typescript@5.6.3))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.31.0(@typescript-eslint/parser@7.1.0(eslint@8.57.0)(typescript@5.6.3))(eslint@8.57.0))(eslint@8.57.0)
-      eslint-plugin-import: 2.31.0(@typescript-eslint/parser@7.1.0(eslint@8.57.0)(typescript@5.6.3))(eslint-import-resolver-typescript@3.6.1)(eslint@8.57.0)
+      eslint-plugin-import: 2.31.0(@typescript-eslint/parser@7.1.0(eslint@8.57.0)(typescript@5.6.3))(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.1.0(eslint@8.57.0)(typescript@5.6.3))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.31.0(@typescript-eslint/parser@7.1.0(eslint@8.57.0)(typescript@5.6.3))(eslint@8.57.0))(eslint@8.57.0))(eslint@8.57.0)
       eslint-plugin-jsx-a11y: 6.10.2(eslint@8.57.0)
       eslint-plugin-react: 7.37.2(eslint@8.57.0)
       eslint-plugin-react-hooks: 5.0.0(eslint@8.57.0)
@@ -10214,8 +10214,8 @@ snapshots:
       debug: 4.3.7
       enhanced-resolve: 5.15.0
       eslint: 8.57.0
-      eslint-module-utils: 2.12.0(@typescript-eslint/parser@7.1.0(eslint@8.57.0)(typescript@5.6.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1)(eslint@8.57.0)
-      eslint-plugin-import: 2.31.0(@typescript-eslint/parser@7.1.0(eslint@8.57.0)(typescript@5.6.3))(eslint-import-resolver-typescript@3.6.1)(eslint@8.57.0)
+      eslint-module-utils: 2.12.0(@typescript-eslint/parser@7.1.0(eslint@8.57.0)(typescript@5.6.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.1.0(eslint@8.57.0)(typescript@5.6.3))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.31.0(@typescript-eslint/parser@7.1.0(eslint@8.57.0)(typescript@5.6.3))(eslint@8.57.0))(eslint@8.57.0))(eslint@8.57.0)
+      eslint-plugin-import: 2.31.0(@typescript-eslint/parser@7.1.0(eslint@8.57.0)(typescript@5.6.3))(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.1.0(eslint@8.57.0)(typescript@5.6.3))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.31.0(@typescript-eslint/parser@7.1.0(eslint@8.57.0)(typescript@5.6.3))(eslint@8.57.0))(eslint@8.57.0))(eslint@8.57.0)
       fast-glob: 3.3.1
       get-tsconfig: 4.7.2
       is-core-module: 2.15.1
@@ -10236,7 +10236,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-module-utils@2.12.0(@typescript-eslint/parser@7.1.0(eslint@8.57.0)(typescript@5.6.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1)(eslint@8.57.0):
+  eslint-module-utils@2.12.0(@typescript-eslint/parser@7.1.0(eslint@8.57.0)(typescript@5.6.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.1.0(eslint@8.57.0)(typescript@5.6.3))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.31.0(@typescript-eslint/parser@7.1.0(eslint@8.57.0)(typescript@5.6.3))(eslint@8.57.0))(eslint@8.57.0))(eslint@8.57.0):
     dependencies:
       debug: 3.2.7
     optionalDependencies:
@@ -10290,7 +10290,7 @@ snapshots:
       - eslint-import-resolver-webpack
       - supports-color
 
-  eslint-plugin-import@2.31.0(@typescript-eslint/parser@7.1.0(eslint@8.57.0)(typescript@5.6.3))(eslint-import-resolver-typescript@3.6.1)(eslint@8.57.0):
+  eslint-plugin-import@2.31.0(@typescript-eslint/parser@7.1.0(eslint@8.57.0)(typescript@5.6.3))(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.1.0(eslint@8.57.0)(typescript@5.6.3))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.31.0(@typescript-eslint/parser@7.1.0(eslint@8.57.0)(typescript@5.6.3))(eslint@8.57.0))(eslint@8.57.0))(eslint@8.57.0):
     dependencies:
       '@rtsao/scc': 1.1.0
       array-includes: 3.1.8
@@ -10301,7 +10301,7 @@ snapshots:
       doctrine: 2.1.0
       eslint: 8.57.0
       eslint-import-resolver-node: 0.3.9
-      eslint-module-utils: 2.12.0(@typescript-eslint/parser@7.1.0(eslint@8.57.0)(typescript@5.6.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1)(eslint@8.57.0)
+      eslint-module-utils: 2.12.0(@typescript-eslint/parser@7.1.0(eslint@8.57.0)(typescript@5.6.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.1.0(eslint@8.57.0)(typescript@5.6.3))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.31.0(@typescript-eslint/parser@7.1.0(eslint@8.57.0)(typescript@5.6.3))(eslint@8.57.0))(eslint@8.57.0))(eslint@8.57.0)
       hasown: 2.0.2
       is-core-module: 2.15.1
       is-glob: 4.0.3
@@ -11765,12 +11765,6 @@ snapshots:
       '@auth/core': 0.37.2
       next: 15.0.3(react-dom@19.0.0-rc-66855b96-20241106(react@19.0.0-rc-66855b96-20241106))(react@19.0.0-rc-66855b96-20241106)
       react: 19.0.0-rc-66855b96-20241106
-
-  next-auth@5.0.0-beta.25(next@15.0.3(react-dom@19.0.0-rc-e4953922-20240919(react@19.0.0-rc-e4953922-20240919))(react@19.0.0-rc-e4953922-20240919))(react@19.0.0-rc-e4953922-20240919):
-    dependencies:
-      '@auth/core': 0.37.2
-      next: 15.0.3(react-dom@19.0.0-rc-e4953922-20240919(react@19.0.0-rc-e4953922-20240919))(react@19.0.0-rc-e4953922-20240919)
-      react: 19.0.0-rc-e4953922-20240919
 
   next-safe-action@7.1.4-experimental.1(next@15.0.3(react-dom@19.0.0-rc-66855b96-20241106(react@19.0.0-rc-66855b96-20241106))(react@19.0.0-rc-66855b96-20241106))(react-dom@19.0.0-rc-66855b96-20241106(react@19.0.0-rc-66855b96-20241106))(react@19.0.0-rc-66855b96-20241106)(zod@3.23.8):
     dependencies:
