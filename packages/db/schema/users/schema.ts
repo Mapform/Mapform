@@ -13,7 +13,7 @@ import { teamspaceMemberships } from "../teamspace-memberships";
 export const users = pgTable("user", {
   id: uuid("id").primaryKey().defaultRandom(),
   name: varchar("name", { length: 256 }),
-  email: text("email").unique(),
+  email: text("email").unique().notNull(),
   image: text("image"),
   hasOnboarded: boolean("hasOnboarded").notNull().default(false),
 });
@@ -25,7 +25,7 @@ export const usersRelations = relations(users, ({ many }) => ({
 
 export const sessions = pgTable("session", {
   sessionToken: text("sessionToken").primaryKey(),
-  userId: uuid("user_id")
+  userId: uuid("userId")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
   expires: timestamp("expires", { mode: "date" }).notNull(),
@@ -33,8 +33,6 @@ export const sessions = pgTable("session", {
 
 export const magicLinks = pgTable("magic_link", {
   id: uuid("id").primaryKey(),
-  userId: uuid("user_id")
-    .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
+  email: text("email").notNull(),
   token: text("token").notNull(),
 });
