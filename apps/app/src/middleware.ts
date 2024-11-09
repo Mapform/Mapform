@@ -5,10 +5,10 @@ import { NextResponse } from "next/server";
 import { withCSRF } from "@mapform/auth/middleware";
 import { validateSessionToken } from "@mapform/auth/helpers/sessions";
 
-const publicAppPaths = ["/onboarding", "/static"];
+const publicAppPaths = ["/signin"];
 
 export default withCSRF(async (req) => {
-  const reqUrl = new URL(req.url as string);
+  const reqUrl = new URL(req.url);
   const authToken = req.cookies.get("session")?.value ?? null;
 
   const pathname = req.nextUrl.pathname;
@@ -17,28 +17,25 @@ export default withCSRF(async (req) => {
     pathname.startsWith(path),
   );
 
-  console.log(1111);
+  if (isPublicAppPath) {
+    return NextResponse.next();
+  }
 
-  if (!authToken) {
-    console.log("No auth token");
-    return NextResponse.redirect(
-      new URL(
-        `/api/auth/signin?callbackUrl=${encodeURIComponent(reqUrl.pathname)}`,
-        reqUrl,
-      ),
-    );
+  const result = await validateSessionToken(authToken);
+
+  if (!authToken || !result.session) {
+    return NextResponse.redirect(new URL("/signin", reqUrl));
   }
 
   /**
    * Validate the session token
    * TODO: Should this be cached?
    */
-  const session = await validateSessionToken(authToken as string);
 
   /**
    * Prevent requests to workspace that the user is not a member of
    */
-  if (session.user?.id && !isPublicAppPath) {
+  if (result.user.id) {
     const workspaceSlug = req.nextUrl.pathname.split("/")[1];
     const hasWorkspaceSlug =
       Boolean(workspaceSlug) && workspaceSlug?.trim() !== "";
@@ -51,7 +48,7 @@ export default withCSRF(async (req) => {
         workspaces,
         eq(workspaces.id, workspaceMemberships.workspaceId),
       )
-      .where(eq(users.id, session.user.id));
+      .where(eq(users.id, result.user.id));
 
     if (hasWorkspaceSlug) {
       const hasAccessToWorkspace = allowedWorkspaces.find(
@@ -77,14 +74,14 @@ export default withCSRF(async (req) => {
   /**
    * Redirect to onboarding if the user has not onboarded yet
    */
-  if (reqUrl.pathname !== "/onboarding" && !session.user?.hasOnboarded) {
+  if (reqUrl.pathname !== "/onboarding" && !result.user.hasOnboarded) {
     return NextResponse.redirect(new URL(`/onboarding`, reqUrl));
   }
 
   /**
    * Don't let them go back to onboarding once they've onboarded
    */
-  if (reqUrl.pathname === "/onboarding" && session.user?.hasOnboarded) {
+  if (reqUrl.pathname === "/onboarding" && result.user.hasOnboarded) {
     return NextResponse.redirect(new URL(`/`, reqUrl));
   }
 });

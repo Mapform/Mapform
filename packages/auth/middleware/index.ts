@@ -28,12 +28,11 @@ export const withCSRF = (next: NextMiddleware) => {
         });
       }
 
-      console.log(1111);
-
-      return response;
+      return next(request, _next);
     }
+
     /**
-     * CSRF protection
+     * CSRF protection only needed for non-GET requests
      */
     const originHeader = request.headers.get("Origin");
     // NOTE: You may need to use `X-Forwarded-Host` instead

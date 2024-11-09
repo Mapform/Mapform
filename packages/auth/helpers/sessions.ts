@@ -29,8 +29,12 @@ export async function createSession(
 }
 
 export async function validateSessionToken(
-  token: string,
+  token: string | null,
 ): Promise<SessionValidationResult> {
+  if (!token) {
+    return { session: null, user: null };
+  }
+
   const sessionId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
   // Lookup encoded session token in the database
   const result = await db

@@ -25,8 +25,16 @@ export const usersRelations = relations(users, ({ many }) => ({
 
 export const sessions = pgTable("session", {
   sessionToken: text("sessionToken").primaryKey(),
-  userId: uuid("userId")
+  userId: uuid("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
   expires: timestamp("expires", { mode: "date" }).notNull(),
+});
+
+export const magicLinks = pgTable("magic_link", {
+  id: uuid("id").primaryKey(),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  token: text("token").notNull(),
 });
