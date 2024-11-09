@@ -1,17 +1,18 @@
 import { createSafeActionClient } from "next-safe-action";
-import { auth } from "~/lib/auth";
+// import { auth } from "~/lib/auth";
 
 // Base client
 export const actionClient = createSafeActionClient();
 
 // Auth client
 export const authAction = actionClient.use(async ({ next }) => {
-  const session = await auth();
-  const userId = session?.user?.id;
+  return next();
+  // const session = await auth();
+  // const userId = session?.user?.id;
 
-  if (!userId) {
-    throw new Error("User not authenticated.");
-  }
+  // if (!userId) {
+  //   throw new Error("User not authenticated.");
+  // }
 
-  return next({ ctx: { userId } });
+  // return next({ ctx: { userId } });
 });

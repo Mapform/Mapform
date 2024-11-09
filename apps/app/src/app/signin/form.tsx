@@ -17,68 +17,74 @@ import { toast } from "@mapform/ui/components/toaster";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useAction } from "next-safe-action/hooks";
+import {
+  requestMagicLinkSchema,
+  type RequestMagicLinkSchema,
+} from "@mapform/backend/auth/request-magic-link/schema";
+import { requestMagicLinkAction } from "~/data/auth/request-magic-link";
 // import { useCountdown } from "usehooks-ts";
 // import { signIn } from "@/actions/magic-link.actions";
 
 export function SignInForm() {
-  const [count, { startCountdown, stopCountdown, resetCountdown }] =
-    useCountdown({
-      countStart: 60,
-      intervalMs: 1000,
-    });
+  // const [count, { startCountdown, stopCountdown, resetCountdown }] =
+  //   useCountdown({
+  //     countStart: 60,
+  //     intervalMs: 1000,
+  //   });
 
-  useEffect(() => {
-    if (count === 0) {
-      stopCountdown();
-      resetCountdown();
-    }
-  }, [count]);
+  // useEffect(() => {
+  //   if (count === 0) {
+  //     stopCountdown();
+  //     resetCountdown();
+  //   }
+  // }, [count]);
 
-  const [showResendVerificationEmail, setShowResendVerificationEmail] =
-    useState(false);
+  // const [showResendVerificationEmail, setShowResendVerificationEmail] =
+  //   useState(false);
 
-  const router = useRouter();
+  // const router = useRouter();
+  const { execute } = useAction(requestMagicLinkAction);
 
-  const form = useForm<z.infer<typeof SignInSchema>>({
-    resolver: zodResolver(SignInSchema),
+  const form = useForm<RequestMagicLinkSchema>({
+    resolver: zodResolver(requestMagicLinkSchema),
     defaultValues: {
       email: "",
     },
   });
 
-  async function onSubmit(values: z.infer<typeof SignInSchema>) {
-    const res = await signIn(values);
+  function onSubmit(values: RequestMagicLinkSchema) {
+    execute(values);
 
-    if (!res.success) {
-      toast({
-        variant: "destructive",
-        description: res.message,
-      });
-    } else if (res.success) {
-      toast({
-        variant: "default",
-        description: res.message,
-      });
+    // if (!res.success) {
+    //   toast({
+    //     variant: "destructive",
+    //     description: res.message,
+    //   });
+    // } else if (res.success) {
+    //   toast({
+    //     variant: "default",
+    //     description: res.message,
+    //   });
 
-      router.push("/");
-    }
+    //   router.push("/");
+    // }
   }
 
-  const onResendVerificationEmail = async () => {
-    const res = await resendVerificationEmail(form.getValues("email"));
-    if (res.error) {
-      toast({
-        variant: "destructive",
-        description: res.error,
-      });
-    } else if (res.success) {
-      toast({
-        variant: "default",
-        description: res.success,
-      });
-      startCountdown();
-    }
-  };
+  // const onResendVerificationEmail = async () => {
+  //   const res = await resendVerificationEmail(form.getValues("email"));
+  //   if (res.error) {
+  //     toast({
+  //       variant: "destructive",
+  //       description: res.error,
+  //     });
+  //   } else if (res.success) {
+  //     toast({
+  //       variant: "default",
+  //       description: res.success,
+  //     });
+  //     startCountdown();
+  //   }
+  // };
 
   return (
     <Form {...form}>
@@ -90,7 +96,7 @@ export function SignInForm() {
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input placeholder="shadcn" {...field} />
+                <Input {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -98,7 +104,7 @@ export function SignInForm() {
         />{" "}
         <Button type="submit">Submit</Button>
       </form>
-      {showResendVerificationEmail && (
+      {/* {showResendVerificationEmail && (
         <Button
           disabled={count > 0 && count < 60}
           onClick={onResendVerificationEmail}
@@ -106,7 +112,7 @@ export function SignInForm() {
         >
           Send verification email {count > 0 && count < 60 && `in ${count}s`}
         </Button>
-      )}
+      )} */}
     </Form>
   );
 }

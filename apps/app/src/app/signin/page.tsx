@@ -1,3 +1,5 @@
+import { SignInForm } from "./form";
+
 export default function SigninPage() {
   return (
     <div className="flex h-full w-full items-center">
@@ -5,6 +7,7 @@ export default function SigninPage() {
         <h1 className="text-xl font-semibold text-stone-900">
           Sign in to Mapform
         </h1>
+        <SignInForm />
       </div>
     </div>
   );
