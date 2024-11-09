@@ -2,12 +2,11 @@ import { db } from "@mapform/db";
 import { users, workspaceMemberships, workspaces } from "@mapform/db/schema";
 import { eq } from "@mapform/db/utils";
 import { NextResponse } from "next/server";
-import { auth, BASE_PATH } from "~/lib/auth";
+import { withAuth } from "@mapform/auth/middleware";
 
 const publicAppPaths = ["/onboarding", "/static"];
 
-// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- This shows an ugly TS error otherwise
-export default auth(async (req) => {
+export default withAuth(async (req) => {
   const reqUrl = new URL(req.url);
 
   const pathname = req.nextUrl.pathname;
@@ -79,7 +78,7 @@ export default auth(async (req) => {
   if (reqUrl.pathname === "/onboarding" && req.auth.user?.hasOnboarded) {
     return NextResponse.redirect(new URL(`/`, req.url));
   }
-}) as ReturnType<typeof auth>;
+});
 
 export const config = {
   matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],

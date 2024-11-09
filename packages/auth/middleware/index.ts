@@ -5,13 +5,11 @@ import {
   NextResponse,
 } from "next/server";
 
-export type MiddlewareFactory = (middleware: NextMiddleware) => NextMiddleware;
-
 /**
  * Manage auth cookie and protect against CSRF attacks by checking the `Origin` header against the `Host` header.
  * More: https://lucia-auth.com/sessions/cookies/nextjs
  */
-export const withAuth: MiddlewareFactory = (next) => {
+export const withAuth = (next: NextMiddleware) => {
   return async (request: NextRequest, _next: NextFetchEvent) => {
     if (request.method === "GET") {
       const response = NextResponse.next();
