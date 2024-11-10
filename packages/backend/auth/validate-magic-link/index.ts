@@ -3,10 +3,8 @@ import { db } from "@mapform/db";
 import { eq } from "@mapform/db/utils";
 import { sessions, users } from "@mapform/db/schema";
 import { setSessionTokenCookie } from "@mapform/auth/helpers/cookies";
-import {
-  createSession,
-  generateSessionToken,
-} from "@mapform/auth/helpers/sessions";
+import { generateToken } from "@mapform/auth/helpers/tokens";
+import { createSession } from "@mapform/auth/helpers/sessions";
 import { env } from "../../env.mjs";
 import { ValidateMagicLinkSchema } from "./schema";
 
@@ -35,7 +33,7 @@ export const validateMagicLink = async ({ token }: ValidateMagicLinkSchema) => {
   /**
    * Generate new session
    */
-  const sessionToken = generateSessionToken();
+  const sessionToken = generateToken();
   const session = await createSession(sessionToken, user.id);
 
   await setSessionTokenCookie(sessionToken, session.expires);

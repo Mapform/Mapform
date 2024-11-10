@@ -1,26 +1,13 @@
 import { db } from "@mapform/db";
 import { eq } from "@mapform/db/utils";
 import { sessions, users, type User, type Session } from "@mapform/db/schema";
-import {
-  encodeBase32LowerCaseNoPadding,
-  encodeHexLowerCase,
-} from "@oslojs/encoding";
-import { sha256 } from "@oslojs/crypto/sha2";
-
-export function generateSessionToken(): string {
-  const bytes = new Uint8Array(20);
-  crypto.getRandomValues(bytes);
-  const token = encodeBase32LowerCaseNoPadding(bytes);
-  return token;
-}
+import { hashToken } from "./tokens";
 
 export async function createSession(
   token: string,
   userId: string,
 ): Promise<Session> {
-  console.log("CREATING SESSION. Input token:", token);
-  const sessionId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
-  console.log("CREATING SESSION. Encoded token:", sessionId);
+  const sessionId = hashToken(token);
   const sessionObject: Session = {
     sessionToken: sessionId,
     userId,
@@ -37,9 +24,7 @@ export async function validateSessionToken(
     return { session: null, user: null };
   }
 
-  console.log("VALIDATING SESSION TOKEN. Input token:", token);
-  const sessionId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
-  console.log("VALIDATING SESSION TOKEN. Encoded token:", sessionId);
+  const sessionId = hashToken(token);
 
   // Lookup encoded session token in the database
   const result = await db
