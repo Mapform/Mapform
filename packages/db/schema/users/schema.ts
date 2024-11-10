@@ -30,9 +30,3 @@ export const sessions = pgTable("session", {
     .references(() => users.id, { onDelete: "cascade" }),
   expires: timestamp("expires", { mode: "date", withTimezone: true }).notNull(),
 });
-
-export const magicLinks = pgTable("magic_link", {
-  token: text("token").notNull().primaryKey(),
-  email: text("email").notNull(),
-  expires: timestamp("expires", { mode: "date", withTimezone: true }).notNull(),
-});

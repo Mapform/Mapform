@@ -1,6 +1,7 @@
 {
   "name": "@mapform/backend",
   "version": "0.1.0",
+  "type": "module",
   "dependencies": {
     "@infra-blocks/zod-utils": "^0.4.5",
     "@mapform/auth": "workspace:*",
@@ -9,7 +10,9 @@
     "@mapform/transactional": "workspace:*",
     "@oslojs/crypto": "^1.0.1",
     "@oslojs/encoding": "^1.1.0",
+    "@t3-oss/env-nextjs": "^0.11.1",
     "@vercel/blob": "^0.23.3",
+    "jsonwebtoken": "^9.0.2",
     "next-safe-action": "^7.9.3",
     "slugify": "^1.6.6",
     "uuid": "^9.0.1",
@@ -20,6 +23,7 @@
     "@mapform/blocknote": "workspace:*",
     "@mapform/eslint-config": "workspace:*",
     "@mapform/typescript-config": "workspace:*",
+    "@types/jsonwebtoken": "^9.0.7",
     "@types/node": "^20.8.10",
     "@types/uuid": "^9.0.8",
     "eslint": "^8.57.0",

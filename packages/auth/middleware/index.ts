@@ -11,7 +11,6 @@ import {
  */
 export const withCSRF = (next: NextMiddleware) => {
   return async (request: NextRequest, _next: NextFetchEvent) => {
-    console.log("CSRF middleware");
     if (request.method === "GET") {
       const response = NextResponse.next();
       const token = request.cookies.get("session")?.value ?? null;

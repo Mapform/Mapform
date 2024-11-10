@@ -18,7 +18,9 @@ export async function createSession(
   token: string,
   userId: string,
 ): Promise<Session> {
+  console.log("CREATING SESSION. Input token:", token);
   const sessionId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
+  console.log("CREATING SESSION. Encoded token:", sessionId);
   const sessionObject: Session = {
     sessionToken: sessionId,
     userId,
@@ -35,7 +37,10 @@ export async function validateSessionToken(
     return { session: null, user: null };
   }
 
+  console.log("VALIDATING SESSION TOKEN. Input token:", token);
   const sessionId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
+  console.log("VALIDATING SESSION TOKEN. Encoded token:", sessionId);
+
   // Lookup encoded session token in the database
   const result = await db
     .select({ user: users, session: sessions })
