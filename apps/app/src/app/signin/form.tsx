@@ -94,15 +94,17 @@ export function SignInForm() {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
+              <FormLabel>Your email</FormLabel>
               <FormControl>
-                <Input {...field} />
+                <Input {...field} placeholder="name@email.com" />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />{" "}
-        <Button type="submit">Submit</Button>
+        <Button className="w-full" type="submit">
+          Submit
+        </Button>
       </form>
       {/* {showResendVerificationEmail && (
         <Button
