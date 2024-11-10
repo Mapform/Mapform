@@ -12,38 +12,25 @@ import {
 } from "@mapform/ui/components/form";
 import { Button } from "@mapform/ui/components/button";
 import { Input } from "@mapform/ui/components/input";
-// import { resendVerificationEmail, signUp } from "../actions/auth.actions";
-import { toast } from "@mapform/ui/components/toaster";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
 import { useAction } from "next-safe-action/hooks";
 import {
   requestMagicLinkSchema,
   type RequestMagicLinkSchema,
 } from "@mapform/backend/auth/request-magic-link/schema";
+import { MailCheckIcon } from "lucide-react";
+import { useState } from "react";
+import Image from "next/image";
+import mapform from "public/mapform.svg";
 import { requestMagicLinkAction } from "~/data/auth/request-magic-link";
-// import { useCountdown } from "usehooks-ts";
-// import { signIn } from "@/actions/magic-link.actions";
 
 export function SignInForm() {
-  // const [count, { startCountdown, stopCountdown, resetCountdown }] =
-  //   useCountdown({
-  //     countStart: 60,
-  //     intervalMs: 1000,
-  //   });
+  const [emailSent, setEmailSent] = useState(false);
 
-  // useEffect(() => {
-  //   if (count === 0) {
-  //     stopCountdown();
-  //     resetCountdown();
-  //   }
-  // }, [count]);
-
-  // const [showResendVerificationEmail, setShowResendVerificationEmail] =
-  //   useState(false);
-
-  // const router = useRouter();
-  const { execute } = useAction(requestMagicLinkAction);
+  const { execute, status } = useAction(requestMagicLinkAction, {
+    onSuccess: () => {
+      setEmailSent(true);
+    },
+  });
 
   const form = useForm<RequestMagicLinkSchema>({
     resolver: zodResolver(requestMagicLinkSchema),
@@ -54,41 +41,31 @@ export function SignInForm() {
 
   function onSubmit(values: RequestMagicLinkSchema) {
     execute(values);
-
-    // if (!res.success) {
-    //   toast({
-    //     variant: "destructive",
-    //     description: res.message,
-    //   });
-    // } else if (res.success) {
-    //   toast({
-    //     variant: "default",
-    //     description: res.message,
-    //   });
-
-    //   router.push("/");
-    // }
   }
 
-  // const onResendVerificationEmail = async () => {
-  //   const res = await resendVerificationEmail(form.getValues("email"));
-  //   if (res.error) {
-  //     toast({
-  //       variant: "destructive",
-  //       description: res.error,
-  //     });
-  //   } else if (res.success) {
-  //     toast({
-  //       variant: "default",
-  //       description: res.success,
-  //     });
-  //     startCountdown();
-  //   }
-  // };
+  if (emailSent) {
+    return (
+      <div>
+        <MailCheckIcon className="mb-4 h-10 w-10 text-green-600" />
+        <h1 className="mb-2 text-2xl font-semibold text-stone-900">
+          Let&apos;s verify your email
+        </h1>
+        <p className="text-muted-foreground">
+          We sent you a magic link to sign in.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
+      <div>
+        <Image alt="Logo" className="mb-4 inline h-10 w-10" src={mapform} />
+        <h1 className="text-2xl font-semibold text-stone-900">
+          Sign in to Mapform
+        </h1>
+      </div>
+      <form className="space-y-2" onSubmit={form.handleSubmit(onSubmit)}>
         <FormField
           control={form.control}
           name="email"
@@ -101,20 +78,15 @@ export function SignInForm() {
               <FormMessage />
             </FormItem>
           )}
-        />{" "}
-        <Button className="w-full" type="submit">
+        />
+        <Button
+          className="w-full"
+          disabled={status === "executing"}
+          type="submit"
+        >
           Submit
         </Button>
       </form>
-      {/* {showResendVerificationEmail && (
-        <Button
-          disabled={count > 0 && count < 60}
-          onClick={onResendVerificationEmail}
-          variant={"link"}
-        >
-          Send verification email {count > 0 && count < 60 && `in ${count}s`}
-        </Button>
-      )} */}
     </Form>
   );
 }
