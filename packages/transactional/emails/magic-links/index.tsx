@@ -1,6 +1,6 @@
 import { Resend } from "resend";
 import { env } from "../../env.mjs";
-import { Email, type EmailProps } from "./email";
+import Email, { type EmailProps } from "./email";
 
 const resend = new Resend(env.RESEND_API_KEY);
 

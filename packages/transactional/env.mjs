@@ -3,13 +3,13 @@ import { z } from "zod";
 
 export const env = createEnv({
   server: {
-    RESEND_API_KEY: z.string().min(1),
-    NODE_ENV: z.enum(["development", "test", "production"]),
+    VERCEL_URL: z.string().min(1).optional(),
+    RESEND_API_KEY: z.string().min(1).optional(),
   },
   client: {
   },
   runtimeEnv: {
+    VERCEL_URL: process.env.VERCEL_URL,
     RESEND_API_KEY: process.env.RESEND_API_KEY,
-    NODE_ENV: process.env.NODE_ENV,
   },
 });

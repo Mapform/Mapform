@@ -20,7 +20,7 @@ import {
 import { MailCheckIcon } from "lucide-react";
 import { useState } from "react";
 import Image from "next/image";
-import mapform from "public/mapform.svg";
+import mapform from "public/static/images/mapform.svg";
 import { requestMagicLinkAction } from "~/data/auth/request-magic-link";
 
 export function SignInForm() {

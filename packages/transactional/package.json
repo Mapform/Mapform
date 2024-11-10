@@ -6,6 +6,9 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit"
   },
+  "imports": {
+    "#*": "./*"
+  },
   "dependencies": {
     "@mapform/ui": "workspace:*",
     "@react-email/components": "0.0.28",
@@ -27,6 +30,8 @@
   },
   "pnpm": {
     "overrides": {
+      "react": "19.0.0-rc-66855b96-20241106",
+      "react-dom": "19.0.0-rc-66855b96-20241106",
       "@types/react": "npm:types-react@19.0.0-rc.1",
       "@types/react-dom": "npm:types-react-dom@19.0.0-rc.1"
     }
