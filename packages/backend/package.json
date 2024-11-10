@@ -2,6 +2,9 @@
   "name": "@mapform/backend",
   "version": "0.1.0",
   "type": "module",
+  "imports": {
+    "#*": "./*"
+  },
   "dependencies": {
     "@infra-blocks/zod-utils": "^0.4.5",
     "@mapform/auth": "workspace:*",

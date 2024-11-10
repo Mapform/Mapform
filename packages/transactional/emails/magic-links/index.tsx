@@ -2,7 +2,7 @@ import { Resend } from "resend";
 import { env } from "../../env.mjs";
 import { Email, type EmailProps } from "./email";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = new Resend(env.RESEND_API_KEY);
 
 export function sendEmail({
   to,
@@ -14,7 +14,7 @@ export function sendEmail({
     to: env.NODE_ENV === "production" ? to : "delivered@resend.dev",
     from:
       env.NODE_ENV === "production"
-        ? "Mapform <notifications@mapform.co>"
+        ? "Mapform <auth@mapform.co>"
         : "Acme <onboarding@resend.dev>",
     subject: "Your Mapform magic link",
     react: <Email {...props} />,

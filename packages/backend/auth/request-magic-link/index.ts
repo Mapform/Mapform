@@ -3,6 +3,7 @@ import { sendEmail } from "@mapform/transactional/emails/magic-links";
 import { type RequestMagicLinkSchema } from "./schema";
 import { magicLinks } from "@mapform/db/schema";
 import { generateToken, hashToken } from "@mapform/auth/helpers/tokens";
+import { env } from "#env.mjs";
 
 export const requestMagicLink = async ({ email }: RequestMagicLinkSchema) => {
   // 1. Generate token
@@ -15,12 +16,14 @@ export const requestMagicLink = async ({ email }: RequestMagicLinkSchema) => {
     expires: new Date(Date.now() + 1000 * 60 * 10), // 10 minutes
   });
 
-  console.log("SEND EMAIL");
+  const baseUrl = env.VERCEL_URL
+    ? `https://${env.VERCEL_URL}`
+    : "http://localhost:3000";
 
   // 3. Send the email
   sendEmail({
     to: email,
     // Temp
-    link: `http://localhost:3000/api/auth/magic-link?token=${token}`,
+    link: `${baseUrl}/api/auth/magic-link?token=${token}`,
   });
 };
