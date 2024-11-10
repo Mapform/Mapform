@@ -2,6 +2,7 @@ import { db } from "@mapform/db";
 import { eq } from "@mapform/db/utils";
 import { sessions, users, type User, type Session } from "@mapform/db/schema";
 import { hashToken } from "./tokens";
+import { cache } from "react";
 
 export async function createSession(
   token: string,
@@ -63,6 +64,16 @@ export async function validateSessionToken(
 export async function invalidateSession(sessionId: string): Promise<void> {
   await db.delete(sessions).where(eq(sessions.sessionToken, sessionId));
 }
+
+export const getCurrentSession = cache(
+  async (token: string | null): Promise<SessionValidationResult> => {
+    if (token === null) {
+      return { session: null, user: null };
+    }
+    const result = await validateSessionToken(token);
+    return result;
+  },
+);
 
 export type SessionValidationResult =
   | { session: Session; user: User }

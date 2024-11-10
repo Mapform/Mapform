@@ -3,7 +3,7 @@ import { users, workspaceMemberships, workspaces } from "@mapform/db/schema";
 import { eq } from "@mapform/db/utils";
 import { NextResponse } from "next/server";
 import { withCSRF } from "@mapform/auth/middleware";
-import { validateSessionToken } from "@mapform/auth/helpers/sessions";
+import { getCurrentSession } from "@mapform/auth/helpers/sessions";
 
 const publicAppPaths = ["/signin"];
 
@@ -21,16 +21,11 @@ export default withCSRF(async (req) => {
     return NextResponse.next();
   }
 
-  const result = await validateSessionToken(authToken);
+  const result = await getCurrentSession(authToken);
 
-  if (!authToken || !result.session) {
+  if (!authToken || !result.session || !result.user) {
     return NextResponse.redirect(new URL("/signin", reqUrl));
   }
-
-  /**
-   * Validate the session token
-   * TODO: Should this be cached?
-   */
 
   /**
    * Prevent requests to workspace that the user is not a member of
