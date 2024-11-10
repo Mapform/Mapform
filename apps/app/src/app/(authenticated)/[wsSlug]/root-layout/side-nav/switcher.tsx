@@ -12,7 +12,6 @@ import {
   PlusIcon,
   ChevronsLeftIcon,
 } from "lucide-react";
-// import { signOut } from "next-auth/react";
 import Link from "next/link";
 import { Button } from "@mapform/ui/components/button";
 import {
@@ -21,6 +20,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@mapform/ui/components/tooltip";
+import { signOutAction } from "~/data/auth/sign-out";
 import { useRootLayout } from "../context";
 
 export function Switcher() {
@@ -130,7 +130,7 @@ export function Switcher() {
           <div className="flex w-full flex-col">
             <button
               className="-mx-2 flex appearance-none items-center gap-2 rounded px-2 py-1.5 text-left transition-colors hover:bg-stone-100"
-              // onClick={() => signOut()}
+              onClick={() => signOutAction()}
               type="button"
             >
               <div className="flex h-4 w-4 items-center justify-center">

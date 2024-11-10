@@ -9,11 +9,13 @@ export const requestMagicLink = async ({ email }: RequestMagicLinkSchema) => {
   const token = generateToken(32);
 
   // 2. Create magic link record
-  const magicLink = await db.insert(magicLinks).values({
+  await db.insert(magicLinks).values({
     email,
     token: hashToken(token),
     expires: new Date(Date.now() + 1000 * 60 * 10), // 10 minutes
   });
+
+  console.log("SEND EMAIL");
 
   // 3. Send the email
   sendEmail({
