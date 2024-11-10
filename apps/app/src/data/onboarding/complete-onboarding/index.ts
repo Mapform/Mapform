@@ -7,8 +7,8 @@ import { authAction } from "~/lib/safe-action";
 
 export const completeOnboardingAction = authAction
   .schema(completeOnboardingSchema)
-  .action(async ({ parsedInput: { name }, ctx: { userId } }) => {
-    await completeOnboarding({ name, userId });
+  .action(async ({ parsedInput: { name }, ctx: { user } }) => {
+    await completeOnboarding({ name, userId: user.id });
 
     redirect("/");
   });

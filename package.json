@@ -4,8 +4,8 @@
   "scripts": {
     "build": "turbo build",
     "db:deploy": "turbo db:deploy",
-    "vercel-build-app": "turbo db:deploy && turbo build --filter=@upfront/app",
-    "vercel-build-widget": "turbo db:deploy && turbo build --filter=@upfront/widget",
+    "vercel-build-app": "turbo db:deploy && turbo build --filter=@mapform/app",
+    "vercel-build-widget": "turbo db:deploy && turbo build --filter=@mapform/widget",
     "clean": "turbo clean",
     "dev": "turbo dev",
     "lint": "turbo lint",

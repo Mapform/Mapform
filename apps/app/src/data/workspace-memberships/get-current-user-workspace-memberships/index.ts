@@ -4,7 +4,7 @@ import { getCurrentUserWorkspaceMemberships } from "@mapform/backend/workspace-m
 import { authAction } from "~/lib/safe-action";
 
 export const getCurrentUserWorkspaceMembershipsAction = authAction.action(
-  ({ ctx: { userId } }) => {
-    return getCurrentUserWorkspaceMemberships({ userId });
+  ({ ctx: { user } }) => {
+    return getCurrentUserWorkspaceMemberships({ userId: user.id });
   },
 );

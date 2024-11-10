@@ -1,5 +1,5 @@
 import {
-  Img,
+  // Img,
   Tailwind,
   Font,
   Head,
@@ -8,11 +8,11 @@ import {
   Preview,
   Container,
 } from "@react-email/components";
-import { env } from "#env.mjs";
+// import { env } from "#env.mjs";
 
-const baseUrl = env.VERCEL_URL
-  ? `https://${env.VERCEL_URL}`
-  : "http://localhost:3000";
+// const baseUrl = env.VERCEL_URL
+//   ? `https://${env.VERCEL_URL}`
+//   : "http://localhost:3000";
 
 export function Root({
   children,
