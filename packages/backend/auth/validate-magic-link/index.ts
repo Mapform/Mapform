@@ -1,11 +1,9 @@
-import jwt from "jsonwebtoken";
 import { db } from "@mapform/db";
 import { eq } from "@mapform/db/utils";
-import { sessions, users } from "@mapform/db/schema";
+import { magicLinks, sessions, users } from "@mapform/db/schema";
 import { setSessionTokenCookie } from "@mapform/auth/helpers/cookies";
-import { generateToken } from "@mapform/auth/helpers/tokens";
+import { generateToken, hashToken } from "@mapform/auth/helpers/tokens";
 import { createSession } from "@mapform/auth/helpers/sessions";
-import { env } from "../../env.mjs";
 import { ValidateMagicLinkSchema } from "./schema";
 
 /**
@@ -13,28 +11,47 @@ import { ValidateMagicLinkSchema } from "./schema";
  */
 export const validateMagicLink = async ({ token }: ValidateMagicLinkSchema) => {
   // Verify the token
-  const { email } = jwt.verify(token, env.JWT_SECRET) as { email: string };
-
-  let user = await db.query.users.findFirst({
-    where: eq(users.email, email),
+  // const { email } = jwt.verify(token, env.JWT_SECRET) as { email: string };
+  const hashedToken = hashToken(token);
+  const magicLink = await db.query.magicLinks.findFirst({
+    where: eq(magicLinks.token, hashedToken),
   });
 
-  if (user) {
-    // Delete session
-    await db.delete(sessions).where(eq(sessions.userId, user.id));
-  } else {
-    [user] = await db.insert(users).values({ email }).returning();
-
-    if (!user) {
-      throw new Error("There was an issue upserting the user");
-    }
+  if (!magicLink) {
+    throw new Error("Invalid magic link");
   }
 
-  /**
-   * Generate new session
-   */
-  const sessionToken = generateToken();
-  const session = await createSession(sessionToken, user.id);
+  if (Date.now() >= magicLink.expires.getTime()) {
+    throw new Error("Magic link expired");
+  }
 
-  await setSessionTokenCookie(sessionToken, session.expires);
+  let user = await db.query.users.findFirst({
+    where: eq(users.email, magicLink.email),
+  });
+
+  await db.transaction(async (tx) => {
+    if (user) {
+      // Delete session
+      await tx.delete(sessions).where(eq(sessions.userId, user.id));
+    } else {
+      [user] = await tx
+        .insert(users)
+        .values({ email: magicLink.email })
+        .returning();
+
+      if (!user) {
+        throw new Error("There was an issue upserting the user");
+      }
+    }
+
+    // Delete magic link
+    await tx.delete(magicLinks).where(eq(magicLinks.token, hashedToken));
+
+    /**
+     * Generate new session
+     */
+    const sessionToken = generateToken();
+    const session = await createSession(sessionToken, user.id);
+    await setSessionTokenCookie(sessionToken, session.expires);
+  });
 };
