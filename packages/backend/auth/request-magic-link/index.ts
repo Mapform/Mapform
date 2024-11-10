@@ -24,6 +24,6 @@ export const requestMagicLink = async ({ email }: RequestMagicLinkSchema) => {
   sendEmail({
     to: email,
     // Temp
-    link: `http://localhost:3000/api/auth/magic-link/${token}`,
+    link: `http://localhost:3000/api/auth/magic-link?token=${token}`,
   });
 };
