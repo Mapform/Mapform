@@ -20,17 +20,24 @@ import {
 import { MailCheckIcon } from "lucide-react";
 import { useState } from "react";
 import Image from "next/image";
+import { useSearchParams } from "next/navigation";
 import mapform from "public/static/images/mapform.svg";
 import { requestMagicLinkAction } from "~/data/auth/request-magic-link";
 
 export function SignInForm() {
   const [emailSent, setEmailSent] = useState(false);
-
+  const searchParams = useSearchParams();
   const { execute, status } = useAction(requestMagicLinkAction, {
     onSuccess: () => {
       setEmailSent(true);
     },
   });
+
+  const error = searchParams.get("error") as
+    | "not-found"
+    | "expired"
+    | "unknown"
+    | null;
 
   const form = useForm<RequestMagicLinkSchema>({
     resolver: zodResolver(requestMagicLinkSchema),
