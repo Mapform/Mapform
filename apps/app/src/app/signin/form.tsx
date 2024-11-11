@@ -33,11 +33,11 @@ export function SignInForm() {
     },
   });
 
-  const error = searchParams.get("error") as
-    | "not-found"
-    | "expired"
-    | "unknown"
-    | null;
+  // const error = searchParams.get("error") as
+  //   | "not-found"
+  //   | "expired"
+  //   | "unknown"
+  //   | null;
 
   const form = useForm<RequestMagicLinkSchema>({
     resolver: zodResolver(requestMagicLinkSchema),
