@@ -28,6 +28,24 @@ export default withCSRF(async (req) => {
   }
 
   /**
+   * Redirect to onboarding if the user has not onboarded yet
+   */
+  if (!result.user.hasOnboarded) {
+    if (reqUrl.pathname !== "/onboarding") {
+      return NextResponse.redirect(new URL(`/onboarding`, reqUrl));
+    }
+
+    return NextResponse.next();
+  }
+
+  /**
+   * Don't let them go back to onboarding once they've onboarded
+   */
+  if (reqUrl.pathname === "/onboarding" && result.user.hasOnboarded) {
+    return NextResponse.redirect(new URL(`/`, reqUrl));
+  }
+
+  /**
    * Prevent requests to workspace that the user is not a member of
    */
   if (result.user.id) {
@@ -64,20 +82,6 @@ export default withCSRF(async (req) => {
 
       return NextResponse.redirect(new URL(`/account`, reqUrl));
     }
-  }
-
-  /**
-   * Redirect to onboarding if the user has not onboarded yet
-   */
-  if (reqUrl.pathname !== "/onboarding" && !result.user.hasOnboarded) {
-    return NextResponse.redirect(new URL(`/onboarding`, reqUrl));
-  }
-
-  /**
-   * Don't let them go back to onboarding once they've onboarded
-   */
-  if (reqUrl.pathname === "/onboarding" && result.user.hasOnboarded) {
-    return NextResponse.redirect(new URL(`/`, reqUrl));
   }
 });
 

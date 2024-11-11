@@ -46,12 +46,16 @@ export const validateMagicLink = async ({ token }: ValidateMagicLinkSchema) => {
 
     // Delete magic link
     await tx.delete(magicLinks).where(eq(magicLinks.token, hashedToken));
-
-    /**
-     * Generate new session
-     */
-    const sessionToken = generateToken();
-    const session = await createSession(sessionToken, user.id);
-    await setSessionTokenCookie(sessionToken, session.expires);
   });
+
+  if (!user) {
+    throw new Error("There was an issue upserting the user");
+  }
+
+  /**
+   * Generate new session
+   */
+  const sessionToken = generateToken();
+  const session = await createSession(sessionToken, user.id);
+  await setSessionTokenCookie(sessionToken, session.expires);
 };
