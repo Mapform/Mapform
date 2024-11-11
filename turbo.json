@@ -14,7 +14,9 @@
     "NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN",
     "GEOAPIFY_API_KEY",
 
-    "RESEND_API_KEY"
+    "RESEND_API_KEY",
+
+    "AUTH_SECRET"
   ],
   "globalDependencies": ["**/.env.*local"],
   "tasks": {

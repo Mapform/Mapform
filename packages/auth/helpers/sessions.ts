@@ -1,80 +1,60 @@
-import { db } from "@mapform/db";
-import { eq } from "@mapform/db/utils";
-import { sessions, users, type User, type Session } from "@mapform/db/schema";
-import { hashToken } from "./tokens";
-import { cache } from "react";
+import { compare, hash } from "bcryptjs";
+import { SignJWT, jwtVerify } from "jose";
+import { cookies } from "next/headers";
+import type { User } from "@mapform/db/schema";
+import { env } from "../env.mjs";
 
-export async function createSession(
-  token: string,
-  userId: string,
-): Promise<Session> {
-  const sessionId = hashToken(token);
-  const sessionObject: Session = {
-    sessionToken: sessionId,
-    userId,
-    expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30),
+const key = new TextEncoder().encode(env.AUTH_SECRET);
+const SALT_ROUNDS = 10;
+
+export async function hashPassword(password: string) {
+  return hash(password, SALT_ROUNDS);
+}
+
+export async function comparePasswords(
+  plainTextPassword: string,
+  hashedPassword: string,
+) {
+  return compare(plainTextPassword, hashedPassword);
+}
+
+interface SessionData {
+  user: { id: string };
+  expires: string;
+}
+
+export async function signToken(payload: SessionData) {
+  return new SignJWT(payload)
+    .setProtectedHeader({ alg: "HS256" })
+    .setIssuedAt()
+    .setExpirationTime("1 day from now")
+    .sign(key);
+}
+
+export async function verifyToken(input: string) {
+  const { payload } = await jwtVerify(input, key, {
+    algorithms: ["HS256"],
+  });
+  return payload as SessionData;
+}
+
+export async function getSession() {
+  const session = (await cookies()).get("session")?.value;
+  if (!session) return null;
+  return verifyToken(session);
+}
+
+export async function setSession(user: User) {
+  const expiresInOneDay = new Date(Date.now() + 24 * 60 * 60 * 1000);
+  const session: SessionData = {
+    user: { id: user.id },
+    expires: expiresInOneDay.toISOString(),
   };
-  await db.insert(sessions).values(sessionObject);
-  return sessionObject;
+  const encryptedSession = await signToken(session);
+  (await cookies()).set("session", encryptedSession, {
+    expires: expiresInOneDay,
+    httpOnly: true,
+    secure: true,
+    sameSite: "lax",
+  });
 }
-
-export async function validateSessionToken(
-  token: string | null,
-): Promise<SessionValidationResult> {
-  if (!token) {
-    return { session: null, user: null };
-  }
-
-  const sessionId = hashToken(token);
-
-  // Lookup encoded session token in the database
-  const result = await db
-    .select({ user: users, session: sessions })
-    .from(sessions)
-    .innerJoin(users, eq(sessions.userId, users.id))
-    .where(eq(sessions.sessionToken, sessionId));
-
-  if (result.length < 1) {
-    return { session: null, user: null };
-  }
-
-  const { user, session } = result[0]!;
-
-  // Check if the session has expired and delete it if it has
-  if (Date.now() >= session.expires.getTime()) {
-    await db
-      .delete(sessions)
-      .where(eq(sessions.sessionToken, session.sessionToken));
-    return { session: null, user: null };
-  }
-
-  // If the session is within 15 days of expiring, update the expiration date
-  if (Date.now() >= session.expires.getTime() - 1000 * 60 * 60 * 24 * 15) {
-    session.expires = new Date(Date.now() + 1000 * 60 * 60 * 24 * 30);
-    await db
-      .update(sessions)
-      .set({
-        expires: session.expires,
-      })
-      .where(eq(sessions.sessionToken, session.sessionToken));
-  }
-  return { session, user };
-}
-
-export async function invalidateSession(sessionId: string): Promise<void> {
-  await db.delete(sessions).where(eq(sessions.sessionToken, sessionId));
-}
-
-export const getCurrentSession = cache(
-  async (token: string | null): Promise<SessionValidationResult> => {
-    if (token === null) {
-      return { session: null, user: null };
-    }
-    const result = await validateSessionToken(token);
-    return result;
-  },
-);
-
-export type SessionValidationResult =
-  | { session: Session; user: User }
-  | { session: null; user: null };

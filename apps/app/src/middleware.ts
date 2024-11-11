@@ -1,88 +1,101 @@
-import { db } from "@mapform/db";
-import { users, workspaceMemberships, workspaces } from "@mapform/db/schema";
-import { eq } from "@mapform/db/utils";
 import { NextResponse } from "next/server";
 import { withCSRF } from "@mapform/auth/middleware";
-import { getCurrentSession } from "@mapform/auth/helpers/sessions";
+import { signToken, verifyToken } from "@mapform/auth/helpers/sessions";
 
 const publicAppPaths = ["/signin"];
 
-export default withCSRF(async (req) => {
-  const reqUrl = new URL(req.url);
-  const authToken = req.cookies.get("session")?.value ?? null;
-
-  const pathname = req.nextUrl.pathname;
-
+export default withCSRF(async (request) => {
+  const { pathname } = request.nextUrl;
+  const sessionCookie = request.cookies.get("session")?.value ?? null;
   const isPublicAppPath = publicAppPaths.some((path) =>
     pathname.startsWith(path),
   );
+  const isProtectedRoute = !isPublicAppPath;
 
-  if (isPublicAppPath) {
-    return NextResponse.next();
+  if (isProtectedRoute && !sessionCookie) {
+    return NextResponse.redirect(new URL("/sign-in", request.url));
   }
 
-  const result = await getCurrentSession(authToken);
+  const res = NextResponse.next();
 
-  if (!authToken || !result.session) {
-    return NextResponse.redirect(new URL("/signin", reqUrl));
-  }
+  if (sessionCookie) {
+    try {
+      const parsed = await verifyToken(sessionCookie);
+      const expiresInOneDay = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
-  /**
-   * Redirect to onboarding if the user has not onboarded yet
-   */
-  if (!result.user.hasOnboarded) {
-    if (reqUrl.pathname !== "/onboarding") {
-      return NextResponse.redirect(new URL(`/onboarding`, reqUrl));
-    }
-
-    return NextResponse.next();
-  }
-
-  /**
-   * Don't let them go back to onboarding once they've onboarded
-   */
-  if (reqUrl.pathname === "/onboarding") {
-    return NextResponse.redirect(new URL(`/`, reqUrl));
-  }
-
-  /**
-   * Prevent requests to workspace that the user is not a member of
-   */
-  if (result.user.id) {
-    const workspaceSlug = req.nextUrl.pathname.split("/")[1];
-    const hasWorkspaceSlug =
-      Boolean(workspaceSlug) && workspaceSlug?.trim() !== "";
-
-    const allowedWorkspaces = await db
-      .select()
-      .from(workspaceMemberships)
-      .innerJoin(users, eq(users.id, workspaceMemberships.userId))
-      .innerJoin(
-        workspaces,
-        eq(workspaces.id, workspaceMemberships.workspaceId),
-      )
-      .where(eq(users.id, result.user.id));
-
-    if (hasWorkspaceSlug) {
-      const hasAccessToWorkspace = allowedWorkspaces.find(
-        ({ workspace }) => workspace.slug === workspaceSlug,
-      );
-
-      if (!hasAccessToWorkspace) {
-        return NextResponse.redirect(new URL("/", reqUrl));
+      res.cookies.set({
+        name: "session",
+        value: await signToken({
+          ...parsed,
+          expires: expiresInOneDay.toISOString(),
+        }),
+        httpOnly: true,
+        secure: true,
+        sameSite: "lax",
+        expires: expiresInOneDay,
+      });
+    } catch (error) {
+      console.error("Error updating session:", error);
+      res.cookies.delete("session");
+      if (isProtectedRoute) {
+        return NextResponse.redirect(new URL("/sign-in", request.url));
       }
-    } else if (allowedWorkspaces.length > 0) {
-      const firstWorkspace = allowedWorkspaces[0]?.workspace;
-
-      if (firstWorkspace) {
-        return NextResponse.redirect(
-          new URL(`/${firstWorkspace.slug}`, reqUrl),
-        );
-      }
-
-      return NextResponse.redirect(new URL(`/account`, reqUrl));
     }
   }
+
+  return res;
+
+  // const reqUrl = new URL(req.url);
+  // const authToken = req.cookies.get("session")?.value ?? null;
+  // const pathname = req.nextUrl.pathname;
+  // /**
+  //  * Redirect to onboarding if the user has not onboarded yet
+  //  */
+  // if (!result.user.hasOnboarded) {
+  //   if (reqUrl.pathname !== "/onboarding") {
+  //     return NextResponse.redirect(new URL(`/onboarding`, reqUrl));
+  //   }
+  //   return NextResponse.next();
+  // }
+  // /**
+  //  * Don't let them go back to onboarding once they've onboarded
+  //  */
+  // if (reqUrl.pathname === "/onboarding") {
+  //   return NextResponse.redirect(new URL(`/`, reqUrl));
+  // }
+  // /**
+  //  * Prevent requests to workspace that the user is not a member of
+  //  */
+  // if (result.user.id) {
+  //   const workspaceSlug = req.nextUrl.pathname.split("/")[1];
+  //   const hasWorkspaceSlug =
+  //     Boolean(workspaceSlug) && workspaceSlug?.trim() !== "";
+  //   const allowedWorkspaces = await db
+  //     .select()
+  //     .from(workspaceMemberships)
+  //     .innerJoin(users, eq(users.id, workspaceMemberships.userId))
+  //     .innerJoin(
+  //       workspaces,
+  //       eq(workspaces.id, workspaceMemberships.workspaceId),
+  //     )
+  //     .where(eq(users.id, result.user.id));
+  //   if (hasWorkspaceSlug) {
+  //     const hasAccessToWorkspace = allowedWorkspaces.find(
+  //       ({ workspace }) => workspace.slug === workspaceSlug,
+  //     );
+  //     if (!hasAccessToWorkspace) {
+  //       return NextResponse.redirect(new URL("/", reqUrl));
+  //     }
+  //   } else if (allowedWorkspaces.length > 0) {
+  //     const firstWorkspace = allowedWorkspaces[0]?.workspace;
+  //     if (firstWorkspace) {
+  //       return NextResponse.redirect(
+  //         new URL(`/${firstWorkspace.slug}`, reqUrl),
+  //       );
+  //     }
+  //     return NextResponse.redirect(new URL(`/account`, reqUrl));
+  //   }
+  // }
 });
 
 export const config = {
