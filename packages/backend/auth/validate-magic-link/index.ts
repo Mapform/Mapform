@@ -18,11 +18,11 @@ export const validateMagicLink = async ({ token }: ValidateMagicLinkSchema) => {
   });
 
   if (!magicLink) {
-    throw new Error("Invalid magic link");
+    throw { type: "not-found" };
   }
 
   if (Date.now() >= magicLink.expires.getTime()) {
-    throw new Error("Magic link expired");
+    throw { type: "expired" };
   }
 
   let user = await db.query.users.findFirst({

@@ -19,7 +19,9 @@ export async function GET(request: NextRequest) {
     await validateMagicLink({ token });
 
     return NextResponse.redirect(`${baseUrl}/`);
-  } catch (e) {
-    return NextResponse.redirect(`${baseUrl}/signin?error=1`);
+  } catch (e: unknown) {
+    return NextResponse.redirect(
+      `${baseUrl}/signin?error=${(e as { type: string }).type || "unknown"}`,
+    );
   }
 }
