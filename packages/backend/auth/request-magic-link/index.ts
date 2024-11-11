@@ -14,6 +14,8 @@ export const requestMagicLink = async ({ email }: RequestMagicLinkSchema) => {
   // 1. Generate token
   const token = generateToken(32);
 
+  console.log("Requesting magic link for", email);
+
   await db.transaction(async (tx) => {
     // 2. Create magic link record
     await db.insert(magicLinks).values({
@@ -26,10 +28,17 @@ export const requestMagicLink = async ({ email }: RequestMagicLinkSchema) => {
     await tx.delete(magicLinks).where(eq(magicLinks.email, email));
   });
 
+  console.log("Magic link created");
+
   // 4. Send the email
   sendEmail({
     to: email,
     // Temp
     link: `${baseUrl}/api/auth/magic-link?token=${token}`,
   });
+
+  console.log(
+    "Email sent with link: ",
+    `${baseUrl}/api/auth/magic-link?token=${token}`,
+  );
 };
