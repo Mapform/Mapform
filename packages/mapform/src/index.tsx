@@ -253,6 +253,7 @@ export function MapForm({
                             type: "richtext",
                             rowId: activePoint.rowId,
                             columnId: activePoint.description.columnId,
+                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
                             value: val as any,
                           });
                       }}

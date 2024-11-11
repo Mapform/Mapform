@@ -49,6 +49,7 @@ export function Map({
         type: "Feature",
         geometry: {
           type: "Point",
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           coordinates: [point.value!.x, point.value!.y],
         },
         properties: {

@@ -25,7 +25,6 @@
     "@mapform/blocknote": "workspace:*",
     "@mapform/eslint-config": "workspace:*",
     "@mapform/typescript-config": "workspace:*",
-    "@types/jsonwebtoken": "^9.0.7",
     "@types/node": "^20.8.10",
     "@types/uuid": "^9.0.8",
     "eslint": "^8.57.0",

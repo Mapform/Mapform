@@ -372,9 +372,6 @@ importers:
       '@mapform/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
-      '@types/jsonwebtoken':
-        specifier: ^9.0.7
-        version: 9.0.7
       '@types/node':
         specifier: ^20.8.10
         version: 20.11.25
@@ -495,9 +492,6 @@ importers:
       '@types/eslint':
         specifier: ^8.56.5
         version: 8.56.5
-      '@types/jsonwebtoken':
-        specifier: ^9.0.7
-        version: 9.0.7
       '@types/node':
         specifier: ^20.11.24
         version: 20.11.24
@@ -684,6 +678,9 @@ importers:
         specifier: 3.23.8
         version: 3.23.8
     devDependencies:
+      '@blocknote/core':
+        specifier: ^0.19.0
+        version: 0.19.0(@types/hast@3.0.4)
       '@mapform/eslint-config':
         specifier: workspace:*
         version: link:../eslint-config
@@ -3504,9 +3501,6 @@ packages:
 
   '@types/json5@0.0.29':
     resolution: {integrity: sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==}
-
-  '@types/jsonwebtoken@9.0.7':
-    resolution: {integrity: sha512-ugo316mmTYBl2g81zDFnZ7cfxlut3o+/EQdaP7J8QN2kY6lJ22hmQYCK5EHcJHbrW+dkCGSCPgbG8JtYj6qSrg==}
 
   '@types/lodash-es@4.17.12':
     resolution: {integrity: sha512-0NgftHUcV4v34VhXm8QBSftKVXtbkBG3ViCjs6+eJ5a6y6Mi/jiFGPc1sC7QK+9BFhWrURE3EOggmWaSxL9OzQ==}
@@ -9975,10 +9969,6 @@ snapshots:
   '@types/json-schema@7.0.12': {}
 
   '@types/json5@0.0.29': {}
-
-  '@types/jsonwebtoken@9.0.7':
-    dependencies:
-      '@types/node': 20.11.25
 
   '@types/lodash-es@4.17.12':
     dependencies:
