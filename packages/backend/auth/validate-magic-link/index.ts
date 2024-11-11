@@ -26,7 +26,7 @@ export const validateMagicLink = async ({ token }: ValidateMagicLinkSchema) => {
   }
 
   let user = await db.query.users.findFirst({
-    where: eq(users.email, magicLink.email),
+    where: eq(users.email, magicLink.email.toLocaleLowerCase()),
   });
 
   await db.transaction(async (tx) => {
@@ -36,7 +36,7 @@ export const validateMagicLink = async ({ token }: ValidateMagicLinkSchema) => {
     } else {
       [user] = await tx
         .insert(users)
-        .values({ email: magicLink.email })
+        .values({ email: magicLink.email.toLocaleLowerCase() })
         .returning();
 
       if (!user) {
