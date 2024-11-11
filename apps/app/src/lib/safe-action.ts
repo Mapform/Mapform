@@ -1,19 +1,34 @@
 import { cookies } from "next/headers";
+import { getUser } from "@mapform/backend/users/get-user";
 import { createSafeActionClient } from "next-safe-action";
-import { getCurrentSession } from "@mapform/auth/helpers/sessions";
+import { verifyToken } from "@mapform/auth/helpers/sessions";
 
 // Base client
 export const actionClient = createSafeActionClient();
 
 // Auth client
 export const authAction = actionClient.use(async ({ next }) => {
-  const cookieStore = await cookies();
-  const token = cookieStore.get("session")?.value ?? null;
-  const result = await getCurrentSession(token);
+  const sessionCookie = (await cookies()).get("session")?.value ?? null;
 
-  if (!result.user) {
+  if (!sessionCookie) {
     throw new Error("User not authenticated.");
   }
 
-  return next({ ctx: { user: result.user, session: result.session } });
+  const sessionData = await verifyToken(sessionCookie);
+
+  if (!sessionData.user || !sessionData.expires) {
+    throw new Error("Invalid session.");
+  }
+
+  if (new Date(sessionData.expires) < new Date()) {
+    throw new Error("Session expired.");
+  }
+
+  const user = await getUser({ id: sessionData.user.id });
+
+  if (!user) {
+    throw new Error("User not found.");
+  }
+
+  return next({ ctx: { user, session: sessionData } });
 });

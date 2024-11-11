@@ -5,6 +5,7 @@ import { signToken, verifyToken } from "@mapform/auth/helpers/sessions";
 const publicAppPaths = ["/signin"];
 
 export default withCSRF(async (request) => {
+  console.log(11111);
   const { pathname } = request.nextUrl;
   const sessionCookie = request.cookies.get("session")?.value ?? null;
   const isPublicAppPath = publicAppPaths.some((path) =>
@@ -13,7 +14,7 @@ export default withCSRF(async (request) => {
   const isProtectedRoute = !isPublicAppPath;
 
   if (isProtectedRoute && !sessionCookie) {
-    return NextResponse.redirect(new URL("/sign-in", request.url));
+    return NextResponse.redirect(new URL("/signin", request.url));
   }
 
   const res = NextResponse.next();
@@ -38,7 +39,7 @@ export default withCSRF(async (request) => {
       console.error("Error updating session:", error);
       res.cookies.delete("session");
       if (isProtectedRoute) {
-        return NextResponse.redirect(new URL("/sign-in", request.url));
+        return NextResponse.redirect(new URL("/signin", request.url));
       }
     }
   }

@@ -19,8 +19,8 @@ export async function comparePasswords(
 }
 
 interface SessionData {
-  user: { id: string };
-  expires: string;
+  user: { id: string } | null;
+  expires: string | null;
 }
 
 export async function signToken(payload: SessionData) {

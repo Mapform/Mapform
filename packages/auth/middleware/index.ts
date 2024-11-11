@@ -7,6 +7,10 @@ import { NextResponse } from "next/server";
  */
 export const withCSRF = (next: NextMiddleware) => {
   return async (request: NextRequest, _next: NextFetchEvent) => {
+    if (request.method === "GET") {
+      return next(request, _next);
+    }
+
     /**
      * CSRF protection only needed for non-GET requests
      */
