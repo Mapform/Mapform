@@ -15,11 +15,14 @@ export async function GET(request: NextRequest) {
   const paramToken = searchParams.get("token");
   const { token } = validateMagicLinkSchema.parse({ token: paramToken });
 
+  console.log(11111, token);
+
   try {
     await validateMagicLink({ token });
 
     return NextResponse.redirect(`${baseUrl}/`);
   } catch (e: unknown) {
+    console.log(222222, e);
     return NextResponse.redirect(
       `${baseUrl}/signin?error=${(e as { type: string }).type || "unknown"}`,
     );
