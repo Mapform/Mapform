@@ -11,7 +11,7 @@ export const authAction = actionClient.use(async ({ next }) => {
   const token = cookieStore.get("session")?.value ?? null;
   const result = await getCurrentSession(token);
 
-  if (!result.user || !result.session) {
+  if (!result.user) {
     throw new Error("User not authenticated.");
   }
 

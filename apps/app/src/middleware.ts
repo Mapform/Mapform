@@ -23,7 +23,7 @@ export default withCSRF(async (req) => {
 
   const result = await getCurrentSession(authToken);
 
-  if (!authToken || !result.session || !result.user) {
+  if (!authToken || !result.session) {
     return NextResponse.redirect(new URL("/signin", reqUrl));
   }
 
