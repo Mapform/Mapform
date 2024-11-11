@@ -14,14 +14,12 @@ export const requestMagicLink = async ({ email }: RequestMagicLinkSchema) => {
   // 1. Generate token
   const token = generateToken(32);
 
-  console.log("Requesting magic link for", email);
-
   await db.transaction(async (tx) => {
     // 2. Delete old magic links
     await tx.delete(magicLinks).where(eq(magicLinks.email, email));
 
     // 3. Create magic link record
-    const [magicLink] = await db
+    await db
       .insert(magicLinks)
       .values({
         email,
@@ -29,19 +27,12 @@ export const requestMagicLink = async ({ email }: RequestMagicLinkSchema) => {
         expires: new Date(Date.now() + 1000 * 60 * 10), // 10 minutes
       })
       .returning();
-
-    console.log("Magic link created", magicLink);
   });
 
   // 4. Send the email
-  sendEmail({
+  await sendEmail({
     to: email,
     // Temp
     link: `${baseUrl}/api/auth/magic-link?token=${token}`,
   });
-
-  console.log(
-    "Email sent with link: ",
-    `${baseUrl}/api/auth/magic-link?token=${token}`,
-  );
 };

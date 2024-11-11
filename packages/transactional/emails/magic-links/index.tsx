@@ -10,7 +10,6 @@ export function sendEmail({
 }: {
   to: string;
 } & EmailProps): ReturnType<typeof resend.emails.send> {
-  console.log("Sending email to", to, env.RESEND_API_KEY);
   return resend.emails.send({
     to: env.NODE_ENV === "production" ? to : "delivered@resend.dev",
     from:
