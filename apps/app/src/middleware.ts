@@ -41,7 +41,7 @@ export default withCSRF(async (req) => {
   /**
    * Don't let them go back to onboarding once they've onboarded
    */
-  if (reqUrl.pathname === "/onboarding" && result.user.hasOnboarded) {
+  if (reqUrl.pathname === "/onboarding") {
     return NextResponse.redirect(new URL(`/`, reqUrl));
   }
 
