@@ -17,18 +17,21 @@ export const requestMagicLink = async ({ email }: RequestMagicLinkSchema) => {
   console.log("Requesting magic link for", email);
 
   await db.transaction(async (tx) => {
-    // 2. Create magic link record
-    await db.insert(magicLinks).values({
-      email,
-      token: hashToken(token),
-      expires: new Date(Date.now() + 1000 * 60 * 10), // 10 minutes
-    });
-
-    // 3. Delete old magic links
+    // 2. Delete old magic links
     await tx.delete(magicLinks).where(eq(magicLinks.email, email));
-  });
 
-  console.log("Magic link created");
+    // 3. Create magic link record
+    const [magicLink] = await db
+      .insert(magicLinks)
+      .values({
+        email,
+        token: hashToken(token),
+        expires: new Date(Date.now() + 1000 * 60 * 10), // 10 minutes
+      })
+      .returning();
+
+    console.log("Magic link created", magicLink);
+  });
 
   // 4. Send the email
   sendEmail({
