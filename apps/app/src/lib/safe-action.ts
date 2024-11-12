@@ -1,6 +1,6 @@
 import { headers } from "next/headers";
 import { createSafeActionClient } from "next-safe-action";
-import { notFound, redirect } from "next/navigation";
+import { redirect } from "next/navigation";
 import { getCurrentSession } from "~/data/auth/get-current-session";
 
 // Base client
@@ -20,7 +20,7 @@ export const authAction = actionClient.use(async ({ next }) => {
   }
 
   const hasAccessToWorkspace = response.user.workspaceMemberships.some(
-    (wm) => wm.workspace.slug,
+    (wm) => workspaceSlug === wm.workspace.slug,
   );
 
   const hasAccessToTeamspace = response.user.workspaceMemberships.some((wm) =>
@@ -28,11 +28,11 @@ export const authAction = actionClient.use(async ({ next }) => {
   );
 
   if (workspaceSlug && !hasAccessToWorkspace) {
-    return notFound();
+    return redirect("/");
   }
 
   if (teamspaceSlug && !hasAccessToTeamspace) {
-    return notFound();
+    return redirect(`/${workspaceSlug}`);
   }
 
   return next({ ctx: { user: response.user, session: response.session } });

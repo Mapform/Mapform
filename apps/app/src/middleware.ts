@@ -61,59 +61,7 @@ export default withCSRF(async (request) => {
     }
   }
 
-  return NextResponse.next();
-
-  // const reqUrl = new URL(req.url);
-  // const authToken = req.cookies.get("session")?.value ?? null;
-  // const pathname = req.nextUrl.pathname;
-  // /**
-  //  * Redirect to onboarding if the user has not onboarded yet
-  //  */
-  // if (!result.user.hasOnboarded) {
-  //   if (reqUrl.pathname !== "/onboarding") {
-  //     return NextResponse.redirect(new URL(`/onboarding`, reqUrl));
-  //   }
-  //   return NextResponse.next();
-  // }
-  // /**
-  //  * Don't let them go back to onboarding once they've onboarded
-  //  */
-  // if (reqUrl.pathname === "/onboarding") {
-  //   return NextResponse.redirect(new URL(`/`, reqUrl));
-  // }
-  // /**
-  //  * Prevent requests to workspace that the user is not a member of
-  //  */
-  // if (result.user.id) {
-  //   const workspaceSlug = req.nextUrl.pathname.split("/")[1];
-  //   const hasWorkspaceSlug =
-  //     Boolean(workspaceSlug) && workspaceSlug?.trim() !== "";
-  //   const allowedWorkspaces = await db
-  //     .select()
-  //     .from(workspaceMemberships)
-  //     .innerJoin(users, eq(users.id, workspaceMemberships.userId))
-  //     .innerJoin(
-  //       workspaces,
-  //       eq(workspaces.id, workspaceMemberships.workspaceId),
-  //     )
-  //     .where(eq(users.id, result.user.id));
-  //   if (hasWorkspaceSlug) {
-  //     const hasAccessToWorkspace = allowedWorkspaces.find(
-  //       ({ workspace }) => workspace.slug === workspaceSlug,
-  //     );
-  //     if (!hasAccessToWorkspace) {
-  //       return NextResponse.redirect(new URL("/", reqUrl));
-  //     }
-  //   } else if (allowedWorkspaces.length > 0) {
-  //     const firstWorkspace = allowedWorkspaces[0]?.workspace;
-  //     if (firstWorkspace) {
-  //       return NextResponse.redirect(
-  //         new URL(`/${firstWorkspace.slug}`, reqUrl),
-  //       );
-  //     }
-  //     return NextResponse.redirect(new URL(`/account`, reqUrl));
-  //   }
-  // }
+  return res;
 });
 
 export const config = {
