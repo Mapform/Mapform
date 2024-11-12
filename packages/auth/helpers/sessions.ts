@@ -24,7 +24,9 @@ interface SessionData {
 }
 
 export async function signToken(payload: SessionData) {
-  return new SignJWT(payload)
+  return new SignJWT({
+    ...payload,
+  })
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
     .setExpirationTime("1 day from now")
@@ -32,10 +34,10 @@ export async function signToken(payload: SessionData) {
 }
 
 export async function verifyToken(input: string) {
-  const { payload } = await jwtVerify(input, key, {
+  const { payload } = await jwtVerify<SessionData>(input, key, {
     algorithms: ["HS256"],
   });
-  return payload as SessionData;
+  return payload;
 }
 
 export async function getSession() {

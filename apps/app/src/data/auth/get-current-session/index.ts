@@ -1,5 +1,6 @@
 "server-only";
 
+// eslint-disable-next-line import/named -- It will work when React 19 is released
 import { cache } from "react";
 import { cookies } from "next/headers";
 import { getUser } from "@mapform/backend/users/get-user";
