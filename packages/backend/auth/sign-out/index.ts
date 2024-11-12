@@ -1,8 +1,5 @@
-import { type SignOutSchema } from "./schema";
-import { deleteSessionTokenCookie } from "@mapform/auth/helpers/cookies";
-import { invalidateSession } from "@mapform/auth/helpers/sessions";
+import { deleteSession } from "@mapform/auth/helpers/sessions";
 
-export const signOut = async ({ token }: SignOutSchema) => {
-  await deleteSessionTokenCookie();
-  await invalidateSession(token);
+export const signOut = async () => {
+  await deleteSession();
 };

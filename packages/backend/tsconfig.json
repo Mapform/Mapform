@@ -9,10 +9,6 @@
   "compilerOptions": {
     "strict": true,
     "strictNullChecks": true,
-    "baseUrl": ".",
-    "paths": {
-      "#*": ["./*"]   // Map #subpath to actual file location
-    }
   },
   "include": [
     "**/*.ts",

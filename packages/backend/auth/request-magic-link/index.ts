@@ -3,7 +3,7 @@ import { sendEmail } from "@mapform/transactional/emails/magic-links";
 import { type RequestMagicLinkSchema } from "./schema";
 import { magicLinks } from "@mapform/db/schema";
 import { generateToken, hashToken } from "@mapform/auth/helpers/tokens";
-import { env } from "#env.mjs";
+import { env } from "../../env.mjs";
 import { eq } from "@mapform/db/utils";
 
 const baseUrl = env.VERCEL_URL

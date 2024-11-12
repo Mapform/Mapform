@@ -8,6 +8,17 @@ import type { GetUserSchema } from "./schema";
 export const getUser = async ({ id }: GetUserSchema) =>
   db.query.users.findFirst({
     where: eq(users.id, id),
+    with: {
+      workspaceMemberships: {
+        with: {
+          workspace: {
+            with: {
+              teamspaces: true,
+            },
+          },
+        },
+      },
+    },
   });
 
 export type GetUser = NonNullable<Awaited<ReturnType<typeof getUser>>>;
