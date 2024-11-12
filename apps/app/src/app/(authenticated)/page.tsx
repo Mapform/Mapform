@@ -12,7 +12,7 @@ export default async function RootLayout() {
     response.user.workspaceMemberships[0]?.workspace.slug;
 
   if (!firstWorkspaceSlug) {
-    redirect("/create-workspace");
+    redirect("/onboarding");
   }
 
   return redirect(firstWorkspaceSlug);

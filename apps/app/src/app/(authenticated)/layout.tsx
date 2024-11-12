@@ -1,20 +1,16 @@
-import { redirect } from "next/navigation";
 import { getCurrentSession } from "~/data/auth/get-current-session";
+import { AuthProvider } from "./auth-provider";
 
-export default async function AuthLayout({
+export default function AuthLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const response = await getCurrentSession();
+  const currentSessionPromise = getCurrentSession();
 
-  if (!response?.user) {
-    redirect("/signin");
-  }
-
-  if (!response.user.hasOnboarded) {
-    redirect("/onboarding");
-  }
-
-  return <>{children}</>;
+  return (
+    <AuthProvider currentSessionPromise={currentSessionPromise}>
+      {children}
+    </AuthProvider>
+  );
 }

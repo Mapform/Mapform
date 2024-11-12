@@ -31,3 +31,5 @@ export const getCurrentSession = cache(async () => {
 
   return { user, session: sessionData };
 });
+
+export type GetCurrentSession = ReturnType<typeof getCurrentSession>;
