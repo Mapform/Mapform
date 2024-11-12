@@ -6,7 +6,7 @@ import { cookies } from "next/headers";
 import { getUser } from "@mapform/backend/users/get-user";
 import { verifyToken } from "@mapform/auth/helpers/sessions";
 
-export const getCurrentSession = cache(async () => {
+export const getCurrentSession = async () => {
   const sessionCookie = (await cookies()).get("session")?.value ?? null;
 
   if (!sessionCookie) {
@@ -30,6 +30,6 @@ export const getCurrentSession = cache(async () => {
   }
 
   return { user, session: sessionData };
-});
+};
 
 export type GetCurrentSession = ReturnType<typeof getCurrentSession>;

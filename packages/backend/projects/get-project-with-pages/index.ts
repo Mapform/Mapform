@@ -8,7 +8,7 @@ export const getProjectWithPages = async ({
 }: GetProjectWithPagesSchema) => {
   // TODO: Cannot use 'with' with geometry columns currently due to Drizzle bug: https://github.com/drizzle-team/drizzle-orm/issues/2526
   // Once fix is merged we can simplify this
-  const [_projects2, _pages, _pageLayers] = await Promise.all([
+  const [_projects, _pages, _pageLayers] = await Promise.all([
     db.query.projects.findFirst({
       where: and(eq(projects.id, id), isNull(projects.rootProjectId)),
       with: {
@@ -74,12 +74,12 @@ export const getProjectWithPages = async ({
       .leftJoin(projects, eq(pages.projectId, projects.id)),
   ]);
 
-  if (!_projects2) {
+  if (!_projects) {
     throw new Error("Project not found");
   }
 
   return {
-    ..._projects2,
+    ..._projects,
     pages: _pages,
     pageLayers: _pageLayers,
   };

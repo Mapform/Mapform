@@ -16,7 +16,18 @@ export default withCSRF(async (request) => {
     return NextResponse.redirect(new URL("/signin", request.url));
   }
 
-  const res = NextResponse.next();
+  const workspaceSlug = pathname.split("/")[1];
+  const teamspaceSlug = pathname.split("/")[2];
+
+  const requestHeaders = new Headers(request.headers);
+  workspaceSlug && requestHeaders.set("x-workspace-slug", workspaceSlug);
+  teamspaceSlug && requestHeaders.set("x-teamspace-slug", teamspaceSlug);
+
+  const res = NextResponse.next({
+    request: {
+      headers: requestHeaders,
+    },
+  });
 
   if (sessionCookie) {
     try {
@@ -34,6 +45,13 @@ export default withCSRF(async (request) => {
         sameSite: "lax",
         expires: expiresInOneDay,
       });
+
+      /**
+       * Redirect to root if already signed in
+       */
+      if (pathname === "/signin") {
+        return NextResponse.redirect(new URL("/", request.url));
+      }
     } catch (error) {
       console.error("Error updating session:", error);
       res.cookies.delete("session");
@@ -43,7 +61,7 @@ export default withCSRF(async (request) => {
     }
   }
 
-  return res;
+  return NextResponse.next();
 
   // const reqUrl = new URL(req.url);
   // const authToken = req.cookies.get("session")?.value ?? null;
