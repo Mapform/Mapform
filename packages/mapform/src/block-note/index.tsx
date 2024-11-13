@@ -51,7 +51,7 @@ export function Blocknote({
 
   // Renders the editor instance using a React component.
   return (
-    <div className="flex h-full flex-1 flex-col overflow-y-auto">
+    <div className="flex max-h-full flex-1 flex-col overflow-y-auto">
       {locationEditorProps ? (
         <Button
           className="absolute right-2 top-2"

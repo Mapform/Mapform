@@ -117,6 +117,23 @@ export function MapForm({
     right: 0,
   };
 
+  const renderButtons = () => (
+    <div className="flex w-full items-center justify-between bg-white">
+      <Button
+        disabled={editable}
+        onClick={onPrev}
+        size="icon-sm"
+        variant="ghost"
+      >
+        <ArrowLeftIcon className="size-5" />
+      </Button>
+      <p className="text-xs text-gray-500">Powered by Mapform</p>
+      <Button disabled={editable} size="icon-sm" type="submit" variant="ghost">
+        <ArrowRightIcon className="size-5" />
+      </Button>
+    </div>
+  );
+
   return (
     <Form {...form}>
       <form
@@ -165,7 +182,7 @@ export function MapForm({
                   <DrawerPrimitive.Portal>
                     <DrawerPrimitive.Content
                       className={cn(
-                        "bg-background prose group absolute bottom-0 top-0 z-40 h-full max-w-full shadow-lg outline-none max-md:!w-full max-md:rounded-t-xl max-md:shadow-[rgba(0,0,15,0.5)_10px_5px_4px_0px] md:rounded-r-lg",
+                        "bg-background prose group absolute bottom-0 top-0 z-40 flex h-full max-w-full flex-col shadow-lg outline-none max-md:!w-full max-md:rounded-t-xl max-md:shadow-[rgba(0,0,15,0.5)_10px_5px_4px_0px] md:rounded-r-lg",
                         editable ? "w-[392px] pl-8" : "w-[360px]",
                         {
                           "overflow-y-auto": snap === 1,
@@ -196,32 +213,12 @@ export function MapForm({
                         title={currentPage.title}
                       />
                       <div
-                        className={cn(
-                          "mt-auto flex justify-between px-4 py-2",
-                          {
-                            hidden: editable || isMobile,
-                          },
-                        )}
+                        className={cn("px-2 pt-2", {
+                          hidden: editable || isMobile,
+                        })}
+                        id="test234"
                       >
-                        <div className="gap-2">
-                          <Button
-                            disabled={editable}
-                            onClick={onPrev}
-                            size="icon"
-                            type="button"
-                            variant="ghost"
-                          >
-                            <ArrowLeftIcon />
-                          </Button>
-                        </div>
-                        <Button
-                          disabled={editable}
-                          size="icon"
-                          type="submit"
-                          variant="ghost"
-                        >
-                          <ArrowRightIcon />
-                        </Button>
+                        {renderButtons()}
                       </div>
                     </DrawerPrimitive.Content>
                   </DrawerPrimitive.Portal>
@@ -322,25 +319,7 @@ export function MapForm({
             </Map>
           </CustomBlockContext.Provider>
         </div>
-        <div className="flex w-full items-center justify-between bg-white p-2 md:hidden">
-          <Button
-            disabled={editable}
-            onClick={onPrev}
-            size="icon-sm"
-            variant="ghost"
-          >
-            <ArrowLeftIcon className="size-5" />
-          </Button>
-          <p className="text-xs text-gray-500">Powered by Mapform</p>
-          <Button
-            disabled={editable}
-            size="icon-sm"
-            type="submit"
-            variant="ghost"
-          >
-            <ArrowRightIcon className="size-5" />
-          </Button>
-        </div>
+        <div className="p-2 md:hidden">{renderButtons()}</div>
       </form>
     </Form>
   );
