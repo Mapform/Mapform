@@ -7,7 +7,8 @@ import { getCurrentSession } from "~/data/auth/get-current-session";
 export const actionClient = createSafeActionClient();
 
 /**
- * Check that the user is authenticated
+ * Check that the user is authenticated, and only requested workspace /
+ * teamspace resources they have access to
  */
 export const authAction = actionClient.use(async ({ next }) => {
   const response = await getCurrentSession();

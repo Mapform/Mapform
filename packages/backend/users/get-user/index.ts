@@ -12,8 +12,17 @@ export const getUser = async ({ id }: GetUserSchema) =>
       workspaceMemberships: {
         with: {
           workspace: {
+            columns: {
+              id: true,
+              slug: true,
+            },
             with: {
-              teamspaces: true,
+              teamspaces: {
+                columns: {
+                  id: true,
+                  slug: true,
+                },
+              },
             },
           },
         },
