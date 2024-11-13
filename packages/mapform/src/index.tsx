@@ -252,7 +252,9 @@ export function MapForm({
             </DesktopDrawer>
           </CustomBlockContext.Provider>
         </div>
-        <div className="p-2 md:hidden">{renderButtons()}</div>
+        <div className="fixed bottom-0 z-50 w-full bg-white p-2 md:hidden">
+          {renderButtons()}
+        </div>
       </form>
     </Form>
   );
