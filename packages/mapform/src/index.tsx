@@ -159,19 +159,7 @@ export function MapForm({
             >
               <ChevronsRightIcon className="size-5" />
             </Button>
-            {/* <DrawerPrimitive.Root
-                  activeSnapPoint={isMobile ? snap : undefined}
-                  container={rootEl.current}
-                  direction={isMobile ? "bottom" : "left"}
-                  dismissible={false}
-                  key={isMobile.toString()}
-                  modal={false}
-                  onOpenChange={setDrawerOpen}
-                  // Always open on mobile
-                  open={drawerOpen || isMobile}
-                  setActiveSnapPoint={isMobile ? setSnap : undefined}
-                  snapPoints={isMobile ? mobileSnapPoints : undefined}
-                > */}
+
             <DesktopDrawer
               onClose={() => {
                 setDrawerOpen(false);
@@ -179,7 +167,6 @@ export function MapForm({
               open={drawerOpen}
               withPadding={editable}
             >
-              <div className="mx-auto mt-3 h-1.5 w-12 flex-shrink-0 rounded-full bg-gray-300 md:hidden" />
               <Blocknote
                 currentPage={currentPage}
                 description={currentPage.content ?? undefined}
@@ -199,22 +186,64 @@ export function MapForm({
                 {renderButtons()}
               </div>
             </DesktopDrawer>
+
+            <DesktopDrawer
+              onClose={() => {
+                setQueryString({
+                  key: "layer_point",
+                  value: null,
+                });
+              }}
+              open={Boolean(activePoint)}
+              withPadding={editable}
+            >
+              <Blocknote
+                currentPage={currentPage}
+                description={
+                  activePoint?.description?.richtextCell?.value ?? undefined
+                }
+                editable={editable}
+                isPage
+                key={currentPage.id}
+                onDescriptionChange={(val) => {
+                  activePoint?.description &&
+                    onPoiCellChange &&
+                    onPoiCellChange({
+                      type: "richtext",
+                      rowId: activePoint.rowId,
+                      columnId: activePoint.description.columnId,
+                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                      value: val as any,
+                    });
+                }}
+                onPrev={onPrev}
+                onTitleChange={(val) => {
+                  activePoint?.title &&
+                    onPoiCellChange &&
+                    onPoiCellChange({
+                      type: "string",
+                      rowId: activePoint.rowId,
+                      columnId: activePoint.title.columnId,
+                      value: val,
+                    });
+                }}
+                title={activePoint?.title?.stringCell?.value}
+              />
+            </DesktopDrawer>
             {/* <DrawerPrimitive.Root
+                  activeSnapPoint={isMobile ? snap : undefined}
                   container={rootEl.current}
                   direction={isMobile ? "bottom" : "left"}
                   dismissible={false}
-                  key={activePoint?.rowId}
+                  key={isMobile.toString()}
                   modal={false}
-                  onOpenChange={(val) => {
-                    if (!val) {
-                      setQueryString({
-                        key: "layer_point",
-                        value: null,
-                      });
-                    }
-                  }}
-                  open={Boolean(activePoint)}
+                  onOpenChange={setDrawerOpen}
+                  // Always open on mobile
+                  open={drawerOpen || isMobile}
+                  setActiveSnapPoint={isMobile ? setSnap : undefined}
+                  snapPoints={isMobile ? mobileSnapPoints : undefined}
                 > */}
+            {/* <div className="mx-auto mt-3 h-1.5 w-12 flex-shrink-0 rounded-full bg-gray-300 md:hidden" /> */}
             {/* <div
               className={cn(
                 "bg-background prose group absolute bottom-0 top-0 z-50 h-full rounded-r-lg shadow-lg outline-none max-md:!w-full",
