@@ -84,7 +84,7 @@ export function MapForm({
   >(null);
   const { width } = useWindowSize();
   const [snap, setSnap] = useState<number | string | null>("140px");
-  const rootEl = useRef<HTMLFormElement | null>(null);
+  const rootEl = useRef<HTMLDivElement | null>(null);
   const initialViewState = {
     longitude: currentPage.center.x,
     latitude: currentPage.center.y,
@@ -119,12 +119,11 @@ export function MapForm({
 
   return (
     <Form {...form}>
-      <div className="flex h-full w-full flex-col overflow-hidden">
-        <form
-          className="relative flex flex-1 overflow-hidden"
-          onSubmit={form.handleSubmit(onSubmit)}
-          ref={rootEl}
-        >
+      <form
+        className="flex h-full w-full flex-col overflow-hidden"
+        onSubmit={form.handleSubmit(onSubmit)}
+      >
+        <div className="relative flex flex-1 overflow-hidden" ref={rootEl}>
           <CustomBlockContext.Provider
             value={{
               editable,
@@ -322,13 +321,12 @@ export function MapForm({
               </div>
             </Map>
           </CustomBlockContext.Provider>
-        </form>
+        </div>
         <div className="flex w-full items-center justify-between bg-white p-2 md:hidden">
           <Button
             disabled={editable}
             onClick={onPrev}
             size="icon-sm"
-            type="submit"
             variant="ghost"
           >
             <ArrowLeftIcon className="size-5" />
@@ -343,7 +341,7 @@ export function MapForm({
             <ArrowRightIcon className="size-5" />
           </Button>
         </div>
-      </div>
+      </form>
     </Form>
   );
 }
