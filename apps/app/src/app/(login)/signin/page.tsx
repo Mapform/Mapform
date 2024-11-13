@@ -1,5 +1,10 @@
+import { Suspense } from "react";
 import { SignInForm } from "../form";
 
 export default function SigninPage() {
-  return <SignInForm type="signin" />;
+  return (
+    <Suspense>
+      <SignInForm type="signin" />
+    </Suspense>
+  );
 }
