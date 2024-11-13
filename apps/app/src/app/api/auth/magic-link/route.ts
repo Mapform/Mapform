@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { validateMagicLink } from "@mapform/backend/auth/validate-magic-link";
 import { validateMagicLinkSchema } from "@mapform/backend/auth/validate-magic-link/schema";
+import type { MagicLinkErrors } from "~/constants/magic-link-errors";
 import { env } from "~/env.mjs";
 
 const baseUrl = env.VERCEL_URL
@@ -21,7 +22,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(`${baseUrl}/`);
   } catch (e: unknown) {
     return NextResponse.redirect(
-      `${baseUrl}/signin?error=${(e as { type: string }).type || "unknown"}`,
+      `${baseUrl}/signin?error=${(e as { type: MagicLinkErrors | null }).type || "unknown"}`,
     );
   }
 }
