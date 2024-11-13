@@ -6,6 +6,10 @@ import { getCurrentSession } from "~/data/auth/get-current-session";
 // Base client
 export const actionClient = createSafeActionClient();
 
+// Exceptions for workspace and teamspace slugs because they are also positional params
+const workspaceExceptions = ["signin", "signup", "onboarding"];
+const teamspaceExceptions = ["settings"];
+
 /**
  * Check that the user is authenticated, and only requested workspace /
  * teamspace resources they have access to.
@@ -20,13 +24,17 @@ export const authAction = actionClient.use(async ({ next }) => {
     return redirect("/signin");
   }
 
-  const hasAccessToWorkspace = response.user.workspaceMemberships.some(
-    (wm) => workspaceSlug === wm.workspace.slug,
-  );
+  const hasAccessToWorkspace = [
+    ...workspaceExceptions,
+    ...response.user.workspaceMemberships.map((wm) => wm.workspace.slug),
+  ].some((ws) => workspaceSlug === ws);
 
-  const hasAccessToTeamspace = response.user.workspaceMemberships.some((wm) =>
-    wm.workspace.teamspaces.some((ts) => ts.slug === teamspaceSlug),
-  );
+  const hasAccessToTeamspace = [
+    ...teamspaceExceptions,
+    ...response.user.workspaceMemberships.flatMap((wm) =>
+      wm.workspace.teamspaces.map((ts) => ts.slug),
+    ),
+  ].some((ts) => ts === teamspaceSlug);
 
   if (workspaceSlug && !hasAccessToWorkspace) {
     return redirect("/");

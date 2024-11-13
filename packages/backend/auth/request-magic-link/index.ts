@@ -24,7 +24,7 @@ export const requestMagicLink = async ({ email }: RequestMagicLinkSchema) => {
       .values({
         email,
         token: hashToken(token),
-        expires: new Date(Date.now() + 1000 * 60 * 1), // 10 minutes
+        expires: new Date(Date.now() + 1000 * 60 * 10), // 10 minutes
       })
       .returning();
   });

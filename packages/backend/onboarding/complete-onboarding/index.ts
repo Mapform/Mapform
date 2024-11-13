@@ -25,7 +25,7 @@ export const completeOnboarding = async ({
   const teamspaceName = "Personal";
   const teamspaceSlug = "personal";
 
-  await db.transaction(async (tx) => {
+  return db.transaction(async (tx) => {
     await tx
       .update(users)
       .set({
@@ -70,5 +70,7 @@ export const completeOnboarding = async ({
       teamspaceId: teamspace.id,
       role: "owner",
     });
+
+    return workspace;
   });
 };
