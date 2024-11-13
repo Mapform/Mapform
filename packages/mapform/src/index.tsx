@@ -7,6 +7,7 @@ import { DrawerPrimitive } from "@mapform/ui/components/drawer";
 import { Form, useForm, zodResolver } from "@mapform/ui/components/form";
 import type { z } from "zod";
 import { cn } from "@mapform/lib/classnames";
+import { useWindowSize } from "@mapform/lib/hooks/use-window-size";
 import type { FormSchema } from "@mapform/lib/schemas/form-step-schema";
 import { useSetQueryString } from "@mapform/lib/hooks/use-set-query-string";
 import { CustomBlockContext } from "@mapform/blocknote";
@@ -52,6 +53,8 @@ interface MapFormProps {
   // };
 }
 
+const mobileSnapPoints = ["140px", 0.55, 0.9];
+
 export function MapForm({
   editable = false,
   onPrev,
@@ -79,6 +82,8 @@ export function MapForm({
   const [isSelectingPinLocationFor, setIsSelectingPinLocationFor] = useState<
     string | null
   >(null);
+  const { width } = useWindowSize();
+  const [snap, setSnap] = useState<number | string | null>("140px");
   const rootEl = useRef<HTMLFormElement | null>(null);
   const initialViewState = {
     longitude: currentPage.center.x,
@@ -93,6 +98,8 @@ export function MapForm({
       right: 0,
     },
   };
+
+  const isMobile = width < 768;
 
   const onSubmit = (data: FormSchema) => {
     onStepSubmit?.(data);
@@ -122,7 +129,7 @@ export function MapForm({
         >
           <Button
             className={cn(
-              "absolute left-2 top-2 z-10 shadow-sm transition-opacity delay-300 duration-300",
+              "absolute left-2 top-2 z-10 shadow-sm transition-opacity delay-300 duration-300 max-md:hidden",
               {
                 "opacity-0": drawerOpen,
               },
@@ -138,22 +145,30 @@ export function MapForm({
           {rootEl.current ? (
             <>
               <DrawerPrimitive.Root
+                activeSnapPoint={snap}
                 container={rootEl.current}
-                direction="left"
+                direction={isMobile ? "bottom" : "left"}
                 dismissible={false}
                 modal={false}
                 onOpenChange={setDrawerOpen}
                 open={drawerOpen}
+                setActiveSnapPoint={setSnap}
+                snapPoints={mobileSnapPoints}
               >
                 <DrawerPrimitive.Portal>
                   <DrawerPrimitive.Content
                     className={cn(
-                      "bg-background prose group absolute bottom-0 top-0 z-40 h-full rounded-r-lg shadow-lg outline-none",
+                      "bg-background prose group absolute bottom-0 top-0 z-40 h-full rounded-t-xl shadow-lg outline-none max-md:!w-full md:rounded-r-lg",
                       editable ? "w-[392px] pl-8" : "w-[360px]",
+                      {
+                        "overflow-y-auto": snap === 1,
+                        "overflow-hidden": snap !== 1,
+                      },
                     )}
                   >
+                    <div className="mx-auto mt-3 h-1.5 w-12 flex-shrink-0 rounded-full bg-gray-300" />
                     <Button
-                      className="absolute right-2 top-2"
+                      className="absolute right-2 top-2 max-md:hidden"
                       onClick={() => {
                         setDrawerOpen(false);
                       }}
@@ -203,7 +218,7 @@ export function MapForm({
               </DrawerPrimitive.Root>
               <DrawerPrimitive.Root
                 container={rootEl.current}
-                direction="left"
+                direction={isMobile ? "bottom" : "left"}
                 dismissible={false}
                 key={activePoint?.rowId}
                 modal={false}
@@ -220,7 +235,7 @@ export function MapForm({
                 <DrawerPrimitive.Portal>
                   <DrawerPrimitive.Content
                     className={cn(
-                      "bg-background prose group absolute bottom-0 top-0 z-50 h-full rounded-r-lg shadow-lg outline-none",
+                      "bg-background prose group absolute bottom-0 top-0 z-50 h-full rounded-r-lg shadow-lg outline-none max-md:!w-full",
                       editable ? "w-[392px] pl-8" : "w-[360px]",
                     )}
                   >

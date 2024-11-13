@@ -1,3 +1,5 @@
+"use client";
+
 import "@blocknote/mantine/style.css";
 import "@blocknote/core/fonts/inter.css";
 import { insertOrUpdateBlock, filterSuggestionItems } from "@blocknote/core";
