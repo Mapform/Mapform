@@ -25,14 +25,6 @@ export const completeOnboarding = async ({
   const teamspaceName = "Personal";
   const teamspaceSlug = "personal";
 
-  const user = await db.query.users.findFirst({
-    where: eq(users.id, userId),
-  });
-
-  if (user?.hasOnboarded) {
-    throw new Error("User has already onboarded");
-  }
-
   await db.transaction(async (tx) => {
     await tx
       .update(users)

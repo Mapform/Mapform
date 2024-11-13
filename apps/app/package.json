@@ -1,5 +1,5 @@
 {
-  "name": "@upfront/app",
+  "name": "@mapform/app",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -12,13 +12,13 @@
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf .next"
   },
   "dependencies": {
-    "@auth/drizzle-adapter": "1.7.2",
     "@dnd-kit/core": "^6.1.0",
     "@dnd-kit/sortable": "^8.0.0",
     "@dnd-kit/utilities": "^3.2.2",
     "@geoapify/geocoder-autocomplete": "^2.0.1",
     "@headlessui/react": "^1.7.18",
     "@infra-blocks/zod-utils": "^0.4.5",
+    "@mapform/auth": "workspace:*",
     "@mapform/backend": "workspace:*",
     "@mapform/blocknote": "workspace:*",
     "@mapform/db": "workspace:*",
@@ -35,11 +35,10 @@
     "@types/mapbox-gl": "^3.1.0",
     "@vercel/blob": "^0.23.3",
     "@vercel/speed-insights": "^1.1.0",
-    "date-fns": "^3.6.0",
+    "date-fns": "^3.6.0",    
     "lucide-react": "^0.354.0",
     "mapbox-gl": "^3.2.0",
     "next": "15.0.3",
-    "next-auth": "5.0.0-beta.25",
     "next-safe-action": "^7.9.3",
     "papaparse": "^5.4.1",
     "react": "19.0.0-rc-66855b96-20241106",

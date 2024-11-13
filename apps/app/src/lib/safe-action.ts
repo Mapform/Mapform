@@ -1,17 +1,40 @@
+import { headers } from "next/headers";
 import { createSafeActionClient } from "next-safe-action";
-import { auth } from "~/lib/auth";
+import { redirect } from "next/navigation";
+import { getCurrentSession } from "~/data/auth/get-current-session";
 
 // Base client
 export const actionClient = createSafeActionClient();
 
-// Auth client
+/**
+ * Check that the user is authenticated, and only requested workspace /
+ * teamspace resources they have access to.
+ */
 export const authAction = actionClient.use(async ({ next }) => {
-  const session = await auth();
-  const userId = session?.user?.id;
+  const response = await getCurrentSession();
+  const headersList = await headers();
+  const workspaceSlug = headersList.get("x-workspace-slug") ?? "";
+  const teamspaceSlug = headersList.get("x-teamspace-slug") ?? "";
 
-  if (!userId) {
-    throw new Error("User not authenticated.");
+  if (!response?.user) {
+    return redirect("/signin");
   }
 
-  return next({ ctx: { userId } });
+  const hasAccessToWorkspace = response.user.workspaceMemberships.some(
+    (wm) => workspaceSlug === wm.workspace.slug,
+  );
+
+  const hasAccessToTeamspace = response.user.workspaceMemberships.some((wm) =>
+    wm.workspace.teamspaces.some((ts) => ts.slug === teamspaceSlug),
+  );
+
+  if (workspaceSlug && !hasAccessToWorkspace) {
+    return redirect("/");
+  }
+
+  if (teamspaceSlug && !hasAccessToTeamspace) {
+    return redirect(`/${workspaceSlug}`);
+  }
+
+  return next({ ctx: { user: response.user, session: response.session } });
 });

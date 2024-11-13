@@ -79,3 +79,9 @@
     scrollbar-width: none; /* Firefox */
   }
 }
+
+@layer components {
+  .link {
+    @apply underline font-medium text-primary visited:text-purple-600;
+  }
+}

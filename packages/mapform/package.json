@@ -28,6 +28,7 @@
     "zod": "3.23.8"
   },
   "devDependencies": {
+    "@blocknote/core": "^0.19.0",
     "@mapform/eslint-config": "workspace:*",
     "@mapform/typescript-config": "workspace:*",
     "@tanstack/react-query": "^5.29.0",

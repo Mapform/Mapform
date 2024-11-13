@@ -1,10 +1,16 @@
-import { Toaster } from "@mapform/ui/components/toaster";
+import { getCurrentSession } from "~/data/auth/get-current-session";
+import { AuthProvider } from "./auth-provider";
 
-export default function Layout({ children }: { children: React.ReactNode }) {
+export default function AuthLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const currentSessionPromise = getCurrentSession();
+
   return (
-    <div className="h-screen w-screen overflow-hidden">
-      <div className="flex flex-col h-full overflow-hidden">{children}</div>
-      <Toaster />
-    </div>
+    <AuthProvider currentSessionPromise={currentSessionPromise}>
+      {children}
+    </AuthProvider>
   );
 }
