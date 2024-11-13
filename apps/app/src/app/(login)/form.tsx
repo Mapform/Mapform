@@ -19,25 +19,15 @@ import {
 } from "@mapform/backend/auth/request-magic-link/schema";
 import { MailCheckIcon } from "lucide-react";
 import { useState } from "react";
-import Image from "next/image";
-// import { useSearchParams } from "next/navigation";
-import mapform from "public/static/images/mapform.svg";
 import { requestMagicLinkAction } from "~/data/auth/request-magic-link";
 
 export function SignInForm() {
   const [emailSent, setEmailSent] = useState(false);
-  // const searchParams = useSearchParams();
   const { execute, status } = useAction(requestMagicLinkAction, {
     onSuccess: () => {
       setEmailSent(true);
     },
   });
-
-  // const error = searchParams.get("error") as
-  //   | "not-found"
-  //   | "expired"
-  //   | "unknown"
-  //   | null;
 
   const form = useForm<RequestMagicLinkSchema>({
     resolver: zodResolver(requestMagicLinkSchema),
@@ -66,12 +56,6 @@ export function SignInForm() {
 
   return (
     <Form {...form}>
-      <div>
-        <Image alt="Logo" className="mb-4 inline h-10 w-10" src={mapform} />
-        <h1 className="text-2xl font-semibold text-stone-900">
-          Sign in to Mapform
-        </h1>
-      </div>
       <form className="space-y-2" onSubmit={form.handleSubmit(onSubmit)}>
         <FormField
           control={form.control}
