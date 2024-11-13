@@ -108,7 +108,12 @@ export function MapForm({
   const mapPadding = {
     top: 0,
     bottom: 0,
-    left: drawerOpen || Boolean(activePoint) ? (editable ? 392 : 360) : 0,
+    left:
+      (drawerOpen || Boolean(activePoint)) && !isMobile
+        ? editable
+          ? 392
+          : 360
+        : 0,
     right: 0,
   };
 
@@ -145,20 +150,22 @@ export function MapForm({
           {rootEl.current ? (
             <>
               <DrawerPrimitive.Root
-                activeSnapPoint={snap}
+                activeSnapPoint={isMobile ? snap : undefined}
                 container={rootEl.current}
                 direction={isMobile ? "bottom" : "left"}
                 dismissible={false}
+                key={isMobile.toString()}
                 modal={false}
                 onOpenChange={setDrawerOpen}
-                open={drawerOpen}
-                setActiveSnapPoint={setSnap}
-                snapPoints={mobileSnapPoints}
+                // Always open on mobile
+                open={drawerOpen || isMobile}
+                setActiveSnapPoint={isMobile ? setSnap : undefined}
+                snapPoints={isMobile ? mobileSnapPoints : undefined}
               >
                 <DrawerPrimitive.Portal>
                   <DrawerPrimitive.Content
                     className={cn(
-                      "bg-background prose group absolute bottom-0 top-0 z-40 h-full rounded-t-xl shadow-lg outline-none max-md:!w-full md:rounded-r-lg",
+                      "bg-background prose group absolute bottom-0 top-0 z-40 h-full max-w-full shadow-lg outline-none max-md:!w-full max-md:rounded-t-xl md:rounded-r-lg",
                       editable ? "w-[392px] pl-8" : "w-[360px]",
                       {
                         "overflow-y-auto": snap === 1,
@@ -166,7 +173,7 @@ export function MapForm({
                       },
                     )}
                   >
-                    <div className="mx-auto mt-3 h-1.5 w-12 flex-shrink-0 rounded-full bg-gray-300" />
+                    <div className="mx-auto mt-3 h-1.5 w-12 flex-shrink-0 rounded-full bg-gray-300 md:hidden" />
                     <Button
                       className="absolute right-2 top-2 max-md:hidden"
                       onClick={() => {
