@@ -19,12 +19,7 @@ import {
 import type { ViewState } from "@mapform/map-utils/types";
 import type { PageData } from "@mapform/backend/datalayer/get-page-data";
 import { Button } from "@mapform/ui/components/button";
-import {
-  ArrowLeftIcon,
-  ArrowRightIcon,
-  ChevronsLeftIcon,
-  ChevronsRightIcon,
-} from "lucide-react";
+import { ArrowLeftIcon, ArrowRightIcon, ChevronsRightIcon } from "lucide-react";
 import { Blocknote } from "./block-note";
 import { Map, SearchLocationMarker } from "./map";
 import "./style.css";
@@ -132,10 +127,10 @@ export function MapForm({
   return (
     <Form {...form}>
       <form
-        className="flex h-full w-full flex-col overflow-hidden"
+        className="flex h-full w-full flex-col md:overflow-hidden"
         onSubmit={form.handleSubmit(onSubmit)}
       >
-        <div className="relative flex flex-1 overflow-hidden">
+        <div className="relative flex-1 md:flex md:overflow-hidden">
           <CustomBlockContext.Provider
             value={{
               editable,
@@ -144,6 +139,31 @@ export function MapForm({
               setIsSelectingPinLocationFor,
             }}
           >
+            {/* MAP CONTAINER */}
+            <div className="top-0 flex flex-1 max-md:sticky max-md:h-[70vh]">
+              <Map
+                editable={editable}
+                initialViewState={initialViewState}
+                isMobile={isMobile}
+                mapPadding={mapPadding}
+                onLoad={onLoad}
+                pageData={pageData}
+              >
+                <div
+                  className={cn(
+                    "absolute bottom-0 right-0 top-0 transition-[width] duration-200",
+                    drawerOpen || Boolean(activePoint)
+                      ? editable
+                        ? "w-[calc(100%-392px)]"
+                        : "w-[calc(100%-360px)]"
+                      : "w-full",
+                  )}
+                >
+                  {children}
+                </div>
+              </Map>
+            </div>
+
             <Button
               className={cn(
                 "absolute left-2 top-2 z-10 shadow-sm transition-opacity delay-300 duration-300 max-md:hidden",
@@ -230,79 +250,6 @@ export function MapForm({
                 title={activePoint?.title?.stringCell?.value}
               />
             </DesktopDrawer>
-            {/* <DrawerPrimitive.Root
-                  activeSnapPoint={isMobile ? snap : undefined}
-                  container={rootEl.current}
-                  direction={isMobile ? "bottom" : "left"}
-                  dismissible={false}
-                  key={isMobile.toString()}
-                  modal={false}
-                  onOpenChange={setDrawerOpen}
-                  // Always open on mobile
-                  open={drawerOpen || isMobile}
-                  setActiveSnapPoint={isMobile ? setSnap : undefined}
-                  snapPoints={isMobile ? mobileSnapPoints : undefined}
-                > */}
-            {/* <div className="mx-auto mt-3 h-1.5 w-12 flex-shrink-0 rounded-full bg-gray-300 md:hidden" /> */}
-            {/* <div
-              className={cn(
-                "bg-background prose group absolute bottom-0 top-0 z-50 h-full rounded-r-lg shadow-lg outline-none max-md:!w-full",
-                editable ? "w-[392px] pl-8" : "w-[360px]",
-              )}
-            >
-              <Blocknote
-                currentPage={currentPage}
-                description={
-                  activePoint?.description?.richtextCell?.value ?? undefined
-                }
-                editable={editable}
-                isPage
-                key={currentPage.id}
-                onDescriptionChange={(val) => {
-                  activePoint?.description &&
-                    onPoiCellChange &&
-                    onPoiCellChange({
-                      type: "richtext",
-                      rowId: activePoint.rowId,
-                      columnId: activePoint.description.columnId,
-                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                      value: val as any,
-                    });
-                }}
-                onPrev={onPrev}
-                onTitleChange={(val) => {
-                  activePoint?.title &&
-                    onPoiCellChange &&
-                    onPoiCellChange({
-                      type: "string",
-                      rowId: activePoint.rowId,
-                      columnId: activePoint.title.columnId,
-                      value: val,
-                    });
-                }}
-                title={activePoint?.title?.stringCell?.value}
-              />
-            </div> */}
-            <Map
-              editable={editable}
-              initialViewState={initialViewState}
-              mapPadding={mapPadding}
-              onLoad={onLoad}
-              pageData={pageData}
-            >
-              <div
-                className={cn(
-                  "absolute bottom-0 right-0 top-0 transition-[width] duration-200",
-                  drawerOpen || Boolean(activePoint)
-                    ? editable
-                      ? "w-[calc(100%-392px)]"
-                      : "w-[calc(100%-360px)]"
-                    : "w-full",
-                )}
-              >
-                {children}
-              </div>
-            </Map>
           </CustomBlockContext.Provider>
         </div>
         <div className="p-2 md:hidden">{renderButtons()}</div>

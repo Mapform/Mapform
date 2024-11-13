@@ -20,6 +20,7 @@ interface MapProps {
   onLoad?: () => void;
   initialViewState: ViewState;
   children?: React.ReactNode;
+  isMobile?: boolean;
 }
 
 /**
@@ -35,6 +36,7 @@ export function Map({
   pageData,
   onLoad,
   children,
+  isMobile,
 }: MapProps) {
   const setQueryString = useSetQueryString();
   const { map, setMap } = useMapform();
@@ -85,6 +87,7 @@ export function Map({
         bearing: initialViewState.bearing,
         maxZoom: 20,
         logoPosition: "bottom-right",
+        scrollZoom: !isMobile,
         // We override the internal resize observer because we are using our own
         trackResize: false,
         // fitBoundsOptions: {

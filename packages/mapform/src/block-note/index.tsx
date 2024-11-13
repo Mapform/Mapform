@@ -51,7 +51,7 @@ export function Blocknote({
 
   // Renders the editor instance using a React component.
   return (
-    <div className="flex max-h-full flex-1 flex-col overflow-y-auto">
+    <div className="flex max-h-full flex-1 flex-col md:overflow-y-auto">
       {locationEditorProps ? (
         <Button
           className="absolute right-2 top-2"
@@ -65,7 +65,7 @@ export function Blocknote({
       ) : null}
 
       {/* Content */}
-      <div className="overflow-y-auto p-4">
+      <div className="p-4 md:overflow-y-auto">
         {/* Title */}
         {editable ? (
           <AutoSizeTextArea
