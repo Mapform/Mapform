@@ -119,206 +119,231 @@ export function MapForm({
 
   return (
     <Form {...form}>
-      <form
-        className="relative flex h-full w-full overflow-hidden"
-        onSubmit={form.handleSubmit(onSubmit)}
-        ref={rootEl}
-      >
-        <CustomBlockContext.Provider
-          value={{
-            editable,
-            onImageUpload,
-            isSelectingPinLocationFor,
-            setIsSelectingPinLocationFor,
-          }}
+      <div className="flex h-full w-full flex-col overflow-hidden">
+        <form
+          className="relative flex flex-1 overflow-hidden"
+          onSubmit={form.handleSubmit(onSubmit)}
+          ref={rootEl}
         >
-          <Button
-            className={cn(
-              "absolute left-2 top-2 z-10 shadow-sm transition-opacity delay-300 duration-300 max-md:hidden",
-              {
-                "opacity-0": drawerOpen,
-              },
-            )}
-            onClick={() => {
-              setDrawerOpen(true);
+          <CustomBlockContext.Provider
+            value={{
+              editable,
+              onImageUpload,
+              isSelectingPinLocationFor,
+              setIsSelectingPinLocationFor,
             }}
-            size="icon-sm"
-            variant="outline"
           >
-            <ChevronsRightIcon className="size-5" />
-          </Button>
-          {rootEl.current ? (
-            <>
-              <DrawerPrimitive.Root
-                activeSnapPoint={isMobile ? snap : undefined}
-                container={rootEl.current}
-                direction={isMobile ? "bottom" : "left"}
-                dismissible={false}
-                key={isMobile.toString()}
-                modal={false}
-                onOpenChange={setDrawerOpen}
-                // Always open on mobile
-                open={drawerOpen || isMobile}
-                setActiveSnapPoint={isMobile ? setSnap : undefined}
-                snapPoints={isMobile ? mobileSnapPoints : undefined}
-              >
-                <DrawerPrimitive.Portal>
-                  <DrawerPrimitive.Content
-                    className={cn(
-                      "bg-background prose group absolute bottom-0 top-0 z-40 h-full max-w-full shadow-lg outline-none max-md:!w-full max-md:rounded-t-xl md:rounded-r-lg",
-                      editable ? "w-[392px] pl-8" : "w-[360px]",
-                      {
-                        "overflow-y-auto": snap === 1,
-                        "overflow-hidden": snap !== 1,
-                      },
-                    )}
-                  >
-                    <div className="mx-auto mt-3 h-1.5 w-12 flex-shrink-0 rounded-full bg-gray-300 md:hidden" />
-                    <Button
-                      className="absolute right-2 top-2 max-md:hidden"
-                      onClick={() => {
-                        setDrawerOpen(false);
-                      }}
-                      size="icon-sm"
-                      variant="ghost"
+            <Button
+              className={cn(
+                "absolute left-2 top-2 z-10 shadow-sm transition-opacity delay-300 duration-300 max-md:hidden",
+                {
+                  "opacity-0": drawerOpen,
+                },
+              )}
+              onClick={() => {
+                setDrawerOpen(true);
+              }}
+              size="icon-sm"
+              variant="outline"
+            >
+              <ChevronsRightIcon className="size-5" />
+            </Button>
+            {rootEl.current ? (
+              <>
+                <DrawerPrimitive.Root
+                  activeSnapPoint={isMobile ? snap : undefined}
+                  container={rootEl.current}
+                  direction={isMobile ? "bottom" : "left"}
+                  dismissible={false}
+                  key={isMobile.toString()}
+                  modal={false}
+                  onOpenChange={setDrawerOpen}
+                  // Always open on mobile
+                  open={drawerOpen || isMobile}
+                  setActiveSnapPoint={isMobile ? setSnap : undefined}
+                  snapPoints={isMobile ? mobileSnapPoints : undefined}
+                >
+                  <DrawerPrimitive.Portal>
+                    <DrawerPrimitive.Content
+                      className={cn(
+                        "bg-background prose group absolute bottom-0 top-0 z-40 h-full max-w-full shadow-lg outline-none max-md:!w-full max-md:rounded-t-xl max-md:shadow-[rgba(0,0,15,0.5)_10px_5px_4px_0px] md:rounded-r-lg",
+                        editable ? "w-[392px] pl-8" : "w-[360px]",
+                        {
+                          "overflow-y-auto": snap === 1,
+                          "overflow-hidden": snap !== 1,
+                        },
+                      )}
                     >
-                      <ChevronsLeftIcon className="size-5" />
-                    </Button>
-                    <Blocknote
-                      currentPage={currentPage}
-                      description={currentPage.content ?? undefined}
-                      editable={editable}
-                      isPage
-                      key={currentPage.id}
-                      onDescriptionChange={onDescriptionChange}
-                      onPrev={onPrev}
-                      onTitleChange={onTitleChange}
-                      title={currentPage.title}
-                    />
-                    <div
-                      className={cn("mt-auto flex justify-between px-4 py-2", {
-                        hidden: editable,
-                      })}
-                    >
-                      <div className="gap-2">
-                        <Button
-                          disabled={editable}
-                          onClick={onPrev}
-                          size="icon"
-                          type="button"
-                          variant="ghost"
-                        >
-                          <ArrowLeftIcon />
-                        </Button>
-                      </div>
+                      <div className="mx-auto mt-3 h-1.5 w-12 flex-shrink-0 rounded-full bg-gray-300 md:hidden" />
                       <Button
-                        disabled={editable}
-                        size="icon"
-                        type="submit"
+                        className="absolute right-2 top-2 max-md:hidden"
+                        onClick={() => {
+                          setDrawerOpen(false);
+                        }}
+                        size="icon-sm"
                         variant="ghost"
                       >
-                        <ArrowRightIcon />
+                        <ChevronsLeftIcon className="size-5" />
                       </Button>
-                    </div>
-                  </DrawerPrimitive.Content>
-                </DrawerPrimitive.Portal>
-              </DrawerPrimitive.Root>
-              <DrawerPrimitive.Root
-                container={rootEl.current}
-                direction={isMobile ? "bottom" : "left"}
-                dismissible={false}
-                key={activePoint?.rowId}
-                modal={false}
-                onOpenChange={(val) => {
-                  if (!val) {
-                    setQueryString({
-                      key: "layer_point",
-                      value: null,
-                    });
-                  }
-                }}
-                open={Boolean(activePoint)}
-              >
-                <DrawerPrimitive.Portal>
-                  <DrawerPrimitive.Content
-                    className={cn(
-                      "bg-background prose group absolute bottom-0 top-0 z-50 h-full rounded-r-lg shadow-lg outline-none max-md:!w-full",
-                      editable ? "w-[392px] pl-8" : "w-[360px]",
-                    )}
-                  >
-                    <Button
-                      className="absolute right-2 top-2"
-                      onClick={() => {
-                        setQueryString({
-                          key: "layer_point",
-                          value: null,
-                        });
-                      }}
-                      size="icon-sm"
-                      variant="ghost"
+                      <Blocknote
+                        currentPage={currentPage}
+                        description={currentPage.content ?? undefined}
+                        editable={editable}
+                        isPage
+                        key={currentPage.id}
+                        onDescriptionChange={onDescriptionChange}
+                        onPrev={onPrev}
+                        onTitleChange={onTitleChange}
+                        title={currentPage.title}
+                      />
+                      <div
+                        className={cn(
+                          "mt-auto flex justify-between px-4 py-2",
+                          {
+                            hidden: editable || isMobile,
+                          },
+                        )}
+                      >
+                        <div className="gap-2">
+                          <Button
+                            disabled={editable}
+                            onClick={onPrev}
+                            size="icon"
+                            type="button"
+                            variant="ghost"
+                          >
+                            <ArrowLeftIcon />
+                          </Button>
+                        </div>
+                        <Button
+                          disabled={editable}
+                          size="icon"
+                          type="submit"
+                          variant="ghost"
+                        >
+                          <ArrowRightIcon />
+                        </Button>
+                      </div>
+                    </DrawerPrimitive.Content>
+                  </DrawerPrimitive.Portal>
+                </DrawerPrimitive.Root>
+                <DrawerPrimitive.Root
+                  container={rootEl.current}
+                  direction={isMobile ? "bottom" : "left"}
+                  dismissible={false}
+                  key={activePoint?.rowId}
+                  modal={false}
+                  onOpenChange={(val) => {
+                    if (!val) {
+                      setQueryString({
+                        key: "layer_point",
+                        value: null,
+                      });
+                    }
+                  }}
+                  open={Boolean(activePoint)}
+                >
+                  <DrawerPrimitive.Portal>
+                    <DrawerPrimitive.Content
+                      className={cn(
+                        "bg-background prose group absolute bottom-0 top-0 z-50 h-full rounded-r-lg shadow-lg outline-none max-md:!w-full",
+                        editable ? "w-[392px] pl-8" : "w-[360px]",
+                      )}
                     >
-                      <XIcon className="size-5" />
-                    </Button>
-                    <Blocknote
-                      currentPage={currentPage}
-                      description={
-                        activePoint?.description?.richtextCell?.value ??
-                        undefined
-                      }
-                      editable={editable}
-                      isPage
-                      key={currentPage.id}
-                      onDescriptionChange={(val) => {
-                        activePoint?.description &&
-                          onPoiCellChange &&
-                          onPoiCellChange({
-                            type: "richtext",
-                            rowId: activePoint.rowId,
-                            columnId: activePoint.description.columnId,
-                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                            value: val as any,
+                      <Button
+                        className="absolute right-2 top-2"
+                        onClick={() => {
+                          setQueryString({
+                            key: "layer_point",
+                            value: null,
                           });
-                      }}
-                      onPrev={onPrev}
-                      onTitleChange={(val) => {
-                        activePoint?.title &&
-                          onPoiCellChange &&
-                          onPoiCellChange({
-                            type: "string",
-                            rowId: activePoint.rowId,
-                            columnId: activePoint.title.columnId,
-                            value: val,
-                          });
-                      }}
-                      title={activePoint?.title?.stringCell?.value}
-                    />
-                  </DrawerPrimitive.Content>
-                </DrawerPrimitive.Portal>
-              </DrawerPrimitive.Root>
-            </>
-          ) : null}
-          <Map
-            editable={editable}
-            initialViewState={initialViewState}
-            mapPadding={mapPadding}
-            onLoad={onLoad}
-            pageData={pageData}
-          >
-            <div
-              className={cn(
-                "absolute bottom-0 right-0 top-0 transition-[width] duration-200",
-                drawerOpen || Boolean(activePoint)
-                  ? editable
-                    ? "w-[calc(100%-392px)]"
-                    : "w-[calc(100%-360px)]"
-                  : "w-full",
-              )}
+                        }}
+                        size="icon-sm"
+                        variant="ghost"
+                      >
+                        <XIcon className="size-5" />
+                      </Button>
+                      <Blocknote
+                        currentPage={currentPage}
+                        description={
+                          activePoint?.description?.richtextCell?.value ??
+                          undefined
+                        }
+                        editable={editable}
+                        isPage
+                        key={currentPage.id}
+                        onDescriptionChange={(val) => {
+                          activePoint?.description &&
+                            onPoiCellChange &&
+                            onPoiCellChange({
+                              type: "richtext",
+                              rowId: activePoint.rowId,
+                              columnId: activePoint.description.columnId,
+                              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                              value: val as any,
+                            });
+                        }}
+                        onPrev={onPrev}
+                        onTitleChange={(val) => {
+                          activePoint?.title &&
+                            onPoiCellChange &&
+                            onPoiCellChange({
+                              type: "string",
+                              rowId: activePoint.rowId,
+                              columnId: activePoint.title.columnId,
+                              value: val,
+                            });
+                        }}
+                        title={activePoint?.title?.stringCell?.value}
+                      />
+                    </DrawerPrimitive.Content>
+                  </DrawerPrimitive.Portal>
+                </DrawerPrimitive.Root>
+              </>
+            ) : null}
+            <Map
+              editable={editable}
+              initialViewState={initialViewState}
+              mapPadding={mapPadding}
+              onLoad={onLoad}
+              pageData={pageData}
             >
-              {children}
-            </div>
-          </Map>
-        </CustomBlockContext.Provider>
-      </form>
+              <div
+                className={cn(
+                  "absolute bottom-0 right-0 top-0 transition-[width] duration-200",
+                  drawerOpen || Boolean(activePoint)
+                    ? editable
+                      ? "w-[calc(100%-392px)]"
+                      : "w-[calc(100%-360px)]"
+                    : "w-full",
+                )}
+              >
+                {children}
+              </div>
+            </Map>
+          </CustomBlockContext.Provider>
+        </form>
+        <div className="flex w-full items-center justify-between bg-white p-2 md:hidden">
+          <Button
+            disabled={editable}
+            onClick={onPrev}
+            size="icon-sm"
+            type="submit"
+            variant="ghost"
+          >
+            <ArrowLeftIcon className="size-5" />
+          </Button>
+          <p className="text-xs text-gray-500">Powered by Mapform</p>
+          <Button
+            disabled={editable}
+            size="icon-sm"
+            type="submit"
+            variant="ghost"
+          >
+            <ArrowRightIcon className="size-5" />
+          </Button>
+        </div>
+      </div>
     </Form>
   );
 }
