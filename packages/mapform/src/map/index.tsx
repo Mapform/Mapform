@@ -173,6 +173,8 @@ export function Map({
               value: `${feature.properties.rowId}_${feature.properties.pointLayerId}`,
             });
 
+            isMobile && window.scrollTo({ top: 0, behavior: "smooth" });
+
             // setActivePoint({
             //   id: feature.properties?.id,
             //   color: feature.properties?.color,
