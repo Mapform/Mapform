@@ -3,5 +3,5 @@ export default function ShareLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return <div className="h-full">{children}</div>;
+  return <div className="h-full overflow-y-auto">{children}</div>;
 }
