@@ -51,7 +51,7 @@ export function Map({
         type: "Feature",
         geometry: {
           type: "Point",
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- We know it's not null
           coordinates: [point.value!.x, point.value!.y],
         },
         properties: {
@@ -195,7 +195,7 @@ export function Map({
         // });
       }
     }
-  }, [map, geojson, setQueryString]);
+  }, [map, geojson, setQueryString, isMobile]);
 
   return (
     <div
