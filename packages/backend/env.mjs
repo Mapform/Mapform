@@ -6,7 +6,7 @@ export const env = createEnv({
     VERCEL_URL: z.string().min(1).optional(),
   },
   client: {
-    NEXT_PUBLIC_BASE_URL: z.string().url().min(1),
+    NEXT_PUBLIC_BASE_URL: z.string().min(1),
   },
   runtimeEnv: {
     VERCEL_URL: process.env.VERCEL_URL,
