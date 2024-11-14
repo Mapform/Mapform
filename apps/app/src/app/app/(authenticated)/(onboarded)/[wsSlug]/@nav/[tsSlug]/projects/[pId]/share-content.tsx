@@ -19,6 +19,8 @@ export function ShareContent({
   const { execute, status } = useAction(publishProjectAction);
   const hasBeenPublished = numberOfVersions > 0;
 
+  console.log(99999, env);
+
   return (
     <div className="space-y-2">
       {hasBeenPublished ? (
