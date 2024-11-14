@@ -27,6 +27,6 @@ export const env = createEnv({
       process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN,
     VERCEL_URL: process.env.VERCEL_URL,
     NODE_ENV: process.env.NODE_ENV,
-    NEXT_PUBLIC_BASE_URL: process.NODE_ENV === "development" ? "http://localhost:3000" : process.env.VERCEL_ENV === "preview" ? `https://${process.env.VERCEL_URL}` : "https://alpha.mapform.co",
+    NEXT_PUBLIC_BASE_URL: process.NODE_ENV === "development" ? "http://localhost:3000" : process.env.NEXT_PUBLIC_VERCEL_ENV === "preview" ? `https://${process.env.VERCEL_URL}` : "https://alpha.mapform.co",
   },
 });
