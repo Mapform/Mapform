@@ -1,8 +1,6 @@
 import { createEnv } from "@t3-oss/env-nextjs";
 import { z } from "zod";
 
-console.log("11111", process.env.VERCEL_ENV, process.env.VERCEL_URL, process.NODE_ENV === "development" ? "http://localhost:3000" : process.env.VERCEL_ENV === "preview" ? `https://${process.env.VERCEL_URL}` : "https://alpha.mapform.co")
-
 export const env = createEnv({
   server: {
     AUTH_SECRET: z.string().min(1),
