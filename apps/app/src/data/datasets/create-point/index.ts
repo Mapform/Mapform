@@ -10,5 +10,5 @@ export const createPointAction = authAction
   .action(async ({ parsedInput }) => {
     await createPoint(parsedInput);
 
-    revalidatePath("/[wsSlug]/[tsSlug]/projects/[pId]/project", "page");
+    revalidatePath("/app/[wsSlug]/[tsSlug]/projects/[pId]/project", "page");
   });

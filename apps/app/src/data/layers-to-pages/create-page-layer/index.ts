@@ -10,5 +10,5 @@ export const createPageLayerAction = authAction
   .action(async ({ parsedInput }) => {
     await createPageLayer(parsedInput);
 
-    revalidatePath("/[wsSlug]/[tsSlug]/projects/[pId]/project", "page");
+    revalidatePath("/app/[wsSlug]/[tsSlug]/projects/[pId]/project", "page");
   });

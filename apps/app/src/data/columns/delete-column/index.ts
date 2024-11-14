@@ -10,6 +10,6 @@ export const deleteColumnAction = authAction
   .action(async ({ parsedInput: { id } }) => {
     await deleteColumn({ id });
 
-    revalidatePath("/[wsSlug]/[tsSlug]/datasets/[dId]", "page");
-    revalidatePath("/[wsSlug]/[tsSlug]/projects/[pId]/project", "page");
+    revalidatePath("/app/[wsSlug]/[tsSlug]/datasets/[dId]", "page");
+    revalidatePath("/app/[wsSlug]/[tsSlug]/projects/[pId]/project", "page");
   });

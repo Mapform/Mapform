@@ -10,7 +10,7 @@ export const editColumnAction = authAction
   .action(async ({ parsedInput: { name, id } }) => {
     const col = await editColumn({ name, id });
 
-    revalidatePath("/[wsSlug]/[tsSlug]/projects/[pId]/project", "page");
+    revalidatePath("/app/[wsSlug]/[tsSlug]/projects/[pId]/project", "page");
 
     return col;
   });

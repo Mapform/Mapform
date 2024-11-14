@@ -10,5 +10,5 @@ export const completeOnboardingAction = authAction
   .action(async ({ parsedInput: { name }, ctx: { user } }) => {
     const { slug } = await completeOnboarding({ name, userId: user.id });
 
-    redirect(`/${slug}`);
+    redirect(`/app/${slug}`);
   });

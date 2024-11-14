@@ -10,5 +10,5 @@ export const deleteRowsAction = authAction
   .action(async ({ parsedInput }) => {
     await deleteRows(parsedInput);
 
-    revalidatePath("/[wsSlug]/[tsSlug]/datasets/[dId]", "page");
+    revalidatePath("/app/[wsSlug]/[tsSlug]/datasets/[dId]", "page");
   });

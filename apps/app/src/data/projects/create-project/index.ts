@@ -10,7 +10,7 @@ export const createProjectAction = authAction
   .action(async ({ parsedInput }) => {
     const project = createProject(parsedInput);
 
-    revalidatePath("/[wsSlug]/[tsSlug]", "page");
+    revalidatePath("/app/[wsSlug]/[tsSlug]", "page");
 
     return project;
   });

@@ -19,10 +19,10 @@ export async function GET(request: NextRequest) {
   try {
     await validateMagicLink({ token });
 
-    return NextResponse.redirect(`${baseUrl}/`);
+    return NextResponse.redirect(`${baseUrl}/app/`);
   } catch (e: unknown) {
     return NextResponse.redirect(
-      `${baseUrl}/signin?error=${(e as { type: MagicLinkErrors | null }).type || "unknown"}`,
+      `${baseUrl}/app/signin?error=${(e as { type: MagicLinkErrors | null }).type || "unknown"}`,
     );
   }
 }

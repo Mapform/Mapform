@@ -10,7 +10,7 @@ export const upsertLayerAction = authAction
   .action(async ({ parsedInput }) => {
     const newLayer = await upsertLayer(parsedInput);
 
-    revalidatePath("/[wsSlug]/[tsSlug]/projects/[pId]/project", "page");
+    revalidatePath("/app/[wsSlug]/[tsSlug]/projects/[pId]/project", "page");
 
     return newLayer;
   });
