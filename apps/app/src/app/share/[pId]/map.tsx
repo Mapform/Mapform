@@ -6,11 +6,11 @@ import React, { useEffect, useState } from "react";
 import type { PageData } from "@mapform/backend/datalayer/get-page-data";
 import type { GetLayerPoint } from "@mapform/backend/datalayer/get-layer-point";
 import { useCreateQueryString } from "@mapform/lib/hooks/use-create-query-string";
+import type { ProjectWithPages } from "@mapform/backend/projects/get-project-with-pages";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import { submitPage } from "~/data/share/submit-page";
 import { createSubmission } from "~/data/share/create-submission";
 import type { Responses } from "~/data/share/get-responses.ts";
-import type { ProjectWithPages } from "~/data/share/get-project-with-pages";
 import { env } from "~/env.mjs";
 
 interface MapProps {
@@ -73,7 +73,7 @@ export function Map({
       }
       setCurrentSession(newSessionId);
     })();
-  }, []);
+  }, [projectWithPages.id, sessionId]);
 
   /**
    * Fix the 'p' query param if no valid page

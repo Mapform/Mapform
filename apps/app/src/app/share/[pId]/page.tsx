@@ -5,13 +5,13 @@ import { MapformProvider } from "@mapform/mapform";
 import { type Row } from "@mapform/db/schema";
 import { getSession } from "~/data/share/get-session";
 import { getPageDataAction } from "~/data/share/get-page-data";
-import { getProjectWithPages } from "~/data/share/get-project-with-pages";
+import { getProjectWithPagesAction } from "~/data/share/get-project-with-pages";
 import { type Responses, getResponses } from "~/data/share/get-responses.ts";
 import { getLayerPointAction } from "~/data/share/get-layer-point";
 import { Map } from "./map";
 
 const fetchProjectWithPages = cache(async (id: string) => {
-  const projectWithPagesResponse = await getProjectWithPages({
+  const projectWithPagesResponse = await getProjectWithPagesAction({
     id,
   });
 
@@ -63,6 +63,7 @@ export default async function Page(props: {
   }>;
 }) {
   const searchParams = await props.searchParams;
+
   const params = await props.params;
   const [projectWithPages, pageData, layerPoint] = await Promise.all([
     fetchProjectWithPages(params.pId),

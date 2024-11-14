@@ -20,14 +20,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={cn(
-          "h-screen w-screen overflow-hidden bg-white",
-          inter.className,
-        )}
-      >
+      <body className={cn("h-full bg-white", inter.className)}>
         <RootProviders>
-          <div className="flex h-full flex-col overflow-hidden">{children}</div>
+          {children}
           <SpeedInsights />
           <Toaster />
         </RootProviders>

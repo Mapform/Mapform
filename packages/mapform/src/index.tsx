@@ -247,7 +247,6 @@ export function MapForm({
                 </div>
               </Map>
             </div>
-
             <Button
               className={cn(
                 "absolute left-2 top-2 z-10 shadow-sm transition-opacity delay-300 duration-300 max-md:hidden",
@@ -263,14 +262,12 @@ export function MapForm({
             >
               <ChevronsRightIcon className="size-5" />
             </Button>
-
             {isMobile ? (
               <AnimatePresence mode="wait">
                 <motion.div
                   animate={{ y: 0, opacity: 1 }}
                   exit={{ y: -10, opacity: 0 }}
                   initial={{ y: 10, opacity: 0 }}
-                  key={activePoint?.rowId}
                   layoutScroll
                   style={{ overflow: "scroll", marginTop: "-20px" }}
                   transition={{ duration: 0.2 }}
@@ -282,11 +279,11 @@ export function MapForm({
                   ) : (
                     <MobileDrawer
                       onClose={() => {
+                        window.scrollTo({ top: 0, behavior: "smooth" });
                         setQueryString({
                           key: "layer_point",
                           value: null,
                         });
-                        window.scrollTo({ top: 0, behavior: "smooth" });
                       }}
                       open={Boolean(activePoint)}
                       withPadding={editable}

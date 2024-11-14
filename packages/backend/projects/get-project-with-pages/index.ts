@@ -35,16 +35,6 @@ export const getProjectWithPages = async ({
 
     db.query.pages.findMany({
       where: eq(pages.projectId, id),
-      columns: {
-        id: true,
-        title: true,
-        position: true,
-        center: true,
-        zoom: true,
-        pitch: true,
-        bearing: true,
-        contentViewType: true,
-      },
       with: {
         layersToPages: {
           with: {

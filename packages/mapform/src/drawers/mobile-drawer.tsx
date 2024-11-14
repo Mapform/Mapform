@@ -26,6 +26,7 @@ export function MobileDrawer({
           className="absolute right-2 top-2"
           onClick={onClose}
           size="icon-sm"
+          type="button"
           variant="ghost"
         >
           <XIcon className="size-5" />
