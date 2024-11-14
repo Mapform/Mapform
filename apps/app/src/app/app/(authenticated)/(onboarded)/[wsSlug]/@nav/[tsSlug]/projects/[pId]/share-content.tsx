@@ -5,6 +5,7 @@ import { Button } from "@mapform/ui/components/button";
 import { Spinner } from "@mapform/ui/components/spinner";
 import { Clipboard } from "@mapform/ui/components/clipboard";
 import { publishProjectAction } from "~/data/projects/publish-project";
+import { env } from "~/env.mjs";
 
 export function ShareContent({
   projectId,
@@ -24,11 +25,7 @@ export function ShareContent({
         <div className="space-y-1">
           <Clipboard
             className="w-full justify-start"
-            clipboardText={
-              process.env.NODE_ENV === "production"
-                ? `mapform.co/share/${projectId}`
-                : `localhost:3000/share/${projectId}`
-            }
+            clipboardText={`${env.NEXT_PUBLIC_BASE_URL}/share/${projectId}`}
             copiedText="Copied!"
             copyText="Copy shareable link"
             size="sm"

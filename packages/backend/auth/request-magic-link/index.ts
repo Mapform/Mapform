@@ -6,9 +6,7 @@ import { generateToken, hashToken } from "@mapform/auth/helpers/tokens";
 import { env } from "../../env.mjs";
 import { eq } from "@mapform/db/utils";
 
-const baseUrl = env.VERCEL_URL
-  ? `https://${env.VERCEL_URL}`
-  : "http://localhost:3000";
+const baseUrl = env.NEXT_PUBLIC_BASE_URL;
 
 export const requestMagicLink = async ({ email }: RequestMagicLinkSchema) => {
   // 1. Generate token

@@ -4,9 +4,7 @@ import { validateMagicLinkSchema } from "@mapform/backend/auth/validate-magic-li
 import type { MagicLinkErrors } from "~/constants/magic-link-errors";
 import { env } from "~/env.mjs";
 
-const baseUrl = env.VERCEL_URL
-  ? `https://${env.VERCEL_URL}`
-  : "http://localhost:3000";
+const baseUrl = env.NEXT_PUBLIC_BASE_URL;
 
 /**
  * TODO: Rate limit this (e.g. 1 request per minute)
@@ -22,7 +20,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(`${baseUrl}/app/`);
   } catch (e: unknown) {
     return NextResponse.redirect(
-      `${baseUrl}/app/signin?error=${(e as { type: MagicLinkErrors | null }).type || "unknown"}`,
+      `${env.NEXT_PUBLIC_BASE_URL}/app/signin?error=${(e as { type: MagicLinkErrors | null }).type || "unknown"}`,
     );
   }
 }

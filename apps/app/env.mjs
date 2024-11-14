@@ -9,10 +9,11 @@ export const env = createEnv({
     VERCEL_ENV: z.string().optional(),
     GEOAPIFY_API_KEY: z.string().min(1),
     VERCEL_URL: z.string().min(1).optional(),
-    NODE_ENV: z.enum(["development", "production"]),
+    NODE_ENV: z.enum(["development", "preview", "production"]),
   },
   client: {
     NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN: z.string().min(1),
+    NEXT_PUBLIC_BASE_URL: z.string().url().min(1),
   },
   runtimeEnv: {
     AUTH_SECRET: process.env.AUTH_SECRET,
@@ -24,5 +25,6 @@ export const env = createEnv({
       process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN,
     VERCEL_URL: process.env.VERCEL_URL,
     NODE_ENV: process.env.NODE_ENV,
+    NEXT_PUBLIC_BASE_URL: process.NODE_ENV === "development" ? "http://localhost:3000" : process.env.VERCEL_ENV === "preview" ? process.env.VERCEL_URL : "https://alpha.mapform.co",
   },
 });
