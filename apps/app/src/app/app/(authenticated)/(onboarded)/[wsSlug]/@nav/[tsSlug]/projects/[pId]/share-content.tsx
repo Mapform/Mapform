@@ -26,8 +26,8 @@ export function ShareContent({
             className="w-full justify-start"
             clipboardText={
               process.env.NODE_ENV === "production"
-                ? `mapform.co/${projectId}`
-                : `localhost:3001/${projectId}`
+                ? `mapform.co/share/${projectId}`
+                : `localhost:3001/share/${projectId}`
             }
             copiedText="Copied!"
             copyText="Copy shareable link"

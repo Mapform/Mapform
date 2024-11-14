@@ -90,7 +90,7 @@ export function Switcher() {
               >
                 <Link
                   className="-mx-2 flex items-center justify-between rounded px-2 py-1.5 transition-colors hover:bg-stone-100"
-                  href={`/${membership.workspace.slug}`}
+                  href={`/app/${membership.workspace.slug}`}
                 >
                   <div className="flex items-center gap-2 overflow-hidden">
                     <div className="flex h-4 w-4 flex-shrink-0 items-center justify-center">

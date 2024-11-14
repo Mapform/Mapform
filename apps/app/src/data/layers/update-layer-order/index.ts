@@ -10,5 +10,5 @@ export const updateLayerOrderAction = authAction
   .action(async ({ parsedInput }) => {
     await updateLayerOrder(parsedInput);
 
-    revalidatePath("/[wsSlug]/[tsSlug]/projects/[pId]/project", "page");
+    revalidatePath("/app/[wsSlug]/[tsSlug]/projects/[pId]/project", "page");
   });

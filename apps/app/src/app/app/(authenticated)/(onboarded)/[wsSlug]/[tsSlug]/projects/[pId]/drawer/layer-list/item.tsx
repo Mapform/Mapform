@@ -163,7 +163,7 @@ export function Item({ layer }: ItemProps) {
                             className="flex items-center gap-2"
                           >
                             <Link
-                              href={`/${params.wsSlug}/${params.tsSlug}/datasets/${layer.datasetId}`}
+                              href={`/app/${params.wsSlug}/${params.tsSlug}/datasets/${layer.datasetId}`}
                             >
                               <ArrowUpRightIcon className="size-4 flex-shrink-0" />
                               View Dataset

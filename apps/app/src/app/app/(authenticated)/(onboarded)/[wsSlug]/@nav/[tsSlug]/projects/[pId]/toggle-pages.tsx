@@ -8,7 +8,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@mapform/ui/components/tooltip";
-import { useRootLayout } from "~/app/(authenticated)/(onboarded)/[wsSlug]/root-layout/context";
+import { useRootLayout } from "~/app/app/(authenticated)/(onboarded)/[wsSlug]/root-layout/context";
 
 export default function TogglePages() {
   const { showDrawer, toggleDrawer } = useRootLayout();

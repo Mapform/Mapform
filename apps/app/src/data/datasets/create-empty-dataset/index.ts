@@ -10,8 +10,8 @@ export const createEmptyDatasetAction = authAction
   .action(async ({ parsedInput }) => {
     const response = await createEmptyDataset(parsedInput);
 
-    revalidatePath("/[wsSlug]/[tsSlug]/datasets", "page");
-    revalidatePath("/[wsSlug]/[tsSlug]/projects/[pId]/project", "page");
+    revalidatePath("/app/[wsSlug]/[tsSlug]/datasets", "page");
+    revalidatePath("/app/[wsSlug]/[tsSlug]/projects/[pId]/project", "page");
 
     return response;
   });

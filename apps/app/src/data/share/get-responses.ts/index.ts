@@ -3,13 +3,13 @@
 import { db } from "@mapform/db";
 import { rows } from "@mapform/db/schema";
 import { eq } from "@mapform/db/utils";
-import { action } from "~/lib/safe-action";
+import { shareClient } from "~/lib/safe-action";
 import { getResponsesSchema } from "./schema";
 
 /**
  * Returns a session's previous responses
  */
-export const getResponses = action
+export const getResponses = shareClient
   .schema(getResponsesSchema)
   .action(async ({ parsedInput: { id } }) => {
     return db.query.rows.findFirst({

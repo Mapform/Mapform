@@ -6,13 +6,13 @@ export default async function OnboardingPage() {
   const currentSession = await getCurrentSession();
 
   if (!currentSession?.user) {
-    return redirect("/signin");
+    return redirect("/app/signin");
   }
 
   const firstWorkspace = currentSession.user.workspaceMemberships[0]?.workspace;
 
   if (firstWorkspace) {
-    return redirect(`/${firstWorkspace.slug}`);
+    return redirect(`/app/${firstWorkspace.slug}`);
   }
 
   return (

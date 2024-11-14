@@ -4,10 +4,10 @@ import { db } from "@mapform/db";
 import { cookies } from "next/headers";
 import { projects, rows } from "@mapform/db/schema";
 import { eq } from "@mapform/db/utils";
-import { action } from "~/lib/safe-action";
+import { shareClient } from "~/lib/safe-action";
 import { createSubmissionSchema } from "./schema";
 
-export const createSubmission = action
+export const createSubmission = shareClient
   .schema(createSubmissionSchema)
   .action(async ({ parsedInput: { projectId } }) => {
     const project = await db.query.projects.findFirst({

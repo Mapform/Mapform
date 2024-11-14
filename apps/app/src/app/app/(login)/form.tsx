@@ -104,7 +104,7 @@ export function SignInForm({ type }: { type: "signin" | "signup" }) {
           {type === "signin"
             ? "Already have an account? "
             : "Don't have an account? "}
-          <Link className="link" href="/signin">
+          <Link className="link" href="/app/signin">
             {type === "signin" ? "Sign in" : "Sign up"}
           </Link>
         </p>

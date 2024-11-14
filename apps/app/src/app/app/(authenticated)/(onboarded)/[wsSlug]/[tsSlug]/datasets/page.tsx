@@ -2,11 +2,9 @@ import Link from "next/link";
 import { format } from "date-fns";
 import { listTeamspaceDatasetsAction } from "~/data/datasets/list-teamspace-datasets";
 
-export default async function DatasetsPage(
-  props: {
-    params: Promise<{ wsSlug: string; tsSlug: string }>;
-  }
-) {
+export default async function DatasetsPage(props: {
+  params: Promise<{ wsSlug: string; tsSlug: string }>;
+}) {
   const params = await props.params;
   const teamspaceDatasets = await listTeamspaceDatasetsAction({
     workspaceSlug: params.wsSlug,
@@ -27,7 +25,7 @@ export default async function DatasetsPage(
             key={dataset.id}
           >
             <Link
-              href={`/${params.wsSlug}/${params.tsSlug}/datasets/${dataset.id}`}
+              href={`/app/${params.wsSlug}/${params.tsSlug}/datasets/${dataset.id}`}
             >
               <div className="flex items-center gap-x-4 border-b border-gray-900/5 bg-stone-50 p-6">
                 {dataset.name}

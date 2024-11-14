@@ -48,13 +48,13 @@ export default async function Nav(props: {
       tabs={[
         {
           name: "Create",
-          href: `/${params.wsSlug}/${params.tsSlug}/projects/${params.pId}`,
+          href: `/app/${params.wsSlug}/${params.tsSlug}/projects/${params.pId}`,
         },
         ...(projectResponse.data?.submissionsDataset.id
           ? [
               {
                 name: "Responses",
-                href: `/${params.wsSlug}/${params.tsSlug}/datasets/${projectResponse.data.submissionsDataset.id}`,
+                href: `/app/${params.wsSlug}/${params.tsSlug}/datasets/${projectResponse.data.submissionsDataset.id}`,
               },
             ]
           : []),

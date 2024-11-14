@@ -1,5 +1,5 @@
 import { cn } from "@mapform/lib/classnames";
-import { LucideIcon } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import Link from "next/link";
 
 export function NavLink(link: {
@@ -12,10 +12,10 @@ export function NavLink(link: {
   return (
     <Link
       className={cn(
-        "-mx-2 hover:bg-stone-100 px-3 py-1.5 rounded transition-colors flex items-center justify-between mb-[2px]",
+        "-mx-2 mb-[2px] flex items-center justify-between rounded px-3 py-1.5 transition-colors hover:bg-stone-100",
         {
           "bg-stone-100 text-stone-900": link.isActive,
-        }
+        },
       )}
       href={link.href}
     >
@@ -24,7 +24,7 @@ export function NavLink(link: {
           "pl-4": link.nested,
         })}
       >
-        <div className="h-4 w-4 flex items-center justify-center flex-shrink-0">
+        <div className="flex h-4 w-4 flex-shrink-0 items-center justify-center">
           <link.icon className="h-4 w-4 flex-shrink-0" />
         </div>
         <span className="truncate">{link.label}</span>

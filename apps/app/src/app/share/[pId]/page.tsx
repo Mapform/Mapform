@@ -3,11 +3,11 @@ import React, { cache } from "react";
 import { cookies } from "next/headers";
 import { MapformProvider } from "@mapform/mapform";
 import { type Row } from "@mapform/db/schema";
-import { getSession } from "~/data/get-session";
-import { getPageDataAction } from "~/data/get-page-data";
-import { getProjectWithPages } from "~/data/get-project-with-pages";
-import { type Responses, getResponses } from "~/data/get-responses.ts";
-import { getLayerPointAction } from "~/data/get-layer-point";
+import { getSession } from "~/data/share/get-session";
+import { getPageDataAction } from "~/data/share/get-page-data";
+import { getProjectWithPages } from "~/data/share/get-project-with-pages";
+import { type Responses, getResponses } from "~/data/share/get-responses.ts";
+import { getLayerPointAction } from "~/data/share/get-layer-point";
 import { Map } from "./map";
 
 const fetchProjectWithPages = cache(async (id: string) => {

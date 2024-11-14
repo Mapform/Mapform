@@ -4,8 +4,8 @@ import { cn } from "@mapform/lib/classnames";
 import { AccordionPrimitive } from "@mapform/ui/components/accordion";
 import { HomeIcon, SettingsIcon, ChevronDownIcon, MapIcon } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
-import { NavLink } from "./nav-link";
 import { useRootLayout } from "../context";
+import { NavLink } from "./nav-link";
 
 export function NavTop() {
   const router = useRouter();
@@ -13,9 +13,9 @@ export function NavTop() {
   const { workspaceDirectory, workspaceSlug } = useRootLayout();
 
   const topLinks = [
-    { href: `/${workspaceSlug}`, icon: HomeIcon, label: "Home" },
+    { href: `/app/${workspaceSlug}`, icon: HomeIcon, label: "Home" },
     {
-      href: `/${workspaceSlug}/settings`,
+      href: `/app/${workspaceSlug}/settings`,
       icon: SettingsIcon,
       label: "Settings",
     },
@@ -60,17 +60,17 @@ export function NavTop() {
                     "-mx-2 mb-[2px] flex cursor-pointer items-center justify-between rounded p-1 transition-colors hover:bg-stone-100",
                     {
                       "bg-stone-100 text-stone-900": pathname.includes(
-                        `/${workspaceSlug}/${teamspace.slug}`,
+                        `/app/${workspaceSlug}/${teamspace.slug}`,
                       ),
                     },
                   )}
                   // We use an on click event handler instead of a Link so that the nested e.stopPropagation() works
                   onClick={() => {
-                    router.push(`/${workspaceSlug}/${teamspace.slug}`);
+                    router.push(`/app/${workspaceSlug}/${teamspace.slug}`);
                   }}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
-                      router.push(`/${workspaceSlug}/${teamspace.slug}`);
+                      router.push(`/app/${workspaceSlug}/${teamspace.slug}`);
                     }
                   }}
                   role="button"
@@ -91,7 +91,7 @@ export function NavTop() {
                 <AccordionPrimitive.Content>
                   {teamspace.projects.map((project) => (
                     <NavLink
-                      href={`/${workspaceSlug}/${teamspace.slug}/projects/${project.id}`}
+                      href={`/app/${workspaceSlug}/${teamspace.slug}/projects/${project.id}`}
                       icon={MapIcon}
                       isActive={isProjectActive(teamspace.slug, project.id)}
                       key={project.id}

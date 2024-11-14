@@ -5,15 +5,15 @@ export default async function RootLayout() {
   const response = await getCurrentSession();
 
   if (!response?.user) {
-    redirect("/signin");
+    redirect("/app/signin");
   }
 
   const firstWorkspaceSlug =
     response.user.workspaceMemberships[0]?.workspace.slug;
 
   if (!firstWorkspaceSlug) {
-    redirect("/onboarding");
+    redirect("/app/onboarding");
   }
 
-  return redirect(firstWorkspaceSlug);
+  return redirect(`/app/${firstWorkspaceSlug}`);
 }

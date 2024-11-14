@@ -18,7 +18,7 @@ export default async function AuthLayout({
    * If the user doesn't have any workspaces, redirect them to the onboarding
    */
   if (!firstWorkspace) {
-    return redirect("/onboarding");
+    return redirect("/app/onboarding");
   }
 
   return <>{children}</>;

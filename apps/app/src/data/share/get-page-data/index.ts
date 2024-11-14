@@ -2,8 +2,8 @@
 
 import { getPageData } from "@mapform/backend/datalayer/get-page-data";
 import { getPageDataSchema } from "@mapform/backend/datalayer/get-page-data/schema";
-import { action } from "~/lib/safe-action";
+import { shareClient } from "~/lib/safe-action";
 
-export const getPageDataAction = action
+export const getPageDataAction = shareClient
   .schema(getPageDataSchema)
   .action(async ({ parsedInput }) => getPageData(parsedInput));

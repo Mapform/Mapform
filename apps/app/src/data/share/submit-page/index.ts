@@ -6,10 +6,10 @@ import { getFormSchemaFromBlockNote } from "@mapform/blocknote";
 import { eq, and } from "@mapform/db/utils";
 import type { Cell } from "@mapform/db/schema";
 import { cells, columns, pages, rows, stringCells } from "@mapform/db/schema";
-import { action } from "~/lib/safe-action";
+import { shareClient } from "~/lib/safe-action";
 import { submitPageSchema } from "./schema";
 
-export const submitPage = action
+export const submitPage = shareClient
   .schema(submitPageSchema)
   .action(async ({ parsedInput: { pageId, submissionId, payload } }) => {
     const [page, row] = await Promise.all([
@@ -119,7 +119,7 @@ export const submitPage = action
                 set: { value: value as string },
               });
           }
-        })
+        }),
       );
     });
 

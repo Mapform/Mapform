@@ -30,14 +30,17 @@ export function TopNav({ children }: { children: React.ReactNode }) {
 
   const pathNav = teamspaces
     ? [
-        { name: teamspaces.name, href: `/${params.wsSlug}/${params.tsSlug}` },
+        {
+          name: teamspaces.name,
+          href: `/app/${params.wsSlug}/${params.tsSlug}`,
+        },
         {
           name: project?.name,
-          href: `/${params.wsSlug}/${params.tsSlug}/${params.pId}`,
+          href: `/app/${params.wsSlug}/${params.tsSlug}/${params.pId}`,
         },
         { name: dataset?.name },
       ].filter((section) => section.name)
-    : [{ name: "Home", href: `/${params.wsSlug}` }];
+    : [{ name: "Home", href: `/app/${params.wsSlug}` }];
 
   return (
     <div className="flex flex-1 flex-col overflow-hidden">

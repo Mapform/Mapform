@@ -15,5 +15,5 @@ export const publishProjectAction = authAction
   .action(async ({ parsedInput: { projectId } }) => {
     await publishProject({ projectId });
 
-    revalidatePath("/[wsSlug]/[tsSlug]/projects/[pId]/project", "page");
+    revalidatePath("/app/[wsSlug]/[tsSlug]/projects/[pId]/project", "page");
   });

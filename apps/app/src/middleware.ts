@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { withCSRF } from "@mapform/auth/middleware";
 import { signToken, verifyToken } from "@mapform/auth/helpers/sessions";
 
-const publicAppPaths = ["/signin", "/signup", "/share"];
+const publicAppPaths = ["/app/signin", "/app/signup", "/share"];
 
 export default withCSRF(async (request) => {
   const { pathname } = request.nextUrl;
@@ -13,7 +13,7 @@ export default withCSRF(async (request) => {
   const isProtectedRoute = !isPublicAppPath;
 
   if (isProtectedRoute && !sessionCookie) {
-    return NextResponse.redirect(new URL("/signin", request.url));
+    return NextResponse.redirect(new URL("/app/signin", request.url));
   }
 
   const workspaceSlug = pathname.split("/")[2];
@@ -49,14 +49,14 @@ export default withCSRF(async (request) => {
       /**
        * Redirect to root if already signed in
        */
-      if (pathname === "/signin") {
+      if (pathname === "/app/signin") {
         return NextResponse.redirect(new URL("/", request.url));
       }
     } catch (error) {
       console.error("Error updating session:", error);
       res.cookies.delete("session");
       if (isProtectedRoute) {
-        return NextResponse.redirect(new URL("/signin", request.url));
+        return NextResponse.redirect(new URL("/app/signin", request.url));
       }
     }
   }

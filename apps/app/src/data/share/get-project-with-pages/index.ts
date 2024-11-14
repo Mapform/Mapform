@@ -3,13 +3,13 @@
 import { db } from "@mapform/db";
 import { eq, desc } from "@mapform/db/utils";
 import { projects, pages } from "@mapform/db/schema";
-import { action } from "~/lib/safe-action";
+import { shareClient } from "~/lib/safe-action";
 import { getProjectWithPagesSchema } from "./schema";
 
 /**
  * Retrieves the most recent child project from the root project ID
  */
-export const getProjectWithPages = action
+export const getProjectWithPages = shareClient
   .schema(getProjectWithPagesSchema)
   .action(async ({ parsedInput: { id } }) => {
     // TODO: This line is causing the server error 'Action error: invalid input syntax for type uuid: "favicon.ico"'
