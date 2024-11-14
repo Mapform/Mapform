@@ -100,7 +100,7 @@ export function MapForm({
 
   const mapPadding = {
     top: 0,
-    bottom: 0,
+    bottom: isMobile ? 200 : 0,
     left:
       (drawerOpen || Boolean(activePoint)) && !isMobile
         ? editable
@@ -224,7 +224,7 @@ export function MapForm({
             }}
           >
             {/* MAP CONTAINER */}
-            <div className="top-0 flex flex-1 max-md:sticky max-md:h-[70vh]">
+            <div className="top-0 flex flex-1 max-md:sticky max-md:h-screen">
               <Map
                 editable={editable}
                 initialViewState={initialViewState}
@@ -263,14 +263,31 @@ export function MapForm({
               <ChevronsRightIcon className="size-5" />
             </Button>
             {isMobile ? (
-              <AnimatePresence mode="wait">
+              <AnimatePresence mode="popLayout">
                 <motion.div
-                  animate={{ y: 0, opacity: 1 }}
-                  exit={{ y: -10, opacity: 0 }}
-                  initial={{ y: 10, opacity: 0 }}
+                  animate={{
+                    y: -200, // 200 + height of the bottom bar
+                    opacity: 1,
+                    transition: {
+                      default: {
+                        type: "spring",
+                        bounce: 0.2,
+                        duration: 1,
+                        // mass: 1.5,
+                        // damping: 10,
+                        // stiffness: 100,
+                      },
+                      opacity: { ease: "linear" },
+                    },
+                  }}
+                  exit={{ y: 200, opacity: 0 }}
+                  initial={{ y: 200, opacity: 0 }}
+                  key={activePoint?.rowId}
                   layoutScroll
-                  style={{ overflow: "scroll", marginTop: "-20px" }}
-                  transition={{ duration: 0.2 }}
+                  style={{
+                    overflow: "scroll",
+                    marginBottom: "-200px",
+                  }}
                 >
                   {!activePoint ? (
                     <MobileDrawer open={drawerOpen} withPadding={editable}>
