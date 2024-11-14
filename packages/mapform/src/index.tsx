@@ -1,11 +1,12 @@
 "use client";
 
 import "mapbox-gl/dist/mapbox-gl.css";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import type { Page } from "@mapform/db/schema";
 import { Form, useForm, zodResolver } from "@mapform/ui/components/form";
 import type { z } from "zod";
 import { cn } from "@mapform/lib/classnames";
+import { motion, AnimatePresence } from "framer-motion";
 import { useWindowSize } from "@mapform/lib/hooks/use-window-size";
 import type { FormSchema } from "@mapform/lib/schemas/form-step-schema";
 import { useSetQueryString } from "@mapform/lib/hooks/use-set-query-string";
@@ -75,6 +76,11 @@ export function MapForm({
     string | null
   >(null);
   const { width } = useWindowSize();
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [activePoint]);
+
   const initialViewState = {
     longitude: currentPage.center.x,
     latitude: currentPage.center.y,
@@ -180,76 +186,91 @@ export function MapForm({
               <ChevronsRightIcon className="size-5" />
             </Button>
 
-            <DesktopDrawer
-              onClose={() => {
-                setDrawerOpen(false);
-              }}
-              open={drawerOpen}
-              withPadding={editable}
-            >
-              <Blocknote
-                currentPage={currentPage}
-                description={currentPage.content ?? undefined}
-                editable={editable}
-                isPage
-                key={currentPage.id}
-                onDescriptionChange={onDescriptionChange}
-                onPrev={onPrev}
-                onTitleChange={onTitleChange}
-                title={currentPage.title}
-              />
-              <div
-                className={cn("px-2 pt-2", {
-                  hidden: editable || isMobile,
-                })}
+            <AnimatePresence mode="wait">
+              <motion.div
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: -10, opacity: 0 }}
+                initial={{ y: 10, opacity: 0 }}
+                key={activePoint?.rowId}
+                layoutScroll
+                style={{ overflow: "scroll" }}
+                transition={{ duration: 0.2 }}
               >
-                {renderButtons()}
-              </div>
-            </DesktopDrawer>
-
-            <DesktopDrawer
-              onClose={() => {
-                setQueryString({
-                  key: "layer_point",
-                  value: null,
-                });
-              }}
-              open={Boolean(activePoint)}
-              withPadding={editable}
-            >
-              <Blocknote
-                currentPage={currentPage}
-                description={
-                  activePoint?.description?.richtextCell?.value ?? undefined
-                }
-                editable={editable}
-                isPage
-                key={currentPage.id}
-                onDescriptionChange={(val) => {
-                  activePoint?.description &&
-                    onPoiCellChange &&
-                    onPoiCellChange({
-                      type: "richtext",
-                      rowId: activePoint.rowId,
-                      columnId: activePoint.description.columnId,
-                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                      value: val as any,
-                    });
-                }}
-                onPrev={onPrev}
-                onTitleChange={(val) => {
-                  activePoint?.title &&
-                    onPoiCellChange &&
-                    onPoiCellChange({
-                      type: "string",
-                      rowId: activePoint.rowId,
-                      columnId: activePoint.title.columnId,
-                      value: val,
-                    });
-                }}
-                title={activePoint?.title?.stringCell?.value}
-              />
-            </DesktopDrawer>
+                {!activePoint ? (
+                  <DesktopDrawer
+                    onClose={() => {
+                      setDrawerOpen(false);
+                    }}
+                    open={drawerOpen}
+                    withPadding={editable}
+                  >
+                    <Blocknote
+                      currentPage={currentPage}
+                      description={currentPage.content ?? undefined}
+                      editable={editable}
+                      isPage
+                      key={currentPage.id}
+                      onDescriptionChange={onDescriptionChange}
+                      onPrev={onPrev}
+                      onTitleChange={onTitleChange}
+                      title={currentPage.title}
+                    />
+                    <div
+                      className={cn("px-2 pt-2", {
+                        hidden: editable || isMobile,
+                      })}
+                    >
+                      {renderButtons()}
+                    </div>
+                  </DesktopDrawer>
+                ) : (
+                  <DesktopDrawer
+                    onClose={() => {
+                      setQueryString({
+                        key: "layer_point",
+                        value: null,
+                      });
+                    }}
+                    open={Boolean(activePoint)}
+                    withPadding={editable}
+                  >
+                    <Blocknote
+                      currentPage={currentPage}
+                      description={
+                        activePoint.description?.richtextCell?.value ??
+                        undefined
+                      }
+                      editable={editable}
+                      isPage
+                      key={currentPage.id}
+                      onDescriptionChange={(val) => {
+                        activePoint.description &&
+                          onPoiCellChange &&
+                          onPoiCellChange({
+                            type: "richtext",
+                            rowId: activePoint.rowId,
+                            columnId: activePoint.description.columnId,
+                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                            value: val as any,
+                          });
+                      }}
+                      onPrev={onPrev}
+                      onTitleChange={(val) => {
+                        activePoint.title &&
+                          onPoiCellChange &&
+                          onPoiCellChange({
+                            type: "string",
+                            rowId: activePoint.rowId,
+                            columnId: activePoint.title.columnId,
+                            value: val,
+                          });
+                      }}
+                      title={activePoint.title?.stringCell?.value}
+                    />
+                  </DesktopDrawer>
+                )}
+              </motion.div>
+            </AnimatePresence>
           </CustomBlockContext.Provider>
         </div>
         <div className="fixed bottom-0 z-50 w-full bg-white p-2 md:hidden">

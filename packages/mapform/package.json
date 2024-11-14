@@ -20,6 +20,7 @@
     "@mapform/ui": "workspace:*",
     "@radix-ui/react-portal": "^1.1.2",
     "@types/mapbox-gl": "^3.1.0",
+    "framer-motion": "12.0.0-alpha.1",
     "geojson": "^0.5.0",
     "lucide-react": "^0.446.0",
     "lucide-static": "^0.454.0",
