@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { withCSRF } from "@mapform/auth/middleware";
 import { signToken, verifyToken } from "@mapform/auth/helpers/sessions";
 
-const publicAppPaths = ["/signin", "/signup"];
+const publicAppPaths = ["/signin", "/signup", "/share"];
 
 export default withCSRF(async (request) => {
   const { pathname } = request.nextUrl;
@@ -16,8 +16,8 @@ export default withCSRF(async (request) => {
     return NextResponse.redirect(new URL("/signin", request.url));
   }
 
-  const workspaceSlug = pathname.split("/")[1];
-  const teamspaceSlug = pathname.split("/")[2];
+  const workspaceSlug = pathname.split("/")[2];
+  const teamspaceSlug = pathname.split("/")[3];
 
   const requestHeaders = new Headers(request.headers);
   workspaceSlug && requestHeaders.set("x-workspace-slug", workspaceSlug);
