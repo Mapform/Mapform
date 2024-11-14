@@ -1,7 +1,7 @@
 "use client";
 
 import "mapbox-gl/dist/mapbox-gl.css";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import type { Page } from "@mapform/db/schema";
 import { Form, useForm, zodResolver } from "@mapform/ui/components/form";
 import type { z } from "zod";
@@ -272,7 +272,7 @@ export function MapForm({
                   initial={{ y: 10, opacity: 0 }}
                   key={activePoint?.rowId}
                   layoutScroll
-                  style={{ overflow: "scroll" }}
+                  style={{ overflow: "scroll", marginTop: "-20px" }}
                   transition={{ duration: 0.2 }}
                 >
                   {!activePoint ? (
