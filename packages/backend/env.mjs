@@ -10,6 +10,6 @@ export const env = createEnv({
   },
   runtimeEnv: {
     VERCEL_URL: process.env.VERCEL_URL,
-    NEXT_PUBLIC_BASE_URL: process.NODE_ENV === "development" ? "http://localhost:3000" : process.env.NEXT_PUBLIC_VERCEL_ENV === "preview" ? `https://${process.env.VERCEL_URL}` : "https://alpha.mapform.co",
+    NEXT_PUBLIC_BASE_URL: process.NODE_ENV === "development" ? "http://localhost:3000" : process.env.NEXT_PUBLIC_VERCEL_ENV === "preview" ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}` : "https://alpha.mapform.co",
   },
 });
