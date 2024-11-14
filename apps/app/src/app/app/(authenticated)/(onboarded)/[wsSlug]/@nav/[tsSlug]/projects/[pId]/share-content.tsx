@@ -27,7 +27,7 @@ export function ShareContent({
             clipboardText={
               process.env.NODE_ENV === "production"
                 ? `mapform.co/share/${projectId}`
-                : `localhost:3001/share/${projectId}`
+                : `localhost:3000/share/${projectId}`
             }
             copiedText="Copied!"
             copyText="Copy shareable link"

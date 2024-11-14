@@ -22,7 +22,9 @@ export function NavTop() {
   ];
 
   const isProjectActive = (teamspaceSlug: string, projectId: string) => {
-    return pathname.includes(`/${workspaceSlug}/${teamspaceSlug}/${projectId}`);
+    return pathname.includes(
+      `/app/${workspaceSlug}/${teamspaceSlug}/${projectId}`,
+    );
   };
 
   const defaultOpenTeamspaces = workspaceDirectory.teamspaces

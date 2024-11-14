@@ -123,7 +123,7 @@ export default async function ProjectPage(props: {
     }
 
     redirect(
-      `/${params.wsSlug}/${params.tsSlug}/projects/${pId}?page=${projectWithPages.pages[0]?.id}`,
+      `/app/${params.wsSlug}/${params.tsSlug}/projects/${pId}?page=${projectWithPages.pages[0]?.id}`,
     );
   }
 
