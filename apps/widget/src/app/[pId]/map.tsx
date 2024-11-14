@@ -4,6 +4,7 @@ import { MapForm, useMapform } from "@mapform/mapform";
 import { useAction } from "next-safe-action/hooks";
 import React, { useEffect, useState } from "react";
 import type { PageData } from "@mapform/backend/datalayer/get-page-data";
+import type { GetLayerPoint } from "@mapform/backend/datalayer/get-layer-point";
 import { useCreateQueryString } from "@mapform/lib/hooks/use-create-query-string";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import { submitPage } from "~/data/submit-page";
@@ -16,16 +17,18 @@ interface MapProps {
   pageData: PageData | undefined;
   projectWithPages: ProjectWithPages;
   formValues: NonNullable<Responses>["cells"];
+  layerPoint?: GetLayerPoint;
   sessionId: string | null;
 }
 
 type Page = ProjectWithPages["pages"][number];
 
 export function Map({
-  projectWithPages,
-  formValues,
-  sessionId,
   pageData,
+  sessionId,
+  layerPoint,
+  formValues,
+  projectWithPages,
 }: MapProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -124,6 +127,7 @@ export function Map({
 
   return (
     <MapForm
+      activePoint={layerPoint}
       currentPage={currentPage}
       defaultFormValues={pageValues}
       mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}

@@ -7,6 +7,7 @@ import { getSession } from "~/data/get-session";
 import { getPageDataAction } from "~/data/get-page-data";
 import { getProjectWithPages } from "~/data/get-project-with-pages";
 import { type Responses, getResponses } from "~/data/get-responses.ts";
+import { getLayerPointAction } from "~/data/get-layer-point";
 import { Map } from "./map";
 
 const fetchProjectWithPages = cache(async (id: string) => {
@@ -32,20 +33,41 @@ const fetchPageData = cache(async (id?: string) => {
   return pageData;
 });
 
-// The root Project Id
-export default async function Page(
-  props: {
-    params: Promise<{ pId: string }>;
-    searchParams?: Promise<{
-      p?: string;
-    }>;
+const fetchLayerPoint = cache(async (param?: string) => {
+  if (!param) {
+    return undefined;
   }
-) {
+
+  const [rowId, pointLayerId] = param.split("_");
+
+  if (!rowId || !pointLayerId) {
+    return undefined;
+  }
+
+  const layerPointResponse = await getLayerPointAction({
+    rowId,
+    pointLayerId,
+  });
+
+  const layerPoint = layerPointResponse?.data;
+
+  return layerPoint;
+});
+
+// The root Project Id
+export default async function Page(props: {
+  params: Promise<{ pId: string }>;
+  searchParams?: Promise<{
+    p?: string;
+    layer_point?: string;
+  }>;
+}) {
   const searchParams = await props.searchParams;
   const params = await props.params;
-  const [projectWithPages, pageData] = await Promise.all([
+  const [projectWithPages, pageData, layerPoint] = await Promise.all([
     fetchProjectWithPages(params.pId),
     fetchPageData(searchParams?.p),
+    fetchLayerPoint(searchParams?.layer_point),
   ]);
 
   const cookieStore = await cookies();
@@ -83,6 +105,7 @@ export default async function Page(
     <MapformProvider>
       <Map
         formValues={formValues}
+        layerPoint={layerPoint}
         pageData={pageData}
         projectWithPages={projectWithPages}
         // We clear the session id if the form id doesn't match the current form
