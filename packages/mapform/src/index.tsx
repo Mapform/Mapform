@@ -224,7 +224,7 @@ export function MapForm({
             }}
           >
             {/* MAP CONTAINER */}
-            <div className="top-0 flex flex-1 max-md:sticky max-md:h-screen">
+            <div className="top-0 mb-[-200px] flex flex-1 max-md:sticky max-md:h-screen">
               <Map
                 editable={editable}
                 initialViewState={initialViewState}
@@ -266,16 +266,13 @@ export function MapForm({
               <AnimatePresence mode="popLayout">
                 <motion.div
                   animate={{
-                    y: -200, // 200 + height of the bottom bar
+                    y: 0,
                     opacity: 1,
                     transition: {
                       default: {
                         type: "spring",
                         bounce: 0.2,
                         duration: 1,
-                        // mass: 1.5,
-                        // damping: 10,
-                        // stiffness: 100,
                       },
                       opacity: { ease: "linear" },
                     },
@@ -286,7 +283,6 @@ export function MapForm({
                   layoutScroll
                   style={{
                     overflow: "scroll",
-                    marginBottom: "-200px",
                   }}
                 >
                   {!activePoint ? (
