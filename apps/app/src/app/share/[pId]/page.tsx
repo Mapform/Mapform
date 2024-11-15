@@ -103,15 +103,17 @@ export default async function Page(props: {
   }
 
   return (
-    <MapformProvider>
-      <Map
-        formValues={formValues}
-        layerPoint={layerPoint}
-        pageData={pageData}
-        projectWithPages={projectWithPages}
-        // We clear the session id if the form id doesn't match the current form
-        sessionId={!projectVersionMismatch && session ? session.id : null}
-      />
-    </MapformProvider>
+    <div className="md:h-screen">
+      <MapformProvider>
+        <Map
+          formValues={formValues}
+          layerPoint={layerPoint}
+          pageData={pageData}
+          projectWithPages={projectWithPages}
+          // We clear the session id if the form id doesn't match the current form
+          sessionId={!projectVersionMismatch && session ? session.id : null}
+        />
+      </MapformProvider>
+    </div>
   );
 }
