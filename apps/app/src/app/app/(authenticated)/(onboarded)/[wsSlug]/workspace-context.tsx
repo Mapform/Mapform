@@ -8,6 +8,7 @@ export interface WorkspaceContextInterface {
   workspaceSlug: string;
   workspaceDirectory: NonNullable<WorkspaceWithTeamspaces>;
   workspaceMemberships: CurrentUserWorkspaceMemberships;
+  currentWorkspace: CurrentUserWorkspaceMemberships[number] | undefined;
 }
 
 export interface WorkspaceProviderProps {
@@ -29,12 +30,17 @@ export function WorkspaceProvider({
   workspaceMemberships: CurrentUserWorkspaceMemberships;
   workspaceDirectory: NonNullable<WorkspaceWithTeamspaces>;
 } & WorkspaceProviderProps) {
+  const currentWorkspace = workspaceMemberships.find(
+    (membership) => membership.workspace.slug === workspaceSlug,
+  );
+
   return (
     <WorkspaceContext.Provider
       value={{
         workspaceDirectory,
         workspaceMemberships,
         workspaceSlug,
+        currentWorkspace,
       }}
     >
       {children}

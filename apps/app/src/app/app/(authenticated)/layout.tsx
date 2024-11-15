@@ -1,5 +1,5 @@
 import { getCurrentSession } from "~/data/auth/get-current-session";
-import { AuthProvider } from "./auth-provider";
+import { AuthProvider } from "./auth-context";
 
 export default function AuthLayout({
   children,

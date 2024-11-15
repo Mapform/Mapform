@@ -40,6 +40,7 @@ import {
   CreditCard,
   LogOut,
   Sparkles,
+  LogOutIcon,
 } from "lucide-react";
 import {
   Collapsible,
@@ -51,9 +52,12 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@mapform/ui/components/avatar";
+import { signOutAction } from "~/data/auth/sign-out";
 import { useWorkspace } from "../workspace-context";
+import { useAuth } from "../../../auth-context";
 
 export function WorkspaceSidebar() {
+  const { user } = useAuth();
   const { workspaceDirectory, workspaceSlug } = useWorkspace();
 
   const data = {
@@ -123,6 +127,9 @@ export function WorkspaceSidebar() {
       })),
     })),
   };
+
+  console.log(1111, user);
+  console.log(2222, user?.name?.split(" ")[0]?.[0]);
 
   return (
     <SidebarLeft>
@@ -276,14 +283,18 @@ export function WorkspaceSidebar() {
                   size="lg"
                 >
                   <Avatar className="h-8 w-8 rounded-lg">
-                    <AvatarImage alt={data.user.name} src={data.user.avatar} />
-                    <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                    <AvatarImage
+                      alt={user?.name ?? ""}
+                      src={data.user.avatar}
+                    />
+                    <AvatarFallback className="rounded-lg">
+                      {user?.name?.split(" ")[0]?.[0]}
+                      {user?.name?.split(" ")[1]?.[0]}
+                    </AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-semibold">
-                      {data.user.name}
-                    </span>
-                    <span className="truncate text-xs">{data.user.email}</span>
+                    <span className="truncate font-semibold">{user?.name}</span>
+                    <span className="truncate text-xs">{user?.email}</span>
                   </div>
                   <ChevronsUpDown className="ml-auto size-4" />
                 </SidebarLeftMenuButton>
@@ -298,46 +309,28 @@ export function WorkspaceSidebar() {
                   <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                     <Avatar className="h-8 w-8 rounded-lg">
                       <AvatarImage
-                        alt={data.user.name}
+                        alt={user?.name || ""}
                         src={data.user.avatar}
                       />
-                      <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                      <AvatarFallback className="rounded-lg uppercase">
+                        {user?.name?.split(" ")[0]?.[0]}
+                        {user?.name?.split(" ")[1]?.[0]}
+                      </AvatarFallback>
                     </Avatar>
                     <div className="grid flex-1 text-left text-sm leading-tight">
                       <span className="truncate font-semibold">
-                        {data.user.name}
+                        {user?.name}
                       </span>
-                      <span className="truncate text-xs">
-                        {data.user.email}
-                      </span>
+                      <span className="truncate text-xs">{user?.email}</span>
                     </div>
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuGroup>
-                  <DropdownMenuItem>
-                    <Sparkles />
-                    Upgrade to Pro
-                  </DropdownMenuItem>
-                </DropdownMenuGroup>
-                <DropdownMenuSeparator />
-                <DropdownMenuGroup>
-                  <DropdownMenuItem>
-                    <BadgeCheck />
-                    Account
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <CreditCard />
-                    Billing
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <Bell />
-                    Notifications
-                  </DropdownMenuItem>
-                </DropdownMenuGroup>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <LogOut />
+                <DropdownMenuItem
+                  className="gap-2 p-2"
+                  onSelect={() => signOutAction()}
+                >
+                  <LogOutIcon className="size-4" />
                   Log out
                 </DropdownMenuItem>
               </DropdownMenuContent>
