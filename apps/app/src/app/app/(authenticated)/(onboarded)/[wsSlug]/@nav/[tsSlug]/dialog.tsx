@@ -29,11 +29,11 @@ import {
   type CreateProjectSchema,
 } from "@mapform/backend/projects/create-project/schema";
 import { createProjectAction } from "~/data/projects/create-project";
-import { useRootLayout } from "../../root-layout/context";
+import { useWorkspace } from "../../workspace-context";
 
 export function CreateDialog({ tsSlug }: { tsSlug: string }) {
   const [open, setOpen] = useState(false);
-  const { workspaceDirectory } = useRootLayout();
+  const { workspaceDirectory } = useWorkspace();
   const teamspaceId = workspaceDirectory.teamspaces.find(
     (ts) => ts.slug === tsSlug,
   )?.id;
