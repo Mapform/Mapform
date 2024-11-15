@@ -76,6 +76,8 @@ export function BlocknoteEditor({
       onChange={onChange}
       sideMenu={false}
       slashMenu={false}
+      // Force Blocknote to use light mode
+      theme="light"
     >
       <SuggestionMenuController
         // eslint-disable-next-line @typescript-eslint/require-await -- Needs to return a Promise
