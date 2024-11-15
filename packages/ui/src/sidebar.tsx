@@ -37,12 +37,30 @@ interface SidebarContextProps {
   toggleSidebar: () => void;
 }
 
-const SidebarContext = React.createContext<SidebarContextProps | null>(null);
+const SidebarLeftContext = React.createContext<SidebarContextProps | null>(
+  null,
+);
+const SidebarRightContext = React.createContext<SidebarContextProps | null>(
+  null,
+);
 
-function useSidebar() {
-  const context = React.useContext(SidebarContext);
+function useSidebarLeft() {
+  const context = React.useContext(SidebarLeftContext);
   if (!context) {
-    throw new Error("useSidebar must be used within a SidebarProvider.");
+    throw new Error(
+      "useSidebarLeft must be used within a SidebarLeftProvider.",
+    );
+  }
+
+  return context;
+}
+
+function useSidebarRight() {
+  const context = React.useContext(SidebarRightContext);
+  if (!context) {
+    throw new Error(
+      "useSidebarRight must be used within a SidebarRightProvider.",
+    );
   }
 
   return context;
@@ -54,6 +72,7 @@ const SidebarProvider = React.forwardRef<
     defaultOpen?: boolean;
     open?: boolean;
     onOpenChange?: (open: boolean) => void;
+    SidebarContext: React.Context<SidebarContextProps | null>;
   }
 >(
   (
@@ -63,6 +82,7 @@ const SidebarProvider = React.forwardRef<
       onOpenChange: setOpenProp,
       className,
       style,
+      SidebarContext,
       children,
       ...props
     },
@@ -166,12 +186,41 @@ const SidebarProvider = React.forwardRef<
 );
 SidebarProvider.displayName = "SidebarProvider";
 
+function SidebarLeftProvider({
+  ref,
+  ...props
+}: Omit<React.ComponentProps<typeof SidebarProvider>, "SidebarContext">) {
+  return (
+    <SidebarProvider SidebarContext={SidebarLeftContext} ref={ref} {...props} />
+  );
+}
+
+function SidebarRightProvider({
+  ref,
+  ...props
+}: Omit<React.ComponentProps<typeof SidebarProvider>, "SidebarContext">) {
+  return (
+    <SidebarProvider
+      SidebarContext={SidebarRightContext}
+      ref={ref}
+      {...props}
+    />
+  );
+}
+
+type SidebarProps = React.ComponentProps<"div"> & {
+  side?: "left" | "right";
+  variant?: "sidebar" | "floating" | "inset";
+  collapsible?: "offcanvas" | "icon" | "none";
+};
+
 const Sidebar = React.forwardRef<
   HTMLDivElement,
-  React.ComponentProps<"div"> & {
-    side?: "left" | "right";
-    variant?: "sidebar" | "floating" | "inset";
-    collapsible?: "offcanvas" | "icon" | "none";
+  SidebarProps & {
+    isMobile?: boolean;
+    state?: "expanded" | "collapsed";
+    openMobile?: boolean;
+    setOpenMobile?: (open: boolean) => void;
   }
 >(
   (
@@ -179,14 +228,16 @@ const Sidebar = React.forwardRef<
       side = "left",
       variant = "sidebar",
       collapsible = "offcanvas",
+      isMobile,
+      state,
+      openMobile,
+      setOpenMobile,
       className,
       children,
       ...props
     },
     ref,
   ) => {
-    const { isMobile, state, openMobile, setOpenMobile } = useSidebar();
-
     if (collapsible === "none") {
       return (
         <div
@@ -269,14 +320,45 @@ const Sidebar = React.forwardRef<
 );
 Sidebar.displayName = "Sidebar";
 
+function SidebarLeft({ ref, ...props }: SidebarProps) {
+  const { isMobile, state, openMobile, setOpenMobile } = useSidebarLeft();
+
+  return (
+    <Sidebar
+      ref={ref}
+      {...props}
+      isMobile={isMobile}
+      openMobile={openMobile}
+      setOpenMobile={setOpenMobile}
+      state={state}
+    />
+  );
+}
+
+function SidebarRight({ ref, ...props }: SidebarProps) {
+  const { isMobile, state, openMobile, setOpenMobile } = useSidebarRight();
+
+  return (
+    <Sidebar
+      ref={ref}
+      {...props}
+      isMobile={isMobile}
+      openMobile={openMobile}
+      setOpenMobile={setOpenMobile}
+      state={state}
+    />
+  );
+}
+
+type SidebarTriggerProps = React.ComponentProps<typeof Button>;
+
 function SidebarTrigger({
   className,
   onClick,
+  toggleSidebar,
   ref,
   ...props
-}: React.ComponentProps<typeof Button>) {
-  const { toggleSidebar } = useSidebar();
-
+}: SidebarTriggerProps & { toggleSidebar: () => void }) {
   return (
     <Button
       className={cn("h-7 w-7", className)}
@@ -296,12 +378,24 @@ function SidebarTrigger({
   );
 }
 
+function SidebarLeftTrigger(props: SidebarTriggerProps) {
+  const { toggleSidebar } = useSidebarLeft();
+
+  return <SidebarTrigger {...props} toggleSidebar={toggleSidebar} />;
+}
+
+function SidebarRightTrigger(props: SidebarTriggerProps) {
+  const { toggleSidebar } = useSidebarRight();
+
+  return <SidebarTrigger {...props} toggleSidebar={toggleSidebar} />;
+}
+
+type SidebarRailProps = React.ComponentProps<"button">;
+
 const SidebarRail = React.forwardRef<
   HTMLButtonElement,
-  React.ComponentProps<"button">
->(({ className, ...props }, ref) => {
-  const { toggleSidebar } = useSidebar();
-
+  React.ComponentProps<"button"> & { toggleSidebar: () => void }
+>(({ className, toggleSidebar, ...props }, ref) => {
   return (
     <button
       aria-label="Toggle Sidebar"
@@ -325,6 +419,18 @@ const SidebarRail = React.forwardRef<
   );
 });
 SidebarRail.displayName = "SidebarRail";
+
+function SidebarLeftRail(props: SidebarRailProps) {
+  const { toggleSidebar } = useSidebarLeft();
+
+  return <SidebarRail {...props} toggleSidebar={toggleSidebar} />;
+}
+
+function SidebarRightRail(props: SidebarRailProps) {
+  const { toggleSidebar } = useSidebarRight();
+
+  return <SidebarRail {...props} toggleSidebar={toggleSidebar} />;
+}
 
 const SidebarInset = React.forwardRef<
   HTMLDivElement,
@@ -545,13 +651,18 @@ const sidebarMenuButtonVariants = cva(
   },
 );
 
+type SidebarMenuButtonProps = React.ComponentProps<typeof Button> & {
+  asChild?: boolean;
+  isActive?: boolean;
+  tooltip?: string | React.ComponentProps<typeof TooltipContent>;
+} & VariantProps<typeof sidebarMenuButtonVariants>;
+
 const SidebarMenuButton = React.forwardRef<
   HTMLButtonElement,
-  React.ComponentProps<"button"> & {
-    asChild?: boolean;
-    isActive?: boolean;
-    tooltip?: string | React.ComponentProps<typeof TooltipContent>;
-  } & VariantProps<typeof sidebarMenuButtonVariants>
+  SidebarMenuButtonProps & {
+    isMobile: boolean;
+    state?: "expanded" | "collapsed";
+  }
 >(
   (
     {
@@ -559,6 +670,8 @@ const SidebarMenuButton = React.forwardRef<
       isActive = false,
       variant = "default",
       size = "default",
+      isMobile,
+      state,
       tooltip,
       className,
       ...props
@@ -566,7 +679,6 @@ const SidebarMenuButton = React.forwardRef<
     ref,
   ) => {
     const Comp = asChild ? Slot : "button";
-    const { isMobile, state } = useSidebar();
 
     const button = (
       <Comp
@@ -603,6 +715,18 @@ const SidebarMenuButton = React.forwardRef<
   },
 );
 SidebarMenuButton.displayName = "SidebarMenuButton";
+
+function SidebarLeftMenuButton(props: SidebarMenuButtonProps) {
+  const { isMobile, state } = useSidebarLeft();
+
+  return <SidebarMenuButton {...props} isMobile={isMobile} state={state} />;
+}
+
+function SidebarRightMenuButton(props: SidebarMenuButtonProps) {
+  const { isMobile, state } = useSidebarRight();
+
+  return <SidebarMenuButton {...props} isMobile={isMobile} state={state} />;
+}
 
 const SidebarMenuAction = React.forwardRef<
   HTMLButtonElement,
@@ -748,7 +872,8 @@ const SidebarMenuSubButton = React.forwardRef<
 SidebarMenuSubButton.displayName = "SidebarMenuSubButton";
 
 export {
-  Sidebar,
+  SidebarLeft,
+  SidebarRight,
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
@@ -761,15 +886,20 @@ export {
   SidebarMenu,
   SidebarMenuAction,
   SidebarMenuBadge,
-  SidebarMenuButton,
+  SidebarLeftMenuButton,
+  SidebarRightMenuButton,
   SidebarMenuItem,
   SidebarMenuSkeleton,
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
-  SidebarProvider,
-  SidebarRail,
+  SidebarLeftProvider,
+  SidebarRightProvider,
+  SidebarLeftRail,
+  SidebarRightRail,
   SidebarSeparator,
-  SidebarTrigger,
-  useSidebar,
+  SidebarLeftTrigger,
+  SidebarRightTrigger,
+  useSidebarLeft,
+  useSidebarRight,
 };
