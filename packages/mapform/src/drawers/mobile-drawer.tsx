@@ -17,7 +17,7 @@ export function MobileDrawer({
   return (
     <div
       className={cn(
-        "bg-background prose relative z-40 flex h-full min-h-[200px] w-full max-w-full flex-col rounded-t-xl shadow-lg outline-none",
+        "bg-background prose relative z-40 flex h-full min-h-[200px] w-full max-w-full flex-col outline-none",
         withPadding ? "pl-8" : "pl-0",
       )}
     >

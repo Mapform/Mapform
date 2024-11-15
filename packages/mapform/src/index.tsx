@@ -277,6 +277,7 @@ export function MapForm({
                       opacity: { ease: "linear" },
                     },
                   }}
+                  className="rounded-t-xl shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]"
                   exit={{ y: 200, opacity: 0 }}
                   initial={{ y: 200, opacity: 0 }}
                   key={activePoint?.rowId}
