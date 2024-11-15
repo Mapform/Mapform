@@ -1,12 +1,13 @@
 "use client";
 
 import "mapbox-gl/dist/mapbox-gl.css";
-import React, { useRef, useState } from "react";
+import React, { useMemo, useState } from "react";
 import type { Page } from "@mapform/db/schema";
-import { DrawerPrimitive } from "@mapform/ui/components/drawer";
 import { Form, useForm, zodResolver } from "@mapform/ui/components/form";
 import type { z } from "zod";
 import { cn } from "@mapform/lib/classnames";
+import { motion, AnimatePresence } from "framer-motion";
+import { useWindowSize } from "@mapform/lib/hooks/use-window-size";
 import type { FormSchema } from "@mapform/lib/schemas/form-step-schema";
 import { useSetQueryString } from "@mapform/lib/hooks/use-set-query-string";
 import { CustomBlockContext } from "@mapform/blocknote";
@@ -19,17 +20,13 @@ import {
 import type { ViewState } from "@mapform/map-utils/types";
 import type { PageData } from "@mapform/backend/datalayer/get-page-data";
 import { Button } from "@mapform/ui/components/button";
-import {
-  ArrowLeftIcon,
-  ArrowRightIcon,
-  ChevronsLeftIcon,
-  ChevronsRightIcon,
-  XIcon,
-} from "lucide-react";
+import { ArrowLeftIcon, ArrowRightIcon, ChevronsRightIcon } from "lucide-react";
 import { Blocknote } from "./block-note";
 import { Map, SearchLocationMarker } from "./map";
 import "./style.css";
 import { MapformProvider, useMapform, type MBMap } from "./context";
+import { DesktopDrawer } from "./drawers/desktop-drawer";
+import { MobileDrawer } from "./drawers/mobile-drawer";
 
 interface MapFormProps {
   editable?: boolean;
@@ -79,7 +76,8 @@ export function MapForm({
   const [isSelectingPinLocationFor, setIsSelectingPinLocationFor] = useState<
     string | null
   >(null);
-  const rootEl = useRef<HTMLFormElement | null>(null);
+  const { width } = useWindowSize();
+
   const initialViewState = {
     longitude: currentPage.center.x,
     latitude: currentPage.center.y,
@@ -94,208 +92,251 @@ export function MapForm({
     },
   };
 
+  const isMobile = width < 768;
+
   const onSubmit = (data: FormSchema) => {
     onStepSubmit?.(data);
   };
 
   const mapPadding = {
     top: 0,
-    bottom: 0,
-    left: drawerOpen || Boolean(activePoint) ? (editable ? 392 : 360) : 0,
+    bottom: isMobile ? 200 : 0,
+    left:
+      (drawerOpen || Boolean(activePoint)) && !isMobile
+        ? editable
+          ? 392
+          : 360
+        : 0,
     right: 0,
   };
+
+  const actionButtons = useMemo(
+    () => (
+      <div className="flex w-full items-center justify-between bg-white">
+        <Button
+          disabled={editable}
+          onClick={onPrev}
+          size="icon-sm"
+          variant="ghost"
+        >
+          <ArrowLeftIcon className="size-5" />
+        </Button>
+        <p className="text-xs text-gray-500">Powered by Mapform</p>
+        <Button
+          disabled={editable}
+          size="icon-sm"
+          type="submit"
+          variant="ghost"
+        >
+          <ArrowRightIcon className="size-5" />
+        </Button>
+      </div>
+    ),
+    [editable, onPrev],
+  );
+
+  const pageContent = useMemo(
+    () => (
+      <>
+        <Blocknote
+          currentPage={currentPage}
+          description={currentPage.content ?? undefined}
+          editable={editable}
+          isPage
+          key={currentPage.id}
+          onDescriptionChange={onDescriptionChange}
+          onPrev={onPrev}
+          onTitleChange={onTitleChange}
+          title={currentPage.title}
+        />
+        <div
+          className={cn("px-2 pt-2", {
+            hidden: editable || isMobile,
+          })}
+        >
+          {actionButtons}
+        </div>
+      </>
+    ),
+    [
+      actionButtons,
+      currentPage,
+      editable,
+      isMobile,
+      onDescriptionChange,
+      onPrev,
+      onTitleChange,
+    ],
+  );
+
+  const activePointContent = useMemo(() => {
+    if (!activePoint) {
+      return null;
+    }
+
+    return (
+      <Blocknote
+        currentPage={currentPage}
+        description={activePoint.description?.richtextCell?.value ?? undefined}
+        editable={editable}
+        isPage
+        key={currentPage.id}
+        onDescriptionChange={(val) => {
+          activePoint.description &&
+            onPoiCellChange &&
+            onPoiCellChange({
+              type: "richtext",
+              rowId: activePoint.rowId,
+              columnId: activePoint.description.columnId,
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Fix this
+              value: val as any,
+            });
+        }}
+        onPrev={onPrev}
+        onTitleChange={(val) => {
+          activePoint.title &&
+            onPoiCellChange &&
+            onPoiCellChange({
+              type: "string",
+              rowId: activePoint.rowId,
+              columnId: activePoint.title.columnId,
+              value: val,
+            });
+        }}
+        title={activePoint.title?.stringCell?.value}
+      />
+    );
+  }, [activePoint, currentPage, editable, onPoiCellChange, onPrev]);
 
   return (
     <Form {...form}>
       <form
-        className="relative flex h-full w-full overflow-hidden"
+        className="flex h-full w-full flex-col md:overflow-hidden"
         onSubmit={form.handleSubmit(onSubmit)}
-        ref={rootEl}
       >
-        <CustomBlockContext.Provider
-          value={{
-            editable,
-            onImageUpload,
-            isSelectingPinLocationFor,
-            setIsSelectingPinLocationFor,
-          }}
-        >
-          <Button
-            className={cn(
-              "absolute left-2 top-2 z-10 shadow-sm transition-opacity delay-300 duration-300",
-              {
-                "opacity-0": drawerOpen,
-              },
-            )}
-            onClick={() => {
-              setDrawerOpen(true);
+        <div className="relative flex-1 md:flex md:overflow-hidden">
+          <CustomBlockContext.Provider
+            value={{
+              editable,
+              onImageUpload,
+              isSelectingPinLocationFor,
+              setIsSelectingPinLocationFor,
             }}
-            size="icon-sm"
-            variant="outline"
           >
-            <ChevronsRightIcon className="size-5" />
-          </Button>
-          {rootEl.current ? (
-            <>
-              <DrawerPrimitive.Root
-                container={rootEl.current}
-                direction="left"
-                dismissible={false}
-                modal={false}
-                onOpenChange={setDrawerOpen}
-                open={drawerOpen}
+            {/* MAP CONTAINER */}
+            <div className="top-0 flex flex-1 max-md:sticky max-md:mb-[-200px] max-md:h-dvh">
+              <Map
+                editable={editable}
+                initialViewState={initialViewState}
+                isMobile={isMobile}
+                mapPadding={mapPadding}
+                onLoad={onLoad}
+                pageData={pageData}
               >
-                <DrawerPrimitive.Portal>
-                  <DrawerPrimitive.Content
-                    className={cn(
-                      "bg-background prose group absolute bottom-0 top-0 z-40 h-full rounded-r-lg shadow-lg outline-none",
-                      editable ? "w-[392px] pl-8" : "w-[360px]",
-                    )}
-                  >
-                    <Button
-                      className="absolute right-2 top-2"
-                      onClick={() => {
-                        setDrawerOpen(false);
-                      }}
-                      size="icon-sm"
-                      variant="ghost"
-                    >
-                      <ChevronsLeftIcon className="size-5" />
-                    </Button>
-                    <Blocknote
-                      currentPage={currentPage}
-                      description={currentPage.content ?? undefined}
-                      editable={editable}
-                      isPage
-                      key={currentPage.id}
-                      onDescriptionChange={onDescriptionChange}
-                      onPrev={onPrev}
-                      onTitleChange={onTitleChange}
-                      title={currentPage.title}
-                    />
-                    <div
-                      className={cn("mt-auto flex justify-between px-4 py-2", {
-                        hidden: editable,
-                      })}
-                    >
-                      <div className="gap-2">
-                        <Button
-                          disabled={editable}
-                          onClick={onPrev}
-                          size="icon"
-                          type="button"
-                          variant="ghost"
-                        >
-                          <ArrowLeftIcon />
-                        </Button>
-                      </div>
-                      <Button
-                        disabled={editable}
-                        size="icon"
-                        type="submit"
-                        variant="ghost"
-                      >
-                        <ArrowRightIcon />
-                      </Button>
-                    </div>
-                  </DrawerPrimitive.Content>
-                </DrawerPrimitive.Portal>
-              </DrawerPrimitive.Root>
-              <DrawerPrimitive.Root
-                container={rootEl.current}
-                direction="left"
-                dismissible={false}
-                key={activePoint?.rowId}
-                modal={false}
-                onOpenChange={(val) => {
-                  if (!val) {
-                    setQueryString({
-                      key: "layer_point",
-                      value: null,
-                    });
-                  }
-                }}
-                open={Boolean(activePoint)}
-              >
-                <DrawerPrimitive.Portal>
-                  <DrawerPrimitive.Content
-                    className={cn(
-                      "bg-background prose group absolute bottom-0 top-0 z-50 h-full rounded-r-lg shadow-lg outline-none",
-                      editable ? "w-[392px] pl-8" : "w-[360px]",
-                    )}
-                  >
-                    <Button
-                      className="absolute right-2 top-2"
-                      onClick={() => {
+                <div
+                  className={cn(
+                    "absolute bottom-0 right-0 top-0 transition-[width] duration-200",
+                    drawerOpen || Boolean(activePoint)
+                      ? editable
+                        ? "w-[calc(100%-392px)]"
+                        : "w-[calc(100%-360px)]"
+                      : "w-full",
+                  )}
+                >
+                  {children}
+                </div>
+              </Map>
+            </div>
+            <Button
+              className={cn(
+                "absolute left-2 top-2 z-10 shadow-sm transition-opacity delay-300 duration-300 max-md:hidden",
+                {
+                  "opacity-0": drawerOpen,
+                },
+              )}
+              onClick={() => {
+                setDrawerOpen(true);
+              }}
+              size="icon-sm"
+              variant="outline"
+            >
+              <ChevronsRightIcon className="size-5" />
+            </Button>
+            {isMobile ? (
+              <AnimatePresence mode="popLayout">
+                <motion.div
+                  animate={{
+                    y: 0,
+                    opacity: 1,
+                    transition: {
+                      default: {
+                        type: "spring",
+                        bounce: 0.2,
+                        duration: 1,
+                      },
+                      opacity: { ease: "linear" },
+                    },
+                  }}
+                  className="rounded-t-xl shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]"
+                  exit={{ y: 200, opacity: 0 }}
+                  initial={{ y: 200, opacity: 0 }}
+                  key={activePoint?.rowId}
+                  layoutScroll
+                  style={{
+                    overflow: "scroll",
+                  }}
+                >
+                  {!activePoint ? (
+                    <MobileDrawer open={drawerOpen} withPadding={editable}>
+                      {pageContent}
+                    </MobileDrawer>
+                  ) : (
+                    <MobileDrawer
+                      onClose={() => {
+                        window.scrollTo({ top: 0, behavior: "smooth" });
                         setQueryString({
                           key: "layer_point",
                           value: null,
                         });
                       }}
-                      size="icon-sm"
-                      variant="ghost"
+                      open={Boolean(activePoint)}
+                      withPadding={editable}
                     >
-                      <XIcon className="size-5" />
-                    </Button>
-                    <Blocknote
-                      currentPage={currentPage}
-                      description={
-                        activePoint?.description?.richtextCell?.value ??
-                        undefined
-                      }
-                      editable={editable}
-                      isPage
-                      key={currentPage.id}
-                      onDescriptionChange={(val) => {
-                        activePoint?.description &&
-                          onPoiCellChange &&
-                          onPoiCellChange({
-                            type: "richtext",
-                            rowId: activePoint.rowId,
-                            columnId: activePoint.description.columnId,
-                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                            value: val as any,
-                          });
-                      }}
-                      onPrev={onPrev}
-                      onTitleChange={(val) => {
-                        activePoint?.title &&
-                          onPoiCellChange &&
-                          onPoiCellChange({
-                            type: "string",
-                            rowId: activePoint.rowId,
-                            columnId: activePoint.title.columnId,
-                            value: val,
-                          });
-                      }}
-                      title={activePoint?.title?.stringCell?.value}
-                    />
-                  </DrawerPrimitive.Content>
-                </DrawerPrimitive.Portal>
-              </DrawerPrimitive.Root>
-            </>
-          ) : null}
-          <Map
-            editable={editable}
-            initialViewState={initialViewState}
-            mapPadding={mapPadding}
-            onLoad={onLoad}
-            pageData={pageData}
-          >
-            <div
-              className={cn(
-                "absolute bottom-0 right-0 top-0 transition-[width] duration-200",
-                drawerOpen || Boolean(activePoint)
-                  ? editable
-                    ? "w-[calc(100%-392px)]"
-                    : "w-[calc(100%-360px)]"
-                  : "w-full",
-              )}
-            >
-              {children}
-            </div>
-          </Map>
-        </CustomBlockContext.Provider>
+                      {activePointContent}
+                    </MobileDrawer>
+                  )}
+                </motion.div>
+              </AnimatePresence>
+            ) : (
+              <>
+                <DesktopDrawer
+                  onClose={() => {
+                    setDrawerOpen(false);
+                  }}
+                  open={drawerOpen}
+                  withPadding={editable}
+                >
+                  {pageContent}
+                </DesktopDrawer>
+                <DesktopDrawer
+                  onClose={() => {
+                    setQueryString({
+                      key: "layer_point",
+                      value: null,
+                    });
+                  }}
+                  open={Boolean(activePoint)}
+                  withPadding={editable}
+                >
+                  {activePointContent}
+                </DesktopDrawer>
+              </>
+            )}
+          </CustomBlockContext.Provider>
+        </div>
+        <div className="fixed bottom-0 z-50 w-full bg-white p-2 md:hidden">
+          {actionButtons}
+        </div>
       </form>
     </Form>
   );

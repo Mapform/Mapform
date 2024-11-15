@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { getCurrentSession } from "~/data/auth/get-current-session";
 
 // Base client
-export const actionClient = createSafeActionClient();
+export const baseClient = createSafeActionClient();
 
 // Exceptions for workspace and teamspace slugs because they are also positional params
 const workspaceExceptions = ["signin", "signup", "onboarding"];
@@ -14,14 +14,14 @@ const teamspaceExceptions = ["settings"];
  * Check that the user is authenticated, and only requested workspace /
  * teamspace resources they have access to.
  */
-export const authAction = actionClient.use(async ({ next }) => {
+export const authAction = baseClient.use(async ({ next }) => {
   const response = await getCurrentSession();
   const headersList = await headers();
   const workspaceSlug = headersList.get("x-workspace-slug") ?? "";
   const teamspaceSlug = headersList.get("x-teamspace-slug") ?? "";
 
   if (!response?.user) {
-    return redirect("/signin");
+    return redirect("/app/signin");
   }
 
   const hasAccessToWorkspace = [
@@ -37,12 +37,17 @@ export const authAction = actionClient.use(async ({ next }) => {
   ].some((ts) => ts === teamspaceSlug);
 
   if (workspaceSlug && !hasAccessToWorkspace) {
-    return redirect("/");
+    return redirect("/app");
   }
 
   if (teamspaceSlug && !hasAccessToTeamspace) {
-    return redirect(`/${workspaceSlug}`);
+    return redirect(`/app/${workspaceSlug}`);
   }
 
   return next({ ctx: { user: response.user, session: response.session } });
 });
+
+/**
+ * We can place explicit checks for the share client here.
+ */
+export const shareClient = baseClient.use(({ next }) => next());

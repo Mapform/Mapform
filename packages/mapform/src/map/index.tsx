@@ -20,6 +20,7 @@ interface MapProps {
   onLoad?: () => void;
   initialViewState: ViewState;
   children?: React.ReactNode;
+  isMobile?: boolean;
 }
 
 /**
@@ -35,6 +36,7 @@ export function Map({
   pageData,
   onLoad,
   children,
+  isMobile,
 }: MapProps) {
   const setQueryString = useSetQueryString();
   const { map, setMap } = useMapform();
@@ -49,7 +51,7 @@ export function Map({
         type: "Feature",
         geometry: {
           type: "Point",
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- We know it's not null
           coordinates: [point.value!.x, point.value!.y],
         },
         properties: {
@@ -85,6 +87,7 @@ export function Map({
         bearing: initialViewState.bearing,
         maxZoom: 20,
         logoPosition: "bottom-right",
+        scrollZoom: !isMobile,
         // We override the internal resize observer because we are using our own
         trackResize: false,
         // fitBoundsOptions: {
@@ -165,6 +168,7 @@ export function Map({
           const feature = e.features?.[0];
 
           if (feature?.properties) {
+            isMobile && window.scrollTo({ top: 0, behavior: "smooth" });
             setQueryString({
               key: "layer_point",
               value: `${feature.properties.rowId}_${feature.properties.pointLayerId}`,
@@ -190,7 +194,7 @@ export function Map({
         // });
       }
     }
-  }, [map, geojson, setQueryString]);
+  }, [map, geojson, setQueryString, isMobile]);
 
   return (
     <div

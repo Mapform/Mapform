@@ -10,5 +10,5 @@ export const deletePageAction = authAction
   .action(async ({ parsedInput }) => {
     await deletePage(parsedInput);
 
-    revalidatePath("/[wsSlug]/[tsSlug]/projects/[pId]/project", "page");
+    revalidatePath("/app/[wsSlug]/[tsSlug]/projects/[pId]/project", "page");
   });

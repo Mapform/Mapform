@@ -10,5 +10,5 @@ export const duplicateRowsAction = authAction
   .action(async ({ parsedInput }) => {
     await duplicateRows(parsedInput);
 
-    revalidatePath("/[wsSlug]/[tsSlug]/datasets/[dId]", "page");
+    revalidatePath("/app/[wsSlug]/[tsSlug]/datasets/[dId]", "page");
   });

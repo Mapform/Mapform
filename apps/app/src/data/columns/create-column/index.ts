@@ -10,7 +10,7 @@ export const createColumnAction = authAction
   .action(async ({ parsedInput }) => {
     const newColumn = await createColumn(parsedInput);
 
-    revalidatePath("/[wsSlug]/[tsSlug]/projects/[pId]/project", "page");
+    revalidatePath("/app/[wsSlug]/[tsSlug]/projects/[pId]/project", "page");
 
     return newColumn;
   });

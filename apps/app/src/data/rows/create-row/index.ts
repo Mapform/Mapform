@@ -10,7 +10,7 @@ export const createRowAction = authAction
   .action(async ({ parsedInput: { datasetId } }) => {
     const newRow = await createRow({ datasetId });
 
-    revalidatePath("/[wsSlug]/[tsSlug]/datasets/[dId]", "page");
+    revalidatePath("/app/[wsSlug]/[tsSlug]/datasets/[dId]", "page");
 
     return newRow;
   });

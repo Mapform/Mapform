@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ["2on150idud1elpoq.public.blob.vercel-storage.com"],
+    domains: ["rwvej77wzlgw9uvu.public.blob.vercel-storage.com"],
   },
   transpilePackages: ["@mapform/ui"],
 };

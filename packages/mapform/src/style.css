@@ -34,3 +34,11 @@ h3.bn-inline-content {
   --bn-border-radius: 4px;
   --bn-font-family: Helvetica Neue, sans-serif; */
 }
+
+/* Media query, when screen less than 768 */
+@media (max-width: 768px) {
+  .mapboxgl-ctrl-bottom-right,
+  .mapboxgl-ctrl-bottom-left {
+    bottom: 200px;
+  }
+}

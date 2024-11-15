@@ -2,10 +2,10 @@
 
 import { signOut } from "@mapform/backend/auth/sign-out";
 import { redirect } from "next/navigation";
-import { actionClient } from "~/lib/safe-action";
+import { baseClient } from "~/lib/safe-action";
 
-export const signOutAction = actionClient.action(async () => {
+export const signOutAction = baseClient.action(async () => {
   await signOut();
 
-  redirect("/signin");
+  redirect("/app/signin");
 });

@@ -10,7 +10,7 @@ export const createPageAction = authAction
   .action(async ({ parsedInput }) => {
     const page = await createPage(parsedInput);
 
-    revalidatePath("/[wsSlug]/[tsSlug]/projects/[pId]/project", "page");
+    revalidatePath("/app/[wsSlug]/[tsSlug]/projects/[pId]/project", "page");
 
     return page;
   });
