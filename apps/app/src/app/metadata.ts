@@ -10,7 +10,6 @@ export const defaultMetadata: Metadata = {
   },
   description: DESCRIPTION,
   metadataBase: new URL("https://www.mapform.co"),
-  colorScheme: "light",
 };
 
 // TODO: Implement
