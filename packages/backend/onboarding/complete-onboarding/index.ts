@@ -11,12 +11,12 @@ import {
 import type { CompleteOnboardingSchema } from "./schema";
 
 export const completeOnboarding = async ({
-  name,
+  userName,
+  workspaceName,
   userId,
 }: CompleteOnboardingSchema & { userId: string }) => {
   const randomChars = Math.random().toString(36).substring(7);
 
-  const workspaceName = `${name}'s Mapform`;
   const workspacelug = `${slugify(workspaceName, {
     lower: true,
     strict: true,
@@ -29,7 +29,7 @@ export const completeOnboarding = async ({
     await tx
       .update(users)
       .set({
-        name,
+        name: userName,
         hasOnboarded: true,
       })
       .where(eq(users.id, userId));

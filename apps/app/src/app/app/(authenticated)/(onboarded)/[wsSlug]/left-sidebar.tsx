@@ -7,7 +7,6 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
 } from "@mapform/ui/components/dropdown-menu";
 import {
   SidebarContent,
@@ -25,9 +24,7 @@ import {
   SidebarMenuAction,
 } from "@mapform/ui/components/sidebar";
 import {
-  AudioWaveform,
   ChevronsUpDown,
-  Command,
   GalleryVerticalEnd,
   HomeIcon,
   Plus,
