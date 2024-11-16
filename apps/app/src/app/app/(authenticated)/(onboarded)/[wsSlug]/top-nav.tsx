@@ -48,7 +48,7 @@ export function TopNav({ navSlot }: TopNavProps) {
     : [{ name: "Home", href: `/app/${params.wsSlug}` }];
 
   return (
-    <div className="flex h-[50px] items-center border-b px-4 py-2">
+    <div className="flex h-16 items-center px-4 py-2">
       <nav className="-mr-2 flex flex-1 items-center">
         <div className="mr-2 flex">
           <TooltipProvider delayDuration={200}>

@@ -88,8 +88,8 @@ export function PageList() {
   };
 
   return (
-    <SidebarContent>
-      <SidebarGroup>
+    <SidebarContent className="h-full">
+      <SidebarGroup className="h-full">
         <SidebarGroupLabel>Pages</SidebarGroupLabel>
         <SidebarGroupAction
           disabled={createPageStatus === "executing"}

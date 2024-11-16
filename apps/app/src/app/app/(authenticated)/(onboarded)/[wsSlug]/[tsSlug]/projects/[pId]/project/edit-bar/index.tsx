@@ -211,7 +211,7 @@ function EditBarInner({ optimisticPage, updatePageServer }: EditBarInnerProps) {
                 });
               }
             }}
-            size="sm"
+            size="icon"
             variant="ghost"
           >
             <PinIcon className="size-5" />

@@ -125,8 +125,8 @@ export function LayerList() {
   };
 
   return (
-    <SidebarContent>
-      <SidebarGroup>
+    <SidebarContent className="h-full">
+      <SidebarGroup className="h-full">
         <SidebarGroupLabel>Layers</SidebarGroupLabel>
         <Popover
           modal
