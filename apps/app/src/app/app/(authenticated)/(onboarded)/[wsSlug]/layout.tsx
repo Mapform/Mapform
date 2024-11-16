@@ -5,6 +5,7 @@ import { getCurrentUserWorkspaceMembershipsAction } from "~/data/workspace-membe
 import { getWorkspaceDirectoryAction } from "~/data/workspaces/get-workspace-directory";
 import { TopNav } from "./top-nav";
 import { WorkspaceProvider } from "./workspace-context";
+import { LeftSidebar } from "./left-sidebar";
 
 export default async function WorkspaceLayout(props: {
   params: Promise<{ wsSlug: string }>;
@@ -32,6 +33,7 @@ export default async function WorkspaceLayout(props: {
       workspaceMemberships={workspaceMemberships}
       workspaceSlug={params.wsSlug}
     >
+      <LeftSidebar />
       <main className="flex flex-1 overflow-hidden">
         <Suspense fallback={<div>Loading...</div>}>
           <div className="flex flex-1 flex-col overflow-hidden">

@@ -9,7 +9,6 @@ import {
 } from "@mapform/ui/components/sidebar";
 import { useParams } from "next/navigation";
 import { RightSidebar } from "./right-sidebar";
-import { LeftSidebar } from "./left-sidebar";
 
 export interface WorkspaceContextInterface {
   workspaceSlug: string;
@@ -68,7 +67,6 @@ export function WorkspaceProvider({
     >
       <SidebarLeftProvider defaultOpen={defaultLeftOpen}>
         <SidebarRightProvider defaultOpen={defaultRightOpen}>
-          <LeftSidebar />
           {children}
           {hasDrawer ? <RightSidebar /> : null}
         </SidebarRightProvider>
