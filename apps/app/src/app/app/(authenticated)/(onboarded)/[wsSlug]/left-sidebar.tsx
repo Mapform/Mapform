@@ -32,11 +32,10 @@ import {
   HomeIcon,
   Plus,
   MapIcon,
-  Settings2,
+  Settings2Icon,
   TableIcon,
   ChevronRightIcon,
   LogOutIcon,
-  EllipsisIcon,
 } from "lucide-react";
 import {
   Collapsible,
@@ -49,12 +48,14 @@ import {
   AvatarImage,
 } from "@mapform/ui/components/avatar";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { signOutAction } from "~/data/auth/sign-out";
 import { useAuth } from "../../auth-context";
 import { useWorkspace } from "./workspace-context";
 
 export function LeftSidebar() {
   const { user } = useAuth();
+  const pathname = usePathname();
   const { workspaceDirectory, workspaceSlug } = useWorkspace();
 
   const data = {
@@ -85,43 +86,40 @@ export function LeftSidebar() {
         title: "Home",
         url: `/app/${workspaceSlug}`,
         icon: HomeIcon,
-        isActive: true,
+        isActive: pathname === `/app/${workspaceSlug}`,
       },
       {
         title: "Settings",
-        url: "#",
-        icon: Settings2,
-        items: [
-          {
-            title: "General",
-            url: "#",
-          },
-          {
-            title: "Team",
-            url: "#",
-          },
-          {
-            title: "Billing",
-            url: "#",
-          },
-          {
-            title: "Limits",
-            url: "#",
-          },
-        ],
+        url: `/app/${workspaceSlug}/settings`,
+        icon: Settings2Icon,
+        isActive: pathname === `/app/${workspaceSlug}/settings`,
       },
     ],
     spaces: workspaceDirectory.teamspaces.map((teamspace) => ({
       title: teamspace.name,
-      url: `/app/${workspaceSlug}/${teamspace.slug}`,
-      projects: teamspace.projects.map((project) => ({
-        title: project.name,
-        url: `/app/${workspaceSlug}/${teamspace.slug}/projects/${project.id}`,
-      })),
-      datasets: teamspace.datasets.map((dataset) => ({
-        title: dataset.name,
-        url: `/app/${workspaceSlug}/${teamspace.slug}/datasets/${dataset.id}`,
-      })),
+      project: {
+        url: `/app/${workspaceSlug}/${teamspace.slug}`,
+        isActive: pathname === `/app/${workspaceSlug}/${teamspace.slug}`,
+        projects: teamspace.projects.map((project) => ({
+          title: project.name,
+          url: `/app/${workspaceSlug}/${teamspace.slug}/projects/${project.id}`,
+          isActive:
+            pathname ===
+            `/app/${workspaceSlug}/${teamspace.slug}/projects/${project.id}`,
+        })),
+      },
+      dataset: {
+        url: `/app/${workspaceSlug}/${teamspace.slug}/datasets`,
+        isActive:
+          pathname === `/app/${workspaceSlug}/${teamspace.slug}/datasets`,
+        datasets: teamspace.datasets.map((dataset) => ({
+          title: dataset.name,
+          url: `/app/${workspaceSlug}/${teamspace.slug}/datasets/${dataset.id}`,
+          isActive:
+            pathname ===
+            `/app/${workspaceSlug}/${teamspace.slug}/datasets/${dataset.id}`,
+        })),
+      },
     })),
   };
 
@@ -192,7 +190,7 @@ export function LeftSidebar() {
             <SidebarMenu>
               {data.navMain.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarLeftMenuButton asChild>
+                  <SidebarLeftMenuButton asChild isActive={item.isActive}>
                     <Link href={item.url}>
                       <item.icon />
                       <span>{item.title}</span>
@@ -209,8 +207,11 @@ export function LeftSidebar() {
             <SidebarMenu>
               <Collapsible className="group/collapsible" defaultOpen>
                 <SidebarMenuItem>
-                  <SidebarLeftMenuButton asChild>
-                    <Link href={space.url}>
+                  <SidebarLeftMenuButton
+                    asChild
+                    isActive={space.project.isActive}
+                  >
+                    <Link href={space.project.url}>
                       <MapIcon />
                       <span>Projects</span>
                     </Link>
@@ -221,10 +222,13 @@ export function LeftSidebar() {
                     </SidebarMenuAction>
                   </CollapsibleTrigger>
                   <CollapsibleContent>
-                    {space.projects.map((project) => (
+                    {space.project.projects.map((project) => (
                       <SidebarMenuSub key={project.title}>
                         <SidebarMenuSubItem>
-                          <SidebarLeftMenuButton asChild>
+                          <SidebarLeftMenuButton
+                            asChild
+                            isActive={project.isActive}
+                          >
                             <Link href={project.url}>
                               {/* <project.icon /> */}
                               <span>{project.title}</span>
@@ -240,8 +244,11 @@ export function LeftSidebar() {
             <SidebarMenu>
               <Collapsible className="group/collapsible">
                 <SidebarMenuItem>
-                  <SidebarLeftMenuButton asChild>
-                    <a href={space.url}>
+                  <SidebarLeftMenuButton
+                    asChild
+                    isActive={space.dataset.isActive}
+                  >
+                    <a href={space.dataset.url}>
                       <TableIcon />
                       <span>Datasets</span>
                     </a>
@@ -253,10 +260,13 @@ export function LeftSidebar() {
                   </CollapsibleTrigger>
 
                   <CollapsibleContent>
-                    {space.datasets.map((dataset) => (
+                    {space.dataset.datasets.map((dataset) => (
                       <SidebarMenuSub key={dataset.title}>
                         <SidebarMenuSubItem>
-                          <SidebarLeftMenuButton asChild>
+                          <SidebarLeftMenuButton
+                            asChild
+                            isActive={dataset.isActive}
+                          >
                             <Link href={dataset.url}>
                               {/* <project.icon /> */}
                               <span>{dataset.title}</span>
