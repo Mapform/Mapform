@@ -8,7 +8,6 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuShortcut,
-  DropdownMenuGroup,
 } from "@mapform/ui/components/dropdown-menu";
 import {
   SidebarContent,
@@ -35,11 +34,6 @@ import {
   Settings2,
   TableIcon,
   ChevronRightIcon,
-  BadgeCheck,
-  Bell,
-  CreditCard,
-  LogOut,
-  Sparkles,
   LogOutIcon,
 } from "lucide-react";
 import {
@@ -53,10 +47,10 @@ import {
   AvatarImage,
 } from "@mapform/ui/components/avatar";
 import { signOutAction } from "~/data/auth/sign-out";
-import { useWorkspace } from "../workspace-context";
-import { useAuth } from "../../../auth-context";
+import { useAuth } from "../../auth-context";
+import { useWorkspace } from "./workspace-context";
 
-export function WorkspaceSidebar() {
+export function LeftSidebar() {
   const { user } = useAuth();
   const { workspaceDirectory, workspaceSlug } = useWorkspace();
 
@@ -127,9 +121,6 @@ export function WorkspaceSidebar() {
       })),
     })),
   };
-
-  console.log(1111, user);
-  console.log(2222, user?.name?.split(" ")[0]?.[0]);
 
   return (
     <SidebarLeft>

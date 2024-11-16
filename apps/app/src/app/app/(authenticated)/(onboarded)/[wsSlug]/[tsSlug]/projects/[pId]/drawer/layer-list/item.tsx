@@ -35,17 +35,14 @@ import {
 } from "@mapform/ui/components/alert-dialog";
 import { useAction } from "next-safe-action/hooks";
 import { startTransition, useState } from "react";
-import { Button } from "@mapform/ui/components/button";
-import { cn } from "@mapform/lib/classnames";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@mapform/ui/components/tooltip";
 import type { PageWithLayers } from "@mapform/backend/pages/get-page-with-layers";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import {
+  SidebarMenuAction,
+  SidebarMenuItem,
+  SidebarRightMenuButton,
+} from "@mapform/ui/components/sidebar";
 import { deleteLayerAction } from "~/data/layers/delete-layer";
 import { deletePageLayerAction } from "~/data/layers-to-pages/delete-page-layer";
 import { DragItem, DragHandle } from "~/components/draggable";
@@ -116,120 +113,98 @@ export function Item({ layer }: ItemProps) {
       <ContextMenu>
         <ContextMenuTrigger>
           <DragHandle id={layer.id}>
-            <div
-              className={cn(
-                "group -mx-2 mb-[2px] flex cursor-pointer items-center justify-between rounded pr-2 transition-colors hover:bg-stone-100",
-                {
-                  // "bg-stone-100": isActive,
-                },
-              )}
-            >
-              <div className="-mr-1 flex flex-1 items-center overflow-hidden">
-                <button
-                  className="flex flex-1 items-center gap-2 overflow-hidden py-1.5 pl-2"
-                  onClick={() => {
-                    // setActivePage(page);
-                    setLayerPopoverOpen(true);
-                  }}
-                  type="button"
+            <SidebarMenuItem>
+              <SidebarRightMenuButton
+                onClick={() => {
+                  setLayerPopoverOpen(true);
+                }}
+              >
+                <Layers2Icon />
+                <span className="truncate text-sm">
+                  {layer.name || "Untitled"}
+                </span>
+              </SidebarRightMenuButton>
+              <DropdownMenu
+                modal
+                onOpenChange={setDropdownOpen}
+                open={dropdownOpen}
+              >
+                <DropdownMenuTrigger asChild>
+                  <SidebarMenuAction>
+                    <EllipsisIcon />
+                  </SidebarMenuAction>
+                </DropdownMenuTrigger>
+
+                <DropdownMenuContent
+                  align="start"
+                  className="w-[200px] overflow-hidden"
+                  side="left"
                 >
-                  <Layers2Icon className="flex size-4 flex-shrink-0 items-center justify-center" />
-                  <span className="truncate text-sm">
-                    {layer.name || "Untitled"}
-                  </span>
-                </button>
-                <DropdownMenu
-                  modal
-                  onOpenChange={setDropdownOpen}
-                  open={dropdownOpen}
-                >
-                  <TooltipProvider delayDuration={200}>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <DropdownMenuTrigger asChild>
-                          <Button
-                            className="!ring-0 !ring-transparent !ring-opacity-0 !ring-offset-0 hover:bg-stone-200"
-                            size="icon-xs"
-                            variant="ghost"
-                          >
-                            <EllipsisIcon className="invisible flex size-4 flex-shrink-0 items-center justify-center transition-opacity group-hover:visible" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                      </TooltipTrigger>
-                      <DropdownMenuContent className="w-[200px] overflow-hidden">
-                        <DropdownMenuGroup>
-                          <DropdownMenuItem
-                            asChild
-                            className="flex items-center gap-2"
-                          >
-                            <Link
-                              href={`/app/${params.wsSlug}/${params.tsSlug}/datasets/${layer.datasetId}`}
-                            >
-                              <ArrowUpRightIcon className="size-4 flex-shrink-0" />
-                              View Dataset
-                            </Link>
-                          </DropdownMenuItem>
-                        </DropdownMenuGroup>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuGroup>
-                          <DropdownMenuItem
-                            className="flex items-center gap-2"
-                            onSelect={(e) => {
-                              e.preventDefault();
-                              setDropdownOpen(false);
-                              setLayerPopoverOpen(true);
-                            }}
-                          >
-                            <Settings2Icon className="size-4 flex-shrink-0" />
-                            Edit
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            className="flex items-center gap-2"
-                            onSelect={handleRemoveFromPage}
-                          >
-                            <UnlinkIcon className="size-4 flex-shrink-0" />
-                            Disconnect
-                          </DropdownMenuItem>
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <DropdownMenuItem
-                                className="flex items-center gap-2"
-                                onSelect={(e) => {
-                                  e.preventDefault();
-                                }}
-                              >
-                                <Trash2Icon className="size-4 flex-shrink-0" />
-                                Delete
-                              </DropdownMenuItem>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                              <AlertDialogHeader>
-                                <AlertDialogTitle>
-                                  Are you sure?
-                                </AlertDialogTitle>
-                                <AlertDialogDescription>
-                                  This layer will be permanently deleted on
-                                  every page.
-                                </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                <AlertDialogAction onClick={handleDelete}>
-                                  Continue
-                                </AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
-                        </DropdownMenuGroup>
-                      </DropdownMenuContent>
-                      <TooltipContent side="bottom">
-                        Delete or edit
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </DropdownMenu>
-              </div>
-            </div>
+                  <DropdownMenuGroup>
+                    <DropdownMenuItem
+                      asChild
+                      className="flex items-center gap-2"
+                    >
+                      <Link
+                        href={`/app/${params.wsSlug}/${params.tsSlug}/datasets/${layer.datasetId}`}
+                      >
+                        <ArrowUpRightIcon className="size-4 flex-shrink-0" />
+                        View Dataset
+                      </Link>
+                    </DropdownMenuItem>
+                  </DropdownMenuGroup>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuGroup>
+                    <DropdownMenuItem
+                      className="flex items-center gap-2"
+                      onSelect={(e) => {
+                        e.preventDefault();
+                        setDropdownOpen(false);
+                        setLayerPopoverOpen(true);
+                      }}
+                    >
+                      <Settings2Icon className="size-4 flex-shrink-0" />
+                      Edit
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      className="flex items-center gap-2"
+                      onSelect={handleRemoveFromPage}
+                    >
+                      <UnlinkIcon className="size-4 flex-shrink-0" />
+                      Disconnect
+                    </DropdownMenuItem>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <DropdownMenuItem
+                          className="flex items-center gap-2"
+                          onSelect={(e) => {
+                            e.preventDefault();
+                          }}
+                        >
+                          <Trash2Icon className="size-4 flex-shrink-0" />
+                          Delete
+                        </DropdownMenuItem>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This layer will be permanently deleted on every
+                            page.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction onClick={handleDelete}>
+                            Continue
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </DropdownMenuGroup>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </SidebarMenuItem>
           </DragHandle>
         </ContextMenuTrigger>
         <ContextMenuContent>

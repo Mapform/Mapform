@@ -7,8 +7,9 @@ import { notFound } from "next/navigation";
 import { getCurrentUserWorkspaceMembershipsAction } from "~/data/workspace-memberships/get-current-user-workspace-memberships";
 import { getWorkspaceDirectoryAction } from "~/data/workspaces/get-workspace-directory";
 import { TopNav } from "./top-nav";
-import { WorkspaceSidebar } from "./workspace-sidebar";
+import { LeftSidebar } from "./left-sidebar";
 import { WorkspaceProvider } from "./workspace-context";
+import { RightSidebar } from "./right-sidebar";
 
 export default async function WorkspaceLayout(props: {
   params: Promise<{ wsSlug: string }>;
@@ -31,7 +32,7 @@ export default async function WorkspaceLayout(props: {
     >
       <SidebarLeftProvider>
         <SidebarRightProvider>
-          <WorkspaceSidebar />
+          <LeftSidebar />
           <main className="flex flex-1 overflow-hidden">
             <Suspense fallback={<div>Loading...</div>}>
               <div className="flex flex-1 flex-col overflow-hidden">
@@ -40,6 +41,7 @@ export default async function WorkspaceLayout(props: {
               </div>
             </Suspense>
           </main>
+          <RightSidebar />
         </SidebarRightProvider>
       </SidebarLeftProvider>
     </WorkspaceProvider>
