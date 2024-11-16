@@ -14,6 +14,8 @@ export default async function WorkspaceLayout(props: {
   const cookieStore = await cookies();
   const defaultLeftOpen =
     cookieStore.get("sidebar-left:state")?.value === "true";
+  const defaultRightOpen =
+    cookieStore.get("sidebar-right:state")?.value === "true";
   const params = await props.params;
   const { children, nav } = props;
 
@@ -25,6 +27,7 @@ export default async function WorkspaceLayout(props: {
   return (
     <WorkspaceProvider
       defaultLeftOpen={defaultLeftOpen}
+      defaultRightOpen={defaultRightOpen}
       workspaceDirectory={workspaceDirectory}
       workspaceMemberships={workspaceMemberships}
       workspaceSlug={params.wsSlug}

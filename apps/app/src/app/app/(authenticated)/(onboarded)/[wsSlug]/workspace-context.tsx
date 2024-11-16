@@ -34,8 +34,10 @@ export function WorkspaceProvider({
   workspaceDirectory,
   workspaceMemberships,
   defaultLeftOpen,
+  defaultRightOpen,
 }: {
   defaultLeftOpen?: boolean;
+  defaultRightOpen?: boolean;
   workspaceMemberships: CurrentUserWorkspaceMemberships;
   workspaceDirectory: NonNullable<WorkspaceWithTeamspaces>;
 } & WorkspaceProviderProps) {
@@ -65,7 +67,7 @@ export function WorkspaceProvider({
       }}
     >
       <SidebarLeftProvider defaultOpen={defaultLeftOpen}>
-        <SidebarRightProvider>
+        <SidebarRightProvider defaultOpen={defaultRightOpen}>
           <LeftSidebar />
           {children}
           {hasDrawer ? <RightSidebar /> : null}

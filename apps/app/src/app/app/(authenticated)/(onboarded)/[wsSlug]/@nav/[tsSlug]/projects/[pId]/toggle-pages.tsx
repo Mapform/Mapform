@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@mapform/ui/components/button";
-import { PanelRightOpenIcon } from "lucide-react";
+import { PanelRightCloseIcon, PanelRightOpenIcon } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -13,23 +13,25 @@ import { useSidebarRight } from "@mapform/ui/components/sidebar";
 export default function TogglePages() {
   const { open, setOpen } = useSidebarRight();
 
-  if (open) return null;
-
   return (
     <TooltipProvider delayDuration={200}>
       <Tooltip>
         <TooltipTrigger asChild>
           <Button
             onClick={() => {
-              setOpen(true);
+              setOpen(!open);
             }}
             size="icon-sm"
             variant="ghost"
           >
-            <PanelRightOpenIcon className="size-5" />
+            {open ? (
+              <PanelRightCloseIcon className="size-5" />
+            ) : (
+              <PanelRightOpenIcon className="size-5" />
+            )}
           </Button>
         </TooltipTrigger>
-        <TooltipContent>Show Pages</TooltipContent>
+        <TooltipContent>{open ? "Hide" : "Show"} Pages</TooltipContent>
       </Tooltip>
     </TooltipProvider>
   );

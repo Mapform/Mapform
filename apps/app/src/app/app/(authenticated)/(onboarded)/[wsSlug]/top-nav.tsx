@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Button } from "@mapform/ui/components/button";
-import { MenuIcon } from "lucide-react";
+import { MenuIcon, PanelLeftCloseIcon, PanelLeftOpenIcon } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -62,7 +62,11 @@ export function TopNav({ navSlot }: TopNavProps) {
                   size="icon-sm"
                   variant="ghost"
                 >
-                  <MenuIcon className="size-5" />
+                  {open ? (
+                    <PanelLeftCloseIcon className="size-5" />
+                  ) : (
+                    <PanelLeftOpenIcon className="size-5" />
+                  )}
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
