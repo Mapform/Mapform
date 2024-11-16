@@ -8,18 +8,24 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@mapform/ui/components/tooltip";
-import { useRootLayout } from "~/app/app/(authenticated)/(onboarded)/[wsSlug]/root-layout/context";
+import { useSidebarRight } from "@mapform/ui/components/sidebar";
 
 export default function TogglePages() {
-  const { showDrawer, toggleDrawer } = useRootLayout();
+  const { open, setOpen } = useSidebarRight();
 
-  if (showDrawer) return null;
+  if (open) return null;
 
   return (
     <TooltipProvider delayDuration={200}>
       <Tooltip>
         <TooltipTrigger asChild>
-          <Button onClick={toggleDrawer} size="icon-sm" variant="ghost">
+          <Button
+            onClick={() => {
+              setOpen(true);
+            }}
+            size="icon-sm"
+            variant="ghost"
+          >
             <PanelRightOpenIcon className="size-5" />
           </Button>
         </TooltipTrigger>

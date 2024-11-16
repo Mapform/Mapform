@@ -29,11 +29,11 @@ import {
   type CreateEmptyDatasetSchema,
 } from "@mapform/backend/datasets/create-empty-dataset/schema";
 import { createEmptyDatasetAction } from "~/data/datasets/create-empty-dataset";
-import { useRootLayout } from "../../../root-layout/context";
+import { useWorkspace } from "../../../workspace-context";
 
 export function CreateDialog({ tsSlug }: { tsSlug: string }) {
   const [open, setOpen] = useState(false);
-  const { workspaceDirectory } = useRootLayout();
+  const { workspaceDirectory } = useWorkspace();
   const teamspaceId = workspaceDirectory.teamspaces.find(
     (ts) => ts.slug === tsSlug,
   )?.id;

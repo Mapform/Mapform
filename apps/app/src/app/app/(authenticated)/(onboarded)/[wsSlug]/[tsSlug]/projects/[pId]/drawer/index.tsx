@@ -15,23 +15,31 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@mapform/ui/components/resizable";
-import { useRootLayout } from "../../../../root-layout/context";
+import { SidebarRight, useSidebarRight } from "@mapform/ui/components/sidebar";
 import { LayerList } from "./layer-list";
 import { PageList } from "./page-list";
 
 export function Drawer() {
   const isClient = useIsClient();
-  const { drawerRef, toggleDrawer } = useRootLayout();
+  const { open, setOpen } = useSidebarRight();
 
   if (!isClient) return null;
 
+  return <SidebarRight>Test</SidebarRight>;
+
   return (
-    <Portal.Root className="flex-1" container={drawerRef.current}>
+    <Portal.Root className="flex-1">
       <div className="-mx-2 flex h-[50px] items-center gap-1 px-4">
         <TooltipProvider delayDuration={200}>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button onClick={toggleDrawer} size="icon-sm" variant="ghost">
+              <Button
+                onClick={() => {
+                  setOpen(!open);
+                }}
+                size="icon-sm"
+                variant="ghost"
+              >
                 <ChevronsRightIcon className="size-5" />
               </Button>
             </TooltipTrigger>

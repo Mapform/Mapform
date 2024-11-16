@@ -335,7 +335,7 @@ function SidebarLeft({ ref, ...props }: SidebarProps) {
   );
 }
 
-function SidebarRight({ ref, ...props }: SidebarProps) {
+function SidebarRight({ side = "right", ref, ...props }: SidebarProps) {
   const { isMobile, state, openMobile, setOpenMobile } = useSidebarRight();
 
   return (
@@ -345,6 +345,7 @@ function SidebarRight({ ref, ...props }: SidebarProps) {
       isMobile={isMobile}
       openMobile={openMobile}
       setOpenMobile={setOpenMobile}
+      side={side}
       state={state}
     />
   );

@@ -50,25 +50,27 @@ export function TopNav({ navSlot }: TopNavProps) {
   return (
     <div className="flex h-[50px] items-center border-b px-4 py-2">
       <nav className="-mr-2 flex flex-1 items-center">
-        {!open ? (
-          <div className="mr-2 flex">
-            <TooltipProvider delayDuration={200}>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    className="-ml-2"
-                    onClick={() => setOpen(true)}
-                    size="icon-sm"
-                    variant="ghost"
-                  >
-                    <MenuIcon className="size-5" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Show Navigation</TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </div>
-        ) : null}
+        <div className="mr-2 flex">
+          <TooltipProvider delayDuration={200}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  className="-ml-2"
+                  onClick={() => {
+                    setOpen(!open);
+                  }}
+                  size="icon-sm"
+                  variant="ghost"
+                >
+                  <MenuIcon className="size-5" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                {open ? "Hide" : "Show"} Navigation
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
         <h3 className="flex items-center text-base font-semibold leading-6 text-stone-900">
           {pathNav.map((section, index) => {
             return (

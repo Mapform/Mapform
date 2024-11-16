@@ -133,7 +133,9 @@ export function Switcher() {
               onClick={() => signOutAction()}
               type="button"
             >
-              <LogOutIcon className="size-4 flex-shrink-0" />
+              <div className="flex h-4 w-4 items-center justify-center">
+                <LogOutIcon className="h-4 w-4 flex-shrink-0" />
+              </div>
               Sign out
             </button>
           </div>
