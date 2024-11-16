@@ -20,7 +20,8 @@ import {
   TooltipTrigger,
 } from "./tooltip";
 
-const SIDEBAR_COOKIE_NAME = "sidebar:state";
+const SIDEBAR_LEFT_COOKIE_NAME = "sidebar-left:state" as const;
+const SIDEBAR_RIGHT_COOKIE_NAME = "sidebar-right:state" as const;
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
 const SIDEBAR_WIDTH = "16rem";
 const SIDEBAR_WIDTH_MOBILE = "18rem";
@@ -73,6 +74,7 @@ const SidebarProvider = React.forwardRef<
     open?: boolean;
     onOpenChange?: (open: boolean) => void;
     SidebarContext: React.Context<SidebarContextProps | null>;
+    cookieName: string;
   }
 >(
   (
@@ -83,6 +85,7 @@ const SidebarProvider = React.forwardRef<
       className,
       style,
       SidebarContext,
+      cookieName,
       children,
       ...props
     },
@@ -105,10 +108,12 @@ const SidebarProvider = React.forwardRef<
           _setOpen(openState);
         }
 
+        console.log(11111, openState);
+
         // This sets the cookie to keep the sidebar state.
-        document.cookie = `${SIDEBAR_COOKIE_NAME}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`;
+        document.cookie = `${cookieName}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`;
       },
-      [setOpenProp, open],
+      [open, setOpenProp, cookieName],
     );
 
     // Helper to toggle the sidebar.
@@ -189,19 +194,31 @@ SidebarProvider.displayName = "SidebarProvider";
 function SidebarLeftProvider({
   ref,
   ...props
-}: Omit<React.ComponentProps<typeof SidebarProvider>, "SidebarContext">) {
+}: Omit<
+  React.ComponentProps<typeof SidebarProvider>,
+  "SidebarContext" | "cookieName"
+>) {
   return (
-    <SidebarProvider SidebarContext={SidebarLeftContext} ref={ref} {...props} />
+    <SidebarProvider
+      SidebarContext={SidebarLeftContext}
+      cookieName={SIDEBAR_LEFT_COOKIE_NAME}
+      ref={ref}
+      {...props}
+    />
   );
 }
 
 function SidebarRightProvider({
   ref,
   ...props
-}: Omit<React.ComponentProps<typeof SidebarProvider>, "SidebarContext">) {
+}: Omit<
+  React.ComponentProps<typeof SidebarProvider>,
+  "SidebarContext" | "cookieName"
+>) {
   return (
     <SidebarProvider
       SidebarContext={SidebarRightContext}
+      cookieName={SIDEBAR_RIGHT_COOKIE_NAME}
       ref={ref}
       {...props}
     />
@@ -901,6 +918,8 @@ export {
   SidebarSeparator,
   SidebarLeftTrigger,
   SidebarRightTrigger,
+  SIDEBAR_LEFT_COOKIE_NAME,
+  SIDEBAR_RIGHT_COOKIE_NAME,
   useSidebarLeft,
   useSidebarRight,
 };

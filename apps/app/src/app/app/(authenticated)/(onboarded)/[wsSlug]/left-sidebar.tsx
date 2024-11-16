@@ -142,7 +142,7 @@ export function LeftSidebar() {
                       {/* {activeTeam.name} */}
                       Team name
                     </span>
-                    <span className="truncate text-xs">Pro</span>
+                    <span className="truncate text-xs">Basic</span>
                   </div>
                   <ChevronsUpDown className="ml-auto" />
                 </SidebarLeftMenuButton>

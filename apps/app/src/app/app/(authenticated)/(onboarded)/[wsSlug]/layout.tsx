@@ -1,9 +1,11 @@
 import {
+  SIDEBAR_LEFT_COOKIE_NAME,
   SidebarLeftProvider,
   SidebarRightProvider,
 } from "@mapform/ui/components/sidebar";
 import { cache, Suspense } from "react";
 import { notFound } from "next/navigation";
+import { cookies } from "next/headers";
 import { getCurrentUserWorkspaceMembershipsAction } from "~/data/workspace-memberships/get-current-user-workspace-memberships";
 import { getWorkspaceDirectoryAction } from "~/data/workspaces/get-workspace-directory";
 import { TopNav } from "./top-nav";
@@ -16,6 +18,9 @@ export default async function WorkspaceLayout(props: {
   children: React.ReactNode;
   nav?: React.ReactNode;
 }) {
+  const cookieStore = await cookies();
+  const defaultLeftOpen =
+    cookieStore.get("sidebar-left:state")?.value === "true";
   const params = await props.params;
   const { children, nav } = props;
 
@@ -30,7 +35,7 @@ export default async function WorkspaceLayout(props: {
       workspaceMemberships={workspaceMemberships}
       workspaceSlug={params.wsSlug}
     >
-      <SidebarLeftProvider>
+      <SidebarLeftProvider defaultOpen={defaultLeftOpen}>
         <SidebarRightProvider>
           <LeftSidebar />
           <main className="flex flex-1 overflow-hidden">
