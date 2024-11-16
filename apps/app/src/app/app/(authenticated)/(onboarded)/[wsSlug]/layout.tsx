@@ -1,17 +1,10 @@
-import {
-  SIDEBAR_LEFT_COOKIE_NAME,
-  SidebarLeftProvider,
-  SidebarRightProvider,
-} from "@mapform/ui/components/sidebar";
 import { cache, Suspense } from "react";
 import { notFound } from "next/navigation";
 import { cookies } from "next/headers";
 import { getCurrentUserWorkspaceMembershipsAction } from "~/data/workspace-memberships/get-current-user-workspace-memberships";
 import { getWorkspaceDirectoryAction } from "~/data/workspaces/get-workspace-directory";
 import { TopNav } from "./top-nav";
-import { LeftSidebar } from "./left-sidebar";
 import { WorkspaceProvider } from "./workspace-context";
-import { RightSidebar } from "./right-sidebar";
 
 export default async function WorkspaceLayout(props: {
   params: Promise<{ wsSlug: string }>;
@@ -31,24 +24,19 @@ export default async function WorkspaceLayout(props: {
 
   return (
     <WorkspaceProvider
+      defaultLeftOpen={defaultLeftOpen}
       workspaceDirectory={workspaceDirectory}
       workspaceMemberships={workspaceMemberships}
       workspaceSlug={params.wsSlug}
     >
-      <SidebarLeftProvider defaultOpen={defaultLeftOpen}>
-        <SidebarRightProvider>
-          <LeftSidebar />
-          <main className="flex flex-1 overflow-hidden">
-            <Suspense fallback={<div>Loading...</div>}>
-              <div className="flex flex-1 flex-col overflow-hidden">
-                <TopNav navSlot={nav} />
-                {children}
-              </div>
-            </Suspense>
-          </main>
-          <RightSidebar />
-        </SidebarRightProvider>
-      </SidebarLeftProvider>
+      <main className="flex flex-1 overflow-hidden">
+        <Suspense fallback={<div>Loading...</div>}>
+          <div className="flex flex-1 flex-col overflow-hidden">
+            <TopNav navSlot={nav} />
+            {children}
+          </div>
+        </Suspense>
+      </main>
     </WorkspaceProvider>
   );
 }

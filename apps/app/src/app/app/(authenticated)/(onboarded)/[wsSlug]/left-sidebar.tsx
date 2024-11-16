@@ -56,31 +56,30 @@ import { useWorkspace } from "./workspace-context";
 export function LeftSidebar() {
   const { user } = useAuth();
   const pathname = usePathname();
-  const { workspaceDirectory, workspaceSlug } = useWorkspace();
+  const {
+    workspaceMemberships,
+    workspaceDirectory,
+    workspaceSlug,
+    currentWorkspace,
+  } = useWorkspace();
+
+  if (!user) {
+    return null;
+  }
 
   const data = {
     user: {
-      name: "shadcn",
-      email: "m@example.com",
-      avatar: "/avatars/shadcn.jpg",
+      name: user.name ?? "No Name",
+      email: user.email,
+      avatar: "/avatars/shadcn.jpg", // TODO
     },
-    teams: [
-      {
-        name: "Acme Inc",
-        logo: GalleryVerticalEnd,
-        plan: "Enterprise",
-      },
-      {
-        name: "Acme Corp.",
-        logo: AudioWaveform,
-        plan: "Startup",
-      },
-      {
-        name: "Evil Corp.",
-        logo: Command,
-        plan: "Free",
-      },
-    ],
+    workspaces: workspaceMemberships.map((membership) => ({
+      name: membership.workspace.name,
+      logo: GalleryVerticalEnd,
+      url: `/app/${membership.workspace.slug}`,
+      isActive: membership.workspace.slug === workspaceSlug,
+      plan: "Basic",
+    })),
     navMain: [
       {
         title: "Home",
@@ -135,12 +134,11 @@ export function LeftSidebar() {
                   size="lg"
                 >
                   <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                    {/* <activeTeam.logo className="size-4" /> */}
+                    <GalleryVerticalEnd className="size-4" />
                   </div>
                   <div className="grid flex-1 text-left text-sm leading-tight">
                     <span className="truncate font-semibold">
-                      {/* {activeTeam.name} */}
-                      Team name
+                      {currentWorkspace?.workspace.name}
                     </span>
                     <span className="truncate text-xs">Basic</span>
                   </div>
@@ -153,30 +151,27 @@ export function LeftSidebar() {
                 side="bottom"
                 sideOffset={4}
               >
-                <DropdownMenuLabel className="text-muted-foreground text-xs">
-                  Teams
+                <DropdownMenuLabel className="text-muted-foreground mb-2 text-xs">
+                  Workspaces
                 </DropdownMenuLabel>
-                {data.teams.map((team, index) => (
-                  <DropdownMenuItem
-                    className="gap-2 p-2"
-                    key={team.name}
-                    // onClick={() => setActiveTeam(team)}
-                  >
-                    <div className="flex size-6 items-center justify-center rounded-sm border">
-                      <team.logo className="size-4 shrink-0" />
-                    </div>
-                    {/* {team.name} */}
-                    Team
-                    <DropdownMenuShortcut>⌘{index + 1}</DropdownMenuShortcut>
-                  </DropdownMenuItem>
+                {data.workspaces.map((workspace) => (
+                  <Link href={workspace.url} key={workspace.name}>
+                    <DropdownMenuItem className="gap-2 p-2">
+                      <div className="flex size-6 items-center justify-center rounded-sm border">
+                        <workspace.logo className="size-4 shrink-0" />
+                      </div>
+                      {workspace.name}
+                      {/* <DropdownMenuShortcut>⌘{index + 1}</DropdownMenuShortcut> */}
+                    </DropdownMenuItem>
+                  </Link>
                 ))}
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="gap-2 p-2">
+                <DropdownMenuItem className="gap-2 p-2" disabled>
                   <div className="bg-background flex size-6 items-center justify-center rounded-md border">
                     <Plus className="size-4" />
                   </div>
                   <div className="text-muted-foreground font-medium">
-                    Add team
+                    Add (coming soon)
                   </div>
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -292,18 +287,17 @@ export function LeftSidebar() {
                   size="lg"
                 >
                   <Avatar className="h-8 w-8 rounded-lg">
-                    <AvatarImage
-                      alt={user?.name ?? ""}
-                      src={data.user.avatar}
-                    />
+                    <AvatarImage alt={user.name ?? ""} src={data.user.avatar} />
                     <AvatarFallback className="rounded-lg">
-                      {user?.name?.split(" ")[0]?.[0]}
-                      {user?.name?.split(" ")[1]?.[0]}
+                      {data.user.name.split(" ")[0]?.[0]}
+                      {data.user.name.split(" ")[1]?.[0]}
                     </AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-semibold">{user?.name}</span>
-                    <span className="truncate text-xs">{user?.email}</span>
+                    <span className="truncate font-semibold">
+                      {data.user.name}
+                    </span>
+                    <span className="truncate text-xs">{data.user.email}</span>
                   </div>
                   <ChevronsUpDown className="ml-auto size-4" />
                 </SidebarLeftMenuButton>
@@ -318,19 +312,21 @@ export function LeftSidebar() {
                   <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                     <Avatar className="h-8 w-8 rounded-lg">
                       <AvatarImage
-                        alt={user?.name || ""}
+                        alt={data.user.name || ""}
                         src={data.user.avatar}
                       />
                       <AvatarFallback className="rounded-lg uppercase">
-                        {user?.name?.split(" ")[0]?.[0]}
-                        {user?.name?.split(" ")[1]?.[0]}
+                        {data.user.name.split(" ")[0]?.[0]}
+                        {data.user.name.split(" ")[1]?.[0]}
                       </AvatarFallback>
                     </Avatar>
                     <div className="grid flex-1 text-left text-sm leading-tight">
                       <span className="truncate font-semibold">
-                        {user?.name}
+                        {data.user.name}
                       </span>
-                      <span className="truncate text-xs">{user?.email}</span>
+                      <span className="truncate text-xs">
+                        {data.user.email}
+                      </span>
                     </div>
                   </div>
                 </DropdownMenuLabel>
