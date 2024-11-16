@@ -22,6 +22,7 @@ import {
   SidebarMenuItem,
   SidebarMenuSub,
   SidebarMenuSubItem,
+  SidebarMenuAction,
 } from "@mapform/ui/components/sidebar";
 import {
   AudioWaveform,
@@ -35,6 +36,7 @@ import {
   TableIcon,
   ChevronRightIcon,
   LogOutIcon,
+  EllipsisIcon,
 } from "lucide-react";
 import {
   Collapsible,
@@ -46,6 +48,7 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@mapform/ui/components/avatar";
+import Link from "next/link";
 import { signOutAction } from "~/data/auth/sign-out";
 import { useAuth } from "../../auth-context";
 import { useWorkspace } from "./workspace-context";
@@ -190,10 +193,10 @@ export function LeftSidebar() {
               {data.navMain.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarLeftMenuButton asChild>
-                    <a href={item.url}>
+                    <Link href={item.url}>
                       <item.icon />
                       <span>{item.title}</span>
-                    </a>
+                    </Link>
                   </SidebarLeftMenuButton>
                 </SidebarMenuItem>
               ))}
@@ -206,24 +209,26 @@ export function LeftSidebar() {
             <SidebarMenu>
               <Collapsible className="group/collapsible" defaultOpen>
                 <SidebarMenuItem>
+                  <SidebarLeftMenuButton asChild>
+                    <Link href={space.url}>
+                      <MapIcon />
+                      <span>Projects</span>
+                    </Link>
+                  </SidebarLeftMenuButton>
                   <CollapsibleTrigger asChild>
-                    <SidebarLeftMenuButton asChild>
-                      <a href={space.url}>
-                        <MapIcon />
-                        <span>Projects</span>
-                        <ChevronRightIcon className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                      </a>
-                    </SidebarLeftMenuButton>
+                    <SidebarMenuAction>
+                      <ChevronRightIcon className="transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                    </SidebarMenuAction>
                   </CollapsibleTrigger>
                   <CollapsibleContent>
                     {space.projects.map((project) => (
                       <SidebarMenuSub key={project.title}>
                         <SidebarMenuSubItem>
                           <SidebarLeftMenuButton asChild>
-                            <a href={project.url}>
+                            <Link href={project.url}>
                               {/* <project.icon /> */}
                               <span>{project.title}</span>
-                            </a>
+                            </Link>
                           </SidebarLeftMenuButton>
                         </SidebarMenuSubItem>
                       </SidebarMenuSub>
@@ -235,24 +240,27 @@ export function LeftSidebar() {
             <SidebarMenu>
               <Collapsible className="group/collapsible">
                 <SidebarMenuItem>
+                  <SidebarLeftMenuButton asChild>
+                    <a href={space.url}>
+                      <TableIcon />
+                      <span>Datasets</span>
+                    </a>
+                  </SidebarLeftMenuButton>
                   <CollapsibleTrigger asChild>
-                    <SidebarLeftMenuButton asChild>
-                      <a href={space.url}>
-                        <TableIcon />
-                        <span>Datasets</span>
-                        <ChevronRightIcon className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                      </a>
-                    </SidebarLeftMenuButton>
+                    <SidebarMenuAction>
+                      <ChevronRightIcon className="transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                    </SidebarMenuAction>
                   </CollapsibleTrigger>
+
                   <CollapsibleContent>
                     {space.datasets.map((dataset) => (
                       <SidebarMenuSub key={dataset.title}>
                         <SidebarMenuSubItem>
                           <SidebarLeftMenuButton asChild>
-                            <a href={dataset.url}>
+                            <Link href={dataset.url}>
                               {/* <project.icon /> */}
                               <span>{dataset.title}</span>
-                            </a>
+                            </Link>
                           </SidebarLeftMenuButton>
                         </SidebarMenuSubItem>
                       </SidebarMenuSub>
