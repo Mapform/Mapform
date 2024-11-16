@@ -214,9 +214,9 @@ export function LeftSidebar() {
                     </SidebarMenuAction>
                   </CollapsibleTrigger>
                   <CollapsibleContent>
-                    {space.project.projects.map((project) => (
-                      <SidebarMenuSub key={project.title}>
-                        <SidebarMenuSubItem>
+                    <SidebarMenuSub>
+                      {space.project.projects.map((project) => (
+                        <SidebarMenuSubItem key={project.title}>
                           <SidebarLeftMenuButton
                             asChild
                             isActive={project.isActive}
@@ -227,8 +227,8 @@ export function LeftSidebar() {
                             </Link>
                           </SidebarLeftMenuButton>
                         </SidebarMenuSubItem>
-                      </SidebarMenuSub>
-                    ))}
+                      ))}
+                    </SidebarMenuSub>
                   </CollapsibleContent>
                 </SidebarMenuItem>
               </Collapsible>
@@ -252,9 +252,9 @@ export function LeftSidebar() {
                   </CollapsibleTrigger>
 
                   <CollapsibleContent>
-                    {space.dataset.datasets.map((dataset) => (
-                      <SidebarMenuSub key={dataset.title}>
-                        <SidebarMenuSubItem>
+                    <SidebarMenuSub>
+                      {space.dataset.datasets.map((dataset) => (
+                        <SidebarMenuSubItem key={dataset.title}>
                           <SidebarLeftMenuButton
                             asChild
                             isActive={dataset.isActive}
@@ -265,8 +265,8 @@ export function LeftSidebar() {
                             </Link>
                           </SidebarLeftMenuButton>
                         </SidebarMenuSubItem>
-                      </SidebarMenuSub>
-                    ))}
+                      ))}
+                    </SidebarMenuSub>
                   </CollapsibleContent>
                 </SidebarMenuItem>
               </Collapsible>
