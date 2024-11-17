@@ -47,17 +47,26 @@ export function CreateDialog({ tsSlug }: { tsSlug: string }) {
   const { execute, status } = useAction(createEmptyDatasetAction, {
     onError: ({ error }) => {
       if (error.serverError) {
-        toast(error.serverError);
+        toast({
+          title: "Uh oh! Something went wrong.",
+          description: error.serverError,
+        });
         return;
       }
 
       if (error.validationErrors) {
-        toast("There was an error creating the dataset");
+        toast({
+          title: "Uh oh! Something went wrong.",
+          description: "There was an error creating the dataset",
+        });
       }
     },
     onSuccess: () => {
       form.reset();
-      toast("Your dataset has been created.");
+      toast({
+        title: "Success!",
+        description: "Your dataset has been created.",
+      });
       setOpen(false);
     },
   });

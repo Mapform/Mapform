@@ -65,19 +65,26 @@ export const LayerPopoverContent = forwardRef<
         return;
       }
 
-      toast(
-        layerToEdit
-          ? "Layer updated successfully."
-          : "Layer created successfully.",
-      );
+      toast({
+        title: "Success!",
+        description: layerToEdit
+          ? "Your layer has been updated."
+          : "Your layer has been created.",
+      });
     },
     onError: ({ error }) => {
       if (error.serverError) {
-        toast(error.serverError);
+        toast({
+          title: "Uh oh! Something went wrong.",
+          description: error.serverError,
+        });
         return;
       }
 
-      toast("There was an error creating the layer.");
+      toast({
+        title: "Uh oh! Something went wrong.",
+        description: "There was an error creating the layer.",
+      });
     },
   });
 

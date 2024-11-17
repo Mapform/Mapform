@@ -47,17 +47,26 @@ export function CreateDialog({ tsSlug }: { tsSlug: string }) {
   const { execute, status } = useAction(createProjectAction, {
     onError: ({ error }) => {
       if (error.serverError) {
-        toast(error.serverError);
+        toast({
+          title: "Uh oh! Something went wrong.",
+          description: error.serverError,
+        });
         return;
       }
 
       if (error.validationErrors) {
-        toast("There was an error creating the project");
+        toast({
+          title: "Uh oh! Something went wrong.",
+          description: "There was an error creating the project",
+        });
       }
     },
     onSuccess: () => {
       form.reset();
-      toast("Your project has been created.");
+      toast({
+        title: "Success!",
+        description: "Your project has been created.",
+      });
       setOpen(false);
     },
   });

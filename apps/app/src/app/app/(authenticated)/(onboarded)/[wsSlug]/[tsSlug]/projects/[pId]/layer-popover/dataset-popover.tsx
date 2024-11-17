@@ -40,7 +40,10 @@ export function DatasetPopover({ form }: DatasetPopoverProps) {
     onSuccess: ({ data, input }) => {
       if (!data?.dataset) return;
 
-      toast("Dataset created!");
+      toast({
+        title: "Success!",
+        description: "Your dataset has been created.",
+      });
       form.setValue("datasetId", data.dataset.id);
 
       if (input.layerType === "point") {

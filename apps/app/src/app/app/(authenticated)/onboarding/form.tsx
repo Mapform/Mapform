@@ -36,16 +36,25 @@ export function OnboardingForm({ email }: OnboardingFormProps) {
 
   const { execute, status } = useAction(completeOnboardingAction, {
     onSuccess: () => {
-      toast("Your account has been created. Welcome to Mapform! 🎉");
+      toast({
+        title: "Success!",
+        description: "Your account has been created. Welcome to Mapform! 🎉",
+      });
     },
     onError: ({ error }) => {
       if (error.serverError) {
-        toast(error.serverError);
+        toast({
+          title: "Uh oh! Something went wrong.",
+          description: error.serverError,
+        });
         return;
       }
 
       if (error.validationErrors) {
-        toast("There was an error creating your account");
+        toast({
+          title: "Uh oh! Something went wrong.",
+          description: "There was an error creating your account",
+        });
       }
     },
   });

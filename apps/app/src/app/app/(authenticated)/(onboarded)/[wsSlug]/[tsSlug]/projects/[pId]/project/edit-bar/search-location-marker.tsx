@@ -78,7 +78,10 @@ export function SearchLocationMarker({
       setDrawerOpen(true);
       setOpen(false);
       setLayerPopoverOpen(false);
-      toast("Point created!");
+      toast({
+        title: "Success!",
+        description: "Point created.",
+      });
     },
   });
 
