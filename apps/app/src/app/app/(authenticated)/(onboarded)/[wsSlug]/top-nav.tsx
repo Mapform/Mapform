@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Button } from "@mapform/ui/components/button";
-import { MenuIcon, PanelLeftCloseIcon, PanelLeftOpenIcon } from "lucide-react";
+import { PanelLeftCloseIcon, PanelLeftOpenIcon } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -33,19 +33,33 @@ export function TopNav({ navSlot }: TopNavProps) {
   const project = teamspaces?.projects.find((p) => p.id === params.pId);
   const dataset = teamspaces?.datasets.find((d) => d.id === params.dId);
 
-  const pathNav = teamspaces
-    ? [
-        {
-          name: teamspaces.name,
-          href: `/app/${params.wsSlug}/${params.tsSlug}`,
-        },
-        {
-          name: project?.name,
-          href: `/app/${params.wsSlug}/${params.tsSlug}/${params.pId}`,
-        },
-        { name: dataset?.name },
-      ].filter((section) => section.name)
-    : [{ name: "Home", href: `/app/${params.wsSlug}` }];
+  const breadcrumbs = [
+    { name: "Home", href: `/app/${params.wsSlug}` },
+    ...(teamspaces
+      ? [
+          {
+            name: teamspaces.name,
+            href: `/app/${params.wsSlug}/${params.tsSlug}`,
+          },
+        ]
+      : []),
+    ...(project
+      ? [
+          {
+            name: project.name,
+            href: `/app/${params.wsSlug}/${params.tsSlug}/projects/${params.pId}`,
+          },
+        ]
+      : []),
+    ...(dataset
+      ? [
+          {
+            name: dataset.name,
+            href: `/app/${params.wsSlug}/${params.tsSlug}/datasets/${params.dId}`,
+          },
+        ]
+      : []),
+  ];
 
   return (
     <div className="flex h-16 items-center px-4 py-2">
@@ -76,15 +90,15 @@ export function TopNav({ navSlot }: TopNavProps) {
           </TooltipProvider>
         </div>
         <h3 className="flex items-center text-base font-semibold leading-6 text-stone-900">
-          {pathNav.map((section, index) => {
+          {breadcrumbs.map((breadcrumb, index) => {
             return (
-              <div key={section.name}>
-                {section.href ? (
-                  <Link href={section.href}>{section.name}</Link>
+              <div key={breadcrumb.name}>
+                {breadcrumb.href ? (
+                  <Link href={breadcrumb.href}>{breadcrumb.name}</Link>
                 ) : (
-                  section.name
+                  breadcrumb.name
                 )}
-                {index < pathNav.length - 1 && (
+                {index < breadcrumbs.length - 1 && (
                   <span className="mx-3 text-sm text-stone-200">/</span>
                 )}
               </div>
