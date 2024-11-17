@@ -24,19 +24,23 @@ export const authAction = baseClient.use(async ({ next }) => {
     return redirect("/app/signin");
   }
 
-  const hasAccessToWorkspace = [
-    ...workspaceExceptions,
-    ...response.user.workspaceMemberships.map((wm) => wm.workspace.slug),
-  ].some((ws) => workspaceSlug === ws);
+  const checkAccessToWorkspace = (slug: string) =>
+    [
+      ...workspaceExceptions,
+      ...response.user.workspaceMemberships.map((wm) => wm.workspace.slug),
+    ].some((ws) => slug === ws);
+  const hasAccessToCurrentWorkspace = checkAccessToWorkspace(workspaceSlug);
 
-  const hasAccessToTeamspace = [
-    ...teamspaceExceptions,
-    ...response.user.workspaceMemberships.flatMap((wm) =>
-      wm.workspace.teamspaces.map((ts) => ts.slug),
-    ),
-  ].some((ts) => ts === teamspaceSlug);
+  const checkAccessToTeamspace = (slug: string) =>
+    [
+      ...teamspaceExceptions,
+      ...response.user.workspaceMemberships.flatMap((wm) =>
+        wm.workspace.teamspaces.map((ts) => ts.slug),
+      ),
+    ].some((ts) => ts === slug);
+  const hasAccessToTeamspace = checkAccessToTeamspace(teamspaceSlug);
 
-  if (workspaceSlug && !hasAccessToWorkspace) {
+  if (workspaceSlug && !hasAccessToCurrentWorkspace) {
     return redirect("/app");
   }
 
@@ -44,7 +48,14 @@ export const authAction = baseClient.use(async ({ next }) => {
     return redirect(`/app/${workspaceSlug}`);
   }
 
-  return next({ ctx: { user: response.user, session: response.session } });
+  return next({
+    ctx: {
+      user: response.user,
+      session: response.session,
+      checkAccessToWorkspace,
+      checkAccessToTeamspace,
+    },
+  });
 });
 
 /**

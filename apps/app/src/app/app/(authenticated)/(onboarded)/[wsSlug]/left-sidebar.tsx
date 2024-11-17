@@ -33,6 +33,8 @@ import {
   TableIcon,
   ChevronRightIcon,
   LogOutIcon,
+  EllipsisIcon,
+  Trash2Icon,
 } from "lucide-react";
 import {
   Collapsible,
@@ -46,9 +48,23 @@ import {
 } from "@mapform/ui/components/avatar";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import {
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from "@mapform/ui/components/alert-dialog";
+import { useAction } from "next-safe-action/hooks";
 import { signOutAction } from "~/data/auth/sign-out";
+import { deleteDatasetAction } from "~/data/datasets/delete-dataset";
 import { useAuth } from "../../auth-context";
 import { useWorkspace } from "./workspace-context";
+import { id } from "date-fns/locale";
 
 export function LeftSidebar() {
   const { user } = useAuth();
@@ -59,6 +75,8 @@ export function LeftSidebar() {
     workspaceSlug,
     currentWorkspace,
   } = useWorkspace();
+  const { execute: executeDeleteDataset, status: statusDeleteDataset } =
+    useAction(deleteDatasetAction);
 
   if (!user) {
     return null;
@@ -97,6 +115,7 @@ export function LeftSidebar() {
         url: `/app/${workspaceSlug}/${teamspace.slug}`,
         isActive: pathname === `/app/${workspaceSlug}/${teamspace.slug}`,
         projects: teamspace.projects.map((project) => ({
+          id: project.id,
           title: project.name,
           url: `/app/${workspaceSlug}/${teamspace.slug}/projects/${project.id}`,
           isActive:
@@ -109,6 +128,7 @@ export function LeftSidebar() {
         isActive:
           pathname === `/app/${workspaceSlug}/${teamspace.slug}/datasets`,
         datasets: teamspace.datasets.map((dataset) => ({
+          id: dataset.id,
           title: dataset.name,
           url: `/app/${workspaceSlug}/${teamspace.slug}/datasets/${dataset.id}`,
           isActive:
@@ -264,6 +284,56 @@ export function LeftSidebar() {
                               <span>{dataset.title}</span>
                             </Link>
                           </SidebarLeftMenuButton>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <SidebarMenuAction showOnHover>
+                                <EllipsisIcon />
+                              </SidebarMenuAction>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="start" side="right">
+                              <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                  <DropdownMenuItem
+                                    className="flex items-center gap-2"
+                                    onSelect={(e) => {
+                                      e.preventDefault();
+                                    }}
+                                  >
+                                    <Trash2Icon className="size-4 flex-shrink-0" />
+                                    Delete
+                                  </DropdownMenuItem>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>
+                                      Are you sure?
+                                    </AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                      Your data will be permanently deleted.
+                                      This action cannot be undone.
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel>
+                                      Cancel
+                                    </AlertDialogCancel>
+                                    <AlertDialogAction
+                                      disabled={
+                                        statusDeleteDataset === "executing"
+                                      }
+                                      onClick={() => {
+                                        executeDeleteDataset({
+                                          datasetId: dataset.id,
+                                        });
+                                      }}
+                                    >
+                                      Continue
+                                    </AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
                         </SidebarMenuSubItem>
                       ))}
                     </SidebarMenuSub>
