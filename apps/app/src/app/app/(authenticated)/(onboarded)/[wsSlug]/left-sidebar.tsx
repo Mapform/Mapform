@@ -246,6 +246,56 @@ export function LeftSidebar() {
                               <span>{project.title}</span>
                             </Link>
                           </SidebarLeftMenuButton>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <SidebarMenuAction showOnHover>
+                                <EllipsisIcon />
+                              </SidebarMenuAction>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="start" side="right">
+                              <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                  <DropdownMenuItem
+                                    className="flex items-center gap-2"
+                                    onSelect={(e) => {
+                                      e.preventDefault();
+                                    }}
+                                  >
+                                    <Trash2Icon className="size-4 flex-shrink-0" />
+                                    Delete
+                                  </DropdownMenuItem>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>
+                                      Are you sure?
+                                    </AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                      Your data will be permanently deleted.
+                                      This action cannot be undone.
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel>
+                                      Cancel
+                                    </AlertDialogCancel>
+                                    <AlertDialogAction
+                                      disabled={
+                                        statusDeleteDataset === "executing"
+                                      }
+                                      onClick={() => {
+                                        executeDeleteDataset({
+                                          datasetId: project.id,
+                                        });
+                                      }}
+                                    >
+                                      Continue
+                                    </AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
                         </SidebarMenuSubItem>
                       ))}
                     </SidebarMenuSub>

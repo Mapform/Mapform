@@ -32,5 +32,5 @@ export const deleteDatasetAction = authAction
 
     await deleteDataset(parsedInput);
 
-    revalidatePath("/app/[wsSlug]/[tsSlug]/projects/[pId]/project", "page");
+    revalidatePath("/app/[wsSlug]", "page");
   });
