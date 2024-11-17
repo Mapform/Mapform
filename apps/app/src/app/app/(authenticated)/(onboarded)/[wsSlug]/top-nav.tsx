@@ -12,6 +12,7 @@ import {
 import { useParams } from "next/navigation";
 import { useSidebarLeft } from "@mapform/ui/components/sidebar";
 import { useWorkspace } from "./workspace-context";
+import { cn } from "@mapform/lib/classnames";
 
 interface TopNavProps {
   navSlot?: React.ReactNode;
@@ -89,17 +90,26 @@ export function TopNav({ navSlot }: TopNavProps) {
             </Tooltip>
           </TooltipProvider>
         </div>
-        <h3 className="flex items-center text-base font-semibold leading-6 text-stone-900">
+        <h3 className="flex items-center text-base font-medium leading-6 text-stone-900">
           {breadcrumbs.map((breadcrumb, index) => {
             return (
               <div key={breadcrumb.name}>
                 {breadcrumb.href ? (
-                  <Link href={breadcrumb.href}>{breadcrumb.name}</Link>
+                  <Link
+                    className={cn(
+                      index < breadcrumbs.length - 1
+                        ? "text-muted-foreground hover:text-foreground"
+                        : "text-foreground",
+                    )}
+                    href={breadcrumb.href}
+                  >
+                    {breadcrumb.name}
+                  </Link>
                 ) : (
                   breadcrumb.name
                 )}
                 {index < breadcrumbs.length - 1 && (
-                  <span className="mx-3 text-sm text-stone-200">/</span>
+                  <span className="text-muted-foreground mx-3 text-sm">/</span>
                 )}
               </div>
             );
