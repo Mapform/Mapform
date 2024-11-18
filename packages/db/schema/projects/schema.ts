@@ -4,6 +4,7 @@ import {
   varchar,
   uuid,
   boolean,
+  AnyPgColumn,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { teamspaces } from "../teamspaces";
@@ -21,7 +22,12 @@ export const projects = pgTable("project", {
   isDirty: boolean("is_dirty").default(false).notNull(),
 
   // This is NULL for the root project
-  rootProjectId: uuid("root_project_id"),
+  rootProjectId: uuid("root_project_id").references(
+    (): AnyPgColumn => projects.id,
+    {
+      onDelete: "cascade",
+    },
+  ),
   datasetId: uuid("dataset_id")
     .notNull()
     .references(() => datasets.id, {
