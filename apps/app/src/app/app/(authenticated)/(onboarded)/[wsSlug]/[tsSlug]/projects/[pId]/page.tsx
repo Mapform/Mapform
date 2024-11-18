@@ -1,7 +1,7 @@
 // eslint-disable-next-line import/named -- It will work when React 19 is released
 import { cache } from "react";
 import { MapformProvider } from "@mapform/mapform";
-import { notFound, redirect } from "next/navigation";
+import { redirect } from "next/navigation";
 import { getPageDataAction } from "~/data/datalayer/get-page-data";
 import { getPageWithLayersAction } from "~/data/pages/get-page-with-layers";
 import { getProjectWithPagesAction } from "~/data/projects/get-project-with-pages";
@@ -20,7 +20,7 @@ const fetchProjectWithPages = cache(async (id: string) => {
   const projectWithPages = projectWithPagesResponse?.data;
 
   if (!projectWithPages) {
-    return notFound();
+    return null;
   }
 
   return projectWithPages;
@@ -115,11 +115,15 @@ export default async function ProjectPage(props: {
     fetchLayerPoint(searchParams?.layer_point),
   ]);
 
+  if (!projectWithPages) {
+    return redirect(`/app/${params.wsSlug}/${params.tsSlug}`);
+  }
+
   const fallbackPage = projectWithPages.pages[0]?.id;
 
   if (!pageWithLayers) {
     if (!fallbackPage) {
-      return notFound();
+      return redirect(`/app/${params.wsSlug}/${params.tsSlug}`);
     }
 
     redirect(
