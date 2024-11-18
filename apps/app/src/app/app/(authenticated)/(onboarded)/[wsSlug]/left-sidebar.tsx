@@ -64,7 +64,6 @@ import { signOutAction } from "~/data/auth/sign-out";
 import { deleteDatasetAction } from "~/data/datasets/delete-dataset";
 import { useAuth } from "../../auth-context";
 import { useWorkspace } from "./workspace-context";
-import { id } from "date-fns/locale";
 
 export function LeftSidebar() {
   const { user } = useAuth();

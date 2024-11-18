@@ -18,7 +18,7 @@ export function Drawer() {
   const container = document.querySelector("#sidebar-right");
 
   return (
-    <Portal.Root className="flex-1" container={container}>
+    <Portal.Root className="flex-1 overflow-hidden" container={container}>
       <ResizablePanelGroup direction="vertical">
         <ResizablePanel>
           <PageList />
