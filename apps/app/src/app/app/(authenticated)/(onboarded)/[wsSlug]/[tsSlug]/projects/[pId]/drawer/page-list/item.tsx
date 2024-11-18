@@ -77,7 +77,12 @@ export function Item({ page }: ItemProps) {
         <ContextMenuTrigger>
           <DragHandle id={page.id}>
             <SidebarMenuItem>
-              <SidebarRightMenuButton>
+              <SidebarRightMenuButton
+                isActive={isActive}
+                onClick={() => {
+                  setActivePage(page);
+                }}
+              >
                 <FileIcon />
                 <span className="truncate text-sm">
                   {page.title || "Untitled"}
