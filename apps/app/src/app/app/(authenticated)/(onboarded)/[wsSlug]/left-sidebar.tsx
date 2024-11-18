@@ -329,10 +329,10 @@ export function LeftSidebar() {
                             asChild
                             isActive={dataset.isActive}
                           >
-                            <Link href={dataset.url}>
+                            <a href={dataset.url}>
                               {/* <project.icon /> */}
                               <span>{dataset.title}</span>
-                            </Link>
+                            </a>
                           </SidebarLeftMenuButton>
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
