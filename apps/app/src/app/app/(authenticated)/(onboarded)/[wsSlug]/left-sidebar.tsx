@@ -62,6 +62,7 @@ import {
 import { useAction } from "next-safe-action/hooks";
 import { signOutAction } from "~/data/auth/sign-out";
 import { deleteDatasetAction } from "~/data/datasets/delete-dataset";
+import { deleteProjectAction } from "~/data/projects/delete-project";
 import { useAuth } from "../../auth-context";
 import { useWorkspace } from "./workspace-context";
 
@@ -76,6 +77,8 @@ export function LeftSidebar() {
   } = useWorkspace();
   const { execute: executeDeleteDataset, status: statusDeleteDataset } =
     useAction(deleteDatasetAction);
+  const { execute: executeDeleteProject, status: statusDeleteProject } =
+    useAction(deleteProjectAction);
 
   if (!user) {
     return null;
@@ -270,8 +273,9 @@ export function LeftSidebar() {
                                       Are you sure?
                                     </AlertDialogTitle>
                                     <AlertDialogDescription>
-                                      Your data will be permanently deleted.
-                                      This action cannot be undone.
+                                      Your project and related data will be
+                                      permanently deleted. This action cannot be
+                                      undone.
                                     </AlertDialogDescription>
                                   </AlertDialogHeader>
                                   <AlertDialogFooter>
@@ -280,11 +284,11 @@ export function LeftSidebar() {
                                     </AlertDialogCancel>
                                     <AlertDialogAction
                                       disabled={
-                                        statusDeleteDataset === "executing"
+                                        statusDeleteProject === "executing"
                                       }
                                       onClick={() => {
-                                        executeDeleteDataset({
-                                          datasetId: project.id,
+                                        executeDeleteProject({
+                                          projectId: project.id,
                                         });
                                       }}
                                     >
