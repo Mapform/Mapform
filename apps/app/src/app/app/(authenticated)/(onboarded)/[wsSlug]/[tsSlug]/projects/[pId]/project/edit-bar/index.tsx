@@ -172,135 +172,144 @@ function EditBarInner({ optimisticPage, updatePageServer }: EditBarInnerProps) {
     (layer) => layer.pageId === optimisticPage.id && layer.type === "point",
   );
 
+  console.log(1111, selectingPinLocation);
+
   return (
-    <TooltipProvider delayDuration={200}>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            onClick={() => {
-              setOpenSearch(true);
-            }}
-            size="icon"
-            variant="ghost"
-          >
-            <SearchIcon className="size-5" />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>Search Locations</TooltipContent>
-      </Tooltip>
-      <CommandDialog
-        dialogContentClassName="-translate-y-[150px]"
-        onOpenChange={setOpenSearch}
-        open={openSearch}
-        shouldFilter={false}
+    <>
+      <div
+        className={cn(
+          "absolute bottom-8 left-1/2 z-10 flex -translate-x-1/2 transform items-center rounded-lg border bg-white p-1 shadow-lg",
+        )}
       >
-        <CommandSearch
-          setOpenSearch={setOpenSearch}
-          setSearchLocation={setSearchLocation}
-        />
-      </CommandDialog>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            className={cn({
-              "bg-accent": isSelectingPoint,
-            })}
-            onClick={() => {
-              setIsSelectingPoint(!isSelectingPoint);
-            }}
-            size="icon"
-            variant="ghost"
+        <TooltipProvider delayDuration={200}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                onClick={() => {
+                  setOpenSearch(true);
+                }}
+                size="icon"
+                variant="ghost"
+              >
+                <SearchIcon className="size-5" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Search Locations</TooltipContent>
+          </Tooltip>
+          <CommandDialog
+            dialogContentClassName="-translate-y-[150px]"
+            onOpenChange={setOpenSearch}
+            open={openSearch}
+            shouldFilter={false}
           >
-            <MapPinPlusIcon className="size-5" />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>Add Pin to Map</TooltipContent>
-      </Tooltip>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            disabled={!hasMoved}
-            onClick={() => {
-              map?.setCenter([
-                optimisticPage.center.x,
-                optimisticPage.center.y,
-              ]);
-              map?.setZoom(optimisticPage.zoom);
-              map?.setPitch(optimisticPage.pitch);
-              map?.setBearing(optimisticPage.bearing);
-            }}
-            size="icon"
-            variant="ghost"
-          >
-            <Undo2Icon className="size-5" />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>Go Back To Last Pinned Location</TooltipContent>
-      </Tooltip>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            disabled={!hasMoved}
-            onClick={() => {
-              const center = map?.getCenter();
-              const zoom = map?.getZoom();
-              const pitch = map?.getPitch();
-              const bearing = map?.getBearing();
+            <CommandSearch
+              setOpenSearch={setOpenSearch}
+              setSearchLocation={setSearchLocation}
+            />
+          </CommandDialog>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                className={cn({
+                  "bg-accent": isSelectingPoint,
+                })}
+                onClick={() => {
+                  setIsSelectingPoint(!isSelectingPoint);
+                }}
+                size="icon"
+                variant="ghost"
+              >
+                <MapPinPlusIcon className="size-5" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Add Pin to Map</TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                disabled={!hasMoved}
+                onClick={() => {
+                  map?.setCenter([
+                    optimisticPage.center.x,
+                    optimisticPage.center.y,
+                  ]);
+                  map?.setZoom(optimisticPage.zoom);
+                  map?.setPitch(optimisticPage.pitch);
+                  map?.setBearing(optimisticPage.bearing);
+                }}
+                size="icon"
+                variant="ghost"
+              >
+                <Undo2Icon className="size-5" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Go Back To Last Pinned Location</TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                disabled={!hasMoved}
+                onClick={() => {
+                  const center = map?.getCenter();
+                  const zoom = map?.getZoom();
+                  const pitch = map?.getPitch();
+                  const bearing = map?.getBearing();
 
-              if (
-                center !== undefined &&
-                zoom !== undefined &&
-                pitch !== undefined &&
-                bearing !== undefined
-              ) {
-                updatePage({
-                  ...optimisticPage,
-                  center: {
-                    x: center.lng,
-                    y: center.lat,
-                  },
-                  zoom,
-                  pitch,
-                  bearing,
-                });
+                  if (
+                    center !== undefined &&
+                    zoom !== undefined &&
+                    pitch !== undefined &&
+                    bearing !== undefined
+                  ) {
+                    updatePage({
+                      ...optimisticPage,
+                      center: {
+                        x: center.lng,
+                        y: center.lat,
+                      },
+                      zoom,
+                      pitch,
+                      bearing,
+                    });
 
-                updatePageServer({
-                  center: {
-                    x: center.lng,
-                    y: center.lat,
-                  },
-                  zoom,
-                  pitch,
-                  bearing,
-                }).catch(() => {
-                  toast({
-                    title: "Uh oh! Something went wrong.",
-                    description: "There was an error saving the location",
-                  });
-                });
-              }
-            }}
-            size="icon"
-            variant="ghost"
-          >
-            <PinIcon className="size-5" />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>Pin Map Position</TooltipContent>
-      </Tooltip>
+                    updatePageServer({
+                      center: {
+                        x: center.lng,
+                        y: center.lat,
+                      },
+                      zoom,
+                      pitch,
+                      bearing,
+                    }).catch(() => {
+                      toast({
+                        title: "Uh oh! Something went wrong.",
+                        description: "There was an error saving the location",
+                      });
+                    });
+                  }
+                }}
+                size="icon"
+                variant="ghost"
+              >
+                <PinIcon className="size-5" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Pin Map Position</TooltipContent>
+          </Tooltip>
 
-      {searchLocation ? (
-        <Button
-          onClick={() => {
-            setSearchLocation(null);
-            setDrawerOpen(true);
-          }}
-          variant="ghost"
-        >
-          Clear Search
-        </Button>
-      ) : null}
-
+          {searchLocation ? (
+            <Button
+              onClick={() => {
+                setSearchLocation(null);
+                setDrawerOpen(true);
+              }}
+              variant="ghost"
+            >
+              Clear Search
+            </Button>
+          ) : null}
+        </TooltipProvider>
+      </div>
       <MapMarker searchLocationMarker={searchLocation}>
         <SearchLocationMarker
           pageLayers={pageLayers}
@@ -319,6 +328,6 @@ function EditBarInner({ optimisticPage, updatePageServer }: EditBarInnerProps) {
           }}
         />
       ) : null}
-    </TooltipProvider>
+    </>
   );
 }

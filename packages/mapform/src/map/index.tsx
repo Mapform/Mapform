@@ -5,7 +5,6 @@ import { cn } from "@mapform/lib/classnames";
 import type { FeatureCollection } from "geojson";
 import type { ViewState } from "@mapform/map-utils/types";
 import type { PageData } from "@mapform/backend/datalayer/get-page-data";
-import { useMeasure } from "@mapform/lib/hooks/use-measure";
 import { usePrevious } from "@mapform/lib/hooks/use-previous";
 import { useSetQueryString } from "@mapform/lib/hooks/use-set-query-string";
 import { useMapform } from "../context";
