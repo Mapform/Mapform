@@ -39,10 +39,9 @@ export function Map({
   isMobile,
 }: MapProps) {
   const setQueryString = useSetQueryString();
-  const { map, setMap } = useMapform();
+  const { map, setMap, mapContainer, mapContainerBounds } = useMapform();
   // Condition in usePrevious resolves issue where map padding is not updated on first render
   const prevMapPadding = usePrevious(map ? mapPadding : undefined);
-  const { ref: mapContainer, bounds } = useMeasure<HTMLDivElement>();
 
   const geojson: FeatureCollection = useMemo(
     () => ({
@@ -131,12 +130,35 @@ export function Map({
     if (map) {
       map.resize();
     }
-  }, [map, bounds]);
+  }, [map, mapContainerBounds]);
 
   /**
    * Update layers
    */
   useEffect(() => {
+    const handleMapClick = (
+      e: mapboxgl.MapMouseEvent & {
+        features?: mapboxgl.MapboxGeoJSONFeature[] | undefined;
+      } & mapboxgl.EventData,
+    ) => {
+      const feature = e.features?.[0];
+
+      if (feature?.properties) {
+        isMobile && window.scrollTo({ top: 0, behavior: "smooth" });
+        setQueryString({
+          key: "layer_point",
+          value: `${feature.properties.rowId}_${feature.properties.pointLayerId}`,
+        });
+
+        // setActivePoint({
+        //   id: feature.properties?.id,
+        //   color: feature.properties?.color,
+        //   title: "Title",
+        //   description: "Description",
+        // });
+      }
+    };
+
     if (map) {
       const currentSource = map.getSource("points") as
         | mapboxgl.AnySourceImpl
@@ -164,24 +186,7 @@ export function Map({
           },
         });
 
-        map.on("click", "points", (e) => {
-          const feature = e.features?.[0];
-
-          if (feature?.properties) {
-            isMobile && window.scrollTo({ top: 0, behavior: "smooth" });
-            setQueryString({
-              key: "layer_point",
-              value: `${feature.properties.rowId}_${feature.properties.pointLayerId}`,
-            });
-
-            // setActivePoint({
-            //   id: feature.properties?.id,
-            //   color: feature.properties?.color,
-            //   title: "Title",
-            //   description: "Description",
-            // });
-          }
-        });
+        map.on("click", "points", handleMapClick);
 
         // map.addLayer({
         //   id: "emoji-layer",
@@ -194,11 +199,17 @@ export function Map({
         // });
       }
     }
+
+    return () => {
+      if (map) {
+        map.off("click", "points", handleMapClick);
+      }
+    };
   }, [map, geojson, setQueryString, isMobile]);
 
   return (
     <div
-      className={cn("flex-1", {
+      className={cn("relative flex-1 overflow-hidden", {
         "rounded-md": editable,
       })}
       ref={mapContainer}

@@ -8,6 +8,7 @@ import {
   type SetStateAction,
 } from "react";
 import type mapboxgl from "mapbox-gl";
+import { useMeasure } from "@mapform/lib/hooks/use-measure";
 
 export type MBMap = mapboxgl.Map;
 export interface ActivePoint {
@@ -22,6 +23,8 @@ interface MapformProviderContextProps {
   setMap: Dispatch<SetStateAction<MBMap | undefined>>;
   drawerOpen: boolean;
   setDrawerOpen: Dispatch<SetStateAction<boolean>>;
+  mapContainer: React.RefObject<HTMLDivElement | null>;
+  mapContainerBounds: DOMRectReadOnly | undefined;
 }
 
 export const MapformProviderContext =
@@ -31,6 +34,8 @@ export const useMapform = () => useContext(MapformProviderContext);
 export function MapformProvider({ children }: { children: React.ReactNode }) {
   const [map, setMap] = useState<MBMap>();
   const [drawerOpen, setDrawerOpen] = useState(true);
+  const { ref: mapContainer, bounds: mapContainerBounds } =
+    useMeasure<HTMLDivElement>();
 
   return (
     <MapformProviderContext.Provider
@@ -39,6 +44,8 @@ export function MapformProvider({ children }: { children: React.ReactNode }) {
         setMap,
         drawerOpen,
         setDrawerOpen,
+        mapContainer,
+        mapContainerBounds,
       }}
     >
       {children}

@@ -1,5 +1,11 @@
 import { Button } from "@mapform/ui/components/button";
-import { PinIcon, SearchIcon, Undo2Icon } from "lucide-react";
+import {
+  MapPinIcon,
+  MapPinPlusIcon,
+  PinIcon,
+  SearchIcon,
+  Undo2Icon,
+} from "lucide-react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { CommandDialog } from "@mapform/ui/components/command";
@@ -12,6 +18,7 @@ import {
 import { useMapform, type MapboxEvent } from "@mapform/mapform";
 import type { CustomBlock } from "@mapform/blocknote";
 import { toast } from "@mapform/ui/components/toaster";
+import { cn } from "@mapform/lib/classnames";
 import type { PlacesSearchResponse } from "@mapform/map-utils/types";
 import { SearchLocationMarker as MapMarker } from "@mapform/mapform";
 import type { PageWithLayers } from "@mapform/backend/pages/get-page-with-layers";
@@ -19,6 +26,7 @@ import { usePage } from "../../page-context";
 import { useProject } from "../../project-context";
 import { SearchLocationMarker } from "./search-location-marker";
 import { CommandSearch } from "./command-search";
+import { MapMouseEvent } from "mapbox-gl";
 
 interface EditBarProps {
   updatePageServer: (args: {
@@ -55,9 +63,14 @@ export function EditBar({ updatePageServer }: EditBarProps) {
 }
 
 function EditBarInner({ optimisticPage, updatePageServer }: EditBarInnerProps) {
-  const { map, setDrawerOpen } = useMapform();
+  const { map, setDrawerOpen, mapContainer } = useMapform();
   const { optimisticProjectWithPages } = useProject();
   const [openSearch, setOpenSearch] = useState(false);
+  const [isSelectingPoint, setIsSelectingPoint] = useState(false);
+  const [selectingPinLocation, setSelectingPinLocation] = useState({
+    x: 0,
+    y: 0,
+  });
   const { updatePage } = usePage();
 
   const [movedCoords, setMovedCoords] = useState<{
@@ -108,6 +121,43 @@ function EditBarInner({ optimisticPage, updatePageServer }: EditBarInnerProps) {
     }
   }, [map, optimisticPage]);
 
+  useEffect(() => {
+    const mapEl = mapContainer.current;
+
+    const updatePosition = (event: MouseEvent) => {
+      const rect = mapContainer.current?.getBoundingClientRect();
+
+      if (!rect) {
+        return;
+      }
+
+      setSelectingPinLocation({
+        x: event.clientX - rect.left,
+        y: event.clientY - rect.top,
+      });
+    };
+
+    const handleLocationSelect = (e: MapMouseEvent) => {
+      console.log(e.lngLat);
+    };
+
+    // Add mousemove event listener
+    if (isSelectingPoint && map) {
+      map.getCanvas().style.cursor = "none";
+      map.on("click", handleLocationSelect);
+      mapEl?.addEventListener("mousemove", updatePosition);
+    }
+
+    // Clean up event listener on component unmount
+    return () => {
+      if (isSelectingPoint && map) {
+        map.getCanvas().style.cursor = "grab";
+        map.off("click", handleLocationSelect);
+        mapEl?.removeEventListener("mousemove", updatePosition);
+      }
+    };
+  }, [mapContainer, isSelectingPoint, map]);
+
   const roundLocation = (num: number) => Math.round(num * 1000000) / 1000000;
 
   const hasMoved =
@@ -149,7 +199,23 @@ function EditBarInner({ optimisticPage, updatePageServer }: EditBarInnerProps) {
           setSearchLocation={setSearchLocation}
         />
       </CommandDialog>
-
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            className={cn({
+              "bg-accent": isSelectingPoint,
+            })}
+            onClick={() => {
+              setIsSelectingPoint(!isSelectingPoint);
+            }}
+            size="icon"
+            variant="ghost"
+          >
+            <MapPinPlusIcon className="size-5" />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>Add Pin to Map</TooltipContent>
+      </Tooltip>
       <Tooltip>
         <TooltipTrigger asChild>
           <Button
@@ -243,6 +309,16 @@ function EditBarInner({ optimisticPage, updatePageServer }: EditBarInnerProps) {
           setSearchLocation={setSearchLocation}
         />
       </MapMarker>
+
+      {isSelectingPoint ? (
+        <MapPinIcon
+          className="pointer-events-none absolute z-50 size-6 -translate-x-1/2 -translate-y-1/2 fill-white shadow-sm outline-2 outline-black"
+          style={{
+            left: selectingPinLocation.x,
+            top: selectingPinLocation.y,
+          }}
+        />
+      ) : null}
     </TooltipProvider>
   );
 }
