@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/named -- Oh it's there
 import { cache, Suspense } from "react";
 import { notFound } from "next/navigation";
 import { cookies } from "next/headers";

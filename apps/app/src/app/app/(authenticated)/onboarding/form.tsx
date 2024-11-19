@@ -103,7 +103,7 @@ export function OnboardingForm({ email }: OnboardingFormProps) {
                     onChange={field.onChange}
                     placeholder="Acme Inc."
                     ref={field.ref}
-                    value={field.value ?? ""}
+                    value={field.value}
                   />
                 </FormControl>
                 <FormMessage />
