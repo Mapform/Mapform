@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { format } from "date-fns";
+import { TableIcon } from "lucide-react";
 import { listTeamspaceDatasetsAction } from "~/data/datasets/list-teamspace-datasets";
 
 export default async function DatasetsPage(props: {
@@ -12,8 +13,20 @@ export default async function DatasetsPage(props: {
   });
   const datasets = teamspaceDatasets?.data;
 
-  if (!datasets) {
-    return <div>Datasets not found</div>;
+  if (!datasets?.length) {
+    return (
+      <div className="flex flex-1 flex-col justify-center pb-8">
+        <div className="text-center">
+          <TableIcon className="mx-auto size-8 text-gray-400" />
+          <h3 className="text-foreground mt-2 text-sm font-semibold">
+            No datasets
+          </h3>
+          <p className="mt-1 text-sm text-gray-500">
+            Get started by creating a new dataset.
+          </p>
+        </div>
+      </div>
+    );
   }
 
   return (
