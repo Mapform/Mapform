@@ -78,6 +78,7 @@ export function Item({ page }: ItemProps) {
           <DragHandle id={page.id}>
             <SidebarMenuItem>
               <SidebarRightMenuButton
+                className="pr-8"
                 isActive={isActive}
                 onClick={() => {
                   setActivePage(page);

@@ -289,6 +289,7 @@ export function LeftSidebar() {
                           <SidebarMenuSubItem key={project.title}>
                             <SidebarLeftMenuButton
                               asChild
+                              className="pr-8"
                               isActive={project.isActive}
                             >
                               <Link href={project.url}>
@@ -386,6 +387,7 @@ export function LeftSidebar() {
                           <SidebarMenuSubItem key={dataset.title}>
                             <SidebarLeftMenuButton
                               asChild
+                              className="pr-8"
                               isActive={dataset.isActive}
                             >
                               <Link href={dataset.url}>

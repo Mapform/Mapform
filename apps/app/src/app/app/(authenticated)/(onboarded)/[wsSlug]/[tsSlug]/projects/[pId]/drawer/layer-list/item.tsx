@@ -115,6 +115,7 @@ export function Item({ layer }: ItemProps) {
           <DragHandle id={layer.id}>
             <SidebarMenuItem>
               <SidebarRightMenuButton
+                className="pr-8"
                 onClick={() => {
                   setLayerPopoverOpen(true);
                 }}
