@@ -92,7 +92,8 @@ export function MapForm({
     },
   };
 
-  const isMobile = width < 768;
+  // eslint-disable-next-line no-implicit-coercion -- Boolean causes another issue
+  const isMobile = !!width && width < 768;
 
   const onSubmit = (data: FormSchema) => {
     onStepSubmit?.(data);
