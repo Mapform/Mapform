@@ -138,7 +138,7 @@ function EditBarInner({ optimisticPage, updatePageServer }: EditBarInnerProps) {
     };
 
     const handleLocationSelect = (e: MapMouseEvent) => {
-      console.log(e.lngLat);
+      console.log(123, e.lngLat);
     };
 
     // Add mousemove event listener
