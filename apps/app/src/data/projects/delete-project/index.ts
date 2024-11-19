@@ -10,7 +10,7 @@ import { authAction } from "~/lib/safe-action";
 
 export const deleteProjectAction = authAction
   .schema(deleteProjectSchema)
-  .action(async ({ parsedInput, ctx: { checkAccessToTeamspace } }) => {
+  .action(async ({ parsedInput, ctx: { checkAccessToTeamspaceBySlug } }) => {
     const project = await db.query.projects.findFirst({
       where: eq(datasets.id, parsedInput.projectId),
       with: {
@@ -26,7 +26,7 @@ export const deleteProjectAction = authAction
       throw new Error("Project not found");
     }
 
-    if (!checkAccessToTeamspace(project.teamspace.slug)) {
+    if (!checkAccessToTeamspaceBySlug(project.teamspace.slug)) {
       throw new Error("Unauthorized");
     }
 

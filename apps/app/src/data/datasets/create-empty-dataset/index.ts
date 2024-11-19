@@ -7,7 +7,11 @@ import { authAction } from "~/lib/safe-action";
 
 export const createEmptyDatasetAction = authAction
   .schema(createEmptyDatasetSchema)
-  .action(async ({ parsedInput }) => {
+  .action(async ({ parsedInput, ctx: { checkAccessToTeamspaceById } }) => {
+    if (!checkAccessToTeamspaceById(parsedInput.teamspaceId)) {
+      throw new Error("You do not have access to this teamspace.");
+    }
+
     const response = await createEmptyDataset(parsedInput);
 
     revalidatePath("/app/[wsSlug]/[tsSlug]/datasets", "page");

@@ -22,12 +22,12 @@ import {
   SidebarMenuSub,
   SidebarMenuSubItem,
   SidebarMenuAction,
+  SidebarGroupAction,
 } from "@mapform/ui/components/sidebar";
 import {
   ChevronsUpDown,
   GalleryVerticalEnd,
   HomeIcon,
-  Plus,
   MapIcon,
   Settings2Icon,
   TableIcon,
@@ -35,7 +35,7 @@ import {
   LogOutIcon,
   EllipsisIcon,
   Trash2Icon,
-  Sidebar,
+  PlusIcon,
 } from "lucide-react";
 import {
   Collapsible,
@@ -64,6 +64,8 @@ import { useAction } from "next-safe-action/hooks";
 import { signOutAction } from "~/data/auth/sign-out";
 import { deleteDatasetAction } from "~/data/datasets/delete-dataset";
 import { deleteProjectAction } from "~/data/projects/delete-project";
+import { createEmptyDatasetAction } from "~/data/datasets/create-empty-dataset";
+import { createProjectAction } from "~/data/projects/create-project";
 import { useAuth } from "../../auth-context";
 import { useWorkspace } from "./workspace-context";
 
@@ -80,6 +82,12 @@ export function LeftSidebar() {
     useAction(deleteDatasetAction);
   const { execute: executeDeleteProject, status: statusDeleteProject } =
     useAction(deleteProjectAction);
+  const {
+    execute: executeCreateEmptyDataset,
+    status: statusCreateEmptyDataset,
+  } = useAction(createEmptyDatasetAction);
+  const { execute: executeCreateProject, status: statusCreateProject } =
+    useAction(createProjectAction);
 
   if (!user) {
     return null;
@@ -113,6 +121,8 @@ export function LeftSidebar() {
       },
     ],
     spaces: workspaceDirectory.teamspaces.map((teamspace) => ({
+      id: teamspace.id,
+      slug: teamspace.slug,
       title: teamspace.name,
       project: {
         url: `/app/${workspaceSlug}/${teamspace.slug}`,
@@ -188,7 +198,7 @@ export function LeftSidebar() {
                 <DropdownMenuSeparator />
                 <DropdownMenuItem className="gap-2 p-2" disabled>
                   <div className="bg-background flex size-6 items-center justify-center rounded-md border">
-                    <Plus className="size-4" />
+                    <PlusIcon className="size-4" />
                   </div>
                   <div className="text-muted-foreground font-medium">
                     Add (coming soon)
@@ -219,6 +229,42 @@ export function LeftSidebar() {
         {data.spaces.map((space) => (
           <SidebarGroup key={space.title}>
             <SidebarGroupLabel>{space.title}</SidebarGroupLabel>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <SidebarGroupAction>
+                  <PlusIcon />
+                </SidebarGroupAction>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" side="right">
+                <DropdownMenuItem
+                  className="flex items-center gap-2"
+                  onSelect={(e) => {
+                    e.preventDefault();
+                    executeCreateProject({
+                      name: "New project",
+                      teamspaceId: space.id,
+                    });
+                  }}
+                >
+                  <PlusIcon className="size-4 flex-shrink-0" />
+                  Create project
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  className="flex items-center gap-2"
+                  onSelect={(e) => {
+                    e.preventDefault();
+                    executeCreateEmptyDataset({
+                      name: "New dataset",
+                      teamspaceId: space.id,
+                    });
+                  }}
+                >
+                  <PlusIcon className="size-4 flex-shrink-0" />
+                  Create dataset
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
             <SidebarMenu>
               <Collapsible className="group/collapsible" defaultOpen>
                 <SidebarMenuItem>

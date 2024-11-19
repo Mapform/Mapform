@@ -10,7 +10,7 @@ import { authAction } from "~/lib/safe-action";
 
 export const deleteDatasetAction = authAction
   .schema(deleteDatasetSchema)
-  .action(async ({ parsedInput, ctx: { checkAccessToTeamspace } }) => {
+  .action(async ({ parsedInput, ctx: { checkAccessToTeamspaceBySlug } }) => {
     const dataset = await db.query.datasets.findFirst({
       where: eq(datasets.id, parsedInput.datasetId),
       with: {
@@ -26,7 +26,7 @@ export const deleteDatasetAction = authAction
       throw new Error("Dataset not found");
     }
 
-    if (!checkAccessToTeamspace(dataset.teamspace.slug)) {
+    if (!checkAccessToTeamspaceBySlug(dataset.teamspace.slug)) {
       throw new Error("Unauthorized");
     }
 
