@@ -268,6 +268,7 @@ export function LeftSidebar() {
               </DropdownMenuContent>
             </DropdownMenu>
 
+            {/* Projects */}
             <SidebarMenu>
               <Collapsible className="group/collapsible" defaultOpen>
                 <SidebarMenuItem>
@@ -364,8 +365,7 @@ export function LeftSidebar() {
                   </CollapsibleContent>
                 </SidebarMenuItem>
               </Collapsible>
-            </SidebarMenu>
-            <SidebarMenu>
+              {/* Datasets */}
               <Collapsible className="group/collapsible">
                 <SidebarMenuItem>
                   <SidebarLeftMenuButton
