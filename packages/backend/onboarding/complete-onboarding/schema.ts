@@ -1,8 +1,9 @@
-import type { z } from "zod";
-import { insertUserSchema } from "@mapform/db/schema";
+import { z } from "zod";
+import { insertUserSchema, insertWorkspaceSchema } from "@mapform/db/schema";
 
-export const completeOnboardingSchema = insertUserSchema.pick({
-  name: true,
+export const completeOnboardingSchema = z.object({
+  userName: insertUserSchema.shape.name,
+  workspaceName: insertWorkspaceSchema.shape.name,
 });
 
 export type CompleteOnboardingSchema = z.infer<typeof completeOnboardingSchema>;

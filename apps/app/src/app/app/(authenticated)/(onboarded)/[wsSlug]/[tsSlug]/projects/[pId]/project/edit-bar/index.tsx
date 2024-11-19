@@ -207,11 +207,14 @@ function EditBarInner({ optimisticPage, updatePageServer }: EditBarInnerProps) {
                   pitch,
                   bearing,
                 }).catch(() => {
-                  toast("There was an error saving the location");
+                  toast({
+                    title: "Uh oh! Something went wrong.",
+                    description: "There was an error saving the location",
+                  });
                 });
               }
             }}
-            size="sm"
+            size="icon"
             variant="ghost"
           >
             <PinIcon className="size-5" />

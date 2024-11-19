@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { format } from "date-fns";
+import { MapIcon } from "lucide-react";
 import { getTeamspaceWithProjectsAction } from "~/data/teamspaces/get-teamspace-with-projects";
 
 export default async function WorkspaceForms(props: {
@@ -14,6 +15,22 @@ export default async function WorkspaceForms(props: {
 
   if (!teamspace) {
     return <div>Workspace not found</div>;
+  }
+
+  if (!teamspace.projects.length) {
+    return (
+      <div className="flex flex-1 flex-col justify-center pb-8">
+        <div className="text-center">
+          <MapIcon className="mx-auto size-8 text-gray-400" />
+          <h3 className="text-foreground mt-2 text-sm font-semibold">
+            No projects
+          </h3>
+          <p className="mt-1 text-sm text-gray-500">
+            Get started by creating a new project.
+          </p>
+        </div>
+      </div>
+    );
   }
 
   return (

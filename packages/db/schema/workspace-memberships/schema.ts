@@ -11,7 +11,7 @@ export const workspaceMemberships = pgTable(
   {
     userId: uuid("user_id")
       .notNull()
-      .references(() => users.id),
+      .references(() => users.id, { onDelete: "cascade" }),
     workspaceId: uuid("workspace_id")
       .notNull()
       .references(() => workspaces.id, { onDelete: "cascade" }),
@@ -19,7 +19,7 @@ export const workspaceMemberships = pgTable(
   },
   (t) => ({
     pk: primaryKey({ columns: [t.userId, t.workspaceId] }),
-  })
+  }),
 );
 
 export const workspaceMembershipsRelations = relations(
@@ -33,5 +33,5 @@ export const workspaceMembershipsRelations = relations(
       fields: [workspaceMemberships.userId],
       references: [users.id],
     }),
-  })
+  }),
 );

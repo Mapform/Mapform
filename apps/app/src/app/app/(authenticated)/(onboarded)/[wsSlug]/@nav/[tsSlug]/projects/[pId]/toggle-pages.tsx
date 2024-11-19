@@ -1,29 +1,37 @@
 "use client";
 
 import { Button } from "@mapform/ui/components/button";
-import { PanelRightOpenIcon } from "lucide-react";
+import { PanelRightCloseIcon, PanelRightOpenIcon } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@mapform/ui/components/tooltip";
-import { useRootLayout } from "~/app/app/(authenticated)/(onboarded)/[wsSlug]/root-layout/context";
+import { useSidebarRight } from "@mapform/ui/components/sidebar";
 
 export default function TogglePages() {
-  const { showDrawer, toggleDrawer } = useRootLayout();
-
-  if (showDrawer) return null;
+  const { open, setOpen } = useSidebarRight();
 
   return (
     <TooltipProvider delayDuration={200}>
       <Tooltip>
         <TooltipTrigger asChild>
-          <Button onClick={toggleDrawer} size="icon-sm" variant="ghost">
-            <PanelRightOpenIcon className="size-5" />
+          <Button
+            onClick={() => {
+              setOpen(!open);
+            }}
+            size="icon-sm"
+            variant="ghost"
+          >
+            {open ? (
+              <PanelRightCloseIcon className="size-5" />
+            ) : (
+              <PanelRightOpenIcon className="size-5" />
+            )}
           </Button>
         </TooltipTrigger>
-        <TooltipContent>Show Pages</TooltipContent>
+        <TooltipContent>{open ? "Hide" : "Show"} Pages</TooltipContent>
       </Tooltip>
     </TooltipProvider>
   );

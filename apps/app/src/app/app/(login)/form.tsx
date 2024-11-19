@@ -102,15 +102,18 @@ export function SignInForm({ type }: { type: "signin" | "signup" }) {
         </h1>
         <p className="text-muted-foreground text-sm">
           {type === "signin"
-            ? "Already have an account? "
-            : "Don't have an account? "}
-          <Link className="link" href="/app/signin">
-            {type === "signin" ? "Sign in" : "Sign up"}
+            ? "Don't have an account? "
+            : "Already have an account? "}
+          <Link
+            className="link"
+            href={type === "signin" ? "/app/signup" : "/app/signin"}
+          >
+            {type === "signin" ? "Sign up" : "Sign in"}
           </Link>
         </p>
       </div>
       <Form {...form}>
-        <form className="space-y-2" onSubmit={form.handleSubmit(onSubmit)}>
+        <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
           <FormField
             control={form.control}
             name="email"

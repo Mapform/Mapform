@@ -19,7 +19,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    // Need suppressHydrationWarning to support next-theme (as per docs)
+    <html lang="en" suppressHydrationWarning>
       <body className={cn("h-full bg-white", inter.className)}>
         <RootProviders>
           {children}

@@ -6,10 +6,6 @@ import { getCurrentSession } from "~/data/auth/get-current-session";
 // Base client
 export const baseClient = createSafeActionClient();
 
-// Exceptions for workspace and teamspace slugs because they are also positional params
-const workspaceExceptions = ["signin", "signup", "onboarding"];
-const teamspaceExceptions = ["settings"];
-
 /**
  * Check that the user is authenticated, and only requested workspace /
  * teamspace resources they have access to.
@@ -24,19 +20,41 @@ export const authAction = baseClient.use(async ({ next }) => {
     return redirect("/app/signin");
   }
 
-  const hasAccessToWorkspace = [
-    ...workspaceExceptions,
-    ...response.user.workspaceMemberships.map((wm) => wm.workspace.slug),
-  ].some((ws) => workspaceSlug === ws);
+  const checkAccessToWorkspaceBySlug = (slug: string) =>
+    [...response.user.workspaceMemberships.map((wm) => wm.workspace.slug)].some(
+      (ws) => slug === ws,
+    );
+  const checkAccessToWorkspaceById = (id: string) =>
+    [...response.user.workspaceMemberships.map((wm) => wm.workspace.id)].some(
+      (ws) => id === ws,
+    );
+  const hasAccessToCurrentWorkspace =
+    checkAccessToWorkspaceBySlug(workspaceSlug);
 
-  const hasAccessToTeamspace = [
-    ...teamspaceExceptions,
-    ...response.user.workspaceMemberships.flatMap((wm) =>
-      wm.workspace.teamspaces.map((ts) => ts.slug),
-    ),
-  ].some((ts) => ts === teamspaceSlug);
+  /**
+   * Teamspace slugs are only unique to a WS, therefore we need to check if the
+   * user has access to the requested teamspace in the requested workspace.
+   */
+  const checkAccessToTeamspaceBySlug = (tsSlug: string) =>
+    [
+      ...response.user.workspaceMemberships.flatMap((wm) =>
+        wm.workspace.teamspaces.map((ts) => ({
+          _tsSlug: ts.slug,
+          _wsSlug: wm.workspace.slug,
+        })),
+      ),
+    ].some(
+      (ts) => ts._tsSlug === tsSlug && checkAccessToWorkspaceBySlug(ts._wsSlug),
+    );
+  const checkAccessToTeamspaceById = (id: string) =>
+    [
+      ...response.user.workspaceMemberships.flatMap((wm) =>
+        wm.workspace.teamspaces.map((ts) => ts.id),
+      ),
+    ].some((ts) => ts === id);
+  const hasAccessToTeamspace = checkAccessToTeamspaceBySlug(teamspaceSlug);
 
-  if (workspaceSlug && !hasAccessToWorkspace) {
+  if (workspaceSlug && !hasAccessToCurrentWorkspace) {
     return redirect("/app");
   }
 
@@ -44,7 +62,16 @@ export const authAction = baseClient.use(async ({ next }) => {
     return redirect(`/app/${workspaceSlug}`);
   }
 
-  return next({ ctx: { user: response.user, session: response.session } });
+  return next({
+    ctx: {
+      user: response.user,
+      session: response.session,
+      checkAccessToWorkspaceBySlug,
+      checkAccessToTeamspaceBySlug,
+      checkAccessToTeamspaceById,
+      checkAccessToWorkspaceById,
+    },
+  });
 });
 
 /**

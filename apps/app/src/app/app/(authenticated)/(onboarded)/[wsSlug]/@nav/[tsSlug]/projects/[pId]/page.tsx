@@ -4,7 +4,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@mapform/ui/components/popover";
-import { SendIcon } from "lucide-react";
+import Link from "next/link";
 import { NavSlot } from "~/components/nav-slot";
 import { getProjectWithTeamspaceAction } from "~/data/projects/get-project-with-teamspace";
 import { ShareContent } from "./share-content";
@@ -26,12 +26,11 @@ export default async function Nav(props: {
   return (
     <NavSlot
       actions={
-        <div className="flex items-center gap-1">
+        <div className="flex items-center">
           <Popover>
             <PopoverTrigger asChild>
               <Button size="sm" variant="ghost">
-                <SendIcon className="mr-2 h-4 w-4" />
-                Share
+                Responses
               </Button>
             </PopoverTrigger>
             <PopoverContent>
@@ -42,23 +41,22 @@ export default async function Nav(props: {
               />
             </PopoverContent>
           </Popover>
+          <Link
+            href={`/app/${params.wsSlug}/${params.tsSlug}/datasets/${project.submissionsDataset.id}`}
+          >
+            <Button size="sm" variant="ghost">
+              Share
+            </Button>
+          </Link>
           <TogglePages />
         </div>
       }
-      tabs={[
-        {
-          name: "Create",
-          href: `/app/${params.wsSlug}/${params.tsSlug}/projects/${params.pId}`,
-        },
-        ...(projectResponse.data?.submissionsDataset.id
-          ? [
-              {
-                name: "Responses",
-                href: `/app/${params.wsSlug}/${params.tsSlug}/datasets/${projectResponse.data.submissionsDataset.id}`,
-              },
-            ]
-          : []),
-      ]}
+      // tabs={[
+      //   {
+      //     name: "Create",
+      //     href: `/app/${params.wsSlug}/${params.tsSlug}/projects/${params.pId}`,
+      //   },
+      // ]}
     />
   );
 }

@@ -1,8 +1,8 @@
 "server-only";
 
 import { db } from "@mapform/db";
-import { teamspaces } from "@mapform/db/schema";
-import { eq, and } from "@mapform/db/utils";
+import { projects, teamspaces } from "@mapform/db/schema";
+import { eq, and, isNull } from "@mapform/db/utils";
 import type { GetTeamspaceWithProjectsSchema } from "./schema";
 
 export const getTeamspaceWithProjects = async ({
@@ -26,6 +26,7 @@ export const getTeamspaceWithProjects = async ({
           name: true,
           createdAt: true,
         },
+        where: isNull(projects.rootProjectId),
       },
     },
   });

@@ -75,7 +75,10 @@ function Project() {
             const response = await executeAsyncUploadImage(formData);
 
             if (response?.serverError) {
-              toast("There was an error uploading the image.");
+              toast({
+                title: "Uh oh! Something went wrong.",
+                description: response.serverError,
+              });
               return null;
             }
 

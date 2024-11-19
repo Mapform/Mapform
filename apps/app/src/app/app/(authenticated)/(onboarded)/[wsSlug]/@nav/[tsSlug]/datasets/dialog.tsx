@@ -24,16 +24,18 @@ import { Input } from "@mapform/ui/components/input";
 import { toast } from "@mapform/ui/components/toaster";
 import { useAction } from "next-safe-action/hooks";
 import { useState } from "react";
-import {
-  createEmptyDatasetSchema,
-  type CreateEmptyDatasetSchema,
-} from "@mapform/backend/datasets/create-empty-dataset/schema";
+import type { z } from "zod";
 import { createEmptyDatasetAction } from "~/data/datasets/create-empty-dataset";
-import { useRootLayout } from "../../../root-layout/context";
+import { extendedCreateEmptyDatasetSchema } from "~/data/datasets/create-empty-dataset/schema";
+import { useWorkspace } from "../../../workspace-context";
+
+type CreateEmptyDatasetSchema = z.infer<
+  typeof extendedCreateEmptyDatasetSchema
+>;
 
 export function CreateDialog({ tsSlug }: { tsSlug: string }) {
   const [open, setOpen] = useState(false);
-  const { workspaceDirectory } = useRootLayout();
+  const { workspaceDirectory } = useWorkspace();
   const teamspaceId = workspaceDirectory.teamspaces.find(
     (ts) => ts.slug === tsSlug,
   )?.id;
@@ -41,23 +43,33 @@ export function CreateDialog({ tsSlug }: { tsSlug: string }) {
     defaultValues: {
       name: "",
       teamspaceId,
+      redirectAfterCreate: true,
     },
-    resolver: zodResolver(createEmptyDatasetSchema),
+    resolver: zodResolver(extendedCreateEmptyDatasetSchema),
   });
   const { execute, status } = useAction(createEmptyDatasetAction, {
     onError: ({ error }) => {
       if (error.serverError) {
-        toast(error.serverError);
+        toast({
+          title: "Uh oh! Something went wrong.",
+          description: error.serverError,
+        });
         return;
       }
 
       if (error.validationErrors) {
-        toast("There was an error creating the dataset");
+        toast({
+          title: "Uh oh! Something went wrong.",
+          description: "There was an error creating the dataset",
+        });
       }
     },
     onSuccess: () => {
       form.reset();
-      toast("Your dataset has been created.");
+      toast({
+        title: "Success!",
+        description: "Your dataset has been created.",
+      });
       setOpen(false);
     },
   });

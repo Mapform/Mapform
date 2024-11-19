@@ -14,13 +14,6 @@ import {
   SortableContext,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { Button } from "@mapform/ui/components/button";
-import {
-  TooltipProvider,
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
-} from "@mapform/ui/components/tooltip";
 import { Layers2Icon, PlusIcon } from "lucide-react";
 import { useState } from "react";
 import {
@@ -46,6 +39,14 @@ import {
   LayerPopoverAnchor,
 } from "../../layer-popover";
 import { Item } from "./item";
+import {
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupAction,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarMenu,
+} from "@mapform/ui/components/sidebar";
 
 export function LayerList() {
   const { optimisticProjectWithPages } = useProject();
@@ -124,139 +125,121 @@ export function LayerList() {
   };
 
   return (
-    <div className="">
-      <div className="flex items-center justify-between">
-        <h3 className="text-xs font-semibold leading-6 text-stone-400">
-          Layers
-        </h3>
-        <TooltipProvider delayDuration={200}>
-          <Popover
-            modal
-            onOpenChange={(val) => {
-              setOpen(val);
-              if (val) {
-                setQuery("");
-              }
-            }}
-            open={open}
-          >
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <PopoverTrigger asChild>
-                  <Button
-                    className="-mr-2 ml-auto"
-                    size="icon-sm"
-                    variant="ghost"
-                  >
-                    <PlusIcon className="size-4" />
-                  </Button>
-                </PopoverTrigger>
-              </TooltipTrigger>
-              <TooltipContent>New Layer</TooltipContent>
-            </Tooltip>
-            <PopoverContent
-              align="start"
-              className="w-[200px] p-0"
-              side="right"
-            >
-              <Command
-                filter={(value, search, keywords) => {
-                  if (value.includes("Create")) return 1;
-                  if (
-                    value
-                      .toLocaleLowerCase()
-                      .includes(search.toLocaleLowerCase())
-                  )
-                    return 1;
-                  if (
-                    keywords?.some((k) =>
-                      k
-                        .toLocaleLowerCase()
-                        .includes(search.toLocaleLowerCase()),
-                    )
-                  )
-                    return 1;
-                  return 0;
-                }}
-              >
-                <CommandInput
-                  onValueChange={(value: string) => {
-                    setQuery(value);
-                  }}
-                  placeholder="Create or search..."
-                  value={query}
-                />
-                <CommandList>
-                  <CommandGroup>
-                    <CommandItem
-                      onSelect={() => {
-                        setLayerPopoverOpen(true);
-                        setOpen(false);
-                      }}
-                    >
-                      <div className="flex items-center overflow-hidden">
-                        <p className="flex items-center font-semibold">
-                          <PlusIcon className="mr-2 size-4" />
-                          Create
-                        </p>
-                        <p className="text-primary ml-1 block truncate">
-                          {query}
-                        </p>
-                      </div>
-                    </CommandItem>
-                  </CommandGroup>
-                  <CommandSeparator />
-                  {layersFromOtherPages.length > 0 ? (
-                    <CommandGroup heading="Layers">
-                      {layersFromOtherPages.map((layer) => (
-                        <CommandItem
-                          key={layer.layerId}
-                          keywords={[layer.name ?? "Untitled"]}
-                          onSelect={() => {
-                            handleCreatePageLayer(layer.layerId);
-                          }}
-                          value={layer.layerId}
-                        >
-                          <div className="flex items-center overflow-hidden">
-                            <Layers2Icon className="mr-2 size-4 flex-shrink-0" />
-                            <span className="truncate">
-                              {layer.name ?? "Untitled"}
-                            </span>
-                          </div>
-                        </CommandItem>
-                      ))}
-                    </CommandGroup>
-                  ) : null}
-                </CommandList>
-              </Command>
-            </PopoverContent>
-          </Popover>
-          <LayerPopoverRoot
-            modal
-            onOpenChange={setLayerPopoverOpen}
-            open={layerPopoverOpen}
-          >
-            <LayerPopoverAnchor />
-            <LayerPopoverContent initialName={query} key={query} />
-          </LayerPopoverRoot>
-        </TooltipProvider>
-      </div>
-      <div className="mt-1 flex flex-col">
-        <DndContext
-          collisionDetection={closestCenter}
-          onDragEnd={reorderLayers}
-          sensors={sensors}
+    <SidebarContent className="h-full">
+      <SidebarGroup className="h-full">
+        <SidebarGroupLabel>Layers</SidebarGroupLabel>
+        <Popover
+          modal
+          onOpenChange={(val) => {
+            setOpen(val);
+            if (val) {
+              setQuery("");
+            }
+          }}
+          open={open}
         >
-          <SortableContext
-            items={dragLayers}
-            strategy={verticalListSortingStrategy}
-          >
-            {dragLayers.map((layer) => {
-              return <Item key={layer.id} layer={layer} />;
-            })}
-          </SortableContext>
-        </DndContext>
-      </div>
-    </div>
+          <PopoverTrigger asChild>
+            <SidebarGroupAction>
+              <PlusIcon />
+            </SidebarGroupAction>
+          </PopoverTrigger>
+
+          <PopoverContent align="start" className="w-[200px] p-0" side="right">
+            <Command
+              filter={(value, search, keywords) => {
+                if (value.includes("Create")) return 1;
+                if (
+                  value.toLocaleLowerCase().includes(search.toLocaleLowerCase())
+                )
+                  return 1;
+                if (
+                  keywords?.some((k) =>
+                    k.toLocaleLowerCase().includes(search.toLocaleLowerCase()),
+                  )
+                )
+                  return 1;
+                return 0;
+              }}
+            >
+              <CommandInput
+                onValueChange={(value: string) => {
+                  setQuery(value);
+                }}
+                placeholder="Create or search..."
+                value={query}
+              />
+              <CommandList>
+                <CommandGroup>
+                  <CommandItem
+                    onSelect={() => {
+                      setLayerPopoverOpen(true);
+                      setOpen(false);
+                    }}
+                  >
+                    <div className="flex items-center overflow-hidden">
+                      <p className="flex items-center font-semibold">
+                        <PlusIcon className="mr-2 size-4" />
+                        Create
+                      </p>
+                      <p className="text-primary ml-1 block truncate">
+                        {query}
+                      </p>
+                    </div>
+                  </CommandItem>
+                </CommandGroup>
+                <CommandSeparator />
+                {layersFromOtherPages.length > 0 ? (
+                  <CommandGroup heading="Layers">
+                    {layersFromOtherPages.map((layer) => (
+                      <CommandItem
+                        key={layer.layerId}
+                        keywords={[layer.name ?? "Untitled"]}
+                        onSelect={() => {
+                          handleCreatePageLayer(layer.layerId);
+                        }}
+                        value={layer.layerId}
+                      >
+                        <div className="flex items-center overflow-hidden">
+                          <Layers2Icon className="mr-2 size-4 flex-shrink-0" />
+                          <span className="truncate">
+                            {layer.name ?? "Untitled"}
+                          </span>
+                        </div>
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                ) : null}
+              </CommandList>
+            </Command>
+          </PopoverContent>
+        </Popover>
+        <LayerPopoverRoot
+          modal
+          onOpenChange={setLayerPopoverOpen}
+          open={layerPopoverOpen}
+        >
+          <LayerPopoverAnchor />
+          <LayerPopoverContent initialName={query} key={query} />
+        </LayerPopoverRoot>
+        <SidebarGroupContent>
+          <SidebarMenu>
+            <DndContext
+              collisionDetection={closestCenter}
+              onDragEnd={reorderLayers}
+              sensors={sensors}
+            >
+              <SortableContext
+                items={dragLayers}
+                strategy={verticalListSortingStrategy}
+              >
+                {dragLayers.map((layer) => {
+                  return <Item key={layer.id} layer={layer} />;
+                })}
+              </SortableContext>
+            </DndContext>
+          </SidebarMenu>
+        </SidebarGroupContent>
+      </SidebarGroup>
+    </SidebarContent>
   );
 }

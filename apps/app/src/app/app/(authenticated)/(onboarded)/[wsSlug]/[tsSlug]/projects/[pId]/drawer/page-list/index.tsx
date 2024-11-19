@@ -14,15 +14,16 @@ import {
   SortableContext,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { Button } from "@mapform/ui/components/button";
 import { Spinner } from "@mapform/ui/components/spinner";
-import {
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
-  TooltipProvider,
-} from "@mapform/ui/components/tooltip";
 import { useMapform } from "@mapform/mapform";
+import {
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupAction,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarMenu,
+} from "@mapform/ui/components/sidebar";
 import { PlusIcon } from "lucide-react";
 import { updatePageOrderAction } from "~/data/pages/update-page-order";
 import { createPageAction } from "~/data/pages/create-page";
@@ -87,70 +88,61 @@ export function PageList() {
   };
 
   return (
-    <div>
-      <div className="flex items-center justify-between">
-        <h3 className="text-xs font-semibold leading-6 text-stone-400">
-          Pages
-        </h3>
-        <TooltipProvider delayDuration={200}>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                className="-mr-2 ml-auto"
-                disabled={createPageStatus === "executing"}
-                onClick={() => {
-                  const loc = map?.getCenter();
-                  const zoom = map?.getZoom();
-                  const pitch = map?.getPitch();
-                  const bearing = map?.getBearing();
+    <SidebarContent className="h-full">
+      <SidebarGroup className="h-full">
+        <SidebarGroupLabel>Pages</SidebarGroupLabel>
+        <SidebarGroupAction
+          disabled={createPageStatus === "executing"}
+          onClick={() => {
+            const loc = map?.getCenter();
+            const zoom = map?.getZoom();
+            const pitch = map?.getPitch();
+            const bearing = map?.getBearing();
 
-                  if (
-                    !loc ||
-                    zoom === undefined ||
-                    pitch === undefined ||
-                    bearing === undefined
-                  )
-                    return;
+            if (
+              !loc ||
+              zoom === undefined ||
+              pitch === undefined ||
+              bearing === undefined
+            )
+              return;
 
-                  executeCreatePage({
-                    projectId: optimisticProjectWithPages.id,
-                    center: { x: loc.lng, y: loc.lat },
-                    zoom,
-                    pitch,
-                    bearing,
-                  });
-                }}
-                size="icon-sm"
-                variant="ghost"
-              >
-                {createPageStatus === "executing" ? (
-                  <Spinner className="size-4" variant="dark" />
-                ) : (
-                  <PlusIcon className="size-4" />
-                )}
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>New Page</TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      </div>
-
-      <div className="mt-1 flex flex-col">
-        <DndContext
-          collisionDetection={closestCenter}
-          onDragEnd={reorderSteps}
-          sensors={sensors}
+            executeCreatePage({
+              projectId: optimisticProjectWithPages.id,
+              center: { x: loc.lng, y: loc.lat },
+              zoom,
+              pitch,
+              bearing,
+            });
+          }}
+          title="Add Page"
         >
-          <SortableContext
-            items={dragPages}
-            strategy={verticalListSortingStrategy}
-          >
-            {dragPages.map((page) => {
-              return <Item key={page.id} page={page} />;
-            })}
-          </SortableContext>
-        </DndContext>
-      </div>
-    </div>
+          {createPageStatus === "executing" ? (
+            <Spinner size="sm" variant="dark" />
+          ) : (
+            <PlusIcon />
+          )}
+          <span className="sr-only">Add Project</span>
+        </SidebarGroupAction>
+        <SidebarGroupContent>
+          <SidebarMenu>
+            <DndContext
+              collisionDetection={closestCenter}
+              onDragEnd={reorderSteps}
+              sensors={sensors}
+            >
+              <SortableContext
+                items={dragPages}
+                strategy={verticalListSortingStrategy}
+              >
+                {dragPages.map((page) => {
+                  return <Item key={page.id} page={page} />;
+                })}
+              </SortableContext>
+            </DndContext>
+          </SidebarMenu>
+        </SidebarGroupContent>
+      </SidebarGroup>
+    </SidebarContent>
   );
 }

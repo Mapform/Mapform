@@ -14,7 +14,7 @@ export const createProject = async ({
   name,
   teamspaceId,
 }: CreateProjectSchema) => {
-  await db.transaction(async (tx) => {
+  return db.transaction(async (tx) => {
     /**
      * Create submissions dataset
      */

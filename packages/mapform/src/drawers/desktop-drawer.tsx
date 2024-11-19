@@ -18,7 +18,7 @@ export function DesktopDrawer({
   return (
     <div
       className={cn(
-        "bg-background prose group relative bottom-0 top-0 z-40 flex h-full max-w-full flex-col shadow-lg outline-none transition md:absolute md:rounded-r-lg",
+        "bg-background prose group absolute bottom-0 top-0 z-40 flex h-full max-w-full flex-col shadow-lg outline-none transition",
         withPadding ? "w-[392px] pl-8" : "w-[360px]",
         open
           ? "visible translate-x-0 opacity-100"

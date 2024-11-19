@@ -1,5 +1,7 @@
+import Image from "next/image";
 import { redirect } from "next/navigation";
 import { getCurrentSession } from "~/data/auth/get-current-session";
+import mapform from "public/static/images/mapform.svg";
 import { OnboardingForm } from "./form";
 
 export default async function OnboardingPage() {
@@ -17,14 +19,17 @@ export default async function OnboardingPage() {
 
   return (
     <div className="flex h-full w-full items-center">
-      <div className="mx-auto max-w-screen-sm px-4 pb-20 text-center">
-        <h1 className="text-xl font-semibold text-stone-900">
-          Welcome to Mapform 📍
-        </h1>
-        <p className="mb-8 mt-2 text-stone-600">
-          Before we get started, please confirm a few details.
-        </p>
-        <OnboardingForm />
+      <div className="max-w-screen mx-auto flex w-[400px] max-w-screen-sm flex-col gap-8 px-4 pb-20">
+        <Image alt="Logo" className="inline h-10 w-10" src={mapform} />
+        <div>
+          <h1 className="mb-2 text-2xl font-semibold text-stone-900">
+            Welcome to Mapform!
+          </h1>
+          <p className="text-muted-foreground">
+            Let&apos;s get you started with your first workspace.
+          </p>
+        </div>
+        <OnboardingForm email={currentSession.user.email} />
       </div>
     </div>
   );

@@ -16,15 +16,12 @@ import {
 } from "@mapform/ui/components/dropdown-menu";
 import { useAction } from "next-safe-action/hooks";
 import { startTransition } from "react";
-import { Button } from "@mapform/ui/components/button";
-import { cn } from "@mapform/lib/classnames";
 import type { ProjectWithPages } from "@mapform/backend/projects/get-project-with-pages";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@mapform/ui/components/tooltip";
+  SidebarMenuAction,
+  SidebarMenuItem,
+  SidebarRightMenuButton,
+} from "@mapform/ui/components/sidebar";
 import { DragItem, DragHandle } from "~/components/draggable";
 import { deletePageAction } from "~/data/pages/delete-page";
 import { usePage } from "../../page-context";
@@ -79,60 +76,42 @@ export function Item({ page }: ItemProps) {
       <ContextMenu>
         <ContextMenuTrigger>
           <DragHandle id={page.id}>
-            <div
-              className={cn(
-                "group -mx-2 mb-[2px] flex cursor-pointer items-center justify-between rounded pr-2 transition-colors hover:bg-stone-100",
-                {
-                  "bg-stone-100": isActive,
-                },
-              )}
-            >
-              <div className="-mr-1 flex flex-1 items-center overflow-hidden">
-                <button
-                  className="flex flex-1 items-center gap-2 overflow-hidden py-1.5 pl-2"
-                  onClick={() => {
-                    setActivePage(page);
-                  }}
-                  type="button"
+            <SidebarMenuItem>
+              <SidebarRightMenuButton
+                className="pr-8"
+                isActive={isActive}
+                onClick={() => {
+                  setActivePage(page);
+                }}
+              >
+                <FileIcon />
+                <span className="truncate text-sm">
+                  {page.title || "Untitled"}
+                </span>
+              </SidebarRightMenuButton>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <SidebarMenuAction>
+                    <EllipsisIcon />
+                  </SidebarMenuAction>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  align="start"
+                  className="w-[200px] overflow-hidden"
+                  side="left"
                 >
-                  <FileIcon className="flex size-4 flex-shrink-0 items-center justify-center" />
-                  <span className="truncate text-sm">
-                    {page.title || "Untitled"}
-                  </span>
-                </button>
-                <DropdownMenu>
-                  <TooltipProvider delayDuration={200}>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <DropdownMenuTrigger asChild>
-                          <Button
-                            className="!ring-0 !ring-transparent !ring-opacity-0 !ring-offset-0 hover:bg-stone-200"
-                            size="icon-xs"
-                            variant="ghost"
-                          >
-                            <EllipsisIcon className="invisible flex size-4 flex-shrink-0 items-center justify-center transition-opacity group-hover:visible" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                      </TooltipTrigger>
-                      <DropdownMenuContent className="w-[200px] overflow-hidden">
-                        <DropdownMenuGroup>
-                          <DropdownMenuItem
-                            className="flex items-center gap-2"
-                            onClick={handleDelete}
-                          >
-                            <Trash2Icon className="size-4 flex-shrink-0" />
-                            Delete
-                          </DropdownMenuItem>
-                        </DropdownMenuGroup>
-                      </DropdownMenuContent>
-                      <TooltipContent side="bottom">
-                        Delete or edit
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </DropdownMenu>
-              </div>
-            </div>
+                  <DropdownMenuGroup>
+                    <DropdownMenuItem
+                      className="flex items-center gap-2"
+                      onClick={handleDelete}
+                    >
+                      <Trash2Icon className="size-4 flex-shrink-0" />
+                      Delete
+                    </DropdownMenuItem>
+                  </DropdownMenuGroup>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </SidebarMenuItem>
           </DragHandle>
         </ContextMenuTrigger>
         <ContextMenuContent>

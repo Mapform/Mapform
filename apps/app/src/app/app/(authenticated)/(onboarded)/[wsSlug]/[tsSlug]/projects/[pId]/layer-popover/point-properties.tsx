@@ -144,7 +144,10 @@ function DataColField({
     },
 
     onError: () => {
-      toast("Failed to create column.");
+      toast({
+        title: "Uh oh! Something went wrong.",
+        description: "There was an error creating the column.",
+      });
     },
   });
 

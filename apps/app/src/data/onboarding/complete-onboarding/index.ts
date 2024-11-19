@@ -7,8 +7,14 @@ import { authAction } from "~/lib/safe-action";
 
 export const completeOnboardingAction = authAction
   .schema(completeOnboardingSchema)
-  .action(async ({ parsedInput: { name }, ctx: { user } }) => {
-    const { slug } = await completeOnboarding({ name, userId: user.id });
+  .action(
+    async ({ parsedInput: { userName, workspaceName }, ctx: { user } }) => {
+      const { slug } = await completeOnboarding({
+        userName,
+        workspaceName,
+        userId: user.id,
+      });
 
-    redirect(`/app/${slug}`);
-  });
+      redirect(`/app/${slug}`);
+    },
+  );
