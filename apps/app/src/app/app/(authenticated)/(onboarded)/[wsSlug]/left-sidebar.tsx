@@ -238,6 +238,7 @@ export function LeftSidebar() {
               <DropdownMenuContent align="start" side="right">
                 <DropdownMenuItem
                   className="flex items-center gap-2"
+                  disabled={statusCreateProject === "executing"}
                   onSelect={(e) => {
                     e.preventDefault();
                     executeCreateProject({
@@ -251,6 +252,7 @@ export function LeftSidebar() {
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   className="flex items-center gap-2"
+                  disabled={statusCreateEmptyDataset === "executing"}
                   onSelect={(e) => {
                     e.preventDefault();
                     executeCreateEmptyDataset({
