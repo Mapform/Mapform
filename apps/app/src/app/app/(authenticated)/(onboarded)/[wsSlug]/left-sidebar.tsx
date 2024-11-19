@@ -44,7 +44,7 @@ import {
 import {
   Avatar,
   AvatarFallback,
-  AvatarImage,
+  // AvatarImage,
 } from "@mapform/ui/components/avatar";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -88,7 +88,7 @@ export function LeftSidebar() {
     user: {
       name: user.name ?? "No Name",
       email: user.email,
-      avatar: "/avatars/shadcn.jpg", // TODO
+      // avatar: "/avatars/shadcn.jpg", // TODO: Use real avatar
     },
     workspaces: workspaceMemberships.map((membership) => ({
       name: membership.workspace.name,
@@ -407,7 +407,7 @@ export function LeftSidebar() {
                   size="lg"
                 >
                   <Avatar className="h-8 w-8 rounded-lg">
-                    <AvatarImage alt={user.name ?? ""} src={data.user.avatar} />
+                    {/* <AvatarImage alt={user.name ?? ""} src={data.user.avatar} /> */}
                     <AvatarFallback className="rounded-lg">
                       {data.user.name.split(" ")[0]?.[0]}
                       {data.user.name.split(" ")[1]?.[0]}
@@ -431,10 +431,10 @@ export function LeftSidebar() {
                 <DropdownMenuLabel className="p-0 font-normal">
                   <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                     <Avatar className="h-8 w-8 rounded-lg">
-                      <AvatarImage
+                      {/* <AvatarImage
                         alt={data.user.name || ""}
                         src={data.user.avatar}
-                      />
+                      /> */}
                       <AvatarFallback className="rounded-lg uppercase">
                         {data.user.name.split(" ")[0]?.[0]}
                         {data.user.name.split(" ")[1]?.[0]}
