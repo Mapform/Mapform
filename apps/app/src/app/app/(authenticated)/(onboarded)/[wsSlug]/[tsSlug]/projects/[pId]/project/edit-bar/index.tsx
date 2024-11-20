@@ -140,7 +140,6 @@ function EditBarInner({ optimisticPage, updatePageServer }: EditBarInnerProps) {
 
     const handleLocationSelect = (e: MapMouseEvent) => {
       setSearchLocation({
-        title: "Selected Location",
         latitude: e.lngLat.lat,
         longitude: e.lngLat.lng,
         icon: "unknown",
@@ -235,7 +234,7 @@ function EditBarInner({ optimisticPage, updatePageServer }: EditBarInnerProps) {
                   <MapPinPlusIcon className="size-5" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Add Pin to Map</TooltipContent>
+              <TooltipContent>Add Point to Map</TooltipContent>
             </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>

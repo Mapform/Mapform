@@ -36,8 +36,6 @@ export function MapformProvider({ children }: { children: React.ReactNode }) {
   const [drawerOpen, setDrawerOpen] = useState(true);
   const { ref: mapContainer, bounds } = useMeasure<HTMLDivElement>();
 
-  console.log("mapContainerBounds", mapContainer, bounds);
-
   const mapContainerBounds = bounds;
 
   return (

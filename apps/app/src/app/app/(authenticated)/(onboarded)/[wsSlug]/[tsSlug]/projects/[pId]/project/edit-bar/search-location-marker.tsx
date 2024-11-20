@@ -106,7 +106,7 @@ export function SearchLocationMarker({
       </Button>
       <div className="flex flex-col">
         <Icon className="mb-2 size-5" />
-        <h1 className="text-lg font-semibold">{title}</h1>
+        <h1 className="text-lg font-semibold">{title || "Untitled"}</h1>
         <div className="mt-8 flex">
           <Popover
             modal
