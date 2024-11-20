@@ -102,12 +102,7 @@ export function MapForm({
   const mapPadding = {
     top: 0,
     bottom: isMobile ? 200 : 0,
-    left:
-      (drawerOpen || Boolean(activePoint)) && !isMobile
-        ? editable
-          ? 392
-          : 360
-        : 0,
+    left: drawerOpen && !isMobile ? (editable ? 392 : 360) : 0,
     right: 0,
   };
 

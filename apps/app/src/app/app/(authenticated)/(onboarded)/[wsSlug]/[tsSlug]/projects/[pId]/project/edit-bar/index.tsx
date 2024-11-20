@@ -186,9 +186,7 @@ function EditBarInner({ optimisticPage, updatePageServer }: EditBarInnerProps) {
       <div
         className={cn(
           "absolute bottom-0 right-0 top-0 transition-[width] duration-200",
-          drawerOpen || Boolean(searchLocation)
-            ? "w-[calc(100%-392px)]"
-            : "w-full",
+          drawerOpen ? "w-[calc(100%-392px)]" : "w-full",
         )}
       >
         <div
