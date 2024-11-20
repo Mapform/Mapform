@@ -26,7 +26,7 @@ export const useMeasure = <T extends Element = Element>(): MeasureResult<T> => {
         observer.disconnect();
       }
     };
-  }, []);
+  }, [ref.current]);
 
   return { ref, bounds };
 };

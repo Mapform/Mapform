@@ -34,8 +34,11 @@ export const useMapform = () => useContext(MapformProviderContext);
 export function MapformProvider({ children }: { children: React.ReactNode }) {
   const [map, setMap] = useState<MBMap>();
   const [drawerOpen, setDrawerOpen] = useState(true);
-  const { ref: mapContainer, bounds: mapContainerBounds } =
-    useMeasure<HTMLDivElement>();
+  const { ref: mapContainer, bounds } = useMeasure<HTMLDivElement>();
+
+  console.log("mapContainerBounds", mapContainer, bounds);
+
+  const mapContainerBounds = bounds;
 
   return (
     <MapformProviderContext.Provider
