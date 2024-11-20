@@ -86,8 +86,6 @@ export function SearchLocationMarker({
   const x = searchLocation.longitude;
   const y = searchLocation.latitude;
 
-  console.log("searchLocation", searchLocation);
-
   return (
     <div
       className="relative w-[240px] rounded-md bg-white p-4 shadow-md"
@@ -99,7 +97,6 @@ export function SearchLocationMarker({
       <Button
         className="absolute right-2 top-2"
         onClick={() => {
-          setDrawerOpen(true);
           setSearchLocation(null);
         }}
         size="icon-sm"
