@@ -102,12 +102,7 @@ export function MapForm({
   const mapPadding = {
     top: 0,
     bottom: isMobile ? 200 : 0,
-    left:
-      (drawerOpen || Boolean(activePoint)) && !isMobile
-        ? editable
-          ? 392
-          : 360
-        : 0,
+    left: drawerOpen && !isMobile ? (editable ? 392 : 360) : 0,
     right: 0,
   };
 
@@ -234,18 +229,7 @@ export function MapForm({
                 onLoad={onLoad}
                 pageData={pageData}
               >
-                <div
-                  className={cn(
-                    "absolute bottom-0 right-0 top-0 transition-[width] duration-200",
-                    drawerOpen || Boolean(activePoint)
-                      ? editable
-                        ? "w-[calc(100%-392px)]"
-                        : "w-[calc(100%-360px)]"
-                      : "w-full",
-                  )}
-                >
-                  {children}
-                </div>
+                {children}
               </Map>
             </div>
             <Button

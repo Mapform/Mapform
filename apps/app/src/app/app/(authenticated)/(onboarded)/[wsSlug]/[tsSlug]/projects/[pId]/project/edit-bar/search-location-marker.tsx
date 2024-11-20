@@ -13,7 +13,7 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from "@mapform/ui/components/popover";
-import type { PlacesSearchResponse } from "@mapform/map-utils/types";
+import type { SearchFeature } from "@mapform/map-utils/types";
 import {
   XIcon,
   StoreIcon,
@@ -40,21 +40,12 @@ import {
 
 interface SearchLocationMarkerProps {
   pageLayers: ProjectWithPages["pageLayers"];
-  searchLocation: PlacesSearchResponse["features"][number] | null;
+  searchLocation: SearchFeature | null;
   setDrawerOpen: (value: SetStateAction<boolean>) => void;
-  setSearchLocation: (
-    value: SetStateAction<PlacesSearchResponse["features"][number] | null>,
-  ) => void;
+  setSearchLocation: (value: SetStateAction<SearchFeature | null>) => void;
 }
 
-const searchLocationIcons: Partial<
-  Record<
-    NonNullable<
-      PlacesSearchResponse["features"][number]["properties"]
-    >["result_type"],
-    LucideIcon
-  >
-> = {
+const searchLocationIcons: Record<SearchFeature["icon"], LucideIcon> = {
   amenity: StoreIcon,
   building: BuildingIcon,
   city: Building2Icon,
@@ -85,17 +76,15 @@ export function SearchLocationMarker({
     },
   });
 
-  if (!searchLocation?.properties?.lon || !searchLocation.properties.lat)
+  if (!searchLocation) {
     return null;
+  }
 
-  const Icon =
-    searchLocationIcons[searchLocation.properties.result_type] ?? MapPinIcon;
+  const Icon = searchLocationIcons[searchLocation.icon];
+  const title = searchLocation.title;
 
-  const title =
-    searchLocation.properties.name ?? searchLocation.properties.address_line1;
-
-  const x = searchLocation.properties.lon;
-  const y = searchLocation.properties.lat;
+  const x = searchLocation.longitude;
+  const y = searchLocation.latitude;
 
   return (
     <div
@@ -108,7 +97,6 @@ export function SearchLocationMarker({
       <Button
         className="absolute right-2 top-2"
         onClick={() => {
-          setDrawerOpen(true);
           setSearchLocation(null);
         }}
         size="icon-sm"
@@ -118,7 +106,7 @@ export function SearchLocationMarker({
       </Button>
       <div className="flex flex-col">
         <Icon className="mb-2 size-5" />
-        <h1 className="text-lg font-semibold">{title}</h1>
+        <h1 className="text-lg font-semibold">{title || "Untitled"}</h1>
         <div className="mt-8 flex">
           <Popover
             modal

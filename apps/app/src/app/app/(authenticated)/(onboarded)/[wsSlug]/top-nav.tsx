@@ -10,9 +10,9 @@ import {
   TooltipTrigger,
 } from "@mapform/ui/components/tooltip";
 import { useParams } from "next/navigation";
+import { cn } from "@mapform/lib/classnames";
 import { useSidebarLeft } from "@mapform/ui/components/sidebar";
 import { useWorkspace } from "./workspace-context";
-import { cn } from "@mapform/lib/classnames";
 
 interface TopNavProps {
   navSlot?: React.ReactNode;

@@ -6,7 +6,6 @@ import { toast } from "@mapform/ui/components/toaster";
 import type { CustomBlock } from "@mapform/blocknote";
 import { useAction } from "next-safe-action/hooks";
 import { debounce } from "@mapform/lib/lodash";
-import { cn } from "@mapform/lib/classnames";
 import { uploadImageAction } from "~/data/images";
 import { updatePageAction } from "~/data/pages/update-page";
 import { upsertCellAction } from "~/data/cells/upsert-cell";
@@ -94,16 +93,10 @@ function Project() {
           }}
           pageData={optimisticPageData}
         >
-          <div
-            className={cn(
-              "absolute bottom-8 left-1/2 z-10 flex -translate-x-1/2 transform items-center rounded-lg border bg-white p-1 shadow-lg",
-            )}
-          >
-            <EditBar
-              key={optimisticPage.id}
-              updatePageServer={updatePageServer}
-            />
-          </div>
+          <EditBar
+            key={optimisticPage.id}
+            updatePageServer={updatePageServer}
+          />
         </MapForm>
       </div>
     </div>

@@ -1,7 +1,7 @@
 import type mapboxgl from "mapbox-gl";
 import { Marker } from "mapbox-gl";
 import { useRef, useEffect } from "react";
-import type { PlacesSearchResponse } from "@mapform/map-utils/types";
+import type { SearchFeature } from "@mapform/map-utils/types";
 import * as Portal from "@radix-ui/react-portal";
 import { useMapform } from "../context";
 
@@ -12,7 +12,7 @@ export function SearchLocationMarker({
   searchLocationMarker,
   children,
 }: {
-  searchLocationMarker: PlacesSearchResponse["features"][number] | null;
+  searchLocationMarker: SearchFeature | null;
   children: React.ReactNode;
 }) {
   const { map } = useMapform();
@@ -23,15 +23,15 @@ export function SearchLocationMarker({
     const currentLngLat = markerEl.current?.getLngLat();
     if (
       map &&
-      searchLocationMarker?.properties &&
-      currentLngLat?.lat !== searchLocationMarker.properties.lat &&
-      currentLngLat?.lng !== searchLocationMarker.properties.lon
+      searchLocationMarker &&
+      currentLngLat?.lat !== searchLocationMarker.latitude &&
+      currentLngLat?.lng !== searchLocationMarker.longitude
     ) {
       markerEl.current?.remove();
       markerEl.current = new Marker(markerElInner.current)
         .setLngLat([
-          searchLocationMarker.properties.lon,
-          searchLocationMarker.properties.lat,
+          searchLocationMarker.longitude,
+          searchLocationMarker.latitude,
         ])
         .addTo(map);
     }
