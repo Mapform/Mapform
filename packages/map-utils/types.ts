@@ -58,3 +58,12 @@ export interface PlacesSearchResponse {
     bbox?: [number, number, number, number];
   }[];
 }
+
+// Simplified version of the response from the places search API
+export type SearchFeature = {
+  title: string;
+  latitude: number;
+  longitude: number;
+  icon: "amenity" | "building" | "city" | "postcode" | "unknown";
+  bbox?: [number, number, number, number];
+};

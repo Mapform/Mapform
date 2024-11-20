@@ -6,7 +6,6 @@ import { toast } from "@mapform/ui/components/toaster";
 import type { CustomBlock } from "@mapform/blocknote";
 import { useAction } from "next-safe-action/hooks";
 import { debounce } from "@mapform/lib/lodash";
-import { cn } from "@mapform/lib/classnames";
 import { uploadImageAction } from "~/data/images";
 import { updatePageAction } from "~/data/pages/update-page";
 import { upsertCellAction } from "~/data/cells/upsert-cell";

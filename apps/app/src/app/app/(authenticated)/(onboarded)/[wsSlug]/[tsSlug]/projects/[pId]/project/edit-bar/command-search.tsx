@@ -11,16 +11,17 @@ import {
 } from "@mapform/ui/components/command";
 import { useQuery } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
-import type { PlacesSearchResponse } from "@mapform/map-utils/types";
+import type {
+  SearchFeature,
+  PlacesSearchResponse,
+} from "@mapform/map-utils/types";
 
 export function CommandSearch({
   setOpenSearch,
   setSearchLocation,
 }: {
   setOpenSearch: React.Dispatch<React.SetStateAction<boolean>>;
-  setSearchLocation: React.Dispatch<
-    PlacesSearchResponse["features"][number] | null
-  >;
+  setSearchLocation: React.Dispatch<SearchFeature | null>;
 }) {
   const { map, setDrawerOpen } = useMapform();
   const [query, setQuery] = useState("");
@@ -62,7 +63,12 @@ export function CommandSearch({
         );
 
         setDrawerOpen(false);
-        setSearchLocation(feature);
+        setSearchLocation({
+          title: feature.properties.name ?? feature.properties.address_line1,
+          latitude: feature.properties.lat,
+          longitude: feature.properties.lon,
+          icon: "unknown",
+        });
       }
     };
 
@@ -134,7 +140,14 @@ export function CommandSearch({
                   );
 
                   setDrawerOpen(false);
-                  setSearchLocation(feature);
+                  setSearchLocation({
+                    title:
+                      feature.properties.name ??
+                      feature.properties.address_line1,
+                    latitude: feature.properties.lat,
+                    longitude: feature.properties.lon,
+                    icon: "unknown",
+                  });
                 }}
               >
                 <span className="truncate pr-2">

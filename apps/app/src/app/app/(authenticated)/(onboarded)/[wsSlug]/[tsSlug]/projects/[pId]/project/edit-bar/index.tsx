@@ -20,7 +20,7 @@ import { useMapform, type MapboxEvent } from "@mapform/mapform";
 import type { CustomBlock } from "@mapform/blocknote";
 import { toast } from "@mapform/ui/components/toaster";
 import { cn } from "@mapform/lib/classnames";
-import type { PlacesSearchResponse } from "@mapform/map-utils/types";
+import type { SearchFeature } from "@mapform/map-utils/types";
 import { SearchLocationMarker as MapMarker } from "@mapform/mapform";
 import type { PageWithLayers } from "@mapform/backend/pages/get-page-with-layers";
 import { usePage } from "../../page-context";
@@ -86,9 +86,9 @@ function EditBarInner({ optimisticPage, updatePageServer }: EditBarInnerProps) {
     pitch: optimisticPage.pitch,
     bearing: optimisticPage.bearing,
   });
-  const [searchLocation, setSearchLocation] = useState<
-    PlacesSearchResponse["features"][number] | null
-  >(null);
+  const [searchLocation, setSearchLocation] = useState<SearchFeature | null>(
+    null,
+  );
 
   const handleOnMove = (e: MapboxEvent) => {
     setMovedCoords({
@@ -138,7 +138,12 @@ function EditBarInner({ optimisticPage, updatePageServer }: EditBarInnerProps) {
     };
 
     const handleLocationSelect = (e: MapMouseEvent) => {
-      console.log(123, e.lngLat);
+      setSearchLocation({
+        title: "Selected Location",
+        latitude: e.lngLat.lat,
+        longitude: e.lngLat.lng,
+        icon: "unknown",
+      });
     };
 
     // Add mousemove event listener
