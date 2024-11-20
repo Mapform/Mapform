@@ -27,6 +27,7 @@ import { usePage } from "../../page-context";
 import { useProject } from "../../project-context";
 import { SearchLocationMarker } from "./search-location-marker";
 import { CommandSearch } from "./command-search";
+import { set } from "date-fns";
 
 interface EditBarProps {
   updatePageServer: (args: {
@@ -144,6 +145,7 @@ function EditBarInner({ optimisticPage, updatePageServer }: EditBarInnerProps) {
         longitude: e.lngLat.lng,
         icon: "unknown",
       });
+      setIsSelectingPoint(false);
     };
 
     // Add mousemove event listener
@@ -157,6 +159,7 @@ function EditBarInner({ optimisticPage, updatePageServer }: EditBarInnerProps) {
     return () => {
       if (isSelectingPoint && map) {
         map.getCanvas().style.cursor = "grab";
+        setSelectingPinLocation({ x: 0, y: 0 });
         map.off("click", handleLocationSelect);
         mapEl?.removeEventListener("mousemove", updatePosition);
       }
@@ -308,18 +311,6 @@ function EditBarInner({ optimisticPage, updatePageServer }: EditBarInnerProps) {
               </TooltipTrigger>
               <TooltipContent>Pin Map Position</TooltipContent>
             </Tooltip>
-
-            {searchLocation ? (
-              <Button
-                onClick={() => {
-                  setSearchLocation(null);
-                  setDrawerOpen(true);
-                }}
-                variant="ghost"
-              >
-                Clear Search
-              </Button>
-            ) : null}
           </TooltipProvider>
         </div>
 
