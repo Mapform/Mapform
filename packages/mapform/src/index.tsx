@@ -234,18 +234,7 @@ export function MapForm({
                 onLoad={onLoad}
                 pageData={pageData}
               >
-                <div
-                  className={cn(
-                    "absolute bottom-0 right-0 top-0 transition-[width] duration-200",
-                    drawerOpen || Boolean(activePoint)
-                      ? editable
-                        ? "w-[calc(100%-392px)]"
-                        : "w-[calc(100%-360px)]"
-                      : "w-full",
-                  )}
-                >
-                  {children}
-                </div>
+                {children}
               </Map>
             </div>
             <Button
