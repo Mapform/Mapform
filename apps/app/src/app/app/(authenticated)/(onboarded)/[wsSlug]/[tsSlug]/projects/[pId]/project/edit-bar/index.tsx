@@ -191,7 +191,7 @@ function EditBarInner({ optimisticPage, updatePageServer }: EditBarInnerProps) {
       {/* This container is used to center the controls within the map-side of the map. There is probably a better way to do this. */}
       <div
         className={cn(
-          "absolute bottom-0 right-0 top-0 transition-[width] duration-200",
+          "pointer-events-none absolute bottom-0 right-0 top-0 transition-[width] duration-200",
           drawerOpen ? "w-[calc(100%-392px)]" : "w-full",
         )}
       >
