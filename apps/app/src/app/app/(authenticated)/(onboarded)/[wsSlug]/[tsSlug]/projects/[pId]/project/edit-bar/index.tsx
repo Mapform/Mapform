@@ -27,7 +27,6 @@ import { usePage } from "../../page-context";
 import { useProject } from "../../project-context";
 import { SearchLocationMarker } from "./search-location-marker";
 import { CommandSearch } from "./command-search";
-import { set } from "date-fns";
 
 interface EditBarProps {
   updatePageServer: (args: {

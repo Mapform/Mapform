@@ -3,9 +3,9 @@ import { datasets, pages, projects } from "@mapform/db/schema";
 import type { CreateProjectSchema } from "./schema";
 
 const INITIAL_VIEW_STATE = {
-  longitude: -122.4,
-  latitude: 37.8,
-  zoom: 14,
+  longitude: 0,
+  latitude: 0,
+  zoom: 0,
   bearing: 0,
   pitch: 0,
 };
