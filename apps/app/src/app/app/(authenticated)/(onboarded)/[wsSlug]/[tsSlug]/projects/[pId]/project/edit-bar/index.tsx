@@ -146,11 +146,18 @@ function EditBarInner({ optimisticPage, updatePageServer }: EditBarInnerProps) {
       setIsSelectingPoint(false);
     };
 
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setIsSelectingPoint(false);
+      }
+    };
+
     // Add mousemove event listener
     if (isSelectingPoint && map) {
       map.getCanvas().style.cursor = "none";
       map.on("click", handleLocationSelect);
       mapEl?.addEventListener("mousemove", updatePosition);
+      window.addEventListener("keydown", handleEscape);
     }
 
     // Clean up event listener on component unmount
@@ -160,6 +167,7 @@ function EditBarInner({ optimisticPage, updatePageServer }: EditBarInnerProps) {
         setSelectingPinLocation({ x: 0, y: 0 });
         map.off("click", handleLocationSelect);
         mapEl?.removeEventListener("mousemove", updatePosition);
+        window.removeEventListener("keydown", handleEscape);
       }
     };
   }, [mapContainer, isSelectingPoint, map]);
