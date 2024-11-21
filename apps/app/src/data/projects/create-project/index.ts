@@ -9,27 +9,21 @@ import { authAction } from "~/lib/safe-action";
 export const createProjectAction = authAction
   .schema(createProjectSchema)
   .action(
-    async ({ parsedInput, ctx: { user, checkAccessToTeamspaceById } }) => {
+    async ({
+      parsedInput,
+      ctx: { user, checkAccessToTeamspaceById, workspaceSlug },
+    }) => {
       if (!checkAccessToTeamspaceById(parsedInput.teamspaceId)) {
         throw new Error("You do not have access to this teamspace.");
       }
 
-      const workspaceForNewProject = user.workspaceMemberships
-        .flatMap((wm) => wm.workspace)
-        .find((ws) =>
-          ws.teamspaces.some((ts) => ts.id === parsedInput.teamspaceId),
-        );
-
-      const teamspaceForNewProject = workspaceForNewProject?.teamspaces.find(
-        (ts) => ts.id === parsedInput.teamspaceId,
-      );
+      const teamspaceSlug = user.workspaceMemberships
+        .flatMap((wm) => wm.workspace.teamspaces.map((ts) => ts))
+        .find((ts) => ts.id === parsedInput.teamspaceId)?.slug;
 
       const project = await createProject(parsedInput);
 
       revalidatePath(`/app/[wsSlug]/[tsSlug]`, "page");
-      redirect(
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- We know they exist
-        `/app/${workspaceForNewProject!.slug}/${teamspaceForNewProject!.slug}/projects/${project.id}`,
-      );
+      redirect(`/app/${workspaceSlug}/${teamspaceSlug}/projects/${project.id}`);
     },
   );

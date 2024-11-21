@@ -29,6 +29,14 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from "@mapform/ui/components/popover";
+import {
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupAction,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarMenu,
+} from "@mapform/ui/components/sidebar";
 import { updateLayerOrderAction } from "~/data/layers/update-layer-order";
 import { createPageLayerAction } from "~/data/layers-to-pages/create-page-layer";
 import { usePage } from "../../page-context";
@@ -39,14 +47,6 @@ import {
   LayerPopoverAnchor,
 } from "../../layer-popover";
 import { Item } from "./item";
-import {
-  SidebarContent,
-  SidebarGroup,
-  SidebarGroupAction,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarMenu,
-} from "@mapform/ui/components/sidebar";
 
 export function LayerList() {
   const { optimisticProjectWithPages } = useProject();

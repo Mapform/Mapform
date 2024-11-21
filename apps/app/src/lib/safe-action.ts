@@ -70,6 +70,8 @@ export const authAction = baseClient.use(async ({ next }) => {
       checkAccessToTeamspaceBySlug,
       checkAccessToTeamspaceById,
       checkAccessToWorkspaceById,
+      workspaceSlug,
+      teamspaceSlug,
     },
   });
 });

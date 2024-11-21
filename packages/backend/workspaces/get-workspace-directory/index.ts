@@ -29,6 +29,7 @@ export const getWorkspaceDirectory = ({
               name: true,
               createdAt: true,
             },
+            orderBy: (datasets, { asc }) => [asc(datasets.createdAt)],
           },
           projects: {
             columns: {
@@ -38,6 +39,7 @@ export const getWorkspaceDirectory = ({
             },
             // Only include root projects
             where: isNull(projects.rootProjectId),
+            orderBy: (projects, { asc }) => [asc(projects.createdAt)],
           },
         },
       },
