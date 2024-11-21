@@ -41,7 +41,7 @@ export default async function DatasetsPage(props: {
               href={`/app/${params.wsSlug}/${params.tsSlug}/datasets/${dataset.id}`}
             >
               <div className="flex items-center gap-x-4 border-b border-gray-900/5 bg-stone-50 p-6">
-                {dataset.name}
+                {dataset.name || "Untitled"}
               </div>
               <dl className="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
                 <div className="flex justify-between gap-x-4 py-3">
