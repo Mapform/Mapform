@@ -13,6 +13,7 @@ import { useParams } from "next/navigation";
 import { cn } from "@mapform/lib/classnames";
 import { useSidebarLeft } from "@mapform/ui/components/sidebar";
 import { useWorkspace } from "./workspace-context";
+import { RenameProjectPopover } from "~/components/rename-project-popover";
 
 interface TopNavProps {
   navSlot?: React.ReactNode;
@@ -48,7 +49,7 @@ export function TopNav({ navSlot }: TopNavProps) {
       ? [
           {
             name: project.name,
-            href: `/app/${params.wsSlug}/${params.tsSlug}/projects/${params.pId}`,
+            isProject: true,
           },
         ]
       : []),
@@ -56,7 +57,7 @@ export function TopNav({ navSlot }: TopNavProps) {
       ? [
           {
             name: dataset.name,
-            href: `/app/${params.wsSlug}/${params.tsSlug}/datasets/${params.dId}`,
+            isDataset: true,
           },
         ]
       : []),
@@ -92,8 +93,8 @@ export function TopNav({ navSlot }: TopNavProps) {
         </div>
         <h3 className="flex items-center text-base font-medium leading-6 text-stone-900">
           {breadcrumbs.map((breadcrumb, index) => {
-            return (
-              <div key={breadcrumb.name}>
+            const content = (
+              <>
                 {breadcrumb.href ? (
                   <Link
                     className={cn(
@@ -111,8 +112,24 @@ export function TopNav({ navSlot }: TopNavProps) {
                 {index < breadcrumbs.length - 1 && (
                   <span className="text-muted-foreground mx-3 text-sm">/</span>
                 )}
-              </div>
+              </>
             );
+
+            if (breadcrumb.isProject && project) {
+              return (
+                <RenameProjectPopover
+                  key={breadcrumb.name}
+                  project={{
+                    id: project.id,
+                    title: project.name,
+                  }}
+                >
+                  {content}
+                </RenameProjectPopover>
+              );
+            }
+
+            return <div key={breadcrumb.name}>{content}</div>;
           })}
         </h3>
         <div className="ml-8 flex-1">{navSlot}</div>

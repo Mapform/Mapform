@@ -12,8 +12,11 @@ import {
   Popover,
   PopoverContent,
   PopoverAnchor,
+  PopoverTrigger,
 } from "@mapform/ui/components/popover";
+import { on } from "events";
 import { useAction } from "next-safe-action/hooks";
+import { Fragment } from "react";
 import { updateProjectAction } from "~/data/projects/update-project";
 
 interface RenameProjectPopoverContentProps {
@@ -22,8 +25,8 @@ interface RenameProjectPopoverContentProps {
     title: string;
   };
   children?: React.ReactNode;
-  onOpenChange: (open: boolean) => void;
-  open: boolean;
+  onOpenChange?: (open: boolean) => void;
+  open?: boolean;
 }
 
 export function RenameProjectPopover({
@@ -49,8 +52,11 @@ export function RenameProjectPopover({
         name: values.name,
       });
     }
-    onOpenChange(false);
+    onOpenChange?.(false);
   };
+
+  const ConditionalTrigger =
+    onOpenChange !== undefined ? Fragment : PopoverTrigger;
 
   return (
     <Popover
@@ -62,7 +68,7 @@ export function RenameProjectPopover({
             return onSubmit(values);
           }
         }
-        onOpenChange(val);
+        onOpenChange?.(val);
       }}
       open={open}
     >
@@ -91,7 +97,9 @@ export function RenameProjectPopover({
           </form>
         </Form>
       </PopoverContent>
-      <PopoverAnchor>{children}</PopoverAnchor>
+      <PopoverAnchor>
+        <ConditionalTrigger>{children}</ConditionalTrigger>
+      </PopoverAnchor>
     </Popover>
   );
 }
