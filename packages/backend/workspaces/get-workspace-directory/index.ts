@@ -38,6 +38,7 @@ export const getWorkspaceDirectory = ({
             },
             // Only include root projects
             where: isNull(projects.rootProjectId),
+            orderBy: (projects, { desc }) => [desc(projects.createdAt)],
           },
         },
       },

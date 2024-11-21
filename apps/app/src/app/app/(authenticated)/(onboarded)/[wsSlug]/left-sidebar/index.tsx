@@ -36,7 +36,6 @@ import {
   EllipsisIcon,
   Trash2Icon,
   PlusIcon,
-  SquarePenIcon,
 } from "lucide-react";
 import {
   Collapsible,
@@ -64,16 +63,11 @@ import {
 import { useAction } from "next-safe-action/hooks";
 import { signOutAction } from "~/data/auth/sign-out";
 import { deleteDatasetAction } from "~/data/datasets/delete-dataset";
-import { deleteProjectAction } from "~/data/projects/delete-project";
 import { createEmptyDatasetAction } from "~/data/datasets/create-empty-dataset";
 import { createProjectAction } from "~/data/projects/create-project";
-import { useAuth } from "../../auth-context";
-import { useWorkspace } from "./workspace-context";
-import {
-  RenameProjectPopover,
-  RenameProjectPopoverContent,
-  RenameProjectPopoverTrigger,
-} from "~/components/rename-project-popover";
+import { useAuth } from "../../../auth-context";
+import { useWorkspace } from "../workspace-context";
+import { ProjectMenuSubItem } from "./project-menu-sub-item";
 
 export function LeftSidebar() {
   const { user } = useAuth();
@@ -86,8 +80,7 @@ export function LeftSidebar() {
   } = useWorkspace();
   const { execute: executeDeleteDataset, status: statusDeleteDataset } =
     useAction(deleteDatasetAction);
-  const { execute: executeDeleteProject, status: statusDeleteProject } =
-    useAction(deleteProjectAction);
+
   const {
     execute: executeCreateEmptyDataset,
     status: statusCreateEmptyDataset,
@@ -296,83 +289,10 @@ export function LeftSidebar() {
                     <SidebarMenuSub>
                       {space.project.projects.length ? (
                         space.project.projects.map((project) => (
-                          <SidebarMenuSubItem key={project.title}>
-                            <SidebarLeftMenuButton
-                              asChild
-                              className="pr-8"
-                              isActive={project.isActive}
-                            >
-                              <Link href={project.url}>
-                                {/* <project.icon /> */}
-                                <span>{project.title}</span>
-                              </Link>
-                            </SidebarLeftMenuButton>
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <SidebarMenuAction showOnHover>
-                                  <EllipsisIcon />
-                                </SidebarMenuAction>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="start" side="right">
-                                <RenameProjectPopover>
-                                  <RenameProjectPopoverTrigger asChild>
-                                    <DropdownMenuItem
-                                      className="flex items-center gap-2"
-                                      onSelect={(e) => {
-                                        e.preventDefault();
-                                      }}
-                                    >
-                                      <SquarePenIcon className="size-4 flex-shrink-0" />
-                                      Rename
-                                    </DropdownMenuItem>
-                                  </RenameProjectPopoverTrigger>
-                                  <RenameProjectPopoverContent />
-                                </RenameProjectPopover>
-                                <AlertDialog>
-                                  <AlertDialogTrigger asChild>
-                                    <DropdownMenuItem
-                                      className="flex items-center gap-2"
-                                      onSelect={(e) => {
-                                        e.preventDefault();
-                                      }}
-                                    >
-                                      <Trash2Icon className="size-4 flex-shrink-0" />
-                                      Delete
-                                    </DropdownMenuItem>
-                                  </AlertDialogTrigger>
-                                  <AlertDialogContent>
-                                    <AlertDialogHeader>
-                                      <AlertDialogTitle>
-                                        Are you sure?
-                                      </AlertDialogTitle>
-                                      <AlertDialogDescription>
-                                        Your project and related data will be
-                                        permanently deleted. This action cannot
-                                        be undone.
-                                      </AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                      <AlertDialogCancel>
-                                        Cancel
-                                      </AlertDialogCancel>
-                                      <AlertDialogAction
-                                        disabled={
-                                          statusDeleteProject === "executing"
-                                        }
-                                        onClick={() => {
-                                          executeDeleteProject({
-                                            projectId: project.id,
-                                          });
-                                        }}
-                                      >
-                                        Continue
-                                      </AlertDialogAction>
-                                    </AlertDialogFooter>
-                                  </AlertDialogContent>
-                                </AlertDialog>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
-                          </SidebarMenuSubItem>
+                          <ProjectMenuSubItem
+                            key={project.id}
+                            project={project}
+                          />
                         ))
                       ) : (
                         <SidebarMenuSubItem>
