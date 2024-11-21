@@ -36,6 +36,7 @@ import {
   EllipsisIcon,
   Trash2Icon,
   PlusIcon,
+  SquarePenIcon,
 } from "lucide-react";
 import {
   Collapsible,
@@ -68,6 +69,11 @@ import { createEmptyDatasetAction } from "~/data/datasets/create-empty-dataset";
 import { createProjectAction } from "~/data/projects/create-project";
 import { useAuth } from "../../auth-context";
 import { useWorkspace } from "./workspace-context";
+import {
+  RenameProjectPopover,
+  RenameProjectPopoverContent,
+  RenameProjectPopoverTrigger,
+} from "~/components/rename-project-popover";
 
 export function LeftSidebar() {
   const { user } = useAuth();
@@ -308,6 +314,20 @@ export function LeftSidebar() {
                                 </SidebarMenuAction>
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="start" side="right">
+                                <RenameProjectPopover>
+                                  <RenameProjectPopoverTrigger asChild>
+                                    <DropdownMenuItem
+                                      className="flex items-center gap-2"
+                                      onSelect={(e) => {
+                                        e.preventDefault();
+                                      }}
+                                    >
+                                      <SquarePenIcon className="size-4 flex-shrink-0" />
+                                      Rename
+                                    </DropdownMenuItem>
+                                  </RenameProjectPopoverTrigger>
+                                  <RenameProjectPopoverContent />
+                                </RenameProjectPopover>
                                 <AlertDialog>
                                   <AlertDialogTrigger asChild>
                                     <DropdownMenuItem
