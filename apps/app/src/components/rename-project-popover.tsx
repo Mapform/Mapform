@@ -39,6 +39,9 @@ export function RenameProjectPopover({
     },
   });
 
+  /**
+   * This will trigger on enter
+   */
   const onSubmit = async (values: UpdateProjectSchema) => {
     if (values.name !== project.title) {
       await executeAsync({
@@ -56,7 +59,7 @@ export function RenameProjectPopover({
         if (!val) {
           const values = form.getValues();
           if (values.name !== project.title) {
-            await executeAsync(values);
+            return onSubmit(values);
           }
         }
         onOpenChange(val);
