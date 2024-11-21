@@ -12,8 +12,9 @@ import {
 import { useParams } from "next/navigation";
 import { cn } from "@mapform/lib/classnames";
 import { useSidebarLeft } from "@mapform/ui/components/sidebar";
-import { useWorkspace } from "./workspace-context";
 import { RenameProjectPopover } from "~/components/rename-project-popover";
+import { RenameDatasetPopover } from "~/components/rename-dataset-popover";
+import { useWorkspace } from "./workspace-context";
 
 interface TopNavProps {
   navSlot?: React.ReactNode;
@@ -126,6 +127,20 @@ export function TopNav({ navSlot }: TopNavProps) {
                 >
                   {content}
                 </RenameProjectPopover>
+              );
+            }
+
+            if (breadcrumb.isDataset && dataset) {
+              return (
+                <RenameDatasetPopover
+                  dataset={{
+                    id: dataset.id,
+                    title: dataset.name,
+                  }}
+                  key={breadcrumb.name}
+                >
+                  {content}
+                </RenameDatasetPopover>
               );
             }
 

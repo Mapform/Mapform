@@ -68,6 +68,7 @@ import { createProjectAction } from "~/data/projects/create-project";
 import { useAuth } from "../../../auth-context";
 import { useWorkspace } from "../workspace-context";
 import { ProjectMenuSubItem } from "./project-menu-sub-item";
+import { DatasetMenuSubItem } from "./dataset-menu-sub-item";
 
 export function LeftSidebar() {
   const { user } = useAuth();
@@ -327,68 +328,10 @@ export function LeftSidebar() {
                     <SidebarMenuSub>
                       {space.dataset.datasets.length ? (
                         space.dataset.datasets.map((dataset) => (
-                          <SidebarMenuSubItem key={dataset.title}>
-                            <SidebarLeftMenuButton
-                              asChild
-                              className="pr-8"
-                              isActive={dataset.isActive}
-                            >
-                              <Link href={dataset.url}>
-                                {/* <project.icon /> */}
-                                <span>{dataset.title}</span>
-                              </Link>
-                            </SidebarLeftMenuButton>
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <SidebarMenuAction showOnHover>
-                                  <EllipsisIcon />
-                                </SidebarMenuAction>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="start" side="right">
-                                <AlertDialog>
-                                  <AlertDialogTrigger asChild>
-                                    <DropdownMenuItem
-                                      className="flex items-center gap-2"
-                                      onSelect={(e) => {
-                                        e.preventDefault();
-                                      }}
-                                    >
-                                      <Trash2Icon className="size-4 flex-shrink-0" />
-                                      Delete
-                                    </DropdownMenuItem>
-                                  </AlertDialogTrigger>
-                                  <AlertDialogContent>
-                                    <AlertDialogHeader>
-                                      <AlertDialogTitle>
-                                        Are you sure?
-                                      </AlertDialogTitle>
-                                      <AlertDialogDescription>
-                                        Your data will be permanently deleted.
-                                        This action cannot be undone.
-                                      </AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                      <AlertDialogCancel>
-                                        Cancel
-                                      </AlertDialogCancel>
-                                      <AlertDialogAction
-                                        disabled={
-                                          statusDeleteDataset === "executing"
-                                        }
-                                        onClick={() => {
-                                          executeDeleteDataset({
-                                            datasetId: dataset.id,
-                                          });
-                                        }}
-                                      >
-                                        Continue
-                                      </AlertDialogAction>
-                                    </AlertDialogFooter>
-                                  </AlertDialogContent>
-                                </AlertDialog>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
-                          </SidebarMenuSubItem>
+                          <DatasetMenuSubItem
+                            dataset={dataset}
+                            key={dataset.id}
+                          />
                         ))
                       ) : (
                         <SidebarMenuSubItem>

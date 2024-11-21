@@ -1,4 +1,4 @@
-import type { UpdateProjectSchema } from "@mapform/backend/projects/update-project/schema";
+import type { UpdateDatasetSchema } from "@mapform/backend/datasets/update-dataset/schema";
 import {
   Form,
   FormField,
@@ -16,10 +16,10 @@ import {
 } from "@mapform/ui/components/popover";
 import { useAction } from "next-safe-action/hooks";
 import { Fragment } from "react";
-import { updateProjectAction } from "~/data/projects/update-project";
+import { updateDatasetAction } from "~/data/datasets/update-dataset";
 
-interface RenameProjectPopoverContentProps {
-  project: {
+interface RenameDatasetPopoverContentProps {
+  dataset: {
     id: string;
     title: string;
   };
@@ -28,26 +28,26 @@ interface RenameProjectPopoverContentProps {
   open?: boolean;
 }
 
-export function RenameProjectPopover({
-  project,
+export function RenameDatasetPopover({
+  dataset,
   children,
   onOpenChange,
   open,
-}: RenameProjectPopoverContentProps) {
-  const { executeAsync, status } = useAction(updateProjectAction);
-  const form = useForm<UpdateProjectSchema>({
+}: RenameDatasetPopoverContentProps) {
+  const { executeAsync, status } = useAction(updateDatasetAction);
+  const form = useForm<UpdateDatasetSchema>({
     defaultValues: {
-      name: project.title,
+      name: dataset.title,
     },
   });
 
   /**
    * This will trigger on enter
    */
-  const onSubmit = async (values: UpdateProjectSchema) => {
-    if (values.name !== project.title) {
+  const onSubmit = async (values: UpdateDatasetSchema) => {
+    if (values.name !== dataset.title) {
       await executeAsync({
-        id: project.id,
+        id: dataset.id,
         name: values.name,
       });
     }
@@ -63,7 +63,7 @@ export function RenameProjectPopover({
       onOpenChange={async (val) => {
         if (!val) {
           const values = form.getValues();
-          if (values.name !== project.title) {
+          if (values.name !== dataset.title) {
             return onSubmit(values);
           }
         }
