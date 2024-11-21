@@ -45,6 +45,7 @@ export function ProjectMenuSubItem({ project }: ProjectMenuSubItemProps) {
   return (
     <SidebarMenuSubItem>
       <RenameProjectPopover
+        key={project.title}
         onOpenChange={setPopoverOpen}
         open={popoverOpen}
         project={project}
