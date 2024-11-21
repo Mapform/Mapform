@@ -33,8 +33,6 @@ import {
   TableIcon,
   ChevronRightIcon,
   LogOutIcon,
-  EllipsisIcon,
-  Trash2Icon,
   PlusIcon,
 } from "lucide-react";
 import {
@@ -49,20 +47,8 @@ import {
 } from "@mapform/ui/components/avatar";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  AlertDialog,
-  AlertDialogTrigger,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogCancel,
-  AlertDialogAction,
-} from "@mapform/ui/components/alert-dialog";
 import { useAction } from "next-safe-action/hooks";
 import { signOutAction } from "~/data/auth/sign-out";
-import { deleteDatasetAction } from "~/data/datasets/delete-dataset";
 import { createEmptyDatasetAction } from "~/data/datasets/create-empty-dataset";
 import { createProjectAction } from "~/data/projects/create-project";
 import { useAuth } from "../../../auth-context";
@@ -79,8 +65,6 @@ export function LeftSidebar() {
     workspaceSlug,
     currentWorkspace,
   } = useWorkspace();
-  const { execute: executeDeleteDataset, status: statusDeleteDataset } =
-    useAction(deleteDatasetAction);
 
   const {
     execute: executeCreateEmptyDataset,
