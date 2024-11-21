@@ -105,10 +105,10 @@ export function TopNav({ navSlot }: TopNavProps) {
                     )}
                     href={breadcrumb.href}
                   >
-                    {breadcrumb.name}
+                    {breadcrumb.name || "Untitled"}
                   </Link>
                 ) : (
-                  breadcrumb.name
+                  breadcrumb.name || "Untitled"
                 )}
                 {index < breadcrumbs.length - 1 && (
                   <span className="text-muted-foreground mx-3 text-sm">/</span>

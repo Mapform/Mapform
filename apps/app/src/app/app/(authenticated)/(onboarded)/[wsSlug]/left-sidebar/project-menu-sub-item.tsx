@@ -57,7 +57,7 @@ export function ProjectMenuSubItem({ project }: ProjectMenuSubItemProps) {
         >
           <Link href={project.url}>
             {/* <project.icon /> */}
-            <span>{project.title}</span>
+            <span>{project.title || "Untitled"}</span>
           </Link>
         </SidebarLeftMenuButton>
       </RenameProjectPopover>

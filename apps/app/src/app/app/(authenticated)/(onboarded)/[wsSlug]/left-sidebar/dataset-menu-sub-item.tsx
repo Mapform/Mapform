@@ -56,7 +56,7 @@ export function DatasetMenuSubItem({ dataset }: DatasetMenuSubItemProps) {
           isActive={dataset.isActive}
         >
           <Link href={dataset.url}>
-            <span>{dataset.title}</span>
+            <span>{dataset.title || "Untitled"}</span>
           </Link>
         </SidebarLeftMenuButton>
       </RenameDatasetPopover>
