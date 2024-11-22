@@ -7,11 +7,13 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@mapform/ui/components/resizable";
+import { usePage } from "../page-context";
 import { LayerList } from "./layer-list";
 import { PageList } from "./page-list";
 
 export function Drawer() {
   const isClient = useIsClient();
+  const { optimisticPage } = usePage();
 
   if (!isClient) return null;
 
@@ -25,7 +27,7 @@ export function Drawer() {
         </ResizablePanel>
         <ResizableHandle />
         <ResizablePanel>
-          <LayerList />
+          <LayerList key={optimisticPage?.id} />
         </ResizablePanel>
       </ResizablePanelGroup>
     </Portal.Root>
