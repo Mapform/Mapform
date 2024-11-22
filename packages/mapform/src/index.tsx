@@ -108,31 +108,35 @@ export function MapForm({
 
   const actionButtons = useMemo(
     () => (
-      <div className="relative flex w-full items-center justify-between bg-white">
-        {onPrev ? (
-          <Button
-            className="absolute left-0"
-            disabled={editable}
-            onClick={onPrev}
-            size="icon-sm"
-            type="button"
-            variant="ghost"
-          >
-            <ArrowLeftIcon className="size-5" />
-          </Button>
-        ) : null}
-        <p className="mx-auto text-xs text-gray-500">Powered by Mapform</p>
-        {onStepSubmit ? (
-          <Button
-            className="absolute right-0"
-            disabled={editable}
-            size="icon-sm"
-            type="submit"
-            variant="ghost"
-          >
-            <ArrowRightIcon className="size-5" />
-          </Button>
-        ) : null}
+      <div className="px-2">
+        <div className="relative flex h-[50px] w-full items-center justify-between bg-white">
+          {onPrev ? (
+            <Button
+              className="absolute left-0"
+              disabled={editable}
+              onClick={onPrev}
+              size="sm"
+              type="button"
+              variant="ghost"
+            >
+              <ArrowLeftIcon className="mr-1 size-4" />
+              Prev
+            </Button>
+          ) : null}
+          <p className="mx-auto text-xs text-gray-500">Powered by Mapform</p>
+          {onStepSubmit ? (
+            <Button
+              className="absolute right-0"
+              disabled={editable}
+              size="sm"
+              type="submit"
+              // variant="secondary"
+            >
+              Next
+              <ArrowRightIcon className="ml-1 size-4" />
+            </Button>
+          ) : null}
+        </div>
       </div>
     ),
     [editable, onPrev, onStepSubmit],
@@ -153,7 +157,7 @@ export function MapForm({
           title={currentPage.title}
         />
         <div
-          className={cn("px-2 pt-2", {
+          className={cn({
             hidden: editable || isMobile,
           })}
         >
@@ -326,7 +330,7 @@ export function MapForm({
             )}
           </CustomBlockContext.Provider>
         </div>
-        <div className="fixed bottom-0 z-50 w-full bg-white p-2 md:hidden">
+        <div className="fixed bottom-0 z-50 w-full bg-white md:hidden">
           {actionButtons}
         </div>
       </form>
