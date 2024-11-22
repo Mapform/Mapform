@@ -291,7 +291,7 @@ export function LeftSidebar() {
                 </SidebarMenuItem>
               </Collapsible>
               {/* Datasets */}
-              <Collapsible className="group/collapsible">
+              <Collapsible className="group/collapsible" defaultOpen>
                 <SidebarMenuItem>
                   <SidebarLeftMenuButton
                     asChild

@@ -19,6 +19,7 @@ interface MapProps {
   formValues: NonNullable<Responses>["cells"];
   layerPoint?: GetLayerPoint;
   sessionId: string | null;
+  isUsingSessions: boolean;
 }
 
 type Page = ProjectWithPages["pages"][number];
@@ -28,6 +29,7 @@ export function Map({
   sessionId,
   layerPoint,
   formValues,
+  isUsingSessions,
   projectWithPages,
 }: MapProps) {
   const router = useRouter();
@@ -62,6 +64,11 @@ export function Map({
     void (async () => {
       let newSessionId = sessionId;
 
+      // If we don't have a submissionsDataset, we are not create sessions
+      if (!isUsingSessions) {
+        return;
+      }
+
       if (!newSessionId) {
         const response = await createSubmission({
           projectId: projectWithPages.id,
@@ -73,7 +80,7 @@ export function Map({
       }
       setCurrentSession(newSessionId);
     })();
-  }, [projectWithPages.id, sessionId]);
+  }, [projectWithPages, sessionId, isUsingSessions]);
 
   /**
    * Fix the 'p' query param if no valid page
@@ -121,9 +128,16 @@ export function Map({
     {},
   );
 
-  if (!currentSession || !currentPage) {
+  if ((isUsingSessions && !currentSession) || !currentPage) {
     return null;
   }
+
+  const prevPageIndex =
+    projectWithPages.pages.findIndex((page) => page.id === currentPage.id) - 1;
+  const nextPageIndex =
+    projectWithPages.pages.findIndex((page) => page.id === currentPage.id) + 1;
+  const prevStep = projectWithPages.pages[prevPageIndex];
+  const nextStep = projectWithPages.pages[nextPageIndex];
 
   return (
     <MapForm
@@ -131,34 +145,28 @@ export function Map({
       currentPage={currentPage}
       defaultFormValues={pageValues}
       mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
-      onPrev={() => {
-        const prevPageIndex =
-          projectWithPages.pages.findIndex(
-            (page) => page.id === currentPage.id,
-          ) - 1;
-        const prevStep = projectWithPages.pages[prevPageIndex];
+      onPrev={
+        prevStep
+          ? () => {
+              setCurrentPageAndFly(prevStep);
+            }
+          : undefined
+      }
+      onStepSubmit={
+        nextStep
+          ? (data) => {
+              if (currentSession) {
+                execute({
+                  pageId: currentPage.id,
+                  submissionId: currentSession,
+                  payload: data,
+                });
+              }
 
-        if (prevStep) {
-          setCurrentPageAndFly(prevStep);
-        }
-      }}
-      onStepSubmit={(data) => {
-        execute({
-          pageId: currentPage.id,
-          submissionId: currentSession,
-          payload: data,
-        });
-
-        const nextPageIndex =
-          projectWithPages.pages.findIndex(
-            (page) => page.id === currentPage.id,
-          ) + 1;
-        const nextStep = projectWithPages.pages[nextPageIndex];
-
-        if (nextStep) {
-          setCurrentPageAndFly(nextStep);
-        }
-      }}
+              setCurrentPageAndFly(nextStep);
+            }
+          : undefined
+      }
       pageData={pageData}
     />
   );

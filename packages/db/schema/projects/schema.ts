@@ -28,11 +28,9 @@ export const projects = pgTable("project", {
       onDelete: "cascade",
     },
   ),
-  datasetId: uuid("dataset_id")
-    .notNull()
-    .references(() => datasets.id, {
-      onDelete: "cascade",
-    }),
+  datasetId: uuid("dataset_id").references(() => datasets.id, {
+    onDelete: "set null",
+  }),
 
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()

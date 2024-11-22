@@ -21,6 +21,10 @@ export const createSubmission = shareClient
       throw new Error("Project not found");
     }
 
+    if (!project.submissionsDataset) {
+      throw new Error("Submissions dataset not found");
+    }
+
     const [row] = await db
       .insert(rows)
       .values({
