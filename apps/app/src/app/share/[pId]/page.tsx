@@ -90,8 +90,9 @@ export default async function Page(props: {
    * A project version mismatch occurs when a new version has been released
    */
   const projectVersionMismatch = projectCookie?.value !== projectWithPages.id;
+  const isUsingSessions = Boolean(projectWithPages.submissionsDataset);
 
-  if (submissionCookie) {
+  if (isUsingSessions && submissionCookie) {
     session = await getSession(submissionCookie.value);
 
     if (session && !projectVersionMismatch) {
@@ -107,6 +108,7 @@ export default async function Page(props: {
       <MapformProvider>
         <Map
           formValues={formValues}
+          isUsingSessions={isUsingSessions}
           layerPoint={layerPoint}
           pageData={pageData}
           projectWithPages={projectWithPages}

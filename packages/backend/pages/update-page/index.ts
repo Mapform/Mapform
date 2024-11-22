@@ -116,17 +116,19 @@ export const updatePage = async ({
       return block !== undefined;
     });
 
-  const inputBlocksToCreate = pageBlock
-    .filter((block) => {
-      return !datasetColumns.find((col) => col.blockNoteId === block.id);
-    })
-    .map((block) => ({
-      name: `${mapBlockTypeToDataType(block.type)}-${block.id}`,
-      type: mapBlockTypeToDataType(block.type),
-      blockNoteId: block.id,
-      datasetId: page.project.submissionsDataset.id,
-      pageId: id,
-    }));
+  const inputBlocksToCreate = page.project.submissionsDataset
+    ? pageBlock
+        .filter((block) => {
+          return !datasetColumns.find((col) => col.blockNoteId === block.id);
+        })
+        .map((block) => ({
+          name: `${mapBlockTypeToDataType(block.type)}-${block.id}`,
+          type: mapBlockTypeToDataType(block.type),
+          blockNoteId: block.id,
+          datasetId: page.project.submissionsDataset!.id,
+          pageId: id,
+        }))
+    : [];
 
   // Delete blocks which are not present in the new content, and which have no cells (submissions)
   const inputBlocksToDelete = datasetColumns.filter((col) => {

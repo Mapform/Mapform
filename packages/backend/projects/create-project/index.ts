@@ -1,5 +1,5 @@
 import { db } from "@mapform/db";
-import { datasets, pages, projects } from "@mapform/db/schema";
+import { pages, projects } from "@mapform/db/schema";
 import type { CreateProjectSchema } from "./schema";
 
 const INITIAL_VIEW_STATE = {
@@ -17,19 +17,20 @@ export const createProject = async ({
   return db.transaction(async (tx) => {
     /**
      * Create submissions dataset
+     * TODO: Add this back in (conditionally) when I support forms again
      */
-    const [dataset] = await tx
-      .insert(datasets)
-      .values({
-        name: `Responses for ${name}`,
-        teamspaceId,
-        type: "submissions",
-      })
-      .returning();
+    // const [dataset] = await tx
+    //   .insert(datasets)
+    //   .values({
+    //     name: `Responses for ${name}`,
+    //     teamspaceId,
+    //     type: "submissions",
+    //   })
+    //   .returning();
 
-    if (!dataset) {
-      throw new Error("Failed to create dataset");
-    }
+    // if (!dataset) {
+    //   throw new Error("Failed to create dataset");
+    // }
 
     /**
      * Create project
@@ -39,7 +40,7 @@ export const createProject = async ({
       .values({
         name,
         teamspaceId,
-        datasetId: dataset.id,
+        // datasetId: dataset.id,
       })
       .returning();
 

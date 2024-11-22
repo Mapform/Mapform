@@ -27,13 +27,15 @@ export default async function Nav(props: {
     <NavSlot
       actions={
         <div className="flex items-center">
-          <Link
-            href={`/app/${params.wsSlug}/${params.tsSlug}/datasets/${project.submissionsDataset.id}`}
-          >
-            <Button size="sm" variant="ghost">
-              Responses
-            </Button>
-          </Link>
+          {project.submissionsDataset ? (
+            <Link
+              href={`/app/${params.wsSlug}/${params.tsSlug}/datasets/${project.submissionsDataset.id}`}
+            >
+              <Button size="sm" variant="ghost">
+                Responses
+              </Button>
+            </Link>
+          ) : null}
           <Popover>
             <PopoverTrigger asChild>
               <Button size="sm" variant="ghost">

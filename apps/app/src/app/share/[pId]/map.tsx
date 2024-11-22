@@ -19,6 +19,7 @@ interface MapProps {
   formValues: NonNullable<Responses>["cells"];
   layerPoint?: GetLayerPoint;
   sessionId: string | null;
+  isUsingSessions: boolean;
 }
 
 type Page = ProjectWithPages["pages"][number];
@@ -28,6 +29,7 @@ export function Map({
   sessionId,
   layerPoint,
   formValues,
+  isUsingSessions,
   projectWithPages,
 }: MapProps) {
   const router = useRouter();
@@ -62,6 +64,11 @@ export function Map({
     void (async () => {
       let newSessionId = sessionId;
 
+      // If we don't have a submissionsDataset, we are not create sessions
+      if (!isUsingSessions) {
+        return;
+      }
+
       if (!newSessionId) {
         const response = await createSubmission({
           projectId: projectWithPages.id,
@@ -73,7 +80,7 @@ export function Map({
       }
       setCurrentSession(newSessionId);
     })();
-  }, [projectWithPages.id, sessionId]);
+  }, [projectWithPages, sessionId, isUsingSessions]);
 
   /**
    * Fix the 'p' query param if no valid page
@@ -121,7 +128,7 @@ export function Map({
     {},
   );
 
-  if (!currentSession || !currentPage) {
+  if ((isUsingSessions && !currentSession) || !currentPage) {
     return null;
   }
 
@@ -143,11 +150,13 @@ export function Map({
         }
       }}
       onStepSubmit={(data) => {
-        execute({
-          pageId: currentPage.id,
-          submissionId: currentSession,
-          payload: data,
-        });
+        if (currentSession) {
+          execute({
+            pageId: currentPage.id,
+            submissionId: currentSession,
+            payload: data,
+          });
+        }
 
         const nextPageIndex =
           projectWithPages.pages.findIndex(
