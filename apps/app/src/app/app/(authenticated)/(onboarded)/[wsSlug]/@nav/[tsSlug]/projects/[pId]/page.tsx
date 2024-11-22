@@ -27,10 +27,17 @@ export default async function Nav(props: {
     <NavSlot
       actions={
         <div className="flex items-center">
+          <Link
+            href={`/app/${params.wsSlug}/${params.tsSlug}/datasets/${project.submissionsDataset.id}`}
+          >
+            <Button size="sm" variant="ghost">
+              Responses
+            </Button>
+          </Link>
           <Popover>
             <PopoverTrigger asChild>
               <Button size="sm" variant="ghost">
-                Responses
+                Share
               </Button>
             </PopoverTrigger>
             <PopoverContent>
@@ -41,13 +48,6 @@ export default async function Nav(props: {
               />
             </PopoverContent>
           </Popover>
-          <Link
-            href={`/app/${params.wsSlug}/${params.tsSlug}/datasets/${project.submissionsDataset.id}`}
-          >
-            <Button size="sm" variant="ghost">
-              Share
-            </Button>
-          </Link>
           <TogglePages />
         </div>
       }
