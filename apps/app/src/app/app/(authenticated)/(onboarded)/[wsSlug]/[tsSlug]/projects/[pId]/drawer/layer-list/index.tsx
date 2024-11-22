@@ -73,7 +73,9 @@ export function LayerList() {
 
   const layersFromOtherPages = optimisticProjectWithPages.pageLayers
     .filter((l) => l.pageId !== optimisticPage?.id)
-    .filter((l) => !dragLayers?.find((dl) => dl.id === l.layerId));
+    .filter((l) => !dragLayers?.find((dl) => dl.id === l.layerId))
+    // filter for uniqueness
+    .filter((l, i, arr) => arr.findIndex((a) => a.layerId === l.layerId) === i);
 
   if (!dragLayers) {
     return null;
