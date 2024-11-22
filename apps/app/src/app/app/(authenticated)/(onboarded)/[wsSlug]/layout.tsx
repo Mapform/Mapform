@@ -14,10 +14,15 @@ export default async function WorkspaceLayout(props: {
   nav?: React.ReactNode;
 }) {
   const cookieStore = await cookies();
-  const defaultLeftOpen =
-    cookieStore.get("sidebar-left:state")?.value === "true";
-  const defaultRightOpen =
-    cookieStore.get("sidebar-right:state")?.value === "true";
+  const leftSidebarCookie = cookieStore.get("sidebar-left:state");
+  const rightSidebarCookie = cookieStore.get("sidebar-right:state");
+
+  const defaultLeftOpen = leftSidebarCookie
+    ? leftSidebarCookie.value === "true"
+    : true;
+  const defaultRightOpen = rightSidebarCookie
+    ? rightSidebarCookie.value === "true"
+    : true;
   const params = await props.params;
   const { children, nav } = props;
 
