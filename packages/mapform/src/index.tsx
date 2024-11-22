@@ -115,6 +115,7 @@ export function MapForm({
             disabled={editable}
             onClick={onPrev}
             size="icon-sm"
+            type="button"
             variant="ghost"
           >
             <ArrowLeftIcon className="size-5" />
