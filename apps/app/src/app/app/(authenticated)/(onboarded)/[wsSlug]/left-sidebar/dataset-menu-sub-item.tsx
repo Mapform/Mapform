@@ -26,6 +26,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { RenameDatasetPopover } from "~/components/rename-dataset-popover";
 import { deleteDatasetAction } from "~/data/datasets/delete-dataset";
+import { useWorkspace } from "../workspace-context";
 
 interface DatasetMenuSubItemProps {
   dataset: {
@@ -41,6 +42,7 @@ export function DatasetMenuSubItem({ dataset }: DatasetMenuSubItemProps) {
     useAction(deleteDatasetAction);
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [dropdownMenuOpen, setDropdownMenuOpen] = useState(false);
+  const { workspaceSlug } = useWorkspace();
 
   return (
     <SidebarMenuSubItem>
@@ -55,7 +57,7 @@ export function DatasetMenuSubItem({ dataset }: DatasetMenuSubItemProps) {
           className="pr-8"
           isActive={dataset.isActive}
         >
-          <Link href={dataset.url}>
+          <Link href={`/app/${workspaceSlug}/redirect?url=${dataset.url}`}>
             <span>{dataset.title || "Untitled"}</span>
           </Link>
         </SidebarLeftMenuButton>
