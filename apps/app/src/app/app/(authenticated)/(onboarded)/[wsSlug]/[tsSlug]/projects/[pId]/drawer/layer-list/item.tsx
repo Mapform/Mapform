@@ -125,86 +125,86 @@ export function Item({ layer }: ItemProps) {
                   {layer.name || "Untitled"}
                 </span>
               </SidebarRightMenuButton>
-              <DropdownMenu
-                modal
-                onOpenChange={setDropdownOpen}
-                open={dropdownOpen}
-              >
-                <DropdownMenuTrigger asChild>
-                  <SidebarMenuAction>
-                    <EllipsisIcon />
-                  </SidebarMenuAction>
-                </DropdownMenuTrigger>
-
-                <DropdownMenuContent
-                  align="start"
-                  className="w-[200px] overflow-hidden"
-                  side="left"
+              <AlertDialog>
+                <DropdownMenu
+                  modal
+                  onOpenChange={setDropdownOpen}
+                  open={dropdownOpen}
                 >
-                  <DropdownMenuGroup>
-                    <DropdownMenuItem
-                      asChild
-                      className="flex items-center gap-2"
-                    >
-                      <Link
-                        href={`/app/${params.wsSlug}/${params.tsSlug}/datasets/${layer.datasetId}`}
+                  <DropdownMenuTrigger asChild>
+                    <SidebarMenuAction>
+                      <EllipsisIcon />
+                    </SidebarMenuAction>
+                  </DropdownMenuTrigger>
+
+                  <DropdownMenuContent
+                    align="start"
+                    className="w-[200px] overflow-hidden"
+                    side="left"
+                  >
+                    <DropdownMenuGroup>
+                      <DropdownMenuItem
+                        asChild
+                        className="flex items-center gap-2"
                       >
-                        <ArrowUpRightIcon className="size-4 flex-shrink-0" />
-                        View Dataset
-                      </Link>
-                    </DropdownMenuItem>
-                  </DropdownMenuGroup>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuGroup>
-                    <DropdownMenuItem
-                      className="flex items-center gap-2"
-                      onSelect={(e) => {
-                        e.preventDefault();
-                        setDropdownOpen(false);
-                        setLayerPopoverOpen(true);
-                      }}
-                    >
-                      <Settings2Icon className="size-4 flex-shrink-0" />
-                      Edit
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      className="flex items-center gap-2"
-                      onSelect={handleRemoveFromPage}
-                    >
-                      <UnlinkIcon className="size-4 flex-shrink-0" />
-                      Disconnect
-                    </DropdownMenuItem>
-                    <AlertDialog>
+                        <Link
+                          href={`/app/${params.wsSlug}/${params.tsSlug}/datasets/${layer.datasetId}`}
+                        >
+                          <ArrowUpRightIcon className="size-4 flex-shrink-0" />
+                          View Dataset
+                        </Link>
+                      </DropdownMenuItem>
+                    </DropdownMenuGroup>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuGroup>
+                      <DropdownMenuItem
+                        className="flex items-center gap-2"
+                        onSelect={(e) => {
+                          e.preventDefault();
+                          setDropdownOpen(false);
+                          setLayerPopoverOpen(true);
+                        }}
+                      >
+                        <Settings2Icon className="size-4 flex-shrink-0" />
+                        Edit
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        className="flex items-center gap-2"
+                        onSelect={handleRemoveFromPage}
+                      >
+                        <UnlinkIcon className="size-4 flex-shrink-0" />
+                        Disconnect
+                      </DropdownMenuItem>
                       <AlertDialogTrigger asChild>
                         <DropdownMenuItem
                           className="flex items-center gap-2"
                           onSelect={(e) => {
                             e.preventDefault();
+                            setDropdownOpen(false);
                           }}
                         >
                           <Trash2Icon className="size-4 flex-shrink-0" />
                           Delete
                         </DropdownMenuItem>
                       </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            This layer will be permanently deleted on every
-                            page.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <AlertDialogAction onClick={handleDelete}>
-                            Continue
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  </DropdownMenuGroup>
-                </DropdownMenuContent>
-              </DropdownMenu>
+                    </DropdownMenuGroup>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This layer will be permanently deleted on every page.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleDelete}>
+                      Continue
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </SidebarMenuItem>
           </DragHandle>
         </ContextMenuTrigger>
