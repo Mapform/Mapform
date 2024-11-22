@@ -130,7 +130,6 @@ export function MapForm({
               disabled={editable}
               size="sm"
               type="submit"
-              // variant="secondary"
             >
               Next
               <ArrowRightIcon className="ml-1 size-4" />
