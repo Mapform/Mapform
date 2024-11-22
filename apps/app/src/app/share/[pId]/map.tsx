@@ -132,42 +132,41 @@ export function Map({
     return null;
   }
 
+  const prevPageIndex =
+    projectWithPages.pages.findIndex((page) => page.id === currentPage.id) - 1;
+  const nextPageIndex =
+    projectWithPages.pages.findIndex((page) => page.id === currentPage.id) + 1;
+  const prevStep = projectWithPages.pages[prevPageIndex];
+  const nextStep = projectWithPages.pages[nextPageIndex];
+
   return (
     <MapForm
       activePoint={layerPoint}
       currentPage={currentPage}
       defaultFormValues={pageValues}
       mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
-      onPrev={() => {
-        const prevPageIndex =
-          projectWithPages.pages.findIndex(
-            (page) => page.id === currentPage.id,
-          ) - 1;
-        const prevStep = projectWithPages.pages[prevPageIndex];
+      onPrev={
+        prevStep
+          ? () => {
+              setCurrentPageAndFly(prevStep);
+            }
+          : undefined
+      }
+      onStepSubmit={
+        nextStep
+          ? (data) => {
+              if (currentSession) {
+                execute({
+                  pageId: currentPage.id,
+                  submissionId: currentSession,
+                  payload: data,
+                });
+              }
 
-        if (prevStep) {
-          setCurrentPageAndFly(prevStep);
-        }
-      }}
-      onStepSubmit={(data) => {
-        if (currentSession) {
-          execute({
-            pageId: currentPage.id,
-            submissionId: currentSession,
-            payload: data,
-          });
-        }
-
-        const nextPageIndex =
-          projectWithPages.pages.findIndex(
-            (page) => page.id === currentPage.id,
-          ) + 1;
-        const nextStep = projectWithPages.pages[nextPageIndex];
-
-        if (nextStep) {
-          setCurrentPageAndFly(nextStep);
-        }
-      }}
+              setCurrentPageAndFly(nextStep);
+            }
+          : undefined
+      }
       pageData={pageData}
     />
   );

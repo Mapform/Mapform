@@ -108,27 +108,33 @@ export function MapForm({
 
   const actionButtons = useMemo(
     () => (
-      <div className="flex w-full items-center justify-between bg-white">
-        <Button
-          disabled={editable}
-          onClick={onPrev}
-          size="icon-sm"
-          variant="ghost"
-        >
-          <ArrowLeftIcon className="size-5" />
-        </Button>
-        <p className="text-xs text-gray-500">Powered by Mapform</p>
-        <Button
-          disabled={editable}
-          size="icon-sm"
-          type="submit"
-          variant="ghost"
-        >
-          <ArrowRightIcon className="size-5" />
-        </Button>
+      <div className="relative flex w-full items-center justify-between bg-white">
+        {onPrev ? (
+          <Button
+            className="absolute left-0"
+            disabled={editable}
+            onClick={onPrev}
+            size="icon-sm"
+            variant="ghost"
+          >
+            <ArrowLeftIcon className="size-5" />
+          </Button>
+        ) : null}
+        <p className="mx-auto text-xs text-gray-500">Powered by Mapform</p>
+        {onStepSubmit ? (
+          <Button
+            className="absolute right-0"
+            disabled={editable}
+            size="icon-sm"
+            type="submit"
+            variant="ghost"
+          >
+            <ArrowRightIcon className="size-5" />
+          </Button>
+        ) : null}
       </div>
     ),
-    [editable, onPrev],
+    [editable, onPrev, onStepSubmit],
   );
 
   const pageContent = useMemo(
