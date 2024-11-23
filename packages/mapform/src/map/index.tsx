@@ -148,17 +148,20 @@ export function Map({
           key: "layer_point",
           value: `${feature.properties.rowId}_${feature.properties.pointLayerId}`,
         });
-
-        // setActivePoint({
-        //   id: feature.properties?.id,
-        //   color: feature.properties?.color,
-        //   title: "Title",
-        //   description: "Description",
-        // });
       }
+    };
+    const handleMouseEnterPoints = () => {
+      map && (map.getCanvas().style.cursor = "pointer");
+    };
+    const handleMouseLeavePoints = () => {
+      map && (map.getCanvas().style.cursor = "");
     };
 
     if (map) {
+      map.on("click", "points", handleMapClick);
+      map.on("mouseenter", "points", handleMouseEnterPoints);
+      map.on("mouseleave", "points", handleMouseLeavePoints);
+
       const currentSource = map.getSource("points") as
         | mapboxgl.AnySourceImpl
         | undefined;
@@ -184,24 +187,14 @@ export function Map({
             "circle-stroke-width": 2,
           },
         });
-
-        map.on("click", "points", handleMapClick);
-
-        // map.addLayer({
-        //   id: "emoji-layer",
-        //   type: "symbol",
-        //   source: "points",
-        //   layout: {
-        //     "icon-image": "cafe",
-        //     "icon-size": 0.5,
-        //   },
-        // });
       }
     }
 
     return () => {
       if (map) {
         map.off("click", "points", handleMapClick);
+        map.off("mouseenter", "points", handleMouseEnterPoints);
+        map.off("mouseleave", "points", handleMouseLeavePoints);
       }
     };
   }, [map, geojson, setQueryString, isMobile]);
