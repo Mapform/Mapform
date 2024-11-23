@@ -253,6 +253,7 @@ export function MapForm({
                 setDrawerOpen(true);
               }}
               size="icon-sm"
+              type="button"
               variant="outline"
             >
               <ChevronsRightIcon className="size-5" />
