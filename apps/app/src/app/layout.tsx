@@ -1,16 +1,20 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "@mapform/ui/globals.css";
 import { cn } from "@mapform/lib/classnames";
 import { Toaster } from "@mapform/ui/components/toaster";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { RootProviders } from "~/components/root-providers";
-import { defaultMetadata } from "./metadata";
+import { defaultMetadata, defaultViewport } from "./metadata";
 
 const inter = Inter({ subsets: ["latin"], display: "swap" });
 
 export const metadata: Metadata = {
   ...defaultMetadata,
+};
+
+export const viewport: Viewport = {
+  ...defaultViewport,
 };
 
 export default function RootLayout({

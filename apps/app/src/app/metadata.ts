@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 
 export const TITLE = "Mapform";
 export const DESCRIPTION = "Create and share maps.";
@@ -10,6 +10,10 @@ export const defaultMetadata: Metadata = {
   },
   description: DESCRIPTION,
   metadataBase: new URL("https://www.mapform.co"),
+};
+
+export const defaultViewport: Viewport = {
+  colorScheme: "light",
 };
 
 // TODO: Implement
