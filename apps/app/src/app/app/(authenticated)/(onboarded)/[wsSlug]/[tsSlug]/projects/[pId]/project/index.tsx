@@ -9,6 +9,7 @@ import { debounce } from "@mapform/lib/lodash";
 import { uploadImageAction } from "~/data/images";
 import { updatePageAction } from "~/data/pages/update-page";
 import { upsertCellAction } from "~/data/cells/upsert-cell";
+import { compressImage } from "~/lib/compress-image";
 import { env } from "~/env.mjs";
 import { usePage } from "../page-context";
 import { useProject } from "../project-context";
@@ -20,8 +21,26 @@ function Project() {
 
   const { executeAsync: executeAsyncUpdatePage } = useAction(updatePageAction);
   const { execute: executeUpsertCell } = useAction(upsertCellAction);
-  const { executeAsync: executeAsyncUploadImage } =
-    useAction(uploadImageAction);
+  const { executeAsync: executeAsyncUploadImage } = useAction(
+    uploadImageAction,
+    {
+      onError: (response) => {
+        if (response.error.validationErrors) {
+          toast({
+            title: "Uh oh! Something went wrong.",
+            description: response.error.validationErrors.image?._errors?.[0],
+          });
+
+          return;
+        }
+
+        toast({
+          title: "Uh oh! Something went wrong.",
+          description: "An error occurred while uploading the image.",
+        });
+      },
+    },
+  );
 
   if (!optimisticPage) {
     return null;
@@ -53,8 +72,8 @@ function Project() {
     });
   };
 
-  const debouncedUpdatePageServer = debounce(updatePageServer, 1000);
-  const debouncedUpsertCell = debounce(executeUpsertCell, 1000);
+  const debouncedUpdatePageServer = debounce(updatePageServer, 2000);
+  const debouncedUpsertCell = debounce(executeUpsertCell, 2000);
 
   return (
     <div className="flex flex-1 justify-center overflow-hidden p-4">
@@ -68,16 +87,19 @@ function Project() {
             void debouncedUpdatePageServer({ content });
           }}
           onImageUpload={async (file: File) => {
+            const compressedFile = await compressImage(
+              file,
+              0.8,
+              2000,
+              2000,
+              1000,
+            );
             const formData = new FormData();
-            formData.append("image", file);
+            formData.append("image", compressedFile);
 
             const response = await executeAsyncUploadImage(formData);
 
             if (response?.serverError) {
-              toast({
-                title: "Uh oh! Something went wrong.",
-                description: response.serverError,
-              });
               return null;
             }
 
