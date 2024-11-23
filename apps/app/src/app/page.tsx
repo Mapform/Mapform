@@ -1,6 +1,9 @@
-import { redirect } from "next/navigation";
+import { Globe } from "~/components/landing/globe";
 
-// This will eventually be the landing page. Redirect for now.
 export default function Page() {
-  return redirect("/app");
+  return (
+    <div>
+      <Globe />
+    </div>
+  );
 }
