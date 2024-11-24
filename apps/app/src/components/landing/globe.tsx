@@ -62,12 +62,9 @@ export function Globe() {
   }, []);
   return (
     <div
+      className="aspect-w-1 aspect-h-1"
       style={{
-        width: "100%",
-        maxWidth: 600,
         aspectRatio: 1,
-        margin: "auto",
-        position: "relative",
       }}
     >
       <canvas
