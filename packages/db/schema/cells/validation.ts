@@ -86,7 +86,17 @@ export const insertIconCellSchema = createInsertSchema(iconsCells, {
       }),
   }),
 });
-export const selectIconCellSchema = createSelectSchema(iconsCells);
+export const selectIconCellSchema = createSelectSchema(iconsCells, {
+  value: z.object({
+    icon: z
+      .string()
+      .min(1, "Emoji is required")
+      .max(2, "Only a single emoji is allowed") // Emojis might be more than one character in length
+      .refine((value) => emojiRegex.test(value), {
+        message: "Must be a single emoji",
+      }),
+  }),
+});
 export type InsertIconCell = z.infer<typeof insertIconCellSchema>;
 export type IconCell = typeof iconsCells.$inferSelect;
 

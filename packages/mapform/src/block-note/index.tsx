@@ -66,6 +66,17 @@ export function Blocknote({
 
       {/* Content */}
       <div className="p-4 md:overflow-y-auto">
+        {/* Emoji */}
+        {editable ? (
+          <div className="pb-4">
+            <Button size="sm" variant="secondary">
+              Add icon
+            </Button>
+          </div>
+        ) : (
+          <></>
+        )}
+
         {/* Title */}
         {editable ? (
           <AutoSizeTextArea
