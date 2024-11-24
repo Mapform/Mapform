@@ -1,6 +1,11 @@
 import { Button } from "@mapform/ui/components/button";
 import { Badge } from "@mapform/ui/components/badge";
 import Link from "next/link";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@mapform/ui/components/tooltip";
 import { Globe } from "~/components/landing/globe";
 import { Nav } from "~/components/landing/nav";
 
@@ -13,9 +18,20 @@ export default function Page() {
           <section className="lg:flex lg:items-center lg:gap-x-12">
             <div className="mx-auto flex max-w-2xl flex-col items-center text-center sm:items-baseline sm:text-left lg:mx-0 lg:flex-auto">
               <span className="flex-grow-0">
-                <Badge className="bg-white max-lg:shadow-sm" variant="outline">
-                  Now in Alpha
-                </Badge>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Badge
+                      className="bg-white max-lg:shadow-sm"
+                      variant="outline"
+                    >
+                      Now in <span className="ml-1 underline">Alpha</span>
+                    </Badge>
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-[200px]">
+                    Mapform is its early stages. There are still a lot missing
+                    features and bugs. Please use at your own risk.
+                  </TooltipContent>
+                </Tooltip>
               </span>
               <h1 className="text-muted-foreground mt-4 text-4xl font-medium lg:text-6xl">
                 A place for

@@ -8,6 +8,7 @@ import {
 import { ThemeProvider } from "next-themes";
 import { createContext, useContext, useState, useEffect, use } from "react";
 import type { GetUser } from "@mapform/backend/users/get-user";
+import { TooltipProvider } from "@mapform/ui/components/tooltip";
 import type { GetCurrentSession } from "~/data/auth/get-current-session";
 
 function makeQueryClient() {
@@ -82,7 +83,7 @@ export function RootProviders({
           disableTransitionOnChange
           enableSystem
         >
-          {children}
+          <TooltipProvider delayDuration={200}>{children}</TooltipProvider>
         </ThemeProvider>
       </QueryClientProvider>
     </AuthContext.Provider>
