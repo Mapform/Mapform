@@ -51,7 +51,7 @@ import { useAction } from "next-safe-action/hooks";
 import { signOutAction } from "~/data/auth/sign-out";
 import { createEmptyDatasetAction } from "~/data/datasets/create-empty-dataset";
 import { createProjectAction } from "~/data/projects/create-project";
-import { useAuth } from "../../../auth-context";
+import { useAuth } from "~/app/root-providers";
 import { useWorkspace } from "../workspace-context";
 import { ProjectMenuSubItem } from "./project-menu-sub-item";
 import { DatasetMenuSubItem } from "./dataset-menu-sub-item";
