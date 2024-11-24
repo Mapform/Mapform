@@ -2,7 +2,7 @@ import { relations } from "drizzle-orm";
 import { datasets } from "../datasets/schema";
 import { layersToPages } from "../layers-to-pages/schema";
 import { columns } from "../columns/schema";
-import { layers, pointLayers } from "./schema";
+import { layers, markerLayers, pointLayers } from "./schema";
 
 /**
  * PARENT LAYER
@@ -14,6 +14,7 @@ export const layersRelations = relations(layers, ({ one, many }) => ({
   }),
   layersToPages: many(layersToPages),
   pointLayer: one(pointLayers),
+  markerLayer: one(markerLayers),
 }));
 
 /**
@@ -26,6 +27,20 @@ export const pointLayersRelations = relations(pointLayers, ({ one }) => ({
   }),
   pointColumn: one(columns, {
     fields: [pointLayers.pointColumnId],
+    references: [columns.id],
+  }),
+}));
+
+/**
+ * MARKER LAYER
+ */
+export const markerLayersRelations = relations(markerLayers, ({ one }) => ({
+  layer: one(layers, {
+    fields: [markerLayers.layerId],
+    references: [layers.id],
+  }),
+  pointColumn: one(columns, {
+    fields: [markerLayers.pointColumnId],
     references: [columns.id],
   }),
 }));

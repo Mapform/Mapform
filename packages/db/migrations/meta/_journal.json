@@ -134,6 +134,13 @@
       "when": 1732479561488,
       "tag": "0018_reflective_angel",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1732489302225,
+      "tag": "0019_safe_winter_soldier",
+      "breakpoints": true
     }
   ]
 }
