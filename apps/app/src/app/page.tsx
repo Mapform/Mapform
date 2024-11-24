@@ -18,14 +18,14 @@ export default function Page() {
                 </Badge>
               </span>
               <h1 className="text-muted-foreground mt-4 text-4xl font-medium lg:text-6xl">
-                A Place For
+                A place for
                 <br />
-                Everything.
+                everything.
                 <br />
                 <div className="text-foreground mt-4">
                   Everything
                   <br />
-                  In Its Place.
+                  in its Place.
                 </div>
               </h1>
               <p className="text-muted-foreground mb-10 mt-4 text-xl leading-8 sm:mb-10 sm:mt-6 sm:text-2xl">
