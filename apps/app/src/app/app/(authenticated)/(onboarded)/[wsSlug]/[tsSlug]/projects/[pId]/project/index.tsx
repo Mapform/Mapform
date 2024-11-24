@@ -19,7 +19,16 @@ function Project() {
   const { layerPoint } = useProject();
   const { optimisticPage, optimisticPageData } = usePage();
 
-  const { executeAsync: executeAsyncUpdatePage } = useAction(updatePageAction);
+  const { executeAsync: executeAsyncUpdatePage } = useAction(updatePageAction, {
+    onError: (response) => {
+      if (response.error.validationErrors || response.error.serverError) {
+        toast({
+          title: "Uh oh! Something went wrong.",
+          description: "An error occurred while updating the page.",
+        });
+      }
+    },
+  });
   const { execute: executeUpsertCell } = useAction(upsertCellAction);
   const { executeAsync: executeAsyncUploadImage } = useAction(
     uploadImageAction,

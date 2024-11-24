@@ -1,13 +1,7 @@
 "use client";
 
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import {
-  createContext,
-  useContext,
-  useEffect,
-  // eslint-disable-next-line import/named -- It will work when React 19 is released
-  useOptimistic,
-} from "react";
+import { createContext, useContext, useEffect, useOptimistic } from "react";
 import type { GetLayerPoint } from "@mapform/backend/datalayer/get-layer-point";
 import { useCreateQueryString } from "@mapform/lib/hooks/use-create-query-string";
 import type { ProjectWithPages } from "@mapform/backend/projects/get-project-with-pages";

@@ -16,7 +16,10 @@ const baseBlockSchema = z.object({
   id: z.string(),
   type: z.string(),
   props: z.record(z.string(), z.unknown()),
-  content: z.union([styleTextSchema, linkSchema]).array().optional(),
+  content: z
+    .union([styleTextSchema, linkSchema, z.unknown()])
+    .array()
+    .optional(),
 });
 
 type Block = z.infer<typeof baseBlockSchema> & {

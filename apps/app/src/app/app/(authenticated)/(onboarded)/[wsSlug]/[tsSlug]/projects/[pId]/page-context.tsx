@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  createContext,
-  useContext,
-  // eslint-disable-next-line import/named -- It will work when React 19 is released
-  useOptimistic,
-} from "react";
+import { createContext, useContext, useOptimistic } from "react";
 import { useMapform } from "@mapform/mapform";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import type { PageData } from "@mapform/backend/datalayer/get-page-data";
