@@ -12,7 +12,7 @@ export default function Page() {
         <section className="lg:flex lg:items-center lg:gap-x-12">
           <div className="mx-auto flex max-w-2xl flex-col items-center text-center sm:items-baseline sm:text-left lg:mx-0 lg:flex-auto">
             <span className="flex-grow-0">
-              <Badge variant="outline">Alpha</Badge>
+              <Badge variant="outline">Now in Alpha</Badge>
             </span>
             <h1 className="text-muted-foreground mt-4 text-6xl font-medium">
               A Place For
