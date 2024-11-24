@@ -41,7 +41,7 @@ export default function Page() {
                 <div className="text-foreground mt-4">
                   Everything
                   <br />
-                  in its Place.
+                  in its place.
                 </div>
               </h1>
               <p className="text-muted-foreground mb-10 mt-4 text-xl leading-8 sm:mb-10 sm:mt-6 sm:text-2xl">
