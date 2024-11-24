@@ -5,7 +5,7 @@ import { SignIn } from "./sign-in";
 
 export function Nav() {
   return (
-    <header className="absolute inset-x-0 top-0 z-50">
+    <header className="sticky inset-x-0 top-0 z-50">
       <nav
         aria-label="Global"
         className="flex items-center justify-between p-6 lg:px-8"
@@ -16,7 +16,7 @@ export function Nav() {
             <Image alt="Logo" className="inline h-8 w-8" src={mapform} />
           </Link>
         </div>
-        <div className="hidden lg:flex lg:flex-1 lg:justify-end">
+        <div className="flex flex-1 justify-end">
           <SignIn />
         </div>
       </nav>
