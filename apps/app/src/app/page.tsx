@@ -14,7 +14,7 @@ export default function Page() {
             <span className="flex-grow-0">
               <Badge>Alpha</Badge>
             </span>
-            <h1 className="mt-4 text-6xl">
+            <h1 className="text-foreground mt-4 text-6xl">
               A Place For
               <br />
               Everything.
