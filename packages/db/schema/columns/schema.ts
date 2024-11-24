@@ -6,11 +6,8 @@ import {
   pgEnum,
   unique,
 } from "drizzle-orm/pg-core";
-import { relations } from "drizzle-orm";
-import { datasets } from "../datasets";
-import { pages } from "../pages";
-import { pointLayers } from "../layers";
-import { cells } from "../cells";
+import { datasets } from "../datasets/schema";
+import { pages } from "../pages/schema";
 
 export const columnTypeEnum = pgEnum("column_type", [
   "string",
@@ -43,20 +40,5 @@ export const columns = pgTable(
       .$onUpdate(() => new Date())
       .notNull(),
   },
-  (t) => ({
-    unq: unique().on(t.datasetId, t.name),
-  }),
+  (t) => [unique().on(t.datasetId, t.name)],
 );
-
-export const columnsRelations = relations(columns, ({ one, many }) => ({
-  dataset: one(datasets, {
-    fields: [columns.datasetId],
-    references: [datasets.id],
-  }),
-  page: one(pages, {
-    fields: [columns.pageId],
-    references: [pages.id],
-  }),
-  pointLayers: many(pointLayers),
-  cells: many(cells),
-}));

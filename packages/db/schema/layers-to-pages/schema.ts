@@ -5,9 +5,8 @@ import {
   primaryKey,
   smallint,
 } from "drizzle-orm/pg-core";
-import { relations } from "drizzle-orm";
-import { layers } from "../layers";
-import { pages } from "../pages";
+import { layers } from "../layers/schema";
+import { pages } from "../pages/schema";
 
 export const layersToPages = pgTable(
   "layers_to_pages",
@@ -30,16 +29,5 @@ export const layersToPages = pgTable(
   },
   (t) => ({
     pk: primaryKey({ columns: [t.layerId, t.pageId] }),
-  })
+  }),
 );
-
-export const layersToPagesRelations = relations(layersToPages, ({ one }) => ({
-  layer: one(layers, {
-    fields: [layersToPages.layerId],
-    references: [layers.id],
-  }),
-  page: one(pages, {
-    fields: [layersToPages.layerId],
-    references: [pages.id],
-  }),
-}));

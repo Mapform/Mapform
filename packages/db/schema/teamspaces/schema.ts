@@ -1,15 +1,5 @@
-import {
-  timestamp,
-  pgTable,
-  varchar,
-  uuid,
-  unique,
-} from "drizzle-orm/pg-core";
-import { relations } from "drizzle-orm";
-import { teamspaceMemberships } from "../teamspace-memberships";
-import { workspaces } from "../workspaces";
-import { projects } from "../projects";
-import { datasets } from "../datasets";
+import { timestamp, pgTable, varchar, uuid, unique } from "drizzle-orm/pg-core";
+import { workspaces } from "../workspaces/schema";
 
 export const teamspaces = pgTable(
   "teamspace",
@@ -29,17 +19,5 @@ export const teamspaces = pgTable(
       .$onUpdate(() => new Date())
       .notNull(),
   },
-  (t) => ({
-    unq: unique().on(t.workspaceSlug, t.slug),
-  }),
+  (t) => [unique().on(t.workspaceSlug, t.slug)],
 );
-
-export const teamspacesRelations = relations(teamspaces, ({ one, many }) => ({
-  projects: many(projects),
-  datasets: many(datasets),
-  teamspaceMemberships: many(teamspaceMemberships),
-  workspace: one(workspaces, {
-    fields: [teamspaces.workspaceSlug],
-    references: [workspaces.slug],
-  }),
-}));

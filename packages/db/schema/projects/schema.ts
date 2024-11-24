@@ -4,12 +4,10 @@ import {
   varchar,
   uuid,
   boolean,
-  AnyPgColumn,
+  type AnyPgColumn,
 } from "drizzle-orm/pg-core";
-import { relations } from "drizzle-orm";
-import { teamspaces } from "../teamspaces";
-import { pages } from "../pages";
-import { datasets } from "../datasets";
+import { teamspaces } from "../teamspaces/schema";
+import { datasets } from "../datasets/schema";
 
 export const projects = pgTable("project", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -40,23 +38,3 @@ export const projects = pgTable("project", {
     .$onUpdate(() => new Date())
     .notNull(),
 });
-
-export const projectsRelations = relations(projects, ({ one, many }) => ({
-  pages: many(pages),
-  teamspace: one(teamspaces, {
-    fields: [projects.teamspaceId],
-    references: [teamspaces.id],
-  }),
-  rootProject: one(projects, {
-    fields: [projects.rootProjectId],
-    references: [projects.id],
-    relationName: "child_to_root",
-  }),
-  childProjects: many(projects, {
-    relationName: "child_to_root",
-  }),
-  submissionsDataset: one(datasets, {
-    fields: [projects.datasetId],
-    references: [datasets.id],
-  }),
-}));

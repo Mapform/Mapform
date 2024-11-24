@@ -1,8 +1,6 @@
 import { timestamp, pgTable, uuid, text, pgEnum } from "drizzle-orm/pg-core";
-import { relations } from "drizzle-orm";
-import { datasets } from "../datasets";
-import { layersToPages } from "../layers-to-pages";
-import { columns } from "../columns";
+import { datasets } from "../datasets/schema";
+import { columns } from "../columns/schema";
 
 export const layerTypeEnum = pgEnum("layer_type", ["point"]);
 export const colorEnum = pgEnum("color", ["black", "gray", ""]);
@@ -26,15 +24,6 @@ export const layers = pgTable("layer", {
     .$onUpdate(() => new Date())
     .notNull(),
 });
-
-export const layersRelations = relations(layers, ({ one, many }) => ({
-  dataset: one(datasets, {
-    fields: [layers.datasetId],
-    references: [datasets.id],
-  }),
-  layersToPages: many(layersToPages),
-  pointLayer: one(pointLayers),
-}));
 
 /**
  * POINT LAYER
@@ -64,14 +53,3 @@ export const pointLayers = pgTable("point_layer", {
     .$onUpdate(() => new Date())
     .notNull(),
 });
-
-export const pointLayersRelations = relations(pointLayers, ({ one }) => ({
-  layer: one(layers, {
-    fields: [pointLayers.layerId],
-    references: [layers.id],
-  }),
-  pointColumn: one(columns, {
-    fields: [pointLayers.pointColumnId],
-    references: [columns.id],
-  }),
-}));
