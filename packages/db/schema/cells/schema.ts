@@ -9,12 +9,12 @@ import {
   numeric,
   geometry,
   index,
-  uniqueIndex,
+  varchar,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
+import type { DocumentContent } from "@mapform/blocknote";
 import { rows } from "../rows";
 import { columns } from "../columns";
-import { DocumentContent } from "@mapform/blocknote";
 
 /**
  * PARENT CELL
@@ -59,6 +59,7 @@ export const cellsRelations = relations(cells, ({ one }) => ({
   pointCell: one(pointCells),
   dateCell: one(dateCells),
   richtextCell: one(richtextCells),
+  iconCell: one(iconsCells),
 }));
 
 /**
@@ -211,3 +212,21 @@ export const richtextCellsRelations = relations(richtextCells, ({ one }) => ({
     references: [cells.id],
   }),
 }));
+
+/**
+ * ICON CELL
+ */
+export const iconsCells = pgTable(
+  "icon_cell",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    value: varchar("icon", { length: 256 }),
+
+    cellId: uuid("cell_id")
+      .notNull()
+      .references(() => cells.id, { onDelete: "cascade" }),
+  },
+  (t) => ({
+    unq: unique("icon_cell_unq").on(t.cellId),
+  }),
+);
