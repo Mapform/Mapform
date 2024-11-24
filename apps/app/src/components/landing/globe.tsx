@@ -82,6 +82,7 @@ export function Globe() {
       className="aspect-w-1 aspect-h-1"
       style={{
         aspectRatio: 1,
+        flex: 1,
       }}
     >
       <canvas
