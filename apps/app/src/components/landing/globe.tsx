@@ -36,6 +36,7 @@ export function Globe() {
       mapBrightness: 2.5,
       mapBaseBrightness: 0.1,
       opacity: 0.8,
+      scale: 1.2,
       baseColor: [1, 1, 1],
       markerColor: [255, 255, 255],
       glowColor: [1.2, 1.2, 1.2],
