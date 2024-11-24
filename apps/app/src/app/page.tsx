@@ -13,7 +13,7 @@ export default function Page() {
           <section className="lg:flex lg:items-center lg:gap-x-12">
             <div className="mx-auto flex max-w-2xl flex-col items-center text-center sm:items-baseline sm:text-left lg:mx-0 lg:flex-auto">
               <span className="flex-grow-0">
-                <Badge className="bg-white" variant="outline">
+                <Badge className="bg-white max-lg:shadow-sm" variant="outline">
                   Now in Alpha
                 </Badge>
               </span>
@@ -33,7 +33,7 @@ export default function Page() {
                 matter to you.
               </p>
               <div className="flex flex-col justify-center gap-2 sm:flex-row sm:justify-start">
-                <Link href="/app" target="_blank">
+                <Link className="max-lg:shadow-sm" href="/app" target="_blank">
                   <Button size="lg">Try it out</Button>
                 </Link>
                 <Link
@@ -41,7 +41,11 @@ export default function Page() {
                   href="/app"
                   target="_blank"
                 >
-                  <Button size="lg" variant="secondary">
+                  <Button
+                    className="max-lg:shadow-sm"
+                    size="lg"
+                    variant="secondary"
+                  >
                     Learn more
                   </Button>
                 </Link>

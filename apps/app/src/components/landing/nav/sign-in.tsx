@@ -9,14 +9,14 @@ export function SignIn() {
 
   if (user) {
     return (
-      <Link href="/app">
+      <Link className="max-lg:shadow-sm" href="/app">
         <Button variant="secondary">Open app</Button>
       </Link>
     );
   }
 
   return (
-    <Link href="/app/signin">
+    <Link className="max-lg:shadow-sm" href="/app/signin">
       <Button variant="secondary">Sign in</Button>
     </Link>
   );
