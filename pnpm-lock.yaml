@@ -571,6 +571,12 @@ importers:
 
   packages/mapform:
     dependencies:
+      '@emoji-mart/data':
+        specifier: ^1.2.1
+        version: 1.2.1
+      '@emoji-mart/react':
+        specifier: ^1.1.1
+        version: 1.1.1(emoji-mart@5.6.0)(react@19.0.0-rc-66855b96-20241106)
       '@mapform/backend':
         specifier: workspace:*
         version: link:../backend
@@ -595,6 +601,9 @@ importers:
       '@types/mapbox-gl':
         specifier: ^3.1.0
         version: 3.1.0
+      emoji-mart:
+        specifier: ^5.6.0
+        version: 5.6.0
       geojson:
         specifier: ^0.5.0
         version: 0.5.0
@@ -1085,6 +1094,12 @@ packages:
 
   '@emoji-mart/data@1.2.1':
     resolution: {integrity: sha512-no2pQMWiBy6gpBEiqGeU77/bFejDqUTRY7KX+0+iur13op3bqUsXdnwoZs6Xb1zbv0gAj5VvS1PWoUUckSr5Dw==}
+
+  '@emoji-mart/react@1.1.1':
+    resolution: {integrity: sha512-NMlFNeWgv1//uPsvLxvGQoIerPuVdXwK/EUek8OOkJ6wVOWPUizRBJU0hDqWZCOROVpfBgCemaC3m6jDOXi03g==}
+    peerDependencies:
+      emoji-mart: ^5.2
+      react: ^16.8 || ^17 || ^18
 
   '@esbuild-kit/core-utils@3.3.2':
     resolution: {integrity: sha512-sPRAnw9CdSsRmEtnsl2WXWdyquogVpB3yZ3dgwJfe8zrOzTsV7cJvmwrKVa+0ma5BoiGJ+BoqkMvawbayKUsqQ==}
@@ -8112,6 +8127,11 @@ snapshots:
     optional: true
 
   '@emoji-mart/data@1.2.1': {}
+
+  '@emoji-mart/react@1.1.1(emoji-mart@5.6.0)(react@19.0.0-rc-66855b96-20241106)':
+    dependencies:
+      emoji-mart: 5.6.0
+      react: 19.0.0-rc-66855b96-20241106
 
   '@esbuild-kit/core-utils@3.3.2':
     dependencies:

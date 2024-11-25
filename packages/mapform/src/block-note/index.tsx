@@ -10,6 +10,13 @@ import {
 import { ImagePlusIcon, SmilePlusIcon, XIcon } from "lucide-react";
 import { Button } from "@mapform/ui/components/button";
 import type { Page } from "@mapform/db/schema";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@mapform/ui/components/popover";
+import data from "@emoji-mart/data";
+import Picker from "@emoji-mart/react";
 import { AutoSizeTextArea } from "../components/autosize-text-area";
 
 interface BlocknoteProps {
@@ -68,10 +75,17 @@ export function Blocknote({
       <div className="p-4 md:overflow-y-auto">
         {/* Emoji */}
         {editable ? (
-          <div className="-ml-2 -mt-2 flex gap-0.5 pb-2">
-            <Button size="icon-sm" variant="ghost">
-              <SmilePlusIcon className="size-4" />
-            </Button>
+          <div className="text-muted-foreground -ml-2 -mt-2 flex gap-0.5 pb-2">
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button size="icon-sm" variant="ghost">
+                  <SmilePlusIcon className="size-4" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-full overflow-hidden bg-none p-0">
+                <Picker data={data} onEmojiSelect={console.log} theme="light" />
+              </PopoverContent>
+            </Popover>
             <Button size="icon-sm" variant="ghost">
               <ImagePlusIcon className="size-4" />
             </Button>

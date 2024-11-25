@@ -42,3 +42,8 @@ h3.bn-inline-content {
     bottom: 200px;
   }
 }
+
+/* Customizing the emoji picker */
+em-emoji-picker {
+  --border-radius: 0px;
+}
