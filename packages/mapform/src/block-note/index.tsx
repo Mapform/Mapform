@@ -7,7 +7,7 @@ import {
   BlocknoteEditor,
   useCreateBlockNote,
 } from "@mapform/blocknote";
-import { XIcon } from "lucide-react";
+import { ImagePlusIcon, SmilePlusIcon, XIcon } from "lucide-react";
 import { Button } from "@mapform/ui/components/button";
 import type { Page } from "@mapform/db/schema";
 import { AutoSizeTextArea } from "../components/autosize-text-area";
@@ -68,9 +68,12 @@ export function Blocknote({
       <div className="p-4 md:overflow-y-auto">
         {/* Emoji */}
         {editable ? (
-          <div className="pb-4">
-            <Button size="sm" variant="secondary">
-              Add icon
+          <div className="-ml-2 -mt-2 flex gap-0.5 pb-2">
+            <Button size="icon-sm" variant="ghost">
+              <SmilePlusIcon className="size-4" />
+            </Button>
+            <Button size="icon-sm" variant="ghost">
+              <ImagePlusIcon className="size-4" />
             </Button>
           </div>
         ) : (
