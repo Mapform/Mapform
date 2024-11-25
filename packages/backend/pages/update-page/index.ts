@@ -44,6 +44,7 @@ const flattenBlockNoteContent = (
 
 export const updatePage = async ({
   id,
+  icon,
   title,
   content,
   zoom,
@@ -144,6 +145,7 @@ export const updatePage = async ({
         .update(pages)
         .set({
           zoom,
+          icon,
           title,
           pitch,
           center,

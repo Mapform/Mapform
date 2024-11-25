@@ -31,25 +31,26 @@ interface BlocknoteProps {
     onClose: () => void;
   };
   onPrev?: () => void;
+  onIconChange?: (icon: string) => void;
   onTitleChange?: (content: string) => void;
   onDescriptionChange?: (content: { content: CustomBlock[] }) => void;
 }
 
 export function Blocknote({
-  title,
   editable,
-  description,
+  currentPage,
+  onIconChange,
   onTitleChange,
   isPage = false,
   onDescriptionChange,
   locationEditorProps,
 }: BlocknoteProps) {
   const [uncontrolledTitle, setUncontrolledTitle] = useState<string>(
-    title || "",
+    currentPage.title || "",
   );
 
   const editor = useCreateBlockNote({
-    initialContent: description?.content,
+    initialContent: currentPage.content?.content,
     placeholders: {
       default: editable ? "Write, or press '/' for commands..." : "",
     },
@@ -74,25 +75,29 @@ export function Blocknote({
       {/* Content */}
       <div className="p-4 md:overflow-y-auto">
         {/* Emoji */}
-        {editable ? (
-          <div className="text-muted-foreground -ml-2 -mt-2 flex gap-0.5 pb-2">
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button size="icon-sm" variant="ghost">
-                  <SmilePlusIcon className="size-4" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-full overflow-hidden bg-none p-0">
-                <Picker data={data} onEmojiSelect={console.log} theme="light" />
-              </PopoverContent>
-            </Popover>
-            <Button size="icon-sm" variant="ghost">
-              <ImagePlusIcon className="size-4" />
-            </Button>
-          </div>
-        ) : (
-          <></>
-        )}
+        <div className="text-muted-foreground -ml-2 -mt-2 flex gap-0.5 pb-2">
+          {currentPage.icon ? (
+            <EmojiPopover onIconChange={onIconChange}>
+              <Button size="icon-sm" variant="ghost">
+                <SmilePlusIcon className="size-4" />
+              </Button>
+            </EmojiPopover>
+          ) : null}
+          <Button size="icon-sm" variant="ghost">
+            <ImagePlusIcon className="size-4" />
+          </Button>
+        </div>
+        {currentPage.icon ? (
+          editable ? (
+            <EmojiPopover onIconChange={onIconChange}>
+              <button className="mb-2 text-6xl" type="button">
+                {currentPage.icon}
+              </button>
+            </EmojiPopover>
+          ) : (
+            <div className="mb-2 text-6xl">{currentPage.icon}</div>
+          )
+        ) : null}
 
         {/* Title */}
         {editable ? (
@@ -136,5 +141,28 @@ export function Blocknote({
         }}
       />
     </div>
+  );
+}
+
+function EmojiPopover({
+  children,
+  onIconChange,
+}: {
+  children: React.ReactNode;
+  onIconChange?: (icon: string) => void;
+}) {
+  return (
+    <Popover>
+      <PopoverTrigger asChild>{children}</PopoverTrigger>
+      <PopoverContent className="w-full overflow-hidden bg-none p-0">
+        <Picker
+          data={data}
+          onEmojiSelect={(e: { native: string }) => {
+            onIconChange && onIconChange(e.native);
+          }}
+          theme="light"
+        />
+      </PopoverContent>
+    </Popover>
   );
 }

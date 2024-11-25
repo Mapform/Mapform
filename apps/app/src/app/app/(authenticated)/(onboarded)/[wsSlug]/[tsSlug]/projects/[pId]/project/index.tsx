@@ -58,6 +58,7 @@ function Project() {
   const updatePageServer = async ({
     content,
     title,
+    icon,
     zoom,
     pitch,
     bearing,
@@ -65,6 +66,7 @@ function Project() {
   }: {
     content?: { content: CustomBlock[] };
     title?: string;
+    icon?: string;
     zoom?: number;
     pitch?: number;
     bearing?: number;
@@ -74,6 +76,7 @@ function Project() {
       id: optimisticPage.id,
       ...(content !== undefined && { content }),
       ...(title !== undefined && { title }),
+      ...(icon !== undefined && { icon }),
       ...(zoom !== undefined && { zoom }),
       ...(pitch !== undefined && { pitch }),
       ...(bearing !== undefined && { bearing }),
@@ -94,6 +97,11 @@ function Project() {
           mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
           onDescriptionChange={(content: { content: CustomBlock[] }) => {
             void debouncedUpdatePageServer({ content });
+          }}
+          onIconChange={(icon: string) => {
+            void debouncedUpdatePageServer({
+              icon,
+            });
           }}
           onImageUpload={async (file: File) => {
             const compressedFile = await compressImage(

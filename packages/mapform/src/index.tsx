@@ -37,6 +37,7 @@ interface MapFormProps {
   showBlocknote?: boolean;
   onPrev?: () => void;
   onLoad?: () => void;
+  onIconChange?: (icon: string) => void;
   onTitleChange?: (content: string) => void;
   onDescriptionChange?: (content: { content: CustomBlock[] }) => void;
   onPoiCellChange?: (val: UpsertCellSchema) => void;
@@ -57,6 +58,7 @@ export function MapForm({
   children,
   activePoint,
   currentPage,
+  onIconChange,
   onStepSubmit,
   onTitleChange,
   onImageUpload,
@@ -146,14 +148,13 @@ export function MapForm({
       <>
         <Blocknote
           currentPage={currentPage}
-          description={currentPage.content ?? undefined}
           editable={editable}
           isPage
           key={currentPage.id}
           onDescriptionChange={onDescriptionChange}
+          onIconChange={onIconChange}
           onPrev={onPrev}
           onTitleChange={onTitleChange}
-          title={currentPage.title}
         />
         <div
           className={cn({
