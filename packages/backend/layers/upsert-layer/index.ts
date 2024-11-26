@@ -18,6 +18,8 @@ export const upsertLayer = async ({
   markerProperties,
 }: UpsertLayerSchema) => {
   const newLayer = await db.transaction(async (tx) => {
+    const shouldUpdate = !!id;
+
     const [layer] = await tx
       .insert(layers)
       .values({
@@ -39,7 +41,7 @@ export const upsertLayer = async ({
     /**
      * Only insert when creating layer
      */
-    if (!id) {
+    if (!shouldUpdate) {
       const existingPageLayers = await tx.query.layersToPages.findMany({
         where: eq(layersToPages.pageId, pageId),
       });
@@ -55,31 +57,29 @@ export const upsertLayer = async ({
     }
 
     if (type === "point" && pointProperties) {
-      if (id) {
-        await tx
-          .update(pointLayers)
-          .set(pointProperties)
-          .where(eq(pointLayers.layerId, id));
-      } else {
-        await tx.insert(pointLayers).values({
+      await tx
+        .insert(pointLayers)
+        .values({
           layerId: layer.id,
           ...pointProperties,
+        })
+        .onConflictDoUpdate({
+          target: pointLayers.layerId,
+          set: pointProperties,
         });
-      }
     }
 
     if (type === "marker" && markerProperties) {
-      if (id) {
-        await tx
-          .update(markerLayers)
-          .set(markerProperties)
-          .where(eq(markerLayers.layerId, id));
-      } else {
-        await tx.insert(markerLayers).values({
+      await tx
+        .insert(markerLayers)
+        .values({
           layerId: layer.id,
           ...markerProperties,
+        })
+        .onConflictDoUpdate({
+          target: markerLayers.layerId,
+          set: markerProperties,
         });
-      }
     }
 
     return layer;

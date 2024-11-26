@@ -31,6 +31,7 @@ export const layers = pgTable("layer", {
 export const pointLayers = pgTable("point_layer", {
   id: uuid("id").primaryKey().defaultRandom(),
   layerId: uuid("layer_id")
+    .unique()
     .notNull()
     .references(() => layers.id, { onDelete: "cascade" }),
   pointColumnId: uuid("point_column_id").references(() => columns.id, {
@@ -60,6 +61,7 @@ export const pointLayers = pgTable("point_layer", {
 export const markerLayers = pgTable("marker_layer", {
   id: uuid("id").primaryKey().defaultRandom(),
   layerId: uuid("layer_id")
+    .unique()
     .notNull()
     .references(() => layers.id, { onDelete: "cascade" }),
   pointColumnId: uuid("point_column_id").references(() => columns.id, {

@@ -1,0 +1,2 @@
+ALTER TABLE "marker_layer" ADD CONSTRAINT "marker_layer_layer_id_unique" UNIQUE("layer_id");--> statement-breakpoint
+ALTER TABLE "point_layer" ADD CONSTRAINT "point_layer_layer_id_unique" UNIQUE("layer_id");
