@@ -7,7 +7,7 @@ import {
   BlocknoteEditor,
   useCreateBlockNote,
 } from "@mapform/blocknote";
-import { ImagePlusIcon, SmilePlusIcon, XIcon } from "lucide-react";
+import { CircleXIcon, ImagePlusIcon, SmilePlusIcon, XIcon } from "lucide-react";
 import { Button } from "@mapform/ui/components/button";
 import type { Page } from "@mapform/db/schema";
 import {
@@ -20,9 +20,9 @@ import Picker from "@emoji-mart/react";
 import { AutoSizeTextArea } from "../components/autosize-text-area";
 
 interface BlocknoteProps {
+  icon?: string | null;
   editable: boolean;
   title?: string | null;
-  currentPage: Page;
   description?: {
     content: CustomBlock[];
   };
@@ -38,7 +38,9 @@ interface BlocknoteProps {
 
 export function Blocknote({
   editable,
-  currentPage,
+  icon,
+  title,
+  description,
   onIconChange,
   onTitleChange,
   isPage = false,
@@ -46,11 +48,11 @@ export function Blocknote({
   locationEditorProps,
 }: BlocknoteProps) {
   const [uncontrolledTitle, setUncontrolledTitle] = useState<string>(
-    currentPage.title || "",
+    title || "",
   );
 
   const editor = useCreateBlockNote({
-    initialContent: currentPage.content?.content,
+    initialContent: description?.content,
     placeholders: {
       default: editable ? "Write, or press '/' for commands..." : "",
     },
@@ -76,7 +78,7 @@ export function Blocknote({
       <div className="p-4 md:overflow-y-auto">
         {/* Emoji */}
         <div className="text-muted-foreground -ml-2 -mt-2 flex gap-0.5 pb-2">
-          {!currentPage.icon ? (
+          {!icon ? (
             <EmojiPopover onIconChange={onIconChange}>
               <Button size="icon-sm" variant="ghost">
                 <SmilePlusIcon className="size-4" />
@@ -87,15 +89,15 @@ export function Blocknote({
             <ImagePlusIcon className="size-4" />
           </Button>
         </div>
-        {currentPage.icon ? (
+        {icon ? (
           editable ? (
             <EmojiPopover onIconChange={onIconChange}>
               <button className="mb-2 text-6xl" type="button">
-                {currentPage.icon}
+                {icon}
               </button>
             </EmojiPopover>
           ) : (
-            <div className="mb-2 text-6xl">{currentPage.icon}</div>
+            <div className="mb-2 text-6xl">{icon}</div>
           )
         ) : null}
 
@@ -107,11 +109,8 @@ export function Blocknote({
               onTitleChange && onTitleChange(val);
             }}
             onEnter={() => {
-              if (currentPage.content?.content[0]) {
-                editor.setTextCursorPosition(
-                  currentPage.content.content[0],
-                  "start",
-                );
+              if (description?.content[0]) {
+                editor.setTextCursorPosition(description.content[0], "start");
               }
               editor.focus();
             }}
@@ -119,7 +118,7 @@ export function Blocknote({
           />
         ) : (
           <h1 className="mb-2 w-full border-0 p-0 text-3xl font-bold">
-            {currentPage.title ?? "Untitled"}
+            {title ?? "Untitled"}
           </h1>
         )}
 
@@ -167,14 +166,15 @@ function EmojiPopover({
           theme="light"
         />
         <Button
+          aria-label="Remove"
           className="absolute bottom-[19px] right-4 z-10"
           onClick={() => {
             onIconChange && onIconChange(null);
           }}
-          size="sm"
+          size="icon-sm"
           variant="secondary"
         >
-          Remove
+          <CircleXIcon className="size-4" />
         </Button>
       </PopoverContent>
     </Popover>

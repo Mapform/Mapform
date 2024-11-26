@@ -147,14 +147,16 @@ export function MapForm({
     () => (
       <>
         <Blocknote
-          currentPage={currentPage}
+          description={currentPage.content as { content: CustomBlock[] }}
           editable={editable}
+          icon={currentPage.icon}
           isPage
           key={currentPage.id}
           onDescriptionChange={onDescriptionChange}
           onIconChange={onIconChange}
           onPrev={onPrev}
           onTitleChange={onTitleChange}
+          title={currentPage.title}
         />
         <div
           className={cn({
@@ -171,6 +173,7 @@ export function MapForm({
       editable,
       isMobile,
       onDescriptionChange,
+      onIconChange,
       onPrev,
       onTitleChange,
     ],
@@ -183,7 +186,6 @@ export function MapForm({
 
     return (
       <Blocknote
-        currentPage={currentPage}
         description={activePoint.description?.richtextCell?.value ?? undefined}
         editable={editable}
         isPage
