@@ -39,6 +39,9 @@ export function TypePopover({ form }: TypePopoverProps) {
                 <SelectItem className="capitalize" value="point">
                   Point
                 </SelectItem>
+                <SelectItem className="capitalize" value="marker">
+                  Marker
+                </SelectItem>
               </SelectContent>
             </Select>
           </FormControl>

@@ -16,6 +16,7 @@ export const columnTypeEnum = pgEnum("column_type", [
   "date",
   "point",
   "richtext",
+  "icon",
 ]);
 
 export const columns = pgTable(

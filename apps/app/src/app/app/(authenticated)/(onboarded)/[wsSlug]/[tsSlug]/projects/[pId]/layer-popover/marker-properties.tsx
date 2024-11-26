@@ -26,12 +26,12 @@ import { createColumnAction } from "~/data/columns/create-column";
 import { usePage } from "../page-context";
 import { ColorPicker } from "./color-picker";
 
-interface PointPropertiesProps {
+interface MarkerPropertiesProps {
   form: UseFormReturn<UpsertLayerSchema>;
   isEditing: boolean;
 }
 
-export function PointProperties({ form, isEditing }: PointPropertiesProps) {
+export function MarkerProperties({ form, isEditing }: MarkerPropertiesProps) {
   const { availableDatasets } = usePage();
   const datasetId = form.watch("datasetId");
   const type = form.watch("type");
@@ -53,22 +53,27 @@ export function PointProperties({ form, isEditing }: PointPropertiesProps) {
 
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- Once we add more layer types this won't error anymore
-    if (!isEditing && type === "point") {
+    if (!isEditing && type === "marker") {
       form.setValue(
-        "pointProperties.pointColumnId",
+        "markerProperties.pointColumnId",
         getAvailableColumns("point")?.find((c) => c.type === "point")?.id ?? "",
       );
 
       form.setValue(
-        "pointProperties.titleColumnId",
+        "markerProperties.titleColumnId",
         getAvailableColumns("string")?.find((c) => c.type === "string")?.id ??
           "",
       );
 
       form.setValue(
-        "pointProperties.descriptionColumnId",
+        "markerProperties.descriptionColumnId",
         getAvailableColumns("richtext")?.find((c) => c.type === "richtext")
           ?.id ?? "",
+      );
+
+      form.setValue(
+        "markerProperties.iconColumnId",
+        getAvailableColumns("icon")?.find((c) => c.type === "icon")?.id ?? "",
       );
     }
   }, [dataset, form, type, getAvailableColumns, isEditing]);
@@ -76,6 +81,7 @@ export function PointProperties({ form, isEditing }: PointPropertiesProps) {
   const availablePointColumns = getAvailableColumns("point");
   const availableStringColumns = getAvailableColumns("string");
   const availableRichtextColumns = getAvailableColumns("richtext");
+  const availableIconColumns = getAvailableColumns("icon");
 
   return (
     <>
@@ -88,22 +94,29 @@ export function PointProperties({ form, isEditing }: PointPropertiesProps) {
         availableColumns={availablePointColumns ?? []}
         form={form}
         label="Location"
-        name="pointProperties.pointColumnId"
+        name="markerProperties.pointColumnId"
         type="point"
       />
       <DataColField
         availableColumns={availableStringColumns ?? []}
         form={form}
         label="Title"
-        name="pointProperties.titleColumnId"
+        name="markerProperties.titleColumnId"
         type="string"
       />
       <DataColField
         availableColumns={availableRichtextColumns ?? []}
         form={form}
         label="Description"
-        name="pointProperties.descriptionColumnId"
+        name="markerProperties.descriptionColumnId"
         type="richtext"
+      />
+      <DataColField
+        availableColumns={availableIconColumns ?? []}
+        form={form}
+        label="Icon"
+        name="markerProperties.iconColumnId"
+        type="icon"
       />
       <div className="col-span-2 mt-1 w-full border-t pt-3">
         <h3 className="-mb-2 text-xs font-semibold leading-6 text-stone-400">
@@ -135,13 +148,16 @@ function DataColField({
       if (!data?.id) return;
 
       input.type === "point" &&
-        form.setValue("pointProperties.pointColumnId", data.id);
+        form.setValue("markerProperties.pointColumnId", data.id);
 
       input.type === "string" &&
-        form.setValue("pointProperties.titleColumnId", data.id);
+        form.setValue("markerProperties.titleColumnId", data.id);
 
       input.type === "richtext" &&
-        form.setValue("pointProperties.descriptionColumnId", data.id);
+        form.setValue("markerProperties.descriptionColumnId", data.id);
+
+      input.type === "icon" &&
+        form.setValue("markerProperties.iconColumnId", data.id);
     },
 
     onError: () => {

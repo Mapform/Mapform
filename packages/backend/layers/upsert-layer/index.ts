@@ -1,6 +1,11 @@
 import { db } from "@mapform/db";
 import { eq } from "@mapform/db/utils";
-import { layers, layersToPages, pointLayers } from "@mapform/db/schema";
+import {
+  layers,
+  layersToPages,
+  markerLayers,
+  pointLayers,
+} from "@mapform/db/schema";
 import type { UpsertLayerSchema } from "./schema";
 
 export const upsertLayer = async ({
@@ -10,6 +15,7 @@ export const upsertLayer = async ({
   name,
   type,
   pointProperties,
+  markerProperties,
 }: UpsertLayerSchema) => {
   const newLayer = await db.transaction(async (tx) => {
     const [layer] = await tx
@@ -58,6 +64,20 @@ export const upsertLayer = async ({
         await tx.insert(pointLayers).values({
           layerId: layer.id,
           ...pointProperties,
+        });
+      }
+    }
+
+    if (type === "marker" && markerProperties) {
+      if (id) {
+        await tx
+          .update(markerLayers)
+          .set(markerProperties)
+          .where(eq(markerLayers.layerId, id));
+      } else {
+        await tx.insert(markerLayers).values({
+          layerId: layer.id,
+          ...markerProperties,
         });
       }
     }

@@ -46,7 +46,7 @@ export function DatasetPopover({ form }: DatasetPopoverProps) {
       });
       form.setValue("datasetId", data.dataset.id);
 
-      if (input.layerType === "point") {
+      if (input.layerType === "point" || input.layerType === "marker") {
         form.setValue(
           "pointProperties.pointColumnId",
           data.columns?.find((c) => c.type === "point")?.id ?? "",

@@ -2,6 +2,7 @@ import { z } from "zod";
 import {
   insertLayerSchema,
   insertLayersToPagesSchema,
+  insertMarkerLayerSchema,
   insertPointLayerSchema,
 } from "@mapform/db/schema";
 
@@ -17,6 +18,15 @@ export const upsertLayerSchema = z.object({
       pointColumnId: insertPointLayerSchema.shape.pointColumnId,
       titleColumnId: insertPointLayerSchema.shape.titleColumnId,
       descriptionColumnId: insertPointLayerSchema.shape.descriptionColumnId,
+    })
+    .optional(),
+  markerProperties: z
+    .object({
+      color: insertMarkerLayerSchema.shape.color,
+      pointColumnId: insertMarkerLayerSchema.shape.pointColumnId,
+      titleColumnId: insertMarkerLayerSchema.shape.titleColumnId,
+      descriptionColumnId: insertMarkerLayerSchema.shape.descriptionColumnId,
+      iconColumnId: insertMarkerLayerSchema.shape.iconColumnId,
     })
     .optional(),
 });

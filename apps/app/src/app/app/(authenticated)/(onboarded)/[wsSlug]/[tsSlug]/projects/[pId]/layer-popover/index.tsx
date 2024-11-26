@@ -28,6 +28,7 @@ import { usePage } from "../page-context";
 import { PointProperties } from "./point-properties";
 import { DatasetPopover } from "./dataset-popover";
 import { TypePopover } from "./type-popover";
+import { MarkerProperties } from "./marker-properties";
 
 interface LayerPopoverProps {
   initialName?: string;
@@ -100,9 +101,10 @@ export const LayerPopoverContent = forwardRef<
       return null;
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- Once we add more layer types this won't error anymore
     if (type === "point")
       return <PointProperties form={form} isEditing={Boolean(layerToEdit)} />;
+
+    return <MarkerProperties form={form} isEditing={Boolean(layerToEdit)} />;
   };
 
   return (
