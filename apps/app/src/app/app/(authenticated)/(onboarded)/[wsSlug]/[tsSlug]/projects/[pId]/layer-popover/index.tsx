@@ -48,13 +48,19 @@ export const LayerPopoverContent = forwardRef<
     defaultValues: {
       name: initialName ?? "",
       pageId: optimisticPage.id,
-      type: "point",
       ...layerToEdit,
-      pointProperties: layerToEdit?.pointLayer
-        ? {
-            ...layerToEdit.pointLayer,
-          }
-        : undefined,
+      pointProperties:
+        layerToEdit?.type === "point" && layerToEdit.pointLayer
+          ? {
+              ...layerToEdit.pointLayer,
+            }
+          : undefined,
+      markerProperties:
+        layerToEdit?.type === "marker" && layerToEdit.markerLayer
+          ? {
+              ...layerToEdit.markerLayer,
+            }
+          : undefined,
     },
     resolver: zodResolver(upsertLayerSchema),
   });
