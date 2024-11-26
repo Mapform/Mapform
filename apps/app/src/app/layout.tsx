@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "@mapform/ui/globals.css";
 import { cn } from "@mapform/lib/classnames";
 import { Toaster } from "@mapform/ui/components/toaster";
+import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { getCurrentSession } from "~/data/auth/get-current-session";
 import { RootProviders } from "./root-providers";
@@ -31,8 +32,9 @@ export default function RootLayout({
       <body className={cn("h-full bg-white", inter.className)}>
         <RootProviders currentSessionPromise={currentSessionPromise}>
           {children}
-          <SpeedInsights />
           <Toaster />
+          <Analytics />
+          <SpeedInsights />
         </RootProviders>
       </body>
     </html>
