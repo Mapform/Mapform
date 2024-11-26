@@ -34,6 +34,7 @@ import {
   upsertCellSchema,
   type UpsertCellSchema,
 } from "@mapform/backend/cells/upsert-cell/schema";
+import { EmojiPicker } from "@mapform/ui/components/emoji-picker";
 import type { GetDataset } from "@mapform/backend/datasets/get-dataset";
 import { upsertCellAction } from "~/data/cells/upsert-cell";
 
@@ -190,6 +191,16 @@ export function CellPopover({
       );
     }
 
+    if (type === "icon") {
+      return (
+        <EmojiInput
+          form={
+            form as UseFormReturn<Extract<UpsertCellSchema, { type: "icon" }>>
+          }
+        />
+      );
+    }
+
     return (
       <RichtextInput
         form={
@@ -250,7 +261,7 @@ export function CellPopover({
             <PopoverAnchor />
             <PopoverContent
               align="start"
-              className="overflow-hidden p-0"
+              className="w-full min-w-72 overflow-hidden p-0"
               side="top"
             >
               {renderField()}
@@ -280,6 +291,30 @@ function StringInput({
               onChange={field.onChange}
               ref={field.ref}
               value={(field.value as string | null) || ""}
+            />
+          </FormControl>
+        </FormItem>
+      )}
+    />
+  );
+}
+
+function EmojiInput({
+  form,
+}: {
+  form: UseFormReturn<Extract<UpsertCellSchema, { type: "icon" }>>;
+}) {
+  return (
+    <FormField
+      control={form.control}
+      name="value"
+      render={({ field }) => (
+        <FormItem className="flex-1">
+          <FormControl>
+            <EmojiPicker
+              onIconChange={(icon) => {
+                field.onChange(icon);
+              }}
             />
           </FormControl>
         </FormItem>

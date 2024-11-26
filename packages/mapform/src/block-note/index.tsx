@@ -7,16 +7,9 @@ import {
   BlocknoteEditor,
   useCreateBlockNote,
 } from "@mapform/blocknote";
-import { CircleXIcon, ImagePlusIcon, SmilePlusIcon, XIcon } from "lucide-react";
+import { ImagePlusIcon, SmilePlusIcon, XIcon } from "lucide-react";
 import { Button } from "@mapform/ui/components/button";
-import type { Page } from "@mapform/db/schema";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@mapform/ui/components/popover";
-import data from "@emoji-mart/data";
-import Picker from "@emoji-mart/react";
+import { EmojiPopover } from "@mapform/ui/components/emoji-picker";
 import { AutoSizeTextArea } from "../components/autosize-text-area";
 
 interface BlocknoteProps {
@@ -143,40 +136,5 @@ export function Blocknote({
         }}
       />
     </div>
-  );
-}
-
-function EmojiPopover({
-  children,
-  onIconChange,
-}: {
-  children: React.ReactNode;
-  onIconChange?: (icon: string | null) => void;
-}) {
-  return (
-    <Popover>
-      <PopoverTrigger asChild>{children}</PopoverTrigger>
-      <PopoverContent className="w-full overflow-hidden bg-none p-0">
-        <Picker
-          data={data}
-          onEmojiSelect={(e: { native: string }) => {
-            onIconChange && onIconChange(e.native);
-          }}
-          skinTonePosition="search"
-          theme="light"
-        />
-        <Button
-          aria-label="Remove"
-          className="absolute bottom-[19px] right-4 z-10"
-          onClick={() => {
-            onIconChange && onIconChange(null);
-          }}
-          size="icon-sm"
-          variant="secondary"
-        >
-          <CircleXIcon className="size-4" />
-        </Button>
-      </PopoverContent>
-    </Popover>
   );
 }
