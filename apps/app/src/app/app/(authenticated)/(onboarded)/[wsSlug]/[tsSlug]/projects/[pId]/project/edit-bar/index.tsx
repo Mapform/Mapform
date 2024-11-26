@@ -182,8 +182,10 @@ function EditBarInner({ optimisticPage, updatePageServer }: EditBarInnerProps) {
     movedCoords.bearing !== optimisticPage.bearing;
 
   const pageLayers = optimisticProjectWithPages.pageLayers.filter(
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- Once we add more layer types this won't error anymore
-    (layer) => layer.pageId === optimisticPage.id && layer.type === "point",
+    (layer) =>
+      layer.pageId === optimisticPage.id &&
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- We do need this
+      (layer.type === "point" || layer.type === "marker"),
   );
 
   return (

@@ -6,6 +6,7 @@ import {
   TextIcon,
   TextQuoteIcon,
   ToggleLeftIcon,
+  SmileIcon,
   type LucideIcon,
 } from "lucide-react";
 
@@ -18,4 +19,5 @@ export const COLUMN_ICONS: {
   richtext: TextQuoteIcon,
   bool: ToggleLeftIcon,
   date: CalendarIcon,
+  icon: SmileIcon,
 };

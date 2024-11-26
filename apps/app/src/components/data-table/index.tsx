@@ -56,6 +56,7 @@ export const DataTable = memo(function DataTable({ dataset }: TableProps) {
                 cell.booleanCell?.value ??
                 cell.richtextCell?.value ??
                 cell.dateCell?.value ??
+                cell.iconCell?.value ??
                 (cell.pointCell && {
                   x: cell.pointCell.x,
                   y: cell.pointCell.y,
