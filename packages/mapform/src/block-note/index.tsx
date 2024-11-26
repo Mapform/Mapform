@@ -31,7 +31,7 @@ interface BlocknoteProps {
     onClose: () => void;
   };
   onPrev?: () => void;
-  onIconChange?: (icon: string) => void;
+  onIconChange?: (icon: string | null) => void;
   onTitleChange?: (content: string) => void;
   onDescriptionChange?: (content: { content: CustomBlock[] }) => void;
 }
@@ -76,7 +76,7 @@ export function Blocknote({
       <div className="p-4 md:overflow-y-auto">
         {/* Emoji */}
         <div className="text-muted-foreground -ml-2 -mt-2 flex gap-0.5 pb-2">
-          {currentPage.icon ? (
+          {!currentPage.icon ? (
             <EmojiPopover onIconChange={onIconChange}>
               <Button size="icon-sm" variant="ghost">
                 <SmilePlusIcon className="size-4" />
@@ -107,16 +107,19 @@ export function Blocknote({
               onTitleChange && onTitleChange(val);
             }}
             onEnter={() => {
-              if (description?.content[0]) {
-                editor.setTextCursorPosition(description.content[0], "start");
+              if (currentPage.content?.content[0]) {
+                editor.setTextCursorPosition(
+                  currentPage.content.content[0],
+                  "start",
+                );
               }
               editor.focus();
             }}
             value={uncontrolledTitle}
           />
         ) : (
-          <h1 className="mb-2 w-full border-0 p-0 text-2xl font-bold">
-            {title ?? "Untitled"}
+          <h1 className="mb-2 w-full border-0 p-0 text-3xl font-bold">
+            {currentPage.title ?? "Untitled"}
           </h1>
         )}
 
@@ -149,7 +152,7 @@ function EmojiPopover({
   onIconChange,
 }: {
   children: React.ReactNode;
-  onIconChange?: (icon: string) => void;
+  onIconChange?: (icon: string | null) => void;
 }) {
   return (
     <Popover>
@@ -160,8 +163,19 @@ function EmojiPopover({
           onEmojiSelect={(e: { native: string }) => {
             onIconChange && onIconChange(e.native);
           }}
+          skinTonePosition="search"
           theme="light"
         />
+        <Button
+          className="absolute bottom-[19px] right-4 z-10"
+          onClick={() => {
+            onIconChange && onIconChange(null);
+          }}
+          size="sm"
+          variant="secondary"
+        >
+          Remove
+        </Button>
       </PopoverContent>
     </Popover>
   );

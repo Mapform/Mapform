@@ -29,7 +29,7 @@ export function AutoSizeTextArea({
 
   return (
     <textarea
-      className="border-0 text-2xl font-bold w-full mb-2 p-0 outline-none border-transparent focus:border-transparent focus:ring-0 placeholder-gray-300 resize-none bg-transparent"
+      className="mb-2 w-full resize-none border-0 border-transparent bg-transparent p-0 text-3xl font-bold placeholder-gray-300 outline-none focus:border-transparent focus:ring-0"
       onChange={(e) => {
         onChange(e.target.value);
         updateHeight();

@@ -37,7 +37,7 @@ interface MapFormProps {
   showBlocknote?: boolean;
   onPrev?: () => void;
   onLoad?: () => void;
-  onIconChange?: (icon: string) => void;
+  onIconChange?: (icon: string | null) => void;
   onTitleChange?: (content: string) => void;
   onDescriptionChange?: (content: { content: CustomBlock[] }) => void;
   onPoiCellChange?: (val: UpsertCellSchema) => void;

@@ -66,7 +66,7 @@ function Project() {
   }: {
     content?: { content: CustomBlock[] };
     title?: string;
-    icon?: string;
+    icon?: string | null;
     zoom?: number;
     pitch?: number;
     bearing?: number;
@@ -98,7 +98,7 @@ function Project() {
           onDescriptionChange={(content: { content: CustomBlock[] }) => {
             void debouncedUpdatePageServer({ content });
           }}
-          onIconChange={(icon: string) => {
+          onIconChange={(icon: string | null) => {
             void debouncedUpdatePageServer({
               icon,
             });
