@@ -76,12 +76,21 @@ export const getPageData = async ({ pageId }: GetPageDataSchema) => {
         (acc, c) => {
           acc[c.cell.rowId] = {
             ...acc[c.cell.rowId],
-            ...c,
+            ...(c.point_cell ? { point_cell: c.point_cell } : {}),
+            ...(c.icon_cell ? { icon_cell: c.icon_cell } : {}),
+            cell: c.cell,
           };
 
           return acc;
         },
-        {} as Record<string, { point_cell: any; icon_cell: any; cell: any }>,
+        {} as Record<
+          string,
+          {
+            point_cell?: (typeof cellsResponse)[number]["point_cell"];
+            icon_cell?: (typeof cellsResponse)[number]["icon_cell"];
+            cell: (typeof cellsResponse)[number]["cell"];
+          }
+        >,
       );
 
       return Object.values(groupedCells).map((c) => ({

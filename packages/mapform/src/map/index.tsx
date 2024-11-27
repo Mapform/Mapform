@@ -42,27 +42,46 @@ export function Map({
   // Condition in usePrevious resolves issue where map padding is not updated on first render
   const prevMapPadding = usePrevious(map ? mapPadding : undefined);
 
-  const geojson: FeatureCollection = useMemo(
+  const pointGeojson: FeatureCollection = useMemo(
     () => ({
       type: "FeatureCollection",
-      features: (pageData?.pointData ?? []).map((point) => ({
+      features: (pageData?.pointData ?? []).map((feature) => ({
         type: "Feature",
         geometry: {
           type: "Point",
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- We know it's not null
-          coordinates: [point.value!.x, point.value!.y],
+          coordinates: [feature.value!.x, feature.value!.y],
         },
         properties: {
-          id: point.id,
-          type: "point",
-          color: point.color ?? "#3b82f6",
-          rowId: point.rowId,
-          pointLayerId: point.pointLayerId,
-          // icon: "...",
+          id: feature.id,
+          color: feature.color ?? "#3b82f6",
+          rowId: feature.rowId,
+          pointLayerId: feature.pointLayerId,
         },
       })),
     }),
-    [pageData],
+    [pageData?.pointData],
+  );
+
+  const markerGeojson: FeatureCollection = useMemo(
+    () => ({
+      type: "FeatureCollection",
+      features: (pageData?.markerData ?? []).map((feature) => ({
+        type: "Feature",
+        geometry: {
+          type: "Point",
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- We know it's not null
+          coordinates: [feature.value!.x, feature.value!.y],
+        },
+        properties: {
+          id: feature.id,
+          color: feature.color ?? "#3b82f6",
+          rowId: feature.rowId,
+          pointLayerId: feature.pointLayerId,
+        },
+      })),
+    }),
+    [pageData?.markerData],
   );
 
   useEffect(() => {
@@ -132,7 +151,7 @@ export function Map({
   }, [map, mapContainerBounds]);
 
   /**
-   * Update layers
+   * BIND EVENT HANDLERS
    */
   useEffect(() => {
     const handleMapClick = (
@@ -158,36 +177,10 @@ export function Map({
     };
 
     if (map) {
+      // BIND EVENT HANDLERS
       map.on("click", "points", handleMapClick);
       map.on("mouseenter", "points", handleMouseEnterPoints);
       map.on("mouseleave", "points", handleMouseLeavePoints);
-
-      const currentSource = map.getSource("points") as
-        | mapboxgl.AnySourceImpl
-        | undefined;
-
-      if (currentSource) {
-        // Update the source data
-        (currentSource as mapboxgl.GeoJSONSource).setData(geojson);
-      } else {
-        // Add a new source and layer
-        map.addSource("points", {
-          type: "geojson",
-          data: geojson,
-        });
-
-        map.addLayer({
-          id: "points",
-          type: "circle",
-          source: "points",
-          paint: {
-            "circle-radius": 8,
-            "circle-color": ["get", "color"],
-            "circle-stroke-color": "#fff",
-            "circle-stroke-width": 2,
-          },
-        });
-      }
     }
 
     return () => {
@@ -197,7 +190,62 @@ export function Map({
         map.off("mouseleave", "points", handleMouseLeavePoints);
       }
     };
-  }, [map, geojson, setQueryString, isMobile]);
+  }, [map, setQueryString, isMobile]);
+
+  /**
+   * ADD LAYERS
+   */
+  useEffect(() => {
+    if (!map) {
+      return;
+    }
+
+    const currentSource = map.getSource("points") as
+      | mapboxgl.AnySourceImpl
+      | undefined;
+
+    if (currentSource) {
+      // Update the source data
+      (currentSource as mapboxgl.GeoJSONSource).setData(pointGeojson);
+    } else {
+      // Add a new source and layer
+      map.addSource("points", {
+        type: "geojson",
+        data: pointGeojson,
+      });
+
+      map.addLayer({
+        id: "points",
+        type: "circle",
+        source: "points",
+        paint: {
+          "circle-radius": 8,
+          "circle-color": ["get", "color"],
+          "circle-stroke-color": "#fff",
+          "circle-stroke-width": 2,
+        },
+      });
+    }
+  }, [map, pointGeojson]);
+
+  /**
+   * ADD MARKERS
+   */
+  useEffect(() => {
+    if (!map) {
+      return;
+    }
+
+    const markers = markerGeojson.features.map((feature) =>
+      new mapboxgl.Marker().setLngLat(feature.geometry.coordinates),
+    );
+
+    markers.forEach((marker) => marker.addTo(map));
+
+    return () => {
+      markers.forEach((marker) => marker.remove());
+    };
+  }, [map, markerGeojson]);
 
   return (
     <div
