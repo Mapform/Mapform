@@ -42,7 +42,7 @@ export function Map({
   // Condition in usePrevious resolves issue where map padding is not updated on first render
   const prevMapPadding = usePrevious(map ? mapPadding : undefined);
 
-  const pointGeojson: FeatureCollection = useMemo(
+  const pointGeojson = useMemo(
     () => ({
       type: "FeatureCollection",
       features: (pageData?.pointData ?? []).map((feature) => ({
@@ -61,7 +61,7 @@ export function Map({
       })),
     }),
     [pageData?.pointData],
-  );
+  ) satisfies FeatureCollection;
 
   const markerGeojson: FeatureCollection = useMemo(
     () => ({
@@ -77,6 +77,7 @@ export function Map({
           id: feature.id,
           color: feature.color ?? "#3b82f6",
           rowId: feature.rowId,
+          icon: feature.icon,
           pointLayerId: feature.pointLayerId,
         },
       })),
@@ -231,21 +232,21 @@ export function Map({
   /**
    * ADD MARKERS
    */
-  useEffect(() => {
-    if (!map) {
-      return;
-    }
+  // useEffect(() => {
+  //   if (!map) {
+  //     return;
+  //   }
 
-    const markers = markerGeojson.features.map((feature) =>
-      new mapboxgl.Marker().setLngLat(feature.geometry.coordinates),
-    );
+  //   const markers = markerGeojson.features.map((feature) =>
+  //     new mapboxgl.Marker().setLngLat(feature.geometry.coordinates),
+  //   );
 
-    markers.forEach((marker) => marker.addTo(map));
+  //   markers.forEach((marker) => marker.addTo(map));
 
-    return () => {
-      markers.forEach((marker) => marker.remove());
-    };
-  }, [map, markerGeojson]);
+  //   return () => {
+  //     markers.forEach((marker) => marker.remove());
+  //   };
+  // }, [map, markerGeojson]);
 
   return (
     <div
@@ -254,6 +255,23 @@ export function Map({
       })}
       ref={mapContainer}
     >
+      {markerGeojson.features.map((feature) => (
+        <SearchLocationMarker
+          key={feature.properties?.id}
+          searchLocationMarker={{
+            latitude: feature.geometry.coordinates[1],
+            longitude: feature.geometry.coordinates[0],
+            icon: "city",
+          }}
+        >
+          <div
+            className="flex size-10 items-center justify-center rounded-full border-2 border-white text-lg shadow-md"
+            style={{ backgroundColor: feature.properties.color }}
+          >
+            {feature.properties.icon}
+          </div>
+        </SearchLocationMarker>
+      ))}
       {children}
     </div>
   );
