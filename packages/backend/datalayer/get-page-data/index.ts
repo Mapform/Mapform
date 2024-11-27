@@ -72,7 +72,19 @@ export const getPageData = async ({ pageId }: GetPageDataSchema) => {
           ),
         );
 
-      return cellsResponse.map((c) => ({
+      const groupedCells = cellsResponse.reduce(
+        (acc, c) => {
+          acc[c.cell.rowId] = {
+            ...acc[c.cell.rowId],
+            ...c,
+          };
+
+          return acc;
+        },
+        {} as Record<string, { point_cell: any; icon_cell: any; cell: any }>,
+      );
+
+      return Object.values(groupedCells).map((c) => ({
         ...c,
         color: pl.layer.pointLayer?.color,
         rowId: c.cell.rowId,

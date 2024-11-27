@@ -115,8 +115,6 @@ export default async function ProjectPage(props: {
     fetchLayerPoint(searchParams?.layer_point),
   ]);
 
-  console.log(11111, pageData?.markerData);
-
   if (!projectWithPages) {
     return redirect(`/app/${params.wsSlug}/${params.tsSlug}`);
   }
