@@ -138,7 +138,6 @@ export function ColorPicker({
                         })}
                         onClick={() => {
                           form.setValue(name, color.value);
-                          setOpen(false);
                         }}
                         style={{ backgroundColor: color.value }}
                         type="button"
