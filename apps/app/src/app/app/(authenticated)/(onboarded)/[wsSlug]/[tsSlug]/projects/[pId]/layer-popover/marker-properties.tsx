@@ -123,7 +123,7 @@ export function MarkerProperties({ form, isEditing }: MarkerPropertiesProps) {
           Styles
         </h3>
       </div>
-      <ColorPicker form={form} label="Color" />
+      <ColorPicker form={form} label="Color" name="markerProperties.color" />
     </>
   );
 }

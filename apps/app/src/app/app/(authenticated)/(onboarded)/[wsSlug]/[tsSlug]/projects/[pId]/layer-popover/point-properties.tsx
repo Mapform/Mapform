@@ -110,7 +110,7 @@ export function PointProperties({ form, isEditing }: PointPropertiesProps) {
           Styles
         </h3>
       </div>
-      <ColorPicker form={form} label="Color" />
+      <ColorPicker form={form} label="Color" name="pointProperties.color" />
     </>
   );
 }

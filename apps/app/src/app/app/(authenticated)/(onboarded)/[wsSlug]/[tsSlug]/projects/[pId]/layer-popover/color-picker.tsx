@@ -25,19 +25,21 @@ const colorOptions = [
 ];
 
 export function ColorPicker({
+  name,
   form,
   label,
 }: {
+  name: "markerProperties.color" | "pointProperties.color";
   form: UseFormReturn<UpsertLayerSchema>;
   label: string;
 }) {
   const [open, setOpen] = useState(false);
-  const formColor = form.watch("pointProperties.color") ?? "#3b82f6";
+  const formColor = form.watch(name) ?? "#3b82f6";
 
   return (
     <FormField
       control={form.control}
-      name="pointProperties.color"
+      name={name}
       render={() => (
         <Popover modal onOpenChange={setOpen} open={open}>
           <FormLabel htmlFor="color">{label}</FormLabel>
@@ -65,7 +67,7 @@ export function ColorPicker({
                   })}
                   key={color.value}
                   onClick={() => {
-                    form.setValue("pointProperties.color", color.value);
+                    form.setValue(name, color.value);
                     setOpen(false);
                   }}
                   style={{ backgroundColor: color.value }}

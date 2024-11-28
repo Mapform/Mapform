@@ -95,9 +95,9 @@ export const getPageData = async ({ pageId }: GetPageDataSchema) => {
 
       return Object.values(groupedCells).map((c) => ({
         ...c,
-        color: pl.layer.pointLayer?.color,
+        color: pl.layer.markerLayer?.color,
         rowId: c.cell.rowId,
-        pointLayerId: pl.layer.pointLayer?.id,
+        pointLayerId: pl.layer.markerLayer?.id,
       }));
     }),
   );
