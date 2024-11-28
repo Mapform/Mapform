@@ -52,7 +52,6 @@ export function PointProperties({ form, isEditing }: PointPropertiesProps) {
   );
 
   useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- Once we add more layer types this won't error anymore
     if (!isEditing && type === "point") {
       form.setValue(
         "pointProperties.pointColumnId",
@@ -70,12 +69,19 @@ export function PointProperties({ form, isEditing }: PointPropertiesProps) {
         getAvailableColumns("richtext")?.find((c) => c.type === "richtext")
           ?.id ?? "",
       );
+
+      form.setValue(
+        "pointProperties.iconColumnId",
+        getAvailableColumns("richtext")?.find((c) => c.type === "richtext")
+          ?.id ?? "",
+      );
     }
   }, [dataset, form, type, getAvailableColumns, isEditing]);
 
   const availablePointColumns = getAvailableColumns("point");
   const availableStringColumns = getAvailableColumns("string");
   const availableRichtextColumns = getAvailableColumns("richtext");
+  const availableIconColumns = getAvailableColumns("icon");
 
   return (
     <>
@@ -104,6 +110,13 @@ export function PointProperties({ form, isEditing }: PointPropertiesProps) {
         label="Description"
         name="pointProperties.descriptionColumnId"
         type="richtext"
+      />
+      <DataColField
+        availableColumns={availableIconColumns ?? []}
+        form={form}
+        label="Icon"
+        name="pointProperties.iconColumnId"
+        type="icon"
       />
       <div className="col-span-2 mt-1 w-full border-t pt-3">
         <h3 className="-mb-2 text-xs font-semibold leading-6 text-stone-400">
@@ -142,6 +155,9 @@ function DataColField({
 
       input.type === "richtext" &&
         form.setValue("pointProperties.descriptionColumnId", data.id);
+
+      input.type === "icon" &&
+        form.setValue("pointProperties.iconColumnId", data.id);
     },
 
     onError: () => {

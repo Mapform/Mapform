@@ -52,7 +52,6 @@ export function MarkerProperties({ form, isEditing }: MarkerPropertiesProps) {
   );
 
   useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- Once we add more layer types this won't error anymore
     if (!isEditing && type === "marker") {
       form.setValue(
         "markerProperties.pointColumnId",

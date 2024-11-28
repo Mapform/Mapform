@@ -165,8 +165,8 @@ export function Map({
       if (feature?.properties) {
         isMobile && window.scrollTo({ top: 0, behavior: "smooth" });
         setQueryString({
-          key: "layer_point",
-          value: `${feature.properties.rowId}_${feature.properties.pointLayerId}`,
+          key: "feature",
+          value: `point_${feature.properties.rowId}_${feature.properties.pointLayerId}`,
         });
       }
     };
@@ -251,8 +251,8 @@ export function Map({
             onClick={() => {
               isMobile && window.scrollTo({ top: 0, behavior: "smooth" });
               setQueryString({
-                key: "layer_point",
-                value: `${feature.properties.rowId}_${feature.properties.pointLayerId}`,
+                key: "feature",
+                value: `marker_${feature.properties.rowId}_${feature.properties.pointLayerId}`,
               });
             }}
             style={{ backgroundColor: feature.properties?.color }}

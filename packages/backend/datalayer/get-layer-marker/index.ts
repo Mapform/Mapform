@@ -1,18 +1,18 @@
 import { db } from "@mapform/db";
 import { eq, sql } from "@mapform/db/utils";
-import { rows, pointLayers, pointCells } from "@mapform/db/schema";
-import { type GetLayerPointSchema } from "./schema";
+import { rows, pointCells, markerLayers } from "@mapform/db/schema";
+import { type GetLayerMarkerSchema } from "./schema";
 
 /**
- * Returns a single point (a row) from a point layer
+ * Returns a single point (a row) from a marker layer
  */
-export const getLayerPoint = async ({
+export const getLayerMarker = async ({
   rowId,
-  pointLayerId,
-}: GetLayerPointSchema) => {
-  const [pointLayer, row] = await Promise.all([
-    db.query.pointLayers.findFirst({
-      where: eq(pointLayers.id, pointLayerId),
+  markerLayerId,
+}: GetLayerMarkerSchema) => {
+  const [markerLayer, row] = await Promise.all([
+    db.query.markerLayers.findFirst({
+      where: eq(markerLayers.id, markerLayerId),
     }),
     db.query.rows.findFirst({
       where: eq(rows.id, rowId),
@@ -45,26 +45,26 @@ export const getLayerPoint = async ({
     throw new Error("Row not found");
   }
 
-  if (!pointLayer) {
-    throw new Error("Point layer not found");
+  if (!markerLayer) {
+    throw new Error("Marker layer not found");
   }
 
   return {
     rowId,
-    pointLayerId,
-    title: row.cells.find((c) => c.columnId === pointLayer.titleColumnId),
+    markerLayerId,
+    title: row.cells.find((c) => c.columnId === markerLayer.titleColumnId),
     description: row.cells.find(
-      (c) => c.columnId === pointLayer.descriptionColumnId,
+      (c) => c.columnId === markerLayer.descriptionColumnId,
     ),
-    location: row.cells.find((c) => c.columnId === pointLayer.pointColumnId),
-    icon: row.cells.find((c) => c.columnId === pointLayer.iconColumnId),
+    location: row.cells.find((c) => c.columnId === markerLayer.pointColumnId),
+    icon: row.cells.find((c) => c.columnId === markerLayer.iconColumnId),
     cells: row.cells.filter(
       (c) =>
-        c.columnId !== pointLayer.pointColumnId &&
-        c.columnId !== pointLayer.titleColumnId &&
-        c.columnId !== pointLayer.descriptionColumnId,
+        c.columnId !== markerLayer.pointColumnId &&
+        c.columnId !== markerLayer.titleColumnId &&
+        c.columnId !== markerLayer.descriptionColumnId,
     ),
   };
 };
 
-export type GetLayerPoint = Awaited<ReturnType<typeof getLayerPoint>>;
+export type GetLayerMarker = Awaited<ReturnType<typeof getLayerMarker>>;

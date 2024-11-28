@@ -3,11 +3,12 @@
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { createContext, useContext, useEffect, useOptimistic } from "react";
 import type { GetLayerPoint } from "@mapform/backend/datalayer/get-layer-point";
+import type { GetLayerMarker } from "@mapform/backend/datalayer/get-layer-marker";
 import { useCreateQueryString } from "@mapform/lib/hooks/use-create-query-string";
 import type { ProjectWithPages } from "@mapform/backend/projects/get-project-with-pages";
 
 export interface ProjectContextProps {
-  layerPoint?: GetLayerPoint;
+  selectedFeature?: GetLayerPoint | GetLayerMarker;
   optimisticProjectWithPages: ProjectWithPages;
   updateProjectWithPages: (action: ProjectWithPages) => void;
 }
@@ -23,11 +24,11 @@ export const useProject = () => useContext(ProjectContext);
  */
 export function ProjectProvider({
   projectWithPages,
-  layerPoint,
+  selectedFeature,
   children,
 }: {
   projectWithPages: ProjectWithPages;
-  layerPoint?: GetLayerPoint;
+  selectedFeature?: GetLayerPoint | GetLayerMarker;
   children: React.ReactNode;
 }) {
   const router = useRouter();
@@ -66,7 +67,7 @@ export function ProjectProvider({
   return (
     <ProjectContext.Provider
       value={{
-        layerPoint,
+        selectedFeature,
         updateProjectWithPages,
         optimisticProjectWithPages,
       }}

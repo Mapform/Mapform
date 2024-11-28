@@ -16,7 +16,7 @@ import { useProject } from "../project-context";
 import { EditBar } from "./edit-bar";
 
 function Project() {
-  const { layerPoint } = useProject();
+  const { selectedFeature } = useProject();
   const { optimisticPage, optimisticPageData } = usePage();
 
   const { executeAsync: executeAsyncUpdatePage } = useAction(updatePageAction, {
@@ -91,7 +91,6 @@ function Project() {
     <div className="flex flex-1 justify-center overflow-hidden p-4">
       <div className="flex flex-1">
         <MapForm
-          activePoint={layerPoint}
           currentPage={optimisticPage}
           editable
           mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
@@ -131,6 +130,7 @@ function Project() {
             });
           }}
           pageData={optimisticPageData}
+          selectedFeature={selectedFeature}
         >
           <EditBar
             key={optimisticPage.id}

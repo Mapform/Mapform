@@ -141,7 +141,7 @@ export function Map({
 
   return (
     <MapForm
-      activePoint={layerPoint}
+      selectedFeature={layerPoint}
       currentPage={currentPage}
       defaultFormValues={pageValues}
       mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}

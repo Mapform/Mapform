@@ -12,6 +12,7 @@ import type { FormSchema } from "@mapform/lib/schemas/form-step-schema";
 import { useSetQueryString } from "@mapform/lib/hooks/use-set-query-string";
 import { CustomBlockContext } from "@mapform/blocknote";
 import type { GetLayerPoint } from "@mapform/backend/datalayer/get-layer-point";
+import type { GetLayerMarker } from "@mapform/backend/datalayer/get-layer-marker";
 import type { UpsertCellSchema } from "@mapform/backend/cells/upsert-cell/schema";
 import {
   type CustomBlock,
@@ -44,7 +45,7 @@ interface MapFormProps {
   onStepSubmit?: (data: Record<string, string>) => void;
   onImageUpload?: (file: File) => Promise<string | null>;
   pageData?: PageData;
-  activePoint?: GetLayerPoint;
+  selectedFeature?: GetLayerPoint | GetLayerMarker;
   // editFields?: {
   //   AddLocationDropdown: (input: { data: any }) => JSX.Element;
   // };
@@ -56,7 +57,7 @@ export function MapForm({
   onLoad,
   pageData,
   children,
-  activePoint,
+  selectedFeature,
   currentPage,
   onIconChange,
   onStepSubmit,
@@ -179,43 +180,46 @@ export function MapForm({
     ],
   );
 
-  const activePointContent = useMemo(() => {
-    if (!activePoint) {
+  const selectedFeatureContent = useMemo(() => {
+    if (!selectedFeature) {
       return null;
     }
 
     return (
       <Blocknote
-        description={activePoint.description?.richtextCell?.value ?? undefined}
+        description={
+          selectedFeature.description?.richtextCell?.value ?? undefined
+        }
         editable={editable}
+        icon={selectedFeature.icon?.iconCell?.value}
         isPage
-        key={currentPage.id}
+        key={selectedFeature.rowId}
         onDescriptionChange={(val) => {
-          activePoint.description &&
+          selectedFeature.description &&
             onPoiCellChange &&
             onPoiCellChange({
               type: "richtext",
-              rowId: activePoint.rowId,
-              columnId: activePoint.description.columnId,
+              rowId: selectedFeature.rowId,
+              columnId: selectedFeature.description.columnId,
               // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Fix this
               value: val as any,
             });
         }}
         onPrev={onPrev}
         onTitleChange={(val) => {
-          activePoint.title &&
+          selectedFeature.title &&
             onPoiCellChange &&
             onPoiCellChange({
               type: "string",
-              rowId: activePoint.rowId,
-              columnId: activePoint.title.columnId,
+              rowId: selectedFeature.rowId,
+              columnId: selectedFeature.title.columnId,
               value: val,
             });
         }}
-        title={activePoint.title?.stringCell?.value}
+        title={selectedFeature.title?.stringCell?.value}
       />
     );
-  }, [activePoint, currentPage, editable, onPoiCellChange, onPrev]);
+  }, [selectedFeature, editable, onPoiCellChange, onPrev]);
 
   return (
     <Form {...form}>
@@ -279,13 +283,13 @@ export function MapForm({
                   className="rounded-t-xl shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]"
                   exit={{ y: 200, opacity: 0 }}
                   initial={{ y: 200, opacity: 0 }}
-                  key={activePoint?.rowId}
+                  key={selectedFeature?.rowId}
                   layoutScroll
                   style={{
                     overflow: "scroll",
                   }}
                 >
-                  {!activePoint ? (
+                  {!selectedFeature ? (
                     <MobileDrawer open={drawerOpen} withPadding={editable}>
                       {pageContent}
                     </MobileDrawer>
@@ -294,14 +298,14 @@ export function MapForm({
                       onClose={() => {
                         window.scrollTo({ top: 0, behavior: "smooth" });
                         setQueryString({
-                          key: "layer_point",
+                          key: "feature",
                           value: null,
                         });
                       }}
-                      open={Boolean(activePoint)}
+                      open={Boolean(selectedFeature)}
                       withPadding={editable}
                     >
-                      {activePointContent}
+                      {selectedFeatureContent}
                     </MobileDrawer>
                   )}
                 </motion.div>
@@ -320,14 +324,14 @@ export function MapForm({
                 <DesktopDrawer
                   onClose={() => {
                     setQueryString({
-                      key: "layer_point",
+                      key: "feature",
                       value: null,
                     });
                   }}
-                  open={Boolean(activePoint)}
+                  open={Boolean(selectedFeature)}
                   withPadding={editable}
                 >
-                  {activePointContent}
+                  {selectedFeatureContent}
                 </DesktopDrawer>
               </>
             )}

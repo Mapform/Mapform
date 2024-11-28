@@ -18,6 +18,7 @@ export const upsertLayerSchema = z.object({
       pointColumnId: insertPointLayerSchema.shape.pointColumnId,
       titleColumnId: insertPointLayerSchema.shape.titleColumnId,
       descriptionColumnId: insertPointLayerSchema.shape.descriptionColumnId,
+      iconColumnId: insertMarkerLayerSchema.shape.iconColumnId,
     })
     .optional(),
   markerProperties: z

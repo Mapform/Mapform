@@ -11,6 +11,7 @@ import { ProjectProvider } from "./project-context";
 import Project from "./project";
 import { PageProvider } from "./page-context";
 import { Drawer } from "./drawer";
+import { getLayermarkerAction } from "~/data/datalayer/get-layer-marker";
 
 const fetchProjectWithPages = cache(async (id: string) => {
   const projectWithPagesResponse = await getProjectWithPagesAction({
@@ -68,25 +69,31 @@ const fetchPageData = cache(async (id?: string) => {
   return pageData;
 });
 
-const fetchLayerPoint = cache(async (param?: string) => {
+const fetchSelectedFeature = cache(async (param?: string) => {
   if (!param) {
     return undefined;
   }
 
-  const [rowId, pointLayerId] = param.split("_");
+  const [type, rowId, subLayerId] = param.split("_");
 
-  if (!rowId || !pointLayerId) {
+  if (!type || !rowId || !subLayerId) {
     return undefined;
   }
 
-  const layerPointResponse = await getLayerPointAction({
-    rowId,
-    pointLayerId,
-  });
+  const featureResponse =
+    type === "point"
+      ? await getLayerPointAction({
+          rowId,
+          pointLayerId: subLayerId,
+        })
+      : await getLayermarkerAction({
+          rowId,
+          markerLayerId: subLayerId,
+        });
 
-  const layerPoint = layerPointResponse?.data;
+  const feature = featureResponse?.data;
 
-  return layerPoint;
+  return feature;
 });
 
 export default async function ProjectPage(props: {
@@ -94,7 +101,7 @@ export default async function ProjectPage(props: {
   searchParams?: Promise<{
     page?: string;
     layer?: string;
-    layer_point?: string;
+    feature?: string;
   }>;
 }) {
   const searchParams = await props.searchParams;
@@ -106,13 +113,13 @@ export default async function ProjectPage(props: {
     pageWithLayers,
     availableDatasets,
     pageData,
-    layerPoint,
+    selectedFeature,
   ] = await Promise.all([
     fetchProjectWithPages(pId),
     fetchPageWithLayers(searchParams?.page),
     fetchAvailableDatasets(params.wsSlug, params.tsSlug),
     fetchPageData(searchParams?.page),
-    fetchLayerPoint(searchParams?.layer_point),
+    fetchSelectedFeature(searchParams?.feature),
   ]);
 
   if (!projectWithPages) {
@@ -135,8 +142,8 @@ export default async function ProjectPage(props: {
     <div className="flex flex-1 flex-col overflow-hidden p-4">
       <MapformProvider>
         <ProjectProvider
-          layerPoint={layerPoint}
           projectWithPages={projectWithPages}
+          selectedFeature={selectedFeature}
         >
           <PageProvider
             availableDatasets={availableDatasets ?? []}
