@@ -84,7 +84,11 @@ export function Item({ page }: ItemProps) {
                   setActivePage(page);
                 }}
               >
-                <FileIcon />
+                {page.icon ? (
+                  <span className="text-lg">{page.icon}</span>
+                ) : (
+                  <FileIcon />
+                )}
                 <span className="truncate text-sm">
                   {page.title || "Untitled"}
                 </span>
