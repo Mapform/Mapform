@@ -193,7 +193,7 @@ export function MapForm({
         editable={editable}
         icon={selectedFeature.icon?.iconCell?.value}
         isPage
-        key={selectedFeature.rowId}
+        key={`${currentPage.id}-${selectedFeature.rowId}`}
         onDescriptionChange={(val) => {
           selectedFeature.description &&
             onPoiCellChange &&
@@ -203,6 +203,17 @@ export function MapForm({
               columnId: selectedFeature.description.columnId,
               // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Fix this
               value: val as any,
+            });
+        }}
+        onIconChange={(val) => {
+          console.log(11111, selectedFeature.icon);
+          selectedFeature.icon &&
+            onPoiCellChange &&
+            onPoiCellChange({
+              type: "icon",
+              rowId: selectedFeature.rowId,
+              columnId: selectedFeature.icon.columnId,
+              value: val,
             });
         }}
         onPrev={onPrev}
@@ -219,7 +230,7 @@ export function MapForm({
         title={selectedFeature.title?.stringCell?.value}
       />
     );
-  }, [selectedFeature, editable, onPoiCellChange, onPrev]);
+  }, [selectedFeature, currentPage, editable, onPoiCellChange, onPrev]);
 
   return (
     <Form {...form}>
