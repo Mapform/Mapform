@@ -155,7 +155,7 @@ export function Map({
    * BIND EVENT HANDLERS
    */
   useEffect(() => {
-    const handleMapClick = (
+    const handleLayerClick = (
       e: mapboxgl.MapMouseEvent & {
         features?: mapboxgl.MapboxGeoJSONFeature[] | undefined;
       } & mapboxgl.EventData,
@@ -179,14 +179,14 @@ export function Map({
 
     if (map) {
       // BIND EVENT HANDLERS
-      map.on("click", "points", handleMapClick);
+      map.on("click", "points", handleLayerClick);
       map.on("mouseenter", "points", handleMouseEnterPoints);
       map.on("mouseleave", "points", handleMouseLeavePoints);
     }
 
     return () => {
       if (map) {
-        map.off("click", "points", handleMapClick);
+        map.off("click", "points", handleLayerClick);
         map.off("mouseenter", "points", handleMouseEnterPoints);
         map.off("mouseleave", "points", handleMouseLeavePoints);
       }
@@ -229,25 +229,6 @@ export function Map({
     }
   }, [map, pointGeojson]);
 
-  /**
-   * ADD MARKERS
-   */
-  // useEffect(() => {
-  //   if (!map) {
-  //     return;
-  //   }
-
-  //   const markers = markerGeojson.features.map((feature) =>
-  //     new mapboxgl.Marker().setLngLat(feature.geometry.coordinates),
-  //   );
-
-  //   markers.forEach((marker) => marker.addTo(map));
-
-  //   return () => {
-  //     markers.forEach((marker) => marker.remove());
-  //   };
-  // }, [map, markerGeojson]);
-
   return (
     <div
       className={cn("relative flex-1 overflow-hidden", {
@@ -255,6 +236,7 @@ export function Map({
       })}
       ref={mapContainer}
     >
+      {/* MARKERS */}
       {markerGeojson.features.map((feature) => (
         <SearchLocationMarker
           key={feature.properties?.id}
@@ -264,12 +246,20 @@ export function Map({
             icon: "city",
           }}
         >
-          <div
-            className="flex size-10 items-center justify-center rounded-full border-2 border-white text-lg shadow-md"
-            style={{ backgroundColor: feature.properties.color }}
+          <button
+            className="flex size-10 cursor-pointer items-center justify-center rounded-full border-2 border-white text-lg shadow-md"
+            onClick={() => {
+              isMobile && window.scrollTo({ top: 0, behavior: "smooth" });
+              setQueryString({
+                key: "layer_point",
+                value: `${feature.properties.rowId}_${feature.properties.pointLayerId}`,
+              });
+            }}
+            style={{ backgroundColor: feature.properties?.color }}
+            type="button"
           >
-            {feature.properties.icon}
-          </div>
+            {feature.properties?.icon}
+          </button>
         </SearchLocationMarker>
       ))}
       {children}
