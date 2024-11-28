@@ -72,19 +72,7 @@ export const selectBooleanCellSchema = createSelectSchema(booleanCells);
 export type InsertBooleanCell = z.infer<typeof insertBooleanCellSchema>;
 export type BooleanCell = typeof booleanCells.$inferSelect;
 
-/**
- * ICON CELLS
- */
-export const insertIconCellSchema = createInsertSchema(iconsCells, {
-  value: z
-    .string()
-    .min(1, "Emoji is required")
-    .max(2, "Only a single emoji is allowed") // Emojis might be more than one character in length
-    .refine((value) => emojiRegex().test(value), {
-      message: "Must be a single emoji",
-    }),
-});
-export const selectIconCellSchema = createSelectSchema(iconsCells, {
+const iconSchemaExtension = {
   value: z.string().superRefine((val, ctx) => {
     const matchedEmojiCount = (val.match(emojiRegex()) || []).length;
 
@@ -95,7 +83,19 @@ export const selectIconCellSchema = createSelectSchema(iconsCells, {
       });
     }
   }),
-});
+};
+
+/**
+ * ICON CELLS
+ */
+export const insertIconCellSchema = createInsertSchema(
+  iconsCells,
+  iconSchemaExtension,
+);
+export const selectIconCellSchema = createSelectSchema(
+  iconsCells,
+  iconSchemaExtension,
+);
 export type InsertIconCell = z.infer<typeof insertIconCellSchema>;
 export type IconCell = typeof iconsCells.$inferSelect;
 
