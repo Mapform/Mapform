@@ -1,3 +1,4 @@
+import emojiRegex from "emoji-regex";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import { z } from "zod";
 import type { DocumentContent } from "@mapform/blocknote";
@@ -74,24 +75,26 @@ export type BooleanCell = typeof booleanCells.$inferSelect;
 /**
  * ICON CELLS
  */
-const emojiRegex = /\p{Emoji_Presentation}/u;
 export const insertIconCellSchema = createInsertSchema(iconsCells, {
   value: z
     .string()
     .min(1, "Emoji is required")
     .max(2, "Only a single emoji is allowed") // Emojis might be more than one character in length
-    .refine((value) => emojiRegex.test(value), {
+    .refine((value) => emojiRegex().test(value), {
       message: "Must be a single emoji",
     }),
 });
 export const selectIconCellSchema = createSelectSchema(iconsCells, {
-  value: z
-    .string()
-    .min(1, "Emoji is required")
-    .max(2, "Only a single emoji is allowed") // Emojis might be more than one character in length
-    .refine((value) => emojiRegex.test(value), {
-      message: "Must be a single emoji",
-    }),
+  value: z.string().superRefine((val, ctx) => {
+    const matchedEmojiCount = (val.match(emojiRegex()) || []).length;
+
+    if (matchedEmojiCount !== 1) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Must be a single emoji",
+      });
+    }
+  }),
 });
 export type InsertIconCell = z.infer<typeof insertIconCellSchema>;
 export type IconCell = typeof iconsCells.$inferSelect;

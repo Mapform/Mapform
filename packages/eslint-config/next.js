@@ -56,5 +56,6 @@ module.exports = {
     "@typescript-eslint/explicit-function-return-type": "off",
     "@typescript-eslint/no-unsafe-call": "off",
     "prefer-named-capture-group": "off",
+    "@typescript-eslint/prefer-regexp-exec": "off",
   },
 };

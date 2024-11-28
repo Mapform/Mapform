@@ -1,10 +1,9 @@
+import emojiRegex from "emoji-regex";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import type { DocumentContent } from "@mapform/blocknote";
 import { z } from "zod";
 import { blockSchema } from "../blocks/validation";
 import { pages } from "./schema";
-
-const emojiRegex = /\p{Emoji_Presentation}/u;
 
 const schemaExtension = {
   position: z.number().int().gt(0),
@@ -18,9 +17,15 @@ const schemaExtension = {
   icon: z
     .string()
     .min(1, "Emoji is required")
-    .max(2, "Only a single emoji is allowed") // Emojis might be more than one character in length
-    .refine((value) => emojiRegex.test(value), {
-      message: "Must be a single emoji",
+    .superRefine((val, ctx) => {
+      const matchedEmojiCount = (val.match(emojiRegex()) || []).length;
+
+      if (matchedEmojiCount !== 1) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Must be a single emoji",
+        });
+      }
     }),
 };
 

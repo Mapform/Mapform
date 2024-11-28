@@ -206,7 +206,6 @@ export function MapForm({
             });
         }}
         onIconChange={(val) => {
-          console.log(11111, selectedFeature.icon);
           selectedFeature.icon &&
             onPoiCellChange &&
             onPoiCellChange({
