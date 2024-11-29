@@ -13,7 +13,7 @@ import { PageList } from "./page-list";
 
 export function Drawer() {
   const isClient = useIsClient();
-  const { optimisticPage } = usePage();
+  const { currentPage } = usePage();
 
   if (!isClient) return null;
 
@@ -27,7 +27,7 @@ export function Drawer() {
         </ResizablePanel>
         <ResizableHandle />
         <ResizablePanel>
-          <LayerList key={optimisticPage?.id} />
+          <LayerList key={currentPage?.id} />
         </ResizablePanel>
       </ResizablePanelGroup>
     </Portal.Root>

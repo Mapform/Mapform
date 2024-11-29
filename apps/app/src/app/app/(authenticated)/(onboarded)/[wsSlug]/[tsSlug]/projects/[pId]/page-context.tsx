@@ -1,19 +1,33 @@
 "use client";
 
-import { createContext, useContext, useOptimistic } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useOptimistic,
+  useState,
+} from "react";
 import { useMapform } from "@mapform/mapform";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import type { PageData } from "@mapform/backend/datalayer/get-page-data";
 import type { ListTeamspaceDatasets } from "@mapform/backend/datasets/list-teamspace-datasets";
 import type { PageWithLayers } from "@mapform/backend/pages/get-page-with-layers";
+import { debounce } from "@mapform/lib/lodash";
+import { toast } from "@mapform/ui/components/toaster";
+import { useAction } from "next-safe-action/hooks";
+import { upsertCellAction } from "~/data/cells/upsert-cell";
+import { uploadImageAction } from "~/data/images";
+import { updatePageAction } from "~/data/pages/update-page";
 
 export interface PageContextProps {
   isEditingPage: boolean;
-  optimisticPage: PageWithLayers | undefined;
-  optimisticPageData: PageData | undefined;
+  currentPage: PageWithLayers | undefined;
+  currentPageData: PageData | undefined;
   availableDatasets: ListTeamspaceDatasets;
-  updatePage: (action: PageWithLayers) => void;
+  updatePage: (data: Partial<PageWithLayers>) => void;
+  updatePageOptimistically: (action: PageWithLayers) => void;
   updatePageData: (action: PageData) => void;
+  updatePageDataOptimistically: (action: PageData) => void;
   setActivePage: (
     page?: Pick<PageWithLayers, "id" | "center" | "zoom" | "pitch" | "bearing">,
   ) => void;
@@ -40,20 +54,66 @@ export function PageProvider({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const [optimisticPage, updatePage] = useOptimistic<
-    PageWithLayers | undefined,
-    PageWithLayers
-  >(pageWithLayers, (state, newPage) => ({
-    ...state,
-    ...newPage,
-  }));
-  const [optimisticPageData, updatePageData] = useOptimistic<
+  /**
+   * Optimistic state for the page. NOTE: We cannot use React useOptimistic
+   * because we are also debouncing our server action calls. Instead, it's
+   * simple to useState, then revert to prev state inside the onError callback.
+   */
+  const [currentPage, setCurrentPage] = useState<PageWithLayers | undefined>(
+    pageWithLayers,
+  );
+  const [currentPageData, updatePageDataOptimistically] = useOptimistic<
     PageData | undefined,
     PageData
   >(pageData, (state, newPageData) => ({
     ...state,
     ...newPageData,
   }));
+
+  /**
+   * Actions
+   */
+  const { execute: executeUpdatePage } = useAction(updatePageAction, {
+    onError: (response) => {
+      if (response.error.validationErrors || response.error.serverError) {
+        toast({
+          title: "Uh oh! Something went wrong.",
+          description: "An error occurred while updating the page.",
+        });
+      }
+
+      // On error we reset the prev page state
+      setCurrentPage(pageWithLayers);
+    },
+  });
+  const { executeAsync: executeAsyncUploadImage } = useAction(
+    uploadImageAction,
+    {
+      onError: (response) => {
+        if (response.error.validationErrors) {
+          toast({
+            title: "Uh oh! Something went wrong.",
+            description: response.error.validationErrors.image?._errors?.[0],
+          });
+
+          return;
+        }
+
+        toast({
+          title: "Uh oh! Something went wrong.",
+          description: "An error occurred while uploading the image.",
+        });
+      },
+    },
+  );
+  const { execute: executeUpsertCell } = useAction(upsertCellAction, {
+    onError: () => {
+      toast({
+        title: "Uh oh! Something went wrong.",
+        description: "We we unable to update your content. Please try again.",
+      });
+    },
+  });
 
   const isEditingPage = Boolean(searchParams.get("edit"));
 
@@ -106,17 +166,78 @@ export function PageProvider({
     router.push(`${pathname}${query}`);
   };
 
+  const upsertCell = debounce(executeUpsertCell, 2000);
+  const uploadImage = debounce(executeAsyncUploadImage, 2000);
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- Ignore
+  const _updatePage = useCallback(
+    debounce(
+      (
+        pageId: string,
+        {
+          content,
+          title,
+          icon,
+          zoom,
+          pitch,
+          bearing,
+          center,
+        }: Partial<PageWithLayers>,
+      ) => {
+        if (!currentPage) {
+          return;
+        }
+
+        const payload = {
+          id: pageId,
+          ...(content !== undefined && { content }),
+          ...(title !== undefined && { title }),
+          ...(icon !== undefined && { icon }),
+          ...(zoom !== undefined && { zoom }),
+          ...(pitch !== undefined && { pitch }),
+          ...(bearing !== undefined && { bearing }),
+          ...(center !== undefined && { center }),
+        };
+
+        executeUpdatePage(payload);
+      },
+      2000,
+      {
+        leading: true,
+        trailing: true,
+      },
+    ),
+    [],
+  );
+
+  const updatePage = (data: PageWithLayers) => {
+    if (!currentPage) {
+      return;
+    }
+
+    _updatePage(currentPage.id, data);
+
+    setCurrentPage({
+      ...currentPage,
+      ...data,
+    });
+  };
+
   return (
     <PageContext.Provider
       value={{
-        updatePage,
+        // upsertCell,
+        uploadImage,
         setEditMode,
         isEditingPage,
         setActivePage,
-        optimisticPage,
-        updatePageData,
+        currentPage,
+        // updatePageData,
+        updatePageDataOptimistically,
+        updatePage,
+        updatePageOptimistically: setCurrentPage,
         availableDatasets,
-        optimisticPageData,
+        currentPageData,
       }}
     >
       {children}

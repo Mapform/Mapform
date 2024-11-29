@@ -59,7 +59,7 @@ interface ItemProps {
 }
 
 export function Item({ layer }: ItemProps) {
-  const { optimisticPage, updatePage } = usePage();
+  const { currentPage, updatePage } = usePage();
   const { optimisticProjectWithPages } = useProject();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [layerPopoverOpen, setLayerPopoverOpen] = useState(false);
@@ -70,9 +70,9 @@ export function Item({ layer }: ItemProps) {
   const isLastPage = optimisticProjectWithPages.pages.length <= 1;
 
   const handleDelete = () => {
-    if (!optimisticPage) return;
+    if (!currentPage) return;
 
-    const newLayers = optimisticPage.layersToPages.filter(
+    const newLayers = currentPage.layersToPages.filter(
       (pageLayer) => pageLayer.layerId !== layer.id,
     );
 
@@ -82,27 +82,27 @@ export function Item({ layer }: ItemProps) {
 
     startTransition(() => {
       updatePage({
-        ...optimisticPage,
+        ...currentPage,
         layersToPages: newLayers,
       });
     });
   };
 
   const handleRemoveFromPage = () => {
-    if (!optimisticPage) return;
+    if (!currentPage) return;
 
-    const newLayers = optimisticPage.layersToPages.filter(
+    const newLayers = currentPage.layersToPages.filter(
       (pageLayer) => pageLayer.layerId !== layer.id,
     );
 
     executeDeletePageLayer({
       layerId: layer.id,
-      pageId: optimisticPage.id,
+      pageId: currentPage.id,
     });
 
     startTransition(() => {
       updatePage({
-        ...optimisticPage,
+        ...currentPage,
         layersToPages: newLayers,
       });
     });

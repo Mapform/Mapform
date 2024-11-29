@@ -42,12 +42,12 @@ export const LayerPopoverContent = forwardRef<
 >(({ layerToEdit, initialName, onSuccess, ...props }, ref) => {
   const { ...rest } = usePage();
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- It's set
-  const optimisticPage = rest.optimisticPage!;
+  const currentPage = rest.currentPage!;
 
   const form = useForm<UpsertLayerSchema>({
     defaultValues: {
       name: initialName ?? "",
-      pageId: optimisticPage.id,
+      pageId: currentPage.id,
       ...layerToEdit,
       pointProperties:
         layerToEdit?.type === "point" && layerToEdit.pointLayer

@@ -32,12 +32,12 @@ interface ItemProps {
 }
 
 export function Item({ page }: ItemProps) {
-  const { setActivePage, optimisticPage } = usePage();
+  const { setActivePage, currentPage } = usePage();
   const { optimisticProjectWithPages, updateProjectWithPages } = useProject();
   const { execute: executeDeletePage } = useAction(deletePageAction);
 
   const isLastPage = optimisticProjectWithPages.pages.length <= 1;
-  const isActive = page.id === optimisticPage?.id;
+  const isActive = page.id === currentPage?.id;
 
   const handleDelete = () => {
     if (isLastPage) return;

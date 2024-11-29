@@ -35,10 +35,7 @@ export function ProjectProvider({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const createQueryString = useCreateQueryString();
-  // Selected page view
   const page = searchParams.get("page");
-  // Selected editable page
-  // const e = searchParams.get("e");
 
   const [optimisticProjectWithPages, updateProjectWithPages] = useOptimistic<
     ProjectWithPages,

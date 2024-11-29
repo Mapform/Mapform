@@ -2,13 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { MapForm } from "@mapform/mapform";
-import { toast } from "@mapform/ui/components/toaster";
 import type { CustomBlock } from "@mapform/blocknote";
-import { useAction } from "next-safe-action/hooks";
-import { debounce } from "@mapform/lib/lodash";
-import { uploadImageAction } from "~/data/images";
-import { updatePageAction } from "~/data/pages/update-page";
-import { upsertCellAction } from "~/data/cells/upsert-cell";
 import { compressImage } from "~/lib/compress-image";
 import { env } from "~/env.mjs";
 import { usePage } from "../page-context";
@@ -17,88 +11,24 @@ import { EditBar } from "./edit-bar";
 
 function Project() {
   const { selectedFeature } = useProject();
-  const { optimisticPage, optimisticPageData } = usePage();
+  const { currentPage, currentPageData, updatePage } = usePage();
 
-  const { executeAsync: executeAsyncUpdatePage } = useAction(updatePageAction, {
-    onError: (response) => {
-      if (response.error.validationErrors || response.error.serverError) {
-        toast({
-          title: "Uh oh! Something went wrong.",
-          description: "An error occurred while updating the page.",
-        });
-      }
-    },
-  });
-  const { execute: executeUpsertCell } = useAction(upsertCellAction);
-  const { executeAsync: executeAsyncUploadImage } = useAction(
-    uploadImageAction,
-    {
-      onError: (response) => {
-        if (response.error.validationErrors) {
-          toast({
-            title: "Uh oh! Something went wrong.",
-            description: response.error.validationErrors.image?._errors?.[0],
-          });
-
-          return;
-        }
-
-        toast({
-          title: "Uh oh! Something went wrong.",
-          description: "An error occurred while uploading the image.",
-        });
-      },
-    },
-  );
-
-  if (!optimisticPage) {
+  if (!currentPage) {
     return null;
   }
-
-  const updatePageServer = async ({
-    content,
-    title,
-    icon,
-    zoom,
-    pitch,
-    bearing,
-    center,
-  }: {
-    content?: { content: CustomBlock[] };
-    title?: string;
-    icon?: string | null;
-    zoom?: number;
-    pitch?: number;
-    bearing?: number;
-    center?: { x: number; y: number };
-  }) => {
-    await executeAsyncUpdatePage({
-      id: optimisticPage.id,
-      ...(content !== undefined && { content }),
-      ...(title !== undefined && { title }),
-      ...(icon !== undefined && { icon }),
-      ...(zoom !== undefined && { zoom }),
-      ...(pitch !== undefined && { pitch }),
-      ...(bearing !== undefined && { bearing }),
-      ...(center !== undefined && { center }),
-    });
-  };
-
-  const debouncedUpdatePageServer = debounce(updatePageServer, 2000);
-  const debouncedUpsertCell = debounce(executeUpsertCell, 2000);
 
   return (
     <div className="flex flex-1 justify-center overflow-hidden p-4">
       <div className="flex flex-1">
         <MapForm
-          currentPage={optimisticPage}
+          currentPage={currentPage}
           editable
           mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
           onDescriptionChange={(content: { content: CustomBlock[] }) => {
-            void debouncedUpdatePageServer({ content });
+            updatePage({ content });
           }}
           onIconChange={(icon: string | null) => {
-            void debouncedUpdatePageServer({
+            updatePage({
               icon,
             });
           }}
@@ -113,29 +43,26 @@ function Project() {
             const formData = new FormData();
             formData.append("image", compressedFile);
 
-            const response = await executeAsyncUploadImage(formData);
+            // const response = await executeAsyncUploadImage(formData);
 
-            if (response?.serverError) {
-              return null;
-            }
+            // if (response?.serverError) {
+            //   return null;
+            // }
 
-            return response?.data?.url || null;
+            // return response?.data?.url || null;
           }}
           onPoiCellChange={(cell) => {
-            debouncedUpsertCell(cell);
+            // upsertCell(cell);
           }}
           onTitleChange={(title: string) => {
-            void debouncedUpdatePageServer({
+            updatePage({
               title,
             });
           }}
-          pageData={optimisticPageData}
+          pageData={currentPageData}
           selectedFeature={selectedFeature}
         >
-          <EditBar
-            key={optimisticPage.id}
-            updatePageServer={updatePageServer}
-          />
+          <EditBar key={currentPage.id} />
         </MapForm>
       </div>
     </div>
