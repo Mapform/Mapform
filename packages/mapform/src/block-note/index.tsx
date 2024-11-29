@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import {
   schema,
   type CustomBlock,
@@ -40,10 +39,6 @@ export function Blocknote({
   onDescriptionChange,
   locationEditorProps,
 }: BlocknoteProps) {
-  const [uncontrolledTitle, setUncontrolledTitle] = useState<string>(
-    title || "",
-  );
-
   const editor = useCreateBlockNote({
     initialContent: description?.content,
     placeholders: {
@@ -98,7 +93,6 @@ export function Blocknote({
         {editable ? (
           <AutoSizeTextArea
             onChange={(val) => {
-              setUncontrolledTitle(val);
               onTitleChange && onTitleChange(val);
             }}
             onEnter={() => {
@@ -107,7 +101,7 @@ export function Blocknote({
               }
               editor.focus();
             }}
-            value={uncontrolledTitle}
+            value={title ?? ""}
           />
         ) : (
           <h1 className="mb-2 w-full border-0 p-0 text-3xl font-bold">

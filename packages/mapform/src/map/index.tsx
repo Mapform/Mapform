@@ -1,5 +1,5 @@
 /* eslint-disable import/no-named-as-default-member -- It's cool yo */
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import mapboxgl from "mapbox-gl";
 import { cn } from "@mapform/lib/classnames";
 import type { FeatureCollection } from "geojson";
@@ -7,6 +7,7 @@ import type { ViewState } from "@mapform/map-utils/types";
 import type { PageData } from "@mapform/backend/datalayer/get-page-data";
 import { usePrevious } from "@mapform/lib/hooks/use-previous";
 import { useSetQueryString } from "@mapform/lib/hooks/use-set-query-string";
+import useSupercluster from "use-supercluster";
 import { useMapform } from "../context";
 import { SearchLocationMarker } from "./search-location-marker";
 
@@ -38,6 +39,10 @@ export function Map({
   isMobile,
 }: MapProps) {
   const setQueryString = useSetQueryString();
+  const [bounds, setBounds] = useState<
+    [number, number, number, number] | undefined
+  >(undefined);
+  const [zoom, setZoom] = useState<number>(initialViewState.zoom);
   const { map, setMap, mapContainer, mapContainerBounds } = useMapform();
   // Condition in usePrevious resolves issue where map padding is not updated on first render
   const prevMapPadding = usePrevious(map ? mapPadding : undefined);
@@ -79,11 +84,21 @@ export function Map({
           rowId: feature.rowId,
           icon: feature.icon,
           pointLayerId: feature.pointLayerId,
+          cluster: false,
         },
       })),
     }),
     [pageData?.markerData],
   );
+
+  const { clusters, supercluster } = useSupercluster({
+    points: markerGeojson.features,
+    bounds,
+    zoom,
+    options: { radius: 100, minZoom: 0, maxZoom: 20 },
+  });
+
+  console.log(11111, clusters, supercluster);
 
   useEffect(() => {
     if (!accessToken) {
@@ -136,6 +151,9 @@ export function Map({
     // eslint-disable-next-line react-hooks/exhaustive-deps -- Just run on initial render
   }, []);
 
+  /**
+   * React to drawer padding change
+   */
   useEffect(() => {
     if (map && JSON.stringify(prevMapPadding) !== JSON.stringify(mapPadding)) {
       map.easeTo({
@@ -145,6 +163,9 @@ export function Map({
     }
   }, [map, mapPadding, prevMapPadding]);
 
+  /**
+   * Resize to window effect
+   */
   useEffect(() => {
     if (map) {
       map.resize();
@@ -152,7 +173,7 @@ export function Map({
   }, [map, mapContainerBounds]);
 
   /**
-   * BIND EVENT HANDLERS
+   * Bind event handlers
    */
   useEffect(() => {
     const handleLayerClick = (
@@ -176,19 +197,45 @@ export function Map({
     const handleMouseLeavePoints = () => {
       map && (map.getCanvas().style.cursor = "");
     };
+    const handleBoundsChange = () => {
+      if (!map) {
+        return;
+      }
+
+      const newBounds = map.getBounds().toArray().flat() as [
+        number,
+        number,
+        number,
+        number,
+      ];
+
+      setBounds(newBounds);
+    };
+    const handleZoomChange = () => {
+      if (!map) {
+        return;
+      }
+
+      setZoom(map.getZoom());
+    };
 
     if (map) {
       // BIND EVENT HANDLERS
       map.on("click", "points", handleLayerClick);
       map.on("mouseenter", "points", handleMouseEnterPoints);
       map.on("mouseleave", "points", handleMouseLeavePoints);
+      map.on("move", handleBoundsChange);
+      map.on("zoom", handleZoomChange);
     }
 
     return () => {
       if (map) {
+        // CLEANUP EVENT HANDLERS
         map.off("click", "points", handleLayerClick);
         map.off("mouseenter", "points", handleMouseEnterPoints);
         map.off("mouseleave", "points", handleMouseLeavePoints);
+        map.off("move", handleBoundsChange);
+        map.off("zoom", handleZoomChange);
       }
     };
   }, [map, setQueryString, isMobile]);
@@ -237,31 +284,70 @@ export function Map({
       ref={mapContainer}
     >
       {/* MARKERS */}
-      {markerGeojson.features.map((feature) => (
-        <SearchLocationMarker
-          key={feature.properties?.id}
-          searchLocationMarker={{
-            latitude: feature.geometry.coordinates[1],
-            longitude: feature.geometry.coordinates[0],
-            icon: "city",
-          }}
-        >
-          <button
-            className="flex size-10 cursor-pointer items-center justify-center rounded-full border-2 border-white text-lg shadow-md"
-            onClick={() => {
-              isMobile && window.scrollTo({ top: 0, behavior: "smooth" });
-              setQueryString({
-                key: "feature",
-                value: `marker_${feature.properties.rowId}_${feature.properties.pointLayerId}`,
-              });
+      {clusters.map((cluster) => {
+        const [longitude, latitude] = cluster.geometry.coordinates;
+
+        if (!longitude || !latitude) {
+          return null;
+        }
+
+        console.log(11111, cluster);
+
+        if (cluster.properties?.cluster) {
+          return (
+            <SearchLocationMarker
+              key={cluster.id}
+              searchLocationMarker={{
+                latitude,
+                longitude,
+                icon: "city",
+              }}
+            >
+              <button
+                className="flex size-20 cursor-pointer items-center justify-center rounded-full border-2 border-white text-lg shadow-md"
+                // onClick={() => {
+                //   isMobile && window.scrollTo({ top: 0, behavior: "smooth" });
+                //   setQueryString({
+                //     key: "feature",
+                //     value: `marker_${cluster.properties.rowId}_${cluster.properties.pointLayerId}`,
+                //   });
+                // }}
+                style={{ backgroundColor: cluster.properties.color }}
+                type="button"
+              >
+                {/* {cluster.properties?.icon} */}
+                Cluster!
+              </button>
+            </SearchLocationMarker>
+          );
+        }
+
+        return (
+          <SearchLocationMarker
+            key={cluster.properties?.id}
+            searchLocationMarker={{
+              latitude,
+              longitude,
+              icon: "city",
             }}
-            style={{ backgroundColor: feature.properties?.color }}
-            type="button"
           >
-            {feature.properties?.icon}
-          </button>
-        </SearchLocationMarker>
-      ))}
+            <button
+              className="flex size-10 cursor-pointer items-center justify-center rounded-full border-2 border-white text-lg shadow-md"
+              onClick={() => {
+                isMobile && window.scrollTo({ top: 0, behavior: "smooth" });
+                setQueryString({
+                  key: "feature",
+                  value: `marker_${cluster.properties.rowId}_${cluster.properties.pointLayerId}`,
+                });
+              }}
+              style={{ backgroundColor: cluster.properties?.color }}
+              type="button"
+            >
+              {cluster.properties?.icon}
+            </button>
+          </SearchLocationMarker>
+        );
+      })}
       {children}
     </div>
   );

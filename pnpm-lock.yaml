@@ -619,6 +619,12 @@ importers:
       next:
         specifier: 14.1.3
         version: 14.1.3(react-dom@19.0.0-rc-66855b96-20241106(react@19.0.0-rc-66855b96-20241106))(react@19.0.0-rc-66855b96-20241106)
+      supercluster:
+        specifier: ^8.0.1
+        version: 8.0.1
+      use-supercluster:
+        specifier: ^1.2.0
+        version: 1.2.0(react@19.0.0-rc-66855b96-20241106)(supercluster@8.0.1)
       zod:
         specifier: 3.23.8
         version: 3.23.8
@@ -650,6 +656,9 @@ importers:
       '@types/react-dom':
         specifier: npm:types-react-dom@19.0.0-rc.1
         version: types-react-dom@19.0.0-rc.1
+      '@types/supercluster':
+        specifier: ^7.1.3
+        version: 7.1.3
       eslint:
         specifier: ^8.57.0
         version: 8.57.0
@@ -3598,6 +3607,9 @@ packages:
 
   '@types/semver@7.5.0':
     resolution: {integrity: sha512-G8hZ6XJiHnuhQKR7ZmysCeJWE08o8T0AXtk5darsCaTVsYZhhgUrq53jizaR2FvsoeCwJhlmwTjkXBY5Pn/ZHw==}
+
+  '@types/supercluster@7.1.3':
+    resolution: {integrity: sha512-Z0pOY34GDFl3Q6hUFYf3HkTwKEE02e7QgtJppBt+beEAxnyOpJua+voGFvxINBHa06GwLFFym7gRPY2SiKIfIA==}
 
   '@types/unique-slug@4.0.0':
     resolution: {integrity: sha512-cvJ1laJ9b6Oy/hLkHF2biJ6bpxRy6D3ZEzxdZFzdp1Mkurt4G41RqBH+I8SE17QZYiNppxsR+gHsMRrRYEvncw==}
@@ -7523,6 +7535,12 @@ packages:
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0
 
+  use-deep-compare-effect@1.8.1:
+    resolution: {integrity: sha512-kbeNVZ9Zkc0RFGpfMN3MNfaKNvcLNyxOAAd9O4CBZ+kCBXXscn9s/4I+8ytUER4RDpEYs5+O6Rs4PqiZ+rHr5Q==}
+    engines: {node: '>=10', npm: '>=6'}
+    peerDependencies:
+      react: '>=16.13'
+
   use-isomorphic-layout-effect@1.1.2:
     resolution: {integrity: sha512-49L8yCO3iGT/ZF9QttjwLF/ZD9Iwto5LnH5LmEdk/6cFmXddqi2ulF0edxTwjj+7mqvpVVGQWvbXZdn32wRSHA==}
     peerDependencies:
@@ -7550,6 +7568,12 @@ packages:
     peerDependenciesMeta:
       '@types/react':
         optional: true
+
+  use-supercluster@1.2.0:
+    resolution: {integrity: sha512-yVsFzcsLqoa4w43r+RcYGLEWfhpeUaGu86dVFA+iDSw6eVwFSrzKN6g1GhcLZg7/BdKm2Gp1fRZ+O+AgcbqF+w==}
+    peerDependencies:
+      react: '>=16'
+      supercluster: '>=8'
 
   use-sync-external-store@1.2.2:
     resolution: {integrity: sha512-PElTlVMwpblvbNqQ82d2n6RjStvdSoNe9FG28kNfz3WiXilJm4DdNkEzRhCZuIDwY8U08WVihhGR5iRqAwfDiw==}
@@ -10273,6 +10297,10 @@ snapshots:
       csstype: 3.1.2
 
   '@types/semver@7.5.0': {}
+
+  '@types/supercluster@7.1.3':
+    dependencies:
+      '@types/geojson': 7946.0.14
 
   '@types/unique-slug@4.0.0': {}
 
@@ -15190,6 +15218,12 @@ snapshots:
     dependencies:
       react: 19.0.0-rc-66855b96-20241106
 
+  use-deep-compare-effect@1.8.1(react@19.0.0-rc-66855b96-20241106):
+    dependencies:
+      '@babel/runtime': 7.24.0
+      dequal: 2.0.3
+      react: 19.0.0-rc-66855b96-20241106
+
   use-isomorphic-layout-effect@1.1.2(react@19.0.0-rc-66855b96-20241106)(types-react@19.0.0-rc.1):
     dependencies:
       react: 19.0.0-rc-66855b96-20241106
@@ -15210,6 +15244,13 @@ snapshots:
       tslib: 2.6.2
     optionalDependencies:
       '@types/react': types-react@19.0.0-rc.1
+
+  use-supercluster@1.2.0(react@19.0.0-rc-66855b96-20241106)(supercluster@8.0.1):
+    dependencies:
+      dequal: 2.0.3
+      react: 19.0.0-rc-66855b96-20241106
+      supercluster: 8.0.1
+      use-deep-compare-effect: 1.8.1(react@19.0.0-rc-66855b96-20241106)
 
   use-sync-external-store@1.2.2(react@19.0.0-rc-66855b96-20241106):
     dependencies:
