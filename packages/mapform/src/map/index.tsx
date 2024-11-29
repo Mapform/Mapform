@@ -11,6 +11,7 @@ import type Supercluster from "supercluster";
 import useSupercluster from "use-supercluster";
 import { useMapform } from "../context";
 import { SearchLocationMarker } from "./search-location-marker";
+import { AnimatePresence, motion } from "motion/react";
 
 const accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
 
@@ -32,6 +33,8 @@ interface MarkerPointFeature {
   rowId: string;
   pointLayerId: string;
   point_count: number;
+  icons: string[] | undefined;
+  colors: string[] | undefined;
 }
 
 /**
@@ -108,17 +111,16 @@ export function Map({
       color: item.color,
       rowId: item.rowId,
       pointLayerId: item.pointLayerId,
+      cluster: item.cluster,
+      point_count: item.point_count,
+      id: item.id,
+      icons: undefined,
+      colors: undefined,
     }),
     [],
   );
   const reduceClusterItems = useCallback(
-    (
-      acc: MarkerPointFeature & {
-        icons: string[] | undefined;
-        colors: string[] | undefined;
-      },
-      cur: MarkerPointFeature,
-    ) => {
+    (acc: MarkerPointFeature, cur: MarkerPointFeature) => {
       acc.icons = acc.icons ? [...acc.icons, cur.icon] : [cur.icon];
       acc.colors = acc.colors ? [...acc.colors, cur.color] : [cur.color];
     },
@@ -134,7 +136,6 @@ export function Map({
       radius: 100,
       minZoom: 0,
       maxZoom: 20,
-      // @ts-expect-error -- The map object is known to not have the same types as the reduce object. We can ignore
       map: mapClusterItems,
       reduce: reduceClusterItems,
     },
@@ -323,78 +324,129 @@ export function Map({
       ref={mapContainer}
     >
       {/* MARKERS */}
-      {clusters.map((cluster) => {
-        const [longitude, latitude] = cluster.geometry.coordinates;
+      <AnimatePresence>
+        {clusters.map((cluster) => {
+          const [longitude, latitude] = cluster.geometry.coordinates;
 
-        if (!longitude || !latitude) {
-          return null;
-        }
+          if (!longitude || !latitude) {
+            return null;
+          }
 
-        if (cluster.properties.cluster) {
-          const { point_count: pointCount } = cluster.properties;
-          const size = 40 + Math.log2(pointCount) * 10;
+          if (cluster.properties.cluster) {
+            const { point_count: pointCount } = cluster.properties;
+            // NOTE: I should be able to generate the size using the point count
+            // divided by the points in view. However, for some reason points that
+            // are not in view (on the other side of the globe) will register as
+            // in view. Until that is resolves this technique will have to do.
+            const size = 40 + Math.log2(pointCount) * 10;
+            const allFeatures = [
+              cluster.properties.icon,
+              ...(cluster.properties.icons ?? []),
+            ];
+            const emojiOccurrences = allFeatures
+              .filter(notEmpty)
+              .reduce<Record<string, number>>((acc, cur) => {
+                acc[cur] = (acc[cur] || 0) + 1;
+                return acc;
+              }, {});
+            const sortedEmojiOccurrences = Object.entries(
+              emojiOccurrences,
+            ).sort((a, b) => b[1] - a[1]);
+
+            const highestCountEmoji = sortedEmojiOccurrences[0]?.[0];
+            const secondHighestCountEmoji = sortedEmojiOccurrences[1]?.[0];
+            const remainaingEmojiCount =
+              pointCount -
+                (highestCountEmoji ? 1 : 0) -
+                (secondHighestCountEmoji ? 1 : 0) || undefined;
+            const clusterItemsArray = [
+              highestCountEmoji,
+              secondHighestCountEmoji,
+              remainaingEmojiCount,
+            ].filter(notEmpty);
+
+            return (
+              <SearchLocationMarker
+                key={cluster.id}
+                searchLocationMarker={{
+                  latitude,
+                  longitude,
+                  icon: "city",
+                }}
+              >
+                <motion.button
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 20 }}
+                  className="relative flex cursor-pointer items-center justify-center rounded-full border-2 border-white text-lg shadow-md"
+                  style={{
+                    width: `${size}px`,
+                    height: `${size}px`,
+                    backgroundColor: cluster.properties.color,
+                  }}
+                  // onClick={() => {
+                  //   isMobile && window.scrollTo({ top: 0, behavior: "smooth" });
+                  //   setQueryString({
+                  //     key: "feature",
+                  //     value: `marker_${cluster.properties.rowId}_${cluster.properties.pointLayerId}`,
+                  //   });
+                  // }}
+                  type="button"
+                >
+                  {clusterItemsArray.map((val, index) => (
+                    <div
+                      className={cn("absolute", {
+                        "left-2 top-2": index === 0,
+                        "right-0 top-0": index === 1,
+                        "bottom-0 right-0": index === 2,
+                      })}
+                      key={val}
+                    >
+                      {val}
+                    </div>
+                  ))}
+                </motion.button>
+              </SearchLocationMarker>
+            );
+          }
 
           return (
             <SearchLocationMarker
-              key={cluster.id}
+              key={cluster.properties.id}
               searchLocationMarker={{
                 latitude,
                 longitude,
                 icon: "city",
               }}
             >
-              <button
-                className="flex cursor-pointer items-center justify-center rounded-full border-2 border-white text-lg shadow-md"
-                style={{
-                  width: `${size}px`,
-                  height: `${size}px`,
-                  backgroundColor: cluster.properties.color,
+              <motion.button
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 20 }}
+                className="flex size-10 cursor-pointer items-center justify-center rounded-full border-2 border-white text-lg shadow-md"
+                onClick={() => {
+                  isMobile && window.scrollTo({ top: 0, behavior: "smooth" });
+                  setQueryString({
+                    key: "feature",
+                    value: `marker_${cluster.properties.rowId}_${cluster.properties.pointLayerId}`,
+                  });
                 }}
-                // onClick={() => {
-                //   isMobile && window.scrollTo({ top: 0, behavior: "smooth" });
-                //   setQueryString({
-                //     key: "feature",
-                //     value: `marker_${cluster.properties.rowId}_${cluster.properties.pointLayerId}`,
-                //   });
-                // }}
+                style={{ backgroundColor: cluster.properties.color }}
                 type="button"
               >
-                {/* {cluster.properties?.icon} */}
-                Cluster!
-              </button>
+                {cluster.properties.icon}
+              </motion.button>
             </SearchLocationMarker>
           );
-        }
-
-        return (
-          <SearchLocationMarker
-            key={cluster.properties.id}
-            searchLocationMarker={{
-              latitude,
-              longitude,
-              icon: "city",
-            }}
-          >
-            <button
-              className="flex size-10 cursor-pointer items-center justify-center rounded-full border-2 border-white text-lg shadow-md"
-              onClick={() => {
-                isMobile && window.scrollTo({ top: 0, behavior: "smooth" });
-                setQueryString({
-                  key: "feature",
-                  value: `marker_${cluster.properties.rowId}_${cluster.properties.pointLayerId}`,
-                });
-              }}
-              style={{ backgroundColor: cluster.properties.color }}
-              type="button"
-            >
-              {cluster.properties.icon}
-            </button>
-          </SearchLocationMarker>
-        );
-      })}
+        })}
+      </AnimatePresence>
       {children}
     </div>
   );
+}
+
+function notEmpty<TValue>(value: TValue | null | undefined): value is TValue {
+  return value !== null && value !== undefined;
 }
 
 export { SearchLocationMarker };
