@@ -1,5 +1,5 @@
 /* eslint-disable import/no-named-as-default-member -- It's cool yo */
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import mapboxgl from "mapbox-gl";
 import { cn } from "@mapform/lib/classnames";
 import type { FeatureCollection } from "geojson";
@@ -7,6 +7,7 @@ import type { ViewState } from "@mapform/map-utils/types";
 import type { PageData } from "@mapform/backend/datalayer/get-page-data";
 import { usePrevious } from "@mapform/lib/hooks/use-previous";
 import { useSetQueryString } from "@mapform/lib/hooks/use-set-query-string";
+import type Supercluster from "supercluster";
 import useSupercluster from "use-supercluster";
 import { useMapform } from "../context";
 import { SearchLocationMarker } from "./search-location-marker";
@@ -21,6 +22,16 @@ interface MapProps {
   initialViewState: ViewState;
   children?: React.ReactNode;
   isMobile?: boolean;
+}
+
+interface MarkerPointFeature {
+  id: string;
+  cluster: boolean;
+  icon: string;
+  color: string;
+  rowId: string;
+  pointLayerId: string;
+  point_count: number;
 }
 
 /**
@@ -91,14 +102,43 @@ export function Map({
     [pageData?.markerData],
   );
 
-  const { clusters, supercluster } = useSupercluster({
-    points: markerGeojson.features,
+  const mapClusterItems = useCallback(
+    (item: MarkerPointFeature) => ({
+      icon: item.icon,
+      color: item.color,
+      rowId: item.rowId,
+      pointLayerId: item.pointLayerId,
+    }),
+    [],
+  );
+  const reduceClusterItems = useCallback(
+    (
+      acc: MarkerPointFeature & {
+        icons: string[] | undefined;
+        colors: string[] | undefined;
+      },
+      cur: MarkerPointFeature,
+    ) => {
+      acc.icons = acc.icons ? [...acc.icons, cur.icon] : [cur.icon];
+      acc.colors = acc.colors ? [...acc.colors, cur.color] : [cur.color];
+    },
+    [],
+  );
+
+  const { clusters } = useSupercluster({
+    points:
+      markerGeojson.features as Supercluster.PointFeature<MarkerPointFeature>[],
     bounds,
     zoom,
-    options: { radius: 100, minZoom: 0, maxZoom: 20 },
+    options: {
+      radius: 100,
+      minZoom: 0,
+      maxZoom: 20,
+      // @ts-expect-error -- The map object is known to not have the same types as the reduce object. We can ignore
+      map: mapClusterItems,
+      reduce: reduceClusterItems,
+    },
   });
-
-  console.log(11111, clusters, supercluster);
 
   useEffect(() => {
     if (!accessToken) {
@@ -224,8 +264,8 @@ export function Map({
       map.on("click", "points", handleLayerClick);
       map.on("mouseenter", "points", handleMouseEnterPoints);
       map.on("mouseleave", "points", handleMouseLeavePoints);
-      map.on("move", handleBoundsChange);
-      map.on("zoom", handleZoomChange);
+      map.on("moveend", handleBoundsChange);
+      map.on("zoomend", handleZoomChange);
     }
 
     return () => {
@@ -234,8 +274,8 @@ export function Map({
         map.off("click", "points", handleLayerClick);
         map.off("mouseenter", "points", handleMouseEnterPoints);
         map.off("mouseleave", "points", handleMouseLeavePoints);
-        map.off("move", handleBoundsChange);
-        map.off("zoom", handleZoomChange);
+        map.off("moveend", handleBoundsChange);
+        map.off("zoomend", handleZoomChange);
       }
     };
   }, [map, setQueryString, isMobile]);
@@ -275,7 +315,6 @@ export function Map({
       });
     }
   }, [map, pointGeojson]);
-
   return (
     <div
       className={cn("relative flex-1 overflow-hidden", {
@@ -291,9 +330,10 @@ export function Map({
           return null;
         }
 
-        console.log(11111, cluster);
+        if (cluster.properties.cluster) {
+          const { point_count: pointCount } = cluster.properties;
+          const size = 40 + Math.log2(pointCount) * 10;
 
-        if (cluster.properties?.cluster) {
           return (
             <SearchLocationMarker
               key={cluster.id}
@@ -304,7 +344,12 @@ export function Map({
               }}
             >
               <button
-                className="flex size-20 cursor-pointer items-center justify-center rounded-full border-2 border-white text-lg shadow-md"
+                className="flex cursor-pointer items-center justify-center rounded-full border-2 border-white text-lg shadow-md"
+                style={{
+                  width: `${size}px`,
+                  height: `${size}px`,
+                  backgroundColor: cluster.properties.color,
+                }}
                 // onClick={() => {
                 //   isMobile && window.scrollTo({ top: 0, behavior: "smooth" });
                 //   setQueryString({
@@ -312,7 +357,6 @@ export function Map({
                 //     value: `marker_${cluster.properties.rowId}_${cluster.properties.pointLayerId}`,
                 //   });
                 // }}
-                style={{ backgroundColor: cluster.properties.color }}
                 type="button"
               >
                 {/* {cluster.properties?.icon} */}
@@ -324,7 +368,7 @@ export function Map({
 
         return (
           <SearchLocationMarker
-            key={cluster.properties?.id}
+            key={cluster.properties.id}
             searchLocationMarker={{
               latitude,
               longitude,
@@ -340,10 +384,10 @@ export function Map({
                   value: `marker_${cluster.properties.rowId}_${cluster.properties.pointLayerId}`,
                 });
               }}
-              style={{ backgroundColor: cluster.properties?.color }}
+              style={{ backgroundColor: cluster.properties.color }}
               type="button"
             >
-              {cluster.properties?.icon}
+              {cluster.properties.icon}
             </button>
           </SearchLocationMarker>
         );
