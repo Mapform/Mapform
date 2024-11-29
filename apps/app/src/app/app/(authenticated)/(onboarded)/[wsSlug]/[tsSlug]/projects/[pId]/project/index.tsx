@@ -11,7 +11,8 @@ import { EditBar } from "./edit-bar";
 
 function Project() {
   const { selectedFeature } = useProject();
-  const { currentPage, currentPageData, updatePage } = usePage();
+  const { currentPage, currentPageData, updatePage, uploadImage, upsertCell } =
+    usePage();
 
   if (!currentPage) {
     return null;
@@ -25,10 +26,11 @@ function Project() {
           editable
           mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
           onDescriptionChange={(content: { content: CustomBlock[] }) => {
-            updatePage({ content });
+            updatePage({ id: currentPage.id, content });
           }}
           onIconChange={(icon: string | null) => {
             updatePage({
+              id: currentPage.id,
               icon,
             });
           }}
@@ -43,19 +45,20 @@ function Project() {
             const formData = new FormData();
             formData.append("image", compressedFile);
 
-            // const response = await executeAsyncUploadImage(formData);
+            const response = await uploadImage(formData);
 
-            // if (response?.serverError) {
-            //   return null;
-            // }
+            if (response?.serverError) {
+              return null;
+            }
 
-            // return response?.data?.url || null;
+            return response?.data?.url || null;
           }}
           onPoiCellChange={(cell) => {
-            // upsertCell(cell);
+            upsertCell(cell);
           }}
           onTitleChange={(title: string) => {
             updatePage({
+              id: currentPage.id,
               title,
             });
           }}

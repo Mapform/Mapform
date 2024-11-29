@@ -7,11 +7,11 @@ import { getPageWithLayersAction } from "~/data/pages/get-page-with-layers";
 import { getProjectWithPagesAction } from "~/data/projects/get-project-with-pages";
 import { listTeamspaceDatasetsAction } from "~/data/datasets/list-teamspace-datasets";
 import { getLayerPointAction } from "~/data/datalayer/get-layer-point";
+import { getLayermarkerAction } from "~/data/datalayer/get-layer-marker";
 import { ProjectProvider } from "./project-context";
 import Project from "./project";
 import { PageProvider } from "./page-context";
 import { Drawer } from "./drawer";
-import { getLayermarkerAction } from "~/data/datalayer/get-layer-marker";
 
 const fetchProjectWithPages = cache(async (id: string) => {
   const projectWithPagesResponse = await getProjectWithPagesAction({

@@ -267,6 +267,7 @@ function EditBarInner({ currentPage }: EditBarInnerProps) {
                       bearing !== undefined
                     ) {
                       updatePage({
+                        id: currentPage.id,
                         center: {
                           x: center.lng,
                           y: center.lat,

@@ -1,20 +1,18 @@
+/* eslint-disable react-hooks/exhaustive-deps -- Callback doesn't work well with debounce */
 "use client";
 
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useOptimistic,
-  useState,
-} from "react";
+import type { Dispatch, SetStateAction } from "react";
+import { createContext, useCallback, useContext, useState } from "react";
 import { useMapform } from "@mapform/mapform";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import type { PageData } from "@mapform/backend/datalayer/get-page-data";
 import type { ListTeamspaceDatasets } from "@mapform/backend/datasets/list-teamspace-datasets";
 import type { PageWithLayers } from "@mapform/backend/pages/get-page-with-layers";
-import { debounce } from "@mapform/lib/lodash";
+import { debounce, type DebouncedFunc } from "@mapform/lib/lodash";
 import { toast } from "@mapform/ui/components/toaster";
+import type { UpdatePageSchema } from "@mapform/backend/pages/update-page/schema";
 import { useAction } from "next-safe-action/hooks";
+import type { InferUseActionHookReturn } from "next-safe-action/hooks";
 import { upsertCellAction } from "~/data/cells/upsert-cell";
 import { uploadImageAction } from "~/data/images";
 import { updatePageAction } from "~/data/pages/update-page";
@@ -24,10 +22,16 @@ export interface PageContextProps {
   currentPage: PageWithLayers | undefined;
   currentPageData: PageData | undefined;
   availableDatasets: ListTeamspaceDatasets;
-  updatePage: (data: Partial<PageWithLayers>) => void;
-  updatePageOptimistically: (action: PageWithLayers) => void;
-  updatePageData: (action: PageData) => void;
-  updatePageDataOptimistically: (action: PageData) => void;
+  updatePage: InferUseActionHookReturn<typeof updatePageAction>["execute"];
+  updatePageOptimistically: Dispatch<
+    SetStateAction<PageWithLayers | undefined>
+  >;
+  uploadImage: DebouncedFunc<
+    InferUseActionHookReturn<typeof uploadImageAction>["executeAsync"]
+  >;
+  upsertCell: DebouncedFunc<
+    InferUseActionHookReturn<typeof upsertCellAction>["execute"]
+  >;
   setActivePage: (
     page?: Pick<PageWithLayers, "id" | "center" | "zoom" | "pitch" | "bearing">,
   ) => void;
@@ -62,13 +66,6 @@ export function PageProvider({
   const [currentPage, setCurrentPage] = useState<PageWithLayers | undefined>(
     pageWithLayers,
   );
-  const [currentPageData, updatePageDataOptimistically] = useOptimistic<
-    PageData | undefined,
-    PageData
-  >(pageData, (state, newPageData) => ({
-    ...state,
-    ...newPageData,
-  }));
 
   /**
    * Actions
@@ -166,10 +163,8 @@ export function PageProvider({
     router.push(`${pathname}${query}`);
   };
 
-  const upsertCell = debounce(executeUpsertCell, 2000);
-  const uploadImage = debounce(executeAsyncUploadImage, 2000);
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- Ignore
+  const upsertCell = useCallback(debounce(executeUpsertCell, 2000), []);
+  const uploadImage = useCallback(debounce(executeAsyncUploadImage, 2000), []);
   const _updatePage = useCallback(
     debounce(
       (
@@ -210,7 +205,7 @@ export function PageProvider({
     [],
   );
 
-  const updatePage = (data: PageWithLayers) => {
+  const updatePage = (data: UpdatePageSchema) => {
     if (!currentPage) {
       return;
     }
@@ -226,18 +221,16 @@ export function PageProvider({
   return (
     <PageContext.Provider
       value={{
-        // upsertCell,
+        upsertCell,
         uploadImage,
         setEditMode,
         isEditingPage,
         setActivePage,
         currentPage,
-        // updatePageData,
-        updatePageDataOptimistically,
         updatePage,
         updatePageOptimistically: setCurrentPage,
         availableDatasets,
-        currentPageData,
+        currentPageData: pageData,
       }}
     >
       {children}
