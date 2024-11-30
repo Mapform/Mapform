@@ -127,7 +127,7 @@ export function Map({
     [],
   );
 
-  const { clusters } = useSupercluster({
+  const { clusters, supercluster } = useSupercluster({
     points:
       markerGeojson.features as Supercluster.PointFeature<MarkerPointFeature>[],
     bounds,
@@ -338,7 +338,7 @@ export function Map({
             // divided by the points in view. However, for some reason points that
             // are not in view (on the other side of the globe) will register as
             // in view. Until that is resolves this technique will have to do.
-            const size = 40 + Math.log2(pointCount) * 10;
+            const size = 50 + Math.log2(pointCount) * 20;
             const allFeatures = [
               cluster.properties.icon,
               ...(cluster.properties.icons ?? []),
@@ -352,7 +352,13 @@ export function Map({
             const sortedEmojiOccurrences = Object.entries(
               emojiOccurrences,
             ).sort((a, b) => b[1] - a[1]);
-
+            const expansionZoom =
+              supercluster &&
+              cluster.id &&
+              Math.min(
+                supercluster.getClusterExpansionZoom(Number(cluster.id)),
+                17,
+              );
             const highestCountEmoji = sortedEmojiOccurrences[0]?.[0];
             const secondHighestCountEmoji = sortedEmojiOccurrences[1]?.[0];
             const remainaingEmojiCount =
@@ -375,35 +381,30 @@ export function Map({
                 }}
               >
                 <motion.button
-                  initial={{ opacity: 0, y: -20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 20 }}
                   className="relative flex cursor-pointer items-center justify-center rounded-full border-2 border-white text-lg shadow-md"
+                  exit={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: -20 }}
+                  onClick={() => {
+                    if (!expansionZoom || !map) {
+                      return;
+                    }
+
+                    map.easeTo({
+                      zoom: expansionZoom,
+                      center: [longitude, latitude],
+                      duration: 750,
+                    });
+                  }}
                   style={{
                     width: `${size}px`,
                     height: `${size}px`,
                     backgroundColor: cluster.properties.color,
                   }}
-                  // onClick={() => {
-                  //   isMobile && window.scrollTo({ top: 0, behavior: "smooth" });
-                  //   setQueryString({
-                  //     key: "feature",
-                  //     value: `marker_${cluster.properties.rowId}_${cluster.properties.pointLayerId}`,
-                  //   });
-                  // }}
                   type="button"
                 >
-                  {clusterItemsArray.map((val, index) => (
-                    <div
-                      className={cn("absolute", {
-                        "left-2 top-2": index === 0,
-                        "right-0 top-0": index === 1,
-                        "bottom-0 right-0": index === 2,
-                      })}
-                      key={val}
-                    >
-                      {val}
-                    </div>
+                  {clusterItemsArray.map((val) => (
+                    <div key={val}>{val}</div>
                   ))}
                 </motion.button>
               </SearchLocationMarker>
@@ -420,10 +421,10 @@ export function Map({
               }}
             >
               <motion.button
-                initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 20 }}
                 className="flex size-10 cursor-pointer items-center justify-center rounded-full border-2 border-white text-lg shadow-md"
+                exit={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: -20 }}
                 onClick={() => {
                   isMobile && window.scrollTo({ top: 0, behavior: "smooth" });
                   setQueryString({
