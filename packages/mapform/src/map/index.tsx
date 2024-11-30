@@ -382,7 +382,7 @@ export function Map({
               >
                 <motion.button
                   animate={{ opacity: 1, y: 0 }}
-                  className="relative flex cursor-pointer items-center justify-center rounded-full border-2 border-white text-lg shadow-md"
+                  className="relative flex cursor-pointer items-center justify-center rounded-full border-2 border-white bg-white/10 text-lg shadow-md backdrop-blur"
                   exit={{ opacity: 0, y: 20 }}
                   initial={{ opacity: 0, y: -20 }}
                   onClick={() => {
@@ -399,7 +399,7 @@ export function Map({
                   style={{
                     width: `${size}px`,
                     height: `${size}px`,
-                    backgroundColor: cluster.properties.color,
+                    // backgroundColor: cluster.properties.color,
                   }}
                   type="button"
                 >
