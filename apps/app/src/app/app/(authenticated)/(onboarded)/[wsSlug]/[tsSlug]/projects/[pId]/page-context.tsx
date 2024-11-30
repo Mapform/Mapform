@@ -2,13 +2,7 @@
 "use client";
 
 import type { Dispatch, SetStateAction } from "react";
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useOptimistic,
-  useState,
-} from "react";
+import { createContext, useCallback, useContext, useState } from "react";
 import { useMapform } from "@mapform/mapform";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import type { PageData } from "@mapform/backend/datalayer/get-page-data";
@@ -29,9 +23,7 @@ export interface PageContextProps {
   currentPageData: PageData | undefined;
   availableDatasets: ListTeamspaceDatasets;
   updatePage: InferUseActionHookReturn<typeof updatePageAction>["execute"];
-  updatePageOptimistically: Dispatch<
-    SetStateAction<PageWithLayers | undefined>
-  >;
+  setOptimisticPageState: Dispatch<SetStateAction<PageWithLayers | undefined>>;
   uploadImage: DebouncedFunc<
     InferUseActionHookReturn<typeof uploadImageAction>["executeAsync"]
   >;
@@ -64,22 +56,16 @@ export function PageProvider({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  /**
-   * Optimistic state for the page. NOTE: We cannot use React useOptimistic
-   * because we are also debouncing our server action calls. Instead, it's
-   * simple to useState, then revert to prev state inside the onError callback.
-   */
-  const [optimisticCurrentPage, setOptimisticCurrentPage] = useState<
+
+  // Need extra state due to debounce with optimistic state issue: https://www.reddit.com/r/nextjs/comments/1h2xt8w/how_to_use_debounced_server_actions_with/
+  // Optimistic state works as follows:
+  // 1. While in debounce delay interval, set optimisticPageState and isPendingDebounce to true
+  // 2. After debounce delay interval, execute server action. The server action isPending state will be true
+  // 3. When the server action resolves, isPendingDebounce is set to false
+  const [optimisticPageState, setOptimisticPageState] = useState<
     PageWithLayers | undefined
   >(pageWithLayers);
-  const [isPendingPageUpdate, setIsPendingPageUpdate] = useState(false);
-  const [_optimisticCurrentPage, _setOptimisticCurrentPage] = useOptimistic<
-    PageWithLayers | undefined,
-    PageWithLayers
-  >(pageWithLayers, (state, newPage) => ({
-    ...state,
-    ...newPage,
-  }));
+  const [isPendingDebounce, setIsPendingDebounce] = useState(false);
 
   /**
    * Actions
@@ -96,10 +82,10 @@ export function PageProvider({
         }
 
         // On error we reset the prev page state
-        setOptimisticCurrentPage(pageWithLayers);
+        setOptimisticPageState(pageWithLayers);
       },
       onSettled: () => {
-        setIsPendingPageUpdate(false);
+        setIsPendingDebounce(false);
       },
     },
   );
@@ -185,7 +171,7 @@ export function PageProvider({
 
   const upsertCell = useCallback(debounce(executeUpsertCell, 2000), []);
   const uploadImage = useCallback(debounce(executeAsyncUploadImage, 2000), []);
-  const _updatePage = useCallback(
+  const updatePageServer = useCallback(
     debounce(
       (
         pageId: string,
@@ -199,10 +185,6 @@ export function PageProvider({
           center,
         }: Partial<PageWithLayers>,
       ) => {
-        if (!pageWithLayers) {
-          return;
-        }
-
         const payload = {
           id: pageId,
           ...(content !== undefined && { content }),
@@ -218,7 +200,6 @@ export function PageProvider({
       },
       2000,
       {
-        // leading: true,
         trailing: true,
       },
     ),
@@ -230,25 +211,20 @@ export function PageProvider({
       return;
     }
 
-    setIsPendingPageUpdate(true);
+    setIsPendingDebounce(true);
 
-    _setOptimisticCurrentPage({
+    setOptimisticPageState({
       ...pageWithLayers,
+      ...optimisticPageState,
       ...data,
     });
-    setOptimisticCurrentPage({
-      ...pageWithLayers,
+    // Must pass the optimistic state here, otherwise some staged changes may be
+    // lost.
+    updatePageServer(pageWithLayers.id, {
+      ...optimisticPageState,
       ...data,
     });
-    _updatePage(pageWithLayers.id, data);
   };
-
-  console.log(
-    1111,
-    isPendingPageUpdate,
-    optimisticCurrentPage,
-    _optimisticCurrentPage,
-  );
 
   return (
     <PageContext.Provider
@@ -259,11 +235,11 @@ export function PageProvider({
         isEditingPage,
         setActivePage,
         currentPage:
-          isPendingPageUpdate || isPending
-            ? optimisticCurrentPage
-            : _optimisticCurrentPage,
+          // We need two pending states here to handle period during debounce
+          // and while action state is pending.
+          isPendingDebounce || isPending ? optimisticPageState : pageWithLayers,
         updatePage,
-        updatePageOptimistically: setOptimisticCurrentPage,
+        setOptimisticPageState,
         availableDatasets,
         currentPageData: pageData,
       }}

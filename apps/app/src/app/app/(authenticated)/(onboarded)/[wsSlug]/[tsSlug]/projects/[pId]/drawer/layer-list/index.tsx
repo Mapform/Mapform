@@ -50,7 +50,7 @@ import { Item } from "./item";
 
 export function LayerList() {
   const { optimisticProjectWithPages } = useProject();
-  const { currentPage, updatePageOptimistically } = usePage();
+  const { currentPage, setOptimisticPageState } = usePage();
   const [open, setOpen] = useState(false);
   const [layerPopoverOpen, setLayerPopoverOpen] = useState(false);
   const [query, setQuery] = useState<string>("");
@@ -100,7 +100,7 @@ export function LayerList() {
         overLayerIndex,
       );
 
-      updatePageOptimistically({
+      setOptimisticPageState({
         ...currentPage,
         layersToPages: currentPage.layersToPages.sort((a, b) => {
           const aIndex = newLayerList.findIndex((l) => l.id === a.layer.id);
