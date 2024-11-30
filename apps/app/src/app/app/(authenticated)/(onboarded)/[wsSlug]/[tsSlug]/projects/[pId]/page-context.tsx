@@ -2,7 +2,13 @@
 "use client";
 
 import type { Dispatch, SetStateAction } from "react";
-import { createContext, useCallback, useContext, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useOptimistic,
+  useState,
+} from "react";
 import { useMapform } from "@mapform/mapform";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import type { PageData } from "@mapform/backend/datalayer/get-page-data";
@@ -63,26 +69,40 @@ export function PageProvider({
    * because we are also debouncing our server action calls. Instead, it's
    * simple to useState, then revert to prev state inside the onError callback.
    */
-  const [currentPage, setCurrentPage] = useState<PageWithLayers | undefined>(
-    pageWithLayers,
-  );
+  const [optimisticCurrentPage, setOptimisticCurrentPage] = useState<
+    PageWithLayers | undefined
+  >(pageWithLayers);
+  const [isPendingPageUpdate, setIsPendingPageUpdate] = useState(false);
+  const [_optimisticCurrentPage, _setOptimisticCurrentPage] = useOptimistic<
+    PageWithLayers | undefined,
+    PageWithLayers
+  >(pageWithLayers, (state, newPage) => ({
+    ...state,
+    ...newPage,
+  }));
 
   /**
    * Actions
    */
-  const { execute: executeUpdatePage } = useAction(updatePageAction, {
-    onError: (response) => {
-      if (response.error.validationErrors || response.error.serverError) {
-        toast({
-          title: "Uh oh! Something went wrong.",
-          description: "An error occurred while updating the page.",
-        });
-      }
+  const { execute: executeUpdatePage, isPending } = useAction(
+    updatePageAction,
+    {
+      onError: (response) => {
+        if (response.error.validationErrors || response.error.serverError) {
+          toast({
+            title: "Uh oh! Something went wrong.",
+            description: "An error occurred while updating the page.",
+          });
+        }
 
-      // On error we reset the prev page state
-      setCurrentPage(pageWithLayers);
+        // On error we reset the prev page state
+        setOptimisticCurrentPage(pageWithLayers);
+      },
+      onSettled: () => {
+        setIsPendingPageUpdate(false);
+      },
     },
-  });
+  );
   const { executeAsync: executeAsyncUploadImage } = useAction(
     uploadImageAction,
     {
@@ -179,7 +199,7 @@ export function PageProvider({
           center,
         }: Partial<PageWithLayers>,
       ) => {
-        if (!currentPage) {
+        if (!pageWithLayers) {
           return;
         }
 
@@ -198,7 +218,7 @@ export function PageProvider({
       },
       2000,
       {
-        leading: true,
+        // leading: true,
         trailing: true,
       },
     ),
@@ -206,17 +226,29 @@ export function PageProvider({
   );
 
   const updatePage = (data: UpdatePageSchema) => {
-    if (!currentPage) {
+    if (!pageWithLayers) {
       return;
     }
 
-    _updatePage(currentPage.id, data);
+    setIsPendingPageUpdate(true);
 
-    setCurrentPage({
-      ...currentPage,
+    _setOptimisticCurrentPage({
+      ...pageWithLayers,
       ...data,
     });
+    setOptimisticCurrentPage({
+      ...pageWithLayers,
+      ...data,
+    });
+    _updatePage(pageWithLayers.id, data);
   };
+
+  console.log(
+    1111,
+    isPendingPageUpdate,
+    optimisticCurrentPage,
+    _optimisticCurrentPage,
+  );
 
   return (
     <PageContext.Provider
@@ -226,9 +258,12 @@ export function PageProvider({
         setEditMode,
         isEditingPage,
         setActivePage,
-        currentPage,
+        currentPage:
+          isPendingPageUpdate || isPending
+            ? optimisticCurrentPage
+            : _optimisticCurrentPage,
         updatePage,
-        updatePageOptimistically: setCurrentPage,
+        updatePageOptimistically: setOptimisticCurrentPage,
         availableDatasets,
         currentPageData: pageData,
       }}
