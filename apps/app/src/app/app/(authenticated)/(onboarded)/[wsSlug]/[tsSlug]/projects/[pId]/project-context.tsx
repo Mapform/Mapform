@@ -42,9 +42,7 @@ export interface ProjectContextProps {
   uploadImage: DebouncedFunc<
     InferUseActionHookReturn<typeof uploadImageAction>["executeAsync"]
   >;
-  upsertCell: DebouncedFunc<
-    InferUseActionHookReturn<typeof upsertCellAction>["execute"]
-  >;
+  upsertCell: InferUseActionHookReturn<typeof upsertCellAction>["execute"];
   setActivePage: (
     page?: Pick<PageWithLayers, "id" | "center" | "zoom" | "pitch" | "bearing">,
   ) => void;
@@ -59,11 +57,6 @@ export const useProject = () => useContext(ProjectContext);
 
 interface OptimisticPageState {
   state: PageWithLayers | undefined;
-  isPendingDebounce: boolean;
-}
-
-interface OptimisticPageDataState {
-  state: PageData | undefined;
   isPendingDebounce: boolean;
 }
 
@@ -109,20 +102,6 @@ export function ProjectProvider({
     },
   );
 
-  const [_pageDataState, _setPageDataState] = useReducer(
-    (
-      prev: OptimisticPageDataState,
-      action: Partial<OptimisticPageDataState>,
-    ) => ({
-      ...prev,
-      ...action,
-    }),
-    {
-      state: pageData,
-      isPendingDebounce: false,
-    },
-  );
-
   const [currentProject, updateCurrentProject] = useOptimistic<
     ProjectWithPages,
     ProjectWithPages
@@ -134,7 +113,7 @@ export function ProjectProvider({
   /**
    * Actions
    */
-  const { execute: executeUpdatePage, isPending } = useAction(
+  const { execute: executeUpdatePage, isPending: isPagePending } = useAction(
     updatePageAction,
     {
       onError: (response) => {
@@ -325,7 +304,7 @@ export function ProjectProvider({
         currentPage:
           // We need two pending states here to handle period during debounce
           // and while action state is pending.
-          _optimisticPageState.isPendingDebounce || isPending
+          _optimisticPageState.isPendingDebounce || isPagePending
             ? _optimisticPageState.state
             : pageWithLayers,
         updatePage,

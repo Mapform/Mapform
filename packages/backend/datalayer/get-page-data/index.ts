@@ -110,6 +110,8 @@ export const getPageData = async ({ pageId }: GetPageDataSchema) => {
         ...pc.point_cell,
         color: pc.color,
         rowId: pc.rowId,
+        cellId: pc.cell.id,
+        columnId: pc.cell.columnId,
         pointLayerId: pc.pointLayerId,
       })),
 
@@ -121,6 +123,8 @@ export const getPageData = async ({ pageId }: GetPageDataSchema) => {
         icon: pc.icon_cell?.value,
         color: pc.color,
         rowId: pc.rowId,
+        cellId: pc.cell.id,
+        columnId: pc.cell.columnId,
         pointLayerId: pc.pointLayerId,
       })),
   };

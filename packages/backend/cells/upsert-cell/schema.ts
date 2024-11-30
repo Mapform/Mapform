@@ -11,7 +11,10 @@ import {
   insertIconCellSchema,
 } from "@mapform/db/schema";
 
-const commonCellSchema = insertCellSchema;
+const commonCellSchema = insertCellSchema.pick({
+  rowId: true,
+  columnId: true,
+});
 
 export const upsertCellSchema = z.discriminatedUnion("type", [
   // String

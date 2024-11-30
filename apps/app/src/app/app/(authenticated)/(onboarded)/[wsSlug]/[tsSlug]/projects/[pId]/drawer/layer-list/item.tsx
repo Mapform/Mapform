@@ -78,6 +78,8 @@ export function Item({ layer }: ItemProps) {
       layerId: layer.id,
     });
 
+    // Note: it is not necessary to set isPendingDebounce to true here since we
+    // are not debouncing
     setOptimisticPageState({
       state: {
         ...currentPage,
@@ -98,6 +100,8 @@ export function Item({ layer }: ItemProps) {
       pageId: currentPage.id,
     });
 
+    // Note: it is not necessary to set isPendingDebounce to true here since we
+    // are not debouncing
     setOptimisticPageState({
       state: {
         ...currentPage,
