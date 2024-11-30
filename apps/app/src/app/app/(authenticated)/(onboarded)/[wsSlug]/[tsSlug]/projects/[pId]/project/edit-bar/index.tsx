@@ -47,7 +47,7 @@ export function EditBar() {
 
 function EditBarInner({ currentPage }: EditBarInnerProps) {
   const { map, setDrawerOpen, mapContainer, drawerOpen } = useMapform();
-  const { optimisticProjectWithPages, updatePage } = useProject();
+  const { currentProject, updatePage } = useProject();
   const [openSearch, setOpenSearch] = useState(false);
   const [isSelectingPoint, setIsSelectingPoint] = useState(false);
   const [selectingPinLocation, setSelectingPinLocation] = useState({
@@ -163,7 +163,7 @@ function EditBarInner({ currentPage }: EditBarInnerProps) {
     movedCoords.pitch !== currentPage.pitch ||
     movedCoords.bearing !== currentPage.bearing;
 
-  const pageLayers = optimisticProjectWithPages.pageLayers.filter(
+  const pageLayers = currentProject.pageLayers.filter(
     (layer) =>
       layer.pageId === currentPage.id &&
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- We do need this

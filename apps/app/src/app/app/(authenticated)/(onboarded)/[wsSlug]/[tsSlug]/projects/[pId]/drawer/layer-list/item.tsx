@@ -58,14 +58,14 @@ interface ItemProps {
 }
 
 export function Item({ layer }: ItemProps) {
-  const { optimisticProjectWithPages, currentPage, updatePage } = useProject();
+  const { currentProject, currentPage, updatePage } = useProject();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [layerPopoverOpen, setLayerPopoverOpen] = useState(false);
   const { execute: executeDeleteLayer } = useAction(deleteLayerAction);
   const { execute: executeDeletePageLayer } = useAction(deletePageLayerAction);
   const params = useParams<{ wsSlug: string; tsSlug: string; pId: string }>();
 
-  const isLastPage = optimisticProjectWithPages.pages.length <= 1;
+  const isLastPage = currentProject.pages.length <= 1;
 
   const handleDelete = () => {
     if (!currentPage) return;

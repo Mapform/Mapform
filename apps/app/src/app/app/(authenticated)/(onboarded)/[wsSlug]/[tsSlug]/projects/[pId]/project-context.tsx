@@ -30,7 +30,7 @@ import { updatePageAction } from "~/data/pages/update-page";
 
 export interface ProjectContextProps {
   selectedFeature?: GetLayerPoint | GetLayerMarker;
-  optimisticProjectWithPages: ProjectWithPages;
+  currentProject: ProjectWithPages;
   isEditingPage: boolean;
   currentPage: PageWithLayers | undefined;
   currentPageData: PageData | undefined;
@@ -47,7 +47,7 @@ export interface ProjectContextProps {
     page?: Pick<PageWithLayers, "id" | "center" | "zoom" | "pitch" | "bearing">,
   ) => void;
   setEditMode: (open: boolean) => void;
-  updateProjectWithPages: (action: ProjectWithPages) => void;
+  updateCurrentProject: (action: ProjectWithPages) => void;
 }
 
 export const ProjectContext = createContext<ProjectContextProps>(
@@ -91,7 +91,7 @@ export function ProjectProvider({
   >(pageWithLayers);
   const [isPendingDebounce, setIsPendingDebounce] = useState(false);
 
-  const [optimisticProjectWithPages, updateProjectWithPages] = useOptimistic<
+  const [currentProject, updateCurrentProject] = useOptimistic<
     ProjectWithPages,
     ProjectWithPages
   >(projectWithPages, (state, newProjectWithPages) => ({
@@ -141,6 +141,7 @@ export function ProjectProvider({
       },
     },
   );
+
   const { execute: executeUpsertCell } = useAction(upsertCellAction, {
     onError: () => {
       toast({
@@ -149,6 +150,22 @@ export function ProjectProvider({
       });
     },
   });
+
+  useEffect(() => {
+    if (projectWithPages.pages[0] && !page) {
+      router.push(
+        `${pathname}?${createQueryString("p", projectWithPages.pages[0].id)}`,
+      );
+    }
+  }, [page, projectWithPages.pages, pathname, router, createQueryString]);
+
+  useEffect(() => {
+    if (projectWithPages.pages[0] && !page) {
+      router.push(
+        `${pathname}?${createQueryString("page", projectWithPages.pages[0].id)}`,
+      );
+    }
+  }, [page, projectWithPages.pages, pathname, router, createQueryString]);
 
   const isEditingPage = Boolean(searchParams.get("edit"));
 
@@ -258,28 +275,12 @@ export function ProjectProvider({
     });
   };
 
-  useEffect(() => {
-    if (projectWithPages.pages[0] && !page) {
-      router.push(
-        `${pathname}?${createQueryString("p", projectWithPages.pages[0].id)}`,
-      );
-    }
-  }, [page, projectWithPages.pages, pathname, router, createQueryString]);
-
-  useEffect(() => {
-    if (projectWithPages.pages[0] && !page) {
-      router.push(
-        `${pathname}?${createQueryString("page", projectWithPages.pages[0].id)}`,
-      );
-    }
-  }, [page, projectWithPages.pages, pathname, router, createQueryString]);
-
   return (
     <ProjectContext.Provider
       value={{
         selectedFeature,
-        updateProjectWithPages,
-        optimisticProjectWithPages,
+        updateCurrentProject,
+        currentProject,
         upsertCell,
         uploadImage,
         setEditMode,

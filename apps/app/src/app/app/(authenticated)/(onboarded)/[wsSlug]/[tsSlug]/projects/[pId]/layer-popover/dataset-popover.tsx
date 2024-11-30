@@ -33,7 +33,7 @@ interface DatasetPopoverProps {
 export function DatasetPopover({ form }: DatasetPopoverProps) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
-  const { optimisticProjectWithPages, availableDatasets } = useProject();
+  const { currentProject, availableDatasets } = useProject();
   const { executeAsync } = useAction(createEmptyDatasetAction, {
     onSuccess: ({ data, input }) => {
       if (!data?.dataset) return;
@@ -125,7 +125,7 @@ export function DatasetPopover({ form }: DatasetPopoverProps) {
                       onSelect={async () => {
                         await executeAsync({
                           name: query,
-                          teamspaceId: optimisticProjectWithPages.teamspaceId,
+                          teamspaceId: currentProject.teamspaceId,
                           layerType: form.watch("type"),
                         });
                         setQuery("");

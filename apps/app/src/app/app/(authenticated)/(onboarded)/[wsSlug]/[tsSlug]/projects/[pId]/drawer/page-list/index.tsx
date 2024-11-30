@@ -32,10 +32,9 @@ import { Item } from "./item";
 
 export function PageList() {
   const { map } = useMapform();
-  const { optimisticProjectWithPages, updateProjectWithPages, setActivePage } =
-    useProject();
+  const { currentProject, updateCurrentProject, setActivePage } = useProject();
 
-  const dragPages = optimisticProjectWithPages.pages;
+  const dragPages = currentProject.pages;
   const { executeAsync: updatePageOrderAsync } = useAction(
     updatePageOrderAction,
   );
@@ -74,13 +73,13 @@ export function PageList() {
       if (activeStepIndex < 0 || overStepIndex < 0) return;
 
       const newPageList = arrayMove(dragPages, activeStepIndex, overStepIndex);
-      updateProjectWithPages({
-        ...optimisticProjectWithPages,
+      updateCurrentProject({
+        ...currentProject,
         pages: newPageList,
       });
 
       await updatePageOrderAsync({
-        projectId: optimisticProjectWithPages.id,
+        projectId: currentProject.id,
         pageOrder: newPageList.map((page) => page.id),
       });
     }
@@ -107,7 +106,7 @@ export function PageList() {
               return;
 
             executeCreatePage({
-              projectId: optimisticProjectWithPages.id,
+              projectId: currentProject.id,
               center: { x: loc.lng, y: loc.lat },
               zoom,
               pitch,

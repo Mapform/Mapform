@@ -48,8 +48,7 @@ import {
 import { Item } from "./item";
 
 export function LayerList() {
-  const { optimisticProjectWithPages, currentPage, setOptimisticPageState } =
-    useProject();
+  const { currentProject, currentPage, setOptimisticPageState } = useProject();
   const [open, setOpen] = useState(false);
   const [layerPopoverOpen, setLayerPopoverOpen] = useState(false);
   const [query, setQuery] = useState<string>("");
@@ -70,7 +69,7 @@ export function LayerList() {
     }),
   );
 
-  const layersFromOtherPages = optimisticProjectWithPages.pageLayers
+  const layersFromOtherPages = currentProject.pageLayers
     .filter((l) => l.pageId !== currentPage?.id)
     .filter((l) => !dragLayers?.find((dl) => dl.id === l.layerId))
     // filter for uniqueness
