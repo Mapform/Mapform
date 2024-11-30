@@ -34,7 +34,7 @@ import {
   AlertDialogTrigger,
 } from "@mapform/ui/components/alert-dialog";
 import { useAction } from "next-safe-action/hooks";
-import { startTransition, useState } from "react";
+import { useState } from "react";
 import type { PageWithLayers } from "@mapform/backend/pages/get-page-with-layers";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -58,7 +58,7 @@ interface ItemProps {
 }
 
 export function Item({ layer }: ItemProps) {
-  const { currentProject, currentPage, updatePage } = useProject();
+  const { currentProject, currentPage, setOptimisticPageState } = useProject();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [layerPopoverOpen, setLayerPopoverOpen] = useState(false);
   const { execute: executeDeleteLayer } = useAction(deleteLayerAction);
@@ -78,11 +78,11 @@ export function Item({ layer }: ItemProps) {
       layerId: layer.id,
     });
 
-    startTransition(() => {
-      updatePage({
+    setOptimisticPageState({
+      state: {
         ...currentPage,
         layersToPages: newLayers,
-      });
+      },
     });
   };
 
@@ -98,11 +98,11 @@ export function Item({ layer }: ItemProps) {
       pageId: currentPage.id,
     });
 
-    startTransition(() => {
-      updatePage({
+    setOptimisticPageState({
+      state: {
         ...currentPage,
         layersToPages: newLayers,
-      });
+      },
     });
   };
 

@@ -100,7 +100,7 @@ export function LayerList() {
 
       setOptimisticPageState({
         isPendingDebounce: true,
-        optimisticPageState: {
+        state: {
           ...currentPage,
           layersToPages: currentPage.layersToPages.sort((a, b) => {
             const aIndex = newLayerList.findIndex((l) => l.id === a.layer.id);
