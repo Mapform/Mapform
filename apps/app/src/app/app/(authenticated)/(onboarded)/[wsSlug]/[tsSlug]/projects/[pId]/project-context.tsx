@@ -1,14 +1,14 @@
 "use client";
 
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import type { Dispatch, SetStateAction } from "react";
+import type { ActionDispatch } from "react";
 import {
   createContext,
   useCallback,
   useContext,
   useEffect,
   useOptimistic,
-  useState,
+  useReducer,
 } from "react";
 import type { GetLayerPoint } from "@mapform/backend/datalayer/get-layer-point";
 import type { GetLayerMarker } from "@mapform/backend/datalayer/get-layer-marker";
@@ -36,7 +36,9 @@ export interface ProjectContextProps {
   currentPageData: PageData | undefined;
   availableDatasets: ListTeamspaceDatasets;
   updatePage: InferUseActionHookReturn<typeof updatePageAction>["execute"];
-  setOptimisticPageState: Dispatch<SetStateAction<PageWithLayers | undefined>>;
+  setOptimisticPageState: ActionDispatch<
+    [action: Partial<OptimisticPageState>]
+  >;
   uploadImage: DebouncedFunc<
     InferUseActionHookReturn<typeof uploadImageAction>["executeAsync"]
   >;
@@ -54,6 +56,11 @@ export const ProjectContext = createContext<ProjectContextProps>(
   {} as ProjectContextProps,
 );
 export const useProject = () => useContext(ProjectContext);
+
+interface OptimisticPageState {
+  optimisticPageState: PageWithLayers | undefined;
+  isPendingDebounce: boolean;
+}
 
 /**
  * Used to update the project and global page info (like page order).
@@ -86,10 +93,16 @@ export function ProjectProvider({
   // 1. While in debounce delay interval, set optimisticPageState and isPendingDebounce to true
   // 2. After debounce delay interval, execute server action. The server action isPending state will be true
   // 3. When the server action resolves, isPendingDebounce is set to false
-  const [optimisticPageState, setOptimisticPageState] = useState<
-    PageWithLayers | undefined
-  >(pageWithLayers);
-  const [isPendingDebounce, setIsPendingDebounce] = useState(false);
+  const [_pageState, _setPageState] = useReducer(
+    (prev: OptimisticPageState, action: Partial<OptimisticPageState>) => ({
+      ...prev,
+      ...action,
+    }),
+    {
+      optimisticPageState: pageWithLayers,
+      isPendingDebounce: false,
+    },
+  );
 
   const [currentProject, updateCurrentProject] = useOptimistic<
     ProjectWithPages,
@@ -114,10 +127,12 @@ export function ProjectProvider({
         }
 
         // On error we reset the prev page state
-        setOptimisticPageState(pageWithLayers);
+        _setPageState({ optimisticPageState: pageWithLayers });
       },
       onSettled: () => {
-        setIsPendingDebounce(false);
+        _setPageState({
+          isPendingDebounce: false,
+        });
       },
     },
   );
@@ -260,17 +275,19 @@ export function ProjectProvider({
       return;
     }
 
-    setIsPendingDebounce(true);
-
-    setOptimisticPageState({
-      ...pageWithLayers,
-      ...optimisticPageState,
-      ...data,
+    _setPageState({
+      optimisticPageState: {
+        ...pageWithLayers,
+        ..._pageState.optimisticPageState,
+        ...data,
+      },
+      isPendingDebounce: true,
     });
+
     // Must pass the optimistic state here, otherwise some staged changes may be
     // lost.
     updatePageServer(pageWithLayers.id, {
-      ...optimisticPageState,
+      ..._pageState.optimisticPageState,
       ...data,
     });
   };
@@ -289,9 +306,11 @@ export function ProjectProvider({
         currentPage:
           // We need two pending states here to handle period during debounce
           // and while action state is pending.
-          isPendingDebounce || isPending ? optimisticPageState : pageWithLayers,
+          _pageState.isPendingDebounce || isPending
+            ? _pageState.optimisticPageState
+            : pageWithLayers,
         updatePage,
-        setOptimisticPageState,
+        setOptimisticPageState: _setPageState,
         availableDatasets,
         currentPageData: pageData,
       }}

@@ -99,18 +99,25 @@ export function LayerList() {
       );
 
       setOptimisticPageState({
-        ...currentPage,
-        layersToPages: currentPage.layersToPages.sort((a, b) => {
-          const aIndex = newLayerList.findIndex((l) => l.id === a.layer.id);
-          const bIndex = newLayerList.findIndex((l) => l.id === b.layer.id);
+        isPendingDebounce: true,
+        optimisticPageState: {
+          ...currentPage,
+          layersToPages: currentPage.layersToPages.sort((a, b) => {
+            const aIndex = newLayerList.findIndex((l) => l.id === a.layer.id);
+            const bIndex = newLayerList.findIndex((l) => l.id === b.layer.id);
 
-          return aIndex - bIndex;
-        }),
+            return aIndex - bIndex;
+          }),
+        },
       });
 
       await executeAsync({
         pageId: currentPage.id,
         layerOrder: newLayerList.map((layer) => layer.id),
+      });
+
+      setOptimisticPageState({
+        isPendingDebounce: false,
       });
     }
   };
