@@ -46,7 +46,6 @@ import {
 import { deleteLayerAction } from "~/data/layers/delete-layer";
 import { deletePageLayerAction } from "~/data/layers-to-pages/delete-page-layer";
 import { DragItem, DragHandle } from "~/components/draggable";
-import { usePage } from "../../page-context";
 import { useProject } from "../../project-context";
 import {
   LayerPopoverRoot,
@@ -59,8 +58,7 @@ interface ItemProps {
 }
 
 export function Item({ layer }: ItemProps) {
-  const { currentPage, updatePage } = usePage();
-  const { optimisticProjectWithPages } = useProject();
+  const { optimisticProjectWithPages, currentPage, updatePage } = useProject();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [layerPopoverOpen, setLayerPopoverOpen] = useState(false);
   const { execute: executeDeleteLayer } = useAction(deleteLayerAction);

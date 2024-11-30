@@ -23,7 +23,7 @@ import { useAction } from "next-safe-action/hooks";
 import type { UpsertLayerSchema } from "@mapform/backend/layers/upsert-layer/schema";
 import { toast } from "@mapform/ui/components/toaster";
 import { createColumnAction } from "~/data/columns/create-column";
-import { usePage } from "../page-context";
+import { useProject } from "../project-context";
 import { ColorPicker } from "./color-picker";
 
 interface PointPropertiesProps {
@@ -32,7 +32,7 @@ interface PointPropertiesProps {
 }
 
 export function PointProperties({ form, isEditing }: PointPropertiesProps) {
-  const { availableDatasets } = usePage();
+  const { availableDatasets } = useProject();
   const datasetId = form.watch("datasetId");
   const type = form.watch("type");
   const dataset = availableDatasets.find((ds) => ds.id === datasetId);

@@ -21,7 +21,6 @@ import { cn } from "@mapform/lib/classnames";
 import type { SearchFeature } from "@mapform/map-utils/types";
 import { SearchLocationMarker as MapMarker } from "@mapform/mapform";
 import type { PageWithLayers } from "@mapform/backend/pages/get-page-with-layers";
-import { usePage } from "../../page-context";
 import { useProject } from "../../project-context";
 import { SearchLocationMarker } from "./search-location-marker";
 import { CommandSearch } from "./command-search";
@@ -33,7 +32,7 @@ interface EditBarInnerProps {
 const queryClient = new QueryClient();
 
 export function EditBar() {
-  const { currentPage } = usePage();
+  const { currentPage } = useProject();
 
   if (!currentPage) {
     return null;
@@ -48,8 +47,7 @@ export function EditBar() {
 
 function EditBarInner({ currentPage }: EditBarInnerProps) {
   const { map, setDrawerOpen, mapContainer, drawerOpen } = useMapform();
-  const { updatePage } = usePage();
-  const { optimisticProjectWithPages } = useProject();
+  const { optimisticProjectWithPages, updatePage } = useProject();
   const [openSearch, setOpenSearch] = useState(false);
   const [isSelectingPoint, setIsSelectingPoint] = useState(false);
   const [selectingPinLocation, setSelectingPinLocation] = useState({

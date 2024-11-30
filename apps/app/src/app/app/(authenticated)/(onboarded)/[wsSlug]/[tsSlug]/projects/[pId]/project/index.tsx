@@ -5,14 +5,18 @@ import { MapForm } from "@mapform/mapform";
 import type { CustomBlock } from "@mapform/blocknote";
 import { compressImage } from "~/lib/compress-image";
 import { env } from "~/env.mjs";
-import { usePage } from "../page-context";
 import { useProject } from "../project-context";
 import { EditBar } from "./edit-bar";
 
 function Project() {
-  const { selectedFeature } = useProject();
-  const { currentPage, currentPageData, updatePage, uploadImage, upsertCell } =
-    usePage();
+  const {
+    currentPage,
+    currentPageData,
+    updatePage,
+    uploadImage,
+    upsertCell,
+    selectedFeature,
+  } = useProject();
 
   if (!currentPage) {
     return null;

@@ -39,7 +39,6 @@ import {
 } from "@mapform/ui/components/sidebar";
 import { updateLayerOrderAction } from "~/data/layers/update-layer-order";
 import { createPageLayerAction } from "~/data/layers-to-pages/create-page-layer";
-import { usePage } from "../../page-context";
 import { useProject } from "../../project-context";
 import {
   LayerPopoverRoot,
@@ -49,8 +48,8 @@ import {
 import { Item } from "./item";
 
 export function LayerList() {
-  const { optimisticProjectWithPages } = useProject();
-  const { currentPage, setOptimisticPageState } = usePage();
+  const { optimisticProjectWithPages, currentPage, setOptimisticPageState } =
+    useProject();
   const [open, setOpen] = useState(false);
   const [layerPopoverOpen, setLayerPopoverOpen] = useState(false);
   const [query, setQuery] = useState<string>("");

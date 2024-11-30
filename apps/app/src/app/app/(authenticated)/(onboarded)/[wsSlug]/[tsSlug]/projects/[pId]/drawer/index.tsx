@@ -7,13 +7,13 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@mapform/ui/components/resizable";
-import { usePage } from "../page-context";
+import { useProject } from "../project-context";
 import { LayerList } from "./layer-list";
 import { PageList } from "./page-list";
 
 export function Drawer() {
   const isClient = useIsClient();
-  const { currentPage } = usePage();
+  const { currentPage } = useProject();
 
   if (!isClient) return null;
 

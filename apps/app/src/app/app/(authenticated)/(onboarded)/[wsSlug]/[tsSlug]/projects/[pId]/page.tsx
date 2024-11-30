@@ -10,7 +10,6 @@ import { getLayerPointAction } from "~/data/datalayer/get-layer-point";
 import { getLayermarkerAction } from "~/data/datalayer/get-layer-marker";
 import { ProjectProvider } from "./project-context";
 import Project from "./project";
-import { PageProvider } from "./page-context";
 import { Drawer } from "./drawer";
 
 const fetchProjectWithPages = cache(async (id: string) => {
@@ -142,19 +141,16 @@ export default async function ProjectPage(props: {
     <div className="flex flex-1 flex-col overflow-hidden p-4">
       <MapformProvider>
         <ProjectProvider
+          availableDatasets={availableDatasets ?? []}
+          pageData={pageData}
+          pageWithLayers={pageWithLayers}
           projectWithPages={projectWithPages}
           selectedFeature={selectedFeature}
         >
-          <PageProvider
-            availableDatasets={availableDatasets ?? []}
-            pageData={pageData}
-            pageWithLayers={pageWithLayers}
-          >
-            <div className="bg-background -m-4 flex flex-1 flex-col overflow-hidden">
-              <Project />
-            </div>
-            <Drawer />
-          </PageProvider>
+          <div className="bg-background -m-4 flex flex-1 flex-col overflow-hidden">
+            <Project />
+          </div>
+          <Drawer />
         </ProjectProvider>
       </MapformProvider>
     </div>

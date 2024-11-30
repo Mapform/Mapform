@@ -24,7 +24,7 @@ import { upsertLayerSchema } from "@mapform/backend/layers/upsert-layer/schema";
 import type { UpsertLayerSchema } from "@mapform/backend/layers/upsert-layer/schema";
 import type { PageWithLayers } from "@mapform/backend/pages/get-page-with-layers";
 import { upsertLayerAction } from "~/data/layers/upsert-layer";
-import { usePage } from "../page-context";
+import { useProject } from "../project-context";
 import { PointProperties } from "./point-properties";
 import { DatasetPopover } from "./dataset-popover";
 import { TypePopover } from "./type-popover";
@@ -40,7 +40,7 @@ export const LayerPopoverContent = forwardRef<
   React.ElementRef<typeof PopoverContent>,
   React.ComponentPropsWithoutRef<typeof PopoverContent> & LayerPopoverProps
 >(({ layerToEdit, initialName, onSuccess, ...props }, ref) => {
-  const { ...rest } = usePage();
+  const { ...rest } = useProject();
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- It's set
   const currentPage = rest.currentPage!;
 

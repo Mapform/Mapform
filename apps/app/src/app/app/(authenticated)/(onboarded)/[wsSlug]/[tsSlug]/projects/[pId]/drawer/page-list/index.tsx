@@ -28,13 +28,12 @@ import { PlusIcon } from "lucide-react";
 import { updatePageOrderAction } from "~/data/pages/update-page-order";
 import { createPageAction } from "~/data/pages/create-page";
 import { useProject } from "../../project-context";
-import { usePage } from "../../page-context";
 import { Item } from "./item";
 
 export function PageList() {
   const { map } = useMapform();
-  const { setActivePage } = usePage();
-  const { optimisticProjectWithPages, updateProjectWithPages } = useProject();
+  const { optimisticProjectWithPages, updateProjectWithPages, setActivePage } =
+    useProject();
 
   const dragPages = optimisticProjectWithPages.pages;
   const { executeAsync: updatePageOrderAsync } = useAction(

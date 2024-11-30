@@ -25,7 +25,6 @@ import { useState } from "react";
 import type { UpsertLayerSchema } from "@mapform/backend/layers/upsert-layer/schema";
 import { createEmptyDatasetAction } from "~/data/datasets/create-empty-dataset";
 import { useProject } from "../project-context";
-import { usePage } from "../page-context";
 
 interface DatasetPopoverProps {
   form: UseFormReturn<UpsertLayerSchema>;
@@ -34,8 +33,7 @@ interface DatasetPopoverProps {
 export function DatasetPopover({ form }: DatasetPopoverProps) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
-  const { availableDatasets } = usePage();
-  const { optimisticProjectWithPages } = useProject();
+  const { optimisticProjectWithPages, availableDatasets } = useProject();
   const { executeAsync } = useAction(createEmptyDatasetAction, {
     onSuccess: ({ data, input }) => {
       if (!data?.dataset) return;
