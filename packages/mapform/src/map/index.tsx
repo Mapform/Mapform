@@ -12,6 +12,7 @@ import useSupercluster from "use-supercluster";
 import { AnimatePresence, motion } from "motion/react";
 import { useMapform } from "../context";
 import { SearchLocationMarker } from "./search-location-marker";
+import { Cluster } from "./cluster";
 
 const accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
 
@@ -33,8 +34,7 @@ interface MarkerPointFeature {
   rowId: string;
   pointLayerId: string;
   point_count: number;
-  icons: string[] | undefined;
-  colors: string[] | undefined;
+  features: { icon: string; color: string }[] | undefined;
 }
 
 /**
@@ -114,15 +114,15 @@ export function Map({
       cluster: item.cluster,
       point_count: item.point_count,
       id: item.id,
-      icons: undefined,
-      colors: undefined,
+      features: undefined,
     }),
     [],
   );
   const reduceClusterItems = useCallback(
     (acc: MarkerPointFeature, cur: MarkerPointFeature) => {
-      acc.icons = acc.icons ? [...acc.icons, cur.icon] : [cur.icon];
-      acc.colors = acc.colors ? [...acc.colors, cur.color] : [cur.color];
+      acc.features = acc.features
+        ? [...acc.features, { icon: cur.icon, color: cur.color }]
+        : [{ icon: cur.icon, color: cur.color }];
     },
     [],
   );
@@ -334,24 +334,20 @@ export function Map({
 
           if (cluster.properties.cluster) {
             const { point_count: pointCount } = cluster.properties;
-            // NOTE: I should be able to generate the size using the point count
-            // divided by the points in view. However, for some reason points that
-            // are not in view (on the other side of the globe) will register as
-            // in view. Until that is resolves this technique will have to do.
-            const size = 50 + Math.log2(pointCount) * 20;
+
             const allFeatures = [
-              cluster.properties.icon,
-              ...(cluster.properties.icons ?? []),
+              {
+                icon: cluster.properties.icon,
+                color: cluster.properties.color,
+              },
+              ...(cluster.properties.features ?? []),
             ];
-            const emojiOccurrences = allFeatures
-              .filter(notEmpty)
-              .reduce<Record<string, number>>((acc, cur) => {
-                acc[cur] = (acc[cur] || 0) + 1;
-                return acc;
-              }, {});
-            const sortedEmojiOccurrences = Object.entries(
-              emojiOccurrences,
-            ).sort((a, b) => b[1] - a[1]);
+            const uniqueFeatures = allFeatures
+              .filter(
+                (item, index, self) =>
+                  index === self.findIndex((obj) => obj.icon === item.icon),
+              )
+              .filter((item) => item.icon); // Remove any empty icons
             const expansionZoom =
               supercluster &&
               cluster.id &&
@@ -359,17 +355,6 @@ export function Map({
                 supercluster.getClusterExpansionZoom(Number(cluster.id)),
                 17,
               );
-            const highestCountEmoji = sortedEmojiOccurrences[0]?.[0];
-            const secondHighestCountEmoji = sortedEmojiOccurrences[1]?.[0];
-            const remainaingEmojiCount =
-              pointCount -
-                (highestCountEmoji ? 1 : 0) -
-                (secondHighestCountEmoji ? 1 : 0) || undefined;
-            const clusterItemsArray = [
-              highestCountEmoji,
-              secondHighestCountEmoji,
-              remainaingEmojiCount,
-            ].filter(notEmpty);
 
             return (
               <SearchLocationMarker
@@ -380,11 +365,7 @@ export function Map({
                   icon: "city",
                 }}
               >
-                <motion.button
-                  animate={{ opacity: 1, y: 0 }}
-                  className="relative flex cursor-pointer items-center justify-center rounded-full border-2 border-white bg-white/10 text-lg shadow-md backdrop-blur"
-                  exit={{ opacity: 0, y: 20 }}
-                  initial={{ opacity: 0, y: -20 }}
+                <Cluster
                   onClick={() => {
                     if (!expansionZoom || !map) {
                       return;
@@ -396,17 +377,9 @@ export function Map({
                       duration: 750,
                     });
                   }}
-                  style={{
-                    width: `${size}px`,
-                    height: `${size}px`,
-                    // backgroundColor: cluster.properties.color,
-                  }}
-                  type="button"
-                >
-                  {clusterItemsArray.map((val) => (
-                    <div key={val}>{val}</div>
-                  ))}
-                </motion.button>
+                  pointCount={pointCount}
+                  uniqueFeatures={uniqueFeatures}
+                />
               </SearchLocationMarker>
             );
           }
@@ -444,10 +417,6 @@ export function Map({
       {children}
     </div>
   );
-}
-
-function notEmpty<TValue>(value: TValue | null | undefined): value is TValue {
-  return value !== null && value !== undefined;
 }
 
 export { SearchLocationMarker };
