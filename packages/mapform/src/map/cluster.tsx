@@ -18,6 +18,7 @@ export function Cluster({ pointCount, onClick, uniqueFeatures }: ClusterProps) {
   const size = 50 + Math.log2(pointCount) * 20;
 
   const maxIconsToShow = Math.floor(bounds.width / 30) - 1;
+  const renderedFeatured = uniqueFeatures.slice(0, maxIconsToShow);
 
   return (
     <motion.button
@@ -33,7 +34,7 @@ export function Cluster({ pointCount, onClick, uniqueFeatures }: ClusterProps) {
       }}
       type="button"
     >
-      {uniqueFeatures.slice(0, maxIconsToShow).map((feature, i) => (
+      {renderedFeatured.map((feature, i) => (
         <div
           className={cn(
             "flex aspect-square size-10 cursor-pointer items-center justify-center rounded-full border-2 border-white text-lg shadow-md",
@@ -52,12 +53,12 @@ export function Cluster({ pointCount, onClick, uniqueFeatures }: ClusterProps) {
           className={cn(
             "text-md text-muted-foreground flex aspect-square size-10 cursor-pointer items-center justify-center rounded-full border-2 border-white shadow-md",
             {
-              "-ml-4": uniqueFeatures.slice(0, maxIconsToShow).length > 0,
+              "-ml-4": renderedFeatured.length > 0,
             },
           )}
           style={{ backgroundColor: "white" }}
         >
-          +{pointCount - maxIconsToShow}
+          +{pointCount - renderedFeatured.length}
         </div>
       )}
     </motion.button>
