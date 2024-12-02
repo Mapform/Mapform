@@ -25,15 +25,9 @@ export interface ProjectContextProps {
   currentPageData: PageData | undefined;
   availableDatasets: ListTeamspaceDatasets;
 
-  uploadImageServer: InferUseActionHookReturn<
-    typeof uploadImageAction
-  >["executeAsync"];
-  upsertCellServer: InferUseActionHookReturn<
-    typeof upsertCellAction
-  >["execute"];
-  updatePageServer: InferUseActionHookReturn<
-    typeof updatePageAction
-  >["execute"];
+  uploadImageServer: InferUseActionHookReturn<typeof uploadImageAction>;
+  upsertCellServer: InferUseActionHookReturn<typeof upsertCellAction>;
+  updatePageServer: InferUseActionHookReturn<typeof updatePageAction>;
 
   setActivePage: (
     page?: Pick<PageWithLayers, "id" | "center" | "zoom" | "pitch" | "bearing">,
@@ -115,7 +109,7 @@ export function ProjectProvider({
   /**
    * Actions
    */
-  const { execute: updatePageServer } = useAction(updatePageAction, {
+  const updatePageServer = useAction(updatePageAction, {
     onError: (response) => {
       if (response.error.validationErrors || response.error.serverError) {
         toast({
@@ -126,7 +120,7 @@ export function ProjectProvider({
     },
   });
 
-  const { execute: upsertCellServer } = useAction(upsertCellAction, {
+  const upsertCellServer = useAction(upsertCellAction, {
     onError: () => {
       toast({
         title: "Uh oh! Something went wrong.",
@@ -135,7 +129,7 @@ export function ProjectProvider({
     },
   });
 
-  const { executeAsync: uploadImageServer } = useAction(uploadImageAction, {
+  const uploadImageServer = useAction(uploadImageAction, {
     onError: (response) => {
       if (response.error.validationErrors) {
         toast({

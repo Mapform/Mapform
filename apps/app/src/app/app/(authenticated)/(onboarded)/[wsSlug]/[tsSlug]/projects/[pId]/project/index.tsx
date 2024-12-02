@@ -34,19 +34,19 @@ function Project() {
   // made quickly (within the debounce time), the update of the
   // second would overwrite the first.
   const debouncedUpdatePageTitle = useCallback(
-    debounce(updatePageServer, 2000),
+    debounce(updatePageServer.execute, 2000),
     [updatePageServer],
   );
   const debouncedUpdatePageDescription = useCallback(
-    debounce(updatePageServer, 2000),
+    debounce(updatePageServer.execute, 2000),
     [updatePageServer],
   );
   const debouncedUpdateCellRichtext = useCallback(
-    debounce(upsertCellServer, 2000),
+    debounce(upsertCellServer.execute, 2000),
     [upsertCellServer],
   );
   const debouncedUpdateCellString = useCallback(
-    debounce(upsertCellServer, 2000),
+    debounce(upsertCellServer.execute, 2000),
     [upsertCellServer],
   );
 
@@ -85,7 +85,7 @@ function Project() {
                 icon,
               });
 
-              updatePageServer({
+              updatePageServer.execute({
                 id: currentPage.id,
                 icon,
               });
@@ -108,7 +108,7 @@ function Project() {
               },
             });
 
-            upsertCellServer({
+            upsertCellServer.execute({
               type: "icon",
               value: icon,
               rowId: selectedFeature.rowId,
@@ -126,7 +126,7 @@ function Project() {
             const formData = new FormData();
             formData.append("image", compressedFile);
 
-            const response = await uploadImageServer(formData);
+            const response = await uploadImageServer.executeAsync(formData);
 
             if (response?.serverError) {
               return null;
