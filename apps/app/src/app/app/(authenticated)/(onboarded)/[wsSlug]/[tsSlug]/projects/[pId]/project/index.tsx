@@ -12,16 +12,23 @@ import { EditBar } from "./edit-bar";
 function Project() {
   const {
     currentPage,
-    currentProject,
     selectedFeature,
     currentPageData,
     updatePageServer,
     upsertCellServer,
     uploadImageServer,
     updatePageOptimistic,
-    updateProjectOptimistic,
     updateSelectedFeatureOptimistic,
   } = useProject();
+
+  /**
+   * NOTE: Optimistic updates DO NOT work with debounced server actions. To work
+   * around this either:
+   * - Pick one or the other
+   * - Add uncontrolled state to the component where it optimistic updates are
+   *   needed. For instance, the Blocknote richtext in an uncontrolled
+   *   component.
+   */
 
   // These need to be separate because if a title and description change are
   // made quickly (within the debounce time), the update of the
@@ -76,13 +83,6 @@ function Project() {
               updatePageOptimistic({
                 ...currentPage,
                 icon,
-              });
-
-              updateProjectOptimistic({
-                ...currentProject,
-                pages: currentProject.pages.map((p) =>
-                  p.id === currentPage.id ? { ...p, icon } : p,
-                ),
               });
 
               updatePageServer({
