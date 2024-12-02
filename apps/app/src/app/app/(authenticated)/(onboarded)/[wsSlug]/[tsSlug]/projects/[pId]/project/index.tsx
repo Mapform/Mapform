@@ -4,7 +4,6 @@ import dynamic from "next/dynamic";
 import { useCallback } from "react";
 import { MapForm } from "@mapform/mapform";
 import { debounce } from "@mapform/lib/lodash";
-import type { CustomBlock } from "@mapform/blocknote";
 import { compressImage } from "~/lib/compress-image";
 import { env } from "~/env.mjs";
 import { useProject } from "../project-context";
@@ -21,6 +20,7 @@ function Project() {
     uploadImageServer,
     updatePageOptimistic,
     updateProjectOptimistic,
+    updateSelectedFeatureOptimistic,
   } = useProject();
 
   // These need to be separate because if a title and description change are
@@ -34,6 +34,14 @@ function Project() {
     debounce(updatePageServer, 2000),
     [updatePageServer],
   );
+  const debouncedUpdateCellRichtext = useCallback(
+    debounce(upsertCellServer, 2000),
+    [upsertCellServer],
+  );
+  const debouncedUpdateCellString = useCallback(
+    debounce(upsertCellServer, 2000),
+    [upsertCellServer],
+  );
 
   if (!currentPage) {
     return null;
@@ -46,25 +54,65 @@ function Project() {
           currentPage={currentPage}
           editable
           mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
-          onDescriptionChange={(content: { content: CustomBlock[] }) => {
-            debouncedUpdatePageDescription({ id: currentPage.id, content });
+          onDescriptionChange={(content, type) => {
+            if (type === "page") {
+              debouncedUpdatePageDescription({ id: currentPage.id, content });
+              return;
+            }
+
+            if (!selectedFeature?.description) {
+              return;
+            }
+
+            debouncedUpdateCellRichtext({
+              type: "richtext",
+              value: content,
+              rowId: selectedFeature.rowId,
+              columnId: selectedFeature.description.columnId,
+            });
           }}
-          onIconChange={(icon: string | null) => {
-            updatePageOptimistic({
-              ...currentPage,
-              icon,
+          onIconChange={(icon, type) => {
+            if (type === "page") {
+              updatePageOptimistic({
+                ...currentPage,
+                icon,
+              });
+
+              updateProjectOptimistic({
+                ...currentProject,
+                pages: currentProject.pages.map((p) =>
+                  p.id === currentPage.id ? { ...p, icon } : p,
+                ),
+              });
+
+              updatePageServer({
+                id: currentPage.id,
+                icon,
+              });
+
+              return;
+            }
+
+            if (!selectedFeature?.icon?.iconCell || !currentPageData) {
+              return;
+            }
+
+            updateSelectedFeatureOptimistic({
+              ...selectedFeature,
+              icon: {
+                ...selectedFeature.icon,
+                iconCell: {
+                  ...selectedFeature.icon.iconCell,
+                  value: icon,
+                },
+              },
             });
 
-            updateProjectOptimistic({
-              ...currentProject,
-              pages: currentProject.pages.map((p) =>
-                p.id === currentPage.id ? { ...p, icon } : p,
-              ),
-            });
-
-            updatePageServer({
-              id: currentPage.id,
-              icon,
+            upsertCellServer({
+              type: "icon",
+              value: icon,
+              rowId: selectedFeature.rowId,
+              columnId: selectedFeature.icon.columnId,
             });
           }}
           onImageUpload={async (file: File) => {
@@ -86,13 +134,25 @@ function Project() {
 
             return response?.data?.url || null;
           }}
-          onPoiCellChange={(cell) => {
-            upsertCellServer(cell);
-          }}
-          onTitleChange={(title: string) => {
-            debouncedUpdatePageTitle({
-              id: currentPage.id,
-              title,
+          onTitleChange={(title, type) => {
+            if (type === "page") {
+              debouncedUpdatePageTitle({
+                id: currentPage.id,
+                title,
+              });
+
+              return;
+            }
+
+            if (!selectedFeature?.title) {
+              return;
+            }
+
+            debouncedUpdateCellString({
+              type: "string",
+              value: title,
+              rowId: selectedFeature.rowId,
+              columnId: selectedFeature.title.columnId,
             });
           }}
           pageData={currentPageData}

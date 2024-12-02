@@ -13,7 +13,6 @@ import { useSetQueryString } from "@mapform/lib/hooks/use-set-query-string";
 import { CustomBlockContext } from "@mapform/blocknote";
 import type { GetLayerPoint } from "@mapform/backend/datalayer/get-layer-point";
 import type { GetLayerMarker } from "@mapform/backend/datalayer/get-layer-marker";
-import type { UpsertCellSchema } from "@mapform/backend/cells/upsert-cell/schema";
 import {
   type CustomBlock,
   getFormSchemaFromBlockNote,
@@ -38,10 +37,12 @@ interface MapFormProps {
   showBlocknote?: boolean;
   onPrev?: () => void;
   onLoad?: () => void;
-  onIconChange?: (icon: string | null) => void;
-  onTitleChange?: (content: string) => void;
-  onDescriptionChange?: (content: { content: CustomBlock[] }) => void;
-  onPoiCellChange?: (val: UpsertCellSchema) => void;
+  onIconChange?: (icon: string | null, type: "page" | "feature") => void;
+  onTitleChange?: (content: string, type: "page" | "feature") => void;
+  onDescriptionChange?: (
+    content: { content: CustomBlock[] },
+    type: "page" | "feature",
+  ) => void;
   onStepSubmit?: (data: Record<string, string>) => void;
   onImageUpload?: (file: File) => Promise<string | null>;
   pageData?: PageData;
@@ -65,7 +66,6 @@ export function MapForm({
   onImageUpload,
   defaultFormValues,
   onDescriptionChange,
-  onPoiCellChange,
 }: MapFormProps) {
   const setQueryString = useSetQueryString();
   const { drawerOpen, setDrawerOpen } = useMapform();
@@ -153,10 +153,16 @@ export function MapForm({
           icon={currentPage.icon}
           isPage
           key={currentPage.id}
-          onDescriptionChange={onDescriptionChange}
-          onIconChange={onIconChange}
+          onDescriptionChange={(val) => {
+            onDescriptionChange && onDescriptionChange(val, "page");
+          }}
+          onIconChange={(val) => {
+            onIconChange && onIconChange(val, "page");
+          }}
           onPrev={onPrev}
-          onTitleChange={onTitleChange}
+          onTitleChange={(val) => {
+            onTitleChange && onTitleChange(val, "page");
+          }}
           title={currentPage.title}
         />
         <div
@@ -195,41 +201,41 @@ export function MapForm({
         isPage
         key={`${currentPage.id}-${selectedFeature.rowId}`}
         onDescriptionChange={(val) => {
-          selectedFeature.description &&
-            onPoiCellChange &&
-            onPoiCellChange({
-              type: "richtext",
-              rowId: selectedFeature.rowId,
-              columnId: selectedFeature.description.columnId,
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Fix this
-              value: val as any,
-            });
+          onDescriptionChange && onDescriptionChange(val, "feature");
         }}
         onIconChange={(val) => {
-          selectedFeature.icon &&
-            onPoiCellChange &&
-            onPoiCellChange({
-              type: "icon",
-              rowId: selectedFeature.rowId,
-              columnId: selectedFeature.icon.columnId,
-              value: val,
-            });
+          onIconChange && onIconChange(val, "feature");
+          // selectedFeature.icon &&
+          //   onPoiCellChange?.({
+          //     type: "icon",
+          //     rowId: selectedFeature.rowId,
+          //     columnId: selectedFeature.icon.columnId,
+          //     value: val,
+          //   });
         }}
         onPrev={onPrev}
         onTitleChange={(val) => {
-          selectedFeature.title &&
-            onPoiCellChange &&
-            onPoiCellChange({
-              type: "string",
-              rowId: selectedFeature.rowId,
-              columnId: selectedFeature.title.columnId,
-              value: val,
-            });
+          onTitleChange && onTitleChange(val, "feature");
+          // selectedFeature.title &&
+          //   onPoiCellChange?.({
+          //     type: "string",
+          //     rowId: selectedFeature.rowId,
+          //     columnId: selectedFeature.title.columnId,
+          //     value: val,
+          //   });
         }}
         title={selectedFeature.title?.stringCell?.value}
       />
     );
-  }, [selectedFeature, currentPage, editable, onPoiCellChange, onPrev]);
+  }, [
+    selectedFeature,
+    editable,
+    currentPage.id,
+    onPrev,
+    onDescriptionChange,
+    onIconChange,
+    onTitleChange,
+  ]);
 
   return (
     <Form {...form}>

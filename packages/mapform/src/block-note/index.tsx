@@ -6,11 +6,11 @@ import {
   BlocknoteEditor,
   useCreateBlockNote,
 } from "@mapform/blocknote";
+import { useState } from "react";
 import { ImagePlusIcon, SmilePlusIcon, XIcon } from "lucide-react";
 import { Button } from "@mapform/ui/components/button";
 import { EmojiPopover } from "@mapform/ui/components/emoji-picker";
 import { AutoSizeTextArea } from "../components/autosize-text-area";
-import { useState } from "react";
 
 interface BlocknoteProps {
   icon?: string | null;

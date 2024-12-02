@@ -24,6 +24,7 @@ export interface ProjectContextProps {
   currentPage: PageWithLayers | undefined;
   currentPageData: PageData | undefined;
   availableDatasets: ListTeamspaceDatasets;
+
   uploadImageServer: InferUseActionHookReturn<
     typeof uploadImageAction
   >["executeAsync"];
@@ -33,12 +34,18 @@ export interface ProjectContextProps {
   updatePageServer: InferUseActionHookReturn<
     typeof updatePageAction
   >["execute"];
+
   setActivePage: (
     page?: Pick<PageWithLayers, "id" | "center" | "zoom" | "pitch" | "bearing">,
   ) => void;
   setEditMode: (open: boolean) => void;
+
   updateProjectOptimistic: (action: ProjectWithPages) => void;
   updatePageOptimistic: (action: PageWithLayers) => void;
+  updatePageDataOptimistic: (action: PageData) => void;
+  updateSelectedFeatureOptimistic: (
+    action: GetLayerPoint | GetLayerMarker,
+  ) => void;
 }
 
 export const ProjectContext = createContext<ProjectContextProps>(
@@ -87,6 +94,23 @@ export function ProjectProvider({
     ...state,
     ...newProject,
   }));
+
+  const [optimisticPageData, updatePageDataOptimistic] = useOptimistic<
+    PageData | undefined,
+    PageData
+  >(pageData, (state, newData) => ({
+    ...state,
+    ...newData,
+  }));
+
+  const [optimisticSelectedFeature, updateSelectedFeatureOptimistic] =
+    useOptimistic<
+      GetLayerPoint | GetLayerMarker | undefined,
+      GetLayerPoint | GetLayerMarker
+    >(selectedFeature, (state, newFeature) => ({
+      ...state,
+      ...newFeature,
+    }));
 
   /**
    * Actions
@@ -199,24 +223,27 @@ export function ProjectProvider({
   return (
     <ProjectContext.Provider
       value={{
-        selectedFeature,
         setEditMode,
         isEditingPage,
         setActivePage,
         availableDatasets,
 
-        currentPageData: pageData,
+        // Optimistic state
         currentPage: optimisticPage,
         currentProject: optimisticProject,
+        currentPageData: optimisticPageData,
+        selectedFeature: optimisticSelectedFeature,
 
         // For optimistic state updates
         updatePageOptimistic,
         updateProjectOptimistic,
+        updatePageDataOptimistic,
 
         // Actions
         updatePageServer,
         upsertCellServer,
         uploadImageServer,
+        updateSelectedFeatureOptimistic,
       }}
     >
       {children}
