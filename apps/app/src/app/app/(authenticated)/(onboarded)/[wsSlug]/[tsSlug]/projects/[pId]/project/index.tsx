@@ -1,7 +1,9 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { useCallback } from "react";
 import { MapForm } from "@mapform/mapform";
+import { debounce } from "@mapform/lib/lodash";
 import type { CustomBlock } from "@mapform/blocknote";
 import { compressImage } from "~/lib/compress-image";
 import { env } from "~/env.mjs";
@@ -11,12 +13,27 @@ import { EditBar } from "./edit-bar";
 function Project() {
   const {
     currentPage,
-    currentPageData,
-    updatePage,
-    uploadImage,
-    upsertCell,
+    currentProject,
     selectedFeature,
+    currentPageData,
+    updatePageServer,
+    upsertCellServer,
+    uploadImageServer,
+    updatePageOptimistic,
+    updateProjectOptimistic,
   } = useProject();
+
+  // These need to be separate because if a title and description change are
+  // made quickly (within the debounce time), the update of the
+  // second would overwrite the first.
+  const debouncedUpdatePageTitle = useCallback(
+    debounce(updatePageServer, 2000),
+    [updatePageServer],
+  );
+  const debouncedUpdatePageDescription = useCallback(
+    debounce(updatePageServer, 2000),
+    [updatePageServer],
+  );
 
   if (!currentPage) {
     return null;
@@ -30,10 +47,22 @@ function Project() {
           editable
           mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
           onDescriptionChange={(content: { content: CustomBlock[] }) => {
-            updatePage({ id: currentPage.id, content });
+            debouncedUpdatePageDescription({ id: currentPage.id, content });
           }}
           onIconChange={(icon: string | null) => {
-            updatePage({
+            updatePageOptimistic({
+              ...currentPage,
+              icon,
+            });
+
+            updateProjectOptimistic({
+              ...currentProject,
+              pages: currentProject.pages.map((p) =>
+                p.id === currentPage.id ? { ...p, icon } : p,
+              ),
+            });
+
+            updatePageServer({
               id: currentPage.id,
               icon,
             });
@@ -49,7 +78,7 @@ function Project() {
             const formData = new FormData();
             formData.append("image", compressedFile);
 
-            const response = await uploadImage(formData);
+            const response = await uploadImageServer(formData);
 
             if (response?.serverError) {
               return null;
@@ -58,10 +87,10 @@ function Project() {
             return response?.data?.url || null;
           }}
           onPoiCellChange={(cell) => {
-            upsertCell(cell);
+            upsertCellServer(cell);
           }}
           onTitleChange={(title: string) => {
-            updatePage({
+            debouncedUpdatePageTitle({
               id: currentPage.id,
               title,
             });

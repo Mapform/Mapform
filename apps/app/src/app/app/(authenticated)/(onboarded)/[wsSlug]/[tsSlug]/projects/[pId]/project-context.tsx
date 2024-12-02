@@ -1,24 +1,13 @@
 "use client";
 
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import type { ActionDispatch } from "react";
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useOptimistic,
-  useReducer,
-} from "react";
+import { createContext, useContext, useEffect, useOptimistic } from "react";
 import type { GetLayerPoint } from "@mapform/backend/datalayer/get-layer-point";
 import type { GetLayerMarker } from "@mapform/backend/datalayer/get-layer-marker";
 import { useCreateQueryString } from "@mapform/lib/hooks/use-create-query-string";
 import type { ProjectWithPages } from "@mapform/backend/projects/get-project-with-pages";
 import { useMapform } from "@mapform/mapform";
 import type { PageWithLayers } from "@mapform/backend/pages/get-page-with-layers";
-import type { UpdatePageSchema } from "@mapform/backend/pages/update-page/schema";
-import type { DebouncedFunc } from "@mapform/lib/lodash";
-import { debounce } from "@mapform/lib/lodash";
 import { toast } from "@mapform/ui/components/toaster";
 import type { InferUseActionHookReturn } from "next-safe-action/hooks";
 import { useAction } from "next-safe-action/hooks";
@@ -35,30 +24,27 @@ export interface ProjectContextProps {
   currentPage: PageWithLayers | undefined;
   currentPageData: PageData | undefined;
   availableDatasets: ListTeamspaceDatasets;
-  updatePage: InferUseActionHookReturn<typeof updatePageAction>["execute"];
-  setOptimisticPageState: ActionDispatch<
-    [action: Partial<OptimisticPageState>]
-  >;
-  uploadImage: DebouncedFunc<
-    InferUseActionHookReturn<typeof uploadImageAction>["executeAsync"]
-  >;
-  upsertCell: InferUseActionHookReturn<typeof upsertCellAction>["execute"];
+  uploadImageServer: InferUseActionHookReturn<
+    typeof uploadImageAction
+  >["executeAsync"];
+  upsertCellServer: InferUseActionHookReturn<
+    typeof upsertCellAction
+  >["execute"];
+  updatePageServer: InferUseActionHookReturn<
+    typeof updatePageAction
+  >["execute"];
   setActivePage: (
     page?: Pick<PageWithLayers, "id" | "center" | "zoom" | "pitch" | "bearing">,
   ) => void;
   setEditMode: (open: boolean) => void;
-  updateCurrentProject: (action: ProjectWithPages) => void;
+  updateProjectOptimistic: (action: ProjectWithPages) => void;
+  updatePageOptimistic: (action: PageWithLayers) => void;
 }
 
 export const ProjectContext = createContext<ProjectContextProps>(
   {} as ProjectContextProps,
 );
 export const useProject = () => useContext(ProjectContext);
-
-interface OptimisticPageState {
-  state: PageWithLayers | undefined;
-  isPendingDebounce: boolean;
-}
 
 /**
  * Used to update the project and global page info (like page order).
@@ -86,80 +72,59 @@ export function ProjectProvider({
   const createQueryString = useCreateQueryString();
   const page = searchParams.get("page");
 
-  // Need extra state due to debounce with optimistic state issue: https://www.reddit.com/r/nextjs/comments/1h2xt8w/how_to_use_debounced_server_actions_with/
-  // Optimistic state works as follows:
-  // 1. While in debounce delay interval, set optimisticPageState and isPendingDebounce to true
-  // 2. After debounce delay interval, execute server action. The server action isPending state will be true
-  // 3. When the server action resolves, isPendingDebounce is set to false
-  const [_optimisticPageState, _setOptimisticPageState] = useReducer(
-    (prev: OptimisticPageState, action: Partial<OptimisticPageState>) => ({
-      ...prev,
-      ...action,
-    }),
-    {
-      state: pageWithLayers,
-      isPendingDebounce: false,
-    },
-  );
+  const [optimisticPage, updatePageOptimistic] = useOptimistic<
+    PageWithLayers | undefined,
+    PageWithLayers
+  >(pageWithLayers, (state, newPage) => ({
+    ...state,
+    ...newPage,
+  }));
 
-  const [currentProject, updateCurrentProject] = useOptimistic<
+  const [optimisticProject, updateProjectOptimistic] = useOptimistic<
     ProjectWithPages,
     ProjectWithPages
-  >(projectWithPages, (state, newProjectWithPages) => ({
+  >(projectWithPages, (state, newProject) => ({
     ...state,
-    ...newProjectWithPages,
+    ...newProject,
   }));
 
   /**
    * Actions
    */
-  const { execute: executeUpdatePage, isPending: isPagePending } = useAction(
-    updatePageAction,
-    {
-      onError: (response) => {
-        if (response.error.validationErrors || response.error.serverError) {
-          toast({
-            title: "Uh oh! Something went wrong.",
-            description: "An error occurred while updating the page.",
-          });
-        }
-
-        // On error we reset the prev page state
-        _setOptimisticPageState({ state: pageWithLayers });
-      },
-      onSettled: () => {
-        _setOptimisticPageState({
-          isPendingDebounce: false,
-        });
-      },
-    },
-  );
-  const { executeAsync: executeAsyncUploadImage } = useAction(
-    uploadImageAction,
-    {
-      onError: (response) => {
-        if (response.error.validationErrors) {
-          toast({
-            title: "Uh oh! Something went wrong.",
-            description: response.error.validationErrors.image?._errors?.[0],
-          });
-
-          return;
-        }
-
+  const { execute: updatePageServer } = useAction(updatePageAction, {
+    onError: (response) => {
+      if (response.error.validationErrors || response.error.serverError) {
         toast({
           title: "Uh oh! Something went wrong.",
-          description: "An error occurred while uploading the image.",
+          description: "An error occurred while updating the page.",
         });
-      },
+      }
     },
-  );
+  });
 
-  const { execute: executeUpsertCell } = useAction(upsertCellAction, {
+  const { execute: upsertCellServer } = useAction(upsertCellAction, {
     onError: () => {
       toast({
         title: "Uh oh! Something went wrong.",
         description: "We we unable to update your content. Please try again.",
+      });
+    },
+  });
+
+  const { executeAsync: uploadImageServer } = useAction(uploadImageAction, {
+    onError: (response) => {
+      if (response.error.validationErrors) {
+        toast({
+          title: "Uh oh! Something went wrong.",
+          description: response.error.validationErrors.image?._errors?.[0],
+        });
+
+        return;
+      }
+
+      toast({
+        title: "Uh oh! Something went wrong.",
+        description: "An error occurred while uploading the image.",
       });
     },
   });
@@ -231,86 +196,27 @@ export function ProjectProvider({
     router.push(`${pathname}${query}`);
   };
 
-  const upsertCell = useCallback(debounce(executeUpsertCell, 2000), []);
-  const uploadImage = useCallback(debounce(executeAsyncUploadImage, 2000), []);
-  const updatePageServer = useCallback(
-    debounce(
-      (
-        pageId: string,
-        {
-          content,
-          title,
-          icon,
-          zoom,
-          pitch,
-          bearing,
-          center,
-        }: Partial<PageWithLayers>,
-      ) => {
-        const payload = {
-          id: pageId,
-          ...(content !== undefined && { content }),
-          ...(title !== undefined && { title }),
-          ...(icon !== undefined && { icon }),
-          ...(zoom !== undefined && { zoom }),
-          ...(pitch !== undefined && { pitch }),
-          ...(bearing !== undefined && { bearing }),
-          ...(center !== undefined && { center }),
-        };
-
-        executeUpdatePage(payload);
-      },
-      2000,
-      {
-        trailing: true,
-      },
-    ),
-    [],
-  );
-
-  const updatePage = (data: UpdatePageSchema) => {
-    if (!pageWithLayers) {
-      return;
-    }
-
-    _setOptimisticPageState({
-      state: {
-        ...pageWithLayers,
-        ..._optimisticPageState.state,
-        ...data,
-      },
-      isPendingDebounce: true,
-    });
-
-    // Must pass the optimistic state here, otherwise some staged changes may be
-    // lost.
-    updatePageServer(pageWithLayers.id, {
-      ..._optimisticPageState.state,
-      ...data,
-    });
-  };
-
   return (
     <ProjectContext.Provider
       value={{
         selectedFeature,
-        updateCurrentProject,
-        currentProject,
-        upsertCell,
-        uploadImage,
         setEditMode,
         isEditingPage,
         setActivePage,
-        currentPage:
-          // We need two pending states here to handle period during debounce
-          // and while action state is pending.
-          _optimisticPageState.isPendingDebounce || isPagePending
-            ? _optimisticPageState.state
-            : pageWithLayers,
-        updatePage,
-        setOptimisticPageState: _setOptimisticPageState,
         availableDatasets,
+
         currentPageData: pageData,
+        currentPage: optimisticPage,
+        currentProject: optimisticProject,
+
+        // For optimistic state updates
+        updatePageOptimistic,
+        updateProjectOptimistic,
+
+        // Actions
+        updatePageServer,
+        upsertCellServer,
+        uploadImageServer,
       }}
     >
       {children}

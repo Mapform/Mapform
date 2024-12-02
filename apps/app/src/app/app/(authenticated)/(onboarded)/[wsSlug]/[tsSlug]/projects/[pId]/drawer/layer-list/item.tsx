@@ -58,7 +58,7 @@ interface ItemProps {
 }
 
 export function Item({ layer }: ItemProps) {
-  const { currentProject, currentPage, setOptimisticPageState } = useProject();
+  const { currentProject, currentPage, updatePageOptimistic } = useProject();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [layerPopoverOpen, setLayerPopoverOpen] = useState(false);
   const { execute: executeDeleteLayer } = useAction(deleteLayerAction);
@@ -80,11 +80,9 @@ export function Item({ layer }: ItemProps) {
 
     // Note: it is not necessary to set isPendingDebounce to true here since we
     // are not debouncing
-    setOptimisticPageState({
-      state: {
-        ...currentPage,
-        layersToPages: newLayers,
-      },
+    updatePageOptimistic({
+      ...currentPage,
+      layersToPages: newLayers,
     });
   };
 
@@ -102,11 +100,9 @@ export function Item({ layer }: ItemProps) {
 
     // Note: it is not necessary to set isPendingDebounce to true here since we
     // are not debouncing
-    setOptimisticPageState({
-      state: {
-        ...currentPage,
-        layersToPages: newLayers,
-      },
+    updatePageOptimistic({
+      ...currentPage,
+      layersToPages: newLayers,
     });
   };
 

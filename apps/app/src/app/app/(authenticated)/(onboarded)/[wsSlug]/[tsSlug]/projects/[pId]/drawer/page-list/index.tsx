@@ -32,7 +32,8 @@ import { Item } from "./item";
 
 export function PageList() {
   const { map } = useMapform();
-  const { currentProject, updateCurrentProject, setActivePage } = useProject();
+  const { currentProject, updateProjectOptimistic, setActivePage } =
+    useProject();
 
   const dragPages = currentProject.pages;
   const { executeAsync: updatePageOrderAsync } = useAction(
@@ -73,7 +74,7 @@ export function PageList() {
       if (activeStepIndex < 0 || overStepIndex < 0) return;
 
       const newPageList = arrayMove(dragPages, activeStepIndex, overStepIndex);
-      updateCurrentProject({
+      updateProjectOptimistic({
         ...currentProject,
         pages: newPageList,
       });

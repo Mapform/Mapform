@@ -31,8 +31,12 @@ interface ItemProps {
 }
 
 export function Item({ page }: ItemProps) {
-  const { currentProject, updateCurrentProject, setActivePage, currentPage } =
-    useProject();
+  const {
+    currentProject,
+    updateProjectOptimistic,
+    setActivePage,
+    currentPage,
+  } = useProject();
   const { execute: executeDeletePage } = useAction(deletePageAction);
 
   const isLastPage = currentProject.pages.length <= 1;
@@ -59,7 +63,7 @@ export function Item({ page }: ItemProps) {
     });
 
     startTransition(() => {
-      updateCurrentProject({
+      updateProjectOptimistic({
         ...currentProject,
         pages: newPages,
       });
