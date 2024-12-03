@@ -1,7 +1,13 @@
 "use client";
 
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { createContext, useContext, useEffect, useOptimistic } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useOptimistic,
+  useTransition,
+} from "react";
 import type { GetLayerPoint } from "@mapform/backend/datalayer/get-layer-point";
 import type { GetLayerMarker } from "@mapform/backend/datalayer/get-layer-marker";
 import { useCreateQueryString } from "@mapform/lib/hooks/use-create-query-string";
@@ -71,6 +77,7 @@ export function ProjectProvider({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const createQueryString = useCreateQueryString();
+  const [_, startTransition] = useTransition();
   const page = searchParams.get("page");
 
   const [optimisticPage, updatePageOptimistic] = useOptimistic<
@@ -229,15 +236,31 @@ export function ProjectProvider({
         selectedFeature: optimisticSelectedFeature,
 
         // For optimistic state updates
-        updatePageOptimistic,
-        updateProjectOptimistic,
-        updatePageDataOptimistic,
+        updatePageOptimistic: (...args) => {
+          startTransition(() => {
+            updatePageOptimistic(...args);
+          });
+        },
+        updateProjectOptimistic: (...args) => {
+          startTransition(() => {
+            updateProjectOptimistic(...args);
+          });
+        },
+        updatePageDataOptimistic: (...args) => {
+          startTransition(() => {
+            updatePageDataOptimistic(...args);
+          });
+        },
+        updateSelectedFeatureOptimistic: (...args) => {
+          startTransition(() => {
+            updateSelectedFeatureOptimistic(...args);
+          });
+        },
 
         // Actions
         updatePageServer,
         upsertCellServer,
         uploadImageServer,
-        updateSelectedFeatureOptimistic,
       }}
     >
       {children}

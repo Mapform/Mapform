@@ -47,7 +47,8 @@ export function EditBar() {
 
 function EditBarInner({ currentPage }: EditBarInnerProps) {
   const { map, setDrawerOpen, mapContainer, drawerOpen } = useMapform();
-  const { currentProject, updatePage } = useProject();
+  const { currentProject, updatePageServer, updatePageOptimistic } =
+    useProject();
   const [openSearch, setOpenSearch] = useState(false);
   const [isSelectingPoint, setIsSelectingPoint] = useState(false);
   const [selectingPinLocation, setSelectingPinLocation] = useState({
@@ -264,7 +265,7 @@ function EditBarInner({ currentPage }: EditBarInnerProps) {
                       pitch !== undefined &&
                       bearing !== undefined
                     ) {
-                      updatePage({
+                      const payload = {
                         id: currentPage.id,
                         center: {
                           x: center.lng,
@@ -273,6 +274,13 @@ function EditBarInner({ currentPage }: EditBarInnerProps) {
                         zoom,
                         pitch,
                         bearing,
+                      };
+
+                      updatePageServer.execute(payload);
+
+                      updatePageOptimistic({
+                        ...currentPage,
+                        ...payload,
                       });
                     }
                   }}
