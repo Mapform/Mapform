@@ -9,6 +9,7 @@ import { getProjectWithPagesAction } from "~/data/share/get-project-with-pages";
 import { type Responses, getResponses } from "~/data/share/get-responses.ts";
 import { getLayerPointAction } from "~/data/share/get-layer-point";
 import { Map } from "./map";
+import { getLayermarkerAction } from "~/data/datalayer/get-layer-marker";
 
 const fetchProjectWithPages = cache(async (id: string) => {
   const projectWithPagesResponse = await getProjectWithPagesAction({
@@ -33,25 +34,31 @@ const fetchPageData = cache(async (id?: string) => {
   return pageData;
 });
 
-const fetchLayerPoint = cache(async (param?: string) => {
+const fetchSelectedFeature = cache(async (param?: string) => {
   if (!param) {
     return undefined;
   }
 
-  const [rowId, pointLayerId] = param.split("_");
+  const [type, rowId, subLayerId] = param.split("_");
 
-  if (!rowId || !pointLayerId) {
+  if (!type || !rowId || !subLayerId) {
     return undefined;
   }
 
-  const layerPointResponse = await getLayerPointAction({
-    rowId,
-    pointLayerId,
-  });
+  const featureResponse =
+    type === "point"
+      ? await getLayerPointAction({
+          rowId,
+          pointLayerId: subLayerId,
+        })
+      : await getLayermarkerAction({
+          rowId,
+          markerLayerId: subLayerId,
+        });
 
-  const layerPoint = layerPointResponse?.data;
+  const feature = featureResponse?.data;
 
-  return layerPoint;
+  return feature;
 });
 
 // The root Project Id
@@ -59,16 +66,16 @@ export default async function Page(props: {
   params: Promise<{ pId: string }>;
   searchParams?: Promise<{
     p?: string;
-    layer_point?: string;
+    feature?: string;
   }>;
 }) {
   const searchParams = await props.searchParams;
 
   const params = await props.params;
-  const [projectWithPages, pageData, layerPoint] = await Promise.all([
+  const [projectWithPages, pageData, selectedFeature] = await Promise.all([
     fetchProjectWithPages(params.pId),
     fetchPageData(searchParams?.p),
-    fetchLayerPoint(searchParams?.layer_point),
+    fetchSelectedFeature(searchParams?.feature),
   ]);
 
   const cookieStore = await cookies();
@@ -109,9 +116,9 @@ export default async function Page(props: {
         <Map
           formValues={formValues}
           isUsingSessions={isUsingSessions}
-          layerPoint={layerPoint}
           pageData={pageData}
           projectWithPages={projectWithPages}
+          selectedFeature={selectedFeature}
           // We clear the session id if the form id doesn't match the current form
           sessionId={!projectVersionMismatch && session ? session.id : null}
         />
