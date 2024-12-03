@@ -48,7 +48,7 @@ import {
 import { Item } from "./item";
 
 export function LayerList() {
-  const { currentProject, currentPage, setOptimisticPageState } = useProject();
+  const { currentProject, currentPage, updatePageOptimistic } = useProject();
   const [open, setOpen] = useState(false);
   const [layerPopoverOpen, setLayerPopoverOpen] = useState(false);
   const [query, setQuery] = useState<string>("");
@@ -98,26 +98,19 @@ export function LayerList() {
         overLayerIndex,
       );
 
-      setOptimisticPageState({
-        isPendingDebounce: true,
-        state: {
-          ...currentPage,
-          layersToPages: currentPage.layersToPages.sort((a, b) => {
-            const aIndex = newLayerList.findIndex((l) => l.id === a.layer.id);
-            const bIndex = newLayerList.findIndex((l) => l.id === b.layer.id);
+      updatePageOptimistic({
+        ...currentPage,
+        layersToPages: currentPage.layersToPages.sort((a, b) => {
+          const aIndex = newLayerList.findIndex((l) => l.id === a.layer.id);
+          const bIndex = newLayerList.findIndex((l) => l.id === b.layer.id);
 
-            return aIndex - bIndex;
-          }),
-        },
+          return aIndex - bIndex;
+        }),
       });
 
       await executeAsync({
         pageId: currentPage.id,
         layerOrder: newLayerList.map((layer) => layer.id),
-      });
-
-      setOptimisticPageState({
-        isPendingDebounce: false,
       });
     }
   };
