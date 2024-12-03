@@ -70,18 +70,20 @@ export function Blocknote({
       {/* Content */}
       <div className="p-4 md:overflow-y-auto">
         {/* Emoji */}
-        <div className="text-muted-foreground -ml-2 -mt-2 flex gap-0.5 pb-2">
-          {!icon ? (
-            <EmojiPopover onIconChange={onIconChange}>
-              <Button size="icon-sm" variant="ghost">
-                <SmilePlusIcon className="size-4" />
-              </Button>
-            </EmojiPopover>
-          ) : null}
-          <Button size="icon-sm" variant="ghost">
-            <ImagePlusIcon className="size-4" />
-          </Button>
-        </div>
+        {editable ? (
+          <div className="text-muted-foreground -ml-2 -mt-2 flex gap-0.5 pb-2">
+            {!icon ? (
+              <EmojiPopover onIconChange={onIconChange}>
+                <Button size="icon-sm" type="button" variant="ghost">
+                  <SmilePlusIcon className="size-4" />
+                </Button>
+              </EmojiPopover>
+            ) : null}
+            <Button size="icon-sm" type="button" variant="ghost">
+              <ImagePlusIcon className="size-4" />
+            </Button>
+          </div>
+        ) : null}
         {icon ? (
           editable ? (
             <EmojiPopover onIconChange={onIconChange}>
