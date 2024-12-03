@@ -73,6 +73,7 @@ export function BlocknoteEditor({
       className="flex-1"
       editable={editable}
       editor={editor}
+      emojiPicker={false}
       onChange={onChange}
       sideMenu={false}
       slashMenu={false}
@@ -84,7 +85,9 @@ export function BlocknoteEditor({
         getItems={async (query) => {
           return filterSuggestionItems(
             [
-              ...getDefaultReactSlashMenuItems(editor),
+              ...getDefaultReactSlashMenuItems(editor).filter(
+                (i) => i.title !== "Emoji",
+              ),
               // Only provide inputs for pages
               ...(includeFormBlocks
                 ? [insertTextInput(editor), insertPin(editor)]

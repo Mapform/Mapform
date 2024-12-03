@@ -25,7 +25,6 @@ import { useState } from "react";
 import type { UpsertLayerSchema } from "@mapform/backend/layers/upsert-layer/schema";
 import { createEmptyDatasetAction } from "~/data/datasets/create-empty-dataset";
 import { useProject } from "../project-context";
-import { usePage } from "../page-context";
 
 interface DatasetPopoverProps {
   form: UseFormReturn<UpsertLayerSchema>;
@@ -34,8 +33,7 @@ interface DatasetPopoverProps {
 export function DatasetPopover({ form }: DatasetPopoverProps) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
-  const { availableDatasets } = usePage();
-  const { optimisticProjectWithPages } = useProject();
+  const { currentProject, availableDatasets } = useProject();
   const { executeAsync } = useAction(createEmptyDatasetAction, {
     onSuccess: ({ data, input }) => {
       if (!data?.dataset) return;
@@ -46,7 +44,7 @@ export function DatasetPopover({ form }: DatasetPopoverProps) {
       });
       form.setValue("datasetId", data.dataset.id);
 
-      if (input.layerType === "point") {
+      if (input.layerType === "point" || input.layerType === "marker") {
         form.setValue(
           "pointProperties.pointColumnId",
           data.columns?.find((c) => c.type === "point")?.id ?? "",
@@ -127,7 +125,7 @@ export function DatasetPopover({ form }: DatasetPopoverProps) {
                       onSelect={async () => {
                         await executeAsync({
                           name: query,
-                          teamspaceId: optimisticProjectWithPages.teamspaceId,
+                          teamspaceId: currentProject.teamspaceId,
                           layerType: form.watch("type"),
                         });
                         setQuery("");

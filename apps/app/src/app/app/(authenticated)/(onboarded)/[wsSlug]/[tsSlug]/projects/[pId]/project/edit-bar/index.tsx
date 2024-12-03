@@ -17,61 +17,44 @@ import {
 } from "@mapform/ui/components/tooltip";
 import type { MapMouseEvent } from "mapbox-gl";
 import { useMapform, type MapboxEvent } from "@mapform/mapform";
-import type { CustomBlock } from "@mapform/blocknote";
-import { toast } from "@mapform/ui/components/toaster";
 import { cn } from "@mapform/lib/classnames";
 import type { SearchFeature } from "@mapform/map-utils/types";
 import { SearchLocationMarker as MapMarker } from "@mapform/mapform";
 import type { PageWithLayers } from "@mapform/backend/pages/get-page-with-layers";
-import { usePage } from "../../page-context";
 import { useProject } from "../../project-context";
 import { SearchLocationMarker } from "./search-location-marker";
 import { CommandSearch } from "./command-search";
 
-interface EditBarProps {
-  updatePageServer: (args: {
-    content?: { content: CustomBlock[] };
-    title?: string;
-    zoom?: number;
-    pitch?: number;
-    bearing?: number;
-    center?: { x: number; y: number };
-  }) => Promise<void>;
+interface EditBarInnerProps {
+  currentPage: PageWithLayers;
 }
-
-type EditBarInnerProps = EditBarProps & {
-  optimisticPage: PageWithLayers;
-};
 
 const queryClient = new QueryClient();
 
-export function EditBar({ updatePageServer }: EditBarProps) {
-  const { optimisticPage } = usePage();
+export function EditBar() {
+  const { currentPage } = useProject();
 
-  if (!optimisticPage) {
+  if (!currentPage) {
     return null;
   }
 
   return (
     <QueryClientProvider client={queryClient}>
-      <EditBarInner
-        optimisticPage={optimisticPage}
-        updatePageServer={updatePageServer}
-      />
+      <EditBarInner currentPage={currentPage} />
     </QueryClientProvider>
   );
 }
 
-function EditBarInner({ optimisticPage, updatePageServer }: EditBarInnerProps) {
+function EditBarInner({ currentPage }: EditBarInnerProps) {
   const { map, setDrawerOpen, mapContainer, drawerOpen } = useMapform();
-  const { optimisticProjectWithPages } = useProject();
+  const { currentProject, updatePageServer, updatePageOptimistic } =
+    useProject();
   const [openSearch, setOpenSearch] = useState(false);
   const [isSelectingPoint, setIsSelectingPoint] = useState(false);
   const [selectingPinLocation, setSelectingPinLocation] = useState({
     x: 0,
     y: 0,
   });
-  const { updatePage } = usePage();
 
   const [movedCoords, setMovedCoords] = useState<{
     lat: number;
@@ -80,11 +63,11 @@ function EditBarInner({ optimisticPage, updatePageServer }: EditBarInnerProps) {
     pitch: number;
     bearing: number;
   }>({
-    lat: optimisticPage.center.y,
-    lng: optimisticPage.center.x,
-    zoom: optimisticPage.zoom,
-    pitch: optimisticPage.pitch,
-    bearing: optimisticPage.bearing,
+    lat: currentPage.center.y,
+    lng: currentPage.center.x,
+    zoom: currentPage.zoom,
+    pitch: currentPage.pitch,
+    bearing: currentPage.bearing,
   });
   const [searchLocation, setSearchLocation] = useState<SearchFeature | null>(
     null,
@@ -103,13 +86,13 @@ function EditBarInner({ optimisticPage, updatePageServer }: EditBarInnerProps) {
   // Update movedCoords when the step changes
   useEffect(() => {
     setMovedCoords({
-      lat: optimisticPage.center.y,
-      lng: optimisticPage.center.x,
-      zoom: optimisticPage.zoom,
-      pitch: optimisticPage.pitch,
-      bearing: optimisticPage.bearing,
+      lat: currentPage.center.y,
+      lng: currentPage.center.x,
+      zoom: currentPage.zoom,
+      pitch: currentPage.pitch,
+      bearing: currentPage.bearing,
     });
-  }, [optimisticPage]);
+  }, [currentPage]);
 
   useEffect(() => {
     if (map) {
@@ -119,7 +102,7 @@ function EditBarInner({ optimisticPage, updatePageServer }: EditBarInnerProps) {
         map.off("moveend", handleOnMove);
       };
     }
-  }, [map, optimisticPage]);
+  }, [map, currentPage]);
 
   useEffect(() => {
     const mapEl = mapContainer.current;
@@ -175,15 +158,17 @@ function EditBarInner({ optimisticPage, updatePageServer }: EditBarInnerProps) {
   const roundLocation = (num: number) => Math.round(num * 1000000) / 1000000;
 
   const hasMoved =
-    roundLocation(movedCoords.lat) !== roundLocation(optimisticPage.center.y) ||
-    roundLocation(movedCoords.lng) !== roundLocation(optimisticPage.center.x) ||
-    movedCoords.zoom !== optimisticPage.zoom ||
-    movedCoords.pitch !== optimisticPage.pitch ||
-    movedCoords.bearing !== optimisticPage.bearing;
+    roundLocation(movedCoords.lat) !== roundLocation(currentPage.center.y) ||
+    roundLocation(movedCoords.lng) !== roundLocation(currentPage.center.x) ||
+    movedCoords.zoom !== currentPage.zoom ||
+    movedCoords.pitch !== currentPage.pitch ||
+    movedCoords.bearing !== currentPage.bearing;
 
-  const pageLayers = optimisticProjectWithPages.pageLayers.filter(
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- Once we add more layer types this won't error anymore
-    (layer) => layer.pageId === optimisticPage.id && layer.type === "point",
+  const pageLayers = currentProject.pageLayers.filter(
+    (layer) =>
+      layer.pageId === currentPage.id &&
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- We do need this
+      (layer.type === "point" || layer.type === "marker"),
   );
 
   return (
@@ -249,12 +234,12 @@ function EditBarInner({ optimisticPage, updatePageServer }: EditBarInnerProps) {
                   disabled={!hasMoved}
                   onClick={() => {
                     map?.setCenter([
-                      optimisticPage.center.x,
-                      optimisticPage.center.y,
+                      currentPage.center.x,
+                      currentPage.center.y,
                     ]);
-                    map?.setZoom(optimisticPage.zoom);
-                    map?.setPitch(optimisticPage.pitch);
-                    map?.setBearing(optimisticPage.bearing);
+                    map?.setZoom(currentPage.zoom);
+                    map?.setPitch(currentPage.pitch);
+                    map?.setBearing(currentPage.bearing);
                   }}
                   size="icon"
                   variant="ghost"
@@ -280,8 +265,8 @@ function EditBarInner({ optimisticPage, updatePageServer }: EditBarInnerProps) {
                       pitch !== undefined &&
                       bearing !== undefined
                     ) {
-                      updatePage({
-                        ...optimisticPage,
+                      const payload = {
+                        id: currentPage.id,
                         center: {
                           x: center.lng,
                           y: center.lat,
@@ -289,21 +274,13 @@ function EditBarInner({ optimisticPage, updatePageServer }: EditBarInnerProps) {
                         zoom,
                         pitch,
                         bearing,
-                      });
+                      };
 
-                      updatePageServer({
-                        center: {
-                          x: center.lng,
-                          y: center.lat,
-                        },
-                        zoom,
-                        pitch,
-                        bearing,
-                      }).catch(() => {
-                        toast({
-                          title: "Uh oh! Something went wrong.",
-                          description: "There was an error saving the location",
-                        });
+                      updatePageServer.execute(payload);
+
+                      updatePageOptimistic({
+                        ...currentPage,
+                        ...payload,
                       });
                     }
                   }}

@@ -24,10 +24,11 @@ import { upsertLayerSchema } from "@mapform/backend/layers/upsert-layer/schema";
 import type { UpsertLayerSchema } from "@mapform/backend/layers/upsert-layer/schema";
 import type { PageWithLayers } from "@mapform/backend/pages/get-page-with-layers";
 import { upsertLayerAction } from "~/data/layers/upsert-layer";
-import { usePage } from "../page-context";
+import { useProject } from "../project-context";
 import { PointProperties } from "./point-properties";
 import { DatasetPopover } from "./dataset-popover";
 import { TypePopover } from "./type-popover";
+import { MarkerProperties } from "./marker-properties";
 
 interface LayerPopoverProps {
   initialName?: string;
@@ -39,21 +40,27 @@ export const LayerPopoverContent = forwardRef<
   React.ElementRef<typeof PopoverContent>,
   React.ComponentPropsWithoutRef<typeof PopoverContent> & LayerPopoverProps
 >(({ layerToEdit, initialName, onSuccess, ...props }, ref) => {
-  const { ...rest } = usePage();
+  const { ...rest } = useProject();
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- It's set
-  const optimisticPage = rest.optimisticPage!;
+  const currentPage = rest.currentPage!;
 
   const form = useForm<UpsertLayerSchema>({
     defaultValues: {
       name: initialName ?? "",
-      pageId: optimisticPage.id,
-      type: "point",
+      pageId: currentPage.id,
       ...layerToEdit,
-      pointProperties: layerToEdit?.pointLayer
-        ? {
-            ...layerToEdit.pointLayer,
-          }
-        : undefined,
+      pointProperties:
+        layerToEdit?.type === "point" && layerToEdit.pointLayer
+          ? {
+              ...layerToEdit.pointLayer,
+            }
+          : undefined,
+      markerProperties:
+        layerToEdit?.type === "marker" && layerToEdit.markerLayer
+          ? {
+              ...layerToEdit.markerLayer,
+            }
+          : undefined,
     },
     resolver: zodResolver(upsertLayerSchema),
   });
@@ -100,9 +107,10 @@ export const LayerPopoverContent = forwardRef<
       return null;
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- Once we add more layer types this won't error anymore
     if (type === "point")
       return <PointProperties form={form} isEditing={Boolean(layerToEdit)} />;
+
+    return <MarkerProperties form={form} isEditing={Boolean(layerToEdit)} />;
   };
 
   return (

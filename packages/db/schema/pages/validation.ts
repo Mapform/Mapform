@@ -1,10 +1,11 @@
+import emojiRegex from "emoji-regex";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import type { DocumentContent } from "@mapform/blocknote";
 import { z } from "zod";
-import { pages } from "./schema";
 import { blockSchema } from "../blocks/validation";
+import { pages } from "./schema";
 
-export const insertPageSchema = createInsertSchema(pages, {
+const schemaExtension = {
   position: z.number().int().gt(0),
   center: z.object({
     x: z.number(),
@@ -13,18 +14,23 @@ export const insertPageSchema = createInsertSchema(pages, {
   content: z.object({
     content: blockSchema.array(),
   }),
-});
+  icon: z
+    .string()
+    .min(1, "Emoji is required")
+    .superRefine((val, ctx) => {
+      const matchedEmojiCount = (val.match(emojiRegex()) || []).length;
 
-export const selectPageSchema = createSelectSchema(pages, {
-  position: z.number().int().gt(0),
-  center: z.object({
-    x: z.number(),
-    y: z.number(),
-  }),
-  content: z.object({
-    content: blockSchema.array(),
-  }),
-});
+      if (matchedEmojiCount !== 1) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Must be a single emoji",
+        });
+      }
+    }),
+};
+
+export const insertPageSchema = createInsertSchema(pages, schemaExtension);
+export const selectPageSchema = createSelectSchema(pages, schemaExtension);
 
 export type InsertPage = Modify<
   z.infer<typeof insertPageSchema>,

@@ -1,6 +1,11 @@
 import { db } from "@mapform/db";
 import { eq } from "@mapform/db/utils";
-import { layers, layersToPages, pointLayers } from "@mapform/db/schema";
+import {
+  layers,
+  layersToPages,
+  markerLayers,
+  pointLayers,
+} from "@mapform/db/schema";
 import type { UpsertLayerSchema } from "./schema";
 
 export const upsertLayer = async ({
@@ -10,8 +15,11 @@ export const upsertLayer = async ({
   name,
   type,
   pointProperties,
+  markerProperties,
 }: UpsertLayerSchema) => {
   const newLayer = await db.transaction(async (tx) => {
+    const shouldUpdate = !!id;
+
     const [layer] = await tx
       .insert(layers)
       .values({
@@ -33,7 +41,7 @@ export const upsertLayer = async ({
     /**
      * Only insert when creating layer
      */
-    if (!id) {
+    if (!shouldUpdate) {
       const existingPageLayers = await tx.query.layersToPages.findMany({
         where: eq(layersToPages.pageId, pageId),
       });
@@ -49,17 +57,29 @@ export const upsertLayer = async ({
     }
 
     if (type === "point" && pointProperties) {
-      if (id) {
-        await tx
-          .update(pointLayers)
-          .set(pointProperties)
-          .where(eq(pointLayers.layerId, id));
-      } else {
-        await tx.insert(pointLayers).values({
+      await tx
+        .insert(pointLayers)
+        .values({
           layerId: layer.id,
           ...pointProperties,
+        })
+        .onConflictDoUpdate({
+          target: pointLayers.layerId,
+          set: pointProperties,
         });
-      }
+    }
+
+    if (type === "marker" && markerProperties) {
+      await tx
+        .insert(markerLayers)
+        .values({
+          layerId: layer.id,
+          ...markerProperties,
+        })
+        .onConflictDoUpdate({
+          target: markerLayers.layerId,
+          set: markerProperties,
+        });
     }
 
     return layer;

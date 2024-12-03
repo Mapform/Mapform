@@ -1,99 +1,119 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { useCallback } from "react";
 import { MapForm } from "@mapform/mapform";
-import { toast } from "@mapform/ui/components/toaster";
-import type { CustomBlock } from "@mapform/blocknote";
-import { useAction } from "next-safe-action/hooks";
 import { debounce } from "@mapform/lib/lodash";
-import { uploadImageAction } from "~/data/images";
-import { updatePageAction } from "~/data/pages/update-page";
-import { upsertCellAction } from "~/data/cells/upsert-cell";
 import { compressImage } from "~/lib/compress-image";
 import { env } from "~/env.mjs";
-import { usePage } from "../page-context";
 import { useProject } from "../project-context";
 import { EditBar } from "./edit-bar";
 
 function Project() {
-  const { layerPoint } = useProject();
-  const { optimisticPage, optimisticPageData } = usePage();
+  const {
+    currentPage,
+    selectedFeature,
+    currentPageData,
+    updatePageServer,
+    upsertCellServer,
+    uploadImageServer,
+    updatePageOptimistic,
+    updateSelectedFeatureOptimistic,
+  } = useProject();
 
-  const { executeAsync: executeAsyncUpdatePage } = useAction(updatePageAction, {
-    onError: (response) => {
-      if (response.error.validationErrors || response.error.serverError) {
-        toast({
-          title: "Uh oh! Something went wrong.",
-          description: "An error occurred while updating the page.",
-        });
-      }
-    },
-  });
-  const { execute: executeUpsertCell } = useAction(upsertCellAction);
-  const { executeAsync: executeAsyncUploadImage } = useAction(
-    uploadImageAction,
-    {
-      onError: (response) => {
-        if (response.error.validationErrors) {
-          toast({
-            title: "Uh oh! Something went wrong.",
-            description: response.error.validationErrors.image?._errors?.[0],
-          });
+  /**
+   * NOTE: Optimistic updates DO NOT work with debounced server actions. To work
+   * around this either:
+   * - Pick one or the other
+   * - Add uncontrolled state to the component where it optimistic updates are
+   *   needed. For instance, the Blocknote richtext in an uncontrolled
+   *   component.
+   */
 
-          return;
-        }
-
-        toast({
-          title: "Uh oh! Something went wrong.",
-          description: "An error occurred while uploading the image.",
-        });
-      },
-    },
+  // These need to be separate because if a title and description change are
+  // made quickly (within the debounce time), the update of the
+  // second would overwrite the first.
+  const debouncedUpdatePageTitle = useCallback(
+    debounce(updatePageServer.execute, 2000),
+    [updatePageServer],
+  );
+  const debouncedUpdatePageDescription = useCallback(
+    debounce(updatePageServer.execute, 2000),
+    [updatePageServer],
+  );
+  const debouncedUpdateCellRichtext = useCallback(
+    debounce(upsertCellServer.execute, 2000),
+    [upsertCellServer],
+  );
+  const debouncedUpdateCellString = useCallback(
+    debounce(upsertCellServer.execute, 2000),
+    [upsertCellServer],
   );
 
-  if (!optimisticPage) {
+  if (!currentPage) {
     return null;
   }
-
-  const updatePageServer = async ({
-    content,
-    title,
-    zoom,
-    pitch,
-    bearing,
-    center,
-  }: {
-    content?: { content: CustomBlock[] };
-    title?: string;
-    zoom?: number;
-    pitch?: number;
-    bearing?: number;
-    center?: { x: number; y: number };
-  }) => {
-    await executeAsyncUpdatePage({
-      id: optimisticPage.id,
-      ...(content !== undefined && { content }),
-      ...(title !== undefined && { title }),
-      ...(zoom !== undefined && { zoom }),
-      ...(pitch !== undefined && { pitch }),
-      ...(bearing !== undefined && { bearing }),
-      ...(center !== undefined && { center }),
-    });
-  };
-
-  const debouncedUpdatePageServer = debounce(updatePageServer, 2000);
-  const debouncedUpsertCell = debounce(executeUpsertCell, 2000);
 
   return (
     <div className="flex flex-1 justify-center overflow-hidden p-4">
       <div className="flex flex-1">
         <MapForm
-          activePoint={layerPoint}
-          currentPage={optimisticPage}
+          currentPage={currentPage}
           editable
           mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
-          onDescriptionChange={(content: { content: CustomBlock[] }) => {
-            void debouncedUpdatePageServer({ content });
+          onDescriptionChange={(content, type) => {
+            if (type === "page") {
+              debouncedUpdatePageDescription({ id: currentPage.id, content });
+              return;
+            }
+
+            if (!selectedFeature?.description) {
+              return;
+            }
+
+            debouncedUpdateCellRichtext({
+              type: "richtext",
+              value: content,
+              rowId: selectedFeature.rowId,
+              columnId: selectedFeature.description.columnId,
+            });
+          }}
+          onIconChange={(icon, type) => {
+            if (type === "page") {
+              updatePageOptimistic({
+                ...currentPage,
+                icon,
+              });
+
+              updatePageServer.execute({
+                id: currentPage.id,
+                icon,
+              });
+
+              return;
+            }
+
+            if (!selectedFeature?.icon?.iconCell || !currentPageData) {
+              return;
+            }
+
+            updateSelectedFeatureOptimistic({
+              ...selectedFeature,
+              icon: {
+                ...selectedFeature.icon,
+                iconCell: {
+                  ...selectedFeature.icon.iconCell,
+                  value: icon,
+                },
+              },
+            });
+
+            upsertCellServer.execute({
+              type: "icon",
+              value: icon,
+              rowId: selectedFeature.rowId,
+              columnId: selectedFeature.icon.columnId,
+            });
           }}
           onImageUpload={async (file: File) => {
             const compressedFile = await compressImage(
@@ -106,7 +126,7 @@ function Project() {
             const formData = new FormData();
             formData.append("image", compressedFile);
 
-            const response = await executeAsyncUploadImage(formData);
+            const response = await uploadImageServer.executeAsync(formData);
 
             if (response?.serverError) {
               return null;
@@ -114,20 +134,31 @@ function Project() {
 
             return response?.data?.url || null;
           }}
-          onPoiCellChange={(cell) => {
-            debouncedUpsertCell(cell);
-          }}
-          onTitleChange={(title: string) => {
-            void debouncedUpdatePageServer({
-              title,
+          onTitleChange={(title, type) => {
+            if (type === "page") {
+              debouncedUpdatePageTitle({
+                id: currentPage.id,
+                title,
+              });
+
+              return;
+            }
+
+            if (!selectedFeature?.title) {
+              return;
+            }
+
+            debouncedUpdateCellString({
+              type: "string",
+              value: title,
+              rowId: selectedFeature.rowId,
+              columnId: selectedFeature.title.columnId,
             });
           }}
-          pageData={optimisticPageData}
+          pageData={currentPageData}
+          selectedFeature={selectedFeature}
         >
-          <EditBar
-            key={optimisticPage.id}
-            updatePageServer={updatePageServer}
-          />
+          <EditBar key={currentPage.id} />
         </MapForm>
       </div>
     </div>

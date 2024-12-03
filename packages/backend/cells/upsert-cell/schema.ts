@@ -8,9 +8,13 @@ import {
   insertDateCellSchema,
   insertRichtextCellSchema,
   insertPointCellSchema,
+  insertIconCellSchema,
 } from "@mapform/db/schema";
 
-const commonCellSchema = insertCellSchema;
+const commonCellSchema = insertCellSchema.pick({
+  rowId: true,
+  columnId: true,
+});
 
 export const upsertCellSchema = z.discriminatedUnion("type", [
   // String
@@ -42,6 +46,11 @@ export const upsertCellSchema = z.discriminatedUnion("type", [
   commonCellSchema.extend({
     type: z.literal(columnTypeEnum.enumValues[5]),
     value: insertRichtextCellSchema.shape.value,
+  }),
+  // icon
+  commonCellSchema.extend({
+    type: z.literal(columnTypeEnum.enumValues[6]),
+    value: insertIconCellSchema.shape.value,
   }),
 ]);
 

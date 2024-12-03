@@ -7,6 +7,7 @@ import {
   booleanCells,
   richtextCells,
   dateCells,
+  iconsCells,
 } from "@mapform/db/schema";
 import type { DocumentContent } from "@mapform/blocknote";
 import { UpsertCellSchema } from "./schema";
@@ -108,6 +109,19 @@ export const upsertCell = async ({
         })
         .onConflictDoUpdate({
           target: dateCells.cellId,
+          set: { value },
+        });
+    }
+
+    if (type === "icon") {
+      await tx
+        .insert(iconsCells)
+        .values({
+          cellId: cell.id,
+          value,
+        })
+        .onConflictDoUpdate({
+          target: iconsCells.cellId,
           set: { value },
         });
     }

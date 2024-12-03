@@ -28,15 +28,14 @@ import { PlusIcon } from "lucide-react";
 import { updatePageOrderAction } from "~/data/pages/update-page-order";
 import { createPageAction } from "~/data/pages/create-page";
 import { useProject } from "../../project-context";
-import { usePage } from "../../page-context";
 import { Item } from "./item";
 
 export function PageList() {
   const { map } = useMapform();
-  const { setActivePage } = usePage();
-  const { optimisticProjectWithPages, updateProjectWithPages } = useProject();
+  const { currentProject, updateProjectOptimistic, setActivePage } =
+    useProject();
 
-  const dragPages = optimisticProjectWithPages.pages;
+  const dragPages = currentProject.pages;
   const { executeAsync: updatePageOrderAsync } = useAction(
     updatePageOrderAction,
   );
@@ -75,13 +74,13 @@ export function PageList() {
       if (activeStepIndex < 0 || overStepIndex < 0) return;
 
       const newPageList = arrayMove(dragPages, activeStepIndex, overStepIndex);
-      updateProjectWithPages({
-        ...optimisticProjectWithPages,
+      updateProjectOptimistic({
+        ...currentProject,
         pages: newPageList,
       });
 
       await updatePageOrderAsync({
-        projectId: optimisticProjectWithPages.id,
+        projectId: currentProject.id,
         pageOrder: newPageList.map((page) => page.id),
       });
     }
@@ -108,7 +107,7 @@ export function PageList() {
               return;
 
             executeCreatePage({
-              projectId: optimisticProjectWithPages.id,
+              projectId: currentProject.id,
               center: { x: loc.lng, y: loc.lat },
               zoom,
               pitch,

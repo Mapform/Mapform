@@ -1,6 +1,11 @@
 import { db } from "@mapform/db";
-import { eq } from "@mapform/db/utils";
-import { cells, pointCells, layersToPages } from "@mapform/db/schema";
+import { eq, or } from "@mapform/db/utils";
+import {
+  cells,
+  pointCells,
+  layersToPages,
+  iconsCells,
+} from "@mapform/db/schema";
 import { type GetPageDataSchema } from "./schema";
 
 export const getPageData = async ({ pageId }: GetPageDataSchema) => {
@@ -10,13 +15,19 @@ export const getPageData = async ({ pageId }: GetPageDataSchema) => {
       layer: {
         with: {
           pointLayer: true,
+          markerLayer: true,
         },
       },
     },
   });
 
   const pointLayers = layersToPagesResponse.filter(
-    (ltp) => ltp.layer.pointLayer?.pointColumnId,
+    (ltp) => ltp.layer.type === "point" && ltp.layer.pointLayer?.pointColumnId,
+  );
+
+  const markerLayers = layersToPagesResponse.filter(
+    (ltp) =>
+      ltp.layer.type === "marker" && ltp.layer.markerLayer?.pointColumnId,
   );
 
   const pointCellsResponse = await Promise.all(
@@ -41,6 +52,56 @@ export const getPageData = async ({ pageId }: GetPageDataSchema) => {
     }),
   );
 
+  const markerCellsResponse = await Promise.all(
+    markerLayers.map(async (pl) => {
+      if (!pl.layer.markerLayer?.pointColumnId || !pl.layer.markerLayer.id) {
+        return [];
+      }
+
+      const cellsResponse = await db
+        .select()
+        .from(cells)
+        .leftJoin(pointCells, eq(cells.id, pointCells.cellId))
+        .leftJoin(iconsCells, eq(cells.id, iconsCells.cellId))
+        .where(
+          or(
+            eq(cells.columnId, pl.layer.markerLayer!.pointColumnId),
+            pl.layer.markerLayer.iconColumnId
+              ? eq(cells.columnId, pl.layer.markerLayer.iconColumnId)
+              : undefined,
+          ),
+        );
+
+      const groupedCells = cellsResponse.reduce(
+        (acc, c) => {
+          acc[c.cell.rowId] = {
+            ...acc[c.cell.rowId],
+            ...(c.point_cell ? { point_cell: c.point_cell } : {}),
+            ...(c.icon_cell ? { icon_cell: c.icon_cell } : {}),
+            cell: c.cell,
+          };
+
+          return acc;
+        },
+        {} as Record<
+          string,
+          {
+            point_cell?: (typeof cellsResponse)[number]["point_cell"];
+            icon_cell?: (typeof cellsResponse)[number]["icon_cell"];
+            cell: (typeof cellsResponse)[number]["cell"];
+          }
+        >,
+      );
+
+      return Object.values(groupedCells).map((c) => ({
+        ...c,
+        color: pl.layer.markerLayer?.color,
+        rowId: c.cell.rowId,
+        pointLayerId: pl.layer.markerLayer?.id,
+      }));
+    }),
+  );
+
   return {
     pointData: pointCellsResponse
       .flat()
@@ -49,6 +110,21 @@ export const getPageData = async ({ pageId }: GetPageDataSchema) => {
         ...pc.point_cell,
         color: pc.color,
         rowId: pc.rowId,
+        cellId: pc.cell.id,
+        columnId: pc.cell.columnId,
+        pointLayerId: pc.pointLayerId,
+      })),
+
+    markerData: markerCellsResponse
+      .flat()
+      .filter((pc) => pc.point_cell?.value)
+      .map((pc) => ({
+        ...pc.point_cell,
+        icon: pc.icon_cell?.value,
+        color: pc.color,
+        rowId: pc.rowId,
+        cellId: pc.cell.id,
+        columnId: pc.cell.columnId,
         pointLayerId: pc.pointLayerId,
       })),
   };

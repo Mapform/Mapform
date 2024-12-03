@@ -20,6 +20,7 @@ export const getPageWithLayers = async ({ id }: GetPageWithLayersSchema) => {
       layer: {
         with: {
           pointLayer: true,
+          markerLayer: true,
         },
       },
     },

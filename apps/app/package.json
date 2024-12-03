@@ -33,6 +33,7 @@
     "@tanstack/react-table": "^8.20.5",
     "@tanstack/react-virtual": "^3.10.8",
     "@types/mapbox-gl": "^3.1.0",
+    "@vercel/analytics": "^1.4.1",
     "@vercel/blob": "^0.23.3",
     "@vercel/speed-insights": "^1.1.0",
     "cobe": "^0.6.3",

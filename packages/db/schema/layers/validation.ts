@@ -1,6 +1,6 @@
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import { z } from "zod";
-import { layers, pointLayers } from "./schema";
+import { layers, markerLayers, pointLayers } from "./schema";
 
 /**
  * LAYERS
@@ -28,3 +28,18 @@ export const selectPointLayerSchema = createSelectSchema(pointLayers, {
 
 export type InsertPointLayer = z.infer<typeof insertPointLayerSchema>;
 export type PointLayer = typeof pointLayers.$inferSelect;
+
+/**
+ * MARKER LAYERS
+ */
+export const insertMarkerLayerSchema = createInsertSchema(markerLayers, {
+  // Must be a hex code
+  color: z.string().length(7).regex(/^#/).optional(),
+});
+export const selectMarkerLayerSchema = createSelectSchema(pointLayers, {
+  // Must be a hex code
+  color: z.string().length(7).regex(/^#/).optional(),
+});
+
+export type InsertMarkerLayer = z.infer<typeof insertMarkerLayerSchema>;
+export type MarkerLayer = typeof pointLayers.$inferSelect;

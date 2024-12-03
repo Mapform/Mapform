@@ -34,7 +34,7 @@ import {
   AlertDialogTrigger,
 } from "@mapform/ui/components/alert-dialog";
 import { useAction } from "next-safe-action/hooks";
-import { startTransition, useState } from "react";
+import { useState } from "react";
 import type { PageWithLayers } from "@mapform/backend/pages/get-page-with-layers";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -46,7 +46,6 @@ import {
 import { deleteLayerAction } from "~/data/layers/delete-layer";
 import { deletePageLayerAction } from "~/data/layers-to-pages/delete-page-layer";
 import { DragItem, DragHandle } from "~/components/draggable";
-import { usePage } from "../../page-context";
 import { useProject } from "../../project-context";
 import {
   LayerPopoverRoot,
@@ -59,20 +58,19 @@ interface ItemProps {
 }
 
 export function Item({ layer }: ItemProps) {
-  const { optimisticPage, updatePage } = usePage();
-  const { optimisticProjectWithPages } = useProject();
+  const { currentProject, currentPage, updatePageOptimistic } = useProject();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [layerPopoverOpen, setLayerPopoverOpen] = useState(false);
   const { execute: executeDeleteLayer } = useAction(deleteLayerAction);
   const { execute: executeDeletePageLayer } = useAction(deletePageLayerAction);
   const params = useParams<{ wsSlug: string; tsSlug: string; pId: string }>();
 
-  const isLastPage = optimisticProjectWithPages.pages.length <= 1;
+  const isLastPage = currentProject.pages.length <= 1;
 
   const handleDelete = () => {
-    if (!optimisticPage) return;
+    if (!currentPage) return;
 
-    const newLayers = optimisticPage.layersToPages.filter(
+    const newLayers = currentPage.layersToPages.filter(
       (pageLayer) => pageLayer.layerId !== layer.id,
     );
 
@@ -80,31 +78,31 @@ export function Item({ layer }: ItemProps) {
       layerId: layer.id,
     });
 
-    startTransition(() => {
-      updatePage({
-        ...optimisticPage,
-        layersToPages: newLayers,
-      });
+    // Note: it is not necessary to set isPendingDebounce to true here since we
+    // are not debouncing
+    updatePageOptimistic({
+      ...currentPage,
+      layersToPages: newLayers,
     });
   };
 
   const handleRemoveFromPage = () => {
-    if (!optimisticPage) return;
+    if (!currentPage) return;
 
-    const newLayers = optimisticPage.layersToPages.filter(
+    const newLayers = currentPage.layersToPages.filter(
       (pageLayer) => pageLayer.layerId !== layer.id,
     );
 
     executeDeletePageLayer({
       layerId: layer.id,
-      pageId: optimisticPage.id,
+      pageId: currentPage.id,
     });
 
-    startTransition(() => {
-      updatePage({
-        ...optimisticPage,
-        layersToPages: newLayers,
-      });
+    // Note: it is not necessary to set isPendingDebounce to true here since we
+    // are not debouncing
+    updatePageOptimistic({
+      ...currentPage,
+      layersToPages: newLayers,
     });
   };
 

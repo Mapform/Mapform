@@ -1,4 +1,3 @@
-import { relations } from "drizzle-orm";
 import {
   boolean,
   timestamp,
@@ -7,8 +6,6 @@ import {
   varchar,
   uuid,
 } from "drizzle-orm/pg-core";
-import { workspaceMemberships } from "../workspace-memberships";
-import { teamspaceMemberships } from "../teamspace-memberships";
 
 export const users = pgTable("user", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -17,11 +14,6 @@ export const users = pgTable("user", {
   image: text("image"),
   hasOnboarded: boolean("hasOnboarded").notNull().default(false),
 });
-
-export const usersRelations = relations(users, ({ many }) => ({
-  workspaceMemberships: many(workspaceMemberships),
-  teamspaceMemberships: many(teamspaceMemberships),
-}));
 
 export const sessions = pgTable("session", {
   sessionToken: text("sessionToken").primaryKey(),

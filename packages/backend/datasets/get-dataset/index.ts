@@ -27,6 +27,7 @@ export const getDataset = async ({ datasetId }: GetDatasetSchema) => {
               numberCell: true,
               dateCell: true,
               richtextCell: true,
+              iconCell: true,
             },
           },
         },

@@ -12,10 +12,8 @@ import {
   varchar,
   index,
 } from "drizzle-orm/pg-core";
-import { relations } from "drizzle-orm";
 import type { DocumentContent } from "@mapform/blocknote";
-import { projects } from "../projects";
-import { layersToPages } from "../layers-to-pages";
+import { projects } from "../projects/schema";
 
 export const contentViewTypeEnum = pgEnum("content_view_type", [
   "map",
@@ -57,15 +55,5 @@ export const pages = pgTable(
       .$onUpdate(() => new Date())
       .notNull(),
   },
-  (t) => ({
-    spatialIndex: index("page_spatial_index").using("gist", t.center),
-  }),
+  (t) => [index("page_spatial_index").using("gist", t.center)],
 );
-
-export const pagesRelations = relations(pages, ({ one, many }) => ({
-  project: one(projects, {
-    fields: [pages.projectId],
-    references: [projects.id],
-  }),
-  layersToPages: many(layersToPages),
-}));

@@ -22,6 +22,7 @@ export const createPoint = async ({
       where: eq(layers.id, layerId),
       with: {
         pointLayer: true,
+        markerLayer: true,
       },
     });
 
@@ -29,19 +30,36 @@ export const createPoint = async ({
       throw new Error("Layer not found");
     }
 
-    if (!layer.pointLayer) {
-      throw new Error("Layer is not a point layer");
+    if (layer.type !== "point" && layer.type !== "marker") {
+      throw new Error("Layer is not a point or marker layer");
     }
 
-    if (!layer.pointLayer.titleColumnId) {
+    const pointColumnId =
+      layer.type === "point"
+        ? layer.pointLayer?.pointColumnId
+        : layer.markerLayer?.pointColumnId;
+    const titleColumnId =
+      layer.type === "point"
+        ? layer.pointLayer?.titleColumnId
+        : layer.markerLayer?.titleColumnId;
+    const descriptionColumnId =
+      layer.type === "point"
+        ? layer.pointLayer?.descriptionColumnId
+        : layer.markerLayer?.descriptionColumnId;
+    const iconColumnId =
+      layer.type === "point"
+        ? layer.pointLayer?.iconColumnId
+        : layer.markerLayer?.iconColumnId;
+
+    if (!titleColumnId) {
       throw new Error("Layer does not have a title column");
     }
 
-    if (!layer.pointLayer.descriptionColumnId) {
+    if (!descriptionColumnId) {
       throw new Error("Layer does not have a description column");
     }
 
-    if (!layer.pointLayer.pointColumnId) {
+    if (!pointColumnId) {
       throw new Error("Layer does not have a point column");
     }
 
@@ -61,16 +79,25 @@ export const createPoint = async ({
       .values([
         {
           rowId: row.id,
-          columnId: layer.pointLayer.titleColumnId,
+          columnId: titleColumnId,
         },
         {
           rowId: row.id,
-          columnId: layer.pointLayer.descriptionColumnId,
+          columnId: descriptionColumnId,
         },
         {
           rowId: row.id,
-          columnId: layer.pointLayer.pointColumnId,
+          columnId: pointColumnId,
         },
+        // If an icon column exists, create a cell for it, but we don't need to create an iconCell (just leave it empty)
+        ...(iconColumnId
+          ? [
+              {
+                rowId: row.id,
+                columnId: iconColumnId,
+              },
+            ]
+          : []),
       ])
       .returning();
 

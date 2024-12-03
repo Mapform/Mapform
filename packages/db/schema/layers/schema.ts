@@ -1,10 +1,8 @@
 import { timestamp, pgTable, uuid, text, pgEnum } from "drizzle-orm/pg-core";
-import { relations } from "drizzle-orm";
-import { datasets } from "../datasets";
-import { layersToPages } from "../layers-to-pages";
-import { columns } from "../columns";
+import { datasets } from "../datasets/schema";
+import { columns } from "../columns/schema";
 
-export const layerTypeEnum = pgEnum("layer_type", ["point"]);
+export const layerTypeEnum = pgEnum("layer_type", ["point", "marker"]);
 export const colorEnum = pgEnum("color", ["black", "gray", ""]);
 
 /**
@@ -27,21 +25,13 @@ export const layers = pgTable("layer", {
     .notNull(),
 });
 
-export const layersRelations = relations(layers, ({ one, many }) => ({
-  dataset: one(datasets, {
-    fields: [layers.datasetId],
-    references: [datasets.id],
-  }),
-  layersToPages: many(layersToPages),
-  pointLayer: one(pointLayers),
-}));
-
 /**
  * POINT LAYER
  */
 export const pointLayers = pgTable("point_layer", {
   id: uuid("id").primaryKey().defaultRandom(),
   layerId: uuid("layer_id")
+    .unique()
     .notNull()
     .references(() => layers.id, { onDelete: "cascade" }),
   pointColumnId: uuid("point_column_id").references(() => columns.id, {
@@ -54,6 +44,9 @@ export const pointLayers = pgTable("point_layer", {
     () => columns.id,
     { onDelete: "set null" },
   ),
+  iconColumnId: uuid("icon_column_id").references(() => columns.id, {
+    onDelete: "set null",
+  }),
   color: text("color"),
 
   createdAt: timestamp("created_at", { withTimezone: true })
@@ -65,13 +58,35 @@ export const pointLayers = pgTable("point_layer", {
     .notNull(),
 });
 
-export const pointLayersRelations = relations(pointLayers, ({ one }) => ({
-  layer: one(layers, {
-    fields: [pointLayers.layerId],
-    references: [layers.id],
+/**
+ * MARKER LAYER
+ */
+export const markerLayers = pgTable("marker_layer", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  layerId: uuid("layer_id")
+    .unique()
+    .notNull()
+    .references(() => layers.id, { onDelete: "cascade" }),
+  pointColumnId: uuid("point_column_id").references(() => columns.id, {
+    onDelete: "set null",
   }),
-  pointColumn: one(columns, {
-    fields: [pointLayers.pointColumnId],
-    references: [columns.id],
+  titleColumnId: uuid("title_column_id").references(() => columns.id, {
+    onDelete: "set null",
   }),
-}));
+  descriptionColumnId: uuid("description_column_id").references(
+    () => columns.id,
+    { onDelete: "set null" },
+  ),
+  iconColumnId: uuid("icon_column_id").references(() => columns.id, {
+    onDelete: "set null",
+  }),
+  color: text("color"),
+
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .defaultNow()
+    .$onUpdate(() => new Date())
+    .notNull(),
+});

@@ -24,6 +24,7 @@ export const getLayerPoint = async ({
             booleanCell: true,
             dateCell: true,
             richtextCell: true,
+            iconCell: true,
             pointCell: {
               columns: {
                 id: true,
@@ -56,6 +57,7 @@ export const getLayerPoint = async ({
       (c) => c.columnId === pointLayer.descriptionColumnId,
     ),
     location: row.cells.find((c) => c.columnId === pointLayer.pointColumnId),
+    icon: row.cells.find((c) => c.columnId === pointLayer.iconColumnId),
     cells: row.cells.filter(
       (c) =>
         c.columnId !== pointLayer.pointColumnId &&

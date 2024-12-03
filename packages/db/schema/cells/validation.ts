@@ -1,5 +1,8 @@
+import emojiRegex from "emoji-regex";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import { z } from "zod";
+import type { DocumentContent } from "@mapform/blocknote";
+import { blockSchema } from "../blocks/validation";
 import {
   cells,
   dateCells,
@@ -8,9 +11,8 @@ import {
   stringCells,
   booleanCells,
   richtextCells,
+  iconsCells,
 } from "./schema";
-import { blockSchema } from "../blocks/validation";
-import type { DocumentContent } from "@mapform/blocknote";
 
 /**
  * CELLS
@@ -69,6 +71,33 @@ export const insertBooleanCellSchema = createInsertSchema(booleanCells);
 export const selectBooleanCellSchema = createSelectSchema(booleanCells);
 export type InsertBooleanCell = z.infer<typeof insertBooleanCellSchema>;
 export type BooleanCell = typeof booleanCells.$inferSelect;
+
+const iconSchemaExtension = {
+  value: z.string().superRefine((val, ctx) => {
+    const matchedEmojiCount = (val.match(emojiRegex()) || []).length;
+
+    if (matchedEmojiCount !== 1) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Must be a single emoji",
+      });
+    }
+  }),
+};
+
+/**
+ * ICON CELLS
+ */
+export const insertIconCellSchema = createInsertSchema(
+  iconsCells,
+  iconSchemaExtension,
+);
+export const selectIconCellSchema = createSelectSchema(
+  iconsCells,
+  iconSchemaExtension,
+);
+export type InsertIconCell = z.infer<typeof insertIconCellSchema>;
+export type IconCell = typeof iconsCells.$inferSelect;
 
 /**
  * RICHTEXT CELLS

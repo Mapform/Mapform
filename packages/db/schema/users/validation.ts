@@ -1,6 +1,6 @@
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import type { z } from "zod";
-import { users, sessions } from "./schema";
+import { users, type sessions } from "./schema";
 
 export const insertUserSchema = createInsertSchema(users, {
   name: (schema) => schema.name.min(3),

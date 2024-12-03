@@ -24,7 +24,6 @@ import {
 } from "@mapform/ui/components/sidebar";
 import { DragItem, DragHandle } from "~/components/draggable";
 import { deletePageAction } from "~/data/pages/delete-page";
-import { usePage } from "../../page-context";
 import { useProject } from "../../project-context";
 
 interface ItemProps {
@@ -32,40 +31,40 @@ interface ItemProps {
 }
 
 export function Item({ page }: ItemProps) {
-  const { setActivePage, optimisticPage } = usePage();
-  const { optimisticProjectWithPages, updateProjectWithPages } = useProject();
+  const {
+    currentProject,
+    updateProjectOptimistic,
+    setActivePage,
+    currentPage,
+  } = useProject();
   const { execute: executeDeletePage } = useAction(deletePageAction);
 
-  const isLastPage = optimisticProjectWithPages.pages.length <= 1;
-  const isActive = page.id === optimisticPage?.id;
+  const isLastPage = currentProject.pages.length <= 1;
+  const isActive = page.id === currentPage?.id;
 
   const handleDelete = () => {
     if (isLastPage) return;
 
-    const newPages = optimisticProjectWithPages.pages.filter(
-      (p) => p.id !== page.id,
-    );
+    const newPages = currentProject.pages.filter((p) => p.id !== page.id);
 
     if (isActive) {
-      const pageIndex = optimisticProjectWithPages.pages.findIndex(
-        (p) => p.id === page.id,
-      );
+      const pageIndex = currentProject.pages.findIndex((p) => p.id === page.id);
 
       const nextPage =
-        optimisticProjectWithPages.pages[pageIndex + 1] ||
-        optimisticProjectWithPages.pages[pageIndex - 1];
+        currentProject.pages[pageIndex + 1] ||
+        currentProject.pages[pageIndex - 1];
 
       nextPage && setActivePage(nextPage);
     }
 
     executeDeletePage({
       pageId: page.id,
-      projectId: optimisticProjectWithPages.id,
+      projectId: currentProject.id,
     });
 
     startTransition(() => {
-      updateProjectWithPages({
-        ...optimisticProjectWithPages,
+      updateProjectOptimistic({
+        ...currentProject,
         pages: newPages,
       });
     });
@@ -84,7 +83,11 @@ export function Item({ page }: ItemProps) {
                   setActivePage(page);
                 }}
               >
-                <FileIcon />
+                {page.icon ? (
+                  <span className="text-lg">{page.icon}</span>
+                ) : (
+                  <FileIcon />
+                )}
                 <span className="truncate text-sm">
                   {page.title || "Untitled"}
                 </span>

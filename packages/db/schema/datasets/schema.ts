@@ -6,12 +6,7 @@ import {
   varchar,
   pgEnum,
 } from "drizzle-orm/pg-core";
-import { relations } from "drizzle-orm";
-import { layers } from "../layers";
-import { teamspaces } from "../teamspaces";
-import { rows } from "../rows";
-import { columns } from "../columns";
-import { projects } from "../projects";
+import { teamspaces } from "../teamspaces/schema";
 
 export const datasetTypeEnum = pgEnum("dataset_type", [
   "default",
@@ -35,14 +30,3 @@ export const datasets = pgTable("dataset", {
     .$onUpdate(() => new Date())
     .notNull(),
 });
-
-export const datasetsRelations = relations(datasets, ({ one, many }) => ({
-  teamspace: one(teamspaces, {
-    fields: [datasets.teamspaceId],
-    references: [teamspaces.id],
-  }),
-  layers: many(layers),
-  rows: many(rows),
-  columns: many(columns),
-  project: many(projects),
-}));

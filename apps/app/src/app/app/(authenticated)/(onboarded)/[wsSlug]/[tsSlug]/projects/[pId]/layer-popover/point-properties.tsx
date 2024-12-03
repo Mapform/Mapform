@@ -23,7 +23,8 @@ import { useAction } from "next-safe-action/hooks";
 import type { UpsertLayerSchema } from "@mapform/backend/layers/upsert-layer/schema";
 import { toast } from "@mapform/ui/components/toaster";
 import { createColumnAction } from "~/data/columns/create-column";
-import { usePage } from "../page-context";
+import { useProject } from "../project-context";
+import { ColorPicker } from "./color-picker";
 
 interface PointPropertiesProps {
   form: UseFormReturn<UpsertLayerSchema>;
@@ -31,7 +32,7 @@ interface PointPropertiesProps {
 }
 
 export function PointProperties({ form, isEditing }: PointPropertiesProps) {
-  const { availableDatasets } = usePage();
+  const { availableDatasets } = useProject();
   const datasetId = form.watch("datasetId");
   const type = form.watch("type");
   const dataset = availableDatasets.find((ds) => ds.id === datasetId);
@@ -51,7 +52,6 @@ export function PointProperties({ form, isEditing }: PointPropertiesProps) {
   );
 
   useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- Once we add more layer types this won't error anymore
     if (!isEditing && type === "point") {
       form.setValue(
         "pointProperties.pointColumnId",
@@ -69,12 +69,19 @@ export function PointProperties({ form, isEditing }: PointPropertiesProps) {
         getAvailableColumns("richtext")?.find((c) => c.type === "richtext")
           ?.id ?? "",
       );
+
+      form.setValue(
+        "pointProperties.iconColumnId",
+        getAvailableColumns("richtext")?.find((c) => c.type === "richtext")
+          ?.id ?? "",
+      );
     }
   }, [dataset, form, type, getAvailableColumns, isEditing]);
 
   const availablePointColumns = getAvailableColumns("point");
   const availableStringColumns = getAvailableColumns("string");
   const availableRichtextColumns = getAvailableColumns("richtext");
+  const availableIconColumns = getAvailableColumns("icon");
 
   return (
     <>
@@ -104,12 +111,19 @@ export function PointProperties({ form, isEditing }: PointPropertiesProps) {
         name="pointProperties.descriptionColumnId"
         type="richtext"
       />
+      <DataColField
+        availableColumns={availableIconColumns ?? []}
+        form={form}
+        label="Icon"
+        name="pointProperties.iconColumnId"
+        type="icon"
+      />
       <div className="col-span-2 mt-1 w-full border-t pt-3">
         <h3 className="-mb-2 text-xs font-semibold leading-6 text-stone-400">
           Styles
         </h3>
       </div>
-      <ColorField form={form} label="Color" />
+      <ColorPicker form={form} label="Color" name="pointProperties.color" />
     </>
   );
 }
@@ -141,6 +155,9 @@ function DataColField({
 
       input.type === "richtext" &&
         form.setValue("pointProperties.descriptionColumnId", data.id);
+
+      input.type === "icon" &&
+        form.setValue("pointProperties.iconColumnId", data.id);
     },
 
     onError: () => {
@@ -259,77 +276,6 @@ function DataColField({
                   ) : null}
                 </CommandList>
               </Command>
-            </PopoverContent>
-          </div>
-        </Popover>
-      )}
-    />
-  );
-}
-
-const colorOptions = [
-  { value: "#3b82f6", label: "Blue" },
-  { value: "#0ea5e9", label: "Sky" },
-  { value: "#6366f1", label: "Indigo" },
-  { value: "#22c55e", label: "Green" },
-  { value: "#14b8a6", label: "Teal" },
-  { value: "#ef4444", label: "Red" },
-  { value: "#ec4899", label: "Pink" },
-  { value: "#f43f5e", label: "Rose" },
-  { value: "#f97316", label: "Orange" },
-  { value: "#f59e0b", label: "Amber" },
-  { value: "#a855f7", label: "Purple" },
-  { value: "#78716c", label: "Stone" },
-];
-
-function ColorField({
-  form,
-  label,
-}: {
-  form: UseFormReturn<UpsertLayerSchema>;
-  label: string;
-}) {
-  const [open, setOpen] = useState(false);
-  const formColor = form.watch("pointProperties.color") ?? "#3b82f6";
-
-  return (
-    <FormField
-      control={form.control}
-      name="pointProperties.color"
-      render={() => (
-        <Popover modal onOpenChange={setOpen} open={open}>
-          <FormLabel htmlFor="color">{label}</FormLabel>
-          <div className="flex w-full flex-shrink-0 justify-end">
-            <PopoverTrigger asChild>
-              <div
-                className="flex h-[28px] w-full cursor-pointer items-center justify-center rounded-md text-sm text-white shadow-sm"
-                style={{
-                  backgroundColor: formColor,
-                }}
-              >
-                {formColor}
-              </div>
-            </PopoverTrigger>
-            <PopoverContent
-              align="start"
-              className="flex w-[200px] flex-wrap justify-evenly gap-2"
-              side="right"
-            >
-              {colorOptions.map((color) => (
-                <button
-                  className={cn("size-8 rounded-full", {
-                    "border-[3px] border-white border-opacity-70":
-                      formColor === color.value,
-                  })}
-                  key={color.value}
-                  onClick={() => {
-                    form.setValue("pointProperties.color", color.value);
-                    setOpen(false);
-                  }}
-                  style={{ backgroundColor: color.value }}
-                  type="button"
-                />
-              ))}
             </PopoverContent>
           </div>
         </Popover>

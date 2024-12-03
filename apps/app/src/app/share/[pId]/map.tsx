@@ -5,6 +5,7 @@ import { useAction } from "next-safe-action/hooks";
 import React, { useEffect, useState } from "react";
 import type { PageData } from "@mapform/backend/datalayer/get-page-data";
 import type { GetLayerPoint } from "@mapform/backend/datalayer/get-layer-point";
+import { type GetLayerMarker } from "@mapform/backend/datalayer/get-layer-marker";
 import { useCreateQueryString } from "@mapform/lib/hooks/use-create-query-string";
 import type { ProjectWithPages } from "@mapform/backend/projects/get-project-with-pages";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
@@ -17,7 +18,7 @@ interface MapProps {
   pageData: PageData | undefined;
   projectWithPages: ProjectWithPages;
   formValues: NonNullable<Responses>["cells"];
-  layerPoint?: GetLayerPoint;
+  selectedFeature?: GetLayerPoint | GetLayerMarker;
   sessionId: string | null;
   isUsingSessions: boolean;
 }
@@ -27,10 +28,10 @@ type Page = ProjectWithPages["pages"][number];
 export function Map({
   pageData,
   sessionId,
-  layerPoint,
   formValues,
   isUsingSessions,
   projectWithPages,
+  selectedFeature,
 }: MapProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -141,7 +142,6 @@ export function Map({
 
   return (
     <MapForm
-      activePoint={layerPoint}
       currentPage={currentPage}
       defaultFormValues={pageValues}
       mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
@@ -168,6 +168,7 @@ export function Map({
           : undefined
       }
       pageData={pageData}
+      selectedFeature={selectedFeature}
     />
   );
 }
