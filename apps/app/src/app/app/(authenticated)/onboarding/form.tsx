@@ -24,6 +24,7 @@ import {
 import { signOutAction } from "~/data/auth/sign-out";
 import { completeOnboardingAction } from "~/data/onboarding/complete-onboarding";
 import { env } from "~/env.mjs";
+import { cn } from "@mapform/lib/classnames";
 
 interface OnboardingFormProps {
   email: string;
@@ -47,21 +48,19 @@ export function OnboardingForm({ email }: OnboardingFormProps) {
       });
     },
     onError: ({ error }) => {
-      console.log(11111, error);
-      if (error.serverError) {
-        toast({
-          title: "Uh oh! Something went wrong.",
-          description: error.serverError,
+      console.error(123, error);
+      if (error.serverError === "Workspace slug already exists") {
+        form.setError("workspaceSlug", {
+          type: "manual",
+          message: error.serverError,
         });
         return;
       }
 
-      if (error.validationErrors) {
-        toast({
-          title: "Uh oh! Something went wrong.",
-          description: "There was an error creating your account",
-        });
-      }
+      toast({
+        title: "Uh oh! Something went wrong.",
+        description: "There was an error creating your account",
+      });
     },
   });
 
@@ -71,6 +70,7 @@ export function OnboardingForm({ email }: OnboardingFormProps) {
         <form
           className="space-y-6 text-left"
           onSubmit={form.handleSubmit((data) => {
+            form.clearErrors();
             execute(data);
           })}
         >
@@ -143,32 +143,38 @@ export function OnboardingForm({ email }: OnboardingFormProps) {
               </FormItem>
             )}
           />
-          {showSlugField ? (
-            <FormField
-              control={form.control}
-              name="workspaceSlug"
-              render={({ field }) => (
-                <FormItem className="flex-1">
-                  <FormLabel>URL Slug</FormLabel>
-                  <FormControl>
-                    <Input
-                      disabled={field.disabled}
-                      name={field.name}
-                      onChange={field.onChange}
-                      placeholder="acme-inc"
-                      ref={field.ref}
-                      value={field.value}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    Your slug must be unique and can only contain lowercase
-                    letters, numbers, and hyphens.
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          ) : null}
+          <FormField
+            control={form.control}
+            name="workspaceSlug"
+            render={({ field }) => (
+              <FormItem
+                className={cn("flex-1", {
+                  "!m-0": !showSlugField,
+                })}
+              >
+                {showSlugField ? (
+                  <>
+                    <FormLabel>URL Slug</FormLabel>
+                    <FormControl>
+                      <Input
+                        disabled={field.disabled}
+                        name={field.name}
+                        onChange={field.onChange}
+                        placeholder="acme-inc"
+                        ref={field.ref}
+                        value={field.value}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      Your slug must be unique and can only contain lowercase
+                      letters, numbers, and hyphens.
+                    </FormDescription>
+                  </>
+                ) : null}
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           <Button
             className="mt-8 w-full"
             disabled={status === "executing" || !form.formState.isValid}
