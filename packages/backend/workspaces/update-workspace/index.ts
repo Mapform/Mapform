@@ -1,5 +1,5 @@
 import { db } from "@mapform/db";
-import { teamspaces, workspaces } from "@mapform/db/schema";
+import { workspaces } from "@mapform/db/schema";
 import type { UpdateWorkspaceSchema } from "./schema";
 import { eq } from "@mapform/db/utils";
 

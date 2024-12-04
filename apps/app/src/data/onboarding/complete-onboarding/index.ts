@@ -24,7 +24,6 @@ export const completeOnboardingAction = authAction
       );
 
       if (error) {
-        console.log("99 error", error);
         if ((error as unknown as { code: string }).code === "23505") {
           throw new ServerError("Workspace slug already exists");
         }

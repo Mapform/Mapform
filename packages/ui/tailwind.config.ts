@@ -85,6 +85,7 @@ const config = {
     require("@tailwindcss/forms"),
     require("@tailwindcss/typography"),
     require("tailwindcss-animate"),
+    require("@tailwindcss/container-queries"),
   ],
 };
 

@@ -67,14 +67,14 @@ export function WorkspaceSettings() {
   return (
     <Form {...form}>
       <form className="flex flex-col" onSubmit={form.handleSubmit(onSubmit)}>
-        <div className="grid grid-cols-1 pb-8 md:grid-cols-3">
-          <div>
+        <div className="@4xl:grid-cols-3 grid grid-cols-1 pb-8">
+          <div className="pb-8">
             <h2 className="text-md font-semibold">Workspace Settings</h2>
             <p className="text-muted-foreground mt-1 text-sm">
               Customize your workspace name and url.
             </p>
           </div>
-          <div className="grid-cols-1 space-y-6 md:col-span-2">
+          <div className="@4xl:col-span-2 grid-cols-1 space-y-6">
             <FormField
               control={form.control}
               name="name"
