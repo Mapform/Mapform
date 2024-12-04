@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { getCurrentSession } from "~/data/auth/get-current-session";
 
 // These represent routes that are not really workspace or teamspace.
-const ignoredWorkspaceSlugs = ["onboarding"];
+const ignoredWorkspaceSlugs = ["onboarding", "settings"];
 
 // Base client
 export const baseClient = createSafeActionClient();
