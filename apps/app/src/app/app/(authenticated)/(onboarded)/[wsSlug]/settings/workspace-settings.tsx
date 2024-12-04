@@ -66,8 +66,11 @@ export function WorkspaceSettings() {
 
   return (
     <Form {...form}>
-      <form className="flex flex-col" onSubmit={form.handleSubmit(onSubmit)}>
-        <div className="@4xl:grid-cols-3 grid grid-cols-1 pb-8">
+      <form
+        className="flex flex-col py-12"
+        onSubmit={form.handleSubmit(onSubmit)}
+      >
+        <div className="@4xl:grid-cols-3 grid grid-cols-1 gap-x-8 pb-8">
           <div className="pb-8">
             <h2 className="text-md font-semibold">Workspace Settings</h2>
             <p className="text-muted-foreground mt-1 text-sm">
