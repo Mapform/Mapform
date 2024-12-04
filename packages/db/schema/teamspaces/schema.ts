@@ -9,7 +9,10 @@ export const teamspaces = pgTable(
     name: varchar("name", { length: 256 }).notNull(),
     workspaceSlug: varchar("workspace_slug")
       .notNull()
-      .references(() => workspaces.slug, { onDelete: "cascade" }),
+      .references(() => workspaces.slug, {
+        onDelete: "cascade",
+        onUpdate: "cascade",
+      }),
 
     createdAt: timestamp("created_at", { withTimezone: true })
       .defaultNow()

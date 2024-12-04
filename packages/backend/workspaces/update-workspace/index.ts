@@ -16,13 +16,6 @@ export const updateWorkspace = async ({
       throw new Error("Workspace not found");
     }
 
-    if (prevWorkspace.slug !== rest.slug) {
-      await tx
-        .update(teamspaces)
-        .set({ workspaceSlug: rest.slug })
-        .where(eq(teamspaces.workspaceSlug, prevWorkspace.slug));
-    }
-
     return tx
       .update(workspaces)
       .set(rest)

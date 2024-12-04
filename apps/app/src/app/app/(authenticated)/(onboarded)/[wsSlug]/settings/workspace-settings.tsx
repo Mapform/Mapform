@@ -24,6 +24,7 @@ import {
   AlertDescription,
 } from "@mapform/ui/components/alert";
 import { useAction } from "next-safe-action/hooks";
+import { toast } from "@mapform/ui/components/toaster";
 import { TriangleAlertIcon } from "lucide-react";
 import { updateWorkspaceAction } from "~/data/workspaces/update-workspace";
 import { useWorkspace } from "../workspace-context";
@@ -41,7 +42,10 @@ export function WorkspaceSettings() {
   });
   const { execute, isPending } = useAction(updateWorkspaceAction, {
     onSuccess: () => {
-      // form.reset();
+      toast({
+        title: "Success!",
+        description: "Your workspace has been updated.",
+      });
     },
 
     onError: (res) => {
