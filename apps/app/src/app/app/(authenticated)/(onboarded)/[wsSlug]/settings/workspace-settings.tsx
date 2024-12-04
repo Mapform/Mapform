@@ -27,6 +27,7 @@ import { useAction } from "next-safe-action/hooks";
 import { toast } from "@mapform/ui/components/toaster";
 import { TriangleAlertIcon } from "lucide-react";
 import { updateWorkspaceAction } from "~/data/workspaces/update-workspace";
+import { env } from "~/env.mjs";
 import { useWorkspace } from "../workspace-context";
 
 export function WorkspaceSettings() {
@@ -92,7 +93,7 @@ export function WorkspaceSettings() {
                   </FormControl>
                   {showSlugField ? null : (
                     <FormDescription>
-                      https://alpha.mapform.co/app/{workspaceDirectory.slug}
+                      {env.NEXT_PUBLIC_BASE_URL}/app/{workspaceDirectory.slug}
                       <Button
                         className="ml-2 text-sm"
                         onClick={() => {
@@ -116,7 +117,7 @@ export function WorkspaceSettings() {
                   name="slug"
                   render={({ field }) => (
                     <FormItem className="flex-1">
-                      <FormLabel>URL</FormLabel>
+                      <FormLabel>URL Slug</FormLabel>
                       <FormControl>
                         <Input
                           disabled={field.disabled}
