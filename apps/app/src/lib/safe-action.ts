@@ -4,7 +4,8 @@ import { redirect } from "next/navigation";
 import { getCurrentSession } from "~/data/auth/get-current-session";
 
 // These represent routes that are not really workspace or teamspace.
-const ignoredWorkspaceSlugs = ["onboarding", "settings"];
+const ignoredWorkspaceSlugs = ["onboarding"];
+const ignoredTeamspaceSlugs = ["settings"];
 
 // Base client
 export const baseClient = createSafeActionClient();
@@ -41,12 +42,16 @@ export const authAction = baseClient.use(async ({ next }) => {
    */
   const checkAccessToTeamspaceBySlug = (tsSlug: string) =>
     [
-      ...response.user.workspaceMemberships.flatMap((wm) =>
-        wm.workspace.teamspaces.map((ts) => ({
+      ...response.user.workspaceMemberships.flatMap((wm) => [
+        ...ignoredTeamspaceSlugs.map((ts) => ({
+          _tsSlug: ts,
+          _wsSlug: wm.workspace.slug,
+        })),
+        ...wm.workspace.teamspaces.map((ts) => ({
           _tsSlug: ts.slug,
           _wsSlug: wm.workspace.slug,
         })),
-      ),
+      ]),
     ].some(
       (ts) => ts._tsSlug === tsSlug && checkAccessToWorkspaceBySlug(ts._wsSlug),
     );
