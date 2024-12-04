@@ -2,6 +2,7 @@ import { db } from "@mapform/db";
 import { eq } from "@mapform/db/utils";
 import {
   cells,
+  iconsCells,
   layers,
   pointCells,
   richtextCells,
@@ -74,7 +75,7 @@ export const createPoint = async ({
       throw new Error("Row not created");
     }
 
-    const [titleCell, descriptionCell, pointCell] = await tx
+    const [titleCell, descriptionCell, pointCell, iconCell] = await tx
       .insert(cells)
       .values([
         {
@@ -119,5 +120,11 @@ export const createPoint = async ({
       cellId: pointCell.id,
       value: location,
     });
+
+    if (iconCell) {
+      await tx.insert(iconsCells).values({
+        cellId: iconCell.id,
+      });
+    }
   });
 };

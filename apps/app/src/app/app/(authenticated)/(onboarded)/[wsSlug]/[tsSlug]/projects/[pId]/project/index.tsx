@@ -93,20 +93,22 @@ function Project() {
               return;
             }
 
-            if (!selectedFeature?.icon?.iconCell || !currentPageData) {
+            if (!selectedFeature?.icon || !currentPageData) {
               return;
             }
 
-            updateSelectedFeatureOptimistic({
-              ...selectedFeature,
-              icon: {
-                ...selectedFeature.icon,
-                iconCell: {
-                  ...selectedFeature.icon.iconCell,
-                  value: icon,
+            if (selectedFeature.icon.iconCell) {
+              updateSelectedFeatureOptimistic({
+                ...selectedFeature,
+                icon: {
+                  ...selectedFeature.icon,
+                  iconCell: {
+                    ...selectedFeature.icon.iconCell,
+                    value: icon,
+                  },
                 },
-              },
-            });
+              });
+            }
 
             upsertCellServer.execute({
               type: "icon",
