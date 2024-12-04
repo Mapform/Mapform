@@ -1,10 +1,13 @@
 "use client";
 
+import slugify from "slugify";
+import { useState } from "react";
 import { Button } from "@mapform/ui/components/button";
 import { Input } from "@mapform/ui/components/input";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -20,12 +23,14 @@ import {
 } from "@mapform/backend/onboarding/complete-onboarding/schema";
 import { signOutAction } from "~/data/auth/sign-out";
 import { completeOnboardingAction } from "~/data/onboarding/complete-onboarding";
+import { env } from "~/env.mjs";
 
 interface OnboardingFormProps {
   email: string;
 }
 
 export function OnboardingForm({ email }: OnboardingFormProps) {
+  const [showSlugField, setShowSlugField] = useState(false);
   const form = useForm<CompleteOnboardingSchema>({
     defaultValues: {
       userName: "",
@@ -42,6 +47,7 @@ export function OnboardingForm({ email }: OnboardingFormProps) {
       });
     },
     onError: ({ error }) => {
+      console.log(11111, error);
       if (error.serverError) {
         toast({
           title: "Uh oh! Something went wrong.",
@@ -63,7 +69,7 @@ export function OnboardingForm({ email }: OnboardingFormProps) {
     <>
       <Form {...form}>
         <form
-          className="space-y-4 text-left"
+          className="space-y-6 text-left"
           onSubmit={form.handleSubmit((data) => {
             execute(data);
           })}
@@ -100,16 +106,69 @@ export function OnboardingForm({ email }: OnboardingFormProps) {
                     className="bg-white"
                     disabled={field.disabled}
                     name={field.name}
-                    onChange={field.onChange}
+                    onChange={(e) => {
+                      field.onChange(e);
+                      if (!showSlugField) {
+                        form.setValue(
+                          "workspaceSlug",
+                          slugify(e.currentTarget.value, {
+                            lower: true,
+                            strict: true,
+                          }),
+                        );
+                      }
+                    }}
                     placeholder="Acme Inc."
                     ref={field.ref}
                     value={field.value}
                   />
                 </FormControl>
+                {showSlugField ? null : (
+                  <FormDescription>
+                    {env.NEXT_PUBLIC_BASE_URL}/app/{form.watch("workspaceSlug")}
+                    <Button
+                      className="ml-2 text-sm"
+                      onClick={() => {
+                        setShowSlugField(true);
+                      }}
+                      size="sm"
+                      type="button"
+                      variant="ghost"
+                    >
+                      Edit
+                    </Button>
+                  </FormDescription>
+                )}
                 <FormMessage />
               </FormItem>
             )}
           />
+          {showSlugField ? (
+            <FormField
+              control={form.control}
+              name="workspaceSlug"
+              render={({ field }) => (
+                <FormItem className="flex-1">
+                  <FormLabel>URL Slug</FormLabel>
+                  <FormControl>
+                    <Input
+                      disabled={field.disabled}
+                      name={field.name}
+                      onChange={field.onChange}
+                      placeholder="acme-inc"
+                      ref={field.ref}
+                      value={field.value}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    Your slug must be unique and can only contain lowercase
+                    letters, numbers, and hyphens.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          ) : null}
           <Button
             className="mt-8 w-full"
             disabled={status === "executing" || !form.formState.isValid}

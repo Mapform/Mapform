@@ -74,7 +74,7 @@ export function WorkspaceSettings() {
               Customize your workspace name and url.
             </p>
           </div>
-          <div className="grid-cols-1 space-y-8 md:col-span-2">
+          <div className="grid-cols-1 space-y-6 md:col-span-2">
             <FormField
               control={form.control}
               name="name"
@@ -86,7 +86,7 @@ export function WorkspaceSettings() {
                       disabled={field.disabled}
                       name={field.name}
                       onChange={field.onChange}
-                      placeholder="My Workspace"
+                      placeholder="Acme Inc."
                       ref={field.ref}
                       value={field.value}
                     />
@@ -100,6 +100,7 @@ export function WorkspaceSettings() {
                           setShowSlugField(true);
                         }}
                         size="sm"
+                        type="button"
                         variant="ghost"
                       >
                         Edit
@@ -123,7 +124,7 @@ export function WorkspaceSettings() {
                           disabled={field.disabled}
                           name={field.name}
                           onChange={field.onChange}
-                          placeholder="my-workspace"
+                          placeholder="acme-inc"
                           ref={field.ref}
                           value={field.value}
                         />

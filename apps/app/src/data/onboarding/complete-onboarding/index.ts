@@ -8,10 +8,14 @@ import { authAction } from "~/lib/safe-action";
 export const completeOnboardingAction = authAction
   .schema(completeOnboardingSchema)
   .action(
-    async ({ parsedInput: { userName, workspaceName }, ctx: { user } }) => {
+    async ({
+      parsedInput: { userName, workspaceName, workspaceSlug },
+      ctx: { user },
+    }) => {
       const { slug } = await completeOnboarding({
         userName,
         workspaceName,
+        workspaceSlug,
         userId: user.id,
       });
 
