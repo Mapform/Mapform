@@ -17,10 +17,6 @@ export default async function Nav(props: {
           name: "Datasets",
           href: `/app/${params.wsSlug}/${params.tsSlug}/datasets`,
         },
-        // {
-        //   name: "Settings",
-        //   href: `/${params.wsSlug}/${params.tsSlug}/settings`,
-        // },
       ]}
     />
   );

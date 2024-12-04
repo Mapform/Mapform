@@ -53,12 +53,6 @@ export default async function Nav(props: {
           <TogglePages />
         </div>
       }
-      // tabs={[
-      //   {
-      //     name: "Create",
-      //     href: `/app/${params.wsSlug}/${params.tsSlug}/projects/${params.pId}`,
-      //   },
-      // ]}
     />
   );
 }
