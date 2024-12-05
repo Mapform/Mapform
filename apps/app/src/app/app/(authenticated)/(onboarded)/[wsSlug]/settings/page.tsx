@@ -7,7 +7,7 @@ export default async function Settings() {
 
   return (
     <div className="@container overflow-y-auto p-4">
-      <div className="mx-auto max-w-screen-lg gap-y-12 divide-y">
+      <div className="mx-auto max-w-screen-md gap-y-12 divide-y">
         <Usage rowsUsed={response?.data || 0} />
         <WorkspaceSettings />
       </div>
