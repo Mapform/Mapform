@@ -3,10 +3,11 @@ import type { LucideIcon } from "lucide-react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@mapform/lib/classnames";
 
-const alertVariants = cva("rounded-md p-4 flex", {
+const alertVariants = cva("rounded-md p-4 flex text-sm", {
   variants: {
     variant: {
       default: "bg-muted text-foreground",
+      warning: "bg-yellow-50 text-yellow-700",
     },
   },
   defaultVariants: {
@@ -37,7 +38,7 @@ const AlertIcon = React.forwardRef<
   return (
     <Icon
       aria-hidden="true"
-      className={cn("ml-3 size-5 text-inherit", className)}
+      className={cn("size-5 text-inherit", className)}
       ref={ref}
       {...props}
     />

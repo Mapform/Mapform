@@ -1,4 +1,3 @@
-import slugify from "slugify";
 import { db } from "@mapform/db";
 import { eq } from "@mapform/db/utils";
 import {
@@ -13,18 +12,9 @@ import type { CompleteOnboardingSchema } from "./schema";
 export const completeOnboarding = async ({
   userName,
   workspaceName,
+  workspaceSlug,
   userId,
 }: CompleteOnboardingSchema & { userId: string }) => {
-  const randomChars = Math.random().toString(36).substring(7);
-
-  const workspacelug = `${slugify(workspaceName, {
-    lower: true,
-    strict: true,
-  })}-${randomChars}`;
-
-  const teamspaceName = "Personal";
-  const teamspaceSlug = "personal";
-
   return db.transaction(async (tx) => {
     await tx
       .update(users)
@@ -37,10 +27,13 @@ export const completeOnboarding = async ({
     const [workspace] = await tx
       .insert(workspaces)
       .values({
-        slug: workspacelug,
+        slug: workspaceSlug,
         name: workspaceName,
       })
       .returning();
+
+    const teamspaceName = "Personal";
+    const teamspaceSlug = "personal";
 
     if (!workspace) {
       throw new Error("Failed to create workspace");
@@ -57,7 +50,7 @@ export const completeOnboarding = async ({
       .values({
         slug: teamspaceSlug,
         name: teamspaceName,
-        workspaceSlug: workspacelug,
+        workspaceSlug,
       })
       .returning();
 

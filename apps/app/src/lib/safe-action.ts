@@ -1,13 +1,32 @@
 import { headers } from "next/headers";
-import { createSafeActionClient } from "next-safe-action";
+import {
+  createSafeActionClient,
+  DEFAULT_SERVER_ERROR_MESSAGE,
+} from "next-safe-action";
 import { redirect } from "next/navigation";
 import { getCurrentSession } from "~/data/auth/get-current-session";
+import { ServerError } from "./server-error";
 
 // These represent routes that are not really workspace or teamspace.
 const ignoredWorkspaceSlugs = ["onboarding"];
+const ignoredTeamspaceSlugs = ["settings"];
 
 // Base client
-export const baseClient = createSafeActionClient();
+export const baseClient = createSafeActionClient({
+  handleServerError(e) {
+    // Log to console.
+    console.error("Action error:", e.message);
+
+    // In this case, we can use the 'MyCustomError` class to unmask errors
+    // and return them with their actual messages to the client.
+    if (e instanceof ServerError) {
+      return e.message;
+    }
+
+    // Every other error that occurs will be masked with the default message.
+    return DEFAULT_SERVER_ERROR_MESSAGE;
+  },
+});
 
 /**
  * Check that the user is authenticated, and only requested workspace /
@@ -41,12 +60,16 @@ export const authAction = baseClient.use(async ({ next }) => {
    */
   const checkAccessToTeamspaceBySlug = (tsSlug: string) =>
     [
-      ...response.user.workspaceMemberships.flatMap((wm) =>
-        wm.workspace.teamspaces.map((ts) => ({
+      ...response.user.workspaceMemberships.flatMap((wm) => [
+        ...ignoredTeamspaceSlugs.map((ts) => ({
+          _tsSlug: ts,
+          _wsSlug: wm.workspace.slug,
+        })),
+        ...wm.workspace.teamspaces.map((ts) => ({
           _tsSlug: ts.slug,
           _wsSlug: wm.workspace.slug,
         })),
-      ),
+      ]),
     ].some(
       (ts) => ts._tsSlug === tsSlug && checkAccessToWorkspaceBySlug(ts._wsSlug),
     );

@@ -9,7 +9,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@mapform/ui/components/tooltip";
-import { useParams } from "next/navigation";
+import { useParams, usePathname } from "next/navigation";
 import { cn } from "@mapform/lib/classnames";
 import { useSidebarLeft } from "@mapform/ui/components/sidebar";
 import { RenameProjectPopover } from "~/components/rename-project-popover";
@@ -29,15 +29,18 @@ export function TopNav({ navSlot }: TopNavProps) {
   }>();
   const { open, setOpen } = useSidebarLeft();
   const { workspaceDirectory } = useWorkspace();
+  const pathname = usePathname();
 
   const teamspaces = workspaceDirectory.teamspaces.find(
     (ts) => ts.slug === params.tsSlug,
   );
   const project = teamspaces?.projects.find((p) => p.id === params.pId);
   const dataset = teamspaces?.datasets.find((d) => d.id === params.dId);
+  const isSettingsPage = `/app/${params.wsSlug}/settings` === pathname;
 
   const breadcrumbs = [
     { name: "Home", href: `/app/${params.wsSlug}` },
+    ...(isSettingsPage ? [{ name: "Settings" }] : []),
     ...(teamspaces
       ? [
           {

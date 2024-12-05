@@ -162,6 +162,13 @@
       "when": 1732809447392,
       "tag": "0022_equal_stepford_cuckoos",
       "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1733344993810,
+      "tag": "0023_boring_loki",
+      "breakpoints": true
     }
   ]
 }
