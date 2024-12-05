@@ -2,7 +2,7 @@ import { cn } from "@mapform/lib/classnames";
 import { Label } from "@mapform/ui/components/label";
 
 // Hard-code for now. This will be dynamic in the future.
-const ALLOWED_ROW_USAGE = 1000;
+const ALLOWED_ROW_USAGE = 100;
 const BLOCKS = 100;
 
 interface UsageProps {
@@ -34,7 +34,7 @@ export function Usage({ rowsUsed }: UsageProps) {
                         (block * ALLOWED_ROW_USAGE) / BLOCKS <= rowsUsed,
                       "bg-gray-100":
                         (block * ALLOWED_ROW_USAGE) / BLOCKS > rowsUsed &&
-                        (block * ALLOWED_ROW_USAGE) / BLOCKS <=
+                        (block * ALLOWED_ROW_USAGE) / BLOCKS <
                           rowsUsed + ALLOWED_ROW_USAGE / BLOCKS,
                     })}
                     key={block}
