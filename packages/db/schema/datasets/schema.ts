@@ -10,6 +10,7 @@ import { teamspaces } from "../teamspaces/schema";
 
 export const datasetTypeEnum = pgEnum("dataset_type", [
   "default",
+  "pages",
   "submissions",
 ]);
 
