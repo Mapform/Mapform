@@ -24,6 +24,7 @@ export const getPageWithLayers = async ({ id }: GetPageWithLayersSchema) => {
         },
       },
     },
+    orderBy: (ltp, { asc }) => [asc(ltp.position)],
   });
 
   return {

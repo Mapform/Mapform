@@ -11,26 +11,6 @@ export const updatePageOrder = async ({
 }: UpdatePageOrderSchema) => {
   const project = await db.query.projects.findFirst({
     where: eq(projects.id, projectId),
-    with: {
-      teamspace: {
-        columns: {
-          id: true,
-        },
-        with: {
-          workspace: {
-            columns: {
-              id: true,
-            },
-          },
-        },
-      },
-      pages: {
-        columns: {
-          id: true,
-          position: true,
-        },
-      },
-    },
   });
 
   if (!project) {
@@ -49,6 +29,4 @@ export const updatePageOrder = async ({
       ),
     ),
   );
-
-  return project;
 };

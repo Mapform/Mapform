@@ -9,39 +9,6 @@ export const updateLayerOrder = async ({
 }: UpdateLayerOrderSchema) => {
   const page = await db.query.pages.findFirst({
     where: eq(projects.id, pageId),
-    with: {
-      project: {
-        columns: {
-          id: true,
-        },
-        with: {
-          teamspace: {
-            with: {
-              workspace: {
-                columns: {
-                  id: true,
-                },
-              },
-            },
-            columns: {
-              id: true,
-            },
-          },
-        },
-      },
-      layersToPages: {
-        columns: {
-          position: true,
-        },
-        with: {
-          layer: {
-            columns: {
-              id: true,
-            },
-          },
-        },
-      },
-    },
   });
 
   if (!page) {
@@ -56,7 +23,8 @@ export const updateLayerOrder = async ({
           .set({
             position: index + 1,
           })
-          .where(eq(layersToPages.layerId, layerId)),
+          .where(eq(layersToPages.layerId, layerId))
+          .returning(),
       ),
     ),
   );
