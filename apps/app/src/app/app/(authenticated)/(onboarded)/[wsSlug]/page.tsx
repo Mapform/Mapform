@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { format } from "date-fns";
 import {
   ChevronRightIcon,
   GithubIcon,
@@ -7,6 +8,13 @@ import {
   ScrollIcon,
 } from "lucide-react";
 import Link from "next/link";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@mapform/ui/components/carousel";
 import { getRecentProjectsAction } from "~/data/projects/get-recent-projects";
 import { getWorkspaceDirectoryAction } from "~/data/workspaces/get-workspace-directory";
 
@@ -52,33 +60,44 @@ export default async function HomePage(props: {
             </p>
           </div>
         </section>
-        <section>
+        <section className="@4xl:overflow-visible overflow-hidden">
           <h3 className="text-muted-foreground mb-2 text-sm font-medium">
             Recent
           </h3>
-          {recentProjects.map((project) => (
-            <Link
-              key={project.id}
-              href={`/app/${params.wsSlug}/${project.teamspaceId}/projects/${project.id}`}
-            >
-              <div className="flex items-center justify-between rounded-lg p-4 shadow duration-200 hover:shadow-lg">
-                <div className="flex items-center gap-4">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-200">
-                    <MapIcon className="h-6 w-6 text-gray-700" />
+          <Carousel>
+            <CarouselContent>
+              {recentProjects.map(({ project, teamspace }) => (
+                <CarouselItem
+                  className="@lg:basis-1/3 @md:basis-1/2"
+                  key={project.id}
+                >
+                  <div className="overflow-hidden rounded-xl border">
+                    <Link
+                      href={`/app/${params.wsSlug}/${teamspace?.slug}/projects/${project.id}`}
+                    >
+                      <div className="flex items-center gap-x-4 border-b border-gray-900/5 bg-stone-50 p-6">
+                        {project.name || "Untitled"}
+                      </div>
+                      <dl className="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
+                        <div className="flex justify-between gap-x-4 py-3">
+                          <dt className="text-stone-500">Updated</dt>
+                          <dd className="text-stone-700">
+                            <time
+                              dateTime={teamspace?.updatedAt.toDateString()}
+                            >
+                              {format(project.updatedAt, "MMMM do, yyyy")}
+                            </time>
+                          </dd>
+                        </div>
+                      </dl>
+                    </Link>
                   </div>
-                  <div className="flex flex-col">
-                    <h6 className="text-base font-semibold text-zinc-900">
-                      {project.name || "Untitled"}
-                    </h6>
-                    <p className="text-sm text-zinc-500">
-                      {/* {project.description || "No description"} */}
-                    </p>
-                  </div>
-                </div>
-                <ChevronRightIcon className="h-5 w-5 text-zinc-500" />
-              </div>
-            </Link>
-          ))}
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious />
+            <CarouselNext />
+          </Carousel>
         </section>
         <section>
           <h3 className="text-muted-foreground mb-2 text-sm font-medium">

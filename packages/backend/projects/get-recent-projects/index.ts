@@ -6,7 +6,7 @@ import type { GetRecentProjectsSchema } from "./schema";
 export const getRecentProjects = async ({
   workspaceSlug,
 }: GetRecentProjectsSchema) => {
-  const records = await db
+  return db
     .select()
     .from(projects)
     .leftJoin(teamspaces, eq(teamspaces.id, projects.teamspaceId))
@@ -18,6 +18,4 @@ export const getRecentProjects = async ({
     )
     .orderBy(desc(projects.updatedAt))
     .limit(5);
-
-  return records.map((record) => record.project);
 };
