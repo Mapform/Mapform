@@ -7,7 +7,7 @@ import {
   useCreateBlockNote,
 } from "@mapform/blocknote";
 import { useState } from "react";
-import { ImagePlusIcon, SmilePlusIcon, XIcon } from "lucide-react";
+import { SmilePlusIcon, XIcon } from "lucide-react";
 import { Button } from "@mapform/ui/components/button";
 import { EmojiPopover } from "@mapform/ui/components/emoji-picker";
 import { AutoSizeTextArea } from "../components/autosize-text-area";
@@ -79,9 +79,9 @@ export function Blocknote({
                 </Button>
               </EmojiPopover>
             ) : null}
-            <Button size="icon-sm" type="button" variant="ghost">
+            {/* <Button size="icon-sm" type="button" variant="ghost">
               <ImagePlusIcon className="size-4" />
-            </Button>
+            </Button> */}
           </div>
         ) : null}
         {icon ? (
