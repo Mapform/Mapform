@@ -28,12 +28,13 @@ import {
   ChevronsUpDown,
   GalleryVerticalEnd,
   HomeIcon,
-  MapIcon,
+  BoxIcon,
   Settings2Icon,
   TableIcon,
   ChevronRightIcon,
   LogOutIcon,
   PlusIcon,
+  MapIcon,
 } from "lucide-react";
 import {
   Collapsible,
@@ -134,6 +135,14 @@ export function LeftSidebar() {
         })),
       },
     })),
+    footer: [
+      {
+        title: "Roadmap",
+        url: "https://mapform.productlane.com/roadmap",
+        icon: MapIcon,
+        isActive: false,
+      },
+    ],
   };
 
   return (
@@ -261,7 +270,7 @@ export function LeftSidebar() {
                     isActive={space.project.isActive}
                   >
                     <Link href={space.project.url}>
-                      <MapIcon />
+                      <BoxIcon />
                       <span>Projects</span>
                     </Link>
                   </SidebarLeftMenuButton>
@@ -336,6 +345,23 @@ export function LeftSidebar() {
         <SidebarMenu>
           <SidebarMenuItem>
             <DropdownMenu>
+              <div className="pb-2">
+                {data.footer.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarLeftMenuButton asChild isActive={item.isActive}>
+                      <Link
+                        href={item.url}
+                        target={
+                          item.url.startsWith("https://") ? "_blank" : undefined
+                        }
+                      >
+                        <item.icon />
+                        <span>{item.title}</span>
+                      </Link>
+                    </SidebarLeftMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </div>
               <DropdownMenuTrigger asChild>
                 <SidebarLeftMenuButton
                   className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"

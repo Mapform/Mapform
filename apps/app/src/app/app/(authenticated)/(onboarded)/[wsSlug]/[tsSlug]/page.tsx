@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { format } from "date-fns";
-import { MapIcon } from "lucide-react";
+import { BoxIcon } from "lucide-react";
 import { getTeamspaceWithProjectsAction } from "~/data/teamspaces/get-teamspace-with-projects";
 
 export default async function WorkspaceForms(props: {
@@ -21,7 +21,7 @@ export default async function WorkspaceForms(props: {
     return (
       <div className="flex flex-1 flex-col justify-center pb-8">
         <div className="text-center">
-          <MapIcon className="mx-auto size-8 text-gray-400" />
+          <BoxIcon className="mx-auto size-8 text-gray-400" />
           <h3 className="text-foreground mt-2 text-sm font-semibold">
             No projects
           </h3>
