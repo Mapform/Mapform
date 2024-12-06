@@ -9,11 +9,14 @@ export const getRecentProjects = async ({
   const records = await db
     .select()
     .from(projects)
-    .leftJoin(teamspaces, eq(teamspaces.workspaceSlug, workspaces.slug))
-    .orderBy(desc(projects.updatedAt))
+    .leftJoin(teamspaces, eq(teamspaces.id, projects.teamspaceId))
     .where(
-      and(eq(workspaces.slug, workspaceSlug), isNull(projects.rootProjectId)),
+      and(
+        eq(teamspaces.workspaceSlug, workspaceSlug),
+        isNull(projects.rootProjectId),
+      ),
     )
+    .orderBy(desc(projects.updatedAt))
     .limit(5);
 
   return records.map((record) => record.project);
