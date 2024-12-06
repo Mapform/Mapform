@@ -61,7 +61,8 @@ export const getProjectWithPages = async ({
       .from(layers)
       .leftJoin(layersToPages, eq(layers.id, layersToPages.layerId))
       .leftJoin(pages, eq(layersToPages.pageId, pages.id))
-      .leftJoin(projects, eq(pages.projectId, projects.id)),
+      .leftJoin(projects, eq(pages.projectId, projects.id))
+      .where(eq(projects.id, id)),
   ]);
 
   if (!_projects) {
