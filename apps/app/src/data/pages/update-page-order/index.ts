@@ -8,9 +8,7 @@ import { authAction } from "~/lib/safe-action";
 export const updatePageOrderAction = authAction
   .schema(updatePageOrderSchema)
   .action(async ({ parsedInput }) => {
-    const project = await updatePageOrder(parsedInput);
+    await updatePageOrder(parsedInput);
 
-    revalidatePath(
-      `/${project.teamspace.workspace.id}/${project.teamspace.id}/projects/${project.id}`,
-    );
+    revalidatePath("/app/[wsSlug]/[tsSlug]/projects/[pId]/project", "page");
   });
