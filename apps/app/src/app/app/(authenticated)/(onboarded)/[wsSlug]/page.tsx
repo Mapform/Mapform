@@ -27,7 +27,26 @@ export default async function HomePage(props: {
 
   return (
     <div className="@container overflow-y-auto p-4">
-      <div className="mx-auto max-w-screen-md gap-y-12 divide-y">
+      <div className="mx-auto max-w-screen-md space-y-12">
+        <section className="flex items-center justify-center rounded-2xl bg-gray-50 px-4 py-6">
+          <div className="prose">
+            <h4>Maker&apos;s note</h4>
+            <p>
+              Hey there, thanks for checking out Mapform. I started hacking on
+              it in early 2024, and felt it was time to lift the curtain — even
+              though it&apos;s not quite ready yet. Honestly, that&apos;s a
+              tough thing to do, but I believe it&apos;s important to start
+              getting feedback to make the product the best it can be.
+            </p>
+            <p>
+              So if you find any bugs (and you will) or have feedback, I&apos;d
+              love to hear from you. Until then, happy mapping!
+            </p>
+            <p>
+              <strong>— Nic</strong>
+            </p>
+          </div>
+        </section>
         <section>
           <h3 className="text-muted-foreground mb-2 text-sm font-medium">
             Links and resources
@@ -121,7 +140,7 @@ export default async function HomePage(props: {
                       Github
                     </h6>
                     <p className="text-sm text-zinc-500">
-                      Check out the repository.
+                      Check out the source code.
                     </p>
                   </div>
                   <ChevronRightIcon className="h-5 w-5 flex-shrink-0 text-zinc-500 duration-200 group-hover:translate-x-1" />
