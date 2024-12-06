@@ -1,5 +1,5 @@
 // eslint-disable-next-line import/named -- Oh it's there
-import { cache, Suspense } from "react";
+import { cache } from "react";
 import { notFound } from "next/navigation";
 import { cookies } from "next/headers";
 import { getCurrentUserWorkspaceMembershipsAction } from "~/data/workspace-memberships/get-current-user-workspace-memberships";
@@ -41,12 +41,10 @@ export default async function WorkspaceLayout(props: {
     >
       <LeftSidebar />
       <main className="flex flex-1 overflow-hidden">
-        <Suspense fallback={<div>Loading...</div>}>
-          <div className="flex flex-1 flex-col overflow-hidden">
-            <TopNav navSlot={nav} />
-            {children}
-          </div>
-        </Suspense>
+        <div className="flex flex-1 flex-col overflow-hidden">
+          <TopNav navSlot={nav} />
+          {children}
+        </div>
       </main>
     </WorkspaceProvider>
   );
