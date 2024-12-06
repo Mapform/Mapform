@@ -1,25 +1,30 @@
 import { notFound } from "next/navigation";
 import {
-  BookOpenIcon,
   ChevronRightIcon,
   GithubIcon,
   LifeBuoyIcon,
   MapIcon,
-  MegaphoneIcon,
-  MessageCircleIcon,
   ScrollIcon,
 } from "lucide-react";
-import { getWorkspaceDirectoryAction } from "~/data/workspaces/get-workspace-directory";
 import Link from "next/link";
+import { getRecentProjectsAction } from "~/data/projects/get-recent-projects";
+import { getWorkspaceDirectoryAction } from "~/data/workspaces/get-workspace-directory";
 
 export default async function HomePage(props: {
   params: Promise<{ wsSlug: string }>;
 }) {
   const params = await props.params;
-  const getWorkspaceDirectoryResponse = await getWorkspaceDirectoryAction({
-    slug: params.wsSlug,
-  });
+  const [getWorkspaceDirectoryResponse, recentProjectsResponse] =
+    await Promise.all([
+      getWorkspaceDirectoryAction({
+        slug: params.wsSlug,
+      }),
+      getRecentProjectsAction({
+        workspaceSlug: params.wsSlug,
+      }),
+    ]);
   const workspaceWithTeamspaces = getWorkspaceDirectoryResponse?.data;
+  const recentProjects = recentProjectsResponse?.data ?? [];
 
   if (!workspaceWithTeamspaces) {
     return notFound();
@@ -46,6 +51,34 @@ export default async function HomePage(props: {
               <strong>— Nic</strong>
             </p>
           </div>
+        </section>
+        <section>
+          <h3 className="text-muted-foreground mb-2 text-sm font-medium">
+            Recent
+          </h3>
+          {recentProjects.map((project) => (
+            <Link
+              key={project.id}
+              href={`/app/${params.wsSlug}/${project.teamspaceId}/projects/${project.id}`}
+            >
+              <div className="flex items-center justify-between rounded-lg p-4 shadow duration-200 hover:shadow-lg">
+                <div className="flex items-center gap-4">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-200">
+                    <MapIcon className="h-6 w-6 text-gray-700" />
+                  </div>
+                  <div className="flex flex-col">
+                    <h6 className="text-base font-semibold text-zinc-900">
+                      {project.name || "Untitled"}
+                    </h6>
+                    <p className="text-sm text-zinc-500">
+                      {/* {project.description || "No description"} */}
+                    </p>
+                  </div>
+                </div>
+                <ChevronRightIcon className="h-5 w-5 text-zinc-500" />
+              </div>
+            </Link>
+          ))}
         </section>
         <section>
           <h3 className="text-muted-foreground mb-2 text-sm font-medium">
