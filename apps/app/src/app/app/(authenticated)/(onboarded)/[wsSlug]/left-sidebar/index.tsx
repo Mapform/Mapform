@@ -35,6 +35,7 @@ import {
   LogOutIcon,
   PlusIcon,
   MapIcon,
+  ScrollIcon,
 } from "lucide-react";
 import {
   Collapsible,
@@ -136,6 +137,12 @@ export function LeftSidebar() {
       },
     })),
     footer: [
+      {
+        title: "Changelog",
+        url: "https://mapform.productlane.com/changelog",
+        icon: ScrollIcon,
+        isActive: false,
+      },
       {
         title: "Roadmap",
         url: "https://mapform.productlane.com/roadmap",
