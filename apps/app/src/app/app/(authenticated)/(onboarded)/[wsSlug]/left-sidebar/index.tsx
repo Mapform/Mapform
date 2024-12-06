@@ -349,26 +349,30 @@ export function LeftSidebar() {
         ))}
       </SidebarContent>
       <SidebarFooter>
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {data.footer.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarLeftMenuButton asChild isActive={item.isActive}>
+                    <Link
+                      href={item.url}
+                      target={
+                        item.url.startsWith("https://") ? "_blank" : undefined
+                      }
+                    >
+                      <item.icon />
+                      <span>{item.title}</span>
+                    </Link>
+                  </SidebarLeftMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
         <SidebarMenu>
           <SidebarMenuItem>
             <DropdownMenu>
-              <div className="pb-2">
-                {data.footer.map((item) => (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarLeftMenuButton asChild isActive={item.isActive}>
-                      <Link
-                        href={item.url}
-                        target={
-                          item.url.startsWith("https://") ? "_blank" : undefined
-                        }
-                      >
-                        <item.icon />
-                        <span>{item.title}</span>
-                      </Link>
-                    </SidebarLeftMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </div>
               <DropdownMenuTrigger asChild>
                 <SidebarLeftMenuButton
                   className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
