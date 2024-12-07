@@ -88,7 +88,7 @@ export function Map({
     if (projectWithPages.pages[0] && (!p || !currentPage)) {
       const firstStep = projectWithPages.pages[0];
 
-      router.push(`${pathname}?=${projectWithPages.pages[0].id}`);
+      router.replace(`${pathname}?p=${projectWithPages.pages[0].id}`);
 
       map?.flyTo({
         center: [firstStep.center.x, firstStep.center.y],
