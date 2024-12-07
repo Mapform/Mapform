@@ -6,7 +6,6 @@ import React, { useEffect, useState } from "react";
 import type { PageData } from "@mapform/backend/datalayer/get-page-data";
 import type { GetLayerPoint } from "@mapform/backend/datalayer/get-layer-point";
 import { type GetLayerMarker } from "@mapform/backend/datalayer/get-layer-marker";
-import { useCreateQueryString } from "@mapform/lib/hooks/use-create-query-string";
 import type { ProjectWithPages } from "@mapform/backend/projects/get-project-with-pages";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import { submitPage } from "~/data/share/submit-page";
@@ -36,12 +35,11 @@ export function Map({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const createQueryString = useCreateQueryString();
 
   const p = searchParams.get("p");
   const currentPage = projectWithPages.pages.find((page) => page.id === p);
   const setCurrentPage = (page: Page) => {
-    router.push(`${pathname}?${createQueryString("p", page.id)}`);
+    router.replace(`${pathname}?p=${page.id}`);
   };
 
   const { map } = useMapform();
@@ -90,9 +88,7 @@ export function Map({
     if (projectWithPages.pages[0] && (!p || !currentPage)) {
       const firstStep = projectWithPages.pages[0];
 
-      router.push(
-        `${pathname}?${createQueryString("p", projectWithPages.pages[0].id)}`,
-      );
+      router.push(`${pathname}?=${projectWithPages.pages[0].id}`);
 
       map?.flyTo({
         center: [firstStep.center.x, firstStep.center.y],
@@ -102,15 +98,7 @@ export function Map({
         duration: 1000,
       });
     }
-  }, [
-    p,
-    map,
-    router,
-    pathname,
-    currentPage,
-    createQueryString,
-    projectWithPages.pages,
-  ]);
+  }, [p, map, router, pathname, currentPage, projectWithPages.pages]);
 
   const pageValues = (currentPage?.content?.content ?? []).reduce(
     (acc: Record<string, string>, block) => {

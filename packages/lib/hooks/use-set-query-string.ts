@@ -17,11 +17,15 @@ export const useSetQueryString = () => {
     }) => {
       const current = new URLSearchParams(window.location.search);
 
+      const currentVal = current.get(key);
+
       // Clear the param if value is not provided
-      if (!value) {
+      if (!value && currentVal) {
         current.delete(key);
-      } else {
+      } else if (value) {
         current.set(key, value);
+      } else {
+        return;
       }
 
       const search = current.toString();
