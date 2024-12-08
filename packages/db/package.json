@@ -21,7 +21,7 @@
     "@types/uuid": "catalog:",
     "@types/ws": "catalog:",
     "drizzle-kit": "catalog:",
-    "eslint": "^8.57.0",
+    "eslint": "catalog:",
     "ts-node": "catalog:",
     "typescript": "catalog:"
   },

@@ -12,7 +12,7 @@
     "@types/node": "^20.8.10",
     "@types/react": "^18.3.10",
     "@types/react-dom": "^18.2.23",
-    "eslint": "^8.57.0",
+    "eslint": "catalog:",
     "react": "19.0.0-rc-e4953922-20240919",
     "react-dom": "19.0.0-rc-e4953922-20240919",
     "typescript": "catalog:"

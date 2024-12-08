@@ -10,8 +10,8 @@
     "@mapform/ui": "workspace:*",
     "@react-email/components": "catalog:",
     "@t3-oss/env-nextjs": "catalog:",
-    "react": "19.0.0-rc-66855b96-20241106",
-    "react-dom": "19.0.0-rc-66855b96-20241106",
+    "react": "catalog:",
+    "react-dom": "catalog:",
     "resend": "catalog:",
     "zod": "catalog:"
   },
@@ -21,14 +21,14 @@
     "@types/node": "^20.8.10",
     "@types/react": "npm:types-react@19.0.0-rc.1",
     "@types/react-dom": "npm:types-react-dom@19.0.0-rc.1",
-    "eslint": "^8.57.0",
+    "eslint": "catalog:",
     "react-email": "catalog:",
     "typescript": "catalog:"
   },
   "pnpm": {
     "overrides": {
-      "react": "19.0.0-rc-66855b96-20241106",
-      "react-dom": "19.0.0-rc-66855b96-20241106",
+      "react": "catalog:",
+      "react-dom": "catalog:",
       "@types/react": "npm:types-react@19.0.0-rc.1",
       "@types/react-dom": "npm:types-react-dom@19.0.0-rc.1"
     }

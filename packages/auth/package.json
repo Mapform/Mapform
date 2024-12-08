@@ -9,9 +9,9 @@
     "@t3-oss/env-nextjs": "catalog:",
     "bcryptjs": "catalog:",
     "jose": "catalog:",
-    "next": "15.0.3",
-    "react": "19.0.0-rc-66855b96-20241106",
-    "react-dom": "19.0.0-rc-66855b96-20241106",
+    "next": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {
@@ -21,7 +21,7 @@
     "@types/node": "^20.8.10",
     "@types/react": "npm:types-react@19.0.0-rc.1",
     "@types/react-dom": "npm:types-react-dom@19.0.0-rc.1",
-    "eslint": "^8.57.0",
+    "eslint": "catalog:",
     "typescript": "catalog:"
   },
   "pnpm": {

@@ -24,7 +24,7 @@
     "@mapform/typescript-config": "workspace:*",
     "@types/node": "^20.8.10",
     "@types/uuid": "catalog:",
-    "eslint": "^8.57.0",
+    "eslint": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
   }
