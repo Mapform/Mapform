@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/named -- It will work when React 19 is released
 import { cache } from "react";
 import { MapformProvider } from "@mapform/mapform";
 import { redirect } from "next/navigation";
