@@ -1,4 +1,8 @@
 import { fontFamily } from "tailwindcss/defaultTheme";
+import forms from "@tailwindcss/forms";
+import typography from "@tailwindcss/typography";
+import animate from "tailwindcss-animate";
+import container from "@tailwindcss/container-queries";
 
 const config = {
   darkMode: ["class"],
@@ -81,12 +85,7 @@ const config = {
       },
     },
   },
-  plugins: [
-    require("@tailwindcss/forms"),
-    require("@tailwindcss/typography"),
-    require("tailwindcss-animate"),
-    require("@tailwindcss/container-queries"),
-  ],
+  plugins: [forms, typography, animate, container],
 };
 
 export default config;

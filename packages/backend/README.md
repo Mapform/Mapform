@@ -6,6 +6,7 @@ This is the data access layer. This layer:
 - Authorizes that the user (or alternative auth mechanism) can access the resource
 - Is agnostic of where it is used; it can be used in the dashboard or future API
 - Defines input schemas
+- Outputs type definitions
 
 This layer does not:
 
