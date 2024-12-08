@@ -31,6 +31,9 @@ export const baseClient = createSafeActionClient({
 /**
  * Check that the user is authenticated, and only requested workspace /
  * teamspace resources they have access to.
+ *
+ * NOTE: This is a first-level service check, but authorization checks must also
+ * happen at the data access layer.
  */
 export const authAction = baseClient.use(async ({ next }) => {
   const response = await getCurrentSession();
