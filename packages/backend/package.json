@@ -3,29 +3,29 @@
   "version": "0.1.0",
   "type": "module",
   "dependencies": {
-    "@infra-blocks/zod-utils": "^0.4.5",
+    "@infra-blocks/zod-utils": "catalog:",
     "@mapform/auth": "workspace:*",
     "@mapform/db": "workspace:*",
     "@mapform/lib": "workspace:*",
     "@mapform/transactional": "workspace:*",
-    "@oslojs/crypto": "^1.0.1",
-    "@oslojs/encoding": "^1.1.0",
-    "@t3-oss/env-nextjs": "^0.11.1",
-    "@vercel/blob": "^0.23.3",
-    "next-safe-action": "^7.9.3",
-    "slugify": "^1.6.6",
-    "uuid": "^9.0.1",
-    "zod": "3.23.8",
-    "zod-form-data": "^2.0.2"
+    "@oslojs/crypto": "catalog:",
+    "@oslojs/encoding": "catalog:",
+    "@t3-oss/env-nextjs": "catalog:",
+    "@vercel/blob": "catalog:",
+    "next-safe-action": "catalog:",
+    "slugify": "catalog:",
+    "uuid": "catalog:",
+    "zod": "catalog:",
+    "zod-form-data": "catalog:"
   },
   "devDependencies": {
     "@mapform/blocknote": "workspace:*",
     "@mapform/eslint-config": "workspace:*",
     "@mapform/typescript-config": "workspace:*",
     "@types/node": "^20.8.10",
-    "@types/uuid": "^9.0.8",
+    "@types/uuid": "catalog:",
     "eslint": "^8.57.0",
-    "typescript": "^5.6.3",
-    "vitest": "^2.1.1"
+    "typescript": "catalog:",
+    "vitest": "catalog:"
   }
 }

@@ -15,30 +15,30 @@
   "devDependencies": {
     "@mapform/blocknote": "workspace:*",
     "@mapform/eslint-config": "workspace:*",
-    "@types/eslint": "^8.56.5",
+    "@types/eslint": "catalog:",
     "@types/node": "^20.11.24",
-    "@types/pg": "^8.11.10",
-    "@types/uuid": "^9.0.8",
-    "@types/ws": "^8.5.10",
-    "drizzle-kit": "^0.28.0",
+    "@types/pg": "catalog:",
+    "@types/uuid": "catalog:",
+    "@types/ws": "catalog:",
+    "drizzle-kit": "catalog:",
     "eslint": "^8.57.0",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.6.3"
+    "ts-node": "catalog:",
+    "typescript": "catalog:"
   },
   "dependencies": {
     "@mapform/typescript-config": "workspace:*",
-    "@neondatabase/serverless": "^0.9.0",
-    "@t3-oss/env-nextjs": "^0.11.1",
-    "dotenv": "^16.4.5",
-    "drizzle-orm": "^0.36.1",
-    "drizzle-zod": "^0.5.1",
-    "emoji-regex": "^10.4.0",
-    "pg": "^8.13.0",
-    "uuid": "^9.0.1",
-    "ws": "^8.18.0",
-    "zod": "3.23.8"
+    "@neondatabase/serverless": "catalog:",
+    "@t3-oss/env-nextjs": "catalog:",
+    "dotenv": "catalog:",
+    "drizzle-orm": "catalog:",
+    "drizzle-zod": "catalog:",
+    "emoji-regex": "catalog:",
+    "pg": "catalog:",
+    "uuid": "catalog:",
+    "ws": "catalog:",
+    "zod": "catalog:"
   },
   "optionalDependencies": {
-    "bufferutil": "^4.0.8"
+    "bufferutil": "catalog:"
   }
 }
