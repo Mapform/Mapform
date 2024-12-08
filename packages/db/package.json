@@ -16,7 +16,7 @@
     "@mapform/blocknote": "workspace:*",
     "@mapform/eslint-config": "workspace:*",
     "@types/eslint": "catalog:",
-    "@types/node": "^20.11.24",
+    "@types/node": "catalog:",
     "@types/pg": "catalog:",
     "@types/uuid": "catalog:",
     "@types/ws": "catalog:",

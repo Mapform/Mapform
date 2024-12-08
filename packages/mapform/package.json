@@ -37,9 +37,9 @@
     "@tanstack/react-query": "catalog:",
     "@types/eslint": "catalog:",
     "@types/geojson": "catalog:",
-    "@types/node": "^20.11.24",
-    "@types/react": "npm:types-react@19.0.0-rc.1",
-    "@types/react-dom": "npm:types-react-dom@19.0.0-rc.1",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
     "@types/supercluster": "catalog:",
     "eslint": "catalog:",
     "react": "catalog:",
@@ -49,8 +49,8 @@
   },
   "pnpm": {
     "overrides": {
-      "@types/react": "npm:types-react@19.0.0-rc.1",
-      "@types/react-dom": "npm:types-react-dom@19.0.0-rc.1"
+      "@types/react": "catalog:",
+      "@types/react-dom": "catalog:"
     }
   }
 }

@@ -18,9 +18,9 @@
   "devDependencies": {
     "@mapform/eslint-config": "workspace:*",
     "@mapform/typescript-config": "workspace:*",
-    "@types/node": "^20.8.10",
-    "@types/react": "npm:types-react@19.0.0-rc.1",
-    "@types/react-dom": "npm:types-react-dom@19.0.0-rc.1",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
     "eslint": "catalog:",
     "react-email": "catalog:",
     "typescript": "catalog:"
@@ -29,8 +29,8 @@
     "overrides": {
       "react": "catalog:",
       "react-dom": "catalog:",
-      "@types/react": "npm:types-react@19.0.0-rc.1",
-      "@types/react-dom": "npm:types-react-dom@19.0.0-rc.1"
+      "@types/react": "catalog:",
+      "@types/react-dom": "catalog:"
     }
   }
 }

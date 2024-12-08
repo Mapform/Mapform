@@ -9,7 +9,7 @@
     "@mapform/eslint-config": "workspace:*",
     "@mapform/typescript-config": "workspace:*",
     "@types/mapbox__geo-viewport": "catalog:",
-    "@types/node": "^20.8.10",
+    "@types/node": "catalog:",
     "@types/react": "^18.3.10",
     "@types/react-dom": "^18.2.23",
     "eslint": "catalog:",

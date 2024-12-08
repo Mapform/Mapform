@@ -162,12 +162,21 @@ catalogs:
     '@types/mapbox__geo-viewport':
       specifier: ^0.5.3
       version: 0.5.3
+    '@types/node':
+      specifier: ^20.11.24
+      version: 20.11.25
     '@types/papaparse':
       specifier: ^5.3.14
       version: 5.3.14
     '@types/pg':
       specifier: ^8.11.10
       version: 8.11.10
+    '@types/react':
+      specifier: npm:types-react@19.0.0-rc.1
+      version: 19.0.0-rc.1
+    '@types/react-dom':
+      specifier: npm:types-react-dom@19.0.0-rc.1
+      version: 19.0.0-rc.1
     '@types/supercluster':
       specifier: ^7.1.3
       version: 7.1.3
@@ -532,16 +541,16 @@ importers:
         specifier: workspace:*
         version: link:../../packages/typescript-config
       '@types/node':
-        specifier: ^20
-        version: 20.11.24
+        specifier: 'catalog:'
+        version: 20.11.25
       '@types/papaparse':
         specifier: 'catalog:'
         version: 5.3.14
       '@types/react':
-        specifier: npm:types-react@19.0.0-rc.1
+        specifier: 'catalog:'
         version: types-react@19.0.0-rc.1
       '@types/react-dom':
-        specifier: npm:types-react-dom@19.0.0-rc.1
+        specifier: 'catalog:'
         version: types-react-dom@19.0.0-rc.1
       '@types/unique-slug':
         specifier: 'catalog:'
@@ -563,13 +572,13 @@ importers:
         version: 8.4.47
       tailwindcss:
         specifier: 'catalog:'
-        version: 3.4.15(ts-node@10.9.2(@types/node@20.11.24)(typescript@5.6.3))
+        version: 3.4.15(ts-node@10.9.2(@types/node@20.11.25)(typescript@5.6.3))
       typescript:
         specifier: 'catalog:'
         version: 5.6.3
       vitest:
         specifier: 'catalog:'
-        version: 2.1.1(@types/node@20.11.24)
+        version: 2.1.1(@types/node@20.11.25)
 
   packages/auth:
     dependencies:
@@ -614,13 +623,13 @@ importers:
         specifier: 'catalog:'
         version: 2.4.6
       '@types/node':
-        specifier: ^20.8.10
+        specifier: 'catalog:'
         version: 20.11.25
       '@types/react':
-        specifier: npm:types-react@19.0.0-rc.1
+        specifier: 'catalog:'
         version: types-react@19.0.0-rc.1
       '@types/react-dom':
-        specifier: npm:types-react-dom@19.0.0-rc.1
+        specifier: 'catalog:'
         version: types-react-dom@19.0.0-rc.1
       eslint:
         specifier: 'catalog:'
@@ -684,7 +693,7 @@ importers:
         specifier: workspace:*
         version: link:../typescript-config
       '@types/node':
-        specifier: ^20.8.10
+        specifier: 'catalog:'
         version: 20.11.25
       '@types/uuid':
         specifier: 'catalog:'
@@ -736,13 +745,13 @@ importers:
         specifier: 'catalog:'
         version: 8.56.5
       '@types/node':
-        specifier: ^20.11.24
+        specifier: 'catalog:'
         version: 20.11.25
       '@types/react':
-        specifier: npm:types-react@19.0.0-rc.1
+        specifier: 'catalog:'
         version: types-react@19.0.0-rc.1
       '@types/react-dom':
-        specifier: npm:types-react-dom@19.0.0-rc.1
+        specifier: 'catalog:'
         version: types-react-dom@19.0.0-rc.1
       eslint:
         specifier: 'catalog:'
@@ -810,8 +819,8 @@ importers:
         specifier: 'catalog:'
         version: 8.56.5
       '@types/node':
-        specifier: ^20.11.24
-        version: 20.11.24
+        specifier: 'catalog:'
+        version: 20.11.25
       '@types/pg':
         specifier: 'catalog:'
         version: 8.11.10
@@ -829,7 +838,7 @@ importers:
         version: 8.57.0
       ts-node:
         specifier: 'catalog:'
-        version: 10.9.2(@types/node@20.11.24)(typescript@5.6.3)
+        version: 10.9.2(@types/node@20.11.25)(typescript@5.6.3)
       typescript:
         specifier: 'catalog:'
         version: 5.6.3
@@ -889,13 +898,13 @@ importers:
         specifier: 'catalog:'
         version: 4.17.12
       '@types/node':
-        specifier: ^20.8.10
+        specifier: 'catalog:'
         version: 20.11.25
       '@types/react':
-        specifier: npm:types-react@19.0.0-rc.1
+        specifier: 'catalog:'
         version: types-react@19.0.0-rc.1
       '@types/react-dom':
-        specifier: npm:types-react-dom@19.0.0-rc.1
+        specifier: 'catalog:'
         version: types-react-dom@19.0.0-rc.1
       eslint:
         specifier: 'catalog:'
@@ -929,7 +938,7 @@ importers:
         specifier: 'catalog:'
         version: 0.5.3
       '@types/node':
-        specifier: ^20.8.10
+        specifier: 'catalog:'
         version: 20.11.25
       '@types/react':
         specifier: ^18.3.10
@@ -1023,13 +1032,13 @@ importers:
         specifier: 'catalog:'
         version: 7946.0.14
       '@types/node':
-        specifier: ^20.11.24
+        specifier: 'catalog:'
         version: 20.11.25
       '@types/react':
-        specifier: npm:types-react@19.0.0-rc.1
+        specifier: 'catalog:'
         version: types-react@19.0.0-rc.1
       '@types/react-dom':
-        specifier: npm:types-react-dom@19.0.0-rc.1
+        specifier: 'catalog:'
         version: types-react-dom@19.0.0-rc.1
       '@types/supercluster':
         specifier: 'catalog:'
@@ -1081,13 +1090,13 @@ importers:
         specifier: workspace:*
         version: link:../typescript-config
       '@types/node':
-        specifier: ^20.8.10
+        specifier: 'catalog:'
         version: 20.11.25
       '@types/react':
-        specifier: npm:types-react@19.0.0-rc.1
+        specifier: 'catalog:'
         version: types-react@19.0.0-rc.1
       '@types/react-dom':
-        specifier: npm:types-react-dom@19.0.0-rc.1
+        specifier: 'catalog:'
         version: types-react-dom@19.0.0-rc.1
       eslint:
         specifier: 'catalog:'
@@ -1177,7 +1186,7 @@ importers:
         version: 1.1.2(react-dom@19.0.0-rc-66855b96-20241106(react@19.0.0-rc-66855b96-20241106))(react@19.0.0-rc-66855b96-20241106)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
       '@tailwindcss/container-queries':
         specifier: 'catalog:'
-        version: 0.1.1(tailwindcss@3.4.15(ts-node@10.9.2(@types/node@20.11.24)(typescript@5.6.3)))
+        version: 0.1.1(tailwindcss@3.4.15(ts-node@10.9.2(@types/node@20.11.25)(typescript@5.6.3)))
       class-variance-authority:
         specifier: 'catalog:'
         version: 0.7.0
@@ -1213,7 +1222,7 @@ importers:
         version: 1.4.41(react-dom@19.0.0-rc-66855b96-20241106(react@19.0.0-rc-66855b96-20241106))(react@19.0.0-rc-66855b96-20241106)
       tailwindcss-animate:
         specifier: 'catalog:'
-        version: 1.0.7(tailwindcss@3.4.15(ts-node@10.9.2(@types/node@20.11.24)(typescript@5.6.3)))
+        version: 1.0.7(tailwindcss@3.4.15(ts-node@10.9.2(@types/node@20.11.25)(typescript@5.6.3)))
       vaul:
         specifier: 'catalog:'
         version: 1.1.0(react-dom@19.0.0-rc-66855b96-20241106(react@19.0.0-rc-66855b96-20241106))(react@19.0.0-rc-66855b96-20241106)(types-react-dom@19.0.0-rc.1)(types-react@19.0.0-rc.1)
@@ -1229,21 +1238,21 @@ importers:
         version: link:../typescript-config
       '@tailwindcss/forms':
         specifier: 'catalog:'
-        version: 0.5.7(tailwindcss@3.4.15(ts-node@10.9.2(@types/node@20.11.24)(typescript@5.6.3)))
+        version: 0.5.7(tailwindcss@3.4.15(ts-node@10.9.2(@types/node@20.11.25)(typescript@5.6.3)))
       '@tailwindcss/typography':
         specifier: 'catalog:'
-        version: 0.5.10(tailwindcss@3.4.15(ts-node@10.9.2(@types/node@20.11.24)(typescript@5.6.3)))
+        version: 0.5.10(tailwindcss@3.4.15(ts-node@10.9.2(@types/node@20.11.25)(typescript@5.6.3)))
       '@types/eslint':
         specifier: 'catalog:'
         version: 8.56.5
       '@types/node':
-        specifier: ^20.11.24
-        version: 20.11.24
+        specifier: 'catalog:'
+        version: 20.11.25
       '@types/react':
-        specifier: npm:types-react@19.0.0-rc.1
+        specifier: 'catalog:'
         version: types-react@19.0.0-rc.1
       '@types/react-dom':
-        specifier: npm:types-react-dom@19.0.0-rc.1
+        specifier: 'catalog:'
         version: types-react-dom@19.0.0-rc.1
       eslint:
         specifier: 'catalog:'
@@ -1256,7 +1265,7 @@ importers:
         version: 19.0.0-rc-66855b96-20241106(react@19.0.0-rc-66855b96-20241106)
       tailwindcss:
         specifier: ^3.4.15
-        version: 3.4.15(ts-node@10.9.2(@types/node@20.11.24)(typescript@5.6.3))
+        version: 3.4.15(ts-node@10.9.2(@types/node@20.11.25)(typescript@5.6.3))
       typescript:
         specifier: 'catalog:'
         version: 5.6.3
@@ -3728,9 +3737,6 @@ packages:
 
   '@types/ms@0.7.34':
     resolution: {integrity: sha512-nG96G3Wp6acyAgJqGasjODb+acrI7KltPiRxzHPXnP3NgI28bpQDRv53olbqGXbfcgF5aiiHmO3xpwEpS5Ld9g==}
-
-  '@types/node@20.11.24':
-    resolution: {integrity: sha512-Kza43ewS3xoLgCEpQrsT+xRo/EJej1y0kVYGiLFE1NEODXGzTfwiC6tXTLMQskn1X4/Rjlh0MQUvx9W+L9long==}
 
   '@types/node@20.11.25':
     resolution: {integrity: sha512-TBHyJxk2b7HceLVGFcpAUjsa5zIdsPWlR6XHfyGzd0SFu+/NFgQgMAl96MSDZgQDvJAvV6BKsFOrt6zIL09JDw==}
@@ -9595,22 +9601,22 @@ snapshots:
     optionalDependencies:
       typescript: 5.6.3
 
-  '@tailwindcss/container-queries@0.1.1(tailwindcss@3.4.15(ts-node@10.9.2(@types/node@20.11.24)(typescript@5.6.3)))':
+  '@tailwindcss/container-queries@0.1.1(tailwindcss@3.4.15(ts-node@10.9.2(@types/node@20.11.25)(typescript@5.6.3)))':
     dependencies:
-      tailwindcss: 3.4.15(ts-node@10.9.2(@types/node@20.11.24)(typescript@5.6.3))
+      tailwindcss: 3.4.15(ts-node@10.9.2(@types/node@20.11.25)(typescript@5.6.3))
 
-  '@tailwindcss/forms@0.5.7(tailwindcss@3.4.15(ts-node@10.9.2(@types/node@20.11.24)(typescript@5.6.3)))':
+  '@tailwindcss/forms@0.5.7(tailwindcss@3.4.15(ts-node@10.9.2(@types/node@20.11.25)(typescript@5.6.3)))':
     dependencies:
       mini-svg-data-uri: 1.4.4
-      tailwindcss: 3.4.15(ts-node@10.9.2(@types/node@20.11.24)(typescript@5.6.3))
+      tailwindcss: 3.4.15(ts-node@10.9.2(@types/node@20.11.25)(typescript@5.6.3))
 
-  '@tailwindcss/typography@0.5.10(tailwindcss@3.4.15(ts-node@10.9.2(@types/node@20.11.24)(typescript@5.6.3)))':
+  '@tailwindcss/typography@0.5.10(tailwindcss@3.4.15(ts-node@10.9.2(@types/node@20.11.25)(typescript@5.6.3)))':
     dependencies:
       lodash.castarray: 4.4.0
       lodash.isplainobject: 4.0.6
       lodash.merge: 4.6.2
       postcss-selector-parser: 6.0.10
-      tailwindcss: 3.4.15(ts-node@10.9.2(@types/node@20.11.24)(typescript@5.6.3))
+      tailwindcss: 3.4.15(ts-node@10.9.2(@types/node@20.11.25)(typescript@5.6.3))
 
   '@tanstack/query-core@5.29.0': {}
 
@@ -9832,10 +9838,6 @@ snapshots:
       '@types/unist': 3.0.2
 
   '@types/ms@0.7.34': {}
-
-  '@types/node@20.11.24':
-    dependencies:
-      undici-types: 5.26.5
 
   '@types/node@20.11.25':
     dependencies:
@@ -10220,14 +10222,6 @@ snapshots:
       '@vitest/utils': 2.1.1
       chai: 5.1.1
       tinyrainbow: 1.2.0
-
-  '@vitest/mocker@2.1.1(@vitest/spy@2.1.1)(vite@5.4.5(@types/node@20.11.24))':
-    dependencies:
-      '@vitest/spy': 2.1.1
-      estree-walker: 3.0.3
-      magic-string: 0.30.11
-    optionalDependencies:
-      vite: 5.4.5(@types/node@20.11.24)
 
   '@vitest/mocker@2.1.1(@vitest/spy@2.1.1)(vite@5.4.5(@types/node@20.11.25))':
     dependencies:
@@ -13051,14 +13045,6 @@ snapshots:
       camelcase-css: 2.0.1
       postcss: 8.4.47
 
-  postcss-load-config@4.0.2(postcss@8.4.47)(ts-node@10.9.2(@types/node@20.11.24)(typescript@5.6.3)):
-    dependencies:
-      lilconfig: 3.1.1
-      yaml: 2.4.1
-    optionalDependencies:
-      postcss: 8.4.47
-      ts-node: 10.9.2(@types/node@20.11.24)(typescript@5.6.3)
-
   postcss-load-config@4.0.2(postcss@8.4.47)(ts-node@10.9.2(@types/node@20.11.25)(typescript@5.6.3)):
     dependencies:
       lilconfig: 3.1.1
@@ -13942,36 +13928,9 @@ snapshots:
     dependencies:
       '@babel/runtime': 7.24.0
 
-  tailwindcss-animate@1.0.7(tailwindcss@3.4.15(ts-node@10.9.2(@types/node@20.11.24)(typescript@5.6.3))):
+  tailwindcss-animate@1.0.7(tailwindcss@3.4.15(ts-node@10.9.2(@types/node@20.11.25)(typescript@5.6.3))):
     dependencies:
-      tailwindcss: 3.4.15(ts-node@10.9.2(@types/node@20.11.24)(typescript@5.6.3))
-
-  tailwindcss@3.4.15(ts-node@10.9.2(@types/node@20.11.24)(typescript@5.6.3)):
-    dependencies:
-      '@alloc/quick-lru': 5.2.0
-      arg: 5.0.2
-      chokidar: 3.6.0
-      didyoumean: 1.2.2
-      dlv: 1.1.3
-      fast-glob: 3.3.2
-      glob-parent: 6.0.2
-      is-glob: 4.0.3
-      jiti: 1.21.6
-      lilconfig: 2.1.0
-      micromatch: 4.0.8
-      normalize-path: 3.0.0
-      object-hash: 3.0.0
-      picocolors: 1.1.1
-      postcss: 8.4.47
-      postcss-import: 15.1.0(postcss@8.4.47)
-      postcss-js: 4.0.1(postcss@8.4.47)
-      postcss-load-config: 4.0.2(postcss@8.4.47)(ts-node@10.9.2(@types/node@20.11.24)(typescript@5.6.3))
-      postcss-nested: 6.2.0(postcss@8.4.47)
-      postcss-selector-parser: 6.1.2
-      resolve: 1.22.8
-      sucrase: 3.35.0
-    transitivePeerDependencies:
-      - ts-node
+      tailwindcss: 3.4.15(ts-node@10.9.2(@types/node@20.11.25)(typescript@5.6.3))
 
   tailwindcss@3.4.15(ts-node@10.9.2(@types/node@20.11.25)(typescript@5.6.3)):
     dependencies:
@@ -14046,24 +14005,6 @@ snapshots:
 
   ts-interface-checker@0.1.13: {}
 
-  ts-node@10.9.2(@types/node@20.11.24)(typescript@5.6.3):
-    dependencies:
-      '@cspotcode/source-map-support': 0.8.1
-      '@tsconfig/node10': 1.0.9
-      '@tsconfig/node12': 1.0.11
-      '@tsconfig/node14': 1.0.3
-      '@tsconfig/node16': 1.0.4
-      '@types/node': 20.11.24
-      acorn: 8.10.0
-      acorn-walk: 8.3.2
-      arg: 4.1.3
-      create-require: 1.1.1
-      diff: 4.0.2
-      make-error: 1.3.6
-      typescript: 5.6.3
-      v8-compile-cache-lib: 3.0.1
-      yn: 3.1.1
-
   ts-node@10.9.2(@types/node@20.11.25)(typescript@5.6.3):
     dependencies:
       '@cspotcode/source-map-support': 0.8.1
@@ -14081,7 +14022,6 @@ snapshots:
       typescript: 5.6.3
       v8-compile-cache-lib: 3.0.1
       yn: 3.1.1
-    optional: true
 
   tsconfig-paths@3.15.0:
     dependencies:
@@ -14383,23 +14323,6 @@ snapshots:
       '@types/unist': 3.0.2
       vfile-message: 4.0.2
 
-  vite-node@2.1.1(@types/node@20.11.24):
-    dependencies:
-      cac: 6.7.14
-      debug: 4.3.7
-      pathe: 1.1.2
-      vite: 5.4.5(@types/node@20.11.24)
-    transitivePeerDependencies:
-      - '@types/node'
-      - less
-      - lightningcss
-      - sass
-      - sass-embedded
-      - stylus
-      - sugarss
-      - supports-color
-      - terser
-
   vite-node@2.1.1(@types/node@20.11.25):
     dependencies:
       cac: 6.7.14
@@ -14417,15 +14340,6 @@ snapshots:
       - supports-color
       - terser
 
-  vite@5.4.5(@types/node@20.11.24):
-    dependencies:
-      esbuild: 0.21.5
-      postcss: 8.4.47
-      rollup: 4.21.3
-    optionalDependencies:
-      '@types/node': 20.11.24
-      fsevents: 2.3.3
-
   vite@5.4.5(@types/node@20.11.25):
     dependencies:
       esbuild: 0.21.5
@@ -14434,40 +14348,6 @@ snapshots:
     optionalDependencies:
       '@types/node': 20.11.25
       fsevents: 2.3.3
-
-  vitest@2.1.1(@types/node@20.11.24):
-    dependencies:
-      '@vitest/expect': 2.1.1
-      '@vitest/mocker': 2.1.1(@vitest/spy@2.1.1)(vite@5.4.5(@types/node@20.11.24))
-      '@vitest/pretty-format': 2.1.1
-      '@vitest/runner': 2.1.1
-      '@vitest/snapshot': 2.1.1
-      '@vitest/spy': 2.1.1
-      '@vitest/utils': 2.1.1
-      chai: 5.1.1
-      debug: 4.3.7
-      magic-string: 0.30.11
-      pathe: 1.1.2
-      std-env: 3.7.0
-      tinybench: 2.9.0
-      tinyexec: 0.3.0
-      tinypool: 1.0.1
-      tinyrainbow: 1.2.0
-      vite: 5.4.5(@types/node@20.11.24)
-      vite-node: 2.1.1(@types/node@20.11.24)
-      why-is-node-running: 2.3.0
-    optionalDependencies:
-      '@types/node': 20.11.24
-    transitivePeerDependencies:
-      - less
-      - lightningcss
-      - msw
-      - sass
-      - sass-embedded
-      - stylus
-      - sugarss
-      - supports-color
-      - terser
 
   vitest@2.1.1(@types/node@20.11.25):
     dependencies:

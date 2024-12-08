@@ -22,7 +22,7 @@
     "@mapform/blocknote": "workspace:*",
     "@mapform/eslint-config": "workspace:*",
     "@mapform/typescript-config": "workspace:*",
-    "@types/node": "^20.8.10",
+    "@types/node": "catalog:",
     "@types/uuid": "catalog:",
     "eslint": "catalog:",
     "typescript": "catalog:",

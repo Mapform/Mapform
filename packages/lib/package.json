@@ -13,18 +13,18 @@
     "@mapform/eslint-config": "workspace:*",
     "@mapform/typescript-config": "workspace:*",
     "@types/lodash-es": "catalog:",
-    "@types/node": "^20.8.10",
+    "@types/node": "catalog:",
     "eslint": "catalog:",
-    "@types/react": "npm:types-react@19.0.0-rc.1",
-    "@types/react-dom": "npm:types-react-dom@19.0.0-rc.1",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
     "typescript": "catalog:"
   },
   "pnpm": {
     "overrides": {
-      "@types/react": "npm:types-react@19.0.0-rc.1",
-      "@types/react-dom": "npm:types-react-dom@19.0.0-rc.1"
+      "@types/react": "catalog:",
+      "@types/react-dom": "catalog:"
     }
   }
 }

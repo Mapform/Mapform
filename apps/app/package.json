@@ -57,10 +57,10 @@
   "devDependencies": {
     "@mapform/eslint-config": "workspace:*",
     "@mapform/typescript-config": "workspace:*",
-    "@types/node": "^20",
+    "@types/node": "catalog:",
     "@types/papaparse": "catalog:",
-    "@types/react": "npm:types-react@19.0.0-rc.1",
-    "@types/react-dom": "npm:types-react-dom@19.0.0-rc.1",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
     "@types/unique-slug": "catalog:",
     "@types/uuid": "catalog:",
     "autoprefixer": "catalog:",
@@ -73,8 +73,8 @@
   },
   "pnpm": {
     "overrides": {
-      "@types/react": "npm:types-react@19.0.0-rc.1",
-      "@types/react-dom": "npm:types-react-dom@19.0.0-rc.1"
+      "@types/react": "catalog:",
+      "@types/react-dom": "catalog:"
     }
   }
 }
