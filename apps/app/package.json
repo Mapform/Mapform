@@ -1,6 +1,7 @@
 {
   "name": "@mapform/app",
-  "version": "0.1.0",
+  "version": "0.0.0",
+  "type": "module",
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
@@ -64,8 +65,6 @@
     "@types/unique-slug": "catalog:",
     "@types/uuid": "catalog:",
     "autoprefixer": "catalog:",
-    "eslint": "catalog:",
-    "eslint-config-next": "catalog:",
     "postcss": "catalog:",
     "tailwindcss": "catalog:",
     "typescript": "catalog:",

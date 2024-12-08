@@ -1,6 +1,7 @@
 {
   "name": "@mapform/map-utils",
-  "version": "0.1.0",
+  "version": "0.0.0",
+  "type": "module",
   "dependencies": {
     "@mapbox/geo-viewport": "catalog:"
   },

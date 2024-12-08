@@ -16,6 +16,7 @@ catalog:
   "@infra-blocks/zod-utils": ^0.4.5
   "@mapbox/geo-viewport": ^0.5.0
   "@neondatabase/serverless": ^0.9.0
+  "@next/eslint-plugin-next": ^15
   "@oslojs/crypto": ^1.0.1
   "@oslojs/encoding": ^1.1.0
   "@radix-ui/react-accordion": ^1.1.2
@@ -63,8 +64,8 @@ catalog:
   "@types/unique-slug": ^4.0.0
   "@types/uuid": ^9.0.8
   "@types/ws": ^8.5.10
-  "@typescript-eslint/eslint-plugin": ^7.1.0
-  "@typescript-eslint/parser": ^7.1.0
+  "@typescript-eslint/eslint-plugin": ^8.15.0
+  "@typescript-eslint/parser": ^8.15.0
   "@vercel/analytics": ^1.4.1
   "@vercel/blob": ^0.23.3
   "@vercel/speed-insights": ^1.1.0
@@ -85,12 +86,15 @@ catalog:
   embla-carousel-react: ^8.5.1
   emoji-mart: ^5.6.0
   emoji-regex: ^10.4.0
-  eslint: 8.57.0
+  eslint: ^9.15.0
   eslint-config-next: 15.0.3
   eslint-config-prettier: ^9.1.0
-  eslint-config-turbo: ^2.2.0
+  eslint-plugin-turbo: ^2.3.0
   eslint-plugin-only-warn: ^1.1.0
+  eslint-plugin-react: ^7.37.2
+  eslint-plugin-react-hooks: ^5.0.0
   geojson: ^0.5.0
+  globals: ^15.12.0
   jose: ^5.9.6
   lodash-es: ^4.17.21
   lucide-react: ^0.446.0
@@ -121,6 +125,7 @@ catalog:
   ts-node: ^10.9.2
   turbo: ^2.3.0
   typescript: ^5.6.3
+  typescript-eslint: ^8.15.0
   unique-slug: ^4.0.0
   use-supercluster: ^1.2.0
   uuid: ^9.0.1

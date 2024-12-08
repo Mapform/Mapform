@@ -15,7 +15,7 @@
     "**/*.tsx",
     "**/*.cjs",
     "**/*.mjs",
-    ".eslintrc.cjs"
+    "eslint.config.js"
   ],
   "exclude": ["dist", "build", "node_modules"]
 }
