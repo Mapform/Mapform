@@ -16,11 +16,11 @@
   "devDependencies": {
     "@mapform/eslint-config": "workspace:*",
     "@mapform/typescript-config": "workspace:*",
-    "prettier": "^3.2.5",
-    "prettier-plugin-tailwindcss": "^0.6.8",
-    "turbo": "^2.3.0"
+    "prettier": "catalog:",
+    "prettier-plugin-tailwindcss": "catalog:",
+    "turbo": "catalog:"
   },
-  "packageManager": "pnpm@8.9.0",
+  "packageManager": "pnpm@9.15.0",
   "engines": {
     "node": ">=20"
   }
