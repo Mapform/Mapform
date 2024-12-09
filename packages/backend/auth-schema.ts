@@ -1,14 +1,32 @@
 import { z } from "zod";
+import {
+  selectUserSchema,
+  selectWorkspaceMembershipSchema,
+  selectWorkspaceSchema,
+  selectTeamspaceSchema,
+} from "@mapform/db/schema";
 
 export const userAuthSchema = z.object({
   authType: z.literal("user"),
-  authUser: z.string(),
-  authSession: z.string(),
+  authUser: selectUserSchema.merge(
+    z.object({
+      workspaceMemberships: z.array(
+        selectWorkspaceMembershipSchema.merge(
+          z.object({
+            workspace: selectWorkspaceSchema.pick({ id: true, slug: true }),
+            teamspaces: z.array(
+              selectTeamspaceSchema.pick({ id: true, slug: true }),
+            ),
+          }),
+        ),
+      ),
+    }),
+  ),
 });
 
 export const apiAuthSchema = z.object({
   authType: z.literal("api"),
-  authData: z.instanceof(Error),
+  authData: z.object({ apiKey: z.string() }),
 });
 
 export const publicAuthSchema = z.object({ authType: z.literal("public") });
