@@ -11,3 +11,17 @@ export const getWorkspace = ({ slug }: GetWorkspaceSchema) =>
 export type UserWorkspace = NonNullable<
   Awaited<ReturnType<typeof getWorkspace>>
 >;
+
+// Server-level
+/**
+ * export const getWorkspaceAction = authAction
+  .schema(getWorkspaceSchema)
+  .action(({ parsedInput, ctx: { user } }) => getWorkspace(ctx)(parsedInput));
+ */
+
+// Data access-level
+/**
+ * export const getWorkspace = withContext((ctx) => ({ slug }: GetWorkspaceSchema) => { ... })
+ *
+ * export const getWorkspace =
+ */
