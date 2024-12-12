@@ -9,12 +9,12 @@ import {
 const authMiddleware = createMiddleware().define(async ({ next }) => {
   const response = await getCurrentSession();
 
-  if (!response?.user) {
+  if (!response?.user.data) {
     return redirect("/app/signin");
   }
 
   return next({
-    ctx: { authType: "user", user: response.user } satisfies AuthContext,
+    ctx: { authType: "user", user: response.user.data } satisfies AuthContext,
   });
 });
 

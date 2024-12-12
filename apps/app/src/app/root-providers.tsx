@@ -7,7 +7,7 @@ import {
 } from "@tanstack/react-query";
 import { ThemeProvider } from "next-themes";
 import { createContext, useContext, useState, useEffect, use } from "react";
-import type { GetUser } from "@mapform/backend/users/get-user";
+import type { GetUser } from "@mapform/backend/data/users/get-user";
 import { TooltipProvider } from "@mapform/ui/components/tooltip";
 import type { GetCurrentSession } from "~/data/auth/get-current-session";
 

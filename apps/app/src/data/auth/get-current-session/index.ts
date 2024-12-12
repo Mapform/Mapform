@@ -2,7 +2,7 @@
 
 import { cache } from "react";
 import { cookies } from "next/headers";
-import { getUser } from "@mapform/backend/users/get-user";
+import { authClient } from "~/lib/safe-action";
 import { verifyToken } from "@mapform/auth/helpers/sessions";
 
 export const getCurrentSession = cache(async () => {
@@ -22,7 +22,7 @@ export const getCurrentSession = cache(async () => {
     return null;
   }
 
-  const user = await getUser({ id: sessionData.user.id });
+  const user = await authClient.getUser({ id: sessionData.user.id });
 
   if (!user) {
     return null;

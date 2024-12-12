@@ -13,10 +13,15 @@ export const userAuthSchema = z.object({
       workspaceMemberships: z.array(
         selectWorkspaceMembershipSchema.merge(
           z.object({
-            workspace: selectWorkspaceSchema.pick({ id: true, slug: true }),
-            teamspaces: z.array(
-              selectTeamspaceSchema.pick({ id: true, slug: true }),
-            ),
+            workspace: selectWorkspaceSchema
+              .pick({ id: true, slug: true })
+              .merge(
+                z.object({
+                  teamspaces: z.array(
+                    selectTeamspaceSchema.pick({ id: true, slug: true }),
+                  ),
+                }),
+              ),
           }),
         ),
       ),
