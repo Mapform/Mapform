@@ -2,7 +2,7 @@
 
 import { createContext, useContext } from "react";
 import type { CurrentUserWorkspaceMemberships } from "@mapform/backend/workspace-memberships/get-current-user-workspace-memberships";
-import type { WorkspaceWithTeamspaces } from "@mapform/backend/workspaces/get-workspace-directory";
+import type { WorkspaceDirectory } from "@mapform/backend/workspaces/get-workspace-directory";
 import {
   SidebarLeftProvider,
   SidebarRightProvider,
@@ -12,7 +12,7 @@ import { RightSidebar } from "./right-sidebar";
 
 export interface WorkspaceContextInterface {
   workspaceSlug: string;
-  workspaceDirectory: NonNullable<WorkspaceWithTeamspaces>;
+  workspaceDirectory: NonNullable<WorkspaceDirectory>;
   workspaceMemberships: CurrentUserWorkspaceMemberships;
   currentWorkspace: CurrentUserWorkspaceMemberships[number] | undefined;
 }
@@ -38,7 +38,7 @@ export function WorkspaceProvider({
   defaultLeftOpen?: boolean;
   defaultRightOpen?: boolean;
   workspaceMemberships: CurrentUserWorkspaceMemberships;
-  workspaceDirectory: NonNullable<WorkspaceWithTeamspaces>;
+  workspaceDirectory: NonNullable<WorkspaceDirectory>;
 } & WorkspaceProviderProps) {
   const params = useParams<{
     pId?: string;

@@ -1,8 +1,8 @@
 import { cache } from "react";
 import { notFound } from "next/navigation";
 import { cookies } from "next/headers";
+import { authClient } from "~/lib/safe-action";
 import { getCurrentUserWorkspaceMembershipsAction } from "~/data/workspace-memberships/get-current-user-workspace-memberships";
-import { getWorkspaceDirectoryAction } from "~/data/workspaces/get-workspace-directory";
 import { TopNav } from "./top-nav";
 import { WorkspaceProvider } from "./workspace-context";
 import { LeftSidebar } from "./left-sidebar";
@@ -53,7 +53,7 @@ export default async function WorkspaceLayout(props: {
  * Cached fetch functions
  */
 const fetchWorkspaceDirectory = cache(async (slug: string) => {
-  const getWorkspaceDirectoryResponse = await getWorkspaceDirectoryAction({
+  const getWorkspaceDirectoryResponse = await authClient.getWorkspaceDirectory({
     slug,
   });
 

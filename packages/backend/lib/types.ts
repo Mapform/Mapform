@@ -17,3 +17,7 @@ export type AuthClient = SafeActionClient<
 >;
 
 export type Middleware = MiddlewareFn<any, any, object, AuthContext>;
+
+export type UnwrapReturn<T extends (...args: any) => any> = NonNullable<
+  Awaited<NonNullable<ReturnType<NonNullable<Awaited<ReturnType<T>>>>>>
+>;

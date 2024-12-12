@@ -1,10 +1,13 @@
 import {
+  createMiddleware,
   createSafeActionClient,
   DEFAULT_SERVER_ERROR_MESSAGE,
 } from "next-safe-action";
+import type { AuthContext } from "./lib/schema";
 import { ServerError } from "./lib/server-error";
 import { Middleware } from "./lib/types";
 import { getWorkspace } from "./data/workspaces/get-workspace";
+import { getWorkspaceDirectory } from "./data/workspaces/get-workspace-directory";
 
 // Base client
 export const baseClient = createSafeActionClient({
@@ -28,7 +31,9 @@ export const createAuthClient = (middleware: Middleware) => {
 
   return {
     getWorkspace: getWorkspace(authClient),
+    getWorkspaceDirectory: getWorkspaceDirectory(authClient),
   };
 };
 
-export { ServerError };
+export { ServerError, createMiddleware };
+export type { AuthContext };

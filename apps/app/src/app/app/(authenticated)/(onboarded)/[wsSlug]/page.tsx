@@ -31,10 +31,10 @@ export default async function HomePage(props: {
         workspaceSlug: params.wsSlug,
       }),
     ]);
-  const workspaceWithTeamspaces = getWorkspaceDirectoryResponse?.data;
+  const WorkspaceDirectory = getWorkspaceDirectoryResponse?.data;
   const recentProjects = recentProjectsResponse?.data ?? [];
 
-  if (!workspaceWithTeamspaces) {
+  if (!WorkspaceDirectory) {
     return notFound();
   }
 
