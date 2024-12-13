@@ -43,3 +43,4 @@ export const userOrPublicOrApiAuthSchema = z.discriminatedUnion("authType", [
 ]);
 
 export type AuthContext = z.infer<typeof userOrPublicOrApiAuthSchema>;
+export type UserAuthContext = z.infer<typeof userAuthSchema>;

@@ -1,6 +1,7 @@
 import { createMiddleware } from "next-safe-action";
 import { ServerError } from "./server-error";
 import { AuthContext, userAuthSchema } from "./schema";
+import { UserAccess } from "./authorization";
 
 export const userAuthMiddleware = createMiddleware<{
   ctx: AuthContext; // [1]
@@ -13,5 +14,7 @@ export const userAuthMiddleware = createMiddleware<{
     );
   }
 
-  return next({ ctx: result.data });
+  const userAccess = new UserAccess(result.data?.user);
+
+  return next({ ctx: { ...result.data, userAccess } });
 });

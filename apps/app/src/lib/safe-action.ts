@@ -55,15 +55,15 @@ export const publicClient = createPublicClient(async () => {
 //   return redirect("/app/signin");
 // }
 
-//   const checkAccessToWorkspaceBySlug = (slug: string) =>
-//     [
-//       ...ignoredWorkspaceSlugs,
-//       ...response.user.workspaceMemberships.map((wm) => wm.workspace.slug),
-//     ].some((ws) => slug === ws);
-//   const checkAccessToWorkspaceById = (id: string) =>
-//     [...response.user.workspaceMemberships.map((wm) => wm.workspace.id)].some(
-//       (ws) => id === ws,
-//     );
+// const checkAccessToWorkspaceBySlug = (slug: string) =>
+//   [
+//     ...ignoredWorkspaceSlugs,
+//     ...response.user.workspaceMemberships.map((wm) => wm.workspace.slug),
+//   ].some((ws) => slug === ws);
+// const checkAccessToWorkspaceById = (id: string) =>
+//   [...response.user.workspaceMemberships.map((wm) => wm.workspace.id)].some(
+//     (ws) => id === ws,
+//   );
 //   const hasAccessToCurrentWorkspace =
 //     checkAccessToWorkspaceBySlug(workspaceSlug);
 

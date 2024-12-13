@@ -8,6 +8,7 @@ import { getWorkspaceDirectory } from "./data/workspaces/get-workspace-directory
 import { requestMagicLink } from "./data/auth/request-magic-link";
 import { validateMagicLink } from "./data/auth/validate-magic-link";
 import { signOut } from "./data/auth/sign-out";
+import { createEmptyDataset } from "./data/datasets/create-empty-dataset";
 
 // Base client
 export const baseClient = createSafeActionClient({
@@ -44,6 +45,9 @@ const createUserAuthClient = (
   return {
     // Auth
     signOut: signOut(authClient),
+
+    // Datasets
+    createEmptyDataset: createEmptyDataset(authClient),
 
     // Workspaces
     getWorkspaceDirectory: getWorkspaceDirectory(authClient),

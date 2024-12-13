@@ -25,8 +25,8 @@ import { toast } from "@mapform/ui/components/toaster";
 import { useAction } from "next-safe-action/hooks";
 import { useState } from "react";
 import type { z } from "zod";
-import { createEmptyDatasetAction } from "~/data/datasets/create-empty-dataset";
 import { extendedCreateEmptyDatasetSchema } from "~/data/datasets/create-empty-dataset/schema";
+import { createEmptyDatasetAction } from "./actions";
 import { useWorkspace } from "../../../workspace-context";
 
 type CreateEmptyDatasetSchema = z.infer<
