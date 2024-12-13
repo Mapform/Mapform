@@ -18,7 +18,14 @@ const authMiddleware = createMiddleware().define(async ({ next }) => {
   });
 });
 
+const publicMiddleware = createMiddleware().define(async ({ next }) => {
+  return next({
+    ctx: { authType: "public" } satisfies AuthContext,
+  });
+});
+
 export const authClient = createAuthClient(authMiddleware);
+export const publicClient = createAuthClient(publicMiddleware);
 
 // These represent routes that are not really workspace or teamspace.
 // const ignoredWorkspaceSlugs = ["onboarding"];

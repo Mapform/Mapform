@@ -31,6 +31,7 @@ import {
 import mapform from "public/static/images/mapform.svg";
 import type { MagicLinkErrors } from "~/constants/magic-link-errors";
 import { requestMagicLinkAction } from "./actions";
+import { toast } from "@mapform/ui/components/toaster";
 
 const errors: Record<MagicLinkErrors, { text: string; icon: LucideIcon }> = {
   "not-found": {
@@ -53,6 +54,13 @@ export function SignInForm({ type }: { type: "signin" | "signup" }) {
   const { execute, status } = useAction(requestMagicLinkAction, {
     onSuccess: () => {
       setEmailSent(true);
+    },
+    onError: () => {
+      toast({
+        title: "Uh oh! Something went wrong.",
+        description:
+          "We were unable to generate your magic link. If the issue persists please contact support.",
+      });
     },
   });
 
