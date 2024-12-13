@@ -4,7 +4,6 @@ import {
 } from "next-safe-action";
 import type { AuthContext } from "./lib/schema";
 import { ServerError } from "./lib/server-error";
-import { getWorkspace } from "./data/workspaces/get-workspace";
 import { getWorkspaceDirectory } from "./data/workspaces/get-workspace-directory";
 import { requestMagicLink } from "./data/auth/request-magic-link";
 import { validateMagicLink } from "./data/auth/validate-magic-link";
@@ -34,6 +33,7 @@ const createUserAuthClient = (
   callback: () => Promise<Extract<AuthContext, { authType: "user" }>>,
 ) => {
   const authClient = baseClient.use(async ({ next }) => {
+    // the callback allows the service to perform auth checks, and return the necerssary context
     const ctx = await callback();
 
     return next({
@@ -46,7 +46,6 @@ const createUserAuthClient = (
     signOut: signOut(authClient),
 
     // Workspaces
-    getWorkspace: getWorkspace(authClient),
     getWorkspaceDirectory: getWorkspaceDirectory(authClient),
   };
 };
@@ -58,6 +57,7 @@ const createPublicClient = (
   callback: () => Promise<Extract<AuthContext, { authType: "public" }>>,
 ) => {
   const authClient = baseClient.use(async ({ next }) => {
+    // the callback allows the service to perform auth checks, and return the necerssary context
     const ctx = await callback();
 
     return next({
