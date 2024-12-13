@@ -12,6 +12,7 @@ import { createEmptyDataset } from "./data/datasets/create-empty-dataset";
 import { deleteDataset } from "./data/datasets/delete-dataset";
 import { updateDataset } from "./data/datasets/update-dataset";
 import { createProject } from "./data/projects/create-project";
+import { deleteProject } from "./data/projects/delete-project";
 
 // Base client
 export const baseClient = createSafeActionClient({
@@ -56,6 +57,7 @@ const createUserAuthClient = (
 
     // Projects
     createProject: createProject(authClient),
+    deleteProject: deleteProject(authClient),
 
     // Workspaces
     getWorkspaceDirectory: getWorkspaceDirectory(authClient),
