@@ -1,31 +1,22 @@
 import { redirect } from "next/navigation";
 import { getCurrentSession } from "~/data/auth/get-current-session";
-import {
-  createAuthClient,
-  createMiddleware,
-  type AuthContext,
-} from "@mapform/backend";
+import { createUserAuthClient, createPublicClient } from "@mapform/backend";
 
-const authMiddleware = createMiddleware().define(async ({ next }) => {
+export const authClient = createUserAuthClient(async () => {
+  console.log("Calling user client");
   const response = await getCurrentSession();
 
   if (!response?.user.data) {
     return redirect("/app/signin");
   }
 
-  return next({
-    ctx: { authType: "user", user: response.user.data } satisfies AuthContext,
-  });
+  return { authType: "user", user: response.user.data };
 });
 
-const publicMiddleware = createMiddleware().define(async ({ next }) => {
-  return next({
-    ctx: { authType: "public" } satisfies AuthContext,
-  });
+export const publicClient = createPublicClient(async () => {
+  console.log("Calling public client");
+  return { authType: "public" };
 });
-
-export const authClient = createAuthClient(authMiddleware);
-export const publicClient = createAuthClient(publicMiddleware);
 
 // These represent routes that are not really workspace or teamspace.
 // const ignoredWorkspaceSlugs = ["onboarding"];

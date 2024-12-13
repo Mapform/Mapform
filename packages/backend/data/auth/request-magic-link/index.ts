@@ -4,7 +4,6 @@ import { db } from "@mapform/db";
 import { eq } from "@mapform/db/utils";
 import { requestMagicLinkSchema } from "./schema";
 import type { AuthClient, UnwrapReturn } from "../../../lib/types";
-import { userAuthMiddleware } from "../../../lib/middleware";
 import { sendEmail } from "@mapform/transactional/emails/magic-links";
 import { magicLinks } from "@mapform/db/schema";
 import { generateToken, hashToken } from "@mapform/auth/helpers/tokens";
@@ -14,7 +13,7 @@ const baseUrl = env.NEXT_PUBLIC_BASE_URL;
 
 export const requestMagicLink = (authClient: AuthClient) =>
   authClient
-    .use(userAuthMiddleware)
+    // Public
     .schema(requestMagicLinkSchema)
     .action(async ({ parsedInput: { email } }) => {
       // 1. Generate token

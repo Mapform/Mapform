@@ -34,11 +34,11 @@ export const apiAuthSchema = z.object({
   apiKey: z.string(),
 });
 
-export const publicAuthSchema = z.object({ authType: z.literal("public") });
+export const publicSchema = z.object({ authType: z.literal("public") });
 
 export const userOrPublicOrApiAuthSchema = z.discriminatedUnion("authType", [
   userAuthSchema,
-  publicAuthSchema,
+  publicSchema,
   apiAuthSchema,
 ]);
 

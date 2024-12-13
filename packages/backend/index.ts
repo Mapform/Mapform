@@ -1,11 +1,9 @@
 import {
-  createMiddleware,
   createSafeActionClient,
   DEFAULT_SERVER_ERROR_MESSAGE,
 } from "next-safe-action";
 import type { AuthContext } from "./lib/schema";
 import { ServerError } from "./lib/server-error";
-import { Middleware } from "./lib/types";
 import { getWorkspace } from "./data/workspaces/get-workspace";
 import { getWorkspaceDirectory } from "./data/workspaces/get-workspace-directory";
 import { getUser } from "./data/users/get-user";
@@ -28,13 +26,23 @@ export const baseClient = createSafeActionClient({
   },
 });
 
-export const createAuthClient = (middleware: Middleware) => {
-  const authClient = baseClient.use(middleware);
+/**
+ * Can be used with user authentication.
+ */
+const createUserAuthClient = (
+  callback: () => Promise<Extract<AuthContext, { authType: "user" }>>,
+) => {
+  const authClient = baseClient.use(async ({ next }) => {
+    const ctx = await callback();
+
+    return next({
+      ctx,
+    });
+  });
 
   return {
-    // Auth
+    // Users
     getUser: getUser(authClient),
-    requestMagicLink: requestMagicLink(authClient),
 
     // Workspaces
     getWorkspace: getWorkspace(authClient),
@@ -42,5 +50,25 @@ export const createAuthClient = (middleware: Middleware) => {
   };
 };
 
-export { ServerError, createMiddleware };
+/**
+ * Can be used without authentication.
+ */
+const createPublicClient = (
+  callback: () => Promise<Extract<AuthContext, { authType: "public" }>>,
+) => {
+  const authClient = baseClient.use(async ({ next }) => {
+    const ctx = await callback();
+
+    return next({
+      ctx,
+    });
+  });
+
+  return {
+    // Auth
+    requestMagicLink: requestMagicLink(authClient),
+  };
+};
+
+export { ServerError, createUserAuthClient, createPublicClient };
 export type { AuthContext };
