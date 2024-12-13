@@ -4,7 +4,7 @@ import { useState } from "react";
 import {
   updateWorkspaceSchema,
   type UpdateWorkspaceSchema,
-} from "@mapform/backend/workspaces/update-workspace/schema";
+} from "@mapform/backend/data/workspaces/update-workspace/schema";
 import {
   Form,
   FormControl,

@@ -16,6 +16,9 @@ import { deleteProject } from "./data/projects/delete-project";
 import { getRecentProjects } from "./data/projects/get-recent-projects";
 import { updateProject } from "./data/projects/update-project";
 import { getUserWorkspaceMemberships } from "./data/workspace-memberships/get-user-workspace-memberships";
+import { countWorkspaceRows } from "./data/rows/count-workspace-rows";
+import { updateWorkspace } from "./data/workspaces/update-workspace";
+import { upsertCell } from "./data/cells/upsert-cell";
 
 // Base client
 export const baseClient = createSafeActionClient({
@@ -53,6 +56,9 @@ const createUserAuthClient = (
     // Auth
     signOut: signOut(authClient),
 
+    // Cells
+    upsertCell: upsertCell(authClient),
+
     // Datasets
     deleteDataset: deleteDataset(authClient),
     updateDataset: updateDataset(authClient),
@@ -64,7 +70,11 @@ const createUserAuthClient = (
     updateProject: updateProject(authClient),
     getRecentProjects: getRecentProjects(authClient),
 
+    // Rows
+    countWorkspaceRows: countWorkspaceRows(authClient),
+
     // Workspaces
+    updateWorkspace: updateWorkspace(authClient),
     getWorkspaceDirectory: getWorkspaceDirectory(authClient),
 
     // Workspace Memberships

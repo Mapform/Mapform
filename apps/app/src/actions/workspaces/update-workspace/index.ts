@@ -2,34 +2,30 @@
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { catchError } from "@mapform/lib/catch-error";
-import { updateWorkspace } from "@mapform/backend/workspaces/update-workspace";
-import { updateWorkspaceSchema } from "@mapform/backend/workspaces/update-workspace/schema";
-import { authAction } from "~/lib/safe-action";
-import { ServerError } from "~/lib/server-error";
+import { authClient } from "~/lib/safe-action";
 
-export const updateWorkspaceAction = authAction
-  .schema(updateWorkspaceSchema)
-  .action(async ({ parsedInput, ctx: { user, workspaceSlug } }) => {
-    if (
-      user.workspaceMemberships.every((m) => m.workspaceId !== parsedInput.id)
-    ) {
-      throw new Error("Unauthorized");
-    }
+// TODO: Not finished implementing
+export const updateWorkspaceAction = async (
+  params: Parameters<typeof authClient.createProject>[0],
+) => {
+  const result = await authClient.updateWorkspace(params);
 
-    const [error] = await catchError(updateWorkspace(parsedInput));
+  // Redirect to the settings page if the slug has changed
+  // if (workspaceSlug !== slug) {
+  //   redirect(`/app/${slug}/settings`);
+  // }
 
-    if (error) {
-      if ((error as unknown as { code: string }).code === "23505") {
-        throw new ServerError("Workspace slug already exists");
-      }
+  revalidatePath(`/app/[wsSlug]/[tsSlug]`, "page");
 
-      throw error;
-    }
+  return result;
+};
 
-    if (workspaceSlug !== parsedInput.slug) {
-      redirect(`/app/${parsedInput.slug}/settings`);
-    }
+// const [error] = await catchError(updateWorkspace(parsedInput));
 
-    revalidatePath(`/app/[wsSlug]/[tsSlug]`, "page");
-  });
+// if (error) {
+//   if ((error as unknown as { code: string }).code === "23505") {
+//     throw new ServerError("Workspace slug already exists");
+//   }
+
+//   throw error;
+// }

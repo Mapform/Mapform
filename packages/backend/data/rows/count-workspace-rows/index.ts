@@ -1,18 +1,28 @@
+"server-only";
+
 import { db } from "@mapform/db";
 import { datasets, rows, teamspaces, workspaces } from "@mapform/db/schema";
-import type { CountWorkspaceRowsSchema } from "./schema";
 import { count, eq } from "@mapform/db/utils";
+import { countWorkspaceRowsSchema } from "./schema";
+import type { AuthClient } from "../../../lib/types";
+import { userAuthMiddleware } from "../../../lib/middleware";
 
-export const countWorkspaceRows = async ({
-  workspaceSlug,
-}: CountWorkspaceRowsSchema) => {
-  const [response] = await db
-    .select({ rowsCount: count(rows.id) })
-    .from(rows)
-    .leftJoin(datasets, eq(datasets.id, rows.datasetId))
-    .leftJoin(teamspaces, eq(teamspaces.id, datasets.teamspaceId))
-    .leftJoin(workspaces, eq(workspaces.slug, teamspaces.workspaceSlug))
-    .where(eq(workspaces.slug, workspaceSlug));
+export const countWorkspaceRows = (authClient: AuthClient) =>
+  authClient
+    .use(userAuthMiddleware)
+    .schema(countWorkspaceRowsSchema)
+    .action(async ({ parsedInput: { workspaceSlug }, ctx: { userAccess } }) => {
+      if (!userAccess.workspace.bySlug(workspaceSlug)) {
+        throw new Error("Unauthorized");
+      }
 
-  return response?.rowsCount;
-};
+      const [response] = await db
+        .select({ rowsCount: count(rows.id) })
+        .from(rows)
+        .leftJoin(datasets, eq(datasets.id, rows.datasetId))
+        .leftJoin(teamspaces, eq(teamspaces.id, datasets.teamspaceId))
+        .leftJoin(workspaces, eq(workspaces.slug, teamspaces.workspaceSlug))
+        .where(eq(workspaces.slug, workspaceSlug));
+
+      return response?.rowsCount;
+    });

@@ -1,25 +1,26 @@
+"server-only";
+
 import { db } from "@mapform/db";
 import { workspaces } from "@mapform/db/schema";
-import type { UpdateWorkspaceSchema } from "./schema";
 import { eq } from "@mapform/db/utils";
+import { updateWorkspaceSchema } from "./schema";
+import type { AuthClient } from "../../../lib/types";
+import { userAuthMiddleware } from "../../../lib/middleware";
 
-export const updateWorkspace = async ({
-  id,
-  ...rest
-}: UpdateWorkspaceSchema) => {
-  return db.transaction(async (tx) => {
-    const prevWorkspace = await tx.query.workspaces.findFirst({
-      where: eq(workspaces.id, id),
+export const updateWorkspace = (authClient: AuthClient) =>
+  authClient
+    .use(userAuthMiddleware)
+    .schema(updateWorkspaceSchema)
+    .action(({ parsedInput: { id, ...rest }, ctx: { userAccess } }) => {
+      if (!userAccess.workspace.byId(id)) {
+        throw new Error("Unauthorized");
+      }
+
+      return db.transaction(async (tx) => {
+        return tx
+          .update(workspaces)
+          .set(rest)
+          .where(eq(workspaces.id, id))
+          .returning();
+      });
     });
-
-    if (!prevWorkspace) {
-      throw new Error("Workspace not found");
-    }
-
-    return tx
-      .update(workspaces)
-      .set(rest)
-      .where(eq(workspaces.id, id))
-      .returning();
-  });
-};
