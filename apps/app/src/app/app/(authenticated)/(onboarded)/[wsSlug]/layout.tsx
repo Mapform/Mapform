@@ -2,7 +2,6 @@ import { cache } from "react";
 import { notFound } from "next/navigation";
 import { cookies } from "next/headers";
 import { authClient } from "~/lib/safe-action";
-import { getCurrentUserWorkspaceMembershipsAction } from "~/actions/workspace-memberships/get-current-user-workspace-memberships";
 import { TopNav } from "./top-nav";
 import { WorkspaceProvider } from "./workspace-context";
 import { LeftSidebar } from "./left-sidebar";
@@ -68,7 +67,7 @@ const fetchWorkspaceDirectory = cache(async (slug: string) => {
 
 const fetchWorkspaceMemberships = cache(async () => {
   const workspaceMembershipsResponse =
-    await getCurrentUserWorkspaceMembershipsAction();
+    await authClient.getUserWorkspaceMemberships({});
 
   const workspaceMemberships = workspaceMembershipsResponse?.data;
 

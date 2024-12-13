@@ -13,6 +13,9 @@ import { deleteDataset } from "./data/datasets/delete-dataset";
 import { updateDataset } from "./data/datasets/update-dataset";
 import { createProject } from "./data/projects/create-project";
 import { deleteProject } from "./data/projects/delete-project";
+import { getRecentProjects } from "./data/projects/get-recent-projects";
+import { updateProject } from "./data/projects/update-project";
+import { getUserWorkspaceMemberships } from "./data/workspace-memberships/get-user-workspace-memberships";
 
 // Base client
 export const baseClient = createSafeActionClient({
@@ -58,9 +61,14 @@ const createUserAuthClient = (
     // Projects
     createProject: createProject(authClient),
     deleteProject: deleteProject(authClient),
+    updateProject: updateProject(authClient),
+    getRecentProjects: getRecentProjects(authClient),
 
     // Workspaces
     getWorkspaceDirectory: getWorkspaceDirectory(authClient),
+
+    // Workspace Memberships
+    getUserWorkspaceMemberships: getUserWorkspaceMemberships(authClient),
   };
 };
 

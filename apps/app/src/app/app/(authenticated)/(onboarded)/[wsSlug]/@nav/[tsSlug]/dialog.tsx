@@ -28,7 +28,7 @@ import {
   createProjectSchema,
   type CreateProjectSchema,
 } from "@mapform/backend/data/projects/create-project/schema";
-import { createProjectAction } from "~/data/projects/create-project";
+import { createProjectAction } from "~/actions/projects/create-project";
 import { useWorkspace } from "../../workspace-context";
 
 export function CreateDialog({ tsSlug }: { tsSlug: string }) {
