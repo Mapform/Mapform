@@ -1,16 +1,14 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { createColumn } from "@mapform/backend/columns/create-column";
-import { createColumnSchema } from "@mapform/backend/columns/create-column/schema";
-import { authAction } from "~/lib/safe-action";
+import { authClient } from "~/lib/safe-action";
 
-export const createColumnAction = authAction
-  .schema(createColumnSchema)
-  .action(async ({ parsedInput }) => {
-    const newColumn = await createColumn(parsedInput);
+export async function createColumnAction(
+  params: Parameters<typeof authClient.createColumn>[0],
+) {
+  const newColumn = await authClient.createColumn(params);
 
-    revalidatePath("/app/[wsSlug]/[tsSlug]/projects/[pId]/project", "page");
+  revalidatePath("/app/[wsSlug]/[tsSlug]/projects/[pId]/project", "page");
 
-    return newColumn;
-  });
+  return newColumn;
+}

@@ -19,6 +19,7 @@ import { getUserWorkspaceMemberships } from "./data/workspace-memberships/get-us
 import { countWorkspaceRows } from "./data/rows/count-workspace-rows";
 import { updateWorkspace } from "./data/workspaces/update-workspace";
 import { upsertCell } from "./data/cells/upsert-cell";
+import { createColumn } from "./data/columns/create-column";
 
 // Base client
 export const baseClient = createSafeActionClient({
@@ -58,6 +59,9 @@ const createUserAuthClient = (
 
     // Cells
     upsertCell: upsertCell(authClient),
+
+    // Columns
+    createColumn: createColumn(authClient),
 
     // Datasets
     deleteDataset: deleteDataset(authClient),
