@@ -36,6 +36,8 @@ export const apiAuthSchema = z.object({
 
 export const publicSchema = z.object({ authType: z.literal("public") });
 
+export const publicOrUserAuthSchema = z.union([publicSchema, userAuthSchema]);
+
 export const userOrPublicOrApiAuthSchema = z.discriminatedUnion("authType", [
   userAuthSchema,
   publicSchema,
@@ -43,4 +45,8 @@ export const userOrPublicOrApiAuthSchema = z.discriminatedUnion("authType", [
 ]);
 
 export type AuthContext = z.infer<typeof userOrPublicOrApiAuthSchema>;
+
 export type UserAuthContext = z.infer<typeof userAuthSchema>;
+export type PublicAuthContext = z.infer<typeof publicSchema>;
+
+export type PublicOrUserAuthContext = z.infer<typeof publicOrUserAuthSchema>;

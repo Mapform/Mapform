@@ -20,6 +20,7 @@ import { countWorkspaceRows } from "./data/rows/count-workspace-rows";
 import { updateWorkspace } from "./data/workspaces/update-workspace";
 import { upsertCell } from "./data/cells/upsert-cell";
 import { createColumn } from "./data/columns/create-column";
+import { getLayerMarker } from "./data/datalayer/get-layer-marker";
 
 // Base client
 export const baseClient = createSafeActionClient({
@@ -62,6 +63,9 @@ const createUserAuthClient = (
 
     // Columns
     createColumn: createColumn(authClient),
+
+    // Datalayers
+    getLayerMarker: getLayerMarker(authClient),
 
     // Datasets
     deleteDataset: deleteDataset(authClient),
