@@ -27,7 +27,7 @@ import { useState } from "react";
 import {
   createProjectSchema,
   type CreateProjectSchema,
-} from "@mapform/backend/projects/create-project/schema";
+} from "@mapform/backend/data/projects/create-project/schema";
 import { createProjectAction } from "~/data/projects/create-project";
 import { useWorkspace } from "../../workspace-context";
 

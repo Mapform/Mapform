@@ -1,4 +1,4 @@
-import type { UpdateDatasetSchema } from "@mapform/backend/datasets/update-dataset/schema";
+import type { UpdateDatasetSchema } from "@mapform/backend/data/datasets/update-dataset/schema";
 import {
   Form,
   FormField,
@@ -16,7 +16,7 @@ import {
 } from "@mapform/ui/components/popover";
 import { useAction } from "next-safe-action/hooks";
 import { Fragment } from "react";
-import { updateDatasetAction } from "~/data/datasets/update-dataset";
+import { updateDatasetAction } from "./actions";
 
 interface RenameDatasetPopoverContentProps {
   dataset: {

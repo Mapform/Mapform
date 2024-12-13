@@ -1,0 +1,22 @@
+"use server";
+
+import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
+import { authClient } from "~/lib/safe-action";
+
+export const createProjectAction = async (
+  params: Parameters<typeof authClient.createProject>[0],
+) => {
+  const headersList = await headers();
+  const workspaceSlug = headersList.get("x-workspace-slug") ?? "";
+  const teamspaceSlug = headersList.get("x-teamspace-slug") ?? "";
+  const result = await authClient.createProject(params);
+
+  revalidatePath(`/app/[wsSlug]/[tsSlug]`, "page");
+  redirect(
+    `/app/${workspaceSlug}/${teamspaceSlug}/projects/${result?.data?.id}`,
+  );
+
+  return result;
+};

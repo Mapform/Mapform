@@ -19,9 +19,9 @@ import type { InferUseActionHookReturn } from "next-safe-action/hooks";
 import { useAction } from "next-safe-action/hooks";
 import type { PageData } from "@mapform/backend/datalayer/get-page-data";
 import type { ListTeamspaceDatasets } from "@mapform/backend/datasets/list-teamspace-datasets";
-import { upsertCellAction } from "~/data/cells/upsert-cell";
-import { uploadImageAction } from "~/data/images";
-import { updatePageAction } from "~/data/pages/update-page";
+import { upsertCellAction } from "~/actions/cells/upsert-cell";
+import { uploadImageAction } from "~/actions/images";
+import { updatePageAction } from "~/actions/pages/update-page";
 
 export interface ProjectContextProps {
   selectedFeature?: GetLayerPoint | GetLayerMarker;

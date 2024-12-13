@@ -8,9 +8,9 @@ import type { GetLayerPoint } from "@mapform/backend/datalayer/get-layer-point";
 import { type GetLayerMarker } from "@mapform/backend/datalayer/get-layer-marker";
 import type { ProjectWithPages } from "@mapform/backend/projects/get-project-with-pages";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
-import { submitPage } from "~/data/share/submit-page";
-import { createSubmission } from "~/data/share/create-submission";
-import type { Responses } from "~/data/share/get-responses.ts";
+import { submitPage } from "~/actions/share/submit-page";
+import { createSubmission } from "~/actions/share/create-submission";
+import type { Responses } from "~/actions/share/get-responses.ts";
 import { env } from "~/env.mjs";
 
 interface MapProps {

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { format } from "date-fns";
 import { TableIcon } from "lucide-react";
-import { listTeamspaceDatasetsAction } from "~/data/datasets/list-teamspace-datasets";
+import { listTeamspaceDatasetsAction } from "~/actions/datasets/list-teamspace-datasets";
 
 export default async function DatasetsPage(props: {
   params: Promise<{ wsSlug: string; tsSlug: string }>;

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { format } from "date-fns";
 import { BoxIcon } from "lucide-react";
-import { getTeamspaceWithProjectsAction } from "~/data/teamspaces/get-teamspace-with-projects";
+import { getTeamspaceWithProjectsAction } from "~/actions/teamspaces/get-teamspace-with-projects";
 
 export default async function WorkspaceForms(props: {
   params: Promise<{ wsSlug: string; tsSlug: string }>;

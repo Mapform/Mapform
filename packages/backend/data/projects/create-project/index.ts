@@ -1,6 +1,10 @@
+"server-only";
+
 import { db } from "@mapform/db";
 import { pages, projects } from "@mapform/db/schema";
-import type { CreateProjectSchema } from "./schema";
+import { createProjectSchema } from "./schema";
+import type { AuthClient } from "../../../lib/types";
+import { userAuthMiddleware } from "../../../lib/middleware";
 
 const INITIAL_VIEW_STATE = {
   longitude: 0,
@@ -10,59 +14,66 @@ const INITIAL_VIEW_STATE = {
   pitch: 0,
 };
 
-export const createProject = async ({
-  name,
-  teamspaceId,
-}: CreateProjectSchema) => {
-  return db.transaction(async (tx) => {
-    /**
-     * Create submissions dataset
-     * TODO: Add this back in (conditionally) when I support forms again
-     */
-    // const [dataset] = await tx
-    //   .insert(datasets)
-    //   .values({
-    //     name: `Responses for ${name}`,
-    //     teamspaceId,
-    //     type: "submissions",
-    //   })
-    //   .returning();
+export const createProject = (authClient: AuthClient) =>
+  authClient
+    .use(userAuthMiddleware)
+    .schema(createProjectSchema)
+    .action(
+      async ({ parsedInput: { name, teamspaceId }, ctx: { userAccess } }) => {
+        if (!userAccess.teamspace.byId(teamspaceId)) {
+          throw new Error("Unauthorized");
+        }
 
-    // if (!dataset) {
-    //   throw new Error("Failed to create dataset");
-    // }
+        return db.transaction(async (tx) => {
+          /**
+           * Create submissions dataset
+           * TODO: Add this back in (conditionally) when I support forms again
+           */
+          // const [dataset] = await tx
+          //   .insert(datasets)
+          //   .values({
+          //     name: `Responses for ${name}`,
+          //     teamspaceId,
+          //     type: "submissions",
+          //   })
+          //   .returning();
 
-    /**
-     * Create project
-     */
-    const [project] = await tx
-      .insert(projects)
-      .values({
-        name,
-        teamspaceId,
-        // datasetId: dataset.id,
-      })
-      .returning();
+          // if (!dataset) {
+          //   throw new Error("Failed to create dataset");
+          // }
 
-    if (!project) {
-      throw new Error("Failed to create project");
-    }
+          /**
+           * Create project
+           */
+          const [project] = await tx
+            .insert(projects)
+            .values({
+              name,
+              teamspaceId,
+              // datasetId: dataset.id,
+            })
+            .returning();
 
-    /**
-     * Create default page
-     */
-    await tx.insert(pages).values({
-      position: 1,
-      projectId: project.id,
-      zoom: INITIAL_VIEW_STATE.zoom,
-      pitch: INITIAL_VIEW_STATE.pitch,
-      bearing: INITIAL_VIEW_STATE.bearing,
-      center: {
-        x: INITIAL_VIEW_STATE.longitude,
-        y: INITIAL_VIEW_STATE.latitude,
+          if (!project) {
+            throw new Error("Failed to create project");
+          }
+
+          /**
+           * Create default page
+           */
+          await tx.insert(pages).values({
+            position: 1,
+            projectId: project.id,
+            zoom: INITIAL_VIEW_STATE.zoom,
+            pitch: INITIAL_VIEW_STATE.pitch,
+            bearing: INITIAL_VIEW_STATE.bearing,
+            center: {
+              x: INITIAL_VIEW_STATE.longitude,
+              y: INITIAL_VIEW_STATE.latitude,
+            },
+          });
+
+          return project;
+        });
       },
-    });
-
-    return project;
-  });
-};
+    );

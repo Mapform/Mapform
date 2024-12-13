@@ -50,7 +50,7 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAction } from "next-safe-action/hooks";
-import { signOutAction } from "~/data/auth/sign-out";
+import { signOutAction } from "~/actions/auth/sign-out";
 import { createProjectAction } from "~/data/projects/create-project";
 import { useAuth } from "~/app/root-providers";
 import { useWorkspace } from "../workspace-context";

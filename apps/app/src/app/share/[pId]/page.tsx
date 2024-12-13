@@ -2,13 +2,13 @@ import React, { cache } from "react";
 import { cookies } from "next/headers";
 import { MapformProvider } from "@mapform/mapform";
 import { type Row } from "@mapform/db/schema";
-import { getSession } from "~/data/share/get-session";
-import { getPageDataAction } from "~/data/share/get-page-data";
-import { getProjectWithPagesAction } from "~/data/share/get-project-with-pages";
-import { type Responses, getResponses } from "~/data/share/get-responses.ts";
-import { getLayerPointAction } from "~/data/share/get-layer-point";
+import { getSession } from "~/actions/share/get-session";
+import { getPageDataAction } from "~/actions/share/get-page-data";
+import { getProjectWithPagesAction } from "~/actions/share/get-project-with-pages";
+import { type Responses, getResponses } from "~/actions/share/get-responses.ts";
+import { getLayerPointAction } from "~/actions/share/get-layer-point";
 import { Map } from "./map";
-import { getLayermarkerAction } from "~/data/datalayer/get-layer-marker";
+import { getLayermarkerAction } from "~/actions/datalayer/get-layer-marker";
 
 const fetchProjectWithPages = cache(async (id: string) => {
   const projectWithPagesResponse = await getProjectWithPagesAction({

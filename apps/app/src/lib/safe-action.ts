@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { getCurrentSession } from "~/data/auth/get-current-session";
+import { getCurrentSession } from "~/actions/auth/get-current-session";
 import { createUserAuthClient, createPublicClient } from "@mapform/backend";
 
 export const authClient = createUserAuthClient(async () => {
@@ -47,9 +47,9 @@ export const publicClient = createPublicClient(async () => {
 //  */
 // export const authAction = baseClient.use(async ({ next }) => {
 //   const response = await getCurrentSession();
-//   const headersList = await headers();
-//   const workspaceSlug = headersList.get("x-workspace-slug") ?? "";
-//   const teamspaceSlug = headersList.get("x-teamspace-slug") ?? "";
+// const headersList = await headers();
+// const workspaceSlug = headersList.get("x-workspace-slug") ?? "";
+// const teamspaceSlug = headersList.get("x-teamspace-slug") ?? "";
 
 // if (!response?.user) {
 //   return redirect("/app/signin");

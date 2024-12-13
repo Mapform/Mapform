@@ -10,6 +10,8 @@ import { validateMagicLink } from "./data/auth/validate-magic-link";
 import { signOut } from "./data/auth/sign-out";
 import { createEmptyDataset } from "./data/datasets/create-empty-dataset";
 import { deleteDataset } from "./data/datasets/delete-dataset";
+import { updateDataset } from "./data/datasets/update-dataset";
+import { createProject } from "./data/projects/create-project";
 
 // Base client
 export const baseClient = createSafeActionClient({
@@ -49,7 +51,11 @@ const createUserAuthClient = (
 
     // Datasets
     deleteDataset: deleteDataset(authClient),
+    updateDataset: updateDataset(authClient),
     createEmptyDataset: createEmptyDataset(authClient),
+
+    // Projects
+    createProject: createProject(authClient),
 
     // Workspaces
     getWorkspaceDirectory: getWorkspaceDirectory(authClient),

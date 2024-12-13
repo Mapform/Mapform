@@ -43,8 +43,8 @@ import {
   SidebarMenuItem,
   SidebarRightMenuButton,
 } from "@mapform/ui/components/sidebar";
-import { deleteLayerAction } from "~/data/layers/delete-layer";
-import { deletePageLayerAction } from "~/data/layers-to-pages/delete-page-layer";
+import { deleteLayerAction } from "~/actions/layers/delete-layer";
+import { deletePageLayerAction } from "~/actions/layers-to-pages/delete-page-layer";
 import { DragItem, DragHandle } from "~/components/draggable";
 import { useProject } from "../../project-context";
 import {

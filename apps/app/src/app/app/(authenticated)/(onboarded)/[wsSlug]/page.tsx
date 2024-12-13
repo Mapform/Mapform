@@ -15,7 +15,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@mapform/ui/components/carousel";
-import { getRecentProjectsAction } from "~/data/projects/get-recent-projects";
+import { getRecentProjectsAction } from "~/actions/projects/get-recent-projects";
 import { getWorkspaceDirectoryAction } from "~/data/workspaces/get-workspace-directory";
 
 export default async function HomePage(props: {

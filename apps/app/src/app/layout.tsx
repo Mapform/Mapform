@@ -5,7 +5,7 @@ import { cn } from "@mapform/lib/classnames";
 import { Toaster } from "@mapform/ui/components/toaster";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import { getCurrentSession } from "~/data/auth/get-current-session";
+import { getCurrentSession } from "~/actions/auth/get-current-session";
 import { RootProviders } from "./root-providers";
 import { defaultMetadata, defaultViewport } from "./metadata";
 

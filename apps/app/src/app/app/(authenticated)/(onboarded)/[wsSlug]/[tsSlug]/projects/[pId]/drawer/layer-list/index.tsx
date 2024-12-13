@@ -37,8 +37,8 @@ import {
   SidebarGroupLabel,
   SidebarMenu,
 } from "@mapform/ui/components/sidebar";
-import { updateLayerOrderAction } from "~/data/layers/update-layer-order";
-import { createPageLayerAction } from "~/data/layers-to-pages/create-page-layer";
+import { updateLayerOrderAction } from "~/actions/layers/update-layer-order";
+import { createPageLayerAction } from "~/actions/layers-to-pages/create-page-layer";
 import { useProject } from "../../project-context";
 import {
   LayerPopoverRoot,

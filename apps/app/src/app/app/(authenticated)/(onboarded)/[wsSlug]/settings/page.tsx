@@ -1,4 +1,4 @@
-import { countWorkspaceRowsAction } from "~/data/rows/count-workspace-rows";
+import { countWorkspaceRowsAction } from "~/actions/rows/count-workspace-rows";
 import { Usage } from "./usage";
 import { WorkspaceSettings } from "./workspace-settings";
 

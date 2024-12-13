@@ -3,7 +3,7 @@
 import type { ReactNode } from "react";
 import { createContext, useContext, useState, useEffect, use } from "react";
 import type { GetUser } from "@mapform/backend/data/users/get-user";
-import type { GetCurrentSession } from "~/data/auth/get-current-session";
+import type { GetCurrentSession } from "~/actions/auth/get-current-session";
 
 interface AuthContextType {
   user: GetUser | null;

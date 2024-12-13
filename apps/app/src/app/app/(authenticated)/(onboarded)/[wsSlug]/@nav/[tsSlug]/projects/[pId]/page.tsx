@@ -6,7 +6,7 @@ import {
 } from "@mapform/ui/components/popover";
 import Link from "next/link";
 import { NavSlot } from "~/components/nav-slot";
-import { getProjectWithTeamspaceAction } from "~/data/projects/get-project-with-teamspace";
+import { getProjectWithTeamspaceAction } from "~/actions/projects/get-project-with-teamspace";
 import { ShareContent } from "./share-content";
 import TogglePages from "./toggle-pages";
 

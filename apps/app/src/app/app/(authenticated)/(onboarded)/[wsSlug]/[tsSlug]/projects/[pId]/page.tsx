@@ -1,12 +1,12 @@
 import { cache } from "react";
 import { MapformProvider } from "@mapform/mapform";
 import { redirect } from "next/navigation";
-import { getPageDataAction } from "~/data/datalayer/get-page-data";
-import { getPageWithLayersAction } from "~/data/pages/get-page-with-layers";
-import { getProjectWithPagesAction } from "~/data/projects/get-project-with-pages";
-import { listTeamspaceDatasetsAction } from "~/data/datasets/list-teamspace-datasets";
-import { getLayerPointAction } from "~/data/datalayer/get-layer-point";
-import { getLayermarkerAction } from "~/data/datalayer/get-layer-marker";
+import { getPageDataAction } from "~/actions/datalayer/get-page-data";
+import { getPageWithLayersAction } from "~/actions/pages/get-page-with-layers";
+import { getProjectWithPagesAction } from "~/actions/projects/get-project-with-pages";
+import { listTeamspaceDatasetsAction } from "~/actions/datasets/list-teamspace-datasets";
+import { getLayerPointAction } from "~/actions/datalayer/get-layer-point";
+import { getLayermarkerAction } from "~/actions/datalayer/get-layer-marker";
 import { ProjectProvider } from "./project-context";
 import Project from "./project";
 import { Drawer } from "./drawer";
