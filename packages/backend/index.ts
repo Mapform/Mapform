@@ -21,6 +21,7 @@ import { updateWorkspace } from "./data/workspaces/update-workspace";
 import { upsertCell } from "./data/cells/upsert-cell";
 import { createColumn } from "./data/columns/create-column";
 import { getLayerMarker } from "./data/datalayer/get-layer-marker";
+import { getLayerPoint } from "./data/datalayer/get-layer-point";
 
 // Base client
 export const baseClient = createSafeActionClient({
@@ -65,6 +66,7 @@ const createUserAuthClient = (
     createColumn: createColumn(authClient),
 
     // Datalayers
+    getLayerPoint: getLayerPoint(authClient),
     getLayerMarker: getLayerMarker(authClient),
 
     // Datasets
@@ -109,6 +111,10 @@ const createPublicClient = (
     // Auth
     requestMagicLink: requestMagicLink(authClient),
     validateMagicLink: validateMagicLink(authClient),
+
+    // Datalayers
+    getLayerPoint: getLayerPoint(authClient),
+    getLayerMarker: getLayerMarker(authClient),
   };
 };
 

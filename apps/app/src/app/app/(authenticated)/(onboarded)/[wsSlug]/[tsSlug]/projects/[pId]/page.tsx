@@ -5,11 +5,10 @@ import { getPageDataAction } from "~/actions/datalayer/get-page-data";
 import { getPageWithLayersAction } from "~/actions/pages/get-page-with-layers";
 import { getProjectWithPagesAction } from "~/actions/projects/get-project-with-pages";
 import { listTeamspaceDatasetsAction } from "~/actions/datasets/list-teamspace-datasets";
-import { getLayerPointAction } from "~/actions/datalayer/get-layer-point";
-import { getLayermarkerAction } from "~/actions/datalayer/get-layer-marker";
 import { ProjectProvider } from "./project-context";
 import Project from "./project";
 import { Drawer } from "./drawer";
+import { authClient } from "~/lib/safe-action";
 
 const fetchProjectWithPages = cache(async (id: string) => {
   const projectWithPagesResponse = await getProjectWithPagesAction({
@@ -80,11 +79,11 @@ const fetchSelectedFeature = cache(async (param?: string) => {
 
   const featureResponse =
     type === "point"
-      ? await getLayerPointAction({
+      ? await authClient.getLayerPoint({
           rowId,
           pointLayerId: subLayerId,
         })
-      : await getLayermarkerAction({
+      : await authClient.getLayerMarker({
           rowId,
           markerLayerId: subLayerId,
         });

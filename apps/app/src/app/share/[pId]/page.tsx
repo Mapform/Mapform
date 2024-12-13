@@ -6,9 +6,8 @@ import { getSession } from "~/actions/share/get-session";
 import { getPageDataAction } from "~/actions/share/get-page-data";
 import { getProjectWithPagesAction } from "~/actions/share/get-project-with-pages";
 import { type Responses, getResponses } from "~/actions/share/get-responses.ts";
-import { getLayerPointAction } from "~/actions/share/get-layer-point";
+import { publicClient } from "~/lib/safe-action";
 import { Map } from "./map";
-import { getLayermarkerAction } from "~/actions/datalayer/get-layer-marker";
 
 const fetchProjectWithPages = cache(async (id: string) => {
   const projectWithPagesResponse = await getProjectWithPagesAction({
@@ -46,11 +45,11 @@ const fetchSelectedFeature = cache(async (param?: string) => {
 
   const featureResponse =
     type === "point"
-      ? await getLayerPointAction({
+      ? await publicClient.getLayerPoint({
           rowId,
           pointLayerId: subLayerId,
         })
-      : await getLayermarkerAction({
+      : await publicClient.getLayerMarker({
           rowId,
           markerLayerId: subLayerId,
         });
