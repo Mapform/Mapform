@@ -1,7 +1,7 @@
 import { db } from "@mapform/db";
 import { eq } from "@mapform/db/utils";
 import { magicLinks, sessions, users } from "@mapform/db/schema";
-import { generateToken, hashToken } from "@mapform/auth/helpers/tokens";
+import { hashToken } from "@mapform/auth/helpers/tokens";
 import { setSession } from "@mapform/auth/helpers/sessions";
 import { ValidateMagicLinkSchema } from "./schema";
 

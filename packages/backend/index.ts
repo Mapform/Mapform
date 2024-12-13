@@ -9,6 +9,7 @@ import { Middleware } from "./lib/types";
 import { getWorkspace } from "./data/workspaces/get-workspace";
 import { getWorkspaceDirectory } from "./data/workspaces/get-workspace-directory";
 import { getUser } from "./data/users/get-user";
+import { requestMagicLink } from "./data/auth/request-magic-link";
 
 // Base client
 export const baseClient = createSafeActionClient({
@@ -31,7 +32,11 @@ export const createAuthClient = (middleware: Middleware) => {
   const authClient = baseClient.use(middleware);
 
   return {
+    // Auth
     getUser: getUser(authClient),
+    requestMagicLink: requestMagicLink(authClient),
+
+    // Workspaces
     getWorkspace: getWorkspace(authClient),
     getWorkspaceDirectory: getWorkspaceDirectory(authClient),
   };
