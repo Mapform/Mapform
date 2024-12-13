@@ -8,17 +8,17 @@ import {
   useOptimistic,
   useTransition,
 } from "react";
-import type { GetLayerPoint } from "@mapform/backend/datalayer/get-layer-point";
-import type { GetLayerMarker } from "@mapform/backend/datalayer/get-layer-marker";
+import type { GetLayerPoint } from "@mapform/backend/data/datalayer/get-layer-point";
+import type { GetLayerMarker } from "@mapform/backend/data/datalayer/get-layer-marker";
 import { useCreateQueryString } from "@mapform/lib/hooks/use-create-query-string";
-import type { ProjectWithPages } from "@mapform/backend/projects/get-project-with-pages";
+import type { ProjectWithPages } from "@mapform/backend/data/projects/get-project-with-pages";
 import { useMapform } from "@mapform/mapform";
-import type { PageWithLayers } from "@mapform/backend/pages/get-page-with-layers";
+import type { PageWithLayers } from "@mapform/backend/data/pages/get-page-with-layers";
 import { toast } from "@mapform/ui/components/toaster";
 import type { InferUseActionHookReturn } from "next-safe-action/hooks";
 import { useAction } from "next-safe-action/hooks";
-import type { PageData } from "@mapform/backend/datalayer/get-page-data";
-import type { ListTeamspaceDatasets } from "@mapform/backend/datasets/list-teamspace-datasets";
+import type { PageData } from "@mapform/backend/data/datalayer/get-page-data";
+import type { ListTeamspaceDatasets } from "@mapform/backend/data/datasets/list-teamspace-datasets";
 import { upsertCellAction } from "~/actions/cells/upsert-cell";
 import { uploadImageAction } from "~/actions/images";
 import { updatePageAction } from "~/actions/pages/update-page";

@@ -1,7 +1,6 @@
 import { cache } from "react";
 import { MapformProvider } from "@mapform/mapform";
 import { redirect } from "next/navigation";
-import { getPageDataAction } from "~/actions/datalayer/get-page-data";
 import { getPageWithLayersAction } from "~/actions/pages/get-page-with-layers";
 import { getProjectWithPagesAction } from "~/actions/projects/get-project-with-pages";
 import { listTeamspaceDatasetsAction } from "~/actions/datasets/list-teamspace-datasets";
@@ -58,7 +57,7 @@ const fetchPageData = cache(async (id?: string) => {
     return undefined;
   }
 
-  const pageDataResponse = await getPageDataAction({
+  const pageDataResponse = await authClient.getPageData({
     pageId: id,
   });
   const pageData = pageDataResponse?.data;

@@ -3,7 +3,6 @@ import { cookies } from "next/headers";
 import { MapformProvider } from "@mapform/mapform";
 import { type Row } from "@mapform/db/schema";
 import { getSession } from "~/actions/share/get-session";
-import { getPageDataAction } from "~/actions/share/get-page-data";
 import { getProjectWithPagesAction } from "~/actions/share/get-project-with-pages";
 import { type Responses, getResponses } from "~/actions/share/get-responses.ts";
 import { publicClient } from "~/lib/safe-action";
@@ -24,7 +23,7 @@ const fetchPageData = cache(async (id?: string) => {
     return undefined;
   }
 
-  const pageDataResponse = await getPageDataAction({
+  const pageDataResponse = await publicClient.getPageData({
     pageId: id,
   });
   const pageData = pageDataResponse?.data;

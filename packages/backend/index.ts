@@ -22,6 +22,7 @@ import { upsertCell } from "./data/cells/upsert-cell";
 import { createColumn } from "./data/columns/create-column";
 import { getLayerMarker } from "./data/datalayer/get-layer-marker";
 import { getLayerPoint } from "./data/datalayer/get-layer-point";
+import { getPageData } from "./data/datalayer/get-page-data";
 
 // Base client
 export const baseClient = createSafeActionClient({
@@ -66,6 +67,7 @@ const createUserAuthClient = (
     createColumn: createColumn(authClient),
 
     // Datalayers
+    getPageData: getPageData(authClient),
     getLayerPoint: getLayerPoint(authClient),
     getLayerMarker: getLayerMarker(authClient),
 
@@ -113,6 +115,7 @@ const createPublicClient = (
     validateMagicLink: validateMagicLink(authClient),
 
     // Datalayers
+    getPageData: getPageData(authClient),
     getLayerPoint: getLayerPoint(authClient),
     getLayerMarker: getLayerMarker(authClient),
   };
