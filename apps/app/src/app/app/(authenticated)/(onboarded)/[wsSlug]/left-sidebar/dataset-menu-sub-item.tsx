@@ -25,7 +25,7 @@ import { useAction } from "next-safe-action/hooks";
 import Link from "next/link";
 import { useState } from "react";
 import { RenameDatasetPopover } from "~/components/rename-dataset-popover";
-import { deleteDatasetAction } from "~/data/datasets/delete-dataset";
+import { deleteDatasetAction } from "./actions";
 import { useWorkspace } from "../workspace-context";
 
 interface DatasetMenuSubItemProps {

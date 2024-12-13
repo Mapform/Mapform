@@ -9,6 +9,7 @@ import { requestMagicLink } from "./data/auth/request-magic-link";
 import { validateMagicLink } from "./data/auth/validate-magic-link";
 import { signOut } from "./data/auth/sign-out";
 import { createEmptyDataset } from "./data/datasets/create-empty-dataset";
+import { deleteDataset } from "./data/datasets/delete-dataset";
 
 // Base client
 export const baseClient = createSafeActionClient({
@@ -47,6 +48,7 @@ const createUserAuthClient = (
     signOut: signOut(authClient),
 
     // Datasets
+    deleteDataset: deleteDataset(authClient),
     createEmptyDataset: createEmptyDataset(authClient),
 
     // Workspaces
