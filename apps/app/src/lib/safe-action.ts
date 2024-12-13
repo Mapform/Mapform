@@ -3,14 +3,13 @@ import { getCurrentSession } from "~/data/auth/get-current-session";
 import { createUserAuthClient, createPublicClient } from "@mapform/backend";
 
 export const authClient = createUserAuthClient(async () => {
-  console.log("Calling user client");
   const response = await getCurrentSession();
 
-  if (!response?.user.data) {
+  if (!response?.user) {
     return redirect("/app/signin");
   }
 
-  return { authType: "user", user: response.user.data };
+  return { authType: "user", user: response.user };
 });
 
 export const publicClient = createPublicClient(async () => {

@@ -6,8 +6,9 @@ import type { AuthContext } from "./lib/schema";
 import { ServerError } from "./lib/server-error";
 import { getWorkspace } from "./data/workspaces/get-workspace";
 import { getWorkspaceDirectory } from "./data/workspaces/get-workspace-directory";
-import { getUser } from "./data/users/get-user";
 import { requestMagicLink } from "./data/auth/request-magic-link";
+import { validateMagicLink } from "./data/auth/validate-magic-link";
+import { signOut } from "./data/auth/sign-out";
 
 // Base client
 export const baseClient = createSafeActionClient({
@@ -41,8 +42,8 @@ const createUserAuthClient = (
   });
 
   return {
-    // Users
-    getUser: getUser(authClient),
+    // Auth
+    signOut: signOut(authClient),
 
     // Workspaces
     getWorkspace: getWorkspace(authClient),
@@ -67,6 +68,7 @@ const createPublicClient = (
   return {
     // Auth
     requestMagicLink: requestMagicLink(authClient),
+    validateMagicLink: validateMagicLink(authClient),
   };
 };
 

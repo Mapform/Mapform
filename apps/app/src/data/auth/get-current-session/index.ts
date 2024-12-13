@@ -2,8 +2,10 @@
 
 import { cache } from "react";
 import { cookies } from "next/headers";
-import { authClient } from "~/lib/safe-action";
 import { verifyToken } from "@mapform/auth/helpers/sessions";
+import { users } from "@mapform/db/schema";
+import { eq } from "@mapform/db/utils";
+import { db } from "@mapform/db";
 
 export const getCurrentSession = cache(async () => {
   const sessionCookie = (await cookies()).get("session")?.value ?? null;
@@ -22,7 +24,30 @@ export const getCurrentSession = cache(async () => {
     return null;
   }
 
-  const user = await authClient.getUser({ id: sessionData.user.id });
+  // const user = await authClient.getUser({ id: sesionData.user.id });
+  const user = await db.query.users.findFirst({
+    where: eq(users.id, sessionData.user.id),
+    with: {
+      workspaceMemberships: {
+        with: {
+          workspace: {
+            columns: {
+              id: true,
+              slug: true,
+            },
+            with: {
+              teamspaces: {
+                columns: {
+                  id: true,
+                  slug: true,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
 
   if (!user) {
     return null;

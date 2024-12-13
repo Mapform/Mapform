@@ -1,5 +1,14 @@
+"server-only";
+
 import { deleteSession } from "@mapform/auth/helpers/sessions";
 
-export const signOut = async () => {
-  await deleteSession();
-};
+import type { AuthClient } from "../../../lib/types";
+import { userAuthMiddleware } from "../../../lib/middleware";
+
+export const signOut = (authClient: AuthClient) =>
+  authClient
+    .use(userAuthMiddleware)
+    // Public
+    .action(async () => {
+      await deleteSession();
+    });

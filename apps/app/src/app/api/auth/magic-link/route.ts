@@ -1,8 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { validateMagicLink } from "@mapform/backend/auth/validate-magic-link";
-import { validateMagicLinkSchema } from "@mapform/backend/auth/validate-magic-link/schema";
-import type { MagicLinkErrors } from "~/constants/magic-link-errors";
+import { publicClient } from "~/lib/safe-action";
 import { env } from "~/env.mjs";
+import { MagicLinkErrors } from "~/constants/magic-link-errors";
 
 const baseUrl = env.NEXT_PUBLIC_BASE_URL;
 
@@ -11,16 +10,23 @@ const baseUrl = env.NEXT_PUBLIC_BASE_URL;
  */
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
-  const paramToken = searchParams.get("token");
-  const { token } = validateMagicLinkSchema.parse({ token: paramToken });
+  const token = searchParams.get("token");
 
-  try {
-    await validateMagicLink({ token });
+  if (!token) {
+    throw new Error("Token is required");
+  }
 
-    return NextResponse.redirect(`${baseUrl}/app/`);
-  } catch (e: unknown) {
+  const response = await publicClient.validateMagicLink({ token });
+
+  if (response?.validationErrors) {
+    return NextResponse.redirect(`${baseUrl}/app/signin?error=unknown`);
+  }
+
+  if (response?.serverError) {
     return NextResponse.redirect(
-      `${env.NEXT_PUBLIC_BASE_URL}/app/signin?error=${(e as { type: MagicLinkErrors | null }).type || "unknown"}`,
+      `${env.NEXT_PUBLIC_BASE_URL}/app/signin?error=${(response.serverError as MagicLinkErrors) || "unknown"}`,
     );
   }
+
+  return NextResponse.redirect(`${baseUrl}/app/`);
 }
