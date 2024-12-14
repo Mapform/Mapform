@@ -20,7 +20,7 @@ export const updateDataset = (authClient: AuthClient) =>
         throw new Error("Dataset not found.");
       }
 
-      if (!userAccess.teamspace.byId(existingDataset.teamspaceId)) {
+      if (!userAccess.teamspace.checkAccessById(existingDataset.teamspaceId)) {
         throw new Error("Unauthorized.");
       }
 

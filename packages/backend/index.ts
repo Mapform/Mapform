@@ -23,6 +23,8 @@ import { createColumn } from "./data/columns/create-column";
 import { getLayerMarker } from "./data/datalayer/get-layer-marker";
 import { getLayerPoint } from "./data/datalayer/get-layer-point";
 import { getPageData } from "./data/datalayer/get-page-data";
+import { createPoint } from "./data/datasets/create-point";
+import { listTeamspaceDatasets } from "./data/datasets/list-teamspace-datasets";
 
 // Base client
 export const baseClient = createSafeActionClient({
@@ -72,9 +74,11 @@ const createUserAuthClient = (
     getLayerMarker: getLayerMarker(authClient),
 
     // Datasets
+    createPoint: createPoint(authClient), // Note: for createUserAuthClient this is causing 'The inferred type of this node exceeds the maximum length the compiler will serialize'
     deleteDataset: deleteDataset(authClient),
     updateDataset: updateDataset(authClient),
     createEmptyDataset: createEmptyDataset(authClient),
+    listTeamspaceDatasets: listTeamspaceDatasets(authClient),
 
     // Projects
     createProject: createProject(authClient),

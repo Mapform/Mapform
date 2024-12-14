@@ -15,7 +15,7 @@ export const createEmptyDataset = (authClient: AuthClient) =>
         parsedInput: { name, teamspaceId, layerType },
         ctx: { userAccess },
       }) => {
-        if (!userAccess.teamspace.byId(teamspaceId)) {
+        if (!userAccess.teamspace.checkAccessById(teamspaceId)) {
           throw new Error("User does not have access to this teamspace.");
         }
 

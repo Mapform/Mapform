@@ -12,7 +12,7 @@ export const getRecentProjects = (authClient: AuthClient) =>
     .use(userAuthMiddleware)
     .schema(getRecentProjectsSchema)
     .action(async ({ parsedInput: { workspaceSlug }, ctx: { userAccess } }) => {
-      if (!userAccess.workspace.bySlug(workspaceSlug)) {
+      if (!userAccess.workspace.checkAccessBySlug(workspaceSlug)) {
         throw new Error("Unauthorized");
       }
 

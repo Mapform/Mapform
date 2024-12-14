@@ -3,7 +3,6 @@ import { MapformProvider } from "@mapform/mapform";
 import { redirect } from "next/navigation";
 import { getPageWithLayersAction } from "~/actions/pages/get-page-with-layers";
 import { getProjectWithPagesAction } from "~/actions/projects/get-project-with-pages";
-import { listTeamspaceDatasetsAction } from "~/actions/datasets/list-teamspace-datasets";
 import { ProjectProvider } from "./project-context";
 import Project from "./project";
 import { Drawer } from "./drawer";
@@ -42,7 +41,7 @@ const fetchPageWithLayers = cache(async (id?: string) => {
 
 const fetchAvailableDatasets = cache(
   async (workspaceSlug: string, teamspaceSlug: string) => {
-    const availableDatasetsResponse = await listTeamspaceDatasetsAction({
+    const availableDatasetsResponse = await authClient.listTeamspaceDatasets({
       workspaceSlug,
       teamspaceSlug,
     });

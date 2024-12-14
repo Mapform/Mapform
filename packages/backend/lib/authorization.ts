@@ -9,20 +9,27 @@ export class UserAccess {
 
   get workspace() {
     return {
-      bySlug: (slug: string) =>
+      checkAccessBySlug: (slug: string) =>
         this.user.workspaceMemberships.some((wm) => wm.workspace.slug === slug),
-      byId: (id: string) =>
+
+      checkAccessById: (id: string) =>
         this.user.workspaceMemberships.some((wm) => wm.workspace.id === id),
     };
   }
 
   get teamspace() {
     return {
-      bySlug: (slug: string) =>
+      ids: this.user.workspaceMemberships
+        .map((m) => m.workspace.teamspaces.map((t) => t.id))
+        .flat(),
+
+      checkAccessBySlug: (tsSlug: string, wsSlug: string) =>
+        this.workspace.checkAccessBySlug(wsSlug) &&
         this.user.workspaceMemberships.some((wm) =>
-          wm.workspace.teamspaces.some((ts) => ts.slug === slug),
+          wm.workspace.teamspaces.some((ts) => ts.slug === tsSlug),
         ),
-      byId: (id: string) =>
+
+      checkAccessById: (id: string) =>
         this.user.workspaceMemberships.some((wm) =>
           wm.workspace.teamspaces.some((ts) => ts.id === id),
         ),

@@ -20,7 +20,7 @@ export const createProject = (authClient: AuthClient) =>
     .schema(createProjectSchema)
     .action(
       async ({ parsedInput: { name, teamspaceId }, ctx: { userAccess } }) => {
-        if (!userAccess.teamspace.byId(teamspaceId)) {
+        if (!userAccess.teamspace.checkAccessById(teamspaceId)) {
           throw new Error("Unauthorized");
         }
 

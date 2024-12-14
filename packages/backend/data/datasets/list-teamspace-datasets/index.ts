@@ -1,33 +1,45 @@
 "server-only";
 
 import { db } from "@mapform/db";
-import { eq, and } from "@mapform/db/utils";
 import { datasets, teamspaces } from "@mapform/db/schema";
-import { type ListAvailableDatasetsSchema } from "./schema";
+import { eq, and } from "@mapform/db/utils";
+import { listTeamspaceDatasetsSchema } from "./schema";
+import type { AuthClient, UnwrapReturn } from "../../../lib/types";
+import { userAuthMiddleware } from "../../../lib/middleware";
 
-export const listTeamspaceDatasets = async ({
-  workspaceSlug,
-  teamspaceSlug,
-}: ListAvailableDatasetsSchema) => {
-  const teamspace = await db.query.teamspaces.findFirst({
-    where: and(
-      eq(teamspaces.slug, teamspaceSlug),
-      eq(teamspaces.workspaceSlug, workspaceSlug),
-    ),
-  });
+export const listTeamspaceDatasets = (authClient: AuthClient) =>
+  authClient
+    .use(userAuthMiddleware)
+    .schema(listTeamspaceDatasetsSchema)
+    .action(
+      async ({
+        parsedInput: { teamspaceSlug, workspaceSlug },
+        ctx: { userAccess },
+      }) => {
+        if (
+          !userAccess.teamspace.checkAccessBySlug(teamspaceSlug, workspaceSlug)
+        ) {
+          throw new Error("Unauthorized");
+        }
 
-  if (!teamspace) {
-    throw new Error("Teamspace not found");
-  }
+        const teamspace = await db.query.teamspaces.findFirst({
+          where: and(
+            eq(teamspaces.slug, teamspaceSlug),
+            eq(teamspaces.workspaceSlug, workspaceSlug),
+          ),
+        });
 
-  return db.query.datasets.findMany({
-    where: eq(datasets.teamspaceId, teamspace.id),
-    with: {
-      columns: true,
-    },
-  });
-};
+        if (!teamspace) {
+          throw new Error("Teamspace not found");
+        }
 
-export type ListTeamspaceDatasets = NonNullable<
-  NonNullable<Awaited<ReturnType<typeof listTeamspaceDatasets>>>
->;
+        return db.query.datasets.findMany({
+          where: eq(datasets.teamspaceId, teamspace.id),
+          with: {
+            columns: true,
+          },
+        });
+      },
+    );
+
+export type ListTeamspaceDatasets = UnwrapReturn<typeof listTeamspaceDatasets>;

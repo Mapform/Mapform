@@ -17,7 +17,7 @@ export const deleteDataset = (authClient: AuthClient) =>
         with: {
           teamspace: {
             columns: {
-              slug: true,
+              id: true,
             },
           },
         },
@@ -27,7 +27,7 @@ export const deleteDataset = (authClient: AuthClient) =>
         throw new Error("Dataset not found");
       }
 
-      if (!userAccess.teamspace.bySlug(dataset.teamspace.slug)) {
+      if (!userAccess.teamspace.checkAccessById(dataset.teamspace.id)) {
         throw new Error("Unauthorized");
       }
 

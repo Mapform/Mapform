@@ -71,21 +71,21 @@ export const publicClient = createPublicClient(async () => {
 //    * Teamspace slugs are only unique to a WS, therefore we need to check if the
 //    * user has access to the requested teamspace in the requested workspace.
 //    */
-//   const checkAccessToTeamspaceBySlug = (tsSlug: string) =>
-//     [
-//       ...response.user.workspaceMemberships.flatMap((wm) => [
-//         ...ignoredTeamspaceSlugs.map((ts) => ({
-//           _tsSlug: ts,
-//           _wsSlug: wm.workspace.slug,
-//         })),
-//         ...wm.workspace.teamspaces.map((ts) => ({
-//           _tsSlug: ts.slug,
-//           _wsSlug: wm.workspace.slug,
-//         })),
-//       ]),
-//     ].some(
-//       (ts) => ts._tsSlug === tsSlug && checkAccessToWorkspaceBySlug(ts._wsSlug),
-//     );
+// const checkAccessToTeamspaceBySlug = (tsSlug: string) =>
+//   [
+//     ...response.user.workspaceMemberships.flatMap((wm) => [
+//       ...ignoredTeamspaceSlugs.map((ts) => ({
+//         _tsSlug: ts,
+//         _wsSlug: wm.workspace.slug,
+//       })),
+//       ...wm.workspace.teamspaces.map((ts) => ({
+//         _tsSlug: ts.slug,
+//         _wsSlug: wm.workspace.slug,
+//       })),
+//     ]),
+//   ].some(
+//     (ts) => ts._tsSlug === tsSlug && checkAccessToWorkspaceBySlug(ts._wsSlug),
+//   );
 //   const checkAccessToTeamspaceById = (id: string) =>
 //     [
 //       ...response.user.workspaceMemberships.flatMap((wm) =>

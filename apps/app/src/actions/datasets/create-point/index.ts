@@ -1,14 +1,14 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { createPoint } from "@mapform/backend/datasets/create-point";
-import { createPointSchema } from "@mapform/backend/datasets/create-point/schema";
-import { authAction } from "~/lib/safe-action";
+import { authClient } from "~/lib/safe-action";
 
-export const createPointAction = authAction
-  .schema(createPointSchema)
-  .action(async ({ parsedInput }) => {
-    await createPoint(parsedInput);
+export const createPointAction = async (
+  params: Parameters<typeof authClient.createPoint>[0],
+) => {
+  const result = await authClient.createPoint(params);
 
-    revalidatePath("/app/[wsSlug]/[tsSlug]/projects/[pId]/project", "page");
-  });
+  revalidatePath(`/app/[wsSlug]/[tsSlug]`, "page");
+
+  return result;
+};

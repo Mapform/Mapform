@@ -12,7 +12,7 @@ export const updateWorkspace = (authClient: AuthClient) =>
     .use(userAuthMiddleware)
     .schema(updateWorkspaceSchema)
     .action(({ parsedInput: { id, ...rest }, ctx: { userAccess } }) => {
-      if (!userAccess.workspace.byId(id)) {
+      if (!userAccess.workspace.checkAccessById(id)) {
         throw new Error("Unauthorized");
       }
 
