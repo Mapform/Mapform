@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { authClient } from "~/lib/safe-action";
 
@@ -8,12 +9,16 @@ import { authClient } from "~/lib/safe-action";
 export const updateWorkspaceAction = async (
   params: Parameters<typeof authClient.createProject>[0],
 ) => {
+  const headersList = await headers();
+  const workspaceSlug = headersList.get("x-workspace-slug") ?? "";
   const result = await authClient.updateWorkspace(params);
 
+  console.log(1111, result?.serverError);
+
   // Redirect to the settings page if the slug has changed
-  // if (workspaceSlug !== slug) {
-  //   redirect(`/app/${slug}/settings`);
-  // }
+  if (workspaceSlug !== params.slug) {
+    redirect(`/app/${params.slug}/settings`);
+  }
 
   revalidatePath(`/app/[wsSlug]/[tsSlug]`, "page");
 
