@@ -25,25 +25,13 @@ export const authClient = createUserAuthClient(async () => {
   const hasAccessToCurrentWorkspace =
     checkAccessToWorkspaceBySlug(workspaceSlug);
 
-  /**
-   * Teamspace slugs are only unique to a WS, therefore we need to check if the
-   * user has access to the requested teamspace in the requested workspace.
-   */
-  const checkAccessToTeamspaceBySlug = (tsSlug: string) =>
+  const checkAccessToTeamspaceBySlug = (slug: string) =>
     [
-      ...response.user.workspaceMemberships.flatMap((wm) => [
-        ...ignoredTeamspaceSlugs.map((ts) => ({
-          _tsSlug: ts,
-          _wsSlug: wm.workspace.slug,
-        })),
-        ...wm.workspace.teamspaces.map((ts) => ({
-          _tsSlug: ts.slug,
-          _wsSlug: wm.workspace.slug,
-        })),
-      ]),
-    ].some(
-      (ts) => ts._tsSlug === tsSlug && checkAccessToWorkspaceBySlug(ts._wsSlug),
-    );
+      ...ignoredTeamspaceSlugs,
+      ...response.user.workspaceMemberships.flatMap((wm) =>
+        wm.workspace.teamspaces.map((ts) => ts.slug),
+      ),
+    ].some((ts) => slug === ts);
 
   const hasAccessToTeamspace = checkAccessToTeamspaceBySlug(teamspaceSlug);
 

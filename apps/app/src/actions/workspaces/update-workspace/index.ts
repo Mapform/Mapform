@@ -13,8 +13,6 @@ export const updateWorkspaceAction = async (
   const workspaceSlug = headersList.get("x-workspace-slug") ?? "";
   const result = await authClient.updateWorkspace(params);
 
-  console.log(1111, result?.serverError);
-
   // Redirect to the settings page if the slug has changed
   if (workspaceSlug !== params.slug) {
     redirect(`/app/${params.slug}/settings`);
