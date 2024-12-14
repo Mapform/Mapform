@@ -28,6 +28,9 @@ import { listTeamspaceDatasets } from "./data/datasets/list-teamspace-datasets";
 import { uploadImage } from "./data/images";
 import { createPageLayer } from "./data/layers-to-pages/create-page-layer";
 import { deletePageLayer } from "./data/layers-to-pages/delete-page-layer";
+import { upsertLayer } from "./data/layers/upsert-layer";
+import { deleteLayer } from "./data/layers/delete-layer";
+import { updateLayerOrder } from "./data/layers/update-layer-order";
 
 // Base client
 export const baseClient = createSafeActionClient({
@@ -85,6 +88,11 @@ const createUserAuthClient = (
 
     // Images
     uploadImage: uploadImage(authClient),
+
+    // Layers
+    upsertLayer: upsertLayer(authClient),
+    deleteLayer: deleteLayer(authClient),
+    updateLayerOrder: updateLayerOrder(authClient),
 
     // Layers to Pages
     createPageLayer: createPageLayer(authClient),
