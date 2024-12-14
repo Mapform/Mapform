@@ -1,8 +1,13 @@
-import { put } from "@vercel/blob";
-import { UploadImageSchema } from "./schema";
+"server-only";
 
-export const uploadImage = async ({ image }: UploadImageSchema) =>
-  put(image.name, image, {
-    access: "public",
-    addRandomSuffix: true,
-  });
+import { AuthClient } from "../../lib/types";
+import { uploadImageSchema } from "./schema";
+import { put } from "@vercel/blob";
+
+export const uploadImage = (authClient: AuthClient) =>
+  authClient.schema(uploadImageSchema).action(({ parsedInput: { image } }) =>
+    put(image.name, image, {
+      access: "public",
+      addRandomSuffix: true,
+    }),
+  );

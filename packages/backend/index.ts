@@ -25,6 +25,9 @@ import { getLayerPoint } from "./data/datalayer/get-layer-point";
 import { getPageData } from "./data/datalayer/get-page-data";
 import { createPoint } from "./data/datasets/create-point";
 import { listTeamspaceDatasets } from "./data/datasets/list-teamspace-datasets";
+import { uploadImage } from "./data/images";
+import { createPageLayer } from "./data/layers-to-pages/create-page-layer";
+import { deletePageLayer } from "./data/layers-to-pages/delete-page-layer";
 
 // Base client
 export const baseClient = createSafeActionClient({
@@ -79,6 +82,13 @@ const createUserAuthClient = (
     updateDataset: updateDataset(authClient),
     createEmptyDataset: createEmptyDataset(authClient),
     listTeamspaceDatasets: listTeamspaceDatasets(authClient),
+
+    // Images
+    uploadImage: uploadImage(authClient),
+
+    // Layers to Pages
+    createPageLayer: createPageLayer(authClient),
+    deletePageLayer: deletePageLayer(authClient),
 
     // Projects
     createProject: createProject(authClient),
