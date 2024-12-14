@@ -1,16 +1,14 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { createPage } from "@mapform/backend/pages/create-page";
-import { createPageSchema } from "@mapform/backend/pages/create-page/schema";
-import { authAction } from "~/lib/safe-action";
+import { authClient } from "~/lib/safe-action";
 
-export const createPageAction = authAction
-  .schema(createPageSchema)
-  .action(async ({ parsedInput }) => {
-    const page = await createPage(parsedInput);
+export const createPageAction = async (
+  params: Parameters<typeof authClient.createPage>[0],
+) => {
+  const result = await authClient.createPage(params);
 
-    revalidatePath("/app/[wsSlug]/[tsSlug]/projects/[pId]/project", "page");
+  revalidatePath("/app/[wsSlug]/[tsSlug]/projects/[pId]/project", "page");
 
-    return page;
-  });
+  return result;
+};

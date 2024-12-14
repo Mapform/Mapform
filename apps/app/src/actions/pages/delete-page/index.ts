@@ -1,14 +1,14 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { deletePage } from "@mapform/backend/pages/delete-page";
-import { deletePageSchema } from "@mapform/backend/pages/delete-page/schema";
-import { authAction } from "~/lib/safe-action";
+import { authClient } from "~/lib/safe-action";
 
-export const deletePageAction = authAction
-  .schema(deletePageSchema)
-  .action(async ({ parsedInput }) => {
-    await deletePage(parsedInput);
+export const deletePageAction = async (
+  params: Parameters<typeof authClient.deletePage>[0],
+) => {
+  const result = await authClient.deletePage(params);
 
-    revalidatePath("/app/[wsSlug]/[tsSlug]/projects/[pId]/project", "page");
-  });
+  revalidatePath("/app/[wsSlug]/[tsSlug]/projects/[pId]/project", "page");
+
+  return result;
+};

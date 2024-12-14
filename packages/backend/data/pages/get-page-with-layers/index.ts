@@ -1,38 +1,44 @@
+"server-only";
+
 import { db } from "@mapform/db";
-import { eq } from "@mapform/db/utils";
 import { layersToPages, pages } from "@mapform/db/schema";
-import type { GetPageWithLayersSchema } from "./schema";
+import { eq } from "@mapform/db/utils";
+import { getPageWithLayersSchema } from "./schema";
+import type { AuthClient, UnwrapReturn } from "../../../lib/types";
+import { userAuthMiddleware } from "../../../lib/middleware";
 
-export const getPageWithLayers = async ({ id }: GetPageWithLayersSchema) => {
-  // TODO: Cannot use 'with' with geometry columns currently due to Drizzle bug: https://github.com/drizzle-team/drizzle-orm/issues/2526
-  // Once fix is merged we can simplify this
-  const page = await db.query.pages.findFirst({
-    where: eq(pages.id, id),
-  });
+export const getPageWithLayers = (authClient: AuthClient) =>
+  authClient
+    .use(userAuthMiddleware)
+    .schema(getPageWithLayersSchema)
+    .action(async ({ parsedInput: { id } }) => {
+      // TODO: Cannot use 'with' with geometry columns currently due to Drizzle bug: https://github.com/drizzle-team/drizzle-orm/issues/2526
+      // Once fix is merged we can simplify this
+      const page = await db.query.pages.findFirst({
+        where: eq(pages.id, id),
+      });
 
-  if (!page) {
-    throw new Error("Page not found");
-  }
+      if (!page) {
+        throw new Error("Page not found");
+      }
 
-  const ltp = await db.query.layersToPages.findMany({
-    where: eq(layersToPages.pageId, id),
-    with: {
-      layer: {
+      const ltp = await db.query.layersToPages.findMany({
+        where: eq(layersToPages.pageId, id),
         with: {
-          pointLayer: true,
-          markerLayer: true,
+          layer: {
+            with: {
+              pointLayer: true,
+              markerLayer: true,
+            },
+          },
         },
-      },
-    },
-    orderBy: (ltp, { asc }) => [asc(ltp.position)],
-  });
+        orderBy: (ltp, { asc }) => [asc(ltp.position)],
+      });
 
-  return {
-    ...page,
-    layersToPages: ltp,
-  };
-};
+      return {
+        ...page,
+        layersToPages: ltp,
+      };
+    });
 
-export type PageWithLayers = NonNullable<
-  NonNullable<Awaited<ReturnType<typeof getPageWithLayers>>>
->;
+export type PageWithLayers = UnwrapReturn<typeof getPageWithLayers>;

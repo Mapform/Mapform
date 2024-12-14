@@ -31,6 +31,11 @@ import { deletePageLayer } from "./data/layers-to-pages/delete-page-layer";
 import { upsertLayer } from "./data/layers/upsert-layer";
 import { deleteLayer } from "./data/layers/delete-layer";
 import { updateLayerOrder } from "./data/layers/update-layer-order";
+import { createPage } from "./data/pages/create-page";
+import { deletePage } from "./data/pages/delete-page";
+import { getPageWithLayers } from "./data/pages/get-page-with-layers";
+import { updatePage } from "./data/pages/update-page";
+import { updatePageOrder } from "./data/pages/update-page-order";
 
 // Base client
 export const baseClient = createSafeActionClient({
@@ -97,6 +102,13 @@ const createUserAuthClient = (
     // Layers to Pages
     createPageLayer: createPageLayer(authClient),
     deletePageLayer: deletePageLayer(authClient),
+
+    // Pages
+    createPage: createPage(authClient),
+    deletePage: deletePage(authClient),
+    updatePage: updatePage(authClient),
+    updatePageOrder: updatePageOrder(authClient),
+    getPageWithLayers: getPageWithLayers(authClient),
 
     // Projects
     createProject: createProject(authClient),
