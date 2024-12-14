@@ -1,14 +1,13 @@
 import { cache } from "react";
 import { MapformProvider } from "@mapform/mapform";
 import { redirect } from "next/navigation";
-import { getProjectWithPagesAction } from "~/actions/projects/get-project-with-pages";
 import { ProjectProvider } from "./project-context";
 import Project from "./project";
 import { Drawer } from "./drawer";
 import { authClient } from "~/lib/safe-action";
 
 const fetchProjectWithPages = cache(async (id: string) => {
-  const projectWithPagesResponse = await getProjectWithPagesAction({
+  const projectWithPagesResponse = await authClient.getProjectWithPages({
     id,
   });
 

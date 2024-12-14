@@ -3,13 +3,12 @@ import { cookies } from "next/headers";
 import { MapformProvider } from "@mapform/mapform";
 import { type Row } from "@mapform/db/schema";
 import { getSession } from "~/actions/share/get-session";
-import { getProjectWithPagesAction } from "~/actions/share/get-project-with-pages";
 import { type Responses, getResponses } from "~/actions/share/get-responses.ts";
 import { publicClient } from "~/lib/safe-action";
 import { Map } from "./map";
 
 const fetchProjectWithPages = cache(async (id: string) => {
-  const projectWithPagesResponse = await getProjectWithPagesAction({
+  const projectWithPagesResponse = await publicClient.getProjectWithPages({
     id,
   });
 

@@ -36,6 +36,9 @@ import { deletePage } from "./data/pages/delete-page";
 import { getPageWithLayers } from "./data/pages/get-page-with-layers";
 import { updatePage } from "./data/pages/update-page";
 import { updatePageOrder } from "./data/pages/update-page-order";
+import { getProjectWithPages } from "./data/projects/get-project-with-pages";
+import { getProjectWithTeamspace } from "./data/projects/get-project-with-teamspace";
+import { publishProject } from "./data/projects/publish-project";
 
 // Base client
 export const baseClient = createSafeActionClient({
@@ -114,7 +117,10 @@ const createUserAuthClient = (
     createProject: createProject(authClient),
     deleteProject: deleteProject(authClient),
     updateProject: updateProject(authClient),
+    publishProject: publishProject(authClient),
     getRecentProjects: getRecentProjects(authClient),
+    getProjectWithPages: getProjectWithPages(authClient),
+    getProjectWithTeamspace: getProjectWithTeamspace(authClient),
 
     // Rows
     countWorkspaceRows: countWorkspaceRows(authClient),
@@ -152,6 +158,9 @@ const createPublicClient = (
     getPageData: getPageData(authClient),
     getLayerPoint: getLayerPoint(authClient),
     getLayerMarker: getLayerMarker(authClient),
+
+    // Projects
+    getProjectWithPages: getProjectWithPages(authClient),
   };
 };
 

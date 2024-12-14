@@ -1,81 +1,89 @@
+"server-only";
+
 import { db } from "@mapform/db";
-import { eq, and, isNull } from "@mapform/db/utils";
-import { projects, pages, layers, layersToPages } from "@mapform/db/schema";
-import type { GetProjectWithPagesSchema } from "./schema";
+import { layers, layersToPages, pages, projects } from "@mapform/db/schema";
+import { and, eq, inArray, isNull } from "@mapform/db/utils";
+import { getProjectWithPagesSchema } from "./schema";
+import type { AuthClient, UnwrapReturn } from "../../../lib/types";
+import { publicOrUserAuthMiddleware } from "../../../lib/middleware";
 
-export const getProjectWithPages = async ({
-  id,
-}: GetProjectWithPagesSchema) => {
-  // TODO: Cannot use 'with' with geometry columns currently due to Drizzle bug: https://github.com/drizzle-team/drizzle-orm/issues/2526
-  // Once fix is merged we can simplify this
-  const [_projects, _pages, _pageLayers] = await Promise.all([
-    db.query.projects.findFirst({
-      where: and(eq(projects.id, id), isNull(projects.rootProjectId)),
-      with: {
-        teamspace: {
-          columns: {
-            id: true,
-            name: true,
-          },
+export const getProjectWithPages = (authClient: AuthClient) =>
+  authClient
+    .use(publicOrUserAuthMiddleware)
+    .schema(getProjectWithPagesSchema)
+    .action(async ({ parsedInput: { id }, ctx: { userAccess } }) => {
+      const [_projects, _pages, _pageLayers] = await Promise.all([
+        db.query.projects.findFirst({
+          where: and(
+            eq(projects.id, id),
+            isNull(projects.rootProjectId),
+            // Check if the user has access to the project's teamspace
+            userAccess &&
+              inArray(projects.teamspaceId, userAccess.teamspace.ids),
+          ),
           with: {
-            workspace: {
-              columns: {
-                id: true,
-              },
-            },
-          },
-        },
-        submissionsDataset: {
-          columns: {
-            id: true,
-          },
-        },
-      },
-    }),
-
-    db.query.pages.findMany({
-      where: eq(pages.projectId, id),
-      with: {
-        layersToPages: {
-          with: {
-            layer: {
+            teamspace: {
               columns: {
                 id: true,
                 name: true,
               },
+              with: {
+                workspace: {
+                  columns: {
+                    id: true,
+                  },
+                },
+              },
+            },
+            submissionsDataset: {
+              columns: {
+                id: true,
+              },
             },
           },
-          columns: {},
-        },
-      },
-      orderBy: (_pages2, { asc }) => [asc(_pages2.position)],
-    }),
+        }),
 
-    db
-      .select({
-        name: layers.name,
-        type: layers.type,
-        layerId: layers.id,
-        pageId: layersToPages.pageId,
-      })
-      .from(layers)
-      .leftJoin(layersToPages, eq(layers.id, layersToPages.layerId))
-      .leftJoin(pages, eq(layersToPages.pageId, pages.id))
-      .leftJoin(projects, eq(pages.projectId, projects.id))
-      .where(eq(projects.id, id)),
-  ]);
+        db.query.pages.findMany({
+          where: eq(pages.projectId, id),
+          with: {
+            layersToPages: {
+              with: {
+                layer: {
+                  columns: {
+                    id: true,
+                    name: true,
+                  },
+                },
+              },
+              columns: {},
+            },
+          },
+          orderBy: (_pages2, { asc }) => [asc(_pages2.position)],
+        }),
 
-  if (!_projects) {
-    throw new Error("Project not found");
-  }
+        db
+          .select({
+            name: layers.name,
+            type: layers.type,
+            layerId: layers.id,
+            pageId: layersToPages.pageId,
+          })
+          .from(layers)
+          .leftJoin(layersToPages, eq(layers.id, layersToPages.layerId))
+          .leftJoin(pages, eq(layersToPages.pageId, pages.id))
+          .leftJoin(projects, eq(pages.projectId, projects.id))
+          .where(eq(projects.id, id)),
+      ]);
 
-  return {
-    ..._projects,
-    pages: _pages,
-    pageLayers: _pageLayers,
-  };
-};
+      if (!_projects) {
+        throw new Error("Project not found");
+      }
 
-export type ProjectWithPages = NonNullable<
-  NonNullable<Awaited<ReturnType<typeof getProjectWithPages>>>
->;
+      return {
+        ..._projects,
+        pages: _pages,
+        pageLayers: _pageLayers,
+      };
+    });
+
+export type ProjectWithPages = UnwrapReturn<typeof getProjectWithPages>;
