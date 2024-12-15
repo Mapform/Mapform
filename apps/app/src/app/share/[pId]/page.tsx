@@ -95,7 +95,8 @@ export default async function Page(props: {
   const isUsingSessions = Boolean(projectWithPages.submissionsDataset);
 
   if (isUsingSessions && submissionCookie) {
-    session = await publicClient.getSession({ rowId: submissionCookie.value });
+    session = (await publicClient.getSession({ rowId: submissionCookie.value }))
+      ?.data;
 
     if (session && !projectVersionMismatch) {
       const responsesResponse = await publicClient.getResponses({

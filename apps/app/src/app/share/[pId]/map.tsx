@@ -14,10 +14,10 @@ import { createSubmissionAction } from "~/data/rows/create-submission";
 import { submitPageAction } from "./actions";
 
 interface MapProps {
-  pageData: PageData | undefined;
-  projectWithPages: ProjectWithPages;
+  pageData: PageData["data"];
+  projectWithPages: NonNullable<ProjectWithPages["data"]>;
   formValues: NonNullable<NonNullable<Responses>["data"]>["cells"];
-  selectedFeature?: GetLayerPoint | GetLayerMarker;
+  selectedFeature?: GetLayerPoint["data"] | GetLayerMarker["data"];
   sessionId: string | null;
   isUsingSessions: boolean;
 }
@@ -37,9 +37,7 @@ export function Map({
   const searchParams = useSearchParams();
 
   const p = searchParams.get("p");
-  const currentPage = projectWithPages.data?.pages.find(
-    (page) => page.id === p,
-  );
+  const currentPage = projectWithPages?.pages.find((page) => page.id === p);
   const setCurrentPage = (page: Page) => {
     router.replace(`${pathname}?p=${page.id}`);
   };
@@ -75,8 +73,8 @@ export function Map({
           projectId: projectWithPages.id,
         });
 
-        if (response?.data) {
-          newSessionId = response.data;
+        if (response) {
+          newSessionId = response;
         }
       }
       setCurrentSession(newSessionId);
