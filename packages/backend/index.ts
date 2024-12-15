@@ -46,6 +46,10 @@ import { getDataset } from "./data/datasets/get-dataset";
 import { createRow } from "./data/rows/create-row";
 import { deleteRows } from "./data/rows/delete-rows";
 import { duplicateRows } from "./data/rows/duplicate-rows";
+import { createSubmission } from "./data/rows/create-submission";
+import { getResponses } from "./data/rows/get-responses";
+import { submitPage } from "./data/cells/submit-page";
+import { getSession } from "./data/rows/get-session";
 
 // Base client
 export const baseClient = createSafeActionClient({
@@ -170,10 +174,18 @@ const createPublicClient = (
     requestMagicLink: requestMagicLink(authClient),
     validateMagicLink: validateMagicLink(authClient),
 
+    // Cells
+    submitPage: submitPage(authClient),
+
     // Datalayers
     getPageData: getPageData(authClient),
     getLayerPoint: getLayerPoint(authClient),
     getLayerMarker: getLayerMarker(authClient),
+
+    // Rows
+    getSession: getSession(authClient),
+    getResponses: getResponses(authClient),
+    createSubmission: createSubmission(authClient),
 
     // Projects
     getProjectWithPages: getProjectWithPages(authClient),

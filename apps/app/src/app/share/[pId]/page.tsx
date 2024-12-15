@@ -2,10 +2,10 @@ import React, { cache } from "react";
 import { cookies } from "next/headers";
 import { MapformProvider } from "@mapform/mapform";
 import { type Row } from "@mapform/db/schema";
-import { getSession } from "~/actions/share/get-session";
-import { type Responses, getResponses } from "~/actions/share/get-responses.ts";
+import { getSession } from "~/actions/rows/get-session";
 import { publicClient } from "~/lib/safe-action";
 import { Map } from "./map";
+import type { Responses } from "@mapform/backend/data/rows/get-responses";
 
 const fetchProjectWithPages = cache(async (id: string) => {
   const projectWithPagesResponse = await publicClient.getProjectWithPages({
@@ -77,7 +77,7 @@ export default async function Page(props: {
   const cookieStore = await cookies();
   const submissionCookie = cookieStore.get("mapform-submission");
   const projectCookie = cookieStore.get("mapform-project-id");
-  const formValues: NonNullable<Responses>["cells"] = [];
+  const formValues: NonNullable<NonNullable<Responses>["data"]>["cells"] = [];
 
   let session: Row | undefined;
 
@@ -99,7 +99,9 @@ export default async function Page(props: {
     session = await getSession(submissionCookie.value);
 
     if (session && !projectVersionMismatch) {
-      const responsesResponse = await getResponses({ id: session.id });
+      const responsesResponse = await publicClient.getResponses({
+        id: session.id,
+      });
       const responses = responsesResponse?.data;
 
       formValues.push(...(responses?.cells ?? []));

@@ -3,26 +3,25 @@
 import { MapForm, useMapform } from "@mapform/mapform";
 import { useAction } from "next-safe-action/hooks";
 import React, { useEffect, useState } from "react";
-import type { PageData } from "@mapform/backend/datalayer/get-page-data";
-import type { GetLayerPoint } from "@mapform/backend/datalayer/get-layer-point";
-import { type GetLayerMarker } from "@mapform/backend/datalayer/get-layer-marker";
-import type { ProjectWithPages } from "@mapform/backend/projects/get-project-with-pages";
+import type { PageData } from "@mapform/backend/data/datalayer/get-page-data";
+import type { GetLayerPoint } from "@mapform/backend/data/datalayer/get-layer-point";
+import { type GetLayerMarker } from "@mapform/backend/data/datalayer/get-layer-marker";
+import type { ProjectWithPages } from "@mapform/backend/data/projects/get-project-with-pages";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
-import { submitPage } from "~/actions/share/submit-page";
-import { createSubmission } from "~/actions/share/create-submission";
-import type { Responses } from "~/actions/share/get-responses.ts";
+import type { Responses } from "@mapform/backend/data/rows/get-responses";
+import { publicClient } from "~/lib/safe-action";
 import { env } from "~/env.mjs";
 
 interface MapProps {
   pageData: PageData | undefined;
   projectWithPages: ProjectWithPages;
-  formValues: NonNullable<Responses>["cells"];
+  formValues: NonNullable<NonNullable<Responses>["data"]>["cells"];
   selectedFeature?: GetLayerPoint | GetLayerMarker;
   sessionId: string | null;
   isUsingSessions: boolean;
 }
 
-type Page = ProjectWithPages["pages"][number];
+type Page = NonNullable<ProjectWithPages["data"]>["pages"][number];
 
 export function Map({
   pageData,
@@ -37,7 +36,9 @@ export function Map({
   const searchParams = useSearchParams();
 
   const p = searchParams.get("p");
-  const currentPage = projectWithPages.pages.find((page) => page.id === p);
+  const currentPage = projectWithPages.data?.pages.find(
+    (page) => page.id === p,
+  );
   const setCurrentPage = (page: Page) => {
     router.replace(`${pathname}?p=${page.id}`);
   };
@@ -46,7 +47,7 @@ export function Map({
 
   const [currentSession, setCurrentSession] = useState<string | null>(null);
 
-  const { execute } = useAction(submitPage);
+  const { execute } = useAction(publicClient.submitPage);
 
   const setCurrentPageAndFly = (page: Page) => {
     setCurrentPage(page);
@@ -69,7 +70,7 @@ export function Map({
       }
 
       if (!newSessionId) {
-        const response = await createSubmission({
+        const response = await publicClient.createSubmission({
           projectId: projectWithPages.id,
         });
 
