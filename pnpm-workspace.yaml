@@ -69,7 +69,6 @@ catalog:
   "@vercel/analytics": ^1.4.1
   "@vercel/blob": ^0.23.3
   "@vercel/speed-insights": ^1.1.0
-  "@vercel/style-guide": ^5.2.0
   autoprefixer: ^10.0.1
   bcryptjs: ^2.4.3
   bufferutil: ^4.0.8

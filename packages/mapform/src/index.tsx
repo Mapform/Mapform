@@ -11,14 +11,14 @@ import { useWindowSize } from "@mapform/lib/hooks/use-window-size";
 import type { FormSchema } from "@mapform/lib/schemas/form-step-schema";
 import { useSetQueryString } from "@mapform/lib/hooks/use-set-query-string";
 import { CustomBlockContext } from "@mapform/blocknote";
-import type { GetLayerPoint } from "@mapform/backend/datalayer/get-layer-point";
-import type { GetLayerMarker } from "@mapform/backend/datalayer/get-layer-marker";
+import type { GetLayerPoint } from "@mapform/backend/data/datalayer/get-layer-point";
+import type { GetLayerMarker } from "@mapform/backend/data/datalayer/get-layer-marker";
 import {
   type CustomBlock,
   getFormSchemaFromBlockNote,
 } from "@mapform/blocknote";
 import type { ViewState } from "@mapform/map-utils/types";
-import type { PageData } from "@mapform/backend/datalayer/get-page-data";
+import type { PageData } from "@mapform/backend/data/datalayer/get-page-data";
 import { Button } from "@mapform/ui/components/button";
 import { ArrowLeftIcon, ArrowRightIcon, ChevronsRightIcon } from "lucide-react";
 import { Blocknote } from "./block-note";
@@ -45,8 +45,8 @@ interface MapFormProps {
   ) => void;
   onStepSubmit?: (data: Record<string, string>) => void;
   onImageUpload?: (file: File) => Promise<string | null>;
-  pageData?: PageData;
-  selectedFeature?: GetLayerPoint | GetLayerMarker;
+  pageData?: PageData["data"];
+  selectedFeature?: GetLayerPoint["data"] | GetLayerMarker["data"];
   // editFields?: {
   //   AddLocationDropdown: (input: { data: any }) => JSX.Element;
   // };
