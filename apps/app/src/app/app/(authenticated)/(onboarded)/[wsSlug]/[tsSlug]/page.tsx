@@ -1,13 +1,13 @@
 import Link from "next/link";
 import { format } from "date-fns";
 import { BoxIcon } from "lucide-react";
-import { getTeamspaceWithProjectsAction } from "~/actions/teamspaces/get-teamspace-with-projects";
+import { authClient } from "~/lib/safe-action";
 
 export default async function WorkspaceForms(props: {
   params: Promise<{ wsSlug: string; tsSlug: string }>;
 }) {
   const params = await props.params;
-  const teamspaceResponse = await getTeamspaceWithProjectsAction({
+  const teamspaceResponse = await authClient.getTeamspaceWithProjects({
     workspaceSlug: params.wsSlug,
     teamspaceSlug: params.tsSlug,
   });

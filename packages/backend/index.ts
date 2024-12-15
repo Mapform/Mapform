@@ -39,6 +39,7 @@ import { updatePageOrder } from "./data/pages/update-page-order";
 import { getProjectWithPages } from "./data/projects/get-project-with-pages";
 import { getProjectWithTeamspace } from "./data/projects/get-project-with-teamspace";
 import { publishProject } from "./data/projects/publish-project";
+import { getTeamspaceWithProjects } from "./data/teamspaces/get-teamspace-with-projects";
 
 // Base client
 export const baseClient = createSafeActionClient({
@@ -124,6 +125,9 @@ const createUserAuthClient = (
 
     // Rows
     countWorkspaceRows: countWorkspaceRows(authClient),
+
+    // Teamspaces
+    getTeamspaceWithProjects: getTeamspaceWithProjects(authClient),
 
     // Workspaces
     updateWorkspace: updateWorkspace(authClient),

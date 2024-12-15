@@ -5,7 +5,6 @@ import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { authClient } from "~/lib/safe-action";
 
-// TODO: Not finished implementing
 export const updateWorkspaceAction = async (
   params: Parameters<typeof authClient.createProject>[0],
 ) => {
@@ -26,13 +25,3 @@ export const updateWorkspaceAction = async (
 
   return result;
 };
-
-// const [error] = await catchError(updateWorkspace(parsedInput));
-
-// if (error) {
-//   if ((error as unknown as { code: string }).code === "23505") {
-//     throw new ServerError("Workspace slug already exists");
-//   }
-
-//   throw error;
-// }

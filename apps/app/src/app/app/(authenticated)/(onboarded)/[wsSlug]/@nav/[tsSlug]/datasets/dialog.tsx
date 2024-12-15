@@ -24,14 +24,12 @@ import { Input } from "@mapform/ui/components/input";
 import { toast } from "@mapform/ui/components/toaster";
 import { useAction } from "next-safe-action/hooks";
 import { useState } from "react";
-import type { z } from "zod";
-import { extendedCreateEmptyDatasetSchema } from "~/data/datasets/create-empty-dataset/schema";
+import {
+  createEmptyDatasetSchema,
+  type CreateEmptyDatasetSchema,
+} from "@mapform/backend/data/datasets/create-empty-dataset/schema";
 import { createEmptyDatasetAction } from "./actions";
 import { useWorkspace } from "../../../workspace-context";
-
-type CreateEmptyDatasetSchema = z.infer<
-  typeof extendedCreateEmptyDatasetSchema
->;
 
 export function CreateDialog({ tsSlug }: { tsSlug: string }) {
   const [open, setOpen] = useState(false);
@@ -43,9 +41,8 @@ export function CreateDialog({ tsSlug }: { tsSlug: string }) {
     defaultValues: {
       name: "",
       teamspaceId,
-      redirectAfterCreate: true,
     },
-    resolver: zodResolver(extendedCreateEmptyDatasetSchema),
+    resolver: zodResolver(createEmptyDatasetSchema),
   });
   const { execute, status } = useAction(createEmptyDatasetAction, {
     onError: ({ error }) => {
