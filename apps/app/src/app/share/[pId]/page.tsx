@@ -2,7 +2,6 @@ import React, { cache } from "react";
 import { cookies } from "next/headers";
 import { MapformProvider } from "@mapform/mapform";
 import { type Row } from "@mapform/db/schema";
-import { getSession } from "~/actions/rows/get-session";
 import { publicClient } from "~/lib/safe-action";
 import { Map } from "./map";
 import type { Responses } from "@mapform/backend/data/rows/get-responses";
@@ -96,7 +95,7 @@ export default async function Page(props: {
   const isUsingSessions = Boolean(projectWithPages.submissionsDataset);
 
   if (isUsingSessions && submissionCookie) {
-    session = await getSession(submissionCookie.value);
+    session = await publicClient.getSession({ rowId: submissionCookie.value });
 
     if (session && !projectVersionMismatch) {
       const responsesResponse = await publicClient.getResponses({
