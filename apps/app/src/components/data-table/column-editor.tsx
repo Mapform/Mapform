@@ -31,7 +31,7 @@ import {
 import {
   editColumnSchema,
   type EditColumnSchema,
-} from "@mapform/backend/columns/edit-column/schema";
+} from "@mapform/backend/data/columns/edit-column/schema";
 import { editColumnAction } from "~/actions/columns/edit-column";
 import { deleteColumnAction } from "~/actions/columns/delete-column";
 import { COLUMN_ICONS } from "~/constants/column-icons";

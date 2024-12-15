@@ -15,6 +15,11 @@ import { publishProjectSchema } from "./schema";
 import { AuthClient } from "../../../lib/types";
 import { userAuthMiddleware } from "../../../lib/middleware";
 
+/**
+ * When we publish, we always create a new form version. By keeping track of
+ * version history, we can allow users to revert to previous versions, and we
+ * can show more detailed submission results.
+ */
 export const publishProject = (authClient: AuthClient) =>
   authClient
     .use(userAuthMiddleware)

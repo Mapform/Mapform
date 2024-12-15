@@ -33,9 +33,9 @@ import { enUS } from "date-fns/locale";
 import {
   upsertCellSchema,
   type UpsertCellSchema,
-} from "@mapform/backend/cells/upsert-cell/schema";
+} from "@mapform/backend/data/cells/upsert-cell/schema";
 import { EmojiPicker } from "@mapform/ui/components/emoji-picker";
-import type { GetDataset } from "@mapform/backend/datasets/get-dataset";
+import type { GetDataset } from "@mapform/backend/data/datasets/get-dataset";
 import { upsertCellAction } from "~/actions/cells/upsert-cell";
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- it's fine

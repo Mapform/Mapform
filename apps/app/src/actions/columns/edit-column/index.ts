@@ -1,16 +1,14 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { editColumn } from "@mapform/backend/columns/edit-column";
-import { editColumnSchema } from "@mapform/backend/columns/edit-column/schema";
-import { authAction } from "~/lib/safe-action";
+import { authClient } from "~/lib/safe-action";
 
-export const editColumnAction = authAction
-  .schema(editColumnSchema)
-  .action(async ({ parsedInput: { name, id } }) => {
-    const col = await editColumn({ name, id });
+export const editColumnAction = async (
+  params: Parameters<typeof authClient.editColumn>[0],
+) => {
+  const result = await authClient.editColumn(params);
 
-    revalidatePath("/app/[wsSlug]/[tsSlug]/projects/[pId]/project", "page");
+  revalidatePath("/app/[wsSlug]/[tsSlug]/projects/[pId]/project", "page");
 
-    return col;
-  });
+  return result;
+};

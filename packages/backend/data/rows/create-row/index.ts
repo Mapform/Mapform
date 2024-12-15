@@ -1,14 +1,22 @@
+"server-only";
+
 import { db } from "@mapform/db";
 import { rows } from "@mapform/db/schema";
-import type { CreateRowSchema } from "./schema";
+import { createRowSchema } from "./schema";
+import type { AuthClient } from "../../../lib/types";
+import { userAuthMiddleware } from "../../../lib/middleware";
 
-export const createRow = async ({ datasetId }: CreateRowSchema) => {
-  const [newRow] = await db
-    .insert(rows)
-    .values({
-      datasetId,
-    })
-    .returning();
+export const createRow = (authClient: AuthClient) =>
+  authClient
+    .use(userAuthMiddleware)
+    .schema(createRowSchema)
+    .action(async ({ parsedInput: { datasetId }, ctx: { userAccess } }) => {
+      const [newRow] = await db
+        .insert(rows)
+        .values({
+          datasetId,
+        })
+        .returning();
 
-  return newRow;
-};
+      return newRow;
+    });

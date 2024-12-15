@@ -40,6 +40,12 @@ import { getProjectWithPages } from "./data/projects/get-project-with-pages";
 import { getProjectWithTeamspace } from "./data/projects/get-project-with-teamspace";
 import { publishProject } from "./data/projects/publish-project";
 import { getTeamspaceWithProjects } from "./data/teamspaces/get-teamspace-with-projects";
+import { deleteColumn } from "./data/columns/delete-column";
+import { editColumn } from "./data/columns/edit-column";
+import { getDataset } from "./data/datasets/get-dataset";
+import { createRow } from "./data/rows/create-row";
+import { deleteRows } from "./data/rows/delete-rows";
+import { duplicateRows } from "./data/rows/duplicate-rows";
 
 // Base client
 export const baseClient = createSafeActionClient({
@@ -81,7 +87,9 @@ const createUserAuthClient = (
     upsertCell: upsertCell(authClient),
 
     // Columns
+    editColumn: editColumn(authClient),
     createColumn: createColumn(authClient),
+    deleteColumn: deleteColumn(authClient),
 
     // Datalayers
     getPageData: getPageData(authClient),
@@ -89,6 +97,7 @@ const createUserAuthClient = (
     getLayerMarker: getLayerMarker(authClient),
 
     // Datasets
+    getDataset: getDataset(authClient),
     createPoint: createPoint(authClient), // Note: for createUserAuthClient this is causing 'The inferred type of this node exceeds the maximum length the compiler will serialize'
     deleteDataset: deleteDataset(authClient),
     updateDataset: updateDataset(authClient),
@@ -124,6 +133,9 @@ const createUserAuthClient = (
     getProjectWithTeamspace: getProjectWithTeamspace(authClient),
 
     // Rows
+    createRow: createRow(authClient),
+    deleteRows: deleteRows(authClient),
+    duplicateRows: duplicateRows(authClient),
     countWorkspaceRows: countWorkspaceRows(authClient),
 
     // Teamspaces
