@@ -7,9 +7,11 @@ import {
 } from "@tanstack/react-query";
 import { ThemeProvider } from "next-themes";
 import { createContext, useContext, useState, useEffect, use } from "react";
-import type { GetUser } from "@mapform/backend/data/users/get-user";
+import type { getCurrentSession } from "~/data/auth/get-current-session";
+import type { GetCurrentSession } from "@mapform/backend/data/auth/get-current-session";
 import { TooltipProvider } from "@mapform/ui/components/tooltip";
-import type { GetCurrentSession } from "~/actions/auth/get-current-session";
+
+type User = NonNullable<GetCurrentSession["data"]>["user"];
 
 function makeQueryClient() {
   return new QueryClient({
@@ -41,8 +43,8 @@ function getQueryClient() {
 }
 
 interface AuthContextType {
-  user: GetUser | null;
-  setUser: (user: GetUser | null) => void;
+  user: User | null;
+  setUser: (user: User | null) => void;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -60,7 +62,7 @@ export function RootProviders({
   currentSessionPromise,
 }: {
   children: React.ReactNode;
-  currentSessionPromise: GetCurrentSession;
+  currentSessionPromise: ReturnType<typeof getCurrentSession>;
 }) {
   // NOTE: Avoid useState when initializing the query client if you don't
   //       have a suspense boundary between this and the code that may
@@ -68,11 +70,11 @@ export function RootProviders({
   //       render if it suspends and there is no boundary
   const queryClient = getQueryClient();
   const session = use(currentSessionPromise);
-  const [user, setUser] = useState<GetUser | null>(session?.user ?? null);
+  const [user, setUser] = useState<User | null>(session?.data?.user ?? null);
 
   useEffect(() => {
-    setUser(session?.user ?? null);
-  }, [session?.user]);
+    setUser(session?.data?.user ?? null);
+  }, [session?.data?.user]);
 
   return (
     <AuthContext.Provider value={{ user, setUser }}>

@@ -16,7 +16,7 @@ import {
 } from "@mapform/ui/components/popover";
 import { useAction } from "next-safe-action/hooks";
 import { Fragment } from "react";
-import { updateProjectAction } from "~/actions/projects/update-project";
+import { updateProjectAction } from "~/data/projects/update-project";
 
 interface RenameProjectPopoverContentProps {
   project: {

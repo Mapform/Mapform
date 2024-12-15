@@ -25,7 +25,7 @@ import { useAction } from "next-safe-action/hooks";
 import Link from "next/link";
 import { useState } from "react";
 import { RenameProjectPopover } from "~/components/rename-project-popover";
-import { deleteProjectAction } from "~/actions/projects/delete-project";
+import { deleteProjectAction } from "~/data/projects/delete-project";
 
 interface ProjectMenuSubItemProps {
   project: {

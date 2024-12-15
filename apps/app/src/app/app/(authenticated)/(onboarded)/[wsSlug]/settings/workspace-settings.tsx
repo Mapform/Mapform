@@ -26,7 +26,7 @@ import {
 import { useAction } from "next-safe-action/hooks";
 import { toast } from "@mapform/ui/components/toaster";
 import { TriangleAlertIcon } from "lucide-react";
-import { updateWorkspaceAction } from "~/actions/workspaces/update-workspace";
+import { updateWorkspaceAction } from "~/data/workspaces/update-workspace";
 import { env } from "~/env.mjs";
 import { useWorkspace } from "../workspace-context";
 

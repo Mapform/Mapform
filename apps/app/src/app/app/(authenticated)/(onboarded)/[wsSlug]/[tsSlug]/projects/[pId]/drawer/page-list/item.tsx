@@ -23,7 +23,7 @@ import {
   SidebarRightMenuButton,
 } from "@mapform/ui/components/sidebar";
 import { DragItem, DragHandle } from "~/components/draggable";
-import { deletePageAction } from "~/actions/pages/delete-page";
+import { deletePageAction } from "~/data/pages/delete-page";
 import { useProject } from "../../project-context";
 
 interface ItemProps {

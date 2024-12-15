@@ -21,8 +21,8 @@ import {
   completeOnboardingSchema,
   type CompleteOnboardingSchema,
 } from "@mapform/backend/onboarding/complete-onboarding/schema";
-import { signOutAction } from "~/actions/auth/sign-out";
-import { completeOnboardingAction } from "~/actions/onboarding/complete-onboarding";
+import { signOutAction } from "~/data/auth/sign-out";
+import { completeOnboardingAction } from "~/data/onboarding/complete-onboarding";
 import { env } from "~/env.mjs";
 import { cn } from "@mapform/lib/classnames";
 

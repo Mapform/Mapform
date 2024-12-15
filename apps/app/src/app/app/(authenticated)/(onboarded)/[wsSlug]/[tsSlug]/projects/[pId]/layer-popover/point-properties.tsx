@@ -22,7 +22,7 @@ import { ChevronsUpDownIcon, PlusIcon, CheckIcon } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import type { UpsertLayerSchema } from "@mapform/backend/layers/upsert-layer/schema";
 import { toast } from "@mapform/ui/components/toaster";
-import { createColumnAction } from "~/actions/columns/create-column";
+import { createColumnAction } from "~/data/columns/create-column";
 import { useProject } from "../project-context";
 import { ColorPicker } from "./color-picker";
 

@@ -31,7 +31,7 @@ import { type SetStateAction, useState } from "react";
 import { useAction } from "next-safe-action/hooks";
 import { toast } from "@mapform/ui/components/toaster";
 import type { ProjectWithPages } from "@mapform/backend/projects/get-project-with-pages";
-import { createPointAction } from "~/actions/datasets/create-point";
+import { createPointAction } from "~/data/datasets/create-point";
 import {
   LayerPopoverContent,
   LayerPopoverRoot,

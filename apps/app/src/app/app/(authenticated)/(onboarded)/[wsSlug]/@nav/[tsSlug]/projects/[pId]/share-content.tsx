@@ -4,7 +4,7 @@ import { useAction } from "next-safe-action/hooks";
 import { Button } from "@mapform/ui/components/button";
 import { Spinner } from "@mapform/ui/components/spinner";
 import { Clipboard } from "@mapform/ui/components/clipboard";
-import { publishProjectAction } from "~/actions/projects/publish-project";
+import { publishProjectAction } from "~/data/projects/publish-project";
 import { env } from "~/env.mjs";
 
 export function ShareContent({

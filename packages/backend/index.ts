@@ -50,6 +50,7 @@ import { createSubmission } from "./data/rows/create-submission";
 import { getResponses } from "./data/rows/get-responses";
 import { submitPage } from "./data/cells/submit-page";
 import { getSession } from "./data/rows/get-session";
+import { getCurrentSession } from "./data/auth/get-current-session";
 
 // Base client
 export const baseClient = createSafeActionClient({
@@ -189,6 +190,9 @@ const createPublicClient = (
 
     // Projects
     getProjectWithPages: getProjectWithPages(authClient),
+
+    // Users
+    getCurrentSession: getCurrentSession(authClient),
   };
 };
 

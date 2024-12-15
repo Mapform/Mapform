@@ -23,7 +23,7 @@ import { Input } from "@mapform/ui/components/input";
 import { upsertLayerSchema } from "@mapform/backend/data/layers/upsert-layer/schema";
 import type { UpsertLayerSchema } from "@mapform/backend/data/layers/upsert-layer/schema";
 import type { PageWithLayers } from "@mapform/backend/data/pages/get-page-with-layers";
-import { upsertLayerAction } from "~/actions/layers/upsert-layer";
+import { upsertLayerAction } from "~/data/layers/upsert-layer";
 import { useProject } from "../project-context";
 import { PointProperties } from "./point-properties";
 import { DatasetPopover } from "./dataset-popover";

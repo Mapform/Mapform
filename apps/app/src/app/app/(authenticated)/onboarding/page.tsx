@@ -1,17 +1,18 @@
 import Image from "next/image";
 import { redirect } from "next/navigation";
-import { getCurrentSession } from "~/actions/auth/get-current-session";
+import { getCurrentSession } from "~/data/auth/get-current-session";
 import mapform from "public/static/images/mapform.svg";
 import { OnboardingForm } from "./form";
 
 export default async function OnboardingPage() {
   const currentSession = await getCurrentSession();
 
-  if (!currentSession?.user) {
+  if (!currentSession?.data?.user) {
     return redirect("/app/signin");
   }
 
-  const firstWorkspace = currentSession.user.workspaceMemberships[0]?.workspace;
+  const firstWorkspace =
+    currentSession.data.user.workspaceMemberships[0]?.workspace;
 
   if (firstWorkspace) {
     return redirect(`/app/${firstWorkspace.slug}`);
@@ -29,7 +30,7 @@ export default async function OnboardingPage() {
             Let&apos;s get you started with your first workspace.
           </p>
         </div>
-        <OnboardingForm email={currentSession.user.email} />
+        <OnboardingForm email={currentSession.data.user.email} />
       </div>
     </div>
   );

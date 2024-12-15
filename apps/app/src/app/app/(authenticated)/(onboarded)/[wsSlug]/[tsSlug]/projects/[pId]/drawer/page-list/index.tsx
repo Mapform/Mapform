@@ -25,8 +25,8 @@ import {
   SidebarMenu,
 } from "@mapform/ui/components/sidebar";
 import { PlusIcon } from "lucide-react";
-import { updatePageOrderAction } from "~/actions/pages/update-page-order";
-import { createPageAction } from "~/actions/pages/create-page";
+import { updatePageOrderAction } from "~/data/pages/update-page-order";
+import { createPageAction } from "~/data/pages/create-page";
 import { useProject } from "../../project-context";
 import { Item } from "./item";
 

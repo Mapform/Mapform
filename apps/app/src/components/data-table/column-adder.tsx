@@ -28,7 +28,7 @@ import {
 } from "@mapform/backend/data/columns/create-column/schema";
 import { PlusIcon } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
-import { createColumnAction } from "~/actions/columns/create-column";
+import { createColumnAction } from "~/data/columns/create-column";
 
 interface ColumnAdderProps {
   datasetId: string;
