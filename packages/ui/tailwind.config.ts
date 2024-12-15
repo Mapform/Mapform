@@ -3,9 +3,9 @@ import forms from "@tailwindcss/forms";
 import typography from "@tailwindcss/typography";
 import animate from "tailwindcss-animate";
 import container from "@tailwindcss/container-queries";
+import { Config } from "tailwindcss/types/config";
 
-const config = {
-  darkMode: ["class"],
+const config: Config = {
   content: ["**/*.{js,ts,jsx,tsx}"],
   theme: {
     container: {
@@ -89,3 +89,4 @@ const config = {
 };
 
 export default config;
+export { forms, typography, animate, container };
