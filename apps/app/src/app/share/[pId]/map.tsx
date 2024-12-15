@@ -11,6 +11,7 @@ import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import type { Responses } from "@mapform/backend/data/rows/get-responses";
 import { env } from "~/env.mjs";
 import { createSubmissionAction } from "~/data/rows/create-submission";
+import { submitPageAction } from "./actions";
 
 interface MapProps {
   pageData: PageData | undefined;
@@ -47,7 +48,7 @@ export function Map({
 
   const [currentSession, setCurrentSession] = useState<string | null>(null);
 
-  const { execute } = useAction(publicClient.submitPage);
+  const { execute } = useAction(submitPageAction);
 
   const setCurrentPageAndFly = (page: Page) => {
     setCurrentPage(page);
