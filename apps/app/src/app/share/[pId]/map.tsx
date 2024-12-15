@@ -9,8 +9,8 @@ import { type GetLayerMarker } from "@mapform/backend/data/datalayer/get-layer-m
 import type { ProjectWithPages } from "@mapform/backend/data/projects/get-project-with-pages";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import type { Responses } from "@mapform/backend/data/rows/get-responses";
-import { publicClient } from "~/lib/safe-action";
 import { env } from "~/env.mjs";
+import { createSubmissionAction } from "~/data/rows/create-submission";
 
 interface MapProps {
   pageData: PageData | undefined;
@@ -70,7 +70,7 @@ export function Map({
       }
 
       if (!newSessionId) {
-        const response = await publicClient.createSubmission({
+        const response = await createSubmissionAction({
           projectId: projectWithPages.id,
         });
 

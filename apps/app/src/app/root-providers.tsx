@@ -7,11 +7,12 @@ import {
 } from "@tanstack/react-query";
 import { ThemeProvider } from "next-themes";
 import { createContext, useContext, useState, useEffect, use } from "react";
-import type { getCurrentSession } from "~/data/auth/get-current-session";
-import type { GetCurrentSession } from "@mapform/backend/data/auth/get-current-session";
+import type { GetCurrentSession } from "~/data/auth/get-current-session";
 import { TooltipProvider } from "@mapform/ui/components/tooltip";
 
-type User = NonNullable<GetCurrentSession["data"]>["user"];
+type User = NonNullable<
+  NonNullable<Awaited<GetCurrentSession>>["data"]
+>["user"];
 
 function makeQueryClient() {
   return new QueryClient({
@@ -62,7 +63,7 @@ export function RootProviders({
   currentSessionPromise,
 }: {
   children: React.ReactNode;
-  currentSessionPromise: ReturnType<typeof getCurrentSession>;
+  currentSessionPromise: GetCurrentSession;
 }) {
   // NOTE: Avoid useState when initializing the query client if you don't
   //       have a suspense boundary between this and the code that may

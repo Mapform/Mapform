@@ -3,7 +3,7 @@
 import { cookies } from "next/headers";
 import { publicClient } from "~/lib/safe-action";
 
-export const createSubmission = async (
+export const createSubmissionAction = async (
   params: Parameters<typeof publicClient.createSubmission>[0],
 ) => {
   const projectId = params.parsedInput.projectId;
