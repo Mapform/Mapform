@@ -3,11 +3,11 @@ import { pages, projects } from "@mapform/db/schema";
 import { eq } from "@mapform/db/utils";
 import { updatePageOrderSchema } from "./schema";
 import type { AuthClient } from "../../../lib/types";
-import { userAuthMiddleware } from "../../../lib/middleware";
+import { userAuthMiddlewareValidator } from "../../../lib/middleware";
 
 export const updatePageOrder = (authClient: AuthClient) =>
   authClient
-    .use(userAuthMiddleware)
+    .use(userAuthMiddlewareValidator)
     .schema(updatePageOrderSchema)
     .action(async ({ parsedInput: { projectId, pageOrder } }) => {
       const project = await db.query.projects.findFirst({

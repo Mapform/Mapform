@@ -4,12 +4,12 @@ import { db } from "@mapform/db";
 import { eq } from "@mapform/db/utils";
 import { rows } from "@mapform/db/schema";
 import type { AuthClient } from "../../../lib/types";
-import { publicMiddleware } from "../../../lib/middleware";
+import { publicMiddlewareValidator } from "../../../lib/middleware";
 import { getSessionSchema } from "./schema";
 
 export const getSession = (authClient: AuthClient) =>
   authClient
-    .use(publicMiddleware)
+    .use(publicMiddlewareValidator)
     .schema(getSessionSchema)
     .action(async ({ parsedInput: { rowId } }) => {
       // TODO: Need authorizations checks here.

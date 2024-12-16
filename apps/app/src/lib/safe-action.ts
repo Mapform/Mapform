@@ -52,9 +52,9 @@ import { completeOnboarding } from "@mapform/backend/data/workspaces/complete-on
 import {
   baseClient,
   PublicAuthContext,
-  publicMiddleware,
+  publicMiddlewareValidator,
   UserAuthContext,
-  userAuthMiddleware,
+  userAuthMiddlewareValidator,
 } from "@mapform/backend";
 import { headers } from "next/headers";
 
@@ -66,15 +66,12 @@ const ignoredTeamspaceSlugs = ["settings"];
  */
 const createUserAuthClient = (callback: () => Promise<UserAuthContext>) => {
   const authClient = baseClient
-    .use(async ({ next }) => {
-      // the callback allows the calling service to perform auth checks, and return the necerssary context
-      const ctx = await callback();
-
-      return next({
-        ctx,
-      });
-    })
-    .use(userAuthMiddleware);
+    .use(async ({ next }) =>
+      next({
+        ctx: await callback(),
+      }),
+    )
+    .use(userAuthMiddlewareValidator);
 
   return {
     // Auth
@@ -154,15 +151,12 @@ const createUserAuthClient = (callback: () => Promise<UserAuthContext>) => {
  */
 const createPublicClient = (callback: () => Promise<PublicAuthContext>) => {
   const authClient = baseClient
-    .use(async ({ next }) => {
-      // the callback allows the calling service to perform auth checks, and return the necerssary context
-      const ctx = await callback();
-
-      return next({
-        ctx,
-      });
-    })
-    .use(publicMiddleware);
+    .use(async ({ next }) =>
+      next({
+        ctx: await callback(),
+      }),
+    )
+    .use(publicMiddlewareValidator);
 
   return {
     // Auth

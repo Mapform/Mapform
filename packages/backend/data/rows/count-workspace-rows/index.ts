@@ -5,11 +5,11 @@ import { datasets, rows, teamspaces, workspaces } from "@mapform/db/schema";
 import { count, eq } from "@mapform/db/utils";
 import { countWorkspaceRowsSchema } from "./schema";
 import type { AuthClient } from "../../../lib/types";
-import { userAuthMiddleware } from "../../../lib/middleware";
+import { userAuthMiddlewareValidator } from "../../../lib/middleware";
 
 export const countWorkspaceRows = (authClient: AuthClient) =>
   authClient
-    .use(userAuthMiddleware)
+    .use(userAuthMiddlewareValidator)
     .schema(countWorkspaceRowsSchema)
     .action(async ({ parsedInput: { workspaceSlug }, ctx: { userAccess } }) => {
       if (!userAccess.workspace.checkAccessBySlug(workspaceSlug)) {

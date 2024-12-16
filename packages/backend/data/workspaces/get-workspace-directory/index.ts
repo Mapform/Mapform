@@ -5,11 +5,11 @@ import { projects, workspaces } from "@mapform/db/schema";
 import { eq, isNull } from "@mapform/db/utils";
 import { getWorkspaceDirectorySchema } from "./schema";
 import type { AuthClient, UnwrapReturn } from "../../../lib/types";
-import { userAuthMiddleware } from "../../../lib/middleware";
+import { userAuthMiddlewareValidator } from "../../../lib/middleware";
 
 export const getWorkspaceDirectory = (authClient: AuthClient) =>
   authClient
-    .use(userAuthMiddleware)
+    .use(userAuthMiddlewareValidator)
     .schema(getWorkspaceDirectorySchema)
     .action(({ parsedInput: { slug } }) => {
       return db.query.workspaces.findFirst({

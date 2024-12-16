@@ -5,11 +5,11 @@ import { eq, and, inArray } from "@mapform/db/utils";
 import { projects } from "@mapform/db/schema";
 import { updateProjectSchema } from "./schema";
 import { AuthClient } from "../../../lib/types";
-import { userAuthMiddleware } from "../../../lib/middleware";
+import { userAuthMiddlewareValidator } from "../../../lib/middleware";
 
 export const updateProject = (authClient: AuthClient) =>
   authClient
-    .use(userAuthMiddleware)
+    .use(userAuthMiddlewareValidator)
     .schema(updateProjectSchema)
     .action(async ({ parsedInput: { id, ...rest }, ctx: { user } }) => {
       const teamspaceIds = user.workspaceMemberships

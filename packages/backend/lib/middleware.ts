@@ -2,7 +2,7 @@ import { createMiddleware } from "next-safe-action";
 import { publicSchema, userAuthSchema } from "./schema";
 import type { PublicAuthContext, UserAuthContext } from "./types";
 
-export const userAuthMiddleware = createMiddleware<{
+export const userAuthMiddlewareValidator = createMiddleware<{
   ctx: UserAuthContext;
 }>().define(async ({ next, ctx }) => {
   const result = userAuthSchema.safeParse(ctx);
@@ -14,7 +14,7 @@ export const userAuthMiddleware = createMiddleware<{
   return next({ ctx: { ...ctx, ...result.data } });
 });
 
-export const publicMiddleware = createMiddleware<{
+export const publicMiddlewareValidator = createMiddleware<{
   ctx: PublicAuthContext;
 }>().define(async ({ next, ctx }) => {
   const result = publicSchema.safeParse(ctx);

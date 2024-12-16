@@ -13,7 +13,7 @@ import {
 } from "@mapform/db/schema";
 import { publishProjectSchema } from "./schema";
 import { AuthClient } from "../../../lib/types";
-import { userAuthMiddleware } from "../../../lib/middleware";
+import { userAuthMiddlewareValidator } from "../../../lib/middleware";
 
 /**
  * When we publish, we always create a new form version. By keeping track of
@@ -22,7 +22,7 @@ import { userAuthMiddleware } from "../../../lib/middleware";
  */
 export const publishProject = (authClient: AuthClient) =>
   authClient
-    .use(userAuthMiddleware)
+    .use(userAuthMiddlewareValidator)
     .schema(publishProjectSchema)
     .action(async ({ parsedInput: { projectId }, ctx: { userAccess } }) => {
       const [rootProjectResponse, results] = await Promise.all([

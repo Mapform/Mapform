@@ -4,10 +4,10 @@ import { db } from "@mapform/db";
 import { workspaceMemberships } from "@mapform/db/schema";
 import { eq } from "@mapform/db/utils";
 import type { AuthClient, UnwrapReturn } from "../../../lib/types";
-import { userAuthMiddleware } from "../../../lib/middleware";
+import { userAuthMiddlewareValidator } from "../../../lib/middleware";
 
 export const getUserWorkspaceMemberships = (authClient: AuthClient) =>
-  authClient.use(userAuthMiddleware).action(({ ctx: { user } }) => {
+  authClient.use(userAuthMiddlewareValidator).action(({ ctx: { user } }) => {
     return db.query.workspaceMemberships.findMany({
       where: eq(workspaceMemberships.userId, user.id),
       with: {

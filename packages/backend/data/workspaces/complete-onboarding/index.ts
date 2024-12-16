@@ -11,12 +11,12 @@ import {
 } from "@mapform/db/schema";
 import { completeOnboardingSchema } from "./schema";
 import type { AuthClient } from "../../../lib/types";
-import { userAuthMiddleware } from "../../../lib/middleware";
+import { userAuthMiddlewareValidator } from "../../../lib/middleware";
 import { ServerError } from "../../../lib/server-error";
 
 export const completeOnboarding = (authClient: AuthClient) =>
   authClient
-    .use(userAuthMiddleware)
+    .use(userAuthMiddlewareValidator)
     .schema(completeOnboardingSchema)
     .action(
       async ({

@@ -5,11 +5,11 @@ import { eq, and, isNull, desc } from "@mapform/db/utils";
 import { projects, teamspaces } from "@mapform/db/schema";
 import { getRecentProjectsSchema } from "./schema";
 import { AuthClient } from "../../../lib/types";
-import { userAuthMiddleware } from "../../../lib/middleware";
+import { userAuthMiddlewareValidator } from "../../../lib/middleware";
 
 export const getRecentProjects = (authClient: AuthClient) =>
   authClient
-    .use(userAuthMiddleware)
+    .use(userAuthMiddlewareValidator)
     .schema(getRecentProjectsSchema)
     .action(async ({ parsedInput: { workspaceSlug }, ctx: { userAccess } }) => {
       if (!userAccess.workspace.checkAccessBySlug(workspaceSlug)) {

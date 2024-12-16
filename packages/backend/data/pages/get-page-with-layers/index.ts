@@ -5,11 +5,11 @@ import { layersToPages, pages } from "@mapform/db/schema";
 import { eq } from "@mapform/db/utils";
 import { getPageWithLayersSchema } from "./schema";
 import type { AuthClient, UnwrapReturn } from "../../../lib/types";
-import { userAuthMiddleware } from "../../../lib/middleware";
+import { userAuthMiddlewareValidator } from "../../../lib/middleware";
 
 export const getPageWithLayers = (authClient: AuthClient) =>
   authClient
-    .use(userAuthMiddleware)
+    .use(userAuthMiddlewareValidator)
     .schema(getPageWithLayersSchema)
     .action(async ({ parsedInput: { id } }) => {
       // TODO: Cannot use 'with' with geometry columns currently due to Drizzle bug: https://github.com/drizzle-team/drizzle-orm/issues/2526

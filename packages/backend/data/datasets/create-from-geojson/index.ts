@@ -17,12 +17,12 @@ import {
 import type { GeoJson } from "@infra-blocks/zod-utils/geojson";
 import { createDatasetFromGeojsonSchema } from "./schema";
 import type { AuthClient } from "../../../lib/types";
-import { userAuthMiddleware } from "../../../lib/middleware";
+import { userAuthMiddlewareValidator } from "../../../lib/middleware";
 import { prepCell } from "./prep-cell";
 
 export const createDatasetFromGeojson = (authClient: AuthClient) =>
   authClient
-    .use(userAuthMiddleware)
+    .use(userAuthMiddlewareValidator)
     .schema(createDatasetFromGeojsonSchema)
     .action(async ({ parsedInput: { name, teamspaceId, data } }) => {
       const cellsToCreateByRow = getCellsToCreateByRow(data).map((row) => ({

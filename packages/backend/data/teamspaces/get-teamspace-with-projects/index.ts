@@ -5,11 +5,11 @@ import { eq, and, isNull } from "@mapform/db/utils";
 import { projects, teamspaces } from "@mapform/db/schema";
 import { getTeamspaceWithProjectsSchema } from "./schema";
 import type { AuthClient, UnwrapReturn } from "../../../lib/types";
-import { userAuthMiddleware } from "../../../lib/middleware";
+import { userAuthMiddlewareValidator } from "../../../lib/middleware";
 
 export const getTeamspaceWithProjects = (authClient: AuthClient) =>
   authClient
-    .use(userAuthMiddleware)
+    .use(userAuthMiddlewareValidator)
     .schema(getTeamspaceWithProjectsSchema)
     .action(
       async ({

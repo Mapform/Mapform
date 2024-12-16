@@ -4,12 +4,12 @@ import { db } from "@mapform/db";
 import { eq } from "@mapform/db/utils";
 import { rows } from "@mapform/db/schema";
 import type { AuthClient, UnwrapReturn } from "../../../lib/types";
-import { publicMiddleware } from "../../../lib/middleware";
+import { publicMiddlewareValidator } from "../../../lib/middleware";
 import { getResponsesSchema } from "./schema";
 
 export const getResponses = (authClient: AuthClient) =>
   authClient
-    .use(publicMiddleware)
+    .use(publicMiddlewareValidator)
     .schema(getResponsesSchema)
     .action(({ parsedInput: { id } }) => {
       return db.query.rows.findFirst({

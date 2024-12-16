@@ -5,11 +5,11 @@ import { layersToPages, projects } from "@mapform/db/schema";
 import { eq } from "@mapform/db/utils";
 import { updateLayerOrderSchema } from "./schema";
 import type { AuthClient } from "../../../lib/types";
-import { userAuthMiddleware } from "../../../lib/middleware";
+import { userAuthMiddlewareValidator } from "../../../lib/middleware";
 
 export const updateLayerOrder = (authClient: AuthClient) =>
   authClient
-    .use(userAuthMiddleware)
+    .use(userAuthMiddlewareValidator)
     .schema(updateLayerOrderSchema)
     .action(async ({ parsedInput: { pageId, layerOrder } }) => {
       const page = await db.query.pages.findFirst({

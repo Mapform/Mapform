@@ -4,12 +4,12 @@ import { db } from "@mapform/db";
 import { eq, sql } from "@mapform/db/utils";
 import { getDatasetSchema } from "./schema";
 import type { AuthClient, UnwrapReturn } from "../../../lib/types";
-import { userAuthMiddleware } from "../../../lib/middleware";
+import { userAuthMiddlewareValidator } from "../../../lib/middleware";
 import { datasets, pointCells } from "@mapform/db/schema";
 
 export const getDataset = (authClient: AuthClient) =>
   authClient
-    .use(userAuthMiddleware)
+    .use(userAuthMiddlewareValidator)
     .schema(getDatasetSchema)
     .action(async ({ parsedInput: { datasetId }, ctx: { userAccess } }) => {
       return db.query.datasets.findFirst({

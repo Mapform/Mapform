@@ -5,11 +5,11 @@ import { and, eq, inArray } from "@mapform/db/utils";
 import { projects } from "@mapform/db/schema";
 import { deleteProjectSchema } from "./schema";
 import type { AuthClient } from "../../../lib/types";
-import { userAuthMiddleware } from "../../../lib/middleware";
+import { userAuthMiddlewareValidator } from "../../../lib/middleware";
 
 export const deleteProject = (authClient: AuthClient) =>
   authClient
-    .use(userAuthMiddleware)
+    .use(userAuthMiddlewareValidator)
     .schema(deleteProjectSchema)
     .action(async ({ parsedInput: { projectId }, ctx: { user } }) => {
       const teamspaceIds = user.workspaceMemberships

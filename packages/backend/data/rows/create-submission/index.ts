@@ -5,11 +5,11 @@ import { eq } from "@mapform/db/utils";
 import { projects, rows } from "@mapform/db/schema";
 import { createSubmissionSchema } from "./schema";
 import type { AuthClient } from "../../../lib/types";
-import { publicMiddleware } from "../../../lib/middleware";
+import { publicMiddlewareValidator } from "../../../lib/middleware";
 
 export const createSubmission = (authClient: AuthClient) =>
   authClient
-    .use(publicMiddleware)
+    .use(publicMiddlewareValidator)
     .schema(createSubmissionSchema)
     .action(async ({ parsedInput: { projectId } }) => {
       const project = await db.query.projects.findFirst({

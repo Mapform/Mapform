@@ -10,11 +10,11 @@ import {
 import { eq } from "@mapform/db/utils";
 import { upsertLayerSchema } from "./schema";
 import type { AuthClient } from "../../../lib/types";
-import { userAuthMiddleware } from "../../../lib/middleware";
+import { userAuthMiddlewareValidator } from "../../../lib/middleware";
 
 export const upsertLayer = (authClient: AuthClient) =>
   authClient
-    .use(userAuthMiddleware)
+    .use(userAuthMiddlewareValidator)
     .schema(upsertLayerSchema)
     .action(
       async ({
