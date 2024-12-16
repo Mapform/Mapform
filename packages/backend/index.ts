@@ -23,4 +23,5 @@ export const baseClient = createSafeActionClient({
 
 export { ServerError };
 export * from "./lib/middleware";
+export * from "./lib/authorization";
 export type * from "./lib/types";
