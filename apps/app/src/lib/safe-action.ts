@@ -57,8 +57,8 @@ import {
 } from "@mapform/backend";
 import { headers } from "next/headers";
 
-const ignoredWorkspaceSlugs = ["onboarding"];
-const ignoredTeamspaceSlugs = ["settings"];
+// const ignoredWorkspaceSlugs = ["onboarding"];
+// const ignoredTeamspaceSlugs = ["settings"];
 
 /**
  * Can be used with user authentication.
