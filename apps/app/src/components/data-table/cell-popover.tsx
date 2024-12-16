@@ -47,7 +47,7 @@ export function CellPopover({
 }: {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- We don't need the full cell definition
   cell: Cell<any, any>;
-  dataset: GetDataset;
+  dataset: NonNullable<GetDataset["data"]>;
 }) {
   const cellEl = useRef<HTMLTableCellElement>(null);
   const type = dataset.columns.find(

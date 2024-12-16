@@ -51,6 +51,7 @@ import { getResponses } from "./data/rows/get-responses";
 import { submitPage } from "./data/cells/submit-page";
 import { getSession } from "./data/rows/get-session";
 import { getCurrentSession } from "./data/auth/get-current-session";
+import { createDatasetFromGeojson } from "./data/datasets/create-from-geojson";
 
 // Base client
 export const baseClient = createSafeActionClient({
@@ -108,6 +109,7 @@ const createUserAuthClient = (
     updateDataset: updateDataset(authClient),
     createEmptyDataset: createEmptyDataset(authClient),
     listTeamspaceDatasets: listTeamspaceDatasets(authClient),
+    createDatasetFromGeojson: createDatasetFromGeojson(authClient),
 
     // Images
     uploadImage: uploadImage(authClient),

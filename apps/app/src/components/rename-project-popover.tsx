@@ -1,4 +1,4 @@
-import type { UpdateProjectSchema } from "@mapform/backend/projects/update-project/schema";
+import type { UpdateProjectSchema } from "@mapform/backend/data/projects/update-project/schema";
 import {
   Form,
   FormField,

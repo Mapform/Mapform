@@ -32,7 +32,9 @@ import { MarkerProperties } from "./marker-properties";
 
 interface LayerPopoverProps {
   initialName?: string;
-  layerToEdit?: GetPageWithLayers["layersToPages"][number]["layer"];
+  layerToEdit?: NonNullable<
+    GetPageWithLayers["data"]
+  >["layersToPages"][number]["layer"];
   onSuccess?: (layerId: string) => void;
 }
 

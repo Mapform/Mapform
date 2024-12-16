@@ -17,10 +17,10 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from "@mapform/ui/components/popover";
-import type { ListTeamspaceDatasets } from "@mapform/backend/datasets/list-teamspace-datasets";
+import type { ListTeamspaceDatasets } from "@mapform/backend/data/datasets/list-teamspace-datasets";
 import { ChevronsUpDownIcon, PlusIcon, CheckIcon } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
-import type { UpsertLayerSchema } from "@mapform/backend/layers/upsert-layer/schema";
+import type { UpsertLayerSchema } from "@mapform/backend/data/layers/upsert-layer/schema";
 import { toast } from "@mapform/ui/components/toaster";
 import { createColumnAction } from "~/data/columns/create-column";
 import { useProject } from "../project-context";
@@ -139,7 +139,9 @@ function DataColField({
   form: UseFormReturn<UpsertLayerSchema>;
   label: string;
   type: Column["type"];
-  availableColumns: ListTeamspaceDatasets[number]["columns"];
+  availableColumns: NonNullable<
+    ListTeamspaceDatasets["data"]
+  >[number]["columns"];
 }) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");

@@ -20,7 +20,7 @@ import { useAction } from "next-safe-action/hooks";
 import {
   completeOnboardingSchema,
   type CompleteOnboardingSchema,
-} from "@mapform/backend/onboarding/complete-onboarding/schema";
+} from "@mapform/backend/data/onboarding/complete-onboarding/schema";
 import { signOutAction } from "~/data/auth/sign-out";
 import { completeOnboardingAction } from "~/data/onboarding/complete-onboarding";
 import { env } from "~/env.mjs";
