@@ -1,13 +1,7 @@
 import { createMiddleware } from "next-safe-action";
-import {
-  AuthContext,
-  publicSchema,
-  userAuthSchema,
-  publicOrUserAuthSchema,
-  PublicAuthContext,
-  UserAuthContext,
-} from "./schema";
+import { publicSchema, userAuthSchema, publicOrUserAuthSchema } from "./schema";
 import { UserAccess } from "./authorization";
+import type { AuthContext, PublicAuthContext, UserAuthContext } from "./types";
 
 export const userAuthMiddleware = createMiddleware<{
   ctx: AuthContext; // [1]

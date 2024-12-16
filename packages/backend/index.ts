@@ -2,7 +2,6 @@ import {
   createSafeActionClient,
   DEFAULT_SERVER_ERROR_MESSAGE,
 } from "next-safe-action";
-import type { AuthContext } from "./lib/schema";
 import { ServerError } from "./lib/server-error";
 
 // Base client
@@ -22,5 +21,9 @@ export const baseClient = createSafeActionClient({
   },
 });
 
-export { ServerError };
-export type { AuthContext };
+export {
+  ServerError,
+  // Exporting middleware can allow conusming services to use them.
+};
+export * from "./lib/middleware";
+export type * from "./lib/types";
