@@ -13,15 +13,15 @@ export const createPage = (authClient: AuthClient) =>
     .schema(createPageSchema)
     .action(
       async ({ parsedInput: { projectId, center, zoom, pitch, bearing } }) => {
-        const projectWithPagesResponse = await getProjectWithPages({
+        const projectWithPagesResponse = await getProjectWithPages(authClient)({
           id: projectId,
         });
 
-        if (!projectWithPagesResponse) {
+        if (!projectWithPagesResponse?.data) {
           throw new Error("Project not found");
         }
 
-        const nextPagePosition = projectWithPagesResponse.pages.length + 1;
+        const nextPagePosition = projectWithPagesResponse.data.pages.length + 1;
 
         const [page] = await db
           .insert(pages)

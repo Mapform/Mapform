@@ -52,6 +52,7 @@ import { submitPage } from "./data/cells/submit-page";
 import { getSession } from "./data/rows/get-session";
 import { getCurrentSession } from "./data/auth/get-current-session";
 import { createDatasetFromGeojson } from "./data/datasets/create-from-geojson";
+import { completeOnboarding } from "./data/workspaces/complete-onboarding";
 
 // Base client
 export const baseClient = createSafeActionClient({
@@ -77,7 +78,7 @@ const createUserAuthClient = (
   callback: () => Promise<Extract<AuthContext, { authType: "user" }>>,
 ) => {
   const authClient = baseClient.use(async ({ next }) => {
-    // the callback allows the service to perform auth checks, and return the necerssary context
+    // the callback allows the calling service to perform auth checks, and return the necerssary context
     const ctx = await callback();
 
     return next({
@@ -150,6 +151,7 @@ const createUserAuthClient = (
 
     // Workspaces
     updateWorkspace: updateWorkspace(authClient),
+    completeOnboarding: completeOnboarding(authClient),
     getWorkspaceDirectory: getWorkspaceDirectory(authClient),
 
     // Workspace Memberships
@@ -164,7 +166,7 @@ const createPublicClient = (
   callback: () => Promise<Extract<AuthContext, { authType: "public" }>>,
 ) => {
   const authClient = baseClient.use(async ({ next }) => {
-    // the callback allows the service to perform auth checks, and return the necerssary context
+    // the callback allows the calling service to perform auth checks, and return the necerssary context
     const ctx = await callback();
 
     return next({

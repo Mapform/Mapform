@@ -2,9 +2,9 @@ import { createMiddleware } from "next-safe-action";
 import { ServerError } from "./server-error";
 import {
   AuthContext,
-  publicOrUserAuthSchema,
   publicSchema,
   userAuthSchema,
+  publicOrUserAuthSchema,
 } from "./schema";
 import { UserAccess } from "./authorization";
 
@@ -15,7 +15,7 @@ export const userAuthMiddleware = createMiddleware<{
 
   if (result.error) {
     throw new ServerError(
-      "This function is only accessible to authenticated users.",
+      "This function is only accessible using the user schema.",
     );
   }
 
@@ -31,7 +31,7 @@ export const publicMiddleware = createMiddleware<{
 
   if (result.error) {
     throw new ServerError(
-      "This function is only accessible using the public sche,a.",
+      "This function is only accessible using the public schema.",
     );
   }
 

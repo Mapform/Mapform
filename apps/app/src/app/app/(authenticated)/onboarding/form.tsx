@@ -20,9 +20,9 @@ import { useAction } from "next-safe-action/hooks";
 import {
   completeOnboardingSchema,
   type CompleteOnboardingSchema,
-} from "@mapform/backend/data/onboarding/complete-onboarding/schema";
+} from "@mapform/backend/data/workspaces/complete-onboarding/schema";
 import { signOutAction } from "~/data/auth/sign-out";
-import { completeOnboardingAction } from "~/data/onboarding/complete-onboarding";
+import { completeOnboardingAction } from "~/data/workspaces/complete-onboarding";
 import { env } from "~/env.mjs";
 import { cn } from "@mapform/lib/classnames";
 

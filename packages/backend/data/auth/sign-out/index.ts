@@ -6,9 +6,6 @@ import type { AuthClient } from "../../../lib/types";
 import { userAuthMiddleware } from "../../../lib/middleware";
 
 export const signOut = (authClient: AuthClient) =>
-  authClient
-    .use(userAuthMiddleware)
-    // Public
-    .action(async () => {
-      await deleteSession();
-    });
+  authClient.use(userAuthMiddleware).action(async () => {
+    await deleteSession();
+  });
