@@ -3,12 +3,10 @@
 import { db } from "@mapform/db";
 import { columns, datasets } from "@mapform/db/schema";
 import { createEmptyDatasetSchema } from "./schema";
-import type { AuthClient } from "../../../lib/types";
-import { userAuthMiddlewareValidator } from "../../../lib/middleware";
+import type { UserAuthClient } from "../../../lib/types";
 
-export const createEmptyDataset = (authClient: AuthClient) =>
+export const createEmptyDataset = (authClient: UserAuthClient) =>
   authClient
-    .use(userAuthMiddlewareValidator)
     .schema(createEmptyDatasetSchema)
     .action(
       async ({

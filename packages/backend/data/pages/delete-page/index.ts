@@ -4,12 +4,10 @@ import { db } from "@mapform/db";
 import { pages } from "@mapform/db/schema";
 import { count, eq } from "@mapform/db/utils";
 import { deletePageSchema } from "./schema";
-import type { AuthClient } from "../../../lib/types";
-import { userAuthMiddlewareValidator } from "../../../lib/middleware";
+import type { UserAuthClient } from "../../../lib/types";
 
-export const deletePage = (authClient: AuthClient) =>
+export const deletePage = (authClient: UserAuthClient) =>
   authClient
-    .use(userAuthMiddlewareValidator)
     .schema(deletePageSchema)
     .action(async ({ parsedInput: { pageId, projectId } }) => {
       const [pageCount] = await db

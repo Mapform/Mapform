@@ -3,13 +3,11 @@
 import { db } from "@mapform/db";
 import { datasets } from "@mapform/db/schema";
 import { eq } from "@mapform/db/utils";
-import type { AuthClient } from "../../../lib/types";
-import { userAuthMiddlewareValidator } from "../../../lib/middleware";
+import type { UserAuthClient } from "../../../lib/types";
 import { deleteDatasetSchema } from "./schema";
 
-export const deleteDataset = (authClient: AuthClient) =>
+export const deleteDataset = (authClient: UserAuthClient) =>
   authClient
-    .use(userAuthMiddlewareValidator)
     .schema(deleteDatasetSchema)
     .action(async ({ parsedInput: { datasetId }, ctx: { userAccess } }) => {
       const dataset = await db.query.datasets.findFirst({

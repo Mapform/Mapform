@@ -16,13 +16,11 @@ import {
 } from "@mapform/db/schema";
 import type { GeoJson } from "@infra-blocks/zod-utils/geojson";
 import { createDatasetFromGeojsonSchema } from "./schema";
-import type { AuthClient } from "../../../lib/types";
-import { userAuthMiddlewareValidator } from "../../../lib/middleware";
+import type { UserAuthClient } from "../../../lib/types";
 import { prepCell } from "./prep-cell";
 
-export const createDatasetFromGeojson = (authClient: AuthClient) =>
+export const createDatasetFromGeojson = (authClient: UserAuthClient) =>
   authClient
-    .use(userAuthMiddlewareValidator)
     .schema(createDatasetFromGeojsonSchema)
     .action(async ({ parsedInput: { name, teamspaceId, data } }) => {
       const cellsToCreateByRow = getCellsToCreateByRow(data).map((row) => ({

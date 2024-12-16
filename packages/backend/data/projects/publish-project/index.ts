@@ -12,17 +12,15 @@ import {
   projects,
 } from "@mapform/db/schema";
 import { publishProjectSchema } from "./schema";
-import { AuthClient } from "../../../lib/types";
-import { userAuthMiddlewareValidator } from "../../../lib/middleware";
+import { UserAuthClient } from "../../../lib/types";
 
 /**
  * When we publish, we always create a new form version. By keeping track of
  * version history, we can allow users to revert to previous versions, and we
  * can show more detailed submission results.
  */
-export const publishProject = (authClient: AuthClient) =>
+export const publishProject = (authClient: UserAuthClient) =>
   authClient
-    .use(userAuthMiddlewareValidator)
     .schema(publishProjectSchema)
     .action(async ({ parsedInput: { projectId }, ctx: { userAccess } }) => {
       const [rootProjectResponse, results] = await Promise.all([

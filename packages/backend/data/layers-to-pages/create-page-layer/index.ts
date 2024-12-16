@@ -4,12 +4,10 @@ import { db } from "@mapform/db";
 import { layersToPages } from "@mapform/db/schema";
 import { eq, and } from "@mapform/db/utils";
 import { createPageLayerSchema } from "./schema";
-import type { AuthClient } from "../../../lib/types";
-import { userAuthMiddlewareValidator } from "../../../lib/middleware";
+import type { UserAuthClient } from "../../../lib/types";
 
-export const createPageLayer = (authClient: AuthClient) =>
+export const createPageLayer = (authClient: UserAuthClient) =>
   authClient
-    .use(userAuthMiddlewareValidator)
     .schema(createPageLayerSchema)
     .action(
       async ({ parsedInput: { layerId, pageId }, ctx: { userAccess } }) => {

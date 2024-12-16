@@ -3,13 +3,11 @@
 import { db } from "@mapform/db";
 import { eq } from "@mapform/db/utils";
 import { rows } from "@mapform/db/schema";
-import type { AuthClient } from "../../../lib/types";
-import { publicMiddlewareValidator } from "../../../lib/middleware";
+import type { PublicClient } from "../../../lib/types";
 import { getSessionSchema } from "./schema";
 
-export const getSession = (authClient: AuthClient) =>
+export const getSession = (authClient: PublicClient) =>
   authClient
-    .use(publicMiddlewareValidator)
     .schema(getSessionSchema)
     .action(async ({ parsedInput: { rowId } }) => {
       // TODO: Need authorizations checks here.

@@ -4,12 +4,10 @@ import { db } from "@mapform/db";
 import { projects, workspaces } from "@mapform/db/schema";
 import { eq, isNull } from "@mapform/db/utils";
 import { getWorkspaceDirectorySchema } from "./schema";
-import type { AuthClient, UnwrapReturn } from "../../../lib/types";
-import { userAuthMiddlewareValidator } from "../../../lib/middleware";
+import type { UserAuthClient, UnwrapReturn } from "../../../lib/types";
 
-export const getWorkspaceDirectory = (authClient: AuthClient) =>
+export const getWorkspaceDirectory = (authClient: UserAuthClient) =>
   authClient
-    .use(userAuthMiddlewareValidator)
     .schema(getWorkspaceDirectorySchema)
     .action(({ parsedInput: { slug } }) => {
       return db.query.workspaces.findFirst({

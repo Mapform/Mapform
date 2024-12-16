@@ -16,13 +16,11 @@ import {
 } from "@mapform/db/schema";
 import { eq, and, inArray } from "@mapform/db/utils";
 import { createPointSchema } from "./schema";
-import type { AuthClient } from "../../../lib/types";
-import { userAuthMiddlewareValidator } from "../../../lib/middleware";
+import type { UserAuthClient } from "../../../lib/types";
 import { DocumentContent } from "@mapform/blocknote";
 
-export const createPoint = (authClient: AuthClient) =>
+export const createPoint = (authClient: UserAuthClient) =>
   authClient
-    .use(userAuthMiddlewareValidator)
     .schema(createPointSchema)
     .action(
       async ({

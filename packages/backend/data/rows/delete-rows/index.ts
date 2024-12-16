@@ -3,14 +3,12 @@
 import { db } from "@mapform/db";
 import { rows } from "@mapform/db/schema";
 import { deleteRowsSchema } from "./schema";
-import type { AuthClient } from "../../../lib/types";
-import { userAuthMiddlewareValidator } from "../../../lib/middleware";
+import type { UserAuthClient } from "../../../lib/types";
 import { inArray } from "@mapform/db/utils";
 
-export const deleteRows = (authClient: AuthClient) =>
+export const deleteRows = (authClient: UserAuthClient) =>
   authClient
-    .use(userAuthMiddlewareValidator)
     .schema(deleteRowsSchema)
-    .action(async ({ parsedInput: { rowIds }, ctx: { userAccess } }) => {
+    .action(async ({ parsedInput: { rowIds } }) => {
       return db.delete(rows).where(inArray(rows.id, rowIds));
     });

@@ -4,12 +4,10 @@ import { db } from "@mapform/db";
 import { layers, layersToPages } from "@mapform/db/schema";
 import { and, eq, gt, sql } from "@mapform/db/utils";
 import { deleteLayerSchema } from "./schema";
-import type { AuthClient } from "../../../lib/types";
-import { userAuthMiddlewareValidator } from "../../../lib/middleware";
+import type { UserAuthClient } from "../../../lib/types";
 
-export const deleteLayer = (authClient: AuthClient) =>
+export const deleteLayer = (authClient: UserAuthClient) =>
   authClient
-    .use(userAuthMiddlewareValidator)
     .schema(deleteLayerSchema)
     .action(async ({ parsedInput: { layerId } }) => {
       const existingPageLayers = await db.query.layersToPages.findMany({

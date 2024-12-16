@@ -10,13 +10,11 @@ import {
   teamspaceMemberships,
 } from "@mapform/db/schema";
 import { completeOnboardingSchema } from "./schema";
-import type { AuthClient } from "../../../lib/types";
-import { userAuthMiddlewareValidator } from "../../../lib/middleware";
+import type { UserAuthClient } from "../../../lib/types";
 import { ServerError } from "../../../lib/server-error";
 
-export const completeOnboarding = (authClient: AuthClient) =>
+export const completeOnboarding = (authClient: UserAuthClient) =>
   authClient
-    .use(userAuthMiddlewareValidator)
     .schema(completeOnboardingSchema)
     .action(
       async ({

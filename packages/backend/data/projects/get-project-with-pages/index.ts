@@ -4,22 +4,27 @@ import { db } from "@mapform/db";
 import { layers, layersToPages, pages, projects } from "@mapform/db/schema";
 import { and, eq, inArray, isNull } from "@mapform/db/utils";
 import { getProjectWithPagesSchema } from "./schema";
-import type { AuthClient, UnwrapReturn } from "../../../lib/types";
-import { publicOrUserAuthMiddleware } from "../../../lib/middleware";
+import type {
+  UserAuthClient,
+  PublicClient,
+  UnwrapReturn,
+} from "../../../lib/types";
 
-export const getProjectWithPages = (authClient: AuthClient) =>
+export const getProjectWithPages = (
+  authClient: UserAuthClient | PublicClient,
+) =>
   authClient
-    .use(publicOrUserAuthMiddleware)
     .schema(getProjectWithPagesSchema)
-    .action(async ({ parsedInput: { id }, ctx: { userAccess } }) => {
+    .action(async ({ parsedInput: { id }, ctx }) => {
       const [_projects, _pages, _pageLayers] = await Promise.all([
         db.query.projects.findFirst({
           where: and(
             eq(projects.id, id),
             isNull(projects.rootProjectId),
             // Check if the user has access to the project's teamspace
-            userAccess &&
-              inArray(projects.teamspaceId, userAccess.teamspace.ids),
+            ctx.authType === "user"
+              ? inArray(projects.teamspaceId, ctx.userAccess.teamspace.ids)
+              : undefined,
           ),
           with: {
             teamspace: {

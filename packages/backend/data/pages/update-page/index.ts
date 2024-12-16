@@ -15,8 +15,7 @@ import type {
   InputCustomBlockTypes,
 } from "@mapform/blocknote";
 import { updatePageSchema } from "./schema";
-import { userAuthMiddlewareValidator } from "../../../lib/middleware";
-import { AuthClient } from "../../../lib/types";
+import { UserAuthClient } from "../../../lib/types";
 
 const mapBlockTypeToDataType = (
   blockType: InputCustomBlockTypes,
@@ -46,9 +45,8 @@ const flattenBlockNoteContent = (
   return flatBlocks;
 };
 
-export const updatePage = (authClient: AuthClient) =>
+export const updatePage = (authClient: UserAuthClient) =>
   authClient
-    .use(userAuthMiddlewareValidator)
     .schema(updatePageSchema)
     .action(
       async ({

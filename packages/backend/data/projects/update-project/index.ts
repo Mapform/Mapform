@@ -4,12 +4,10 @@ import { db } from "@mapform/db";
 import { eq, and, inArray } from "@mapform/db/utils";
 import { projects } from "@mapform/db/schema";
 import { updateProjectSchema } from "./schema";
-import { AuthClient } from "../../../lib/types";
-import { userAuthMiddlewareValidator } from "../../../lib/middleware";
+import { UserAuthClient } from "../../../lib/types";
 
-export const updateProject = (authClient: AuthClient) =>
+export const updateProject = (authClient: UserAuthClient) =>
   authClient
-    .use(userAuthMiddlewareValidator)
     .schema(updateProjectSchema)
     .action(async ({ parsedInput: { id, ...rest }, ctx: { user } }) => {
       const teamspaceIds = user.workspaceMemberships

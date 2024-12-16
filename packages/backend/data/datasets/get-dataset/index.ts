@@ -3,15 +3,13 @@
 import { db } from "@mapform/db";
 import { eq, sql } from "@mapform/db/utils";
 import { getDatasetSchema } from "./schema";
-import type { AuthClient, UnwrapReturn } from "../../../lib/types";
-import { userAuthMiddlewareValidator } from "../../../lib/middleware";
+import type { UserAuthClient, UnwrapReturn } from "../../../lib/types";
 import { datasets, pointCells } from "@mapform/db/schema";
 
-export const getDataset = (authClient: AuthClient) =>
+export const getDataset = (authClient: UserAuthClient) =>
   authClient
-    .use(userAuthMiddlewareValidator)
     .schema(getDatasetSchema)
-    .action(async ({ parsedInput: { datasetId }, ctx: { userAccess } }) => {
+    .action(async ({ parsedInput: { datasetId } }) => {
       return db.query.datasets.findFirst({
         where: eq(datasets.id, datasetId),
         with: {

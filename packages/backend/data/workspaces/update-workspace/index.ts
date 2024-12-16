@@ -6,12 +6,10 @@ import { workspaces } from "@mapform/db/schema";
 import { catchError } from "@mapform/lib/catch-error";
 import { updateWorkspaceSchema } from "./schema";
 import type { UserAuthClient } from "../../../lib/types";
-import { userAuthMiddlewareValidator } from "../../../lib/middleware";
 import { ServerError } from "../../../lib/server-error";
 
 export const updateWorkspace = (authClient: UserAuthClient) =>
   authClient
-    .use(userAuthMiddlewareValidator)
     .schema(updateWorkspaceSchema)
     .action(async ({ parsedInput: { id, ...rest }, ctx: { userAccess } }) => {
       if (!userAccess.workspace.checkAccessById(id)) {

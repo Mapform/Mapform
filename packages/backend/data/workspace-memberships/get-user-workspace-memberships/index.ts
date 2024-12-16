@@ -3,11 +3,10 @@
 import { db } from "@mapform/db";
 import { workspaceMemberships } from "@mapform/db/schema";
 import { eq } from "@mapform/db/utils";
-import type { AuthClient, UnwrapReturn } from "../../../lib/types";
-import { userAuthMiddlewareValidator } from "../../../lib/middleware";
+import type { UserAuthClient, UnwrapReturn } from "../../../lib/types";
 
-export const getUserWorkspaceMemberships = (authClient: AuthClient) =>
-  authClient.use(userAuthMiddlewareValidator).action(({ ctx: { user } }) => {
+export const getUserWorkspaceMemberships = (authClient: UserAuthClient) =>
+  authClient.action(({ ctx: { user } }) => {
     return db.query.workspaceMemberships.findMany({
       where: eq(workspaceMemberships.userId, user.id),
       with: {

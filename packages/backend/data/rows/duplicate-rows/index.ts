@@ -13,14 +13,12 @@ import {
   numberCells,
 } from "@mapform/db/schema";
 import { duplicateRowsSchema } from "./schema";
-import type { AuthClient } from "../../../lib/types";
-import { userAuthMiddlewareValidator } from "../../../lib/middleware";
+import type { UserAuthClient } from "../../../lib/types";
 
-export const duplicateRows = (authClient: AuthClient) =>
+export const duplicateRows = (authClient: UserAuthClient) =>
   authClient
-    .use(userAuthMiddlewareValidator)
     .schema(duplicateRowsSchema)
-    .action(async ({ parsedInput: { rowIds }, ctx: { userAccess } }) => {
+    .action(async ({ parsedInput: { rowIds } }) => {
       const dataToDuplicate = await db.query.rows.findMany({
         where: inArray(rows.id, rowIds),
         with: {

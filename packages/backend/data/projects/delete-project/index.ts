@@ -4,12 +4,10 @@ import { db } from "@mapform/db";
 import { and, eq, inArray } from "@mapform/db/utils";
 import { projects } from "@mapform/db/schema";
 import { deleteProjectSchema } from "./schema";
-import type { AuthClient } from "../../../lib/types";
-import { userAuthMiddlewareValidator } from "../../../lib/middleware";
+import type { UserAuthClient } from "../../../lib/types";
 
-export const deleteProject = (authClient: AuthClient) =>
+export const deleteProject = (authClient: UserAuthClient) =>
   authClient
-    .use(userAuthMiddlewareValidator)
     .schema(deleteProjectSchema)
     .action(async ({ parsedInput: { projectId }, ctx: { user } }) => {
       const teamspaceIds = user.workspaceMemberships

@@ -3,13 +3,11 @@
 import { db } from "@mapform/db";
 import { pages } from "@mapform/db/schema";
 import { createPageSchema } from "./schema";
-import type { AuthClient } from "../../../lib/types";
-import { userAuthMiddlewareValidator } from "../../../lib/middleware";
+import type { UserAuthClient } from "../../../lib/types";
 import { getProjectWithPages } from "../../projects/get-project-with-pages";
 
-export const createPage = (authClient: AuthClient) =>
+export const createPage = (authClient: UserAuthClient) =>
   authClient
-    .use(userAuthMiddlewareValidator)
     .schema(createPageSchema)
     .action(
       async ({ parsedInput: { projectId, center, zoom, pitch, bearing } }) => {

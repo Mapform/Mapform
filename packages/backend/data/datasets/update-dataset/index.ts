@@ -3,13 +3,11 @@
 import { db } from "@mapform/db";
 import { datasets } from "@mapform/db/schema";
 import { eq } from "@mapform/db/utils";
-import type { AuthClient } from "../../../lib/types";
-import { userAuthMiddlewareValidator } from "../../../lib/middleware";
+import type { UserAuthClient } from "../../../lib/types";
 import { updateDatasetSchema } from "./schema";
 
-export const updateDataset = (authClient: AuthClient) =>
+export const updateDataset = (authClient: UserAuthClient) =>
   authClient
-    .use(userAuthMiddlewareValidator)
     .schema(updateDatasetSchema)
     .action(async ({ parsedInput: { id, ...rest }, ctx: { userAccess } }) => {
       const existingDataset = await db.query.datasets.findFirst({

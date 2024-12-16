@@ -3,14 +3,12 @@
 import { db } from "@mapform/db";
 import { rows } from "@mapform/db/schema";
 import { createRowSchema } from "./schema";
-import type { AuthClient } from "../../../lib/types";
-import { userAuthMiddlewareValidator } from "../../../lib/middleware";
+import type { UserAuthClient } from "../../../lib/types";
 
-export const createRow = (authClient: AuthClient) =>
+export const createRow = (authClient: UserAuthClient) =>
   authClient
-    .use(userAuthMiddlewareValidator)
     .schema(createRowSchema)
-    .action(async ({ parsedInput: { datasetId }, ctx: { userAccess } }) => {
+    .action(async ({ parsedInput: { datasetId } }) => {
       const [newRow] = await db
         .insert(rows)
         .values({
