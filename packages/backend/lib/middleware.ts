@@ -1,10 +1,11 @@
 import { createMiddleware } from "next-safe-action";
-import { ServerError } from "./server-error";
 import {
   AuthContext,
   publicSchema,
   userAuthSchema,
   publicOrUserAuthSchema,
+  PublicAuthContext,
+  UserAuthContext,
 } from "./schema";
 import { UserAccess } from "./authorization";
 
@@ -14,9 +15,7 @@ export const userAuthMiddleware = createMiddleware<{
   const result = userAuthSchema.safeParse(ctx);
 
   if (result.error) {
-    throw new ServerError(
-      "This function is only accessible using the user schema.",
-    );
+    throw new Error("This function is only accessible using the user schema.");
   }
 
   const userAccess = new UserAccess(result.data?.user);
@@ -30,7 +29,7 @@ export const publicMiddleware = createMiddleware<{
   const result = publicSchema.safeParse(ctx);
 
   if (result.error) {
-    throw new ServerError(
+    throw new Error(
       "This function is only accessible using the public schema.",
     );
   }
@@ -44,18 +43,28 @@ export const publicOrUserAuthMiddleware = createMiddleware<{
   const result = publicOrUserAuthSchema.safeParse(ctx);
 
   if (result.error) {
-    throw new ServerError(
+    throw new Error(
       "This function is only accessible when using userAuth or publicAuth schemas.",
     );
+  }
+
+  let modifiedContext:
+    | PublicAuthContext
+    | (UserAuthContext & { userAccess: UserAccess });
+
+  if (result.data.authType === "public") {
+    modifiedContext = result.data;
+  } else {
+    modifiedContext = {
+      ...result.data,
+      userAccess: new UserAccess(result.data.user),
+    };
   }
 
   return next({
     ctx: {
       ...ctx,
-      ...result.data,
-      ...(result.data.authType === "user"
-        ? { userAccess: new UserAccess(result.data.user) }
-        : {}),
+      ...modifiedContext,
     },
   });
 });

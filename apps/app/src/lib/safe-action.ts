@@ -227,6 +227,5 @@ export const authClient = createUserAuthClient(async () => {
 });
 
 export const publicClient = createPublicClient(async () => {
-  console.log("Calling public client");
   return { authType: "public" };
 });
