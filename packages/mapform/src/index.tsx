@@ -18,7 +18,7 @@ import {
   getFormSchemaFromBlockNote,
 } from "@mapform/blocknote";
 import type { ViewState } from "@mapform/map-utils/types";
-import type { PageData } from "@mapform/backend/data/datalayer/get-page-data";
+import type { GetPageData } from "@mapform/backend/data/datalayer/get-page-data";
 import { Button } from "@mapform/ui/components/button";
 import { ArrowLeftIcon, ArrowRightIcon, ChevronsRightIcon } from "lucide-react";
 import { Blocknote } from "./block-note";
@@ -45,7 +45,7 @@ interface MapFormProps {
   ) => void;
   onStepSubmit?: (data: Record<string, string>) => void;
   onImageUpload?: (file: File) => Promise<string | null>;
-  pageData?: PageData["data"];
+  pageData?: GetPageData["data"];
   selectedFeature?: GetLayerPoint["data"] | GetLayerMarker["data"];
   // editFields?: {
   //   AddLocationDropdown: (input: { data: any }) => JSX.Element;

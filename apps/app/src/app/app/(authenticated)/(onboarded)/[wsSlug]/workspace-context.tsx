@@ -1,8 +1,8 @@
 "use client";
 
 import { createContext, useContext } from "react";
-import type { CurrentUserWorkspaceMemberships } from "@mapform/backend/workspace-memberships/get-current-user-workspace-memberships";
-import type { WorkspaceDirectory } from "@mapform/backend/workspaces/get-workspace-directory";
+import type { GetUserWorkspaceMemberships } from "@mapform/backend/data/workspace-memberships/get-user-workspace-memberships";
+import type { WorkspaceDirectory } from "@mapform/backend/data/workspaces/get-workspace-directory";
 import {
   SidebarLeftProvider,
   SidebarRightProvider,
@@ -12,9 +12,11 @@ import { RightSidebar } from "./right-sidebar";
 
 export interface WorkspaceContextInterface {
   workspaceSlug: string;
-  workspaceDirectory: NonNullable<WorkspaceDirectory>;
-  workspaceMemberships: CurrentUserWorkspaceMemberships;
-  currentWorkspace: CurrentUserWorkspaceMemberships[number] | undefined;
+  workspaceDirectory: NonNullable<WorkspaceDirectory["data"]>;
+  workspaceMemberships: NonNullable<GetUserWorkspaceMemberships["data"]>;
+  currentWorkspace:
+    | NonNullable<GetUserWorkspaceMemberships["data"]>[number]
+    | undefined;
 }
 
 export interface WorkspaceProviderProps {
@@ -37,8 +39,8 @@ export function WorkspaceProvider({
 }: {
   defaultLeftOpen?: boolean;
   defaultRightOpen?: boolean;
-  workspaceMemberships: CurrentUserWorkspaceMemberships;
-  workspaceDirectory: NonNullable<WorkspaceDirectory>;
+  workspaceMemberships: NonNullable<GetUserWorkspaceMemberships["data"]>;
+  workspaceDirectory: NonNullable<WorkspaceDirectory["data"]>;
 } & WorkspaceProviderProps) {
   const params = useParams<{
     pId?: string;
@@ -52,7 +54,7 @@ export function WorkspaceProvider({
    */
   const hasDrawer = [Boolean(params.pId)].some(Boolean);
   // const pathname = usePathname();
-  const currentWorkspace = workspaceMemberships.find(
+  const currentWorkspace = workspaceMemberships?.find(
     (membership) => membership.workspace.slug === workspaceSlug,
   );
 

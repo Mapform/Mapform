@@ -86,4 +86,4 @@ export const getProjectWithPages = (authClient: AuthClient) =>
       };
     });
 
-export type ProjectWithPages = UnwrapReturn<typeof getProjectWithPages>;
+export type GetProjectWithPages = UnwrapReturn<typeof getProjectWithPages>;

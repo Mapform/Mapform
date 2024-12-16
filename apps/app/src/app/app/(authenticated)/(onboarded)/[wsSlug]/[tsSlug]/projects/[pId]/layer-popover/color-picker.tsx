@@ -1,5 +1,5 @@
 import colors from "tailwindcss/colors";
-import type { UpsertLayerSchema } from "@mapform/backend/layers/upsert-layer/schema";
+import type { UpsertLayerSchema } from "@mapform/backend/data/layers/upsert-layer/schema";
 import { cn } from "@mapform/lib/classnames";
 import type { UseFormReturn } from "@mapform/ui/components/form";
 import { FormField, FormLabel } from "@mapform/ui/components/form";

@@ -16,7 +16,7 @@ import {
 } from "@mapform/ui/components/dropdown-menu";
 import { useAction } from "next-safe-action/hooks";
 import { startTransition } from "react";
-import type { ProjectWithPages } from "@mapform/backend/projects/get-project-with-pages";
+import type { GetProjectWithPages } from "@mapform/backend/data/projects/get-project-with-pages";
 import {
   SidebarMenuAction,
   SidebarMenuItem,
@@ -27,7 +27,7 @@ import { deletePageAction } from "~/data/pages/delete-page";
 import { useProject } from "../../project-context";
 
 interface ItemProps {
-  page: ProjectWithPages["pages"][number];
+  page: NonNullable<GetProjectWithPages["data"]>["pages"][number];
 }
 
 export function Item({ page }: ItemProps) {

@@ -35,7 +35,7 @@ import {
 } from "@mapform/ui/components/alert-dialog";
 import { useAction } from "next-safe-action/hooks";
 import { useState } from "react";
-import type { PageWithLayers } from "@mapform/backend/pages/get-page-with-layers";
+import type { GetPageWithLayers } from "@mapform/backend/data/pages/get-page-with-layers";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import {
@@ -54,7 +54,9 @@ import {
 } from "../../layer-popover";
 
 interface ItemProps {
-  layer: PageWithLayers["layersToPages"][number]["layer"];
+  layer: NonNullable<
+    GetPageWithLayers["data"]
+  >["layersToPages"][number]["layer"];
 }
 
 export function Item({ layer }: ItemProps) {

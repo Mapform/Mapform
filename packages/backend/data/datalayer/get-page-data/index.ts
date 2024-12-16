@@ -169,4 +169,4 @@ export const getPageData = (authClient: AuthClient) =>
       };
     });
 
-export type PageData = UnwrapReturn<typeof getPageData>;
+export type GetPageData = UnwrapReturn<typeof getPageData>;

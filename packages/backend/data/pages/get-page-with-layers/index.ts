@@ -41,4 +41,4 @@ export const getPageWithLayers = (authClient: AuthClient) =>
       };
     });
 
-export type PageWithLayers = UnwrapReturn<typeof getPageWithLayers>;
+export type GetPageWithLayers = UnwrapReturn<typeof getPageWithLayers>;

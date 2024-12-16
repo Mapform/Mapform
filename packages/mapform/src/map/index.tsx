@@ -3,7 +3,7 @@ import mapboxgl from "mapbox-gl";
 import { cn } from "@mapform/lib/classnames";
 import type { FeatureCollection } from "geojson";
 import type { ViewState } from "@mapform/map-utils/types";
-import type { PageData } from "@mapform/backend/data/datalayer/get-page-data";
+import type { GetPageData } from "@mapform/backend/data/datalayer/get-page-data";
 import { usePrevious } from "@mapform/lib/hooks/use-previous";
 import { useSetQueryString } from "@mapform/lib/hooks/use-set-query-string";
 import type Supercluster from "supercluster";
@@ -16,7 +16,7 @@ import { Cluster } from "./cluster";
 const accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
 
 interface MapProps {
-  pageData?: PageData["data"];
+  pageData?: GetPageData["data"];
   editable?: boolean;
   mapPadding: ViewState["padding"];
   onLoad?: () => void;

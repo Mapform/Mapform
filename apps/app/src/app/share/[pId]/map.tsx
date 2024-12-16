@@ -3,10 +3,10 @@
 import { MapForm, useMapform } from "@mapform/mapform";
 import { useAction } from "next-safe-action/hooks";
 import React, { useEffect, useState } from "react";
-import type { PageData } from "@mapform/backend/data/datalayer/get-page-data";
+import type { GetPageData } from "@mapform/backend/data/datalayer/get-page-data";
 import type { GetLayerPoint } from "@mapform/backend/data/datalayer/get-layer-point";
 import { type GetLayerMarker } from "@mapform/backend/data/datalayer/get-layer-marker";
-import type { ProjectWithPages } from "@mapform/backend/data/projects/get-project-with-pages";
+import type { GetProjectWithPages } from "@mapform/backend/data/projects/get-project-with-pages";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import type { Responses } from "@mapform/backend/data/rows/get-responses";
 import { env } from "~/env.mjs";
@@ -14,15 +14,15 @@ import { createSubmissionAction } from "~/data/rows/create-submission";
 import { submitPageAction } from "./actions";
 
 interface MapProps {
-  pageData: PageData["data"];
-  projectWithPages: NonNullable<ProjectWithPages["data"]>;
+  pageData: GetPageData["data"];
+  projectWithPages: NonNullable<GetProjectWithPages["data"]>;
   formValues: NonNullable<NonNullable<Responses>["data"]>["cells"];
   selectedFeature?: GetLayerPoint["data"] | GetLayerMarker["data"];
   sessionId: string | null;
   isUsingSessions: boolean;
 }
 
-type Page = NonNullable<ProjectWithPages["data"]>["pages"][number];
+type Page = NonNullable<GetProjectWithPages["data"]>["pages"][number];
 
 export function Map({
   pageData,
