@@ -4,12 +4,10 @@ import { db } from "@mapform/db";
 import { layersToPages, projects } from "@mapform/db/schema";
 import { eq } from "@mapform/db/utils";
 import { updateLayerOrderSchema } from "./schema";
-import type { AuthClient } from "../../../lib/types";
-import { userAuthMiddlewareValidator } from "../../../lib/middleware";
+import type { UserAuthClient } from "../../../lib/types";
 
-export const updateLayerOrder = (authClient: AuthClient) =>
+export const updateLayerOrder = (authClient: UserAuthClient) =>
   authClient
-    .use(userAuthMiddlewareValidator)
     .schema(updateLayerOrderSchema)
     .action(async ({ parsedInput: { pageId, layerOrder } }) => {
       const page = await db.query.pages.findFirst({
