@@ -27,6 +27,20 @@ export const userAuthSchema = z.object({
       ),
     }),
   ),
+  userAccess: z.object({
+    workspace: z.object({
+      checkAccessBySlug: z.function().args(z.string()).returns(z.boolean()),
+      checkAccessById: z.function().args(z.string()).returns(z.boolean()),
+    }),
+    teamspace: z.object({
+      ids: z.array(z.string()),
+      checkAccessBySlug: z
+        .function()
+        .args(z.string(), z.string())
+        .returns(z.boolean()),
+      checkAccessById: z.function().args(z.string()).returns(z.boolean()),
+    }),
+  }),
 });
 
 export const apiAuthSchema = z.object({

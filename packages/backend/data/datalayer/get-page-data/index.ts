@@ -11,12 +11,14 @@ import {
 } from "@mapform/db/schema";
 import { and, eq, or, inArray } from "@mapform/db/utils";
 import { getPageDataSchema } from "./schema";
-import type { AuthClient, UnwrapReturn } from "../../../lib/types";
-import { publicOrUserAuthMiddleware } from "../../../lib/middleware";
+import type {
+  UserAuthClient,
+  UnwrapReturn,
+  PublicClient,
+} from "../../../lib/types";
 
-export const getPageData = (authClient: AuthClient) =>
+export const getPageData = (authClient: PublicClient | UserAuthClient) =>
   authClient
-    .use(publicOrUserAuthMiddleware)
     .schema(getPageDataSchema)
     .action(async ({ parsedInput: { pageId }, ctx }) => {
       if (ctx.authType === "public") {
@@ -24,10 +26,6 @@ export const getPageData = (authClient: AuthClient) =>
       }
 
       if (ctx.authType === "user") {
-        const teamspaceIds = ctx.user.workspaceMemberships
-          .map((m) => m.workspace.teamspaces.map((t) => t.id))
-          .flat();
-
         const result = await db
           .select()
           .from(pages)
@@ -35,7 +33,7 @@ export const getPageData = (authClient: AuthClient) =>
           .where(
             and(
               eq(pages.id, pageId),
-              inArray(projects.teamspaceId, teamspaceIds),
+              inArray(projects.teamspaceId, ctx.userAccess.teamspace.ids),
             ),
           );
 

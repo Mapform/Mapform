@@ -3,12 +3,12 @@
 import { db } from "@mapform/db";
 import { verifyToken } from "@mapform/auth/helpers/sessions";
 import { publicMiddleware } from "../../../lib/middleware";
-import { AuthClient, UnwrapReturn } from "../../../lib/types";
+import { PublicClient, UnwrapReturn } from "../../../lib/types";
 import { getCurrentSessionSchema } from "./schema";
 import { users } from "@mapform/db/schema";
 import { eq } from "@mapform/db/utils";
 
-export const getCurrentSession = (authClient: AuthClient) =>
+export const getCurrentSession = (authClient: PublicClient) =>
   authClient
     .use(publicMiddleware)
     .schema(getCurrentSessionSchema)

@@ -2,10 +2,10 @@
 
 import { deleteSession } from "@mapform/auth/helpers/sessions";
 
-import type { AuthClient } from "../../../lib/types";
+import type { UserAuthClient } from "../../../lib/types";
 import { userAuthMiddleware } from "../../../lib/middleware";
 
-export const signOut = (authClient: AuthClient) =>
+export const signOut = (authClient: UserAuthClient) =>
   authClient.use(userAuthMiddleware).action(async () => {
     await deleteSession();
   });

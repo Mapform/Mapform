@@ -21,9 +21,6 @@ export const baseClient = createSafeActionClient({
   },
 });
 
-export {
-  ServerError,
-  // Exporting middleware can allow conusming services to use them.
-};
+export { ServerError };
 export * from "./lib/middleware";
 export type * from "./lib/types";

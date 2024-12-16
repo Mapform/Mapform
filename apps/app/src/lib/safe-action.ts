@@ -49,7 +49,11 @@ import { getSession } from "@mapform/backend/data/rows/get-session";
 import { getCurrentSession } from "@mapform/backend/data/auth/get-current-session";
 import { createDatasetFromGeojson } from "@mapform/backend/data/datasets/create-from-geojson";
 import { completeOnboarding } from "@mapform/backend/data/workspaces/complete-onboarding";
-import { baseClient, type AuthContext } from "@mapform/backend";
+import {
+  baseClient,
+  userAuthMiddleware,
+  type AuthContext,
+} from "@mapform/backend";
 import { headers } from "next/headers";
 
 const ignoredWorkspaceSlugs = ["onboarding"];
@@ -61,14 +65,16 @@ const ignoredTeamspaceSlugs = ["settings"];
 const createUserAuthClient = (
   callback: () => Promise<Extract<AuthContext, { authType: "user" }>>,
 ) => {
-  const authClient = baseClient.use(async ({ next }) => {
-    // the callback allows the calling service to perform auth checks, and return the necerssary context
-    const ctx = await callback();
+  const authClient = baseClient
+    .use(async ({ next }) => {
+      // the callback allows the calling service to perform auth checks, and return the necerssary context
+      const ctx = await callback();
 
-    return next({
-      ctx,
-    });
-  });
+      return next({
+        ctx,
+      });
+    })
+    .use(userAuthMiddleware);
 
   return {
     // Auth

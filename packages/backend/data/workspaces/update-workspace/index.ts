@@ -5,11 +5,11 @@ import { eq } from "@mapform/db/utils";
 import { workspaces } from "@mapform/db/schema";
 import { catchError } from "@mapform/lib/catch-error";
 import { updateWorkspaceSchema } from "./schema";
-import type { AuthClient } from "../../../lib/types";
+import type { UserAuthClient } from "../../../lib/types";
 import { userAuthMiddleware } from "../../../lib/middleware";
 import { ServerError } from "../../../lib/server-error";
 
-export const updateWorkspace = (authClient: AuthClient) =>
+export const updateWorkspace = (authClient: UserAuthClient) =>
   authClient
     .use(userAuthMiddleware)
     .schema(updateWorkspaceSchema)
