@@ -11,13 +11,11 @@ import {
   stringCells,
 } from "@mapform/db/schema";
 import { submitPageSchema } from "./schema";
-import type { AuthClient } from "../../../lib/types";
-import { publicMiddleware } from "../../../lib/middleware";
+import type { PublicClient } from "../../../lib/types";
 import { getFormSchemaFromBlockNote } from "@mapform/blocknote";
 
-export const submitPage = (authClient: AuthClient) =>
+export const submitPage = (authClient: PublicClient) =>
   authClient
-    .use(publicMiddleware)
     .schema(submitPageSchema)
     .action(async ({ parsedInput: { pageId, submissionId, payload } }) => {
       const [page, row] = await Promise.all([

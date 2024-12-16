@@ -4,12 +4,10 @@ import { db } from "@mapform/db";
 import { eq, and, inArray } from "@mapform/db/utils";
 import { columns, datasets } from "@mapform/db/schema";
 import { deleteColumnSchema } from "./schema";
-import type { AuthClient } from "../../../lib/types";
-import { userAuthMiddleware } from "../../../lib/middleware";
+import type { UserAuthClient } from "../../../lib/types";
 
-export const deleteColumn = (authClient: AuthClient) =>
+export const deleteColumn = (authClient: UserAuthClient) =>
   authClient
-    .use(userAuthMiddleware)
     .schema(deleteColumnSchema)
     .action(async ({ parsedInput: { id }, ctx: { userAccess } }) => {
       // TODO: Not sure if this works lol

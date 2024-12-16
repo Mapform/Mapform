@@ -10,12 +10,14 @@ import {
 } from "@mapform/db/schema";
 import { and, eq, inArray, sql } from "@mapform/db/utils";
 import { getLayerPointSchema } from "./schema";
-import type { AuthClient, UnwrapReturn } from "../../../lib/types";
-import { publicOrUserAuthMiddleware } from "../../../lib/middleware";
+import type {
+  UserAuthClient,
+  PublicClient,
+  UnwrapReturn,
+} from "../../../lib/types";
 
-export const getLayerPoint = (authClient: AuthClient) =>
+export const getLayerPoint = (authClient: UserAuthClient | PublicClient) =>
   authClient
-    .use(publicOrUserAuthMiddleware)
     .schema(getLayerPointSchema)
     .action(async ({ parsedInput: { rowId, pointLayerId }, ctx }) => {
       if (ctx.authType === "public") {

@@ -17,13 +17,11 @@ import {
 } from "@mapform/db/schema";
 import { and, eq, inArray } from "@mapform/db/utils";
 import { upsertCellSchema } from "./schema";
-import type { AuthClient } from "../../../lib/types";
-import { userAuthMiddleware } from "../../../lib/middleware";
+import type { UserAuthClient } from "../../../lib/types";
 import { DocumentContent } from "@mapform/blocknote";
 
-export const upsertCell = (authClient: AuthClient) =>
+export const upsertCell = (authClient: UserAuthClient) =>
   authClient
-    .use(userAuthMiddleware)
     .schema(upsertCellSchema)
     .action(
       async ({

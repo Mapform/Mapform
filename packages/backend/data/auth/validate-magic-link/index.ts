@@ -3,15 +3,14 @@
 import { db } from "@mapform/db";
 import { eq } from "@mapform/db/utils";
 import { validateMagicLinkSchema } from "./schema";
-import type { AuthClient } from "../../../lib/types";
+import type { PublicClient } from "../../../lib/types";
 import { magicLinks, sessions, users } from "@mapform/db/schema";
 import { hashToken } from "@mapform/auth/helpers/tokens";
 import { setSession } from "@mapform/auth/helpers/sessions";
 import { ServerError } from "../../../lib/server-error";
 
-export const validateMagicLink = (authClient: AuthClient) =>
+export const validateMagicLink = (authClient: PublicClient) =>
   authClient
-    // Public
     .schema(validateMagicLinkSchema)
     .action(async ({ parsedInput: { token } }) => {
       // Verify the token

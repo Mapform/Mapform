@@ -8,13 +8,11 @@ import { sendEmail } from "@mapform/transactional/emails/magic-links";
 import { magicLinks } from "@mapform/db/schema";
 import { generateToken, hashToken } from "@mapform/auth/helpers/tokens";
 import { env } from "../../../env.mjs";
-import { publicMiddleware } from "../../../lib/middleware";
 
 const baseUrl = env.NEXT_PUBLIC_BASE_URL;
 
 export const requestMagicLink = (authClient: PublicClient) =>
   authClient
-    .use(publicMiddleware)
     .schema(requestMagicLinkSchema)
     .action(async ({ parsedInput: { email } }) => {
       // 1. Generate token

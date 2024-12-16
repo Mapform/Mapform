@@ -3,8 +3,7 @@
 import { db } from "@mapform/db";
 import { pages, projects } from "@mapform/db/schema";
 import { createProjectSchema } from "./schema";
-import type { AuthClient } from "../../../lib/types";
-import { userAuthMiddleware } from "../../../lib/middleware";
+import type { UserAuthClient } from "../../../lib/types";
 
 const INITIAL_VIEW_STATE = {
   longitude: 0,
@@ -14,9 +13,8 @@ const INITIAL_VIEW_STATE = {
   pitch: 0,
 };
 
-export const createProject = (authClient: AuthClient) =>
+export const createProject = (authClient: UserAuthClient) =>
   authClient
-    .use(userAuthMiddleware)
     .schema(createProjectSchema)
     .action(
       async ({ parsedInput: { name, teamspaceId }, ctx: { userAccess } }) => {

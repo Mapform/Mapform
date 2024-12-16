@@ -3,13 +3,11 @@
 import { db } from "@mapform/db";
 import { columns, datasets } from "@mapform/db/schema";
 import { createColumnSchema } from "./schema";
-import type { AuthClient } from "../../../lib/types";
-import { userAuthMiddleware } from "../../../lib/middleware";
+import type { UserAuthClient } from "../../../lib/types";
 import { and, eq, inArray } from "@mapform/db/utils";
 
-export const createColumn = (authClient: AuthClient) =>
+export const createColumn = (authClient: UserAuthClient) =>
   authClient
-    .use(userAuthMiddleware)
     .schema(createColumnSchema)
     .action(
       async ({ parsedInput: { name, datasetId, type }, ctx: { user } }) => {

@@ -10,12 +10,14 @@ import {
 } from "@mapform/db/schema";
 import { and, eq, inArray, sql } from "@mapform/db/utils";
 import { getLayerMarkerSchema } from "./schema";
-import type { AuthClient, UnwrapReturn } from "../../../lib/types";
-import { publicOrUserAuthMiddleware } from "../../../lib/middleware";
+import type {
+  UserAuthClient,
+  PublicClient,
+  UnwrapReturn,
+} from "../../../lib/types";
 
-export const getLayerMarker = (authClient: AuthClient) =>
+export const getLayerMarker = (authClient: UserAuthClient | PublicClient) =>
   authClient
-    .use(publicOrUserAuthMiddleware)
     .schema(getLayerMarkerSchema)
     .action(async ({ parsedInput: { rowId, markerLayerId }, ctx }) => {
       // If publicAuth, need to check that the data is from a dataset that has been made public via  a public project

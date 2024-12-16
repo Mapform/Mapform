@@ -4,14 +4,12 @@ import { db } from "@mapform/db";
 import { eq } from "@mapform/db/utils";
 import { columns } from "@mapform/db/schema";
 import { editColumnSchema } from "./schema";
-import type { AuthClient } from "../../../lib/types";
-import { userAuthMiddleware } from "../../../lib/middleware";
+import type { UserAuthClient } from "../../../lib/types";
 
-export const editColumn = (authClient: AuthClient) =>
+export const editColumn = (authClient: UserAuthClient) =>
   authClient
-    .use(userAuthMiddleware)
     .schema(editColumnSchema)
-    .action(async ({ parsedInput: { id, name }, ctx: { userAccess } }) => {
+    .action(async ({ parsedInput: { id, name } }) => {
       const [col] = await db
         .update(columns)
         .set({ name })

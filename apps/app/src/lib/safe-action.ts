@@ -51,8 +51,10 @@ import { createDatasetFromGeojson } from "@mapform/backend/data/datasets/create-
 import { completeOnboarding } from "@mapform/backend/data/workspaces/complete-onboarding";
 import {
   baseClient,
+  PublicAuthContext,
+  publicMiddleware,
+  UserAuthContext,
   userAuthMiddleware,
-  type AuthContext,
 } from "@mapform/backend";
 import { headers } from "next/headers";
 
@@ -62,9 +64,7 @@ const ignoredTeamspaceSlugs = ["settings"];
 /**
  * Can be used with user authentication.
  */
-const createUserAuthClient = (
-  callback: () => Promise<Extract<AuthContext, { authType: "user" }>>,
-) => {
+const createUserAuthClient = (callback: () => Promise<UserAuthContext>) => {
   const authClient = baseClient
     .use(async ({ next }) => {
       // the callback allows the calling service to perform auth checks, and return the necerssary context
@@ -152,17 +152,17 @@ const createUserAuthClient = (
 /**
  * Can be used without authentication.
  */
-const createPublicClient = (
-  callback: () => Promise<Extract<AuthContext, { authType: "public" }>>,
-) => {
-  const authClient = baseClient.use(async ({ next }) => {
-    // the callback allows the calling service to perform auth checks, and return the necerssary context
-    const ctx = await callback();
+const createPublicClient = (callback: () => Promise<PublicAuthContext>) => {
+  const authClient = baseClient
+    .use(async ({ next }) => {
+      // the callback allows the calling service to perform auth checks, and return the necerssary context
+      const ctx = await callback();
 
-    return next({
-      ctx,
-    });
-  });
+      return next({
+        ctx,
+      });
+    })
+    .use(publicMiddleware);
 
   return {
     // Auth
@@ -193,33 +193,45 @@ const createPublicClient = (
 export const authClient = createUserAuthClient(async () => {
   const headersList = await headers();
   const response = await internalGetCurrentSession();
+  const user = response?.data?.user;
   const workspaceSlug = headersList.get("x-workspace-slug") ?? "";
   const teamspaceSlug = headersList.get("x-teamspace-slug") ?? "";
 
-  if (!response?.data?.user) {
+  if (!user) {
     return redirect("/app/signin");
   }
 
-  const checkAccessToWorkspaceBySlug = (slug: string) =>
-    [
-      ...ignoredWorkspaceSlugs,
-      ...response.data!.user!.workspaceMemberships.map(
-        (wm) => wm.workspace.slug,
+  const workspace = {
+    checkAccessBySlug: (slug: string) =>
+      user.workspaceMemberships.some((wm) => wm.workspace.slug === slug),
+
+    checkAccessById: (id: string) =>
+      user.workspaceMemberships.some((wm) => wm.workspace.id === id),
+  };
+
+  const teamspace = {
+    ids: user.workspaceMemberships
+      .map((m) => m.workspace.teamspaces.map((t) => t.id))
+      .flat(),
+
+    checkAccessBySlug: (tsSlug: string, wsSlug: string) =>
+      workspace.checkAccessBySlug(wsSlug) &&
+      user.workspaceMemberships.some((wm) =>
+        wm.workspace.teamspaces.some((ts) => ts.slug === tsSlug),
       ),
-    ].some((ws) => slug === ws);
+
+    checkAccessById: (id: string) =>
+      user.workspaceMemberships.some((wm) =>
+        wm.workspace.teamspaces.some((ts) => ts.id === id),
+      ),
+  };
 
   const hasAccessToCurrentWorkspace =
-    checkAccessToWorkspaceBySlug(workspaceSlug);
-
-  const checkAccessToTeamspaceBySlug = (slug: string) =>
-    [
-      ...ignoredTeamspaceSlugs,
-      ...response.data!.user!.workspaceMemberships.flatMap((wm) =>
-        wm.workspace.teamspaces.map((ts) => ts.slug),
-      ),
-    ].some((ts) => slug === ts);
-
-  const hasAccessToTeamspace = checkAccessToTeamspaceBySlug(teamspaceSlug);
+    workspace.checkAccessBySlug(workspaceSlug);
+  const hasAccessToTeamspace = teamspace.checkAccessBySlug(
+    teamspaceSlug,
+    workspaceSlug,
+  );
 
   if (workspaceSlug && !hasAccessToCurrentWorkspace) {
     return redirect("/app");
@@ -229,9 +241,64 @@ export const authClient = createUserAuthClient(async () => {
     return redirect(`/app/${workspaceSlug}`);
   }
 
-  return { authType: "user", user: response.data!.user };
+  return {
+    authType: "user",
+    user,
+    userAccess: {
+      workspace,
+      teamspace,
+    },
+  };
 });
 
 export const publicClient = createPublicClient(async () => {
   return { authType: "public" };
 });
+
+// const checkAccessToWorkspaceBySlug = (slug: string) =>
+//   [
+//     ...ignoredWorkspaceSlugs,
+//     ...response.data!.user!.workspaceMemberships.map(
+//       (wm) => wm.workspace.slug,
+//     ),
+//   ].some((ws) => slug === ws);
+
+// const hasAccessToCurrentWorkspace =
+//   checkAccessToWorkspaceBySlug(workspaceSlug);
+
+// const checkAccessToTeamspaceBySlug = (slug: string) =>
+//   [
+//     ...ignoredTeamspaceSlugs,
+//     ...response.data!.user!.workspaceMemberships.flatMap((wm) =>
+//       wm.workspace.teamspaces.map((ts) => ts.slug),
+//     ),
+//   ].some((ts) => slug === ts);
+
+// get workspace() {
+//   return {
+//     checkAccessBySlug: (slug: string) =>
+//       this.user.workspaceMemberships.some((wm) => wm.workspace.slug === slug),
+
+//     checkAccessById: (id: string) =>
+//       this.user.workspaceMemberships.some((wm) => wm.workspace.id === id),
+//   };
+// }
+
+// get teamspace() {
+//   return {
+//     ids: this.user.workspaceMemberships
+//       .map((m) => m.workspace.teamspaces.map((t) => t.id))
+//       .flat(),
+
+//     checkAccessBySlug: (tsSlug: string, wsSlug: string) =>
+//       this.workspace.checkAccessBySlug(wsSlug) &&
+//       this.user.workspaceMemberships.some((wm) =>
+//         wm.workspace.teamspaces.some((ts) => ts.slug === tsSlug),
+//       ),
+
+//     checkAccessById: (id: string) =>
+//       this.user.workspaceMemberships.some((wm) =>
+//         wm.workspace.teamspaces.some((ts) => ts.id === id),
+//       ),
+//   };
+// }
