@@ -10,5 +10,5 @@ export const deleteColumn = (authClient: UserAuthClient) =>
   authClient
     .schema(deleteColumnSchema)
     .action(async ({ parsedInput: { id } }) => {
-      return db.delete(columns).where(eq(columns.id, id));
+      await db.delete(columns).where(eq(columns.id, id));
     });
