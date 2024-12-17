@@ -52,7 +52,6 @@
     "slugify": "catalog:",
     "unique-slug": "catalog:",
     "uuid": "catalog:",
-    "v1.0#zt9osglwgmzvwp": "link:@fsq-developers/v1.0#zt9osglwgmzvwp",
     "zod": "catalog:"
   },
   "devDependencies": {
@@ -69,11 +68,5 @@
     "tailwindcss": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
-  },
-  "pnpm": {
-    "overrides": {
-      "@types/react": "catalog:",
-      "@types/react-dom": "catalog:"
-    }
   }
 }

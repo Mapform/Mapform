@@ -47,11 +47,5 @@
     "react-dom": "catalog:",
     "tailwindcss": "catalog:",
     "typescript": "catalog:"
-  },
-  "pnpm": {
-    "overrides": {
-      "@types/react": "catalog:",
-      "@types/react-dom": "catalog:"
-    }
   }
 }
