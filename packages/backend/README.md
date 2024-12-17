@@ -11,3 +11,11 @@ This is the data access layer. This layer:
 This layer does not:
 
 - Provide authentication (just authorization)
+
+TODO:
+
+- Additional authorization checks should be performed here. This is reduce the
+  responsibility on services to implement the checks themselves. (For now
+  apps/app should be proving the minimum auth checks we need)
+- Consider removing the middleware with just type checking. The middleware is
+  not super necessary
