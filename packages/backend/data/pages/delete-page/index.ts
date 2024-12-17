@@ -2,7 +2,7 @@
 
 import { db } from "@mapform/db";
 import { pages } from "@mapform/db/schema";
-import { count, eq } from "@mapform/db/utils";
+import { and, count, eq, gt, sql } from "@mapform/db/utils";
 import { deletePageSchema } from "./schema";
 import type { UserAuthClient } from "../../../lib/types";
 
@@ -23,5 +23,27 @@ export const deletePage = (authClient: UserAuthClient) =>
         throw new Error("Cannot delete the last page");
       }
 
-      await db.delete(pages).where(eq(pages.id, pageId));
+      await db.transaction(async (tx) => {
+        const deletedPage = await tx.query.pages.findFirst({
+          where: eq(pages.id, pageId),
+        });
+
+        if (!deletedPage) {
+          throw new Error("Page not found");
+        }
+
+        await tx.delete(pages).where(eq(pages.id, pageId));
+
+        await tx
+          .update(pages)
+          .set({
+            position: sql`${pages.position} - 1`,
+          })
+          .where(
+            and(
+              eq(pages.projectId, projectId),
+              gt(pages.position, deletedPage.position),
+            ),
+          );
+      });
     });
