@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, useMemo } from "react";
+import { useMemo } from "react";
 import {
   flexRender,
   getCoreRowModel,
@@ -30,7 +30,7 @@ interface TableProps {
   dataset: NonNullable<GetDataset["data"]>;
 }
 
-export const DataTable = memo(function DataTable({ dataset }: TableProps) {
+export const DataTable = function DataTable({ dataset }: TableProps) {
   const { execute: executeDeleteRows, status: statusDeleteRows } =
     useAction(deleteRowsAction);
   const { execute: executeDuplicateRows, status: statusDuplicateRows } =
@@ -188,7 +188,7 @@ export const DataTable = memo(function DataTable({ dataset }: TableProps) {
       </button>
     </div>
   );
-});
+};
 
 const getColumns = (dataset: NonNullable<GetDataset["data"]>) => {
   return [
