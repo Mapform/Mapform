@@ -39,7 +39,7 @@ export function PointProperties({ form, isEditing }: PointPropertiesProps) {
 
   const getAvailableColumns = useCallback(
     (t: Column["type"]) => {
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- Once we add more layer types this won't error anymore
+       
       if (!dataset || !type) {
         return null;
       }

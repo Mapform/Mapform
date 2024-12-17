@@ -81,7 +81,7 @@ export function BlocknoteEditor({
       theme="light"
     >
       <SuggestionMenuController
-        // eslint-disable-next-line @typescript-eslint/require-await -- Needs to return a Promise
+         
         getItems={async (query) => {
           return filterSuggestionItems(
             [

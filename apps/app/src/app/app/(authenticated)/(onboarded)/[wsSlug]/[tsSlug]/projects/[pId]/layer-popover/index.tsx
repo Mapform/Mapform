@@ -43,7 +43,7 @@ export const LayerPopoverContent = forwardRef<
   React.ComponentPropsWithoutRef<typeof PopoverContent> & LayerPopoverProps
 >(({ layerToEdit, initialName, onSuccess, ...props }, ref) => {
   const { ...rest } = useProject();
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- It's set
+   
   const currentPage = rest.currentPage!;
 
   const form = useForm<UpsertLayerSchema>({

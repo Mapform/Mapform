@@ -38,7 +38,7 @@ import { EmojiPicker } from "@mapform/ui/components/emoji-picker";
 import type { GetDataset } from "@mapform/backend/data/datasets/get-dataset";
 import { upsertCellAction } from "~/data/cells/upsert-cell";
 
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- it's fine
+ 
 const accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN!;
 
 export function CellPopover({

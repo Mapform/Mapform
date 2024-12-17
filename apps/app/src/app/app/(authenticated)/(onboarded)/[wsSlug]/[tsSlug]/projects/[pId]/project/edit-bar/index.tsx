@@ -167,7 +167,7 @@ function EditBarInner({ currentPage }: EditBarInnerProps) {
   const pageLayers = currentProject.pageLayers.filter(
     (layer) =>
       layer.pageId === currentPage.id &&
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- We do need this
+       
       (layer.type === "point" || layer.type === "marker"),
   );
 

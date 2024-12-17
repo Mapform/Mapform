@@ -67,7 +67,7 @@ export function Map({
         type: "Feature",
         geometry: {
           type: "Point",
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- We know it's not null
+           
           coordinates: [feature.value!.x, feature.value!.y],
         },
         properties: {
@@ -88,7 +88,7 @@ export function Map({
         type: "Feature",
         geometry: {
           type: "Point",
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- We know it's not null
+           
           coordinates: [feature.value!.x, feature.value!.y],
         },
         properties: {
