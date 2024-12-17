@@ -57,8 +57,8 @@ import {
 } from "@mapform/backend";
 import { headers } from "next/headers";
 
-// const ignoredWorkspaceSlugs = ["onboarding"];
-// const ignoredTeamspaceSlugs = ["settings"];
+const ignoredWorkspaceSlugs = ["onboarding"];
+const ignoredTeamspaceSlugs = ["settings"];
 
 /**
  * Can be used with user authentication.
@@ -85,11 +85,19 @@ const createUserAuthClient = () => {
         workspaceSlug,
       );
 
-      if (workspaceSlug && !hasAccessToCurrentWorkspace) {
+      if (
+        workspaceSlug &&
+        !hasAccessToCurrentWorkspace &&
+        !ignoredWorkspaceSlugs.includes(workspaceSlug)
+      ) {
         return redirect("/app");
       }
 
-      if (teamspaceSlug && !hasAccessToTeamspace) {
+      if (
+        teamspaceSlug &&
+        !hasAccessToTeamspace &&
+        !ignoredTeamspaceSlugs.includes(teamspaceSlug)
+      ) {
         return redirect(`/app/${workspaceSlug}`);
       }
 
