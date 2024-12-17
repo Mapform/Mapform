@@ -258,7 +258,6 @@ export function LeftSidebar() {
                     executeCreateEmptyDataset({
                       name: "New dataset",
                       teamspaceId: space.id,
-                      redirectAfterCreate: true,
                     });
                   }}
                 >
