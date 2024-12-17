@@ -1,13 +1,13 @@
 import Link from "next/link";
 import { format } from "date-fns";
 import { TableIcon } from "lucide-react";
-import { listTeamspaceDatasetsAction } from "~/data/datasets/list-teamspace-datasets";
+import { authClient } from "~/lib/safe-action";
 
 export default async function DatasetsPage(props: {
   params: Promise<{ wsSlug: string; tsSlug: string }>;
 }) {
   const params = await props.params;
-  const teamspaceDatasets = await listTeamspaceDatasetsAction({
+  const teamspaceDatasets = await authClient.listTeamspaceDatasets({
     workspaceSlug: params.wsSlug,
     teamspaceSlug: params.tsSlug,
   });

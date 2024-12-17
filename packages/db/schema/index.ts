@@ -32,6 +32,7 @@ export * from "./cells/relations";
 export * from "./users/validation";
 export * from "./workspaces/validation";
 export * from "./workspace-memberships/validation";
+export * from "./teamspaces/validation";
 export * from "./projects/validation";
 export * from "./pages/validation";
 export * from "./layers/validation";

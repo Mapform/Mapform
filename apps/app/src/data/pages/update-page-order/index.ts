@@ -1,14 +1,14 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { updatePageOrder } from "@mapform/backend/pages/update-page-order";
-import { updatePageOrderSchema } from "@mapform/backend/pages/update-page-order/schema";
-import { authAction } from "~/lib/safe-action";
+import { authClient } from "~/lib/safe-action";
 
-export const updatePageOrderAction = authAction
-  .schema(updatePageOrderSchema)
-  .action(async ({ parsedInput }) => {
-    await updatePageOrder(parsedInput);
+export const updatePageOrderAction = async (
+  params: Parameters<typeof authClient.updatePageOrder>[0],
+) => {
+  const result = await authClient.updatePageOrder(params);
 
-    revalidatePath("/app/[wsSlug]/[tsSlug]/projects/[pId]/project", "page");
-  });
+  revalidatePath("/app/[wsSlug]/[tsSlug]/projects/[pId]/project", "page");
+
+  return result;
+};

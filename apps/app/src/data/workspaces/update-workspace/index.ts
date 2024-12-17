@@ -1,35 +1,27 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
-import { catchError } from "@mapform/lib/catch-error";
-import { updateWorkspace } from "@mapform/backend/workspaces/update-workspace";
-import { updateWorkspaceSchema } from "@mapform/backend/workspaces/update-workspace/schema";
-import { authAction } from "~/lib/safe-action";
-import { ServerError } from "~/lib/server-error";
+import { authClient } from "~/lib/safe-action";
 
-export const updateWorkspaceAction = authAction
-  .schema(updateWorkspaceSchema)
-  .action(async ({ parsedInput, ctx: { user, workspaceSlug } }) => {
-    if (
-      user.workspaceMemberships.every((m) => m.workspaceId !== parsedInput.id)
-    ) {
-      throw new Error("Unauthorized");
-    }
+export const updateWorkspaceAction = async (
+  params: Parameters<typeof authClient.createProject>[0],
+) => {
+  const headersList = await headers();
+  const workspaceSlug = headersList.get("x-workspace-slug") ?? "";
+  const result = await authClient.updateWorkspace(params);
 
-    const [error] = await catchError(updateWorkspace(parsedInput));
+  if (result?.serverError) {
+    return result;
+  }
 
-    if (error) {
-      if ((error as unknown as { code: string }).code === "23505") {
-        throw new ServerError("Workspace slug already exists");
-      }
+  // Redirect to the settings page if the slug has changed
+  if (workspaceSlug !== params.slug) {
+    redirect(`/app/${params.slug}/settings`);
+  }
 
-      throw error;
-    }
+  revalidatePath(`/app/[wsSlug]/[tsSlug]`, "page");
 
-    if (workspaceSlug !== parsedInput.slug) {
-      redirect(`/app/${parsedInput.slug}/settings`);
-    }
-
-    revalidatePath(`/app/[wsSlug]/[tsSlug]`, "page");
-  });
+  return result;
+};

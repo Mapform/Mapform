@@ -1,14 +1,14 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { duplicateRows } from "@mapform/backend/rows/duplicate-rows";
-import { duplicateRowsSchema } from "@mapform/backend/rows/duplicate-rows/schema";
-import { authAction } from "~/lib/safe-action";
+import { authClient } from "~/lib/safe-action";
 
-export const duplicateRowsAction = authAction
-  .schema(duplicateRowsSchema)
-  .action(async ({ parsedInput }) => {
-    await duplicateRows(parsedInput);
+export const duplicateRowsAction = async (
+  params: Parameters<typeof authClient.duplicateRows>[0],
+) => {
+  const result = await authClient.duplicateRows(params);
 
-    revalidatePath("/app/[wsSlug]/[tsSlug]/datasets/[dId]", "page");
-  });
+  revalidatePath("/app/[wsSlug]/[tsSlug]/datasets/[dId]", "page");
+
+  return result;
+};

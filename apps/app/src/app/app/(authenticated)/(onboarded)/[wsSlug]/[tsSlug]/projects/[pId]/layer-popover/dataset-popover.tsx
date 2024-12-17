@@ -22,8 +22,8 @@ import { toast } from "@mapform/ui/components/toaster";
 import { CheckIcon, ChevronsUpDownIcon, PlusIcon } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import { useState } from "react";
-import type { UpsertLayerSchema } from "@mapform/backend/layers/upsert-layer/schema";
-import { createEmptyDatasetAction } from "~/data/datasets/create-empty-dataset";
+import type { UpsertLayerSchema } from "@mapform/backend/data/layers/upsert-layer/schema";
+import { createEmptyDatasetAction } from "./actions";
 import { useProject } from "../project-context";
 
 interface DatasetPopoverProps {

@@ -16,7 +16,7 @@ import { useAction } from "next-safe-action/hooks";
 import {
   requestMagicLinkSchema,
   type RequestMagicLinkSchema,
-} from "@mapform/backend/auth/request-magic-link/schema";
+} from "@mapform/backend/data/auth/request-magic-link/schema";
 import { MailCheckIcon, CircleHelpIcon, TimerIcon } from "lucide-react";
 import { useState } from "react";
 import Link from "next/link";
@@ -29,8 +29,9 @@ import {
   AlertIcon,
 } from "@mapform/ui/components/alert";
 import mapform from "public/static/images/mapform.svg";
-import { requestMagicLinkAction } from "~/data/auth/request-magic-link";
 import type { MagicLinkErrors } from "~/constants/magic-link-errors";
+import { requestMagicLinkAction } from "./actions";
+import { toast } from "@mapform/ui/components/toaster";
 
 const errors: Record<MagicLinkErrors, { text: string; icon: LucideIcon }> = {
   "not-found": {
@@ -53,6 +54,13 @@ export function SignInForm({ type }: { type: "signin" | "signup" }) {
   const { execute, status } = useAction(requestMagicLinkAction, {
     onSuccess: () => {
       setEmailSent(true);
+    },
+    onError: () => {
+      toast({
+        title: "Uh oh! Something went wrong.",
+        description:
+          "We were unable to generate your magic link. If the issue persists please contact support.",
+      });
     },
   });
 

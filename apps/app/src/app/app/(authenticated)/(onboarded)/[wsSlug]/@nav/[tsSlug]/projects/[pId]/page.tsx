@@ -6,7 +6,7 @@ import {
 } from "@mapform/ui/components/popover";
 import Link from "next/link";
 import { NavSlot } from "~/components/nav-slot";
-import { getProjectWithTeamspaceAction } from "~/data/projects/get-project-with-teamspace";
+import { authClient } from "~/lib/safe-action";
 import { ShareContent } from "./share-content";
 import TogglePages from "./toggle-pages";
 
@@ -14,7 +14,7 @@ export default async function Nav(props: {
   params: Promise<{ wsSlug: string; tsSlug: string; pId: string }>;
 }) {
   const params = await props.params;
-  const projectResponse = await getProjectWithTeamspaceAction({
+  const projectResponse = await authClient.getProjectWithTeamspace({
     id: params.pId,
   });
   const project = projectResponse?.data;

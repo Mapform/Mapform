@@ -8,28 +8,35 @@ import {
   useOptimistic,
   useTransition,
 } from "react";
-import type { GetLayerPoint } from "@mapform/backend/datalayer/get-layer-point";
-import type { GetLayerMarker } from "@mapform/backend/datalayer/get-layer-marker";
+import type { GetLayerPoint } from "@mapform/backend/data/datalayer/get-layer-point";
+import type { GetLayerMarker } from "@mapform/backend/data/datalayer/get-layer-marker";
 import { useCreateQueryString } from "@mapform/lib/hooks/use-create-query-string";
-import type { ProjectWithPages } from "@mapform/backend/projects/get-project-with-pages";
+import type { GetProjectWithPages } from "@mapform/backend/data/projects/get-project-with-pages";
 import { useMapform } from "@mapform/mapform";
-import type { PageWithLayers } from "@mapform/backend/pages/get-page-with-layers";
+import type { GetPageWithLayers } from "@mapform/backend/data/pages/get-page-with-layers";
 import { toast } from "@mapform/ui/components/toaster";
 import type { InferUseActionHookReturn } from "next-safe-action/hooks";
 import { useAction } from "next-safe-action/hooks";
-import type { PageData } from "@mapform/backend/datalayer/get-page-data";
-import type { ListTeamspaceDatasets } from "@mapform/backend/datasets/list-teamspace-datasets";
+import type { GetPageData } from "@mapform/backend/data/datalayer/get-page-data";
+import type { ListTeamspaceDatasets } from "@mapform/backend/data/datasets/list-teamspace-datasets";
 import { upsertCellAction } from "~/data/cells/upsert-cell";
 import { uploadImageAction } from "~/data/images";
 import { updatePageAction } from "~/data/pages/update-page";
 
+type LayerPoint = NonNullable<GetLayerPoint["data"]>;
+type LayerMarker = NonNullable<GetLayerMarker["data"]>;
+type PageWithLayers = NonNullable<GetPageWithLayers["data"]>;
+type PageData = NonNullable<GetPageData["data"]>;
+type TeamspaceDatasets = NonNullable<ListTeamspaceDatasets["data"]>;
+type ProjectWithPages = NonNullable<GetProjectWithPages["data"]>;
+
 export interface ProjectContextProps {
-  selectedFeature?: GetLayerPoint | GetLayerMarker;
+  selectedFeature?: LayerPoint | LayerMarker;
   currentProject: ProjectWithPages;
   isEditingPage: boolean;
   currentPage: PageWithLayers | undefined;
   currentPageData: PageData | undefined;
-  availableDatasets: ListTeamspaceDatasets;
+  availableDatasets: TeamspaceDatasets;
 
   uploadImageServer: InferUseActionHookReturn<typeof uploadImageAction>;
   upsertCellServer: InferUseActionHookReturn<typeof upsertCellAction>;
@@ -40,12 +47,12 @@ export interface ProjectContextProps {
   ) => void;
   setEditMode: (open: boolean) => void;
 
-  updateProjectOptimistic: (action: ProjectWithPages) => void;
+  updateProjectOptimistic: (
+    action: NonNullable<GetProjectWithPages["data"]>,
+  ) => void;
   updatePageOptimistic: (action: PageWithLayers) => void;
   updatePageDataOptimistic: (action: PageData) => void;
-  updateSelectedFeatureOptimistic: (
-    action: GetLayerPoint | GetLayerMarker,
-  ) => void;
+  updateSelectedFeatureOptimistic: (action: LayerPoint | LayerMarker) => void;
 }
 
 export const ProjectContext = createContext<ProjectContextProps>(
@@ -66,10 +73,10 @@ export function ProjectProvider({
   children,
 }: {
   projectWithPages: ProjectWithPages;
-  selectedFeature?: GetLayerPoint | GetLayerMarker;
-  pageData?: PageData;
+  selectedFeature?: LayerPoint | LayerMarker;
+  pageData?: GetPageData["data"];
   pageWithLayers?: PageWithLayers;
-  availableDatasets: ListTeamspaceDatasets;
+  availableDatasets: TeamspaceDatasets;
   children: React.ReactNode;
 }) {
   const { map } = useMapform();
@@ -106,8 +113,8 @@ export function ProjectProvider({
 
   const [optimisticSelectedFeature, updateSelectedFeatureOptimistic] =
     useOptimistic<
-      GetLayerPoint | GetLayerMarker | undefined,
-      GetLayerPoint | GetLayerMarker
+      LayerPoint | LayerMarker | undefined,
+      LayerPoint | LayerMarker
     >(selectedFeature, (state, newFeature) => ({
       ...state,
       ...newFeature,
@@ -138,7 +145,10 @@ export function ProjectProvider({
 
   const uploadImageServer = useAction(uploadImageAction, {
     onError: (response) => {
-      if (response.error.validationErrors) {
+      if (
+        response.error.validationErrors &&
+        "image" in response.error.validationErrors
+      ) {
         toast({
           title: "Uh oh! Something went wrong.",
           description: response.error.validationErrors.image?._errors?.[0],

@@ -1,11 +1,10 @@
 "use server";
 
-import { signOut } from "@mapform/backend/auth/sign-out";
+import { authClient } from "~/lib/safe-action";
 import { redirect } from "next/navigation";
-import { baseClient } from "~/lib/safe-action";
 
-export const signOutAction = baseClient.action(async () => {
-  await signOut();
+export const signOutAction = async () => {
+  await authClient.signOut({});
 
   redirect("/app/signin");
-});
+};

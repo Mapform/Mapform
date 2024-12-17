@@ -1,18 +1,13 @@
-// eslint-disable-next-line import/named -- It will work when React 19 is released
 import React, { cache } from "react";
 import { cookies } from "next/headers";
 import { MapformProvider } from "@mapform/mapform";
 import { type Row } from "@mapform/db/schema";
-import { getSession } from "~/data/share/get-session";
-import { getPageDataAction } from "~/data/share/get-page-data";
-import { getProjectWithPagesAction } from "~/data/share/get-project-with-pages";
-import { type Responses, getResponses } from "~/data/share/get-responses.ts";
-import { getLayerPointAction } from "~/data/share/get-layer-point";
+import { publicClient } from "~/lib/safe-action";
 import { Map } from "./map";
-import { getLayermarkerAction } from "~/data/datalayer/get-layer-marker";
+import type { Responses } from "@mapform/backend/data/rows/get-responses";
 
 const fetchProjectWithPages = cache(async (id: string) => {
-  const projectWithPagesResponse = await getProjectWithPagesAction({
+  const projectWithPagesResponse = await publicClient.getProjectWithPages({
     id,
   });
 
@@ -26,7 +21,7 @@ const fetchPageData = cache(async (id?: string) => {
     return undefined;
   }
 
-  const pageDataResponse = await getPageDataAction({
+  const pageDataResponse = await publicClient.getPageData({
     pageId: id,
   });
   const pageData = pageDataResponse?.data;
@@ -47,11 +42,11 @@ const fetchSelectedFeature = cache(async (param?: string) => {
 
   const featureResponse =
     type === "point"
-      ? await getLayerPointAction({
+      ? await publicClient.getLayerPoint({
           rowId,
           pointLayerId: subLayerId,
         })
-      : await getLayermarkerAction({
+      : await publicClient.getLayerMarker({
           rowId,
           markerLayerId: subLayerId,
         });
@@ -81,7 +76,7 @@ export default async function Page(props: {
   const cookieStore = await cookies();
   const submissionCookie = cookieStore.get("mapform-submission");
   const projectCookie = cookieStore.get("mapform-project-id");
-  const formValues: NonNullable<Responses>["cells"] = [];
+  const formValues: NonNullable<NonNullable<Responses>["data"]>["cells"] = [];
 
   let session: Row | undefined;
 
@@ -100,10 +95,13 @@ export default async function Page(props: {
   const isUsingSessions = Boolean(projectWithPages.submissionsDataset);
 
   if (isUsingSessions && submissionCookie) {
-    session = await getSession(submissionCookie.value);
+    session = (await publicClient.getSession({ rowId: submissionCookie.value }))
+      ?.data;
 
     if (session && !projectVersionMismatch) {
-      const responsesResponse = await getResponses({ id: session.id });
+      const responsesResponse = await publicClient.getResponses({
+        id: session.id,
+      });
       const responses = responsesResponse?.data;
 
       formValues.push(...(responses?.cells ?? []));

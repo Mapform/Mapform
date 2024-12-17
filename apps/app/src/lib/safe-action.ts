@@ -1,109 +1,222 @@
-import { headers } from "next/headers";
-import {
-  createSafeActionClient,
-  DEFAULT_SERVER_ERROR_MESSAGE,
-} from "next-safe-action";
 import { redirect } from "next/navigation";
-import { getCurrentSession } from "~/data/auth/get-current-session";
-import { ServerError } from "./server-error";
+import { getCurrentSession as internalGetCurrentSession } from "~/data/auth/get-current-session";
+import { getWorkspaceDirectory } from "@mapform/backend/data/workspaces/get-workspace-directory";
+import { requestMagicLink } from "@mapform/backend/data/auth/request-magic-link";
+import { validateMagicLink } from "@mapform/backend/data/auth/validate-magic-link";
+import { signOut } from "@mapform/backend/data/auth/sign-out";
+import { createEmptyDataset } from "@mapform/backend/data/datasets/create-empty-dataset";
+import { deleteDataset } from "@mapform/backend/data/datasets/delete-dataset";
+import { updateDataset } from "@mapform/backend/data/datasets/update-dataset";
+import { createProject } from "@mapform/backend/data/projects/create-project";
+import { deleteProject } from "@mapform/backend/data/projects/delete-project";
+import { getRecentProjects } from "@mapform/backend/data/projects/get-recent-projects";
+import { updateProject } from "@mapform/backend/data/projects/update-project";
+import { getUserWorkspaceMemberships } from "@mapform/backend/data/workspace-memberships/get-user-workspace-memberships";
+import { countWorkspaceRows } from "@mapform/backend/data/rows/count-workspace-rows";
+import { updateWorkspace } from "@mapform/backend/data/workspaces/update-workspace";
+import { upsertCell } from "@mapform/backend/data/cells/upsert-cell";
+import { createColumn } from "@mapform/backend/data/columns/create-column";
+import { getLayerMarker } from "@mapform/backend/data/datalayer/get-layer-marker";
+import { getLayerPoint } from "@mapform/backend/data/datalayer/get-layer-point";
+import { getPageData } from "@mapform/backend/data/datalayer/get-page-data";
+import { createPoint } from "@mapform/backend/data/datasets/create-point";
+import { listTeamspaceDatasets } from "@mapform/backend/data/datasets/list-teamspace-datasets";
+import { uploadImage } from "@mapform/backend/data/images";
+import { createPageLayer } from "@mapform/backend/data/layers-to-pages/create-page-layer";
+import { deletePageLayer } from "@mapform/backend/data/layers-to-pages/delete-page-layer";
+import { upsertLayer } from "@mapform/backend/data/layers/upsert-layer";
+import { deleteLayer } from "@mapform/backend/data/layers/delete-layer";
+import { updateLayerOrder } from "@mapform/backend/data/layers/update-layer-order";
+import { createPage } from "@mapform/backend/data/pages/create-page";
+import { deletePage } from "@mapform/backend/data/pages/delete-page";
+import { getPageWithLayers } from "@mapform/backend/data/pages/get-page-with-layers";
+import { updatePage } from "@mapform/backend/data/pages/update-page";
+import { updatePageOrder } from "@mapform/backend/data/pages/update-page-order";
+import { getProjectWithPages } from "@mapform/backend/data/projects/get-project-with-pages";
+import { getProjectWithTeamspace } from "@mapform/backend/data/projects/get-project-with-teamspace";
+import { publishProject } from "@mapform/backend/data/projects/publish-project";
+import { getTeamspaceWithProjects } from "@mapform/backend/data/teamspaces/get-teamspace-with-projects";
+import { deleteColumn } from "@mapform/backend/data/columns/delete-column";
+import { editColumn } from "@mapform/backend/data/columns/edit-column";
+import { getDataset } from "@mapform/backend/data/datasets/get-dataset";
+import { createRow } from "@mapform/backend/data/rows/create-row";
+import { deleteRows } from "@mapform/backend/data/rows/delete-rows";
+import { duplicateRows } from "@mapform/backend/data/rows/duplicate-rows";
+import { createSubmission } from "@mapform/backend/data/rows/create-submission";
+import { getResponses } from "@mapform/backend/data/rows/get-responses";
+import { submitPage } from "@mapform/backend/data/cells/submit-page";
+import { getSession } from "@mapform/backend/data/rows/get-session";
+import { getCurrentSession } from "@mapform/backend/data/auth/get-current-session";
+import { createDatasetFromGeojson } from "@mapform/backend/data/datasets/create-from-geojson";
+import { completeOnboarding } from "@mapform/backend/data/workspaces/complete-onboarding";
+import {
+  baseClient,
+  UserAccess,
+  publicMiddlewareValidator,
+  userAuthMiddlewareValidator,
+} from "@mapform/backend";
+import { headers } from "next/headers";
 
-// These represent routes that are not really workspace or teamspace.
 const ignoredWorkspaceSlugs = ["onboarding"];
 const ignoredTeamspaceSlugs = ["settings"];
 
-// Base client
-export const baseClient = createSafeActionClient({
-  handleServerError(e) {
-    // Log to console.
-    console.error("Action error:", e.message);
+/**
+ * Can be used with user authentication.
+ */
+const createUserAuthClient = () => {
+  const extendedClient = baseClient
+    .use(async ({ next }) => {
+      const headersList = await headers();
+      const response = await internalGetCurrentSession();
+      const user = response?.data?.user;
+      const workspaceSlug = headersList.get("x-workspace-slug") ?? "";
+      const teamspaceSlug = headersList.get("x-teamspace-slug") ?? "";
 
-    // In this case, we can use the 'MyCustomError` class to unmask errors
-    // and return them with their actual messages to the client.
-    if (e instanceof ServerError) {
-      return e.message;
-    }
+      if (!user) {
+        return redirect("/app/signin");
+      }
 
-    // Every other error that occurs will be masked with the default message.
-    return DEFAULT_SERVER_ERROR_MESSAGE;
-  },
-});
+      const userAccess = new UserAccess(user);
+
+      const hasAccessToCurrentWorkspace =
+        userAccess.workspace.checkAccessBySlug(workspaceSlug);
+      const hasAccessToTeamspace = userAccess.teamspace.checkAccessBySlug(
+        teamspaceSlug,
+        workspaceSlug,
+      );
+
+      if (
+        workspaceSlug &&
+        !hasAccessToCurrentWorkspace &&
+        !ignoredWorkspaceSlugs.includes(workspaceSlug)
+      ) {
+        return redirect("/app");
+      }
+
+      if (
+        teamspaceSlug &&
+        !hasAccessToTeamspace &&
+        !ignoredTeamspaceSlugs.includes(teamspaceSlug)
+      ) {
+        return redirect(`/app/${workspaceSlug}`);
+      }
+
+      return next({
+        ctx: {
+          authType: "user" as const,
+          user,
+          userAccess,
+        },
+      });
+    })
+    .use(userAuthMiddlewareValidator);
+
+  return {
+    // Auth
+    signOut: signOut(extendedClient),
+
+    // Cells
+    upsertCell: upsertCell(extendedClient),
+
+    // Columns
+    editColumn: editColumn(extendedClient),
+    createColumn: createColumn(extendedClient),
+    deleteColumn: deleteColumn(extendedClient),
+
+    // Datalayers
+    getPageData: getPageData(extendedClient),
+    getLayerPoint: getLayerPoint(extendedClient),
+    getLayerMarker: getLayerMarker(extendedClient),
+
+    // Datasets
+    getDataset: getDataset(extendedClient),
+    createPoint: createPoint(extendedClient), // Note: for createUserAuthClient this is causing 'The inferred type of this node exceeds the maximum length the compiler will serialize'
+    deleteDataset: deleteDataset(extendedClient),
+    updateDataset: updateDataset(extendedClient),
+    createEmptyDataset: createEmptyDataset(extendedClient),
+    listTeamspaceDatasets: listTeamspaceDatasets(extendedClient),
+    createDatasetFromGeojson: createDatasetFromGeojson(extendedClient),
+
+    // Images
+    uploadImage: uploadImage(extendedClient),
+
+    // Layers
+    upsertLayer: upsertLayer(extendedClient),
+    deleteLayer: deleteLayer(extendedClient),
+    updateLayerOrder: updateLayerOrder(extendedClient),
+
+    // Layers to Pages
+    createPageLayer: createPageLayer(extendedClient),
+    deletePageLayer: deletePageLayer(extendedClient),
+
+    // Pages
+    createPage: createPage(extendedClient),
+    deletePage: deletePage(extendedClient),
+    updatePage: updatePage(extendedClient),
+    updatePageOrder: updatePageOrder(extendedClient),
+    getPageWithLayers: getPageWithLayers(extendedClient),
+
+    // Projects
+    createProject: createProject(extendedClient),
+    deleteProject: deleteProject(extendedClient),
+    updateProject: updateProject(extendedClient),
+    publishProject: publishProject(extendedClient),
+    getRecentProjects: getRecentProjects(extendedClient),
+    getProjectWithPages: getProjectWithPages(extendedClient),
+    getProjectWithTeamspace: getProjectWithTeamspace(extendedClient),
+
+    // Rows
+    createRow: createRow(extendedClient),
+    deleteRows: deleteRows(extendedClient),
+    duplicateRows: duplicateRows(extendedClient),
+    countWorkspaceRows: countWorkspaceRows(extendedClient),
+
+    // Teamspaces
+    getTeamspaceWithProjects: getTeamspaceWithProjects(extendedClient),
+
+    // Workspaces
+    updateWorkspace: updateWorkspace(extendedClient),
+    completeOnboarding: completeOnboarding(extendedClient),
+    getWorkspaceDirectory: getWorkspaceDirectory(extendedClient),
+
+    // Workspace Memberships
+    getUserWorkspaceMemberships: getUserWorkspaceMemberships(extendedClient),
+  };
+};
 
 /**
- * Check that the user is authenticated, and only requested workspace /
- * teamspace resources they have access to.
+ * Can be used without authentication.
  */
-export const authAction = baseClient.use(async ({ next }) => {
-  const response = await getCurrentSession();
-  const headersList = await headers();
-  const workspaceSlug = headersList.get("x-workspace-slug") ?? "";
-  const teamspaceSlug = headersList.get("x-teamspace-slug") ?? "";
+const createPublicClient = () => {
+  const extendedClient = baseClient
+    .use(async ({ next }) => next({ ctx: { authType: "public" as const } }))
+    .use(publicMiddlewareValidator);
 
-  if (!response?.user) {
-    return redirect("/app/signin");
-  }
+  return {
+    // Auth
+    requestMagicLink: requestMagicLink(extendedClient),
+    validateMagicLink: validateMagicLink(extendedClient),
 
-  const checkAccessToWorkspaceBySlug = (slug: string) =>
-    [
-      ...ignoredWorkspaceSlugs,
-      ...response.user.workspaceMemberships.map((wm) => wm.workspace.slug),
-    ].some((ws) => slug === ws);
-  const checkAccessToWorkspaceById = (id: string) =>
-    [...response.user.workspaceMemberships.map((wm) => wm.workspace.id)].some(
-      (ws) => id === ws,
-    );
-  const hasAccessToCurrentWorkspace =
-    checkAccessToWorkspaceBySlug(workspaceSlug);
+    // Cells
+    submitPage: submitPage(extendedClient),
 
-  /**
-   * Teamspace slugs are only unique to a WS, therefore we need to check if the
-   * user has access to the requested teamspace in the requested workspace.
-   */
-  const checkAccessToTeamspaceBySlug = (tsSlug: string) =>
-    [
-      ...response.user.workspaceMemberships.flatMap((wm) => [
-        ...ignoredTeamspaceSlugs.map((ts) => ({
-          _tsSlug: ts,
-          _wsSlug: wm.workspace.slug,
-        })),
-        ...wm.workspace.teamspaces.map((ts) => ({
-          _tsSlug: ts.slug,
-          _wsSlug: wm.workspace.slug,
-        })),
-      ]),
-    ].some(
-      (ts) => ts._tsSlug === tsSlug && checkAccessToWorkspaceBySlug(ts._wsSlug),
-    );
-  const checkAccessToTeamspaceById = (id: string) =>
-    [
-      ...response.user.workspaceMemberships.flatMap((wm) =>
-        wm.workspace.teamspaces.map((ts) => ts.id),
-      ),
-    ].some((ts) => ts === id);
-  const hasAccessToTeamspace = checkAccessToTeamspaceBySlug(teamspaceSlug);
+    // Datalayers
+    getPageData: getPageData(extendedClient),
+    getLayerPoint: getLayerPoint(extendedClient),
+    getLayerMarker: getLayerMarker(extendedClient),
 
-  if (workspaceSlug && !hasAccessToCurrentWorkspace) {
-    return redirect("/app");
-  }
+    // Rows
+    getSession: getSession(extendedClient),
+    getResponses: getResponses(extendedClient),
+    createSubmission: createSubmission(extendedClient),
 
-  if (teamspaceSlug && !hasAccessToTeamspace) {
-    return redirect(`/app/${workspaceSlug}`);
-  }
+    // Projects
+    getProjectWithPages: getProjectWithPages(extendedClient),
 
-  return next({
-    ctx: {
-      user: response.user,
-      session: response.session,
-      checkAccessToWorkspaceBySlug,
-      checkAccessToTeamspaceBySlug,
-      checkAccessToTeamspaceById,
-      checkAccessToWorkspaceById,
-      workspaceSlug,
-      teamspaceSlug,
-    },
-  });
-});
+    // Users
+    getCurrentSession: getCurrentSession(extendedClient),
+  };
+};
 
-/**
- * We can place explicit checks for the share client here.
- */
-export const shareClient = baseClient.use(({ next }) => next());
+export const authClient = createUserAuthClient();
+export const publicClient = createPublicClient();

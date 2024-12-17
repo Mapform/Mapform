@@ -1,14 +1,14 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { deleteRows } from "@mapform/backend/rows/delete-rows";
-import { deleteRowsSchema } from "@mapform/backend/rows/delete-rows/schema";
-import { authAction } from "~/lib/safe-action";
+import { authClient } from "~/lib/safe-action";
 
-export const deleteRowsAction = authAction
-  .schema(deleteRowsSchema)
-  .action(async ({ parsedInput }) => {
-    await deleteRows(parsedInput);
+export const deleteRowsAction = async (
+  params: Parameters<typeof authClient.deleteRows>[0],
+) => {
+  const result = await authClient.deleteRows(params);
 
-    revalidatePath("/app/[wsSlug]/[tsSlug]/datasets/[dId]", "page");
-  });
+  revalidatePath("/app/[wsSlug]/[tsSlug]/datasets/[dId]", "page");
+
+  return result;
+};

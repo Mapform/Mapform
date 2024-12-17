@@ -20,13 +20,13 @@ import { useMapform, type MapboxEvent } from "@mapform/mapform";
 import { cn } from "@mapform/lib/classnames";
 import type { SearchFeature } from "@mapform/map-utils/types";
 import { SearchLocationMarker as MapMarker } from "@mapform/mapform";
-import type { PageWithLayers } from "@mapform/backend/pages/get-page-with-layers";
+import type { GetPageWithLayers } from "@mapform/backend/data/pages/get-page-with-layers";
 import { useProject } from "../../project-context";
 import { SearchLocationMarker } from "./search-location-marker";
 import { CommandSearch } from "./command-search";
 
 interface EditBarInnerProps {
-  currentPage: PageWithLayers;
+  currentPage: NonNullable<GetPageWithLayers["data"]>;
 }
 
 const queryClient = new QueryClient();
@@ -167,7 +167,7 @@ function EditBarInner({ currentPage }: EditBarInnerProps) {
   const pageLayers = currentProject.pageLayers.filter(
     (layer) =>
       layer.pageId === currentPage.id &&
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- We do need this
+       
       (layer.type === "point" || layer.type === "marker"),
   );
 

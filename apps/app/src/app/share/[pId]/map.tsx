@@ -3,26 +3,26 @@
 import { MapForm, useMapform } from "@mapform/mapform";
 import { useAction } from "next-safe-action/hooks";
 import React, { useEffect, useState } from "react";
-import type { PageData } from "@mapform/backend/datalayer/get-page-data";
-import type { GetLayerPoint } from "@mapform/backend/datalayer/get-layer-point";
-import { type GetLayerMarker } from "@mapform/backend/datalayer/get-layer-marker";
-import type { ProjectWithPages } from "@mapform/backend/projects/get-project-with-pages";
+import type { GetPageData } from "@mapform/backend/data/datalayer/get-page-data";
+import type { GetLayerPoint } from "@mapform/backend/data/datalayer/get-layer-point";
+import { type GetLayerMarker } from "@mapform/backend/data/datalayer/get-layer-marker";
+import type { GetProjectWithPages } from "@mapform/backend/data/projects/get-project-with-pages";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
-import { submitPage } from "~/data/share/submit-page";
-import { createSubmission } from "~/data/share/create-submission";
-import type { Responses } from "~/data/share/get-responses.ts";
+import type { Responses } from "@mapform/backend/data/rows/get-responses";
 import { env } from "~/env.mjs";
+import { createSubmissionAction } from "~/data/rows/create-submission";
+import { submitPageAction } from "./actions";
 
 interface MapProps {
-  pageData: PageData | undefined;
-  projectWithPages: ProjectWithPages;
-  formValues: NonNullable<Responses>["cells"];
-  selectedFeature?: GetLayerPoint | GetLayerMarker;
+  pageData: GetPageData["data"];
+  projectWithPages: NonNullable<GetProjectWithPages["data"]>;
+  formValues: NonNullable<NonNullable<Responses>["data"]>["cells"];
+  selectedFeature?: GetLayerPoint["data"] | GetLayerMarker["data"];
   sessionId: string | null;
   isUsingSessions: boolean;
 }
 
-type Page = ProjectWithPages["pages"][number];
+type Page = NonNullable<GetProjectWithPages["data"]>["pages"][number];
 
 export function Map({
   pageData,
@@ -37,7 +37,7 @@ export function Map({
   const searchParams = useSearchParams();
 
   const p = searchParams.get("p");
-  const currentPage = projectWithPages.pages.find((page) => page.id === p);
+  const currentPage = projectWithPages?.pages.find((page) => page.id === p);
   const setCurrentPage = (page: Page) => {
     router.replace(`${pathname}?p=${page.id}`);
   };
@@ -46,7 +46,7 @@ export function Map({
 
   const [currentSession, setCurrentSession] = useState<string | null>(null);
 
-  const { execute } = useAction(submitPage);
+  const { execute } = useAction(submitPageAction);
 
   const setCurrentPageAndFly = (page: Page) => {
     setCurrentPage(page);
@@ -69,12 +69,12 @@ export function Map({
       }
 
       if (!newSessionId) {
-        const response = await createSubmission({
+        const response = await createSubmissionAction({
           projectId: projectWithPages.id,
         });
 
-        if (response?.data) {
-          newSessionId = response.data;
+        if (response) {
+          newSessionId = response;
         }
       }
       setCurrentSession(newSessionId);

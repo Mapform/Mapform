@@ -33,12 +33,12 @@ import { enUS } from "date-fns/locale";
 import {
   upsertCellSchema,
   type UpsertCellSchema,
-} from "@mapform/backend/cells/upsert-cell/schema";
+} from "@mapform/backend/data/cells/upsert-cell/schema";
 import { EmojiPicker } from "@mapform/ui/components/emoji-picker";
-import type { GetDataset } from "@mapform/backend/datasets/get-dataset";
+import type { GetDataset } from "@mapform/backend/data/datasets/get-dataset";
 import { upsertCellAction } from "~/data/cells/upsert-cell";
 
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- it's fine
+ 
 const accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN!;
 
 export function CellPopover({
@@ -47,7 +47,7 @@ export function CellPopover({
 }: {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- We don't need the full cell definition
   cell: Cell<any, any>;
-  dataset: GetDataset;
+  dataset: NonNullable<GetDataset["data"]>;
 }) {
   const cellEl = useRef<HTMLTableCellElement>(null);
   const type = dataset.columns.find(

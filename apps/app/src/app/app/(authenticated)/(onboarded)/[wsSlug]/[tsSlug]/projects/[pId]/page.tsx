@@ -1,19 +1,13 @@
-// eslint-disable-next-line import/named -- It will work when React 19 is released
 import { cache } from "react";
 import { MapformProvider } from "@mapform/mapform";
 import { redirect } from "next/navigation";
-import { getPageDataAction } from "~/data/datalayer/get-page-data";
-import { getPageWithLayersAction } from "~/data/pages/get-page-with-layers";
-import { getProjectWithPagesAction } from "~/data/projects/get-project-with-pages";
-import { listTeamspaceDatasetsAction } from "~/data/datasets/list-teamspace-datasets";
-import { getLayerPointAction } from "~/data/datalayer/get-layer-point";
-import { getLayermarkerAction } from "~/data/datalayer/get-layer-marker";
 import { ProjectProvider } from "./project-context";
 import Project from "./project";
 import { Drawer } from "./drawer";
+import { authClient } from "~/lib/safe-action";
 
 const fetchProjectWithPages = cache(async (id: string) => {
-  const projectWithPagesResponse = await getProjectWithPagesAction({
+  const projectWithPagesResponse = await authClient.getProjectWithPages({
     id,
   });
 
@@ -31,7 +25,7 @@ const fetchPageWithLayers = cache(async (id?: string) => {
     return undefined;
   }
 
-  const pageWithLayersResponse = await getPageWithLayersAction({
+  const pageWithLayersResponse = await authClient.getPageWithLayers({
     id,
   });
   const pageWithLayers = pageWithLayersResponse?.data;
@@ -45,7 +39,7 @@ const fetchPageWithLayers = cache(async (id?: string) => {
 
 const fetchAvailableDatasets = cache(
   async (workspaceSlug: string, teamspaceSlug: string) => {
-    const availableDatasetsResponse = await listTeamspaceDatasetsAction({
+    const availableDatasetsResponse = await authClient.listTeamspaceDatasets({
       workspaceSlug,
       teamspaceSlug,
     });
@@ -60,7 +54,7 @@ const fetchPageData = cache(async (id?: string) => {
     return undefined;
   }
 
-  const pageDataResponse = await getPageDataAction({
+  const pageDataResponse = await authClient.getPageData({
     pageId: id,
   });
   const pageData = pageDataResponse?.data;
@@ -81,11 +75,11 @@ const fetchSelectedFeature = cache(async (param?: string) => {
 
   const featureResponse =
     type === "point"
-      ? await getLayerPointAction({
+      ? await authClient.getLayerPoint({
           rowId,
           pointLayerId: subLayerId,
         })
-      : await getLayermarkerAction({
+      : await authClient.getLayerMarker({
           rowId,
           markerLayerId: subLayerId,
         });

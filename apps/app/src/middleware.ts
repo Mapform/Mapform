@@ -20,8 +20,13 @@ export default withCSRF(async (request) => {
   const teamspaceSlug = pathname.split("/")[3];
 
   const requestHeaders = new Headers(request.headers);
-  workspaceSlug && requestHeaders.set("x-workspace-slug", workspaceSlug);
-  teamspaceSlug && requestHeaders.set("x-teamspace-slug", teamspaceSlug);
+
+  if (workspaceSlug) {
+    requestHeaders.set("x-workspace-slug", workspaceSlug);
+  }
+  if (teamspaceSlug) {
+    requestHeaders.set("x-teamspace-slug", teamspaceSlug);
+  }
 
   const res = NextResponse.next({
     request: {

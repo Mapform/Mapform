@@ -20,9 +20,9 @@ import { toast } from "@mapform/ui/components/toaster";
 import { useAction } from "next-safe-action/hooks";
 import { Button } from "@mapform/ui/components/button";
 import { Input } from "@mapform/ui/components/input";
-import { upsertLayerSchema } from "@mapform/backend/layers/upsert-layer/schema";
-import type { UpsertLayerSchema } from "@mapform/backend/layers/upsert-layer/schema";
-import type { PageWithLayers } from "@mapform/backend/pages/get-page-with-layers";
+import { upsertLayerSchema } from "@mapform/backend/data/layers/upsert-layer/schema";
+import type { UpsertLayerSchema } from "@mapform/backend/data/layers/upsert-layer/schema";
+import type { GetPageWithLayers } from "@mapform/backend/data/pages/get-page-with-layers";
 import { upsertLayerAction } from "~/data/layers/upsert-layer";
 import { useProject } from "../project-context";
 import { PointProperties } from "./point-properties";
@@ -32,7 +32,9 @@ import { MarkerProperties } from "./marker-properties";
 
 interface LayerPopoverProps {
   initialName?: string;
-  layerToEdit?: PageWithLayers["layersToPages"][number]["layer"];
+  layerToEdit?: NonNullable<
+    GetPageWithLayers["data"]
+  >["layersToPages"][number]["layer"];
   onSuccess?: (layerId: string) => void;
 }
 
@@ -41,7 +43,7 @@ export const LayerPopoverContent = forwardRef<
   React.ComponentPropsWithoutRef<typeof PopoverContent> & LayerPopoverProps
 >(({ layerToEdit, initialName, onSuccess, ...props }, ref) => {
   const { ...rest } = useProject();
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- It's set
+   
   const currentPage = rest.currentPage!;
 
   const form = useForm<UpsertLayerSchema>({

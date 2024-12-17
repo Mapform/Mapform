@@ -92,7 +92,7 @@ const SidebarProvider = React.forwardRef<
     ref,
   ) => {
     const { width } = useWindowSize();
-    // eslint-disable-next-line no-implicit-coercion -- Boolean causes another issue
+     
     const isMobile = !!width && width < 768;
     const [openMobile, setOpenMobile] = React.useState(false);
 

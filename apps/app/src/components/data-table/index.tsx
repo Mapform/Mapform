@@ -16,7 +16,7 @@ import {
 } from "@mapform/ui/components/table";
 import { Checkbox } from "@mapform/ui/components/checkbox";
 import { Button } from "@mapform/ui/components/button";
-import type { GetDataset } from "@mapform/backend/datasets/get-dataset";
+import type { GetDataset } from "@mapform/backend/data/datasets/get-dataset";
 import { CopyIcon, PlusIcon, Trash2Icon } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import { createRowAction } from "~/data/rows/create-row";
@@ -27,7 +27,7 @@ import { CellPopover } from "./cell-popover";
 import { ColumnEditor } from "./column-editor";
 
 interface TableProps {
-  dataset: GetDataset;
+  dataset: NonNullable<GetDataset["data"]>;
 }
 
 export const DataTable = memo(function DataTable({ dataset }: TableProps) {
@@ -44,9 +44,12 @@ export const DataTable = memo(function DataTable({ dataset }: TableProps) {
         const rowCells = row.cells;
 
         return rowCells.reduce<
-          Record<string, GetDataset["rows"][number]["cells"][number]>
+          Record<
+            string,
+            NonNullable<GetDataset["data"]>["rows"][number]["cells"][number]
+          >
         >(
-          // @ts-expect-error -- It's gucci baby
+          // @ts-expect-error -- It's all gucci baby
           (acc, cell) => {
             return {
               ...acc,
@@ -187,7 +190,7 @@ export const DataTable = memo(function DataTable({ dataset }: TableProps) {
   );
 });
 
-const getColumns = (dataset: GetDataset) => {
+const getColumns = (dataset: NonNullable<GetDataset["data"]>) => {
   return [
     {
       id: "select",

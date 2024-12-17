@@ -1,5 +1,5 @@
 import colors from "tailwindcss/colors";
-import type { UpsertLayerSchema } from "@mapform/backend/layers/upsert-layer/schema";
+import type { UpsertLayerSchema } from "@mapform/backend/data/layers/upsert-layer/schema";
 import { cn } from "@mapform/lib/classnames";
 import type { UseFormReturn } from "@mapform/ui/components/form";
 import { FormField, FormLabel } from "@mapform/ui/components/form";
@@ -155,7 +155,7 @@ export function ColorPicker({
                   max={hueToSliderStep[950]}
                   min={hueToSliderStep[50]}
                   onValueChange={(value) => {
-                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- It's gucci
+                     
                     const hue = Object.entries(hueToSliderStep).find(
                       ([_, step]) => step === value[0],
                     )![0] as Hue;

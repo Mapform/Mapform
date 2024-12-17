@@ -1,9 +1,7 @@
-// eslint-disable-next-line import/named -- Oh it's there
 import { cache } from "react";
 import { notFound } from "next/navigation";
 import { cookies } from "next/headers";
-import { getCurrentUserWorkspaceMembershipsAction } from "~/data/workspace-memberships/get-current-user-workspace-memberships";
-import { getWorkspaceDirectoryAction } from "~/data/workspaces/get-workspace-directory";
+import { authClient } from "~/lib/safe-action";
 import { TopNav } from "./top-nav";
 import { WorkspaceProvider } from "./workspace-context";
 import { LeftSidebar } from "./left-sidebar";
@@ -54,7 +52,7 @@ export default async function WorkspaceLayout(props: {
  * Cached fetch functions
  */
 const fetchWorkspaceDirectory = cache(async (slug: string) => {
-  const getWorkspaceDirectoryResponse = await getWorkspaceDirectoryAction({
+  const getWorkspaceDirectoryResponse = await authClient.getWorkspaceDirectory({
     slug,
   });
 
@@ -69,7 +67,7 @@ const fetchWorkspaceDirectory = cache(async (slug: string) => {
 
 const fetchWorkspaceMemberships = cache(async () => {
   const workspaceMembershipsResponse =
-    await getCurrentUserWorkspaceMembershipsAction();
+    await authClient.getUserWorkspaceMemberships({});
 
   const workspaceMemberships = workspaceMembershipsResponse?.data;
 

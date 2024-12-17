@@ -30,7 +30,7 @@ import {
 import { type SetStateAction, useState } from "react";
 import { useAction } from "next-safe-action/hooks";
 import { toast } from "@mapform/ui/components/toaster";
-import type { ProjectWithPages } from "@mapform/backend/projects/get-project-with-pages";
+import type { GetProjectWithPages } from "@mapform/backend/data/projects/get-project-with-pages";
 import { createPointAction } from "~/data/datasets/create-point";
 import {
   LayerPopoverContent,
@@ -39,7 +39,7 @@ import {
 } from "../../layer-popover";
 
 interface SearchLocationMarkerProps {
-  pageLayers: ProjectWithPages["pageLayers"];
+  pageLayers: NonNullable<GetProjectWithPages["data"]>["pageLayers"];
   searchLocation: SearchFeature | null;
   setDrawerOpen: (value: SetStateAction<boolean>) => void;
   setSearchLocation: (value: SetStateAction<SearchFeature | null>) => void;

@@ -15,8 +15,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@mapform/ui/components/carousel";
-import { getRecentProjectsAction } from "~/data/projects/get-recent-projects";
-import { getWorkspaceDirectoryAction } from "~/data/workspaces/get-workspace-directory";
+import { authClient } from "~/lib/safe-action";
 
 export default async function HomePage(props: {
   params: Promise<{ wsSlug: string }>;
@@ -24,17 +23,17 @@ export default async function HomePage(props: {
   const params = await props.params;
   const [getWorkspaceDirectoryResponse, recentProjectsResponse] =
     await Promise.all([
-      getWorkspaceDirectoryAction({
+      authClient.getWorkspaceDirectory({
         slug: params.wsSlug,
       }),
-      getRecentProjectsAction({
+      authClient.getRecentProjects({
         workspaceSlug: params.wsSlug,
       }),
     ]);
-  const workspaceWithTeamspaces = getWorkspaceDirectoryResponse?.data;
+  const WorkspaceDirectory = getWorkspaceDirectoryResponse?.data;
   const recentProjects = recentProjectsResponse?.data ?? [];
 
-  if (!workspaceWithTeamspaces) {
+  if (!WorkspaceDirectory) {
     return notFound();
   }
 

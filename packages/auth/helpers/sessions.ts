@@ -18,7 +18,7 @@ export async function comparePasswords(
   return compare(plainTextPassword, hashedPassword);
 }
 
-interface SessionData {
+export interface SessionData {
   user: { id: string } | null;
   expires: string | null;
 }

@@ -1,9 +1,14 @@
-import { countWorkspaceRowsAction } from "~/data/rows/count-workspace-rows";
 import { Usage } from "./usage";
+import { authClient } from "~/lib/safe-action";
 import { WorkspaceSettings } from "./workspace-settings";
 
-export default async function Settings() {
-  const response = await countWorkspaceRowsAction();
+export default async function Settings(props: {
+  params: Promise<{ wsSlug: string }>;
+}) {
+  const params = await props.params;
+  const response = await authClient.countWorkspaceRows({
+    workspaceSlug: params.wsSlug,
+  });
 
   return (
     <div className="@container overflow-y-auto p-4">
