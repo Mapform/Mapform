@@ -92,7 +92,13 @@ function EditBarInner({ currentPage }: EditBarInnerProps) {
       pitch: currentPage.pitch,
       bearing: currentPage.bearing,
     });
-  }, [currentPage]);
+  }, [
+    currentPage.center.y,
+    currentPage.center.x,
+    currentPage.zoom,
+    currentPage.pitch,
+    currentPage.bearing,
+  ]);
 
   useEffect(() => {
     if (map) {
@@ -167,7 +173,6 @@ function EditBarInner({ currentPage }: EditBarInnerProps) {
   const pageLayers = currentProject.pageLayers.filter(
     (layer) =>
       layer.pageId === currentPage.id &&
-       
       (layer.type === "point" || layer.type === "marker"),
   );
 
