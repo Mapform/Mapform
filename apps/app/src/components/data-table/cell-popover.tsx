@@ -51,12 +51,14 @@ export function CellPopover({
   const type = dataset.columns.find(
     (column) => column.id === cell.column.id,
   )?.type;
+  const originalValue =
+    type === "number" ? cell.getValue()?.toString() : cell.getValue();
 
   const form = useForm<UpsertCellSchema>({
     defaultValues: {
       rowId: cell.row.id,
       columnId: cell.column.id,
-      value: type === "number" ? cell.getValue()?.toString() : cell.getValue(),
+      value: originalValue,
       type,
     },
     resolver: zodResolver(upsertCellSchema),
@@ -66,7 +68,10 @@ export function CellPopover({
 
   const onSubmit = (values: UpsertCellSchema) => {
     setOpen(false);
-    executeUpsertCell(values);
+
+    if (originalValue !== values.value) {
+      executeUpsertCell(values);
+    }
   };
 
   const renderCellContent = useCallback(() => {

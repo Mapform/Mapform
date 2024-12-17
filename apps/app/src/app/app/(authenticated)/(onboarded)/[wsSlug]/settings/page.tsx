@@ -1,6 +1,7 @@
 import { Usage } from "./usage";
 import { authClient } from "~/lib/safe-action";
 import { WorkspaceSettings } from "./workspace-settings";
+import { notFound } from "next/navigation";
 
 export default async function Settings(props: {
   params: Promise<{ wsSlug: string }>;
@@ -9,6 +10,10 @@ export default async function Settings(props: {
   const response = await authClient.countWorkspaceRows({
     workspaceSlug: params.wsSlug,
   });
+
+  if (!response?.data) {
+    return notFound();
+  }
 
   return (
     <div className="@container overflow-y-auto p-4">
