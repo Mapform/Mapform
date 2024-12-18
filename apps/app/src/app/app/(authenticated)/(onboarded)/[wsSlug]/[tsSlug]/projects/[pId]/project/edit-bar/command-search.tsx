@@ -28,70 +28,6 @@ export function CommandSearch({
 }: CommandSearchProps) {
   const [query, setQuery] = useState("");
 
-  // useEffect(() => {
-  //   const down = (
-  //     key: string,
-  //     feature: PlacesSearchResponse["features"][number],
-  //     e: KeyboardEvent,
-  //   ) => {
-  //     if (e.key === key.toString() && (e.metaKey || e.ctrlKey)) {
-  //       const bbox = feature.bbox;
-
-  //       if (!bbox || !feature.properties) {
-  //         return;
-  //       }
-
-  //       e.preventDefault();
-  //       e.stopPropagation();
-
-  //       setOpenSearch(false);
-  //       map?.fitBounds(
-  //         [
-  //           [bbox[0], bbox[1]],
-  //           [bbox[2], bbox[3]],
-  //         ],
-  //         {
-  //           duration: 0,
-  //         },
-  //       );
-
-  //       setDrawerOpen(false);
-  //       setSearchLocation({
-  //         title: feature.properties.name ?? feature.properties.address_line1,
-  //         latitude: feature.properties.lat,
-  //         longitude: feature.properties.lon,
-  //         icon: "unknown",
-  //       });
-  //     }
-  //   };
-
-  // data?.features.forEach((feature, i) => {
-  //   const key = i + 1;
-
-  //   if (key <= 5) {
-  //     document.addEventListener(
-  //       "keydown",
-
-  //       down.bind(null, key.toString(), feature),
-  //     );
-  //   }
-  // });
-
-  // return () => {
-  //   data?.features.forEach((feature, i) => {
-  //     const key = i + 1;
-
-  //     if (i <= 5) {
-  //       document.removeEventListener(
-  //         "keydown",
-
-  //         down.bind(null, key.toString(), feature),
-  //       );
-  //     }
-  //   });
-  // };
-  // }, [data?.features, map, setOpenSearch, setSearchLocation, setDrawerOpen]);
-
   return (
     <>
       <CommandInput
@@ -107,62 +43,6 @@ export function CommandSearch({
         setOpenSearch={setOpenSearch}
         setSearchLocation={setSearchLocation}
       />
-      {/* <CommandList className={cn(isFetching && "animate-pulse")}>
-        <CommandEmpty className="text-muted-foreground m-2 mb-0 rounded bg-gray-100 p-8 text-center">
-          {isFetching ? "Searching..." : "No results found."}
-        </CommandEmpty>
-        <CommandGroup>
-          {data?.features.map((feature, i) => {
-            if (!feature.bbox || !feature.properties) {
-              return;
-            }
-
-            return (
-              <CommandItem
-                key={feature.properties.place_id}
-                onSelect={() => {
-                  setOpenSearch(false);
-
-                  if (!feature.bbox || !feature.properties) {
-                    return;
-                  }
-
-                  map?.fitBounds(
-                    [
-                      [feature.bbox[0], feature.bbox[1]],
-                      [feature.bbox[2], feature.bbox[3]],
-                    ],
-                    {
-                      duration: 0,
-                    },
-                  );
-
-                  setDrawerOpen(false);
-                  setSearchLocation({
-                    title:
-                      feature.properties.name ??
-                      feature.properties.address_line1,
-                    latitude: feature.properties.lat,
-                    longitude: feature.properties.lon,
-                    icon: "unknown",
-                  });
-                }}
-              >
-                <span className="truncate pr-2">
-                  <span className="font-medium">
-                    {feature.properties.name ??
-                      feature.properties.address_line1}
-                  </span>
-                  <span className="text-muted-foreground ml-2 text-sm">
-                    {feature.properties.address_line2}
-                  </span>
-                </span>
-                <CommandShortcut>⌘{i + 1}</CommandShortcut>
-              </CommandItem>
-            );
-          })}
-        </CommandGroup>
-      </CommandList> */}
     </>
   );
 }
@@ -189,6 +69,71 @@ function SearchResults({
     queryFn: () => fetchPlaces(debouncedSearchQuery),
     placeholderData: (prev) => prev,
   });
+
+  // Controls hot keys for selecting search results
+  useEffect(() => {
+    const down = (
+      key: string,
+      feature: PlacesSearchResponse["features"][number],
+      e: KeyboardEvent,
+    ) => {
+      if (e.key === key.toString() && (e.metaKey || e.ctrlKey)) {
+        const bbox = feature.bbox;
+
+        if (!bbox || !feature.properties) {
+          return;
+        }
+
+        e.preventDefault();
+        e.stopPropagation();
+
+        setOpenSearch(false);
+        map?.fitBounds(
+          [
+            [bbox[0], bbox[1]],
+            [bbox[2], bbox[3]],
+          ],
+          {
+            duration: 0,
+          },
+        );
+
+        setDrawerOpen(false);
+        setSearchLocation({
+          title: feature.properties.name ?? feature.properties.address_line1,
+          latitude: feature.properties.lat,
+          longitude: feature.properties.lon,
+          icon: "unknown",
+        });
+      }
+    };
+
+    data?.features.forEach((feature, i) => {
+      const key = i + 1;
+
+      if (key <= 5) {
+        document.addEventListener(
+          "keydown",
+
+          down.bind(null, key.toString(), feature),
+        );
+      }
+    });
+
+    return () => {
+      data?.features.forEach((feature, i) => {
+        const key = i + 1;
+
+        if (i <= 5) {
+          document.removeEventListener(
+            "keydown",
+
+            down.bind(null, key.toString(), feature),
+          );
+        }
+      });
+    };
+  }, [data?.features, map, setOpenSearch, setSearchLocation, setDrawerOpen]);
 
   if (!enabled) return null;
 
