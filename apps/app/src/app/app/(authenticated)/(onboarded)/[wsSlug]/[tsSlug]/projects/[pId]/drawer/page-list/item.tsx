@@ -23,8 +23,10 @@ import {
   SidebarRightMenuButton,
 } from "@mapform/ui/components/sidebar";
 import { DragItem, DragHandle } from "~/components/draggable";
+import { usePathname } from "next/navigation";
 import { deletePageAction } from "~/data/pages/delete-page";
 import { useProject } from "../../project-context";
+import { cn } from "@mapform/lib/classnames";
 
 interface ItemProps {
   page: NonNullable<GetProjectWithPages["data"]>["pages"][number];
@@ -37,7 +39,9 @@ export function Item({ page }: ItemProps) {
     setActivePage,
     currentPage,
   } = useProject();
-  const { execute: executeDeletePage } = useAction(deletePageAction);
+  const pathname = usePathname();
+  const { executeAsync: executeDeletePage, isPending } =
+    useAction(deletePageAction);
 
   const isLastPage = currentProject.pages.length <= 1;
   const isActive = page.id === currentPage?.id;
@@ -47,21 +51,16 @@ export function Item({ page }: ItemProps) {
 
     const newPages = currentProject.pages.filter((p) => p.id !== page.id);
 
-    if (isActive) {
-      const pageIndex = currentProject.pages.findIndex((p) => p.id === page.id);
+    const pageIndex = currentProject.pages.findIndex((p) => p.id === page.id);
 
-      const nextPage =
-        currentProject.pages[pageIndex + 1] ||
-        currentProject.pages[pageIndex - 1];
+    const nextPage =
+      currentProject.pages[pageIndex + 1] ||
+      currentProject.pages[pageIndex - 1];
 
-      if (nextPage) {
-        setActivePage(nextPage);
-      }
-    }
-
-    executeDeletePage({
+    await executeDeletePage({
       pageId: page.id,
       projectId: currentProject.id,
+      redirect: nextPage ? `${pathname}?page=${nextPage.id}` : undefined,
     });
 
     startTransition(() => {
@@ -80,6 +79,7 @@ export function Item({ page }: ItemProps) {
             <SidebarMenuItem>
               <SidebarRightMenuButton
                 className="pr-8"
+                disabled={isPending}
                 isActive={isActive}
                 onClick={() => {
                   setActivePage(page);
@@ -90,7 +90,11 @@ export function Item({ page }: ItemProps) {
                 ) : (
                   <FileIcon />
                 )}
-                <span className="truncate text-sm">
+                <span
+                  className={cn("truncate text-sm", {
+                    "text-muted-foreground": isPending,
+                  })}
+                >
                   {page.title || "Untitled"}
                 </span>
               </SidebarRightMenuButton>
@@ -108,6 +112,7 @@ export function Item({ page }: ItemProps) {
                   <DropdownMenuGroup>
                     <DropdownMenuItem
                       className="flex items-center gap-2"
+                      disabled={isPending}
                       onClick={handleDelete}
                     >
                       <Trash2Icon className="size-4 flex-shrink-0" />
