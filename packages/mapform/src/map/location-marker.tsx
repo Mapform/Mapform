@@ -8,7 +8,7 @@ import { useMapform } from "../context";
 /**
  * Update searchLocationMarker marker
  */
-export function SearchLocationMarker({
+export function LocationMarker({
   searchLocationMarker,
   children,
 }: {

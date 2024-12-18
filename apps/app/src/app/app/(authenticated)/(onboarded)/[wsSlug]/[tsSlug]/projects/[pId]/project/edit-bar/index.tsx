@@ -19,7 +19,7 @@ import type { MapMouseEvent } from "mapbox-gl";
 import { useMapform, type MapboxEvent } from "@mapform/mapform";
 import { cn } from "@mapform/lib/classnames";
 import type { SearchFeature } from "@mapform/map-utils/types";
-import { SearchLocationMarker as MapMarker } from "@mapform/mapform";
+import { LocationMarker } from "@mapform/mapform";
 import type { GetPageWithLayers } from "@mapform/backend/data/pages/get-page-with-layers";
 import { useProject } from "../../project-context";
 import { SearchLocationMarker } from "./search-location-marker";
@@ -300,14 +300,14 @@ function EditBarInner({ currentPage }: EditBarInnerProps) {
           </TooltipProvider>
         </div>
 
-        <MapMarker searchLocationMarker={searchLocation}>
+        <LocationMarker searchLocationMarker={searchLocation}>
           <SearchLocationMarker
             pageLayers={pageLayers}
             searchLocation={searchLocation}
             setDrawerOpen={setDrawerOpen}
             setSearchLocation={setSearchLocation}
           />
-        </MapMarker>
+        </LocationMarker>
       </div>
 
       {isSelectingPoint ? (

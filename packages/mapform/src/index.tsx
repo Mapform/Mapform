@@ -22,7 +22,7 @@ import type { GetPageData } from "@mapform/backend/data/datalayer/get-page-data"
 import { Button } from "@mapform/ui/components/button";
 import { ArrowLeftIcon, ArrowRightIcon, ChevronsRightIcon } from "lucide-react";
 import { Blocknote } from "./block-note";
-import { Map, SearchLocationMarker } from "./map";
+import { Map, LocationMarker } from "./map";
 import "./style.css";
 import { MapformProvider, useMapform, type MBMap } from "./context";
 import { DesktopDrawer } from "./drawers/desktop-drawer";
@@ -95,7 +95,6 @@ export function MapForm({
     },
   };
 
-   
   const isMobile = !!width && width < 768;
 
   const onSubmit = (data: FormSchema) => {
@@ -363,7 +362,7 @@ export function MapForm({
 
 MapForm.displayName = "MapForm";
 
-export { MapformProvider, useMapform, SearchLocationMarker };
+export { MapformProvider, useMapform, LocationMarker };
 export type { ViewState, MBMap };
 export type { MapboxEvent } from "mapbox-gl";
 

@@ -90,9 +90,9 @@ export function SearchLocationMarker({
     <div
       className="relative w-[240px] rounded-md bg-white p-4 shadow-md"
       ref={ref}
-      style={{
-        transform: `translateY(-${bounds.height / 2 + 16 + 8}px)`,
-      }}
+      // style={{
+      //   transform: `translateY(-${bounds.height / 2 + 16 + 8}px)`,
+      // }}
     >
       <Button
         className="absolute right-2 top-2"
