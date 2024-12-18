@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { authClient } from "~/lib/safe-action";
 
 export const deleteProjectAction = async (
-  params: Parameters<typeof authClient.deleteProject>[0],
+  params: Last<Parameters<typeof authClient.deleteProject>>,
 ) => {
   const result = await authClient.deleteProject(params);
 

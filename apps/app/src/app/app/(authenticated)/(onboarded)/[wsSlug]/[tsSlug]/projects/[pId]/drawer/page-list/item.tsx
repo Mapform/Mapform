@@ -42,7 +42,7 @@ export function Item({ page }: ItemProps) {
   const isLastPage = currentProject.pages.length <= 1;
   const isActive = page.id === currentPage?.id;
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (isLastPage) return;
 
     const newPages = currentProject.pages.filter((p) => p.id !== page.id);
@@ -54,7 +54,9 @@ export function Item({ page }: ItemProps) {
         currentProject.pages[pageIndex + 1] ||
         currentProject.pages[pageIndex - 1];
 
-      nextPage && setActivePage(nextPage);
+      if (nextPage) {
+        setActivePage(nextPage);
+      }
     }
 
     executeDeletePage({

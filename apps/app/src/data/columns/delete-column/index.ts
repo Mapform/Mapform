@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { authClient } from "~/lib/safe-action";
 
 export const deleteColumnAction = async (
-  params: Parameters<typeof authClient.deleteColumn>[0],
+  params: Last<Parameters<typeof authClient.deleteColumn>>,
 ) => {
   const result = await authClient.deleteColumn(params);
 

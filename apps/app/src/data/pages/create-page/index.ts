@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { authClient } from "~/lib/safe-action";
 
 export const createPageAction = async (
-  params: Parameters<typeof authClient.createPage>[0],
+  params: Last<Parameters<typeof authClient.createPage>>,
 ) => {
   const result = await authClient.createPage(params);
 

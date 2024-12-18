@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { authClient } from "~/lib/safe-action";
 
 export const updateDatasetAction = async (
-  params: Parameters<typeof authClient.updateDataset>[0],
+  params: Last<Parameters<typeof authClient.updateDataset>>,
 ) => {
   const result = await authClient.updateDataset(params);
   revalidatePath("/app/[wsSlug]/[tsSlug]", "page");

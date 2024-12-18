@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { authClient } from "~/lib/safe-action";
 
 export const publishProjectAction = async (
-  params: Parameters<typeof authClient.publishProject>[0],
+  params: Last<Parameters<typeof authClient.publishProject>>,
 ) => {
   const result = await authClient.publishProject(params);
 

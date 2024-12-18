@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { authClient } from "~/lib/safe-action";
 
 export const createPointAction = async (
-  params: Parameters<typeof authClient.createPoint>[0],
+  params: Last<Parameters<typeof authClient.createPoint>>,
 ) => {
   const result = await authClient.createPoint(params);
 

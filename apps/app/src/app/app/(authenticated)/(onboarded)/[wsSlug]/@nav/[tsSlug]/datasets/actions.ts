@@ -6,7 +6,7 @@ import { redirect } from "next/navigation";
 import { authClient } from "~/lib/safe-action";
 
 export const createEmptyDatasetAction = async (
-  params: Parameters<typeof authClient.createEmptyDataset>[0],
+  params: Last<Parameters<typeof authClient.createEmptyDataset>>,
 ) => {
   const headersList = await headers();
   const workspaceSlug = headersList.get("x-workspace-slug") ?? "";
