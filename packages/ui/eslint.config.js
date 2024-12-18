@@ -1,4 +1,4 @@
-import { config } from "@mapform/eslint-config/react-internal";
+import { reactConfig } from "@mapform/eslint-config/react-internal";
 
 /** @type {import("eslint").Linter.Config} */
-export default config;
+export default reactConfig;
