@@ -112,7 +112,7 @@ export function Item({ page }: ItemProps) {
                   <DropdownMenuGroup>
                     <DropdownMenuItem
                       className="flex items-center gap-2"
-                      disabled={isPending}
+                      disabled={isPending || currentProject.pages.length <= 1}
                       onClick={handleDelete}
                     >
                       <Trash2Icon className="size-4 flex-shrink-0" />
