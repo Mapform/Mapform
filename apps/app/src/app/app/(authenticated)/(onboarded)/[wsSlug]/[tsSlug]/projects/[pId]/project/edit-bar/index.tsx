@@ -312,7 +312,7 @@ function EditBarInner({ currentPage }: EditBarInnerProps) {
 
       {isSelectingPoint ? (
         <MapPinIcon
-          className="pointer-events-none absolute z-50 size-6 -translate-x-1/2 -translate-y-1/2 fill-white shadow-sm outline-2 outline-black"
+          className="pointer-events-none absolute z-50 size-6 -translate-x-1/2 -translate-y-full fill-white outline-2 outline-black"
           style={{
             left: selectingPinLocation.x,
             top: selectingPinLocation.y,
