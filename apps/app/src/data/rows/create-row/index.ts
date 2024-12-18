@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { authClient } from "~/lib/safe-action";
 
 export const createRowAction = async (
-  params: Parameters<typeof authClient.createRow>[0],
+  params: Last<Parameters<typeof authClient.createRow>>,
 ) => {
   const result = await authClient.createRow(params);
 

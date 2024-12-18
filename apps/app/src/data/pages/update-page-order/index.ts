@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { authClient } from "~/lib/safe-action";
 
 export const updatePageOrderAction = async (
-  params: Parameters<typeof authClient.updatePageOrder>[0],
+  params: Last<Parameters<typeof authClient.updatePageOrder>>,
 ) => {
   const result = await authClient.updatePageOrder(params);
 

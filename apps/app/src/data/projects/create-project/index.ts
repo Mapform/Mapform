@@ -6,7 +6,7 @@ import { redirect } from "next/navigation";
 import { authClient } from "~/lib/safe-action";
 
 export const createProjectAction = async (
-  params: Parameters<typeof authClient.createProject>[0],
+  params: Last<Parameters<typeof authClient.createProject>>,
 ) => {
   const headersList = await headers();
   const workspaceSlug = headersList.get("x-workspace-slug") ?? "";

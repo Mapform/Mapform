@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { authClient } from "~/lib/safe-action";
 
 export const deleteLayerAction = async (
-  params: Parameters<typeof authClient.deleteLayer>[0],
+  params: Last<Parameters<typeof authClient.deleteLayer>>,
 ) => {
   const result = await authClient.deleteLayer(params);
 

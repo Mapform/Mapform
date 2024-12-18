@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { authClient } from "~/lib/safe-action";
 
 export async function createColumnAction(
-  params: Parameters<typeof authClient.createColumn>[0],
+  params: Last<Parameters<typeof authClient.createColumn>>,
 ) {
   const newColumn = await authClient.createColumn(params);
 

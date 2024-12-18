@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { authClient } from "~/lib/safe-action";
 
 export const duplicateRowsAction = async (
-  params: Parameters<typeof authClient.duplicateRows>[0],
+  params: Last<Parameters<typeof authClient.duplicateRows>>,
 ) => {
   const result = await authClient.duplicateRows(params);
 

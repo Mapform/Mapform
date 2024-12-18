@@ -6,7 +6,7 @@ import { revalidatePath } from "next/cache";
 import { authClient } from "~/lib/safe-action";
 
 export const updateWorkspaceAction = async (
-  params: Parameters<typeof authClient.createProject>[0],
+  params: Last<Parameters<typeof authClient.updateWorkspace>>,
 ) => {
   const headersList = await headers();
   const workspaceSlug = headersList.get("x-workspace-slug") ?? "";

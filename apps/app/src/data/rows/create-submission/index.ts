@@ -4,9 +4,9 @@ import { cookies } from "next/headers";
 import { publicClient } from "~/lib/safe-action";
 
 export const createSubmissionAction = async (
-  params: Parameters<typeof publicClient.createSubmission>[0],
+  params: Last<Parameters<typeof publicClient.createSubmission>>,
 ) => {
-  const projectId = params.parsedInput.projectId;
+  const projectId = params.projectId;
   const result = await publicClient.createSubmission(params);
 
   if (!result?.data) {

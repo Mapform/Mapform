@@ -6,7 +6,7 @@ import { authClient } from "~/lib/safe-action";
 export const createEmptyDatasetAction = authClient.createEmptyDataset;
 
 export const deleteDatasetAction = async (
-  params: Parameters<typeof authClient.deleteDataset>[0],
+  params: Last<Parameters<typeof authClient.deleteDataset>>,
 ) => {
   const result = await authClient.deleteDataset(params);
   revalidatePath("/app/[wsSlug]", "page");
