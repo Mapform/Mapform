@@ -19,7 +19,7 @@ import type { MapMouseEvent } from "mapbox-gl";
 import { useMapform, type MapboxEvent } from "@mapform/mapform";
 import { cn } from "@mapform/lib/classnames";
 import type { SearchFeature } from "@mapform/map-utils/types";
-import { SearchLocationMarker as MapMarker } from "@mapform/mapform";
+import { LocationMarker } from "@mapform/mapform";
 import type { GetPageWithLayers } from "@mapform/backend/data/pages/get-page-with-layers";
 import { useProject } from "../../project-context";
 import { SearchLocationMarker } from "./search-location-marker";
@@ -300,19 +300,25 @@ function EditBarInner({ currentPage }: EditBarInnerProps) {
           </TooltipProvider>
         </div>
 
-        <MapMarker searchLocationMarker={searchLocation}>
+        <LocationMarker
+          markerOptions={{
+            anchor: "bottom",
+            offset: [0, -16],
+          }}
+          searchLocationMarker={searchLocation}
+        >
           <SearchLocationMarker
             pageLayers={pageLayers}
             searchLocation={searchLocation}
             setDrawerOpen={setDrawerOpen}
             setSearchLocation={setSearchLocation}
           />
-        </MapMarker>
+        </LocationMarker>
       </div>
 
       {isSelectingPoint ? (
         <MapPinIcon
-          className="pointer-events-none absolute z-50 size-6 -translate-x-1/2 -translate-y-1/2 fill-white shadow-sm outline-2 outline-black"
+          className="pointer-events-none absolute z-50 size-6 -translate-x-1/2 -translate-y-full fill-white outline-2 outline-black"
           style={{
             left: selectingPinLocation.x,
             top: selectingPinLocation.y,

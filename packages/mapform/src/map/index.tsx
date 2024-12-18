@@ -10,7 +10,7 @@ import type Supercluster from "supercluster";
 import useSupercluster from "use-supercluster";
 import { AnimatePresence, motion } from "motion/react";
 import { useMapform } from "../context";
-import { SearchLocationMarker } from "./search-location-marker";
+import { LocationMarker } from "./location-marker";
 import { Cluster } from "./cluster";
 
 const accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
@@ -67,7 +67,6 @@ export function Map({
         type: "Feature",
         geometry: {
           type: "Point",
-           
           coordinates: [feature.value!.x, feature.value!.y],
         },
         properties: {
@@ -88,7 +87,6 @@ export function Map({
         type: "Feature",
         geometry: {
           type: "Point",
-           
           coordinates: [feature.value!.x, feature.value!.y],
         },
         properties: {
@@ -356,7 +354,7 @@ export function Map({
               );
 
             return (
-              <SearchLocationMarker
+              <LocationMarker
                 key={cluster.id}
                 searchLocationMarker={{
                   latitude,
@@ -379,12 +377,12 @@ export function Map({
                   pointCount={pointCount}
                   uniqueFeatures={uniqueFeatures}
                 />
-              </SearchLocationMarker>
+              </LocationMarker>
             );
           }
 
           return (
-            <SearchLocationMarker
+            <LocationMarker
               key={cluster.properties.id}
               searchLocationMarker={{
                 latitude,
@@ -409,7 +407,7 @@ export function Map({
               >
                 {cluster.properties.icon}
               </motion.button>
-            </SearchLocationMarker>
+            </LocationMarker>
           );
         })}
       </AnimatePresence>
@@ -418,4 +416,4 @@ export function Map({
   );
 }
 
-export { SearchLocationMarker };
+export { LocationMarker };
