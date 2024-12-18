@@ -1,4 +1,3 @@
-import { useMeasure } from "@mapform/lib/hooks/use-measure";
 import { Button } from "@mapform/ui/components/button";
 import {
   Command,
@@ -59,7 +58,6 @@ export function SearchLocationMarker({
   searchLocation,
   setSearchLocation,
 }: SearchLocationMarkerProps) {
-  const { ref, bounds } = useMeasure<HTMLDivElement>();
   const [open, setOpen] = useState(false);
   const [layerPopoverOpen, setLayerPopoverOpen] = useState(false);
   const [query, setQuery] = useState<string>("");
@@ -87,13 +85,7 @@ export function SearchLocationMarker({
   const y = searchLocation.latitude;
 
   return (
-    <div
-      className="relative w-[240px] rounded-md bg-white p-4 shadow-md"
-      ref={ref}
-      // style={{
-      //   transform: `translateY(-${bounds.height / 2 + 16 + 8}px)`,
-      // }}
-    >
+    <div className="relative w-[240px] rounded-md bg-white p-4 shadow-md">
       <Button
         className="absolute right-2 top-2"
         onClick={() => {

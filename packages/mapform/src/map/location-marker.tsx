@@ -10,9 +10,11 @@ import { useMapform } from "../context";
  */
 export function LocationMarker({
   searchLocationMarker,
+  markerOptions,
   children,
 }: {
   searchLocationMarker: SearchFeature | null;
+  markerOptions?: mapboxgl.MarkerOptions;
   children: React.ReactNode;
 }) {
   const { map } = useMapform();
@@ -28,7 +30,7 @@ export function LocationMarker({
       currentLngLat?.lng !== searchLocationMarker.longitude
     ) {
       markerEl.current?.remove();
-      markerEl.current = new Marker(markerElInner.current)
+      markerEl.current = new Marker(markerElInner.current, markerOptions)
         .setLngLat([
           searchLocationMarker.longitude,
           searchLocationMarker.latitude,
@@ -39,7 +41,7 @@ export function LocationMarker({
     if (map && !searchLocationMarker) {
       markerEl.current?.remove();
     }
-  }, [map, searchLocationMarker, children]);
+  }, [map, searchLocationMarker, children, markerOptions]);
 
   return (
     <Portal.Root container={markerElInner.current}>{children}</Portal.Root>

@@ -300,7 +300,13 @@ function EditBarInner({ currentPage }: EditBarInnerProps) {
           </TooltipProvider>
         </div>
 
-        <LocationMarker searchLocationMarker={searchLocation}>
+        <LocationMarker
+          markerOptions={{
+            anchor: "bottom",
+            offset: [0, -16],
+          }}
+          searchLocationMarker={searchLocation}
+        >
           <SearchLocationMarker
             pageLayers={pageLayers}
             searchLocation={searchLocation}
