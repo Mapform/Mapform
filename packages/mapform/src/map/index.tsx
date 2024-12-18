@@ -67,7 +67,6 @@ export function Map({
         type: "Feature",
         geometry: {
           type: "Point",
-
           coordinates: [feature.value!.x, feature.value!.y],
         },
         properties: {
@@ -88,7 +87,6 @@ export function Map({
         type: "Feature",
         geometry: {
           type: "Point",
-
           coordinates: [feature.value!.x, feature.value!.y],
         },
         properties: {
