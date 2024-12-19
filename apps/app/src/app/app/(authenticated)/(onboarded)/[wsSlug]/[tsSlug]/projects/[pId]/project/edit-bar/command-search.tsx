@@ -146,7 +146,17 @@ function SearchResults({
 
   if (!enabled) return null;
 
-  const features = data?.features ?? [];
+  // Only show unique features with properties and bbox
+  const features =
+    data?.features.filter(
+      (f, i, self) =>
+        f.properties &&
+        f.bbox &&
+        i ===
+          self.findIndex(
+            (t) => t.properties?.place_id === f.properties?.place_id,
+          ),
+    ) ?? [];
 
   return (
     <CommandList className={cn(isFetching && "animate-pulse")}>
@@ -165,61 +175,50 @@ function SearchResults({
           "p-0": features.length === 0,
         })}
       >
-        {data?.features
-          .filter(
-            (f, i, self) =>
-              f.properties &&
-              f.bbox &&
-              i ===
-                self.findIndex(
-                  (t) => t.properties?.place_id === f.properties?.place_id,
-                ),
-          )
-          .map((feature, i) => {
-            return (
-              <CommandItem
-                key={feature.properties?.place_id}
-                onSelect={() => {
-                  setOpenSearch(false);
+        {features.map((feature, i) => {
+          return (
+            <CommandItem
+              key={feature.properties?.place_id}
+              onSelect={() => {
+                setOpenSearch(false);
 
-                  if (!feature.bbox || !feature.properties) {
-                    return;
-                  }
+                if (!feature.bbox || !feature.properties) {
+                  return;
+                }
 
-                  map?.fitBounds(
-                    [
-                      [feature.bbox[0], feature.bbox[1]],
-                      [feature.bbox[2], feature.bbox[3]],
-                    ],
-                    {
-                      duration: 0,
-                    },
-                  );
+                map?.fitBounds(
+                  [
+                    [feature.bbox[0], feature.bbox[1]],
+                    [feature.bbox[2], feature.bbox[3]],
+                  ],
+                  {
+                    duration: 0,
+                  },
+                );
 
-                  setDrawerOpen(false);
-                  setSearchLocation({
-                    title:
-                      feature.properties.name ??
-                      feature.properties.address_line1,
-                    latitude: feature.properties.lat,
-                    longitude: feature.properties.lon,
-                    icon: "unknown",
-                  });
-                }}
-              >
-                <span className="truncate pr-2">
-                  <span className="font-medium">
-                    {feature.properties?.name ??
-                      feature.properties?.address_line1}
-                  </span>
-                  <span className="text-muted-foreground ml-2 text-sm">
-                    {feature.properties?.address_line2}
-                  </span>
+                setDrawerOpen(false);
+                setSearchLocation({
+                  title:
+                    feature.properties.name ?? feature.properties.address_line1,
+                  latitude: feature.properties.lat,
+                  longitude: feature.properties.lon,
+                  icon: "unknown",
+                });
+              }}
+            >
+              <span className="truncate pr-2">
+                <span className="font-medium">
+                  {feature.properties?.name ??
+                    feature.properties?.address_line1}
                 </span>
-                <CommandShortcut>⌘{i + 1}</CommandShortcut>
-              </CommandItem>
-            );
-          })}
+                <span className="text-muted-foreground ml-2 text-sm">
+                  {feature.properties?.address_line2}
+                </span>
+              </span>
+              <CommandShortcut>⌘{i + 1}</CommandShortcut>
+            </CommandItem>
+          );
+        })}
       </CommandGroup>
     </CommandList>
   );
