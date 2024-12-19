@@ -15,26 +15,71 @@ import type {
   SearchFeature,
   PlacesSearchResponse,
 } from "@mapform/map-utils/types";
+import { useDebounce } from "@mapform/lib/hooks/use-debounce";
+import { useProject } from "../../project-context";
+
+interface CommandSearchProps {
+  setOpenSearch: React.Dispatch<React.SetStateAction<boolean>>;
+  setSearchLocation: React.Dispatch<SearchFeature | null>;
+}
 
 export function CommandSearch({
   setOpenSearch,
   setSearchLocation,
-}: {
-  setOpenSearch: React.Dispatch<React.SetStateAction<boolean>>;
-  setSearchLocation: React.Dispatch<SearchFeature | null>;
-}) {
-  const { map, setDrawerOpen } = useMapform();
+}: CommandSearchProps) {
   const [query, setQuery] = useState("");
-  const debouncedSetQuery = debounce(setQuery, 250, {
-    leading: true,
-    trailing: true,
-  });
+
+  return (
+    <>
+      <CommandInput
+        className="border-none focus:ring-0"
+        onValueChange={(search) => {
+          setQuery(search);
+        }}
+        placeholder="Search for places..."
+        value={query}
+      />
+      <SearchResults
+        query={query}
+        setOpenSearch={setOpenSearch}
+        setSearchLocation={setSearchLocation}
+      />
+    </>
+  );
+}
+
+interface SearchResultsProps {
+  query: string;
+  setSearchLocation: CommandSearchProps["setSearchLocation"];
+  setOpenSearch: CommandSearchProps["setOpenSearch"];
+}
+
+function SearchResults({
+  query,
+  setSearchLocation,
+  setOpenSearch,
+}: SearchResultsProps) {
+  const { map, setDrawerOpen } = useMapform();
+  const debouncedSearchQuery = useDebounce(query, 200);
+
+  const enabled = !!debouncedSearchQuery;
+
   const { data, isFetching } = useQuery({
-    queryKey: ["search", query],
-    queryFn: () => fetchPlaces(query),
+    enabled,
+    queryKey: ["search", debouncedSearchQuery],
+    queryFn: () =>
+      fetchPlaces(debouncedSearchQuery, {
+        bounds: map?.getBounds().toArray().flat() as [
+          number,
+          number,
+          number,
+          number,
+        ],
+      }),
     placeholderData: (prev) => prev,
   });
 
+  // Controls hot keys for selecting search results
   useEffect(() => {
     const down = (
       key: string,
@@ -99,29 +144,41 @@ export function CommandSearch({
     };
   }, [data?.features, map, setOpenSearch, setSearchLocation, setDrawerOpen]);
 
-  return (
-    <>
-      <CommandInput
-        className="border-none focus:ring-0"
-        onValueChange={(search) => {
-          debouncedSetQuery(search);
-        }}
-        placeholder="Search for places..."
-        value={query}
-      />
-      <CommandList className={cn(isFetching && "animate-pulse")}>
-        <CommandEmpty className="text-muted-foreground m-2 mb-0 rounded bg-gray-100 p-8 text-center">
-          {isFetching ? "Searching..." : "No results found."}
-        </CommandEmpty>
-        <CommandGroup>
-          {data?.features.map((feature, i) => {
-            if (!feature.bbox || !feature.properties) {
-              return;
-            }
+  if (!enabled) return null;
 
+  const features = data?.features ?? [];
+
+  return (
+    <CommandList className={cn(isFetching && "animate-pulse")}>
+      {isFetching && features.length === 0 && (
+        <div className="text-muted-foreground m-2 rounded bg-gray-100 px-2 py-3 text-center text-sm">
+          Searching...
+        </div>
+      )}
+      {features.length === 0 && !isFetching && (
+        <div className="text-muted-foreground m-2 rounded bg-gray-100 px-2 py-3 text-center text-sm">
+          No results found.
+        </div>
+      )}
+      <CommandGroup
+        className={cn("p-2", {
+          "p-0": features.length === 0,
+        })}
+      >
+        {data?.features
+          .filter(
+            (f, i, self) =>
+              f.properties &&
+              f.bbox &&
+              i ===
+                self.findIndex(
+                  (t) => t.properties?.place_id === f.properties?.place_id,
+                ),
+          )
+          .map((feature, i) => {
             return (
               <CommandItem
-                key={feature.properties.place_id}
+                key={feature.properties?.place_id}
                 onSelect={() => {
                   setOpenSearch(false);
 
@@ -152,29 +209,33 @@ export function CommandSearch({
               >
                 <span className="truncate pr-2">
                   <span className="font-medium">
-                    {feature.properties.name ??
-                      feature.properties.address_line1}
+                    {feature.properties?.name ??
+                      feature.properties?.address_line1}
                   </span>
                   <span className="text-muted-foreground ml-2 text-sm">
-                    {feature.properties.address_line2}
+                    {feature.properties?.address_line2}
                   </span>
                 </span>
                 <CommandShortcut>⌘{i + 1}</CommandShortcut>
               </CommandItem>
             );
           })}
-        </CommandGroup>
-      </CommandList>
-    </>
+      </CommandGroup>
+    </CommandList>
   );
 }
 
-async function fetchPlaces(query?: string) {
+async function fetchPlaces(
+  query?: string,
+  { bounds }: { bounds?: [number, number, number, number] } = {},
+) {
   if (!query) {
     return undefined;
   }
 
-  const response = await fetch(`/api/places/search?query=${query}`);
+  const response = await fetch(
+    `/api/places/search?query=${query}&bounds=${bounds?.join(",")}`,
+  );
 
   if (!response.ok) {
     throw new Error(`Response status: ${response.status}`);
