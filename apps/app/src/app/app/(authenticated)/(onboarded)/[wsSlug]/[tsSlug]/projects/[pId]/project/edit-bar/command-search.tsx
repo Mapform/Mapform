@@ -16,6 +16,7 @@ import type {
   PlacesSearchResponse,
 } from "@mapform/map-utils/types";
 import { useDebounce } from "@mapform/lib/hooks/use-debounce";
+import { useProject } from "../../project-context";
 
 interface CommandSearchProps {
   setOpenSearch: React.Dispatch<React.SetStateAction<boolean>>;
@@ -66,7 +67,15 @@ function SearchResults({
   const { data, isFetching } = useQuery({
     enabled,
     queryKey: ["search", debouncedSearchQuery],
-    queryFn: () => fetchPlaces(debouncedSearchQuery),
+    queryFn: () =>
+      fetchPlaces(debouncedSearchQuery, {
+        bounds: map?.getBounds().toArray().flat() as [
+          number,
+          number,
+          number,
+          number,
+        ],
+      }),
     placeholderData: (prev) => prev,
   });
 
@@ -204,12 +213,17 @@ function SearchResults({
   );
 }
 
-async function fetchPlaces(query?: string) {
+async function fetchPlaces(
+  query?: string,
+  { bounds }: { bounds?: [number, number, number, number] } = {},
+) {
   if (!query) {
     return undefined;
   }
 
-  const response = await fetch(`/api/places/search?query=${query}`);
+  const response = await fetch(
+    `/api/places/search?query=${query}&bounds=${bounds?.join(",")}`,
+  );
 
   if (!response.ok) {
     throw new Error(`Response status: ${response.status}`);
