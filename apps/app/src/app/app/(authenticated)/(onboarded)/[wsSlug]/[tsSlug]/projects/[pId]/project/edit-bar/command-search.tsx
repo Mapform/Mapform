@@ -160,15 +160,13 @@ function SearchResults({
           No results found.
         </div>
       )}
-      <CommandGroup>
-        {data?.features.map((feature, i) => {
-          if (!feature.bbox || !feature.properties) {
-            return;
-          }
-
+      {/* <CommandGroup> */}
+      {data?.features
+        .filter((f) => f.properties && f.bbox)
+        .map((feature, i) => {
           return (
             <CommandItem
-              key={feature.properties.place_id}
+              key={feature.properties?.place_id}
               onSelect={() => {
                 setOpenSearch(false);
 
@@ -198,17 +196,18 @@ function SearchResults({
             >
               <span className="truncate pr-2">
                 <span className="font-medium">
-                  {feature.properties.name ?? feature.properties.address_line1}
+                  {feature.properties?.name ??
+                    feature.properties?.address_line1}
                 </span>
                 <span className="text-muted-foreground ml-2 text-sm">
-                  {feature.properties.address_line2}
+                  {feature.properties?.address_line2}
                 </span>
               </span>
               <CommandShortcut>⌘{i + 1}</CommandShortcut>
             </CommandItem>
           );
         })}
-      </CommandGroup>
+      {/* </CommandGroup> */}
     </CommandList>
   );
 }
