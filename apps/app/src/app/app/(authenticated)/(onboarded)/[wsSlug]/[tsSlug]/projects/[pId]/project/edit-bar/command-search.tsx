@@ -151,16 +151,20 @@ function SearchResults({
   return (
     <CommandList className={cn(isFetching && "animate-pulse")}>
       {isFetching && features.length === 0 && (
-        <div className="text-muted-foreground m-2 mb-0 rounded bg-gray-100 px-2 py-3 text-center text-sm">
+        <div className="text-muted-foreground m-2 rounded bg-gray-100 px-2 py-3 text-center text-sm">
           Searching...
         </div>
       )}
       {features.length === 0 && !isFetching && (
-        <div className="text-muted-foreground m-2 mb-0 rounded bg-gray-100 px-2 py-3 text-center text-sm">
+        <div className="text-muted-foreground m-2 rounded bg-gray-100 px-2 py-3 text-center text-sm">
           No results found.
         </div>
       )}
-      <CommandGroup>
+      <CommandGroup
+        className={cn("p-2", {
+          "p-0": features.length === 0,
+        })}
+      >
         {data?.features
           .filter(
             (f, i, self) =>
