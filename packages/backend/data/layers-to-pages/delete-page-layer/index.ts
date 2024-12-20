@@ -1,8 +1,9 @@
 "server-only";
 
 import { db } from "@mapform/db";
-import { layersToPages } from "@mapform/db/schema";
+import { layersToPages, pages, projects } from "@mapform/db/schema";
 import { eq, and, gt, sql } from "@mapform/db/utils";
+import { notEmpty } from "@mapform/lib/not-empty";
 import { deletePageLayerSchema } from "./schema";
 import type { UserAuthClient } from "../../../lib/types";
 
@@ -11,28 +12,25 @@ export const deletePageLayer = (authClient: UserAuthClient) =>
     .schema(deletePageLayerSchema)
     .action(
       async ({ parsedInput: { layerId, pageId }, ctx: { userAccess } }) => {
-        const existingPageLayers = await db.query.layersToPages.findMany({
-          where: and(
-            eq(layersToPages.layerId, layerId),
-            eq(layersToPages.pageId, pageId),
-          ),
-          with: {
-            page: {
-              with: {
-                project: {
-                  columns: {
-                    teamspaceId: true,
-                  },
-                },
-              },
-            },
-          },
-        });
+        const results = await db
+          .select()
+          .from(layersToPages)
+          .leftJoin(pages, eq(pages.id, layersToPages.pageId))
+          .leftJoin(projects, eq(projects.id, pages.projectId))
+          .where(
+            and(
+              eq(layersToPages.layerId, layerId),
+              eq(layersToPages.pageId, pageId),
+            ),
+          );
+
+        const ltpTeamspaceIds = results
+          .map((result) => result.project?.teamspaceId)
+          .filter(notEmpty);
 
         if (
-          existingPageLayers.some(
-            (ltp) =>
-              !userAccess.teamspace.ids.includes(ltp.page.project.teamspaceId),
+          ltpTeamspaceIds.some(
+            (teamspaceId) => !userAccess.teamspace.ids.includes(teamspaceId),
           )
         ) {
           throw new Error("Unauthorized");
@@ -50,8 +48,8 @@ export const deletePageLayer = (authClient: UserAuthClient) =>
 
           // We now need to update the position of the remaining layersToPosition
           await Promise.all(
-            existingPageLayers.map(async (ltp) => {
-              const positionThatWasDeleted = ltp.position;
+            results.map(async (result) => {
+              const positionThatWasDeleted = result.layers_to_pages.position;
 
               return db
                 .update(layersToPages)
