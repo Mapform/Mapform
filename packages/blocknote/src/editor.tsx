@@ -98,7 +98,6 @@ export function BlocknoteEditor({
         }}
         suggestionMenuComponent={({ items, selectedIndex, onItemClick }) => (
           <div className="bg-popover text-popover-foreground z-50 min-w-[200px] space-y-1 overflow-hidden rounded-md border p-1 shadow-md">
-            {console.log(1111, items)}
             {items.map((item, index) => (
               <div
                 className={cn(
