@@ -133,6 +133,8 @@ export const LayerPopoverContent = forwardRef<
                     <FormControl>
                       <Input
                         autoComplete="off"
+                        data-lpignore="true"
+                        data-1p-ignore
                         disabled={field.disabled}
                         name={field.name}
                         onChange={field.onChange}
