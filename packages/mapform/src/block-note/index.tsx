@@ -45,6 +45,7 @@ export function Blocknote({
   );
 
   const editor = useCreateBlockNote({
+    animations: false,
     initialContent: description?.content,
     placeholders: {
       default: editable ? "Write, or press '/' for commands..." : "",
