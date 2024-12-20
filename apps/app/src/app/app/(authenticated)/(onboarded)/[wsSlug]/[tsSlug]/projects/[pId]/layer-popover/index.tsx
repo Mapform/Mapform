@@ -43,7 +43,7 @@ export const LayerPopoverContent = forwardRef<
   React.ComponentPropsWithoutRef<typeof PopoverContent> & LayerPopoverProps
 >(({ layerToEdit, initialName, onSuccess, ...props }, ref) => {
   const { ...rest } = useProject();
-   
+
   const currentPage = rest.currentPage!;
 
   const form = useForm<UpsertLayerSchema>({
@@ -132,6 +132,7 @@ export const LayerPopoverContent = forwardRef<
                   <div className="flex-1">
                     <FormControl>
                       <Input
+                        autoComplete="off"
                         disabled={field.disabled}
                         name={field.name}
                         onChange={field.onChange}
