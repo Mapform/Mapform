@@ -96,20 +96,20 @@ export function BlocknoteEditor({
             query,
           );
         }}
-        suggestionMenuComponent={(props) => (
+        suggestionMenuComponent={({ items, selectedIndex, onItemClick }) => (
           <div className="bg-popover text-popover-foreground z-50 min-w-[200px] space-y-1 overflow-hidden rounded-md border p-1 shadow-md">
-            {props.items.map((item, index) => (
+            {console.log(1111, items)}
+            {items.map((item, index) => (
               <div
                 className={cn(
                   "focus:bg-accent focus:text-accent-foreground hover:bg-accent hover:text-accent-foreground relative flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-1 text-sm outline-none transition-colors data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
                   {
-                    "bg-accent text-accent-foreground":
-                      props.selectedIndex === index,
+                    "bg-accent text-accent-foreground": selectedIndex === index,
                   },
                 )}
                 key={item.title}
                 onClick={() => {
-                  props.onItemClick?.(item);
+                  onItemClick?.(item);
                 }}
               >
                 <span className="size-4">{item.icon}</span>
