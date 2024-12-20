@@ -12,7 +12,7 @@ import { deleteProject } from "@mapform/backend/data/projects/delete-project";
 import { getRecentProjects } from "@mapform/backend/data/projects/get-recent-projects";
 import { updateProject } from "@mapform/backend/data/projects/update-project";
 import { getUserWorkspaceMemberships } from "@mapform/backend/data/workspace-memberships/get-user-workspace-memberships";
-import { countWorkspaceRows } from "@mapform/backend/data/rows/count-workspace-rows";
+import { getRowAndPageCount } from "@mapform/backend/data/usage/get-row-and-page-count";
 import { updateWorkspace } from "@mapform/backend/data/workspaces/update-workspace";
 import { upsertCell } from "@mapform/backend/data/cells/upsert-cell";
 import { createColumn } from "@mapform/backend/data/columns/create-column";
@@ -169,7 +169,7 @@ const createUserAuthClient = () => {
     createRow: createRow(extendedClient),
     deleteRows: deleteRows(extendedClient),
     duplicateRows: duplicateRows(extendedClient),
-    countWorkspaceRows: countWorkspaceRows(extendedClient),
+    getRowAndPageCount: getRowAndPageCount(extendedClient),
 
     // Teamspaces
     getTeamspaceWithProjects: getTeamspaceWithProjects(extendedClient),
