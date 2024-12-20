@@ -1249,7 +1249,7 @@ importers:
         specifier: 'catalog:'
         version: 19.0.0(react@19.0.0)
       tailwindcss:
-        specifier: ^3.4.17
+        specifier: 'catalog:'
         version: 3.4.17(ts-node@10.9.2(@types/node@20.11.25)(typescript@5.6.3))
       typescript:
         specifier: 'catalog:'
