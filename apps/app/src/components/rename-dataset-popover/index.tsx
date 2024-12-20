@@ -82,6 +82,8 @@ export function RenameDatasetPopover({
                   <FormControl>
                     <Input
                       autoComplete="off"
+                      data-lpignore="true"
+                      data-1p-ignore
                       disabled={field.disabled || status === "executing"}
                       name={field.name}
                       onChange={field.onChange}

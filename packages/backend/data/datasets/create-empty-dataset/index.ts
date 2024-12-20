@@ -27,7 +27,7 @@ export const createEmptyDataset = (authClient: UserAuthClient) =>
             })
             .returning();
 
-          if (layerType === "point" && ds) {
+          if ((layerType === "point" || layerType === "marker") && ds) {
             cols = await tx
               .insert(columns)
               .values([
@@ -45,6 +45,11 @@ export const createEmptyDataset = (authClient: UserAuthClient) =>
                   datasetId: ds.id,
                   name: "Description",
                   type: "richtext",
+                },
+                {
+                  datasetId: ds.id,
+                  name: "Icon",
+                  type: "icon",
                 },
               ])
               .returning();

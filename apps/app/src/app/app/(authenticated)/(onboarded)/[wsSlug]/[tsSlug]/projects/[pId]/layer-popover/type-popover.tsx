@@ -27,15 +27,11 @@ export function TypePopover({ form }: TypePopoverProps) {
         <>
           <FormLabel htmlFor="layerSelect">Type</FormLabel>
           <FormControl>
-            <Select
-              name={field.name}
-              onValueChange={field.onChange}
-              value={field.value}
-            >
+            <Select onValueChange={field.onChange} {...field}>
               <SelectTrigger id="layerSelect" s="sm" variant="filled">
                 <SelectValue placeholder="Select type..." />
               </SelectTrigger>
-              <SelectContent ref={field.ref}>
+              <SelectContent>
                 <SelectItem className="capitalize" value="point">
                   Point
                 </SelectItem>
