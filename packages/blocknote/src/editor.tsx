@@ -68,7 +68,6 @@ export function BlocknoteEditor({
   includeFormBlocks = false,
 }: BlocknoteEditorProps) {
   return (
-    // @ts-ignore -- There is something wrong with the internal children type
     <BlockNoteView
       className="flex-1"
       editable={editable}
@@ -81,7 +80,6 @@ export function BlocknoteEditor({
       theme="light"
     >
       <SuggestionMenuController
-         
         getItems={async (query) => {
           return filterSuggestionItems(
             [

@@ -2,14 +2,14 @@ import { NextResponse } from "next/server";
 import { withCSRF } from "@mapform/auth/middleware";
 import { signToken, verifyToken } from "@mapform/auth/helpers/sessions";
 
-const publicAppPaths = ["/", "/app/signin", "/app/signup", "/share"];
+const publicAppPaths = ["/app/signin", "/app/signup", "/share"];
 
 export default withCSRF(async (request) => {
   const { pathname } = request.nextUrl;
   const sessionCookie = request.cookies.get("session")?.value ?? null;
-  const isPublicAppPath = publicAppPaths.some((path) =>
-    pathname.startsWith(path),
-  );
+  const isPublicAppPath =
+    publicAppPaths.some((path) => pathname.startsWith(path)) ||
+    pathname === "/";
   const isProtectedRoute = !isPublicAppPath;
 
   if (isProtectedRoute && !sessionCookie) {
