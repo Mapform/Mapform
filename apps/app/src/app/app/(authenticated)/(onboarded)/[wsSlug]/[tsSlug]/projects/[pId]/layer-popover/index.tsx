@@ -128,7 +128,7 @@ export const LayerPopoverContent = forwardRef<
               name="name"
               render={({ field }) => (
                 <>
-                  <FormLabel>Name</FormLabel>
+                  <FormLabel className="w-[77px]">Name</FormLabel>
                   <div className="flex-1">
                     <FormControl>
                       <Input
@@ -153,9 +153,11 @@ export const LayerPopoverContent = forwardRef<
 
             <TypePopover form={form} />
 
-            <DatasetPopover form={form} />
+            {form.watch("type") && <DatasetPopover form={form} />}
 
-            {renderProperties()}
+            {form.watch("datasetId") &&
+              form.watch("type") &&
+              renderProperties()}
 
             <Button
               className="col-span-2"
