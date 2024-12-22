@@ -169,6 +169,13 @@
       "when": 1733344993810,
       "tag": "0023_boring_loki",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1734876003767,
+      "tag": "0024_nosy_scarecrow",
+      "breakpoints": true
     }
   ]
 }
