@@ -18,7 +18,9 @@
 
     "AUTH_SECRET",
 
-    "STRIPE_SECRET_KEY"
+    "STRIPE_SECRET_KEY",
+    "BASIC_PRODUCT_ID",
+    "PRO_PRODUCT_ID"
   ],
   "globalDependencies": ["**/.env.*local"],
   "tasks": {

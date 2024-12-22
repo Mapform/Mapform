@@ -82,21 +82,28 @@ export const completeOnboarding = (authClient: UserAuthClient) =>
               email: user.email, // Billing email associated with the workspace
             });
 
+            const product = await stripe.products.retrieve(env.FREE_PRODUCT_ID);
+            const rowLimitString = product.metadata["row_limit"];
+
+            if (!rowLimitString) {
+              throw new Error("Product row limit not found");
+            }
+
             // Subscripe to the free tier
             const subscription = await stripe.subscriptions.create({
               customer: customer.id,
-              items: [{ price: "price_12345" }], // Free-tier price ID
+              items: [{ price: env.FREE_PRODUCT_ID }], // Free-tier price ID
             });
 
-            // await tx.insert(plans).values({
-            //   name: "Free",
-            //   workspaceSlug: workspace.slug,
-            //   stripeCustomerId: customer.id,
-            //   stripeSubscriptionId: subscription.id,
-            //   stripeProductId: "price_12345",
-            //   subscriptionStatus: "active",
-            //   rowLimit: 100,
-            // });
+            await tx.insert(plans).values({
+              name: product.name,
+              workspaceSlug: workspace.slug,
+              stripeCustomerId: customer.id,
+              stripeSubscriptionId: subscription.id,
+              stripeProductId: env.FREE_PRODUCT_ID,
+              subscriptionStatus: "active",
+              rowLimit: Number(rowLimitString),
+            });
 
             return workspace;
           })
