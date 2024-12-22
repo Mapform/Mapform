@@ -8,10 +8,15 @@ import {
   teamspaces,
   workspaceMemberships,
   teamspaceMemberships,
+  plans,
 } from "@mapform/db/schema";
+import Stripe from "stripe";
 import { completeOnboardingSchema } from "./schema";
 import type { UserAuthClient } from "../../../lib/types";
 import { ServerError } from "../../../lib/server-error";
+import { env } from "../../../env.mjs";
+
+export const stripe = new Stripe(env.STRIPE_SECRET_KEY);
 
 export const completeOnboarding = (authClient: UserAuthClient) =>
   authClient
@@ -70,6 +75,28 @@ export const completeOnboarding = (authClient: UserAuthClient) =>
               teamspaceId: teamspace.id,
               role: "owner",
             });
+
+            // Create Stripe customer
+            const customer = await stripe.customers.create({
+              name: workspaceName, // Workspace name
+              email: user.email, // Billing email associated with the workspace
+            });
+
+            // Subscripe to the free tier
+            const subscription = await stripe.subscriptions.create({
+              customer: customer.id,
+              items: [{ price: "price_12345" }], // Free-tier price ID
+            });
+
+            // await tx.insert(plans).values({
+            //   name: "Free",
+            //   workspaceSlug: workspace.slug,
+            //   stripeCustomerId: customer.id,
+            //   stripeSubscriptionId: subscription.id,
+            //   stripeProductId: "price_12345",
+            //   subscriptionStatus: "active",
+            //   rowLimit: 100,
+            // });
 
             return workspace;
           })

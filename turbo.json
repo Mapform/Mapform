@@ -16,7 +16,9 @@
 
     "RESEND_API_KEY",
 
-    "AUTH_SECRET"
+    "AUTH_SECRET",
+
+    "STRIPE_SECRET_KEY"
   ],
   "globalDependencies": ["**/.env.*local"],
   "tasks": {
