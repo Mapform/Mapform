@@ -82,7 +82,9 @@ export const completeOnboarding = (authClient: UserAuthClient) =>
               email: user.email, // Billing email associated with the workspace
             });
 
-            const product = await stripe.products.retrieve(env.FREE_PRODUCT_ID);
+            const product = await stripe.products.retrieve(
+              env.BASIC_PRODUCT_ID,
+            );
             const rowLimitString = product.metadata["row_limit"];
 
             if (!rowLimitString) {
@@ -92,7 +94,7 @@ export const completeOnboarding = (authClient: UserAuthClient) =>
             // Subscripe to the free tier
             const subscription = await stripe.subscriptions.create({
               customer: customer.id,
-              items: [{ price: env.FREE_PRODUCT_ID }], // Free-tier price ID
+              items: [{ price: env.BASIC_PRICE_ID }], // Free-tier price ID
             });
 
             await tx.insert(plans).values({
@@ -100,7 +102,7 @@ export const completeOnboarding = (authClient: UserAuthClient) =>
               workspaceSlug: workspace.slug,
               stripeCustomerId: customer.id,
               stripeSubscriptionId: subscription.id,
-              stripeProductId: env.FREE_PRODUCT_ID,
+              stripeProductId: env.BASIC_PRODUCT_ID,
               subscriptionStatus: "active",
               rowLimit: Number(rowLimitString),
             });
@@ -112,8 +114,7 @@ export const completeOnboarding = (authClient: UserAuthClient) =>
               if ((error as unknown as { code: string }).code === "23505") {
                 throw new ServerError("Workspace slug already exists");
               }
-
-              throw new Error("Failed to complete onboarding");
+              throw new Error("Failed to complete onboarding: " + error);
             }
           });
       },

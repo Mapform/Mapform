@@ -11,7 +11,7 @@ interface UsageProps {
 
 export function Usage({ rowsUsed }: UsageProps) {
   return (
-    <div className="flex flex-col pb-12">
+    <div className="flex flex-col py-12">
       <div className="@4xl:grid-cols-3 grid grid-cols-1 gap-x-8">
         <div className="pb-8">
           <h2 className="text-md font-semibold">Usage</h2>

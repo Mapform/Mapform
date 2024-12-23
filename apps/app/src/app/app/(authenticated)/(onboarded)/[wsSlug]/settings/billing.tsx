@@ -1,9 +1,9 @@
-export function Usage() {
+export function Billing({ planName }: { planName: string }) {
   return (
     <div className="flex flex-col pb-12">
       <div className="@4xl:grid-cols-3 grid grid-cols-1 gap-x-8">
         <div className="pb-8">
-          <h2 className="text-md font-semibold">Basic Plan</h2>
+          <h2 className="text-md font-semibold">{planName}</h2>
           <p className="text-muted-foreground mt-1 text-sm">
             While in Alpha Mapflow only supports basic-tier features.
           </p>

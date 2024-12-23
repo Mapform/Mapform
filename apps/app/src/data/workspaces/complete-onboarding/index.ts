@@ -6,7 +6,9 @@ import { authClient } from "~/lib/safe-action";
 export const completeOnboardingAction = async (
   params: Last<Parameters<typeof authClient.completeOnboarding>>,
 ) => {
-  await authClient.completeOnboarding(params);
+  const result = await authClient.completeOnboarding(params);
 
   redirect(`/app/${params.workspaceSlug}`);
+
+  return result;
 };
