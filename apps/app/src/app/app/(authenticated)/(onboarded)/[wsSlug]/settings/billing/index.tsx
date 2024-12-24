@@ -4,10 +4,12 @@ export function Billing({
   planName,
   workspaceSlug,
   stripeCustomerId,
+  stripeProductId,
 }: {
   planName: string;
   workspaceSlug: string;
   stripeCustomerId: string;
+  stripeProductId: string;
 }) {
   return (
     <div className="flex flex-col pb-12">
@@ -21,6 +23,7 @@ export function Billing({
         <div className="@4xl:col-span-2 grid-cols-1 space-y-6">
           <Buttons
             stripeCustomerId={stripeCustomerId}
+            stripeProductId={stripeProductId}
             workspaceSlug={workspaceSlug}
           />
         </div>

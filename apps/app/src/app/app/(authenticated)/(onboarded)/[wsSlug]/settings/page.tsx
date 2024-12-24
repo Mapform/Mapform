@@ -43,6 +43,7 @@ export default async function Settings(props: {
         <Billing
           planName={workspacePlan.name}
           stripeCustomerId={workspacePlan.stripeCustomerId}
+          stripeProductId={workspacePlan.stripeProductId}
           workspaceSlug={params.wsSlug}
         />
         <Usage rowsUsed={rowsUsed} />

@@ -50,6 +50,7 @@ import { getCurrentSession } from "@mapform/backend/data/auth/get-current-sessio
 import { createDatasetFromGeojson } from "@mapform/backend/data/datasets/create-from-geojson";
 import { completeOnboarding } from "@mapform/backend/data/workspaces/complete-onboarding";
 import { createCheckoutSession } from "@mapform/backend/data/stripe/create-checkout-session";
+import { createBillingSession } from "@mapform/backend/data/stripe/create-billing-session";
 import {
   baseClient,
   UserAccess,
@@ -173,6 +174,7 @@ const createUserAuthClient = () => {
     getRowAndPageCount: getRowAndPageCount(extendedClient),
 
     // Stripe
+    createBillingSession: createBillingSession(extendedClient),
     createCheckoutSession: createCheckoutSession(extendedClient),
 
     // Teamspaces
