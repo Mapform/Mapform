@@ -1,4 +1,12 @@
-export function Billing({ planName }: { planName: string }) {
+import { Buttons } from "./buttons";
+
+export function Billing({
+  planName,
+  stripeCustomerId,
+}: {
+  planName: string;
+  stripeCustomerId: string;
+}) {
   return (
     <div className="flex flex-col pb-12">
       <div className="@4xl:grid-cols-3 grid grid-cols-1 gap-x-8">
@@ -8,7 +16,9 @@ export function Billing({ planName }: { planName: string }) {
             While in Alpha Mapflow only supports basic-tier features.
           </p>
         </div>
-        <div className="@4xl:col-span-2 grid-cols-1 space-y-6">Free</div>
+        <div className="@4xl:col-span-2 grid-cols-1 space-y-6">
+          <Buttons stripeCustomerId={stripeCustomerId} />
+        </div>
       </div>
     </div>
   );
