@@ -8,7 +8,9 @@ export const completeOnboardingAction = async (
 ) => {
   const result = await authClient.completeOnboarding(params);
 
-  redirect(`/app/${params.workspaceSlug}`);
+  if (!result?.serverError && !result?.validationErrors) {
+    redirect(`/app/${params.workspaceSlug}`);
+  }
 
   return result;
 };
