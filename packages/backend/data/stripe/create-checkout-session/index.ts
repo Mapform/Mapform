@@ -30,7 +30,7 @@ export const createCheckoutSession = (authClient: UserAuthClient) =>
           ],
           mode: "subscription",
           success_url: `${env.NEXT_PUBLIC_BASE_URL}/api/stripe/checkout?session_id={CHECKOUT_SESSION_ID}`,
-          cancel_url: `${env.NEXT_PUBLIC_BASE_URL}/app`,
+          cancel_url: `${env.NEXT_PUBLIC_BASE_URL}/app/${workspaceSlug}/settings`,
           customer: stripeCustomerId || undefined,
           client_reference_id: workspaceSlug,
           allow_promotion_codes: true,

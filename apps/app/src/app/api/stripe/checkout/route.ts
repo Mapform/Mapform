@@ -1,6 +1,5 @@
 import { eq } from "@mapform/db/utils";
 import { db } from "@mapform/db";
-// import { setSession } from "@/lib/auth/session";
 import { NextRequest, NextResponse } from "next/server";
 import { stripe } from "@mapform/lib/stripe";
 import Stripe from "stripe";
