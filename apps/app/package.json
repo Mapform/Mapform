@@ -50,6 +50,7 @@
     "react": "catalog:",
     "react-dom": "catalog:",
     "slugify": "catalog:",
+    "stripe": "catalog:",
     "unique-slug": "catalog:",
     "uuid": "catalog:",
     "zod": "catalog:"

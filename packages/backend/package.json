@@ -14,7 +14,7 @@
     "@vercel/blob": "catalog:",
     "next-safe-action": "catalog:",
     "slugify": "catalog:",
-    "stripe": "^17.5.0",
+    "stripe": "catalog:",
     "uuid": "catalog:",
     "zod": "catalog:",
     "zod-form-data": "catalog:"

@@ -2,9 +2,11 @@ import { Buttons } from "./buttons";
 
 export function Billing({
   planName,
+  workspaceSlug,
   stripeCustomerId,
 }: {
   planName: string;
+  workspaceSlug: string;
   stripeCustomerId: string;
 }) {
   return (
@@ -17,7 +19,10 @@ export function Billing({
           </p>
         </div>
         <div className="@4xl:col-span-2 grid-cols-1 space-y-6">
-          <Buttons stripeCustomerId={stripeCustomerId} />
+          <Buttons
+            stripeCustomerId={stripeCustomerId}
+            workspaceSlug={workspaceSlug}
+          />
         </div>
       </div>
     </div>

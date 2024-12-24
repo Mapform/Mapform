@@ -11,7 +11,14 @@ export const createCheckoutSession = (authClient: UserAuthClient) =>
   authClient
     .schema(createCheckoutSessionSchema)
     .action(
-      async ({ parsedInput: { stripeCustomerId, priceId }, ctx: { user } }) => {
+      async ({
+        parsedInput: { stripeCustomerId, workspaceSlug, priceId },
+        ctx: { userAccess },
+      }) => {
+        if (!userAccess.workspace.checkAccessBySlug(workspaceSlug)) {
+          throw new Error("Unauthorized");
+        }
+
         // TODO: Once members can be added, must ensure that only the owner can create a checkout session
         return stripe.checkout.sessions.create({
           payment_method_types: ["card"],
@@ -23,9 +30,9 @@ export const createCheckoutSession = (authClient: UserAuthClient) =>
           ],
           mode: "subscription",
           success_url: `${env.NEXT_PUBLIC_BASE_URL}/api/stripe/checkout?session_id={CHECKOUT_SESSION_ID}`,
-          cancel_url: `${env.NEXT_PUBLIC_BASE_URL}/pricing`,
+          cancel_url: `${env.NEXT_PUBLIC_BASE_URL}/app`,
           customer: stripeCustomerId || undefined,
-          client_reference_id: user.id,
+          client_reference_id: workspaceSlug,
           allow_promotion_codes: true,
         });
       },
