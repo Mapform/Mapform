@@ -21,7 +21,9 @@
     "STRIPE_SECRET_KEY",
     "BASIC_PRODUCT_ID",
     "BASIC_PRICE_ID",
-    "PRO_PRODUCT_ID"
+    "PRO_PRODUCT_ID",
+    "PRO_PRICE_ID",
+    "PRO_PRICE_ID_ANNUAL"
   ],
   "globalDependencies": ["**/.env.*local"],
   "tasks": {

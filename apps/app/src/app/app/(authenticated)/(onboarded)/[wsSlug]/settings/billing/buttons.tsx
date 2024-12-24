@@ -9,7 +9,7 @@ export const Buttons = ({ stripeCustomerId }: { stripeCustomerId: string }) => {
       onClick={() => {
         createCheckoutSessionAction({
           stripeCustomerId,
-          priceId: "price_1QYrMPDY79ilcWiaeuOtBB8P",
+          priceId: "price_1QZZizDY79ilcWialnPP9l2u",
         });
       }}
     >
