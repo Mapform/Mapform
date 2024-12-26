@@ -62,6 +62,9 @@ export const createBillingSession = (authClient: UserAuthClient) =>
                   },
                 ],
               },
+              payment_method_update: {
+                enabled: true,
+              },
               subscription_cancel: {
                 enabled: true,
                 mode: "at_period_end",
