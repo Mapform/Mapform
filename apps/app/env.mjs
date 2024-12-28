@@ -13,6 +13,8 @@ export const env = createEnv({
     STRIPE_WEBHOOK_SECRET: z.string().min(1),
   },
   client: {
+    NEXT_PUBLIC_STRIPE_PRO_PRICE_ID_MONTHLY: z.string().min(1),
+    NEXT_PUBLIC_STRIPE_PRO_PRICE_ID_YEARLY: z.string().min(1),
     NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN: z.string().min(1),
     NEXT_PUBLIC_BASE_URL: z.string().url().min(1),
   },
@@ -27,6 +29,8 @@ export const env = createEnv({
     VERCEL_URL: process.env.VERCEL_URL,
     NODE_ENV: process.env.NODE_ENV,
     STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
+    NEXT_PUBLIC_STRIPE_PRO_PRICE_ID_MONTHLY: process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID_MONTHLY,
+    NEXT_PUBLIC_STRIPE_PRO_PRICE_ID_YEARLY: process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID_YEARLY,
     NEXT_PUBLIC_BASE_URL: process.env.NODE_ENV === "development" ? "http://localhost:3000" : process.env.NEXT_PUBLIC_VERCEL_ENV === "preview" ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}` : "https://alpha.mapform.co",
   },
 });

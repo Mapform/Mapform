@@ -3,7 +3,6 @@
   "version": "0.0.0",
   "type": "module",
   "dependencies": {
-    "@mapform/db": "workspace:*",
     "@t3-oss/env-nextjs": "catalog:",
     "clsx": "catalog:",
     "lodash-es": "catalog:",

@@ -40,12 +40,7 @@ export default async function Settings(props: {
   return (
     <div className="@container overflow-y-auto p-4">
       <div className="mx-auto max-w-screen-md gap-y-12 divide-y">
-        <Billing
-          planName={workspacePlan.name}
-          stripeCustomerId={workspacePlan.stripeCustomerId}
-          stripeProductId={workspacePlan.stripeProductId}
-          workspaceSlug={params.wsSlug}
-        />
+        <Billing plan={workspacePlan} workspaceSlug={params.wsSlug} />
         <Usage rowsUsed={rowsUsed} />
         <WorkspaceSettings />
       </div>
