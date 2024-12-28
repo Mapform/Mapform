@@ -15,6 +15,7 @@ import { completeOnboardingSchema } from "./schema";
 import type { UserAuthClient } from "../../../lib/types";
 import { ServerError } from "../../../lib/server-error";
 import { env } from "../../../env.mjs";
+import { PLANS } from "../../../constants/plans";
 
 export const stripe = new Stripe(env.STRIPE_SECRET_KEY);
 
@@ -83,18 +84,13 @@ export const completeOnboarding = (authClient: UserAuthClient) =>
             });
 
             const product = await stripe.products.retrieve(
-              env.BASIC_PRODUCT_ID,
+              env.STRIPE_PRODUCT_ID,
             );
-            const rowLimitString = product.metadata["row_limit"];
-
-            if (!rowLimitString) {
-              throw new Error("Product row limit not found");
-            }
 
             // Subscripe to the free tier
             const subscription = await stripe.subscriptions.create({
               customer: customer.id,
-              items: [{ price: env.BASIC_PRICE_ID }], // Free-tier price ID
+              items: [{ price: env.STRIPE_BASIC_PRICE_ID }],
             });
 
             await tx.insert(plans).values({
@@ -102,9 +98,9 @@ export const completeOnboarding = (authClient: UserAuthClient) =>
               workspaceSlug: workspace.slug,
               stripeCustomerId: customer.id,
               stripeSubscriptionId: subscription.id,
-              stripeProductId: env.BASIC_PRODUCT_ID,
+              stripeProductId: env.STRIPE_PRODUCT_ID,
               subscriptionStatus: "active",
-              rowLimit: Number(rowLimitString),
+              rowLimit: PLANS.basic.rowLimit,
             });
 
             return workspace;

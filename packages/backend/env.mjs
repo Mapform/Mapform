@@ -5,9 +5,8 @@ export const env = createEnv({
   server: {
     VERCEL_URL: z.string().min(1).optional(),
     STRIPE_SECRET_KEY: z.string().min(1),
-    BASIC_PRODUCT_ID: z.string().min(1),
-    BASIC_PRICE_ID: z.string().min(1),
-    PRO_PRODUCT_ID: z.string().min(1),
+    STRIPE_PRODUCT_ID: z.string().min(1),
+    STRIPE_BASIC_PRICE_ID: z.string().min(1),
   },
   client: {
     NEXT_PUBLIC_BASE_URL: z.string().url().min(1),
@@ -15,9 +14,8 @@ export const env = createEnv({
   runtimeEnv: {
     VERCEL_URL: process.env.VERCEL_URL,
     STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
-    BASIC_PRODUCT_ID: process.env.BASIC_PRODUCT_ID,
-    BASIC_PRICE_ID: process.env.BASIC_PRICE_ID,
-    PRO_PRODUCT_ID: process.env.PRO_PRODUCT_ID,
+    STRIPE_PRODUCT_ID: process.env.STRIPE_PRODUCT_ID,
+    STRIPE_BASIC_PRICE_ID: process.env.STRIPE_BASIC_PRICE_ID,
     NEXT_PUBLIC_BASE_URL: process.env.NODE_ENV === "development" ? "http://localhost:3000" : process.env.NEXT_PUBLIC_VERCEL_ENV === "preview" ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}` : "https://alpha.mapform.co",
   },
 });

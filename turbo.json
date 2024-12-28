@@ -19,11 +19,10 @@
     "AUTH_SECRET",
 
     "STRIPE_SECRET_KEY",
-    "BASIC_PRODUCT_ID",
-    "BASIC_PRICE_ID",
-    "PRO_PRODUCT_ID",
-    "PRO_PRICE_ID",
-    "PRO_PRICE_ID_ANNUAL"
+    "STRIPE_PRODUCT_ID",
+    "STRIPE_BASIC_PRICE_ID",
+    "STRIPE_PRO_PRICE_ID_MONTHLY",
+    "STRIPE_PRO_PRICE_ID_YEARLY"
   ],
   "globalDependencies": ["**/.env.*local"],
   "tasks": {
