@@ -11,11 +11,11 @@ import {
   plans,
 } from "@mapform/db/schema";
 import Stripe from "stripe";
+import { PLANS } from "@mapform/lib/constants/plans";
 import { completeOnboardingSchema } from "./schema";
 import type { UserAuthClient } from "../../../lib/types";
 import { ServerError } from "../../../lib/server-error";
 import { env } from "../../../env.mjs";
-import { PLANS } from "../../../constants/plans";
 
 export const stripe = new Stripe(env.STRIPE_SECRET_KEY);
 
