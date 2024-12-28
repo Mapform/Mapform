@@ -16,11 +16,11 @@ export const plans = pgTable(
     name: varchar("name", { length: 64 }).notNull(),
 
     stripeCustomerId: text("stripe_customer_id").unique().notNull(),
-    stripeSubscriptionId: text("stripe_subscription_id").unique().notNull(),
-    stripeProductId: text("stripe_product_id").notNull(),
+    stripeSubscriptionId: text("stripe_subscription_id").unique(),
+    stripeProductId: text("stripe_product_id"),
     subscriptionStatus: varchar("subscription_status", {
       length: 20,
-    }).notNull(),
+    }),
 
     rowLimit: integer("position").notNull(),
 

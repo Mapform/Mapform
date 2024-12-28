@@ -83,22 +83,10 @@ export const completeOnboarding = (authClient: UserAuthClient) =>
               email: user.email, // Billing email associated with the workspace
             });
 
-            const product = await stripe.products.retrieve(
-              env.STRIPE_PRODUCT_ID,
-            );
-
-            // Subscripe to the free tier
-            const subscription = await stripe.subscriptions.create({
-              customer: customer.id,
-              items: [{ price: env.STRIPE_BASIC_PRICE_ID }],
-            });
-
             await tx.insert(plans).values({
-              name: product.name,
+              name: PLANS.basic.name,
               workspaceSlug: workspace.slug,
               stripeCustomerId: customer.id,
-              stripeSubscriptionId: subscription.id,
-              stripeProductId: env.STRIPE_PRODUCT_ID,
               subscriptionStatus: "active",
               rowLimit: PLANS.basic.rowLimit,
             });

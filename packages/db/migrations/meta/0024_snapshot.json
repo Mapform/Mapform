@@ -1,5 +1,5 @@
 {
-  "id": "74347368-bd5a-436a-bfd6-dd6fc2c8cb16",
+  "id": "cbdf6c32-1da9-4b56-9348-e6ea3d07d1f2",
   "prevId": "9aad0c1c-7aba-4037-94b6-78df06a4e645",
   "version": "7",
   "dialect": "postgresql",
@@ -1821,19 +1821,19 @@
           "name": "stripe_subscription_id",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "stripe_product_id": {
           "name": "stripe_product_id",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "subscription_status": {
           "name": "subscription_status",
           "type": "varchar(20)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "position": {
           "name": "position",

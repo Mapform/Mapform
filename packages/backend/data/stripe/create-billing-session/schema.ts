@@ -3,7 +3,7 @@ import { z } from "zod";
 
 export const createBillingSessionSchema = z.object({
   stripeCustomerId: selectPlanSchema.shape.stripeCustomerId,
-  stripeProductId: selectPlanSchema.shape.stripeProductId,
+  stripeProductId: z.string(),
   workspaceSlug: selectPlanSchema.shape.workspaceSlug,
 });
 
