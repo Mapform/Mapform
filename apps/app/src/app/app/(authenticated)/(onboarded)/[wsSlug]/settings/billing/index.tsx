@@ -29,17 +29,17 @@ export function Billing({
       <div className="@4xl:grid-cols-3 grid grid-cols-1 gap-x-8">
         <div className="pb-8">
           <h2 className="text-md font-semibold">Active Plan</h2>
-          <p className="text-muted-foreground mt-1 text-sm">
+          <span className="text-muted-foreground mt-1 text-sm">
             Your current plan is <Badge>{plan.name}</Badge>
-          </p>
+          </span>
         </div>
         <div className="@4xl:col-span-2 grid-cols-1 space-y-6">
           <div className="grid grid-cols-2">
             <div className="">
               <div className="text-sm font-semibold">{PLANS.basic.name}</div>
-              <div className="text-2xl font-medium">$0</div>
+              <div className="mb-2 text-2xl font-medium">$0</div>
               <BasicButtons plan={plan} workspaceSlug={workspaceSlug} />
-              <ul className="text-sm">
+              <ul className="mt-2 text-sm">
                 {BASIC_FEATURES.map((feature) => (
                   <li
                     className="rounded-l-md px-3 py-2 even:bg-gray-50"
@@ -52,14 +52,14 @@ export function Billing({
             </div>
             <div className="">
               <div className="text-sm font-semibold">{PLANS.pro.name}</div>
-              <div className="flex">
+              <div className="mb-2 flex">
                 <div className="text-2xl font-medium">$12</div>
                 <div className="text-muted-foreground mb-[3px] ml-1 self-end text-sm">
                   per seat/month
                 </div>
               </div>
               <ProButtons plan={plan} workspaceSlug={workspaceSlug} />
-              <ul className="text-sm">
+              <ul className="mt-2 text-sm">
                 {PRO_FEATURES.map((feature) => (
                   <li
                     className="rounded-r-md px-3 py-2 even:bg-gray-50"

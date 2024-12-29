@@ -25,6 +25,8 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  console.log(22222, event);
+
   switch (event.type) {
     case "customer.subscription.created":
     case "customer.subscription.updated":

@@ -17,7 +17,7 @@ export const ProButtons = ({
 
   if (
     stripeProductId &&
-    plan.stripePriceId === env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID_MONTHLY
+    plan.stripeProductId === env.NEXT_PUBLIC_STRIPE_PRO_PRODUCT_ID
   ) {
     return (
       <Button
