@@ -4,6 +4,14 @@ import { PLANS } from "@mapform/lib/constants/plans";
 import type { WorkspaceDirectory } from "@mapform/backend/data/workspaces/get-workspace-directory";
 import { BasicButtons } from "./basic-buttons";
 
+const BASIC_FEATURES = ["Unlimited projects", "Unlimited datasets", "100 rows"];
+
+const PRO_FEATURES = [
+  "Everything in Basic",
+  "Teams (coming soon)",
+  "1,000 rows",
+];
+
 export function Billing({
   plan,
   workspaceSlug,
@@ -23,23 +31,31 @@ export function Billing({
         <div className="@4xl:col-span-2 grid-cols-1 space-y-6">
           <div className="grid grid-cols-2">
             <div className="">
-              <div className="">{PLANS.basic.name}</div>
+              <div className="text-sm font-semibold">{PLANS.basic.name}</div>
               <BasicButtons plan={plan} workspaceSlug={workspaceSlug} />
               <ul className="text-sm">
-                <li className="even:bg-gray-50">Row 1</li>
-                <li className="even:bg-gray-50">Row 2</li>
-                <li className="even:bg-gray-50">Row 3</li>
-                <li className="even:bg-gray-50">Row 4</li>
+                {BASIC_FEATURES.map((feature) => (
+                  <li
+                    className="rounded-l-md px-3 py-2 even:bg-gray-50"
+                    key={feature}
+                  >
+                    {feature}
+                  </li>
+                ))}
               </ul>
             </div>
             <div className="">
-              <div className="">{PLANS.pro.name}</div>
+              <div className="text-sm font-semibold">{PLANS.pro.name}</div>
               <ProButtons plan={plan} workspaceSlug={workspaceSlug} />
               <ul className="text-sm">
-                <li className="even:bg-gray-50">Row 1</li>
-                <li className="even:bg-gray-50">Row 2</li>
-                <li className="even:bg-gray-50">Row 3</li>
-                <li className="even:bg-gray-50">Row 4</li>
+                {PRO_FEATURES.map((feature) => (
+                  <li
+                    className="rounded-r-md px-3 py-2 even:bg-gray-50"
+                    key={feature}
+                  >
+                    {feature}
+                  </li>
+                ))}
               </ul>
             </div>
           </div>
