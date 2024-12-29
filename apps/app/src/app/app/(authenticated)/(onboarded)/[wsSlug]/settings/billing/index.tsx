@@ -25,10 +25,22 @@ export function Billing({
             <div className="">
               <div className="">{PLANS.basic.name}</div>
               <BasicButtons plan={plan} workspaceSlug={workspaceSlug} />
+              <ul className="text-sm">
+                <li className="even:bg-gray-50">Row 1</li>
+                <li className="even:bg-gray-50">Row 2</li>
+                <li className="even:bg-gray-50">Row 3</li>
+                <li className="even:bg-gray-50">Row 4</li>
+              </ul>
             </div>
             <div className="">
               <div className="">{PLANS.pro.name}</div>
               <ProButtons plan={plan} workspaceSlug={workspaceSlug} />
+              <ul className="text-sm">
+                <li className="even:bg-gray-50">Row 1</li>
+                <li className="even:bg-gray-50">Row 2</li>
+                <li className="even:bg-gray-50">Row 3</li>
+                <li className="even:bg-gray-50">Row 4</li>
+              </ul>
             </div>
           </div>
         </div>
