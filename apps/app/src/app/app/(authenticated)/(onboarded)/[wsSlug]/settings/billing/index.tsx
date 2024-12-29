@@ -52,7 +52,9 @@ export function Billing({
               <div className="mb-2 flex">
                 <div className="text-2xl font-medium">$12</div>
                 <div className="text-muted-foreground mb-[3px] ml-1 self-end text-sm">
-                  per seat/month
+                  {/* TODO: Add this back once introducing seats. Also need to allow seat modifications in Stripe Billing > Customer Portal: https://dashboard.stripe.com/test/settings/billing/portal */}
+                  {/* per seat/month */}
+                  per month
                 </div>
               </div>
               <ProButtons plan={plan} workspaceSlug={workspaceSlug} />
