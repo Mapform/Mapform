@@ -61,6 +61,7 @@ export async function GET(request: NextRequest) {
         stripeCustomerId: customerId,
         stripeSubscriptionId: subscriptionId,
         stripeProductId: productId,
+        stripePriceId: plan.id,
         name: (plan.product as Stripe.Product).name,
         subscriptionStatus: subscription.status,
         updatedAt: new Date(),

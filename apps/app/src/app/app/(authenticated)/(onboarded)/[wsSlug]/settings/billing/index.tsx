@@ -3,6 +3,7 @@ import { ProButtons } from "./pro-buttons";
 import { PLANS } from "@mapform/lib/constants/plans";
 import type { WorkspaceDirectory } from "@mapform/backend/data/workspaces/get-workspace-directory";
 import { BasicButtons } from "./basic-buttons";
+import { getStripePrices } from "@mapform/lib/stripe";
 
 const BASIC_FEATURES = ["Unlimited projects", "Unlimited datasets", "100 rows"];
 
@@ -15,10 +16,14 @@ const PRO_FEATURES = [
 export function Billing({
   plan,
   workspaceSlug,
+  proPrice,
 }: {
   plan: NonNullable<NonNullable<WorkspaceDirectory["data"]>["plan"]>;
   workspaceSlug: string;
+  proPrice: Awaited<ReturnType<typeof getStripePrices>>[number];
 }) {
+  console.log(1111, proPrice, plan);
+
   return (
     <div className="flex flex-col pb-12">
       <div className="@4xl:grid-cols-3 grid grid-cols-1 gap-x-8">
@@ -47,7 +52,12 @@ export function Billing({
             </div>
             <div className="">
               <div className="text-sm font-semibold">{PLANS.pro.name}</div>
-              <div className="text-2xl font-medium">$12</div>
+              <div className="flex">
+                <div className="text-2xl font-medium">$12</div>
+                <div className="text-muted-foreground mb-[3px] ml-1 self-end text-sm">
+                  per seat/month
+                </div>
+              </div>
               <ProButtons plan={plan} workspaceSlug={workspaceSlug} />
               <ul className="text-sm">
                 {PRO_FEATURES.map((feature) => (

@@ -64,6 +64,7 @@ export async function handleSubscriptionChange(
       .set({
         stripeSubscriptionId: subscriptionId,
         stripeProductId: plan?.product as string,
+        stripePriceId: plan?.id,
         name: (plan?.product as Stripe.Product).name,
         subscriptionStatus: status,
       })
@@ -74,6 +75,7 @@ export async function handleSubscriptionChange(
       .set({
         stripeSubscriptionId: null,
         stripeProductId: null,
+        stripePriceId: null,
         name: PLANS.basic.name,
         subscriptionStatus: status,
       })

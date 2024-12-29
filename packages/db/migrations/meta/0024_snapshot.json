@@ -1,5 +1,5 @@
 {
-  "id": "cbdf6c32-1da9-4b56-9348-e6ea3d07d1f2",
+  "id": "a9b9559d-0d70-44a9-8cc8-8ffbc8bec391",
   "prevId": "9aad0c1c-7aba-4037-94b6-78df06a4e645",
   "version": "7",
   "dialect": "postgresql",
@@ -1825,6 +1825,12 @@
         },
         "stripe_product_id": {
           "name": "stripe_product_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "stripe_price_id": {
+          "name": "stripe_price_id",
           "type": "text",
           "primaryKey": false,
           "notNull": false

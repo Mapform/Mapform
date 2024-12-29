@@ -87,7 +87,6 @@ export const completeOnboarding = (authClient: UserAuthClient) =>
               name: PLANS.basic.name,
               workspaceSlug: workspace.slug,
               stripeCustomerId: customer.id,
-              subscriptionStatus: "active",
               rowLimit: PLANS.basic.rowLimit,
             });
 

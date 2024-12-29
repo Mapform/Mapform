@@ -18,6 +18,7 @@ export const plans = pgTable(
     stripeCustomerId: text("stripe_customer_id").unique().notNull(),
     stripeSubscriptionId: text("stripe_subscription_id").unique(),
     stripeProductId: text("stripe_product_id"),
+    stripePriceId: text("stripe_price_id"),
     subscriptionStatus: varchar("subscription_status", {
       length: 20,
     }),

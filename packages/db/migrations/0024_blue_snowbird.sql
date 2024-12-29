@@ -4,6 +4,7 @@ CREATE TABLE IF NOT EXISTS "plan" (
 	"stripe_customer_id" text NOT NULL,
 	"stripe_subscription_id" text,
 	"stripe_product_id" text,
+	"stripe_price_id" text,
 	"subscription_status" varchar(20),
 	"position" integer NOT NULL,
 	"workspace_slug" varchar NOT NULL,
