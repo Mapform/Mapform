@@ -32,6 +32,7 @@ export function Billing({
           <div className="grid grid-cols-2">
             <div className="">
               <div className="text-sm font-semibold">{PLANS.basic.name}</div>
+              <div className="text-2xl font-medium">$0</div>
               <BasicButtons plan={plan} workspaceSlug={workspaceSlug} />
               <ul className="text-sm">
                 {BASIC_FEATURES.map((feature) => (
@@ -46,6 +47,7 @@ export function Billing({
             </div>
             <div className="">
               <div className="text-sm font-semibold">{PLANS.pro.name}</div>
+              <div className="text-2xl font-medium">$12</div>
               <ProButtons plan={plan} workspaceSlug={workspaceSlug} />
               <ul className="text-sm">
                 {PRO_FEATURES.map((feature) => (
