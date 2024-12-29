@@ -25,8 +25,6 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  console.log(22222, event);
-
   switch (event.type) {
     case "customer.subscription.created":
     case "customer.subscription.updated":
@@ -68,6 +66,8 @@ export async function handleSubscriptionChange(
         stripeProductId: plan?.product as string,
         stripePriceId: plan?.id,
         name: (plan?.product as Stripe.Product).name,
+        // TODO: When adding more plans will need to update this
+        rowLimit: PLANS.pro.rowLimit,
         subscriptionStatus: status,
       })
       .where(eq(plans.id, existingPlan.id));
@@ -78,6 +78,7 @@ export async function handleSubscriptionChange(
         stripeSubscriptionId: null,
         stripeProductId: null,
         stripePriceId: null,
+        rowLimit: PLANS.basic.rowLimit,
         name: PLANS.basic.name,
         subscriptionStatus: status,
       })

@@ -1,5 +1,6 @@
 export const PLANS = {
   basic: {
+    id: null,
     name: "Basic",
     rowLimit: 100,
     monthlySessions: 50,

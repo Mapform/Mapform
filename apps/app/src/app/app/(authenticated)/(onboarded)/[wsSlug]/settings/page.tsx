@@ -61,7 +61,7 @@ export default async function Settings(props: {
           proPrice={proPrice}
           workspaceSlug={params.wsSlug}
         />
-        <Usage rowsUsed={rowsUsed} />
+        <Usage rowLimit={workspacePlan.rowLimit} rowsUsed={rowsUsed} />
         <WorkspaceSettings />
       </div>
     </div>

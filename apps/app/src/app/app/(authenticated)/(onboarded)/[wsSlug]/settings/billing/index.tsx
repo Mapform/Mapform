@@ -16,14 +16,11 @@ const PRO_FEATURES = [
 export function Billing({
   plan,
   workspaceSlug,
-  proPrice,
 }: {
   plan: NonNullable<NonNullable<WorkspaceDirectory["data"]>["plan"]>;
   workspaceSlug: string;
   proPrice: Awaited<ReturnType<typeof getStripePrices>>[number];
 }) {
-  console.log(1111, proPrice, plan);
-
   return (
     <div className="flex flex-col pb-12">
       <div className="@4xl:grid-cols-3 grid grid-cols-1 gap-x-8">

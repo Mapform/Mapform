@@ -4,33 +4,33 @@ import { WorkspaceDirectory } from "@mapform/backend/data/workspaces/get-workspa
 import { Button } from "@mapform/ui/components/button";
 import { env } from "~/*";
 import { createCheckoutSessionAction } from "~/data/stripe/create-checkout-session";
-// import { createBillingSessionAction } from "~/data/stripe/create-billing-session";
+import { createBillingSessionAction } from "~/data/stripe/create-billing-session";
 
 export const BasicButtons = ({
   plan,
   workspaceSlug,
-  // stripeProductId,
 }: {
   plan: NonNullable<NonNullable<WorkspaceDirectory["data"]>["plan"]>;
   workspaceSlug: string;
-  // stripeProductId: string;
 }) => {
-  // if (true) {
-  //   return (
-  //     <Button
-  //       onClick={() => {
-  //         void createBillingSessionAction({
-  //           workspaceSlug,
-  //           stripeCustomerId,
-  //           stripeProductId,
-  //         });
-  //       }}
-  //       variant="outline"
-  //     >
-  //       Manage
-  //     </Button>
-  //   );
-  // }
+  const stripeProductId = plan.stripeProductId;
+
+  if (stripeProductId) {
+    return (
+      <Button
+        onClick={() => {
+          void createBillingSessionAction({
+            workspaceSlug,
+            stripeCustomerId: plan.stripeCustomerId,
+            stripeProductId,
+          });
+        }}
+        variant="outline"
+      >
+        Downgrade
+      </Button>
+    );
+  }
 
   return (
     <Button

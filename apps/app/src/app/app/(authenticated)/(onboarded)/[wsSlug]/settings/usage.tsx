@@ -1,15 +1,14 @@
 import { cn } from "@mapform/lib/classnames";
 import { Label } from "@mapform/ui/components/label";
 
-// Hard-code for now. This will be dynamic in the future.
-const ALLOWED_ROW_USAGE = 100;
 const BLOCKS = 100;
 
 interface UsageProps {
+  rowLimit: number;
   rowsUsed: number;
 }
 
-export function Usage({ rowsUsed }: UsageProps) {
+export function Usage({ rowLimit, rowsUsed }: UsageProps) {
   return (
     <div className="flex flex-col py-12">
       <div className="@4xl:grid-cols-3 grid grid-cols-1 gap-x-8">
@@ -31,11 +30,11 @@ export function Usage({ rowsUsed }: UsageProps) {
                   <div
                     className={cn("size-3 rounded-sm border", {
                       "bg-primary border-primary":
-                        (block * ALLOWED_ROW_USAGE) / BLOCKS <= rowsUsed,
+                        (block * rowLimit) / BLOCKS <= rowsUsed,
                       "bg-gray-100":
-                        (block * ALLOWED_ROW_USAGE) / BLOCKS > rowsUsed &&
-                        (block * ALLOWED_ROW_USAGE) / BLOCKS <
-                          rowsUsed + ALLOWED_ROW_USAGE / BLOCKS,
+                        (block * rowLimit) / BLOCKS > rowsUsed &&
+                        (block * rowLimit) / BLOCKS <
+                          rowsUsed + rowLimit / BLOCKS,
                     })}
                     key={block}
                   />
@@ -43,7 +42,7 @@ export function Usage({ rowsUsed }: UsageProps) {
               })}
             </div>
             <div className="text-muted-foreground text-sm">
-              {rowsUsed} / {ALLOWED_ROW_USAGE} Rows
+              {rowsUsed} / {rowLimit} Rows
             </div>
           </div>
         </div>
