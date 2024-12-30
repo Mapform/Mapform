@@ -6,6 +6,7 @@ import { createRowSchema } from "./schema";
 import type { UserAuthClient } from "../../../lib/types";
 import { getRowAndPageCount } from "../../usage/get-row-and-page-count";
 import { eq } from "@mapform/db/utils";
+import { ServerError } from "../../../lib/server-error";
 
 export const createRow = (authClient: UserAuthClient) =>
   authClient
@@ -19,6 +20,17 @@ export const createRow = (authClient: UserAuthClient) =>
               id: true,
               slug: true,
               workspaceSlug: true,
+            },
+            with: {
+              workspace: {
+                with: {
+                  plan: {
+                    columns: {
+                      rowLimit: true,
+                    },
+                  },
+                },
+              },
             },
           },
         },
@@ -40,6 +52,15 @@ export const createRow = (authClient: UserAuthClient) =>
 
       if (rowCount === undefined || pageCount === undefined) {
         throw new Error("Row count or page count is undefined.");
+      }
+
+      if (
+        rowCount + pageCount >=
+        existingDataset.teamspace.workspace.plan!.rowLimit
+      ) {
+        throw new ServerError(
+          "Row limit exceeded. Delete some rows, or upgrade your plan.",
+        );
       }
 
       const [newRow] = await db

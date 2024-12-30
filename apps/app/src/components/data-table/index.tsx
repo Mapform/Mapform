@@ -25,6 +25,7 @@ import { duplicateRowsAction } from "~/data/rows/duplicate-rows";
 import { ColumnAdder } from "./column-adder";
 import { CellPopover } from "./cell-popover";
 import { ColumnEditor } from "./column-editor";
+import { toast } from "@mapform/ui/components/toaster";
 
 interface TableProps {
   dataset: NonNullable<GetDataset["data"]>;
@@ -35,8 +36,20 @@ export const DataTable = function DataTable({ dataset }: TableProps) {
     useAction(deleteRowsAction);
   const { execute: executeDuplicateRows, status: statusDuplicateRows } =
     useAction(duplicateRowsAction);
-  const { execute: executeCreateRow, status: statusCreateRow } =
-    useAction(createRowAction);
+  const { execute: executeCreateRow, status: statusCreateRow } = useAction(
+    createRowAction,
+    {
+      onError: ({ error }) => {
+        if (error.serverError) {
+          toast({
+            title: "Uh oh! Something went wrong.",
+            description: error.serverError,
+          });
+          return;
+        }
+      },
+    },
+  );
   const columns = useMemo(() => getColumns(dataset), [dataset]);
   const rows = useMemo(
     () =>
