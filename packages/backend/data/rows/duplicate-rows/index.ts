@@ -11,6 +11,7 @@ import {
   dateCells,
   richtextCells,
   numberCells,
+  iconsCells,
 } from "@mapform/db/schema";
 import { duplicateRowsSchema } from "./schema";
 import type { UserAuthClient } from "../../../lib/types";
@@ -29,6 +30,7 @@ export const duplicateRows = (authClient: UserAuthClient) =>
               booleanCell: true,
               dateCell: true,
               richtextCell: true,
+              iconCell: true,
               pointCell: {
                 columns: {
                   id: true,
@@ -104,85 +106,96 @@ export const duplicateRows = (authClient: UserAuthClient) =>
         const richtextCellsToDuplicate = cellsToDuplicate.filter(
           (cell) => cell.richtextCell,
         );
+        const iconCellsToDuplicate = cellsToDuplicate.filter(
+          (cell) => cell.iconCell,
+        );
 
-        if (pointCellsToDuplicate.length > 0) {
-          await tx.insert(pointCells).values(
-            pointCellsToDuplicate.map((cell) => {
-              return {
-                cellId: cellIdMap[cell.id]!,
-                value: {
-                  x: cell.pointCell!.x,
-                  y: cell.pointCell!.y,
-                },
-              };
-            }),
-          );
-        }
-
-        if (stringCellsToDuplicate.length > 0) {
-          await tx.insert(stringCells).values(
-            cellsToDuplicate
-              .filter((cell) => cell.stringCell)
-              .map((cell) => {
+        await Promise.all([
+          pointCellsToDuplicate.length > 0 &&
+            tx.insert(pointCells).values(
+              pointCellsToDuplicate.map((cell) => {
                 return {
                   cellId: cellIdMap[cell.id]!,
-                  value: cell.stringCell!.value,
+                  value: {
+                    x: cell.pointCell!.x,
+                    y: cell.pointCell!.y,
+                  },
                 };
               }),
-          );
-        }
+            ),
 
-        if (booleanCellsToDuplicate.length > 0) {
-          await tx.insert(booleanCells).values(
-            cellsToDuplicate
-              .filter((cell) => cell.booleanCell)
-              .map((cell) => {
-                return {
-                  cellId: cellIdMap[cell.id]!,
-                  value: cell.booleanCell!.value,
-                };
-              }),
-          );
-        }
+          stringCellsToDuplicate.length > 0 &&
+            tx.insert(stringCells).values(
+              cellsToDuplicate
+                .filter((cell) => cell.stringCell)
+                .map((cell) => {
+                  return {
+                    cellId: cellIdMap[cell.id]!,
+                    value: cell.stringCell!.value,
+                  };
+                }),
+            ),
 
-        if (dateCellsToDuplicate.length > 0) {
-          await tx.insert(dateCells).values(
-            cellsToDuplicate
-              .filter((cell) => cell.dateCell)
-              .map((cell) => {
-                return {
-                  cellId: cellIdMap[cell.id]!,
-                  value: cell.dateCell!.value,
-                };
-              }),
-          );
-        }
+          booleanCellsToDuplicate.length > 0 &&
+            tx.insert(booleanCells).values(
+              cellsToDuplicate
+                .filter((cell) => cell.booleanCell)
+                .map((cell) => {
+                  return {
+                    cellId: cellIdMap[cell.id]!,
+                    value: cell.booleanCell!.value,
+                  };
+                }),
+            ),
 
-        if (numberCellsToDuplicate.length > 0) {
-          await tx.insert(numberCells).values(
-            cellsToDuplicate
-              .filter((cell) => cell.numberCell)
-              .map((cell) => {
-                return {
-                  cellId: cellIdMap[cell.id]!,
-                  value: cell.numberCell!.value,
-                };
-              }),
-          );
-        }
+          dateCellsToDuplicate.length > 0 &&
+            tx.insert(dateCells).values(
+              cellsToDuplicate
+                .filter((cell) => cell.dateCell)
+                .map((cell) => {
+                  return {
+                    cellId: cellIdMap[cell.id]!,
+                    value: cell.dateCell!.value,
+                  };
+                }),
+            ),
 
-        if (richtextCellsToDuplicate.length) {
-          await tx.insert(richtextCells).values(
-            cellsToDuplicate
-              .filter((cell) => cell.richtextCell)
-              .map((cell) => {
-                return {
-                  cellId: cellIdMap[cell.id]!,
-                  value: cell.richtextCell!.value,
-                };
-              }),
-          );
-        }
+          numberCellsToDuplicate.length > 0 &&
+            tx.insert(numberCells).values(
+              cellsToDuplicate
+                .filter((cell) => cell.numberCell)
+                .map((cell) => {
+                  return {
+                    cellId: cellIdMap[cell.id]!,
+                    value: cell.numberCell!.value,
+                  };
+                }),
+            ),
+
+          richtextCellsToDuplicate.length > 0 &&
+            tx.insert(richtextCells).values(
+              cellsToDuplicate
+                .filter((cell) => cell.richtextCell)
+                .map((cell) => {
+                  return {
+                    cellId: cellIdMap[cell.id]!,
+                    value: cell.richtextCell!.value,
+                  };
+                }),
+            ),
+
+          iconCellsToDuplicate.length > 0 &&
+            tx.insert(iconsCells).values(
+              cellsToDuplicate
+                .filter((cell) => cell.iconCell)
+                .map((cell) => {
+                  return {
+                    cellId: cellIdMap[cell.id]!,
+                    value: cell.iconCell!.value,
+                  };
+                }),
+            ),
+        ]);
 
         return duplicatedRowIds;
       });
