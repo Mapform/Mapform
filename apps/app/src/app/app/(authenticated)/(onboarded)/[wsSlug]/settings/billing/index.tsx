@@ -26,9 +26,12 @@ export function Billing({
       <div className="@4xl:grid-cols-3 grid grid-cols-1 gap-x-8">
         <div className="pb-8">
           <h2 className="text-md font-semibold">Active Plan</h2>
-          <span className="text-muted-foreground mt-1 text-sm">
+          <div className="text-muted-foreground mt-1 text-sm">
             Your current plan is <Badge>{plan.name}</Badge>
-          </span>
+          </div>
+          <div className="text-muted-foreground mt-1 text-sm">
+            Prices in USD.
+          </div>
         </div>
         <div className="@4xl:col-span-2 grid-cols-1 space-y-6">
           <div className="grid grid-cols-2">
