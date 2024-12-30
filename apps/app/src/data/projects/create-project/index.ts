@@ -13,10 +13,12 @@ export const createProjectAction = async (
   const teamspaceSlug = headersList.get("x-teamspace-slug") ?? "";
   const result = await authClient.createProject(params);
 
-  revalidatePath(`/app/[wsSlug]/[tsSlug]`, "page");
-  redirect(
-    `/app/${workspaceSlug}/${teamspaceSlug}/projects/${result?.data?.id}`,
-  );
+  if (!result?.serverError && !result?.validationErrors) {
+    revalidatePath(`/app/[wsSlug]/[tsSlug]`, "page");
+    redirect(
+      `/app/${workspaceSlug}/${teamspaceSlug}/projects/${result?.data?.id}`,
+    );
+  }
 
   return result;
 };
