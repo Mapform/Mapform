@@ -35,7 +35,17 @@ export const DataTable = function DataTable({ dataset }: TableProps) {
   const { execute: executeDeleteRows, status: statusDeleteRows } =
     useAction(deleteRowsAction);
   const { execute: executeDuplicateRows, status: statusDuplicateRows } =
-    useAction(duplicateRowsAction);
+    useAction(duplicateRowsAction, {
+      onError: ({ error }) => {
+        if (error.serverError) {
+          toast({
+            title: "Uh oh! Something went wrong.",
+            description: error.serverError,
+          });
+          return;
+        }
+      },
+    });
   const { execute: executeCreateRow, status: statusCreateRow } = useAction(
     createRowAction,
     {

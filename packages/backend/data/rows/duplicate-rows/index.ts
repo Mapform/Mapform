@@ -1,7 +1,7 @@
 "server-only";
 
 import { db } from "@mapform/db";
-import { inArray, sql } from "@mapform/db/utils";
+import { eq, inArray, sql } from "@mapform/db/utils";
 import {
   pointCells,
   rows,
@@ -11,14 +11,17 @@ import {
   dateCells,
   richtextCells,
   numberCells,
+  plans,
 } from "@mapform/db/schema";
 import { duplicateRowsSchema } from "./schema";
 import type { UserAuthClient } from "../../../lib/types";
+import { ServerError } from "../../../lib/server-error";
+import { getRowAndPageCount } from "../../usage/get-row-and-page-count";
 
 export const duplicateRows = (authClient: UserAuthClient) =>
   authClient
     .schema(duplicateRowsSchema)
-    .action(async ({ parsedInput: { rowIds } }) => {
+    .action(async ({ parsedInput: { rowIds }, ctx: { userAccess } }) => {
       const dataToDuplicate = await db.query.rows.findMany({
         where: inArray(rows.id, rowIds),
         with: {
@@ -41,11 +44,64 @@ export const duplicateRows = (authClient: UserAuthClient) =>
               },
             },
           },
+          dataset: {
+            with: {
+              teamspace: {
+                columns: {
+                  id: true,
+                  workspaceSlug: true,
+                },
+              },
+            },
+          },
         },
       });
 
       if (dataToDuplicate.length === 0) {
         throw new Error("No rows found to duplicate");
+      }
+
+      const teamspace = dataToDuplicate[0]?.dataset.teamspace;
+
+      // Validate that all rows are from the same teamspace
+      if (
+        !teamspace ||
+        dataToDuplicate.some((row) => row.dataset.teamspace.id !== teamspace.id)
+      ) {
+        throw new Error("Rows must be from the same teamspace");
+      }
+
+      // Check if user has access to the teamspace
+      dataToDuplicate.forEach((row) => {
+        if (!userAccess.teamspace.checkAccessById(row.dataset.teamspace.id)) {
+          throw new Error("Unauthorized");
+        }
+      });
+
+      const [plan, counts] = await Promise.all([
+        db.query.plans.findFirst({
+          where: eq(plans.workspaceSlug, teamspace.workspaceSlug),
+        }),
+        getRowAndPageCount(authClient)({
+          workspaceSlug: teamspace.workspaceSlug,
+        }),
+      ]);
+
+      const rowCount = counts?.data?.rowCount;
+      const pageCount = counts?.data?.pageCount;
+
+      if (!plan) {
+        throw new Error("Plan not found.");
+      }
+
+      if (rowCount === undefined || pageCount === undefined) {
+        throw new Error("Row count or page count is undefined.");
+      }
+
+      if (rowCount + pageCount + dataToDuplicate.length > plan.rowLimit) {
+        throw new ServerError(
+          "Row limit exceeded. Delete some rows, or upgrade your plan.",
+        );
       }
 
       await db.transaction(async (tx) => {
