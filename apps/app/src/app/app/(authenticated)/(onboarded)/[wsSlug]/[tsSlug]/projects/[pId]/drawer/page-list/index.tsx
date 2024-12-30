@@ -29,6 +29,7 @@ import { updatePageOrderAction } from "~/data/pages/update-page-order";
 import { createPageAction } from "~/data/pages/create-page";
 import { useProject } from "../../project-context";
 import { Item } from "./item";
+import { toast } from "@mapform/ui/components/toaster";
 
 export function PageList() {
   const { map } = useMapform();
@@ -48,6 +49,12 @@ export function PageList() {
         if (!newPageData) return;
 
         setActivePage(newPageData);
+      },
+      onError: ({ error }) => {
+        toast({
+          title: "Uh oh! Something went wrong.",
+          description: error.serverError,
+        });
       },
     },
   );
