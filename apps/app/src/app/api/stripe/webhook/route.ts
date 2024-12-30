@@ -40,9 +40,7 @@ export async function POST(request: NextRequest) {
   return NextResponse.json({ received: true });
 }
 
-export async function handleSubscriptionChange(
-  subscription: Stripe.Subscription,
-) {
+async function handleSubscriptionChange(subscription: Stripe.Subscription) {
   const customerId = subscription.customer as string;
   const subscriptionId = subscription.id;
   const status = subscription.status;
