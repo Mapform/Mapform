@@ -30,7 +30,6 @@ import {
 } from "@mapform/backend/data/datasets/create-empty-dataset/schema";
 import { createEmptyDatasetAction } from "~/data/datasets/create-empty-dataset";
 import { useWorkspace } from "~/app/app/(authenticated)/(onboarded)/[wsSlug]/workspace-context";
-import { useRouter } from "next/navigation";
 
 interface CreateDatasetDialogProps {
   tsSlug: string;
@@ -41,7 +40,6 @@ export function CreateDatasetDialog({
   tsSlug,
   children,
 }: CreateDatasetDialogProps) {
-  const router = useRouter();
   const [open, setOpen] = useState(false);
   const { workspaceDirectory } = useWorkspace();
   const teamspace = workspaceDirectory.teamspaces.find(
@@ -71,17 +69,13 @@ export function CreateDatasetDialog({
         });
       }
     },
-    onSuccess: ({ data }) => {
+    onSuccess: () => {
       form.reset();
       toast({
         title: "Success!",
         description: "Your dataset has been created.",
       });
       setOpen(false);
-
-      router.push(
-        `/app/${workspaceDirectory.slug}/${teamspace?.slug}/datasets/${data?.dataset?.id}`,
-      );
     },
   });
 
