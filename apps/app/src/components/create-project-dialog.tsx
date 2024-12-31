@@ -104,6 +104,7 @@ export function CreateProjectDialog({
                     <FormLabel>Name</FormLabel>
                     <FormControl>
                       <Input
+                        autoComplete="off"
                         disabled={field.disabled}
                         name={field.name}
                         onChange={field.onChange}
