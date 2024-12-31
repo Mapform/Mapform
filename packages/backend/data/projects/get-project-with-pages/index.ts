@@ -36,6 +36,15 @@ export const getProjectWithPages = (
                 workspace: {
                   columns: {
                     id: true,
+                    slug: true,
+                  },
+                  with: {
+                    plan: {
+                      columns: {
+                        id: true,
+                        rowLimit: true,
+                      },
+                    },
                   },
                 },
               },

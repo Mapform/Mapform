@@ -3,10 +3,12 @@
   "version": "0.0.0",
   "type": "module",
   "dependencies": {
+    "@t3-oss/env-nextjs": "catalog:",
     "clsx": "catalog:",
     "lodash-es": "catalog:",
     "lucide-react": "catalog:",
     "next": "catalog:",
+    "stripe": "catalog:",
     "tailwind-merge": "catalog:",
     "zod": "catalog:"
   },

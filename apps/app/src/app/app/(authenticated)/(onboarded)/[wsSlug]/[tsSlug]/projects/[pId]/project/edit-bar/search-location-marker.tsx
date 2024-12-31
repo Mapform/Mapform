@@ -72,6 +72,15 @@ export function SearchLocationMarker({
         description: "Point created.",
       });
     },
+    onError: ({ error }) => {
+      if (error.serverError) {
+        toast({
+          title: "Uh oh! Something went wrong.",
+          description: error.serverError,
+        });
+        return;
+      }
+    },
   });
 
   if (!searchLocation) {

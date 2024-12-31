@@ -19,6 +19,7 @@ export const getWorkspaceDirectory = (authClient: UserAuthClient) =>
           createdAt: true,
         },
         with: {
+          plan: true,
           teamspaces: {
             columns: {
               id: true,

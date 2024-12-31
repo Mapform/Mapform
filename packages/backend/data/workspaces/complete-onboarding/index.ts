@@ -8,10 +8,16 @@ import {
   teamspaces,
   workspaceMemberships,
   teamspaceMemberships,
+  plans,
 } from "@mapform/db/schema";
+import Stripe from "stripe";
+import { PLANS } from "@mapform/lib/constants/plans";
 import { completeOnboardingSchema } from "./schema";
 import type { UserAuthClient } from "../../../lib/types";
 import { ServerError } from "../../../lib/server-error";
+import { env } from "../../../env.mjs";
+
+export const stripe = new Stripe(env.STRIPE_SECRET_KEY);
 
 export const completeOnboarding = (authClient: UserAuthClient) =>
   authClient
@@ -71,6 +77,19 @@ export const completeOnboarding = (authClient: UserAuthClient) =>
               role: "owner",
             });
 
+            // Create Stripe customer
+            const customer = await stripe.customers.create({
+              name: workspaceName, // Workspace name
+              email: user.email, // Billing email associated with the workspace
+            });
+
+            await tx.insert(plans).values({
+              name: PLANS.basic.name,
+              workspaceSlug: workspace.slug,
+              stripeCustomerId: customer.id,
+              rowLimit: PLANS.basic.rowLimit,
+            });
+
             return workspace;
           })
           .catch((error) => {
@@ -78,8 +97,7 @@ export const completeOnboarding = (authClient: UserAuthClient) =>
               if ((error as unknown as { code: string }).code === "23505") {
                 throw new ServerError("Workspace slug already exists");
               }
-
-              throw new Error("Failed to complete onboarding");
+              throw new Error("Failed to complete onboarding: " + error);
             }
           });
       },
