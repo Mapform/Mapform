@@ -29,18 +29,28 @@ import {
   type CreateProjectSchema,
 } from "@mapform/backend/data/projects/create-project/schema";
 import { createProjectAction } from "~/data/projects/create-project";
-import { useWorkspace } from "../../workspace-context";
+import { useWorkspace } from "~/app/app/(authenticated)/(onboarded)/[wsSlug]/workspace-context";
+import { useRouter } from "next/navigation";
 
-export function CreateDialog({ tsSlug }: { tsSlug: string }) {
+interface CreateProjectDialogProps {
+  tsSlug: string;
+  children: React.ReactNode;
+}
+
+export function CreateProjectDialog({
+  tsSlug,
+  children,
+}: CreateProjectDialogProps) {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const { workspaceDirectory } = useWorkspace();
-  const teamspaceId = workspaceDirectory.teamspaces.find(
+  const teamspace = workspaceDirectory.teamspaces.find(
     (ts) => ts.slug === tsSlug,
-  )?.id;
+  );
   const form = useForm<CreateProjectSchema>({
     defaultValues: {
       name: "",
-      teamspaceId,
+      teamspaceId: teamspace?.id,
     },
     resolver: zodResolver(createProjectSchema),
   });
@@ -61,13 +71,17 @@ export function CreateDialog({ tsSlug }: { tsSlug: string }) {
         });
       }
     },
-    onSuccess: () => {
+    onSuccess: ({ data }) => {
       form.reset();
       toast({
         title: "Success!",
         description: "Your project has been created.",
       });
       setOpen(false);
+
+      router.push(
+        `/app/${workspaceDirectory.slug}/${teamspace?.slug}/projects/${data?.id}`,
+      );
     },
   });
 
@@ -77,9 +91,7 @@ export function CreateDialog({ tsSlug }: { tsSlug: string }) {
 
   return (
     <Dialog onOpenChange={setOpen} open={open}>
-      <DialogTrigger asChild>
-        <Button size="sm">Create Project</Button>
-      </DialogTrigger>
+      <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -98,6 +110,7 @@ export function CreateDialog({ tsSlug }: { tsSlug: string }) {
                     <FormLabel>Name</FormLabel>
                     <FormControl>
                       <Input
+                        autoComplete="off"
                         disabled={field.disabled}
                         name={field.name}
                         onChange={field.onChange}

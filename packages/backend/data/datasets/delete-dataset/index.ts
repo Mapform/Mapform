@@ -29,5 +29,5 @@ export const deleteDataset = (authClient: UserAuthClient) =>
         throw new Error("Unauthorized");
       }
 
-      return db.delete(datasets).where(eq(datasets.id, datasetId));
+      await db.delete(datasets).where(eq(datasets.id, datasetId));
     });

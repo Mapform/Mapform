@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { format } from "date-fns";
 import {
+  BoxIcon,
   ChevronRightIcon,
   GithubIcon,
   LifeBuoyIcon,
@@ -16,6 +17,8 @@ import {
   CarouselPrevious,
 } from "@mapform/ui/components/carousel";
 import { authClient } from "~/lib/safe-action";
+import { CreateProjectDialog } from "~/components/create-project-dialog";
+import { Button } from "@mapform/ui/components/button";
 
 export default async function HomePage(props: {
   params: Promise<{ wsSlug: string }>;
@@ -30,73 +33,77 @@ export default async function HomePage(props: {
         workspaceSlug: params.wsSlug,
       }),
     ]);
-  const WorkspaceDirectory = getWorkspaceDirectoryResponse?.data;
+  const workspaceDirectory = getWorkspaceDirectoryResponse?.data;
   const recentProjects = recentProjectsResponse?.data ?? [];
 
-  if (!WorkspaceDirectory) {
+  if (!workspaceDirectory) {
     return notFound();
   }
 
   return (
     <div className="@container overflow-y-auto p-4">
       <div className="mx-auto max-w-screen-md space-y-12">
-        <section className="flex items-center justify-center rounded-2xl bg-gray-50 px-4 py-6">
-          <div className="prose">
-            <h4>Maker&apos;s note</h4>
-            <p>
-              Hey there, thanks for checking out Mapform. I started hacking on
-              it in early 2024, and felt it was time to lift the curtain — even
-              though it&apos;s not quite ready yet. Honestly, that&apos;s a
-              tough thing to do, but I believe it&apos;s important to start
-              getting feedback to make the product the best it can be.
-            </p>
-            <p>
-              So if you find any bugs (and you will) or have feedback, I&apos;d
-              love to hear from you. Until then, happy mapping!
-            </p>
-            <p>
-              <strong>— Nic</strong>
-            </p>
-          </div>
-        </section>
         <section className="@4xl:overflow-visible overflow-hidden">
-          <h3 className="text-muted-foreground mb-2 text-sm font-medium">
-            Recent
-          </h3>
-          <Carousel>
-            <CarouselContent>
-              {recentProjects.map(({ project, teamspace }) => (
-                <CarouselItem
-                  className="@lg:basis-1/3 @md:basis-1/2"
-                  key={project.id}
-                >
-                  <div className="overflow-hidden rounded-xl border">
-                    <Link
-                      href={`/app/${params.wsSlug}/${teamspace?.slug}/projects/${project.id}`}
+          {recentProjects.length ? (
+            <>
+              <h3 className="text-muted-foreground mb-2 text-sm font-medium">
+                Recent
+              </h3>
+              <Carousel>
+                <CarouselContent>
+                  {recentProjects.map(({ project, teamspace }) => (
+                    <CarouselItem
+                      className="@lg:basis-1/3 @md:basis-1/2"
+                      key={project.id}
                     >
-                      <div className="flex items-center gap-x-4 border-b border-gray-900/5 bg-stone-50 p-6">
-                        {project.name || "Untitled"}
+                      <div className="overflow-hidden rounded-xl border">
+                        <Link
+                          href={`/app/${params.wsSlug}/${teamspace?.slug}/projects/${project.id}`}
+                        >
+                          <div className="flex items-center gap-x-4 border-b border-gray-900/5 bg-stone-50 p-6">
+                            {project.name || "Untitled"}
+                          </div>
+                          <dl className="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
+                            <div className="flex justify-between gap-x-4 py-3">
+                              <dt className="text-stone-500">Updated</dt>
+                              <dd className="text-stone-700">
+                                <time
+                                  dateTime={teamspace?.updatedAt.toDateString()}
+                                >
+                                  {format(project.updatedAt, "MMMM do, yyyy")}
+                                </time>
+                              </dd>
+                            </div>
+                          </dl>
+                        </Link>
                       </div>
-                      <dl className="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
-                        <div className="flex justify-between gap-x-4 py-3">
-                          <dt className="text-stone-500">Updated</dt>
-                          <dd className="text-stone-700">
-                            <time
-                              dateTime={teamspace?.updatedAt.toDateString()}
-                            >
-                              {format(project.updatedAt, "MMMM do, yyyy")}
-                            </time>
-                          </dd>
-                        </div>
-                      </dl>
-                    </Link>
-                  </div>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselPrevious />
-            <CarouselNext />
-          </Carousel>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselPrevious />
+                <CarouselNext />
+              </Carousel>
+            </>
+          ) : (
+            <div className="flex flex-1 flex-col justify-center rounded-lg bg-gray-50 p-8">
+              <div className="text-center">
+                <BoxIcon className="mx-auto size-8 text-gray-400" />
+                <h3 className="text-foreground mt-2 text-sm font-semibold">
+                  No projects yet
+                </h3>
+                <p className="mt-1 text-sm text-gray-500">
+                  Get started by creating a new project.
+                </p>
+                <CreateProjectDialog
+                  tsSlug={workspaceDirectory.teamspaces[0]!.slug}
+                >
+                  <Button className="mt-4" size="sm">
+                    Create Project
+                  </Button>
+                </CreateProjectDialog>
+              </div>
+            </div>
+          )}
         </section>
         <section>
           <h3 className="text-muted-foreground mb-2 text-sm font-medium">

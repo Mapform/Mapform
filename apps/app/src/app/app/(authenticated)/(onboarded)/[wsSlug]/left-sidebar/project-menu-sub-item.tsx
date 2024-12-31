@@ -26,6 +26,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { RenameProjectPopover } from "~/components/rename-project-popover";
 import { deleteProjectAction } from "~/data/projects/delete-project";
+import { useWorkspace } from "../workspace-context";
 
 interface ProjectMenuSubItemProps {
   project: {
@@ -34,9 +35,14 @@ interface ProjectMenuSubItemProps {
     url: string;
     isActive: boolean;
   };
+  teamspaceSlug: string;
 }
 
-export function ProjectMenuSubItem({ project }: ProjectMenuSubItemProps) {
+export function ProjectMenuSubItem({
+  project,
+  teamspaceSlug,
+}: ProjectMenuSubItemProps) {
+  const { workspaceSlug } = useWorkspace();
   const { execute: executeDeleteProject, status: statusDeleteProject } =
     useAction(deleteProjectAction);
   const [popoverOpen, setPopoverOpen] = useState(false);
@@ -106,6 +112,9 @@ export function ProjectMenuSubItem({ project }: ProjectMenuSubItemProps) {
                   onClick={() => {
                     executeDeleteProject({
                       projectId: project.id,
+                      redirect: project.isActive
+                        ? `/app/${workspaceSlug}/${teamspaceSlug}`
+                        : undefined,
                     });
                   }}
                 >

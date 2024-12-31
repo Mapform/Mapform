@@ -92,7 +92,7 @@ const SidebarProvider = React.forwardRef<
     ref,
   ) => {
     const { width } = useWindowSize();
-     
+
     const isMobile = !!width && width < 768;
     const [openMobile, setOpenMobile] = React.useState(false);
 
