@@ -6,7 +6,7 @@ export const env = createEnv({
     AUTH_SECRET: z.string().min(1),
     RESEND_API_KEY: z.string().min(1),
     DATABASE_URL: z.string().url().min(1),
-    VERCEL_ENV: z.string().optional(),
+
     GEOAPIFY_API_KEY: z.string().min(1),
     VERCEL_URL: z.string().min(1).optional(),
     NODE_ENV: z.enum(["development", "preview", "production"]),
@@ -18,12 +18,13 @@ export const env = createEnv({
     NEXT_PUBLIC_STRIPE_PRO_PRICE_ID_YEARLY: z.string().min(1),
     NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN: z.string().min(1),
     NEXT_PUBLIC_BASE_URL: z.string().url().min(1),
+    NEXT_PUBLIC_VERCEL_ENV: z.enum(["development", "preview", "production"]),
   },
   runtimeEnv: {
     AUTH_SECRET: process.env.AUTH_SECRET,
     RESEND_API_KEY: process.env.RESEND_API_KEY,
     DATABASE_URL: process.env.DATABASE_URL,
-    VERCEL_ENV: process.env.VERCEL_ENV,
+    NEXT_PUBLIC_VERCEL_ENV: process.env.NEXT_PUBLIC_VERCEL_ENV,
     GEOAPIFY_API_KEY: process.env.GEOAPIFY_API_KEY,
     NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN:
       process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN,
