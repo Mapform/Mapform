@@ -815,6 +815,9 @@ importers:
       eslint:
         specifier: 'catalog:'
         version: 9.16.0(jiti@1.21.6)
+      stripe:
+        specifier: 'catalog:'
+        version: 17.5.0
       ts-node:
         specifier: 'catalog:'
         version: 10.9.2(@types/node@20.11.25)(typescript@5.6.3)

@@ -23,6 +23,7 @@
     "@types/ws": "catalog:",
     "drizzle-kit": "catalog:",
     "eslint": "catalog:",
+    "stripe": "catalog:",
     "ts-node": "catalog:",
     "typescript": "catalog:"
   },
