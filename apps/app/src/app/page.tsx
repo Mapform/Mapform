@@ -29,8 +29,8 @@ export default function Page() {
                     </Badge>
                   </TooltipTrigger>
                   <TooltipContent className="max-w-[200px]">
-                    Mapform is its early stages. There are still a lot missing
-                    features and bugs. Please use at your own risk.
+                    Mapform is still in early development. Be one of the first
+                    to try it out and provide feedback!
                   </TooltipContent>
                 </Tooltip>
               </span>
