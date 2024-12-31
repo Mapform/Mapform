@@ -1,5 +1,6 @@
 import { NavSlot } from "~/components/nav-slot";
-import { CreateDialog } from "./dialog";
+import { CreateProjectDialog } from "~/components/create-project-dialog";
+import { Button } from "@mapform/ui/components/button";
 
 export default async function Nav(props: {
   params: Promise<{ wsSlug: string; tsSlug: string }>;
@@ -7,7 +8,12 @@ export default async function Nav(props: {
   const params = await props.params;
   return (
     <NavSlot
-      actions={<CreateDialog tsSlug={params.tsSlug} />}
+      // actions={<CreateDialog tsSlug={params.tsSlug} />}
+      actions={
+        <CreateProjectDialog tsSlug={params.tsSlug}>
+          <Button size="sm">Create Project</Button>
+        </CreateProjectDialog>
+      }
       tabs={[
         {
           name: "Projects",

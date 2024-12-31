@@ -25,26 +25,34 @@ import { toast } from "@mapform/ui/components/toaster";
 import { useAction } from "next-safe-action/hooks";
 import { useState } from "react";
 import {
-  createEmptyDatasetSchema,
-  type CreateEmptyDatasetSchema,
-} from "@mapform/backend/data/datasets/create-empty-dataset/schema";
-import { createEmptyDatasetAction } from "./actions";
-import { useWorkspace } from "../../../workspace-context";
+  createProjectSchema,
+  type CreateProjectSchema,
+} from "@mapform/backend/data/projects/create-project/schema";
+import { createProjectAction } from "~/data/projects/create-project";
+import { useWorkspace } from "~/app/app/(authenticated)/(onboarded)/[wsSlug]/workspace-context";
 
-export function CreateDialog({ tsSlug }: { tsSlug: string }) {
+interface CreateProjectDialogProps {
+  tsSlug: string;
+  children: React.ReactNode;
+}
+
+export function CreateProjectDialog({
+  tsSlug,
+  children,
+}: CreateProjectDialogProps) {
   const [open, setOpen] = useState(false);
   const { workspaceDirectory } = useWorkspace();
   const teamspaceId = workspaceDirectory.teamspaces.find(
     (ts) => ts.slug === tsSlug,
   )?.id;
-  const form = useForm<CreateEmptyDatasetSchema>({
+  const form = useForm<CreateProjectSchema>({
     defaultValues: {
       name: "",
       teamspaceId,
     },
-    resolver: zodResolver(createEmptyDatasetSchema),
+    resolver: zodResolver(createProjectSchema),
   });
-  const { execute, status } = useAction(createEmptyDatasetAction, {
+  const { execute, status } = useAction(createProjectAction, {
     onError: ({ error }) => {
       if (error.serverError) {
         toast({
@@ -57,7 +65,7 @@ export function CreateDialog({ tsSlug }: { tsSlug: string }) {
       if (error.validationErrors) {
         toast({
           title: "Uh oh! Something went wrong.",
-          description: "There was an error creating the dataset",
+          description: "There was an error creating the project",
         });
       }
     },
@@ -65,28 +73,26 @@ export function CreateDialog({ tsSlug }: { tsSlug: string }) {
       form.reset();
       toast({
         title: "Success!",
-        description: "Your dataset has been created.",
+        description: "Your project has been created.",
       });
       setOpen(false);
     },
   });
 
-  const onSubmit = (values: CreateEmptyDatasetSchema) => {
+  const onSubmit = (values: CreateProjectSchema) => {
     execute(values);
   };
 
   return (
     <Dialog onOpenChange={setOpen} open={open}>
-      <DialogTrigger asChild>
-        <Button size="sm">Create Dataset</Button>
-      </DialogTrigger>
+      <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <DialogHeader>
-              <DialogTitle>Create Dataset</DialogTitle>
+              <DialogTitle>Create Project</DialogTitle>
               <DialogDescription>
-                Store geospatial and tabular data for your projects.
+                Collect and display location data with a new project.
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4 py-6">
@@ -101,7 +107,7 @@ export function CreateDialog({ tsSlug }: { tsSlug: string }) {
                         disabled={field.disabled}
                         name={field.name}
                         onChange={field.onChange}
-                        placeholder="My Dataset"
+                        placeholder="My MapForm"
                         ref={field.ref}
                         value={field.value}
                       />

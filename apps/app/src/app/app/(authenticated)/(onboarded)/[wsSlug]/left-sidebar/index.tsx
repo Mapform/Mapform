@@ -22,7 +22,6 @@ import {
   SidebarMenuSub,
   SidebarMenuSubItem,
   SidebarMenuAction,
-  SidebarGroupAction,
 } from "@mapform/ui/components/sidebar";
 import {
   ChevronsUpDown,
@@ -49,14 +48,13 @@ import {
 } from "@mapform/ui/components/avatar";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useAction } from "next-safe-action/hooks";
 import { signOutAction } from "~/data/auth/sign-out";
-import { createProjectAction } from "~/data/projects/create-project";
 import { useAuth } from "~/app/root-providers";
 import { useWorkspace } from "../workspace-context";
 import { ProjectMenuSubItem } from "./project-menu-sub-item";
 import { DatasetMenuSubItem } from "./dataset-menu-sub-item";
-import { createEmptyDatasetAction } from "./actions";
+import { CreateProjectDialog } from "~/components/create-project-dialog";
+import { CreateDatasetDialog } from "~/components/create-dataset-dialog";
 
 export function LeftSidebar() {
   const { user } = useAuth();
@@ -67,13 +65,6 @@ export function LeftSidebar() {
     workspaceSlug,
     currentWorkspace,
   } = useWorkspace();
-
-  const {
-    execute: executeCreateEmptyDataset,
-    status: statusCreateEmptyDataset,
-  } = useAction(createEmptyDatasetAction);
-  const { execute: executeCreateProject, status: statusCreateProject } =
-    useAction(createProjectAction);
 
   if (!user) {
     return null;
@@ -229,7 +220,7 @@ export function LeftSidebar() {
         {data.spaces.map((space) => (
           <SidebarGroup key={space.title}>
             <SidebarGroupLabel>{space.title}</SidebarGroupLabel>
-            <DropdownMenu>
+            {/* <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <SidebarGroupAction>
                   <PlusIcon />
@@ -265,7 +256,7 @@ export function LeftSidebar() {
                   Create dataset
                 </DropdownMenuItem>
               </DropdownMenuContent>
-            </DropdownMenu>
+            </DropdownMenu> */}
 
             {/* Projects */}
             <SidebarMenu>
@@ -280,11 +271,18 @@ export function LeftSidebar() {
                       <span>Projects</span>
                     </Link>
                   </SidebarLeftMenuButton>
-                  <CollapsibleTrigger asChild>
-                    <SidebarMenuAction>
-                      <ChevronRightIcon className="transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                    </SidebarMenuAction>
-                  </CollapsibleTrigger>
+                  <div className="absolute right-1 top-1.5 flex gap-1">
+                    <CreateProjectDialog tsSlug={space.slug}>
+                      <SidebarMenuAction className="relative right-0 top-0">
+                        <PlusIcon />
+                      </SidebarMenuAction>
+                    </CreateProjectDialog>
+                    <CollapsibleTrigger asChild>
+                      <SidebarMenuAction className="relative right-0 top-0">
+                        <ChevronRightIcon className="transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                      </SidebarMenuAction>
+                    </CollapsibleTrigger>
+                  </div>
                   <CollapsibleContent>
                     <SidebarMenuSub>
                       {space.project.projects.length ? (
@@ -292,6 +290,7 @@ export function LeftSidebar() {
                           <ProjectMenuSubItem
                             key={project.id}
                             project={project}
+                            teamspaceSlug={space.slug}
                           />
                         ))
                       ) : (
@@ -317,11 +316,19 @@ export function LeftSidebar() {
                       <span>Datasets</span>
                     </Link>
                   </SidebarLeftMenuButton>
-                  <CollapsibleTrigger asChild>
-                    <SidebarMenuAction>
-                      <ChevronRightIcon className="transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                    </SidebarMenuAction>
-                  </CollapsibleTrigger>
+
+                  <div className="absolute right-1 top-1.5 flex gap-1">
+                    <CreateDatasetDialog tsSlug={space.slug}>
+                      <SidebarMenuAction className="relative right-0 top-0">
+                        <PlusIcon />
+                      </SidebarMenuAction>
+                    </CreateDatasetDialog>
+                    <CollapsibleTrigger asChild>
+                      <SidebarMenuAction className="relative right-0 top-0">
+                        <ChevronRightIcon className="transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                      </SidebarMenuAction>
+                    </CollapsibleTrigger>
+                  </div>
 
                   <CollapsibleContent>
                     <SidebarMenuSub>
@@ -330,6 +337,7 @@ export function LeftSidebar() {
                           <DatasetMenuSubItem
                             dataset={dataset}
                             key={dataset.id}
+                            teamspaceSlug={space.slug}
                           />
                         ))
                       ) : (
