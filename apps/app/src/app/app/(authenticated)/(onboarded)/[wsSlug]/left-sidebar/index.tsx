@@ -348,27 +348,23 @@ export function LeftSidebar() {
         ))}
       </SidebarContent>
       <SidebarFooter>
-        <SidebarGroup>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {data.footer.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarLeftMenuButton asChild isActive={item.isActive}>
-                    <Link
-                      href={item.url}
-                      target={
-                        item.url.startsWith("https://") ? "_blank" : undefined
-                      }
-                    >
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarLeftMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        <SidebarMenu>
+          {data.footer.map((item) => (
+            <SidebarMenuItem key={item.title}>
+              <SidebarLeftMenuButton asChild isActive={item.isActive}>
+                <Link
+                  href={item.url}
+                  target={
+                    item.url.startsWith("https://") ? "_blank" : undefined
+                  }
+                >
+                  <item.icon />
+                  <span>{item.title}</span>
+                </Link>
+              </SidebarLeftMenuButton>
+            </SidebarMenuItem>
+          ))}
+        </SidebarMenu>
         <SidebarMenu>
           <SidebarMenuItem>
             <DropdownMenu>
