@@ -39,7 +39,6 @@ export function PointProperties({ form, isEditing }: PointPropertiesProps) {
 
   const getAvailableColumns = useCallback(
     (t: Column["type"]) => {
-       
       if (!dataset || !type) {
         return null;
       }
@@ -72,8 +71,7 @@ export function PointProperties({ form, isEditing }: PointPropertiesProps) {
 
       form.setValue(
         "pointProperties.iconColumnId",
-        getAvailableColumns("richtext")?.find((c) => c.type === "richtext")
-          ?.id ?? "",
+        getAvailableColumns("icon")?.find((c) => c.type === "icon")?.id ?? "",
       );
     }
   }, [dataset, form, type, getAvailableColumns, isEditing]);
