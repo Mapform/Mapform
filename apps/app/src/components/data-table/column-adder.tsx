@@ -16,25 +16,30 @@ import {
   PopoverTrigger,
 } from "@mapform/ui/components/popover";
 import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from "@mapform/ui/components/select";
+  Command,
+  CommandInput,
+  CommandList,
+  CommandGroup,
+  CommandItem,
+  CommandEmpty,
+} from "@mapform/ui/components/command";
 import {
   createColumnSchema,
   type CreateColumnSchema,
 } from "@mapform/backend/data/columns/create-column/schema";
-import { PlusIcon } from "lucide-react";
+import { CheckIcon, ChevronsUpDownIcon, PlusIcon } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import { createColumnAction } from "~/data/columns/create-column";
+import { cn } from "@mapform/lib/classnames";
+import { useState } from "react";
 
 interface ColumnAdderProps {
   datasetId: string;
 }
 
 export function ColumnAdder({ datasetId }: ColumnAdderProps) {
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
   const { execute, status } = useAction(createColumnAction);
   const form = useForm<CreateColumnSchema>({
     defaultValues: {
@@ -89,37 +94,69 @@ export function ColumnAdder({ datasetId }: ColumnAdderProps) {
                 control={form.control}
                 name="type"
                 render={({ field }) => (
-                  <>
-                    <FormLabel htmlFor="layerSelect">Type</FormLabel>
-                    <FormControl>
-                      <Select
-                        name={field.name}
-                        onValueChange={field.onChange}
-                        value={field.value}
-                      >
-                        <SelectTrigger
-                          className="capitalize"
-                          id="layerSelect"
-                          s="sm"
-                          variant="filled"
+                  <Popover modal onOpenChange={setOpen} open={open}>
+                    <FormLabel htmlFor="type">Type</FormLabel>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          className="ring-offset-background placeholder:text-muted-foreground focus:ring-ring flex h-7 w-full items-center justify-between whitespace-nowrap rounded-md border-0 bg-stone-100 px-2 py-0.5 text-sm font-normal capitalize shadow-sm focus:outline-none focus:ring-1 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
+                          id="type"
+                          size="icon-xs"
+                          variant="ghost"
                         >
-                          <SelectValue placeholder="Select type..." />
-                        </SelectTrigger>
-                        <SelectContent ref={field.ref}>
-                          {columnTypeEnum.enumValues.map((type) => (
-                            <SelectItem
-                              className="capitalize"
-                              key={type}
-                              value={type}
-                            >
-                              {type}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </FormControl>
-                    <FormMessage />
-                  </>
+                          {form.watch("type")
+                            ? columnTypeEnum.enumValues.find(
+                                (type) => type === field.value,
+                              )
+                            : "Select type..."}
+                          <ChevronsUpDownIcon className="size-4 opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent
+                      align="start"
+                      className="w-[200px] p-0"
+                      side="right"
+                    >
+                      <Command>
+                        <CommandInput
+                          className="h-9"
+                          onValueChange={(v: string) => {
+                            setQuery(v);
+                          }}
+                          placeholder="Search types..."
+                          value={query}
+                        />
+                        <CommandList>
+                          <CommandEmpty>No type found.</CommandEmpty>
+                          <CommandGroup>
+                            {columnTypeEnum.enumValues.map((type) => (
+                              <CommandItem
+                                className="capitalize"
+                                value={type}
+                                key={type}
+                                onSelect={() => {
+                                  form.setValue("type", type);
+                                  setQuery("");
+                                  setOpen(false);
+                                }}
+                              >
+                                {type}
+                                <CheckIcon
+                                  className={cn(
+                                    "ml-auto size-4",
+                                    field.value === type
+                                      ? "opacity-100"
+                                      : "opacity-0",
+                                  )}
+                                />
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
                 )}
               />
               <Button
