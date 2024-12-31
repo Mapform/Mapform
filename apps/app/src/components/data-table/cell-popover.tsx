@@ -26,6 +26,7 @@ import {
   schema,
   BlocknoteEditor,
   useCreateBlockNote,
+  CustomBlockContext,
 } from "@mapform/blocknote";
 import { format } from "date-fns";
 import { enUS } from "date-fns/locale";
@@ -36,6 +37,9 @@ import {
 import { EmojiPicker } from "@mapform/ui/components/emoji-picker";
 import type { GetDataset } from "@mapform/backend/data/datasets/get-dataset";
 import { upsertCellAction } from "~/data/cells/upsert-cell";
+import { compressImage } from "~/lib/compress-image";
+import { uploadImageAction } from "~/data/images";
+import { toast } from "@mapform/ui/components/toaster";
 
 const accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN!;
 
@@ -385,29 +389,76 @@ function RichtextInput({
     placeholders: {
       default: "Write, or press '/' for commands...",
     },
+    animations: false,
     schema,
+  });
+  const uploadImageServer = useAction(uploadImageAction, {
+    onError: (response) => {
+      if (
+        response.error.validationErrors &&
+        "image" in response.error.validationErrors
+      ) {
+        toast({
+          title: "Uh oh! Something went wrong.",
+          description: response.error.validationErrors.image?._errors?.[0],
+        });
+
+        return;
+      }
+
+      toast({
+        title: "Uh oh! Something went wrong.",
+        description: "An error occurred while uploading the image.",
+      });
+    },
   });
 
   return (
-    <div className="h-[300px] w-full">
-      <FormField
-        control={form.control}
-        name="value"
-        render={({ field }) => (
-          <FormItem className="flex-1">
-            <FormControl>
-              <BlocknoteEditor
-                editor={editor}
-                includeFormBlocks={false}
-                onChange={() => {
-                  field.onChange({ content: editor.document });
-                }}
-              />
-            </FormControl>
-          </FormItem>
-        )}
-      />
-    </div>
+    <CustomBlockContext.Provider
+      value={{
+        editable: true,
+        onImageUpload: async (file: File) => {
+          const compressedFile = await compressImage(
+            file,
+            0.8,
+            2000,
+            2000,
+            1000,
+          );
+          const formData = new FormData();
+          formData.append("image", compressedFile);
+
+          const response = await uploadImageServer.executeAsync(formData);
+
+          if (response?.serverError) {
+            return null;
+          }
+
+          return response?.data?.url || null;
+        },
+      }}
+    >
+      <div className="h-[360px] w-[360px] overflow-y-auto">
+        <FormField
+          control={form.control}
+          name="value"
+          render={({ field }) => (
+            <FormItem className="flex-1">
+              <FormControl>
+                <BlocknoteEditor
+                  editable
+                  editor={editor}
+                  includeFormBlocks={false}
+                  onChange={() => {
+                    field.onChange({ content: editor.document });
+                  }}
+                />
+              </FormControl>
+            </FormItem>
+          )}
+        />
+      </div>
+    </CustomBlockContext.Provider>
   );
 }
 

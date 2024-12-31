@@ -109,10 +109,9 @@ export const LayerPopoverContent = forwardRef<
       return null;
     }
 
-    if (type === "point")
-      return <PointProperties form={form} isEditing={Boolean(layerToEdit)} />;
+    if (type === "point") return <PointProperties form={form} />;
 
-    return <MarkerProperties form={form} isEditing={Boolean(layerToEdit)} />;
+    return <MarkerProperties form={form} />;
   };
 
   return (

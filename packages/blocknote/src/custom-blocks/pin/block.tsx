@@ -40,12 +40,12 @@ export const Pin = createReactBlockSpec(
       if (editable) {
         return (
           <Button
-            className="w-full cursor-default relative"
+            className="relative w-full cursor-default"
             size="sm"
             variant="outline"
           >
             <input
-              className="w-full bg-transparent text-center text-sm font-medium border-0 p-0 outline-none border-transparent focus:border-transparent focus:ring-0"
+              className="w-full border-0 border-transparent bg-transparent p-0 text-center text-sm font-medium outline-none focus:border-transparent focus:ring-0"
               onChange={(e) => {
                 editor.updateBlock(block, {
                   type: "pin",
@@ -69,7 +69,7 @@ export const Pin = createReactBlockSpec(
       const currentLongitude = form.watch(`${block.id}.longitude`);
 
       return (
-        <div className="fiex flex-col w-full">
+        <div className="fiex w-full flex-col">
           {isSelectingPinLocationFor === block.id ? (
             <div className="flex flex-col gap-2">
               <Button
@@ -78,7 +78,9 @@ export const Pin = createReactBlockSpec(
                   // form.setValue(`${block.id}.latitude`, viewState.latitude);
                   // form.setValue(`${block.id}.longitude`, viewState.longitude);
                   // setViewState(prevViewState);
-                  setIsSelectingPinLocationFor(null);
+                  if (setIsSelectingPinLocationFor) {
+                    setIsSelectingPinLocationFor(null);
+                  }
                 }}
                 size="sm"
               >
@@ -91,7 +93,9 @@ export const Pin = createReactBlockSpec(
                     form.setValue(`${block.id}.latitude`, "");
                     form.setValue(`${block.id}.longitude`, "");
                     // setViewState(prevViewState);
-                    setIsSelectingPinLocationFor(null);
+                    if (setIsSelectingPinLocationFor) {
+                      setIsSelectingPinLocationFor(null);
+                    }
                   }}
                   variant="outline"
                 >
@@ -102,7 +106,9 @@ export const Pin = createReactBlockSpec(
                 className="w-full"
                 onClick={() => {
                   // setViewState(prevViewState);
-                  setIsSelectingPinLocationFor(null);
+                  if (setIsSelectingPinLocationFor) {
+                    setIsSelectingPinLocationFor(null);
+                  }
                 }}
                 size="sm"
                 variant="outline"
@@ -112,9 +118,11 @@ export const Pin = createReactBlockSpec(
             </div>
           ) : (
             <Button
-              className="w-full relative"
+              className="relative w-full"
               onClick={() => {
-                setIsSelectingPinLocationFor(block.id);
+                if (setIsSelectingPinLocationFor) {
+                  setIsSelectingPinLocationFor(block.id);
+                }
 
                 // setPrevViewState(viewState);
 
@@ -171,5 +179,5 @@ export const Pin = createReactBlockSpec(
         </div>
       );
     },
-  }
+  },
 );

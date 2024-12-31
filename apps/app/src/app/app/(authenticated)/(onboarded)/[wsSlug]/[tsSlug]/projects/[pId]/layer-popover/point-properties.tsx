@@ -28,10 +28,9 @@ import { ColorPicker } from "./color-picker";
 
 interface PointPropertiesProps {
   form: UseFormReturn<UpsertLayerSchema>;
-  isEditing: boolean;
 }
 
-export function PointProperties({ form, isEditing }: PointPropertiesProps) {
+export function PointProperties({ form }: PointPropertiesProps) {
   const { availableDatasets } = useProject();
   const datasetId = form.watch("datasetId");
   const type = form.watch("type");
@@ -51,7 +50,7 @@ export function PointProperties({ form, isEditing }: PointPropertiesProps) {
   );
 
   useEffect(() => {
-    if (!isEditing && type === "point") {
+    if (type === "point") {
       form.setValue(
         "pointProperties.pointColumnId",
         getAvailableColumns("point")?.find((c) => c.type === "point")?.id ?? "",
@@ -74,7 +73,7 @@ export function PointProperties({ form, isEditing }: PointPropertiesProps) {
         getAvailableColumns("icon")?.find((c) => c.type === "icon")?.id ?? "",
       );
     }
-  }, [dataset, form, type, getAvailableColumns, isEditing]);
+  }, [dataset, form, type, getAvailableColumns]);
 
   const availablePointColumns = getAvailableColumns("point");
   const availableStringColumns = getAvailableColumns("string");

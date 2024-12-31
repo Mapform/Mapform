@@ -67,7 +67,7 @@ export const Image = createReactBlockSpec(
         }
 
         return (
-          <Popover defaultOpen>
+          <Popover modal defaultOpen>
             <PopoverTrigger className="w-full">
               <div className="flex w-full items-center gap-2 rounded-md bg-gray-100 p-2 text-sm font-medium text-stone-500">
                 <ImageIcon />
