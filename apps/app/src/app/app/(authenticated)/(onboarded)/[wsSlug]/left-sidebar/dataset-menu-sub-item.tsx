@@ -25,7 +25,7 @@ import { useAction } from "next-safe-action/hooks";
 import Link from "next/link";
 import { useState } from "react";
 import { RenameDatasetPopover } from "~/components/rename-dataset-popover";
-import { deleteDatasetAction } from "./actions";
+import { deleteDatasetAction } from "~/data/datasets/delete-dataset";
 import { useWorkspace } from "../workspace-context";
 
 interface DatasetMenuSubItemProps {
@@ -35,9 +35,13 @@ interface DatasetMenuSubItemProps {
     url: string;
     isActive: boolean;
   };
+  teamspaceSlug: string;
 }
 
-export function DatasetMenuSubItem({ dataset }: DatasetMenuSubItemProps) {
+export function DatasetMenuSubItem({
+  dataset,
+  teamspaceSlug,
+}: DatasetMenuSubItemProps) {
   const { execute: executeDeleteDataset, status: statusDeleteDataset } =
     useAction(deleteDatasetAction);
   const [popoverOpen, setPopoverOpen] = useState(false);
@@ -107,6 +111,9 @@ export function DatasetMenuSubItem({ dataset }: DatasetMenuSubItemProps) {
                   onClick={() => {
                     executeDeleteDataset({
                       datasetId: dataset.id,
+                      redirect: dataset.isActive
+                        ? `/app/${workspaceSlug}/${teamspaceSlug}/datasets`
+                        : undefined,
                     });
                   }}
                 >

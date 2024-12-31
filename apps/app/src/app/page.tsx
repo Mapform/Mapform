@@ -8,6 +8,7 @@ import {
 } from "@mapform/ui/components/tooltip";
 import { Globe } from "~/components/landing/globe";
 import { Nav } from "~/components/landing/nav";
+import { ArrowUpRightIcon } from "lucide-react";
 
 export default function Page() {
   return (
@@ -28,8 +29,8 @@ export default function Page() {
                     </Badge>
                   </TooltipTrigger>
                   <TooltipContent className="max-w-[200px]">
-                    Mapform is its early stages. There are still a lot missing
-                    features and bugs. Please use at your own risk.
+                    Mapform is still in early development. Be one of the first
+                    to try it out and provide feedback!
                   </TooltipContent>
                 </Tooltip>
               </span>
@@ -53,8 +54,7 @@ export default function Page() {
                   <Button size="lg">Try it out</Button>
                 </Link>
                 <Link
-                  // TODO: Add link to either a blog post, docs, or social post
-                  href="/app"
+                  href="mailto:contact@mapform.co?subject=I'd like to learn more about Mapform"
                   target="_blank"
                 >
                   <Button
@@ -62,7 +62,7 @@ export default function Page() {
                     size="lg"
                     variant="secondary"
                   >
-                    Learn more
+                    Contact <ArrowUpRightIcon className="ml-1 size-5" />
                   </Button>
                 </Link>
               </div>

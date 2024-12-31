@@ -16,9 +16,11 @@ export const createEmptyDatasetAction = async (
   revalidatePath("/app/[wsSlug]/[tsSlug]/datasets", "page");
   revalidatePath("/app/[wsSlug]/[tsSlug]/projects/[pId]/project", "page");
 
-  redirect(
-    `/app/${workspaceSlug}/${teamspaceSlug}/datasets/${result?.data?.dataset?.id}`,
-  );
+  if (!result?.serverError && !result?.validationErrors) {
+    redirect(
+      `/app/${workspaceSlug}/${teamspaceSlug}/datasets/${result?.data?.dataset?.id}`,
+    );
+  }
 
   return result;
 };

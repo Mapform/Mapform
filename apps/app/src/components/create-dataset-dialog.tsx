@@ -28,19 +28,27 @@ import {
   createEmptyDatasetSchema,
   type CreateEmptyDatasetSchema,
 } from "@mapform/backend/data/datasets/create-empty-dataset/schema";
-import { createEmptyDatasetAction } from "./actions";
-import { useWorkspace } from "../../../workspace-context";
+import { createEmptyDatasetAction } from "~/data/datasets/create-empty-dataset";
+import { useWorkspace } from "~/app/app/(authenticated)/(onboarded)/[wsSlug]/workspace-context";
 
-export function CreateDialog({ tsSlug }: { tsSlug: string }) {
+interface CreateDatasetDialogProps {
+  tsSlug: string;
+  children: React.ReactNode;
+}
+
+export function CreateDatasetDialog({
+  tsSlug,
+  children,
+}: CreateDatasetDialogProps) {
   const [open, setOpen] = useState(false);
   const { workspaceDirectory } = useWorkspace();
-  const teamspaceId = workspaceDirectory.teamspaces.find(
+  const teamspace = workspaceDirectory.teamspaces.find(
     (ts) => ts.slug === tsSlug,
-  )?.id;
+  );
   const form = useForm<CreateEmptyDatasetSchema>({
     defaultValues: {
       name: "",
-      teamspaceId,
+      teamspaceId: teamspace?.id,
     },
     resolver: zodResolver(createEmptyDatasetSchema),
   });
@@ -77,9 +85,7 @@ export function CreateDialog({ tsSlug }: { tsSlug: string }) {
 
   return (
     <Dialog onOpenChange={setOpen} open={open}>
-      <DialogTrigger asChild>
-        <Button size="sm">Create Dataset</Button>
-      </DialogTrigger>
+      <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -98,6 +104,7 @@ export function CreateDialog({ tsSlug }: { tsSlug: string }) {
                     <FormLabel>Name</FormLabel>
                     <FormControl>
                       <Input
+                        autoComplete="off"
                         disabled={field.disabled}
                         name={field.name}
                         onChange={field.onChange}

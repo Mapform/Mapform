@@ -23,7 +23,7 @@ export default async function WorkspaceForms(props: {
         <div className="text-center">
           <BoxIcon className="mx-auto size-8 text-gray-400" />
           <h3 className="text-foreground mt-2 text-sm font-semibold">
-            No projects
+            No projects yet
           </h3>
           <p className="mt-1 text-sm text-gray-500">
             Get started by creating a new project.
