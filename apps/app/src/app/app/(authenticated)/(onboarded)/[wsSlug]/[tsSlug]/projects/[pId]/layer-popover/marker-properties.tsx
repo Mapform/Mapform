@@ -28,10 +28,9 @@ import { ColorPicker } from "./color-picker";
 
 interface MarkerPropertiesProps {
   form: UseFormReturn<UpsertLayerSchema>;
-  isEditing: boolean;
 }
 
-export function MarkerProperties({ form, isEditing }: MarkerPropertiesProps) {
+export function MarkerProperties({ form }: MarkerPropertiesProps) {
   const { availableDatasets } = useProject();
   const datasetId = form.watch("datasetId");
   const type = form.watch("type");
@@ -39,7 +38,6 @@ export function MarkerProperties({ form, isEditing }: MarkerPropertiesProps) {
 
   const getAvailableColumns = useCallback(
     (t: Column["type"]) => {
-       
       if (!dataset || !type) {
         return null;
       }
@@ -52,7 +50,7 @@ export function MarkerProperties({ form, isEditing }: MarkerPropertiesProps) {
   );
 
   useEffect(() => {
-    if (!isEditing && type === "marker") {
+    if (type === "marker") {
       form.setValue(
         "markerProperties.pointColumnId",
         getAvailableColumns("point")?.find((c) => c.type === "point")?.id ?? "",
@@ -75,7 +73,7 @@ export function MarkerProperties({ form, isEditing }: MarkerPropertiesProps) {
         getAvailableColumns("icon")?.find((c) => c.type === "icon")?.id ?? "",
       );
     }
-  }, [dataset, form, type, getAvailableColumns, isEditing]);
+  }, [dataset, form, type, getAvailableColumns, datasetId]);
 
   const availablePointColumns = getAvailableColumns("point");
   const availableStringColumns = getAvailableColumns("string");
