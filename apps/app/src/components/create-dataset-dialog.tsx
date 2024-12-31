@@ -28,8 +28,9 @@ import {
   createEmptyDatasetSchema,
   type CreateEmptyDatasetSchema,
 } from "@mapform/backend/data/datasets/create-empty-dataset/schema";
-import { createEmptyDatasetAction } from "../app/app/(authenticated)/(onboarded)/[wsSlug]/@nav/[tsSlug]/datasets/actions";
+import { createEmptyDatasetAction } from "~/data/datasets/create-empty-dataset";
 import { useWorkspace } from "~/app/app/(authenticated)/(onboarded)/[wsSlug]/workspace-context";
+import { useRouter } from "next/navigation";
 
 interface CreateDatasetDialogProps {
   tsSlug: string;
@@ -40,15 +41,16 @@ export function CreateDatasetDialog({
   tsSlug,
   children,
 }: CreateDatasetDialogProps) {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const { workspaceDirectory } = useWorkspace();
-  const teamspaceId = workspaceDirectory.teamspaces.find(
+  const teamspace = workspaceDirectory.teamspaces.find(
     (ts) => ts.slug === tsSlug,
-  )?.id;
+  );
   const form = useForm<CreateEmptyDatasetSchema>({
     defaultValues: {
       name: "",
-      teamspaceId,
+      teamspaceId: teamspace?.id,
     },
     resolver: zodResolver(createEmptyDatasetSchema),
   });
@@ -69,13 +71,17 @@ export function CreateDatasetDialog({
         });
       }
     },
-    onSuccess: () => {
+    onSuccess: ({ data }) => {
       form.reset();
       toast({
         title: "Success!",
         description: "Your dataset has been created.",
       });
       setOpen(false);
+
+      router.push(
+        `/app/${workspaceDirectory.slug}/${teamspace?.slug}/datasets/${data?.dataset?.id}`,
+      );
     },
   });
 

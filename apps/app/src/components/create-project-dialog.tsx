@@ -30,6 +30,7 @@ import {
 } from "@mapform/backend/data/projects/create-project/schema";
 import { createProjectAction } from "~/data/projects/create-project";
 import { useWorkspace } from "~/app/app/(authenticated)/(onboarded)/[wsSlug]/workspace-context";
+import { useRouter } from "next/navigation";
 
 interface CreateProjectDialogProps {
   tsSlug: string;
@@ -40,15 +41,16 @@ export function CreateProjectDialog({
   tsSlug,
   children,
 }: CreateProjectDialogProps) {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const { workspaceDirectory } = useWorkspace();
-  const teamspaceId = workspaceDirectory.teamspaces.find(
+  const teamspace = workspaceDirectory.teamspaces.find(
     (ts) => ts.slug === tsSlug,
-  )?.id;
+  );
   const form = useForm<CreateProjectSchema>({
     defaultValues: {
       name: "",
-      teamspaceId,
+      teamspaceId: teamspace?.id,
     },
     resolver: zodResolver(createProjectSchema),
   });
@@ -69,13 +71,17 @@ export function CreateProjectDialog({
         });
       }
     },
-    onSuccess: () => {
+    onSuccess: ({ data }) => {
       form.reset();
       toast({
         title: "Success!",
         description: "Your project has been created.",
       });
       setOpen(false);
+
+      router.push(
+        `/app/${workspaceDirectory.slug}/${teamspace?.slug}/projects/${data?.id}`,
+      );
     },
   });
 

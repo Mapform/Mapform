@@ -14,7 +14,7 @@ export const deleteProject = (authClient: UserAuthClient) =>
         .map((m) => m.workspace.teamspaces.map((t) => t.id))
         .flat();
 
-      return db
+      await db
         .delete(projects)
         .where(
           and(
