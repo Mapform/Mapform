@@ -438,7 +438,7 @@ function RichtextInput({
         },
       }}
     >
-      <div className="h-[300px] w-[360px]">
+      <div className="h-[360px] w-[360px] overflow-y-auto">
         <FormField
           control={form.control}
           name="value"
