@@ -8,13 +8,13 @@ import { useContext, createContext } from "react";
 export interface CustomBlockContextProps {
   editable: boolean;
   onImageUpload?: (file: File) => Promise<string | null>;
-  isSelectingPinLocationFor: string | null;
-  setIsSelectingPinLocationFor: React.Dispatch<
+  isSelectingPinLocationFor?: string | null;
+  setIsSelectingPinLocationFor?: React.Dispatch<
     React.SetStateAction<string | null>
   >;
 }
 
 export const CustomBlockContext = createContext<CustomBlockContextProps>(
-  {} as CustomBlockContextProps
+  {} as CustomBlockContextProps,
 );
 export const useCustomBlockContext = () => useContext(CustomBlockContext);
