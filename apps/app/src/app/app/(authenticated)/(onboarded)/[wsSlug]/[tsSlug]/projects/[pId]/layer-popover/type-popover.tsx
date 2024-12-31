@@ -3,7 +3,6 @@ import {
   FormLabel,
   FormControl,
   type UseFormReturn,
-  FormItem,
 } from "@mapform/ui/components/form";
 import {
   Command,
@@ -41,6 +40,7 @@ const types = [
 
 export function TypePopover({ form }: TypePopoverProps) {
   const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
 
   return (
     <FormField
@@ -57,7 +57,7 @@ export function TypePopover({ form }: TypePopoverProps) {
                 size="icon-xs"
                 variant="ghost"
               >
-                {form.watch("datasetId")
+                {form.watch("type")
                   ? types.find((type) => type.value === field.value)?.label
                   : "Select type..."}
                 <ChevronsUpDownIcon className="size-4 opacity-50" />
@@ -66,7 +66,14 @@ export function TypePopover({ form }: TypePopoverProps) {
           </PopoverTrigger>
           <PopoverContent align="start" className="w-[200px] p-0" side="right">
             <Command>
-              <CommandInput placeholder="Search types..." className="h-9" />
+              <CommandInput
+                className="h-9"
+                onValueChange={(v: string) => {
+                  setQuery(v);
+                }}
+                placeholder="Search types..."
+                value={query}
+              />
               <CommandList>
                 <CommandEmpty>No type found.</CommandEmpty>
                 <CommandGroup>
@@ -76,6 +83,8 @@ export function TypePopover({ form }: TypePopoverProps) {
                       key={type.value}
                       onSelect={() => {
                         form.setValue("type", type.value);
+                        setQuery("");
+                        setOpen(false);
                       }}
                     >
                       {type.label}
