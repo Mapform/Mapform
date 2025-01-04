@@ -37,6 +37,7 @@ export interface ProjectContextProps {
   currentPage: PageWithLayers | undefined;
   currentPageData: PageData | undefined;
   availableDatasets: TeamspaceDatasets;
+  projectWithPages: ProjectWithPages;
 
   uploadImageServer: InferUseActionHookReturn<typeof uploadImageAction>;
   upsertCellServer: InferUseActionHookReturn<typeof upsertCellAction>;
@@ -237,6 +238,7 @@ export function ProjectProvider({
         setEditMode,
         isEditingPage,
         setActivePage,
+        projectWithPages,
         availableDatasets,
 
         // Optimistic state

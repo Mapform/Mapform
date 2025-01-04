@@ -35,6 +35,7 @@ interface MapFormProps {
   currentPage: Page;
   defaultFormValues?: Record<string, string>;
   showBlocknote?: boolean;
+  includeFormBlocks?: boolean;
   onPrev?: () => void;
   onLoad?: () => void;
   onIconChange?: (icon: string | null, type: "page" | "feature") => void;
@@ -66,6 +67,7 @@ export function MapForm({
   onImageUpload,
   defaultFormValues,
   onDescriptionChange,
+  includeFormBlocks = false,
 }: MapFormProps) {
   const setQueryString = useSetQueryString();
   const { drawerOpen, setDrawerOpen } = useMapform();
@@ -150,7 +152,7 @@ export function MapForm({
           description={currentPage.content as { content: CustomBlock[] }}
           editable={editable}
           icon={currentPage.icon}
-          isPage
+          includeFormBlocks={includeFormBlocks}
           key={currentPage.id}
           onDescriptionChange={(val) => {
             onDescriptionChange && onDescriptionChange(val, "page");
@@ -182,6 +184,7 @@ export function MapForm({
       onIconChange,
       onPrev,
       onTitleChange,
+      includeFormBlocks,
     ],
   );
 
@@ -197,7 +200,6 @@ export function MapForm({
         }
         editable={editable}
         icon={selectedFeature.icon?.iconCell?.value}
-        isPage
         key={`${currentPage.id}-${selectedFeature.rowId}`}
         onDescriptionChange={(val) => {
           onDescriptionChange && onDescriptionChange(val, "feature");

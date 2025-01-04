@@ -16,6 +16,7 @@ function Project() {
     currentPageData,
     updatePageServer,
     upsertCellServer,
+    projectWithPages,
     uploadImageServer,
     updatePageOptimistic,
     updateSelectedFeatureOptimistic,
@@ -60,6 +61,7 @@ function Project() {
         <MapForm
           currentPage={currentPage}
           editable
+          includeFormBlocks={projectWithPages.formsEnabled}
           mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
           onDescriptionChange={(content, type) => {
             if (type === "page") {

@@ -19,7 +19,7 @@ interface BlocknoteProps {
   description?: {
     content: CustomBlock[];
   };
-  isPage?: boolean;
+  includeFormBlocks?: boolean;
   locationEditorProps?: {
     onClose: () => void;
   };
@@ -36,7 +36,7 @@ export function Blocknote({
   description,
   onIconChange,
   onTitleChange,
-  isPage = false,
+  includeFormBlocks = false,
   onDescriptionChange,
   locationEditorProps,
 }: BlocknoteProps) {
@@ -122,7 +122,7 @@ export function Blocknote({
         <BlocknoteEditor
           editable={editable}
           editor={editor}
-          includeFormBlocks={!isPage}
+          includeFormBlocks={includeFormBlocks}
           onChange={() => {
             onDescriptionChange &&
               onDescriptionChange({
