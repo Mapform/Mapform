@@ -1,7 +1,7 @@
 "server-only";
 
 import { db } from "@mapform/db";
-import { pages, projects, teamspaces } from "@mapform/db/schema";
+import { datasets, pages, projects, teamspaces } from "@mapform/db/schema";
 import { createProjectSchema } from "./schema";
 import type { UserAuthClient } from "../../../lib/types";
 import { ServerError } from "../../../lib/server-error";
@@ -20,7 +20,10 @@ export const createProject = (authClient: UserAuthClient) =>
   authClient
     .schema(createProjectSchema)
     .action(
-      async ({ parsedInput: { name, teamspaceId }, ctx: { userAccess } }) => {
+      async ({
+        parsedInput: { name, teamspaceId, formsEnabled },
+        ctx: { userAccess },
+      }) => {
         if (!userAccess.teamspace.checkAccessById(teamspaceId)) {
           throw new Error("Unauthorized");
         }
@@ -61,22 +64,26 @@ export const createProject = (authClient: UserAuthClient) =>
         }
 
         return db.transaction(async (tx) => {
+          let datasetId: string | undefined;
           /**
            * Create submissions dataset
-           * TODO: Add this back in (conditionally) when I support forms again
            */
-          // const [dataset] = await tx
-          //   .insert(datasets)
-          //   .values({
-          //     name: `Responses for ${name}`,
-          //     teamspaceId,
-          //     type: "submissions",
-          //   })
-          //   .returning();
+          if (formsEnabled) {
+            const [dataset] = await tx
+              .insert(datasets)
+              .values({
+                name: `Responses for ${name}`,
+                teamspaceId,
+                type: "submissions",
+              })
+              .returning();
 
-          // if (!dataset) {
-          //   throw new Error("Failed to create dataset");
-          // }
+            if (!dataset) {
+              throw new Error("Failed to create dataset");
+            }
+
+            datasetId = dataset.id;
+          }
 
           /**
            * Create project
@@ -86,7 +93,8 @@ export const createProject = (authClient: UserAuthClient) =>
             .values({
               name,
               teamspaceId,
-              // datasetId: dataset.id,
+              formsEnabled,
+              datasetId,
             })
             .returning();
 
