@@ -14,6 +14,8 @@ export const projects = pgTable("project", {
   name: varchar("name", { length: 256 }).notNull(),
   icon: varchar("icon", { length: 256 }),
 
+  formsEnabled: boolean("forms_enabled").default(false).notNull(),
+
   teamspaceId: uuid("teamspace_id")
     .notNull()
     .references(() => teamspaces.id, { onDelete: "cascade" }),
