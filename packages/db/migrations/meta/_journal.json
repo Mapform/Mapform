@@ -183,6 +183,13 @@
       "when": 1736017959954,
       "tag": "0025_complex_runaways",
       "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1736116225265,
+      "tag": "0026_striped_fabian_cortez",
+      "breakpoints": true
     }
   ]
 }

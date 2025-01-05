@@ -30,18 +30,6 @@ const mapBlockTypeToDataType = (
   }
 };
 
-const generateUniqueColumnName = (name: string, existingNames: string[]) => {
-  let uniqueName = name;
-  let i = 1;
-
-  while (existingNames.includes(uniqueName)) {
-    uniqueName = `${name} (${i})`;
-    i++;
-  }
-
-  return uniqueName;
-};
-
 const flattenBlockNoteContent = (
   content: DocumentContent,
   flatBlocks: CustomBlock[] = [],
@@ -149,10 +137,7 @@ export const updatePage = (authClient: UserAuthClient) =>
                 );
               })
               .map((block) => ({
-                name: generateUniqueColumnName(
-                  block.props.label,
-                  datasetColumns.map((col) => col.name),
-                ),
+                name: block.props.label,
                 type: mapBlockTypeToDataType(block.type),
                 blockNoteId: block.id,
                 datasetId: page.project.submissionsDataset!.id,
@@ -171,7 +156,11 @@ export const updatePage = (authClient: UserAuthClient) =>
         // Input blocks to update
         const inputBlocksToUpdate = pageBlock
           .filter((block) => {
-            return datasetColumns.find((col) => col.blockNoteId === block.id);
+            return datasetColumns.find((col) => {
+              return (
+                col.blockNoteId === block.id && col.name !== block.props.label
+              );
+            });
           })
           .map((block) => ({
             name: block.props.label,
