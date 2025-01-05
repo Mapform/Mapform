@@ -16,6 +16,10 @@ export const Pin = createReactBlockSpec(
   {
     type: "pin",
     propSchema: {
+      label: {
+        default: "My Label",
+        type: "string",
+      },
       text: {
         default: "Pick a Location",
         type: "string",
