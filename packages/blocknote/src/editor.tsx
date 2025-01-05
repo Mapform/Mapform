@@ -29,7 +29,7 @@ const insertPin = (edtr: typeof schema.BlockNoteEditor) => ({
   aliases: ["location", "pins"],
   group: "Inputs",
   icon: <MapPinIcon className="size-4" />,
-  subtext: "User location selector",
+  subtext: "Capture location from user",
 });
 
 const insertTextInput = (edtr: typeof schema.BlockNoteEditor) => ({
@@ -42,7 +42,7 @@ const insertTextInput = (edtr: typeof schema.BlockNoteEditor) => ({
   aliases: ["input", "short-text"],
   group: "Inputs",
   icon: <TextIcon className="size-4" />,
-  subtext: "User text input",
+  subtext: "Capture text from user",
 });
 
 const insertImage = (edtr: typeof schema.BlockNoteEditor) => ({
@@ -129,7 +129,7 @@ export function BlocknoteEditor({
           );
 
           return (
-            <div className="bg-popover text-popover-foreground z-50 w-[300px] space-y-1 overflow-hidden rounded-md border shadow-md">
+            <div className="bg-popover text-popover-foreground z-50 w-[300px] space-y-1 overflow-hidden overflow-y-auto rounded-md border shadow-md">
               {Object.entries(groupedItems).map(([group, items]) => (
                 <div key={group} className="border-b last:border-0">
                   <div className="space-y-1 p-1">
