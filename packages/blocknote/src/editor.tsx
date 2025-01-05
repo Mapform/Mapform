@@ -29,6 +29,7 @@ const insertPin = (edtr: typeof schema.BlockNoteEditor) => ({
   aliases: ["location", "pins"],
   group: "Inputs",
   icon: <MapPinIcon className="size-4" />,
+  subtext: "User location selector",
 });
 
 const insertTextInput = (edtr: typeof schema.BlockNoteEditor) => ({
@@ -41,6 +42,7 @@ const insertTextInput = (edtr: typeof schema.BlockNoteEditor) => ({
   aliases: ["input", "short-text"],
   group: "Inputs",
   icon: <TextIcon className="size-4" />,
+  subtext: "User text input",
 });
 
 const insertImage = (edtr: typeof schema.BlockNoteEditor) => ({
@@ -53,6 +55,7 @@ const insertImage = (edtr: typeof schema.BlockNoteEditor) => ({
   aliases: ["photo"],
   group: "Basic blocks",
   icon: <ImageIcon className="size-4" />,
+  subtext: "Upload an image",
 });
 
 interface BlocknoteEditorProps {
@@ -87,11 +90,11 @@ export function BlocknoteEditor({
               ...getDefaultReactSlashMenuItems(editor).filter(
                 (i) => i.title !== "Emoji",
               ),
+              insertImage(editor),
               // Only provide inputs for pages
               ...(includeFormBlocks
                 ? [insertTextInput(editor), insertPin(editor)]
                 : []),
-              insertImage(editor),
             ],
             query,
           );
@@ -113,13 +116,20 @@ export function BlocknoteEditor({
                 onItemClick?.(item);
               }}
             >
-              <span className="size-4">{item.icon}</span>
-              {item.title}
+              <div className="flex size-10 flex-shrink-0 items-center justify-center rounded-lg bg-gray-50">
+                <span className="size-4">{item.icon}</span>
+              </div>
+              <div className="flex flex-col">
+                <div>{item.title}</div>
+                <div className="text-muted-foreground text-xs">
+                  {item.subtext}
+                </div>
+              </div>
             </div>
           );
 
           return (
-            <div className="bg-popover text-popover-foreground z-50 min-w-[200px] space-y-1 overflow-hidden rounded-md border shadow-md">
+            <div className="bg-popover text-popover-foreground z-50 w-[300px] space-y-1 overflow-hidden rounded-md border shadow-md">
               {Object.entries(groupedItems).map(([group, items]) => (
                 <div key={group} className="border-b last:border-0">
                   <div className="space-y-1 p-1">
