@@ -1,7 +1,7 @@
 "server-only";
 
 import { db } from "@mapform/db";
-import { count, eq, inArray } from "@mapform/db/utils";
+import { count, eq, inArray, type SQL, sql } from "@mapform/db/utils";
 import {
   cells,
   columns,
@@ -15,7 +15,7 @@ import type {
   InputCustomBlockTypes,
 } from "@mapform/blocknote";
 import { updatePageSchema } from "./schema";
-import { UserAuthClient } from "../../../lib/types";
+import type { UserAuthClient } from "../../../lib/types";
 
 const mapBlockTypeToDataType = (
   blockType: InputCustomBlockTypes,
@@ -168,6 +168,27 @@ export const updatePage = (authClient: UserAuthClient) =>
           );
         });
 
+        // Input blocks to update
+        const inputBlocksToUpdate = pageBlock
+          .filter((block) => {
+            return datasetColumns.find((col) => col.blockNoteId === block.id);
+          })
+          .map((block) => ({
+            name: block.props.label,
+            blockNoteId: block.id,
+          }));
+
+        // To update many columns at once, we need to use a case statement as per: https://orm.drizzle.team/docs/guides/update-many-with-different-value
+        const sqlChunks: SQL[] = [];
+        sqlChunks.push(sql`(case`);
+        for (const input of inputBlocksToUpdate) {
+          sqlChunks.push(
+            sql`when ${columns.blockNoteId} = ${input.blockNoteId} then ${input.name}`,
+          );
+        }
+        sqlChunks.push(sql`end)`);
+        const updateBlocksSql: SQL = sql.join(sqlChunks, sql.raw(" "));
+
         await db.transaction(async (tx) => {
           await Promise.all([
             tx
@@ -198,6 +219,18 @@ export const updatePage = (authClient: UserAuthClient) =>
                 inputBlocksToDelete.map((col) => col.columnId),
               ),
             ),
+
+            tx
+              .update(columns)
+              .set({
+                name: updateBlocksSql,
+              })
+              .where(
+                inArray(
+                  columns.blockNoteId,
+                  inputBlocksToUpdate.map((col) => col.blockNoteId),
+                ),
+              ),
           ]);
         });
 
