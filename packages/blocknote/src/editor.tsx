@@ -27,7 +27,7 @@ const insertPin = (edtr: typeof schema.BlockNoteEditor) => ({
     });
   },
   aliases: ["location", "pins"],
-  group: "Inputs",
+  group: "Input blocks",
   icon: <MapPinIcon className="size-4" />,
   subtext: "Capture location from user",
 });
@@ -40,7 +40,7 @@ const insertTextInput = (edtr: typeof schema.BlockNoteEditor) => ({
     });
   },
   aliases: ["input", "short-text"],
-  group: "Inputs",
+  group: "Input blocks",
   icon: <TextIcon className="size-4" />,
   subtext: "Capture text from user",
 });

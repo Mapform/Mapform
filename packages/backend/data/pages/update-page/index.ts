@@ -220,17 +220,18 @@ export const updatePage = (authClient: UserAuthClient) =>
               ),
             ),
 
-            tx
-              .update(columns)
-              .set({
-                name: updateBlocksSql,
-              })
-              .where(
-                inArray(
-                  columns.blockNoteId,
-                  inputBlocksToUpdate.map((col) => col.blockNoteId),
+            inputBlocksToUpdate.length &&
+              tx
+                .update(columns)
+                .set({
+                  name: updateBlocksSql,
+                })
+                .where(
+                  inArray(
+                    columns.blockNoteId,
+                    inputBlocksToUpdate.map((col) => col.blockNoteId),
+                  ),
                 ),
-              ),
           ]);
         });
 

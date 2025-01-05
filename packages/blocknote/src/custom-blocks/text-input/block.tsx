@@ -29,7 +29,7 @@ export const TextInput = createReactBlockSpec(
         type: "boolean",
       },
     },
-    content: "inline",
+    content: "none",
   },
   {
     render: ({ block, editor }) => {
