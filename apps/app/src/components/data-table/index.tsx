@@ -153,7 +153,7 @@ export const DataTable = function DataTable({ dataset }: TableProps) {
           </>
         ) : null}
       </div>
-      <Table>
+      <Table className="border-b">
         <TableHeader
           className="sticky top-[53px] z-10 bg-white"
           style={{
@@ -164,7 +164,7 @@ export const DataTable = function DataTable({ dataset }: TableProps) {
             <TableRow className="border-none" key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
                 return (
-                  <TableHead key={header.id}>
+                  <TableHead className="truncate" key={header.id}>
                     {header.isPlaceholder
                       ? null
                       : flexRender(
@@ -199,7 +199,7 @@ export const DataTable = function DataTable({ dataset }: TableProps) {
         </TableBody>
       </Table>
       <button
-        className="hover:bg-muted/50 flex items-center border-t p-2 text-left text-sm disabled:pointer-events-none disabled:opacity-50"
+        className="hover:bg-muted/50 sticky left-0 flex items-center p-2 text-left text-sm disabled:pointer-events-none disabled:opacity-50"
         disabled={statusCreateRow === "executing"}
         onClick={() => {
           executeCreateRow({ datasetId: dataset.id });
