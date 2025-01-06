@@ -43,11 +43,11 @@ export const TextInput = createReactBlockSpec(
           // This is what allows us to match the user value back to the input
           name={block.id}
           render={({ field }) => (
-            <FormItem className="w-full">
+            <FormItem className="my-2 w-full">
               {editable ? (
                 <div className="flex justify-between">
                   <input
-                    className="flex-1 border-0 border-transparent bg-transparent p-0 text-sm font-medium placeholder-gray-300 outline-none focus:border-transparent focus:ring-0"
+                    className="flex-1 border-0 border-transparent bg-transparent p-0 text-base font-medium placeholder-gray-300 outline-none focus:border-transparent focus:ring-0"
                     onChange={(e) => {
                       editor.updateBlock(block, {
                         type: "textInput",
