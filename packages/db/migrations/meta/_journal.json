@@ -190,6 +190,13 @@
       "when": 1736116225265,
       "tag": "0026_striped_fabian_cortez",
       "breakpoints": true
+    },
+    {
+      "idx": 27,
+      "version": "7",
+      "when": 1736289002390,
+      "tag": "0027_skinny_maelstrom",
+      "breakpoints": true
     }
   ]
 }
