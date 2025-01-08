@@ -22,11 +22,11 @@ export function Drawer() {
   return (
     <Portal.Root className="flex-1 overflow-hidden" container={container}>
       <ResizablePanelGroup direction="vertical">
-        <ResizablePanel>
+        <ResizablePanel minSize={15}>
           <PageList />
         </ResizablePanel>
         <ResizableHandle />
-        <ResizablePanel>
+        <ResizablePanel minSize={15}>
           <LayerList key={currentPage?.id} />
         </ResizablePanel>
       </ResizablePanelGroup>
