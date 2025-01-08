@@ -95,7 +95,7 @@ export function PageList() {
 
   return (
     <SidebarContent className="h-full">
-      <SidebarGroup className="h-full">
+      <SidebarGroup>
         <SidebarGroupLabel>Pages</SidebarGroupLabel>
         <SidebarGroupAction
           disabled={createPageStatus === "executing"}

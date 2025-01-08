@@ -16,6 +16,7 @@ import {
 import { useProject } from "../project-context";
 import { LayerList } from "./layer-list";
 import { PageList } from "./page-list";
+import { Ending } from "./ending";
 
 export function Drawer() {
   const isClient = useIsClient();
@@ -38,6 +39,10 @@ export function Drawer() {
           <ResizablePanelGroup direction="vertical">
             <ResizablePanel minSize={15}>
               <PageList />
+            </ResizablePanel>
+            <ResizableHandle />
+            <ResizablePanel minSize={10} maxSize={10}>
+              <Ending />
             </ResizablePanel>
             <ResizableHandle />
             <ResizablePanel minSize={15}>
