@@ -1,13 +1,13 @@
 import { pgEnum, timestamp, pgTable, uuid, text } from "drizzle-orm/pg-core";
-import { pages } from "../pages/schema";
+import { projects } from "../projects/schema";
 
 export const endingType = pgEnum("ending_type", ["redirect", "page"]);
 
 export const endings = pgTable("ending", {
   id: uuid("id").primaryKey().defaultRandom(),
-  pageId: uuid("page_id")
+  projectId: uuid("project_id")
     .notNull()
-    .references(() => pages.id, { onDelete: "cascade" }),
+    .references(() => projects.id, { onDelete: "cascade" }),
   endingType: endingType("ending_type").default("page").notNull(),
 
   // For redirect endings

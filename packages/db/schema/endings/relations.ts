@@ -4,7 +4,7 @@ import { endings } from "./schema";
 
 export const endingsRelations = relations(endings, ({ one }) => ({
   page: one(pages, {
-    fields: [endings.pageId],
+    fields: [endings.projectId],
     references: [pages.id],
   }),
 }));

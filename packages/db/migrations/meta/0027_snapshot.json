@@ -1,5 +1,5 @@
 {
-  "id": "aedfbf2a-e6ba-413c-bbf7-cadba8fdbb13",
+  "id": "2ea6e8bb-99d5-466b-a505-f9ec14fb45b6",
   "prevId": "3be18b45-439a-4821-80e4-df897e692ded",
   "version": "7",
   "dialect": "postgresql",
@@ -1922,8 +1922,8 @@
           "notNull": true,
           "default": "gen_random_uuid()"
         },
-        "page_id": {
-          "name": "page_id",
+        "project_id": {
+          "name": "project_id",
           "type": "uuid",
           "primaryKey": false,
           "notNull": true
@@ -1971,12 +1971,12 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "ending_page_id_page_id_fk": {
-          "name": "ending_page_id_page_id_fk",
+        "ending_project_id_project_id_fk": {
+          "name": "ending_project_id_project_id_fk",
           "tableFrom": "ending",
-          "tableTo": "page",
+          "tableTo": "project",
           "columnsFrom": [
-            "page_id"
+            "project_id"
           ],
           "columnsTo": [
             "id"
