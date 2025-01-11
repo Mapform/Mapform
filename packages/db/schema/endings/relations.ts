@@ -1,10 +1,10 @@
 import { relations } from "drizzle-orm";
-import { pages } from "../pages/schema";
+import { projects } from "../projects/schema";
 import { endings } from "./schema";
 
 export const endingsRelations = relations(endings, ({ one }) => ({
-  page: one(pages, {
+  project: one(projects, {
     fields: [endings.projectId],
-    references: [pages.id],
+    references: [projects.id],
   }),
 }));
