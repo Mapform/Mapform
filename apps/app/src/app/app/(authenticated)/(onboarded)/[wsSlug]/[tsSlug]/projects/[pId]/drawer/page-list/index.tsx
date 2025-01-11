@@ -30,6 +30,7 @@ import { createPageAction } from "~/data/pages/create-page";
 import { useProject } from "../../project-context";
 import { Item } from "./item";
 import { toast } from "@mapform/ui/components/toaster";
+import { Ending } from "./ending";
 
 export function PageList() {
   const { map } = useMapform();
@@ -149,6 +150,7 @@ export function PageList() {
           </SidebarMenu>
         </SidebarGroupContent>
       </SidebarGroup>
+      <Ending />
     </SidebarContent>
   );
 }
