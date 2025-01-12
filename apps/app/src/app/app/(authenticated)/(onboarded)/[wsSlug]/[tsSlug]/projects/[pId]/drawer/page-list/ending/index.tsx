@@ -9,25 +9,28 @@ import {
   SidebarMenuItem,
   SidebarRightMenuButton,
   SidebarGroupAction,
+  SidebarMenuAction,
 } from "@mapform/ui/components/sidebar";
 import {
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-} from "@mapform/ui/components/popover";
-import {
-  Command,
-  CommandList,
-  CommandGroup,
-  CommandItem,
-} from "@mapform/ui/components/command";
-import { ExternalLinkIcon, FlagIcon, PlusIcon } from "lucide-react";
+  EllipsisIcon,
+  ExternalLinkIcon,
+  FlagIcon,
+  PlusIcon,
+  Trash2Icon,
+} from "lucide-react";
 import type { Ending } from "@mapform/db/schema";
 import type { ReactElement } from "react";
 import { useProject } from "../../../project-context";
 import { useAction } from "next-safe-action/hooks";
 import { createEndingAction } from "~/data/endings/create-ending";
 import { toast } from "@mapform/ui/components/toaster";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+} from "@mapform/ui/components/dropdown-menu";
 
 const endingContent: Record<
   Ending["endingType"],
@@ -38,11 +41,11 @@ const endingContent: Record<
 > = {
   page: {
     title: "End Screen",
-    icon: <FlagIcon />,
+    icon: <FlagIcon className="size-4" />,
   },
   redirect: {
     title: "Redirect",
-    icon: <ExternalLinkIcon />,
+    icon: <ExternalLinkIcon className="size-4" />,
   },
 };
 
@@ -61,55 +64,74 @@ export function Ending() {
     <SidebarContent>
       <SidebarGroup>
         <SidebarGroupLabel>Ending</SidebarGroupLabel>
-        <Popover>
-          <PopoverTrigger asChild>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
             <SidebarGroupAction>
               <PlusIcon />
             </SidebarGroupAction>
-          </PopoverTrigger>
-          <PopoverContent align="start" className="w-[200px] p-0" side="right">
-            <Command>
-              <CommandList>
-                <CommandGroup>
-                  <CommandItem
-                    className="flex items-center"
-                    onSelect={() =>
-                      execute({
-                        projectId: projectWithPages.id,
-                        endingType: "page",
-                      })
-                    }
-                  >
-                    <FlagIcon className="mr-2 size-4 flex-shrink-0" />
-                    End Screen
-                  </CommandItem>
-                  <CommandItem
-                    className="flex items-center"
-                    onSelect={() =>
-                      execute({
-                        projectId: projectWithPages.id,
-                        endingType: "redirect",
-                      })
-                    }
-                  >
-                    <ExternalLinkIcon className="mr-2 size-4 flex-shrink-0" />
-                    Redirect
-                  </CommandItem>
-                </CommandGroup>
-              </CommandList>
-            </Command>
-          </PopoverContent>
-        </Popover>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            align="start"
+            className="w-[200px] overflow-hidden"
+            side="left"
+          >
+            <DropdownMenuGroup>
+              {Object.entries(endingContent).map(([key, value]) => (
+                <DropdownMenuItem
+                  key={key}
+                  className="flex items-center gap-2"
+                  disabled={!!projectWithPages.ending}
+                  onClick={() =>
+                    execute({
+                      projectId: projectWithPages.id,
+                      endingType: key as Ending["endingType"],
+                    })
+                  }
+                >
+                  {value.icon}
+                  {value.title}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
         <SidebarGroupContent>
           <SidebarMenu>
             <SidebarMenuItem>
               {projectWithPages.ending ? (
-                <SidebarRightMenuButton className="pr-8">
-                  {endingContent[projectWithPages.ending.endingType].icon}
-                  <span className="truncate text-sm">
-                    {endingContent[projectWithPages.ending.endingType].title}
-                  </span>
-                </SidebarRightMenuButton>
+                <>
+                  <SidebarRightMenuButton className="pr-8">
+                    {endingContent[projectWithPages.ending.endingType].icon}
+                    <span className="truncate text-sm">
+                      {endingContent[projectWithPages.ending.endingType].title}
+                    </span>
+                  </SidebarRightMenuButton>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <SidebarMenuAction>
+                        <EllipsisIcon />
+                      </SidebarMenuAction>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent
+                      align="start"
+                      className="w-[200px] overflow-hidden"
+                      side="left"
+                    >
+                      <DropdownMenuGroup>
+                        <DropdownMenuItem
+                          className="flex items-center gap-2"
+                          // disabled={
+                          //   isPending || currentProject.pages.length <= 1
+                          // }
+                          // onClick={handleDelete}
+                        >
+                          <Trash2Icon className="size-4 flex-shrink-0" />
+                          Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuGroup>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </>
               ) : (
                 <div className="bg-sidebar-accent text-muted-foreground flex flex-col items-center rounded-md py-4">
                   <p className="text-center text-sm">No ending added</p>
