@@ -51,6 +51,7 @@ import { createDatasetFromGeojson } from "@mapform/backend/data/datasets/create-
 import { completeOnboarding } from "@mapform/backend/data/workspaces/complete-onboarding";
 import { createCheckoutSession } from "@mapform/backend/data/stripe/create-checkout-session";
 import { createBillingSession } from "@mapform/backend/data/stripe/create-billing-session";
+import { createEnding } from "@mapform/backend/data/endings/create-ending";
 import {
   baseClient,
   UserAccess,
@@ -138,6 +139,9 @@ const createUserAuthClient = () => {
     createEmptyDataset: createEmptyDataset(extendedClient),
     listTeamspaceDatasets: listTeamspaceDatasets(extendedClient),
     createDatasetFromGeojson: createDatasetFromGeojson(extendedClient),
+
+    // Endings
+    createEnding: createEnding(extendedClient),
 
     // Images
     uploadImage: uploadImage(extendedClient),

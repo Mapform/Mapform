@@ -17,16 +17,17 @@ import {
 } from "@mapform/ui/components/popover";
 import {
   Command,
-  CommandInput,
   CommandList,
   CommandGroup,
   CommandItem,
-  CommandSeparator,
 } from "@mapform/ui/components/command";
 import { ExternalLinkIcon, FlagIcon, PlusIcon } from "lucide-react";
 import type { Ending } from "@mapform/db/schema";
 import type { ReactElement } from "react";
 import { useProject } from "../../../project-context";
+import { useAction } from "next-safe-action/hooks";
+import { createEndingAction } from "~/data/endings/create-ending";
+import { toast } from "@mapform/ui/components/toaster";
 
 const endingContent: Record<
   Ending["endingType"],
@@ -36,7 +37,7 @@ const endingContent: Record<
   }
 > = {
   page: {
-    title: "Page",
+    title: "End Screen",
     icon: <FlagIcon />,
   },
   redirect: {
@@ -47,6 +48,14 @@ const endingContent: Record<
 
 export function Ending() {
   const { projectWithPages } = useProject();
+  const { execute } = useAction(createEndingAction, {
+    onError: ({ error }) => {
+      toast({
+        title: "Uh oh! Something went wrong.",
+        description: error.serverError,
+      });
+    },
+  });
 
   return (
     <SidebarContent>
@@ -59,7 +68,36 @@ export function Ending() {
             </SidebarGroupAction>
           </PopoverTrigger>
           <PopoverContent align="start" className="w-[200px] p-0" side="right">
-            Test
+            <Command>
+              <CommandList>
+                <CommandGroup>
+                  <CommandItem
+                    className="flex items-center"
+                    onSelect={() =>
+                      execute({
+                        projectId: projectWithPages.id,
+                        endingType: "page",
+                      })
+                    }
+                  >
+                    <FlagIcon className="mr-2 size-4 flex-shrink-0" />
+                    End Screen
+                  </CommandItem>
+                  <CommandItem
+                    className="flex items-center"
+                    onSelect={() =>
+                      execute({
+                        projectId: projectWithPages.id,
+                        endingType: "redirect",
+                      })
+                    }
+                  >
+                    <ExternalLinkIcon className="mr-2 size-4 flex-shrink-0" />
+                    Redirect
+                  </CommandItem>
+                </CommandGroup>
+              </CommandList>
+            </Command>
           </PopoverContent>
         </Popover>
         <SidebarGroupContent>
