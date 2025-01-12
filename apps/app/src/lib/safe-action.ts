@@ -52,6 +52,7 @@ import { completeOnboarding } from "@mapform/backend/data/workspaces/complete-on
 import { createCheckoutSession } from "@mapform/backend/data/stripe/create-checkout-session";
 import { createBillingSession } from "@mapform/backend/data/stripe/create-billing-session";
 import { createEnding } from "@mapform/backend/data/endings/create-ending";
+import { deleteEnding } from "@mapform/backend/data/endings/delete-ending";
 import {
   baseClient,
   UserAccess,
@@ -142,6 +143,7 @@ const createUserAuthClient = () => {
 
     // Endings
     createEnding: createEnding(extendedClient),
+    deleteEnding: deleteEnding(extendedClient),
 
     // Images
     uploadImage: uploadImage(extendedClient),

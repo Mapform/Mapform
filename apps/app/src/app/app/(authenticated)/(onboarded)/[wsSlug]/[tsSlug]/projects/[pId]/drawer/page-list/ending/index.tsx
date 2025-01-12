@@ -75,24 +75,22 @@ export function Ending() {
             className="w-[200px] overflow-hidden"
             side="left"
           >
-            <DropdownMenuGroup>
-              {Object.entries(endingContent).map(([key, value]) => (
-                <DropdownMenuItem
-                  key={key}
-                  className="flex items-center gap-2"
-                  disabled={!!projectWithPages.ending}
-                  onClick={() =>
-                    execute({
-                      projectId: projectWithPages.id,
-                      endingType: key as Ending["endingType"],
-                    })
-                  }
-                >
-                  {value.icon}
-                  {value.title}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuGroup>
+            {Object.entries(endingContent).map(([key, value]) => (
+              <DropdownMenuItem
+                key={key}
+                className="flex items-center gap-2"
+                disabled={!!projectWithPages.ending}
+                onClick={() =>
+                  execute({
+                    projectId: projectWithPages.id,
+                    endingType: key as Ending["endingType"],
+                  })
+                }
+              >
+                {value.icon}
+                {value.title}
+              </DropdownMenuItem>
+            ))}
           </DropdownMenuContent>
         </DropdownMenu>
         <SidebarGroupContent>
