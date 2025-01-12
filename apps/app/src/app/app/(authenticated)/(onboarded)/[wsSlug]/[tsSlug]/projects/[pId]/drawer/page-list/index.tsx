@@ -41,7 +41,7 @@ export function PageList() {
   const { executeAsync: updatePageOrderAsync } = useAction(
     updatePageOrderAction,
   );
-  const { execute: executeCreatePage, status: createPageStatus } = useAction(
+  const { execute: executeCreatePage, isPending: createIsPending } = useAction(
     createPageAction,
     {
       onSuccess: (newPage) => {
@@ -99,7 +99,7 @@ export function PageList() {
       <SidebarGroup>
         <SidebarGroupLabel>Pages</SidebarGroupLabel>
         <SidebarGroupAction
-          disabled={createPageStatus === "executing"}
+          disabled={createIsPending}
           onClick={() => {
             const loc = map?.getCenter();
             const zoom = map?.getZoom();
@@ -124,7 +124,7 @@ export function PageList() {
           }}
           title="Add Page"
         >
-          {createPageStatus === "executing" ? (
+          {createIsPending ? (
             <Spinner size="sm" variant="dark" />
           ) : (
             <PlusIcon />

@@ -32,6 +32,7 @@ import {
   DropdownMenuItem,
 } from "@mapform/ui/components/dropdown-menu";
 import { deleteEndingAction } from "~/data/endings/delete-ending";
+import { Spinner } from "@mapform/ui/components/spinner";
 
 const endingContent: Record<
   Ending["endingType"],
@@ -52,15 +53,19 @@ const endingContent: Record<
 
 export function Ending() {
   const { projectWithPages } = useProject();
-  const { execute: createEnding } = useAction(createEndingAction, {
-    onError: ({ error }) => {
-      toast({
-        title: "Uh oh! Something went wrong.",
-        description: error.serverError,
-      });
+  const { execute: createEnding, isPending: createIsPending } = useAction(
+    createEndingAction,
+    {
+      onError: ({ error }) => {
+        toast({
+          title: "Uh oh! Something went wrong.",
+          description: error.serverError,
+        });
+      },
     },
-  });
-  const { execute: deleteEnding } = useAction(deleteEndingAction);
+  );
+  const { execute: deleteEnding, isPending: deleteIsPending } =
+    useAction(deleteEndingAction);
 
   const handleDelete = async () => {
     if (!projectWithPages.ending) return;
@@ -75,7 +80,11 @@ export function Ending() {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <SidebarGroupAction>
-              <PlusIcon />
+              {createIsPending ? (
+                <Spinner size="sm" variant="dark" />
+              ) : (
+                <PlusIcon />
+              )}
             </SidebarGroupAction>
           </DropdownMenuTrigger>
           <DropdownMenuContent
@@ -106,7 +115,10 @@ export function Ending() {
             <SidebarMenuItem>
               {projectWithPages.ending ? (
                 <>
-                  <SidebarRightMenuButton className="pr-8">
+                  <SidebarRightMenuButton
+                    className="pr-8"
+                    disabled={deleteIsPending}
+                  >
                     {endingContent[projectWithPages.ending.endingType].icon}
                     <span className="truncate text-sm">
                       {endingContent[projectWithPages.ending.endingType].title}
