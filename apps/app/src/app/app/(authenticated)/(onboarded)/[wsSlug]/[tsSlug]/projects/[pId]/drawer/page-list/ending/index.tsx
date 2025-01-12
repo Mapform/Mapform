@@ -8,12 +8,25 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarRightMenuButton,
+  SidebarGroupAction,
 } from "@mapform/ui/components/sidebar";
-import { ExternalLinkIcon, FlagIcon } from "lucide-react";
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@mapform/ui/components/popover";
+import {
+  Command,
+  CommandInput,
+  CommandList,
+  CommandGroup,
+  CommandItem,
+  CommandSeparator,
+} from "@mapform/ui/components/command";
+import { ExternalLinkIcon, FlagIcon, PlusIcon } from "lucide-react";
 import type { Ending } from "@mapform/db/schema";
 import type { ReactElement } from "react";
 import { useProject } from "../../../project-context";
-import { Button } from "@mapform/ui/components/button";
 
 const endingContent: Record<
   Ending["endingType"],
@@ -39,6 +52,16 @@ export function Ending() {
     <SidebarContent>
       <SidebarGroup>
         <SidebarGroupLabel>Ending</SidebarGroupLabel>
+        <Popover>
+          <PopoverTrigger asChild>
+            <SidebarGroupAction>
+              <PlusIcon />
+            </SidebarGroupAction>
+          </PopoverTrigger>
+          <PopoverContent align="start" className="w-[200px] p-0" side="right">
+            Test
+          </PopoverContent>
+        </Popover>
         <SidebarGroupContent>
           <SidebarMenu>
             <SidebarMenuItem>
@@ -52,9 +75,6 @@ export function Ending() {
               ) : (
                 <div className="bg-sidebar-accent text-muted-foreground flex flex-col items-center rounded-md py-4">
                   <p className="text-center text-sm">No ending added</p>
-                  {/* <Button size="sm" variant="outline">
-                    Add
-                  </Button> */}
                 </div>
               )}
             </SidebarMenuItem>

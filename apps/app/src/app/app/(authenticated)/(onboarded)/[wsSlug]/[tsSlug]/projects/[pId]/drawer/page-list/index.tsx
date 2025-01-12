@@ -129,7 +129,7 @@ export function PageList() {
           ) : (
             <PlusIcon />
           )}
-          <span className="sr-only">Add Project</span>
+          <span className="sr-only">Add Ending</span>
         </SidebarGroupAction>
         <SidebarGroupContent>
           <SidebarMenu>
