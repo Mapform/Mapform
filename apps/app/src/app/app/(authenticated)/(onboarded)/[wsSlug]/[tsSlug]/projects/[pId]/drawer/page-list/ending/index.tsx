@@ -31,6 +31,7 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
 } from "@mapform/ui/components/dropdown-menu";
+import { deleteEndingAction } from "~/data/endings/delete-ending";
 
 const endingContent: Record<
   Ending["endingType"],
@@ -51,7 +52,7 @@ const endingContent: Record<
 
 export function Ending() {
   const { projectWithPages } = useProject();
-  const { execute } = useAction(createEndingAction, {
+  const { execute: createEnding } = useAction(createEndingAction, {
     onError: ({ error }) => {
       toast({
         title: "Uh oh! Something went wrong.",
@@ -59,6 +60,13 @@ export function Ending() {
       });
     },
   });
+  const { execute: deleteEnding } = useAction(deleteEndingAction);
+
+  const handleDelete = async () => {
+    if (!projectWithPages.ending) return;
+
+    deleteEnding({ endingId: projectWithPages.ending.id });
+  };
 
   return (
     <SidebarContent>
@@ -81,7 +89,7 @@ export function Ending() {
                 className="flex items-center gap-2"
                 disabled={!!projectWithPages.ending}
                 onClick={() =>
-                  execute({
+                  createEnding({
                     projectId: projectWithPages.id,
                     endingType: key as Ending["endingType"],
                   })
@@ -121,7 +129,7 @@ export function Ending() {
                           // disabled={
                           //   isPending || currentProject.pages.length <= 1
                           // }
-                          // onClick={handleDelete}
+                          onClick={handleDelete}
                         >
                           <Trash2Icon className="size-4 flex-shrink-0" />
                           Delete
