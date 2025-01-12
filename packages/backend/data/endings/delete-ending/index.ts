@@ -3,16 +3,27 @@
 import { db } from "@mapform/db";
 import type { UserAuthClient } from "../../../lib/types";
 import { deleteEndingSchema } from "./schema";
-import { endings, projects } from "@mapform/db/schema";
-import { and, eq, inArray } from "@mapform/db/utils";
+import { endings } from "@mapform/db/schema";
+import { eq } from "@mapform/db/utils";
 
 export const deleteEnding = (authClient: UserAuthClient) =>
   authClient
     .schema(deleteEndingSchema)
-    .action(
-      async ({ parsedInput: { endingId, ...rest }, ctx: { userAccess } }) => {
-        // TODO VALIDATION
+    .action(async ({ parsedInput: { endingId }, ctx: { userAccess } }) => {
+      const ending = await db.query.endings.findFirst({
+        where: eq(endings.id, endingId),
+        with: {
+          project: true,
+        },
+      });
 
-        await db.delete(endings).where(eq(endings.id, endingId));
-      },
-    );
+      if (!ending) {
+        throw new Error("Ending not found");
+      }
+
+      if (!userAccess.teamspace.checkAccessById(ending.project.teamspaceId)) {
+        throw new Error("Unauthorized");
+      }
+
+      await db.delete(endings).where(eq(endings.id, endingId));
+    });
