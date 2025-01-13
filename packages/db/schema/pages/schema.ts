@@ -15,6 +15,8 @@ import {
 import type { DocumentContent } from "@mapform/blocknote";
 import { projects } from "../projects/schema";
 
+export const pageTypeEnum = pgEnum("page_type", ["page", "page_ending"]);
+
 export const contentViewTypeEnum = pgEnum("content_view_type", [
   "map",
   "split",
@@ -30,6 +32,7 @@ export const pages = pgTable(
     projectId: uuid("project_id")
       .notNull()
       .references(() => projects.id, { onDelete: "cascade" }),
+    pageType: pageTypeEnum("page_type").default("page").notNull(),
 
     bannerImage: text("banner_image"),
     icon: varchar("icon", { length: 256 }),
