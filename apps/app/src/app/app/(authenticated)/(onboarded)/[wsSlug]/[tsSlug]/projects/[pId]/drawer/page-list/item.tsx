@@ -15,7 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "@mapform/ui/components/dropdown-menu";
 import { useAction } from "next-safe-action/hooks";
-import { startTransition } from "react";
+import { act, startTransition } from "react";
 import type { GetProjectWithPages } from "@mapform/backend/data/projects/get-project-with-pages";
 import {
   SidebarMenuAction,
@@ -29,10 +29,11 @@ import { useProject } from "../../project-context";
 import { cn } from "@mapform/lib/classnames";
 
 interface ItemProps {
+  index: number;
   page: NonNullable<GetProjectWithPages["data"]>["pages"][number];
 }
 
-export function Item({ page }: ItemProps) {
+export function Item({ page, index }: ItemProps) {
   const {
     currentProject,
     updateProjectOptimistic,
@@ -71,6 +72,12 @@ export function Item({ page }: ItemProps) {
     });
   };
 
+  const firstEndingIndex = currentProject.pages.findIndex(
+    (p) => p.pageType === "page_ending",
+  );
+
+  console.log(8888, index, firstEndingIndex);
+
   return (
     <DragItem id={page.id} key={page.id}>
       <ContextMenu>
@@ -78,7 +85,10 @@ export function Item({ page }: ItemProps) {
           <DragHandle id={page.id}>
             <SidebarMenuItem>
               <SidebarRightMenuButton
-                className="pr-8"
+                className={cn("pr-8", {
+                  "opacity-40": index > firstEndingIndex && !isActive,
+                  "opacity-70": index > firstEndingIndex && isActive,
+                })}
                 disabled={isPending}
                 isActive={isActive}
                 onClick={() => {

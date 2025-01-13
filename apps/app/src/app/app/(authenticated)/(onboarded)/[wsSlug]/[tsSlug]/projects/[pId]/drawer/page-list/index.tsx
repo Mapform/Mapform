@@ -186,8 +186,8 @@ export function PageList() {
                 items={dragPages}
                 strategy={verticalListSortingStrategy}
               >
-                {dragPages.map((page) => {
-                  return <Item key={page.id} page={page} />;
+                {dragPages.map((page, index) => {
+                  return <Item index={index} key={page.id} page={page} />;
                 })}
               </SortableContext>
             </DndContext>
