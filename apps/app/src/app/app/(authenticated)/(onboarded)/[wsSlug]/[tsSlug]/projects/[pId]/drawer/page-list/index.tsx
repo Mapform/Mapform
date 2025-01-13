@@ -14,7 +14,6 @@ import {
   SortableContext,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { Spinner } from "@mapform/ui/components/spinner";
 import { useMapform } from "@mapform/mapform";
 import {
   SidebarContent,
@@ -24,15 +23,46 @@ import {
   SidebarGroupLabel,
   SidebarMenu,
 } from "@mapform/ui/components/sidebar";
-import { PlusIcon } from "lucide-react";
+import {
+  Command,
+  CommandList,
+  CommandGroup,
+  CommandItem,
+} from "@mapform/ui/components/command";
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@mapform/ui/components/popover";
+import { FileIcon, FlagIcon, type LucideIcon, PlusIcon } from "lucide-react";
 import { updatePageOrderAction } from "~/data/pages/update-page-order";
 import { createPageAction } from "~/data/pages/create-page";
 import { useProject } from "../../project-context";
 import { Item } from "./item";
 import { toast } from "@mapform/ui/components/toaster";
+import type { Page } from "@mapform/db/schema";
+import { useState } from "react";
+
+const pages: {
+  name: string;
+  icon: LucideIcon;
+  pageType: Page["pageType"];
+}[] = [
+  {
+    name: "Page",
+    icon: FileIcon,
+    pageType: "page",
+  },
+  {
+    name: "End Screen",
+    icon: FlagIcon,
+    pageType: "page_ending",
+  },
+];
 
 export function PageList() {
   const { map } = useMapform();
+  const [open, setOpen] = useState(false);
   const { currentProject, updateProjectOptimistic, setActivePage } =
     useProject();
 
@@ -97,39 +127,54 @@ export function PageList() {
     <SidebarContent className="h-full">
       <SidebarGroup>
         <SidebarGroupLabel>Pages</SidebarGroupLabel>
-        <SidebarGroupAction
-          disabled={createIsPending}
-          onClick={() => {
-            const loc = map?.getCenter();
-            const zoom = map?.getZoom();
-            const pitch = map?.getPitch();
-            const bearing = map?.getBearing();
+        {/* This is a combobox instead of a dropdown because I may want to add to this over time */}
+        <Popover open={open} onOpenChange={setOpen}>
+          <PopoverTrigger asChild>
+            <SidebarGroupAction>
+              <PlusIcon />
+            </SidebarGroupAction>
+          </PopoverTrigger>
+          <PopoverContent align="start" className="w-[200px] p-0" side="right">
+            <Command>
+              <CommandList>
+                <CommandGroup>
+                  {pages.map((page) => (
+                    <CommandItem
+                      key={page.name}
+                      className="flex items-center gap-2"
+                      disabled={createIsPending}
+                      onSelect={() => {
+                        const loc = map?.getCenter();
+                        const zoom = map?.getZoom();
+                        const pitch = map?.getPitch();
+                        const bearing = map?.getBearing();
 
-            if (
-              !loc ||
-              zoom === undefined ||
-              pitch === undefined ||
-              bearing === undefined
-            )
-              return;
+                        if (
+                          !loc ||
+                          zoom === undefined ||
+                          pitch === undefined ||
+                          bearing === undefined
+                        )
+                          return;
 
-            executeCreatePage({
-              projectId: currentProject.id,
-              center: { x: loc.lng, y: loc.lat },
-              zoom,
-              pitch,
-              bearing,
-            });
-          }}
-          title="Add Page"
-        >
-          {createIsPending ? (
-            <Spinner size="sm" variant="dark" />
-          ) : (
-            <PlusIcon />
-          )}
-          <span className="sr-only">Add Ending</span>
-        </SidebarGroupAction>
+                        executeCreatePage({
+                          projectId: currentProject.id,
+                          center: { x: loc.lng, y: loc.lat },
+                          zoom,
+                          pitch,
+                          bearing,
+                          pageType: page.pageType,
+                        });
+                      }}
+                    >
+                      <page.icon className="size-4" /> {page.name}
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </CommandList>
+            </Command>
+          </PopoverContent>
+        </Popover>
         <SidebarGroupContent>
           <SidebarMenu>
             <DndContext

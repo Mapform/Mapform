@@ -1,6 +1,6 @@
 "use client";
 
-import { EllipsisIcon, FileIcon, Trash2Icon } from "lucide-react";
+import { EllipsisIcon, FileIcon, FlagIcon, Trash2Icon } from "lucide-react";
 import {
   ContextMenu,
   ContextMenuContent,
@@ -87,8 +87,10 @@ export function Item({ page }: ItemProps) {
               >
                 {page.icon ? (
                   <span className="text-lg">{page.icon}</span>
-                ) : (
+                ) : page.pageType === "page" ? (
                   <FileIcon />
+                ) : (
+                  <FlagIcon />
                 )}
                 <span
                   className={cn("truncate text-sm", {

@@ -63,7 +63,6 @@ function Project() {
         <MapForm
           currentPage={currentPage}
           editable
-          ending={searchParams.get("ending") ? projectWithPages.ending : null}
           includeFormBlocks={projectWithPages.formsEnabled}
           mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
           onDescriptionChange={(content, type) => {
