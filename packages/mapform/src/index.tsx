@@ -241,7 +241,7 @@ export function MapForm({
     onTitleChange,
   ]);
 
-  if (ending) {
+  if (ending?.endingType === "page") {
     return (
       <div className="flex h-full w-full items-center justify-center">
         <h1>Ending!</h1>
