@@ -27,7 +27,6 @@ export const getProjectWithPages = (
               : undefined,
           ),
           with: {
-            ending: true,
             teamspace: {
               columns: {
                 id: true,

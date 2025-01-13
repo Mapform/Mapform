@@ -37,7 +37,6 @@ interface MapFormProps {
   defaultFormValues?: Record<string, string>;
   showBlocknote?: boolean;
   includeFormBlocks?: boolean;
-  ending?: NonNullable<GetProjectWithPages["data"]>["ending"];
   onPrev?: () => void;
   onLoad?: () => void;
   onIconChange?: (icon: string | null, type: "page" | "feature") => void;
@@ -59,7 +58,6 @@ export function MapForm({
   editable = false,
   onPrev,
   onLoad,
-  ending,
   pageData,
   children,
   selectedFeature,
@@ -240,14 +238,6 @@ export function MapForm({
     onIconChange,
     onTitleChange,
   ]);
-
-  if (ending?.endingType === "page") {
-    return (
-      <div className="flex h-full w-full items-center justify-center">
-        <h1>Ending!</h1>
-      </div>
-    );
-  }
 
   return (
     <Form {...form}>
