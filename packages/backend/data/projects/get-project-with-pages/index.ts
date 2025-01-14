@@ -27,6 +27,11 @@ export const getProjectWithPages = (
               : undefined,
           ),
           with: {
+            childProjects: {
+              columns: {
+                id: true,
+              },
+            },
             teamspace: {
               columns: {
                 id: true,
