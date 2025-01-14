@@ -84,8 +84,14 @@ export function Item({ page, index }: ItemProps) {
             <SidebarMenuItem>
               <SidebarRightMenuButton
                 className={cn("pr-8", {
-                  "opacity-40": index > firstEndingIndex && !isActive,
-                  "opacity-70": index > firstEndingIndex && isActive,
+                  "opacity-40":
+                    firstEndingIndex > -1 &&
+                    index > firstEndingIndex &&
+                    !isActive,
+                  "opacity-70":
+                    firstEndingIndex > -1 &&
+                    index > firstEndingIndex &&
+                    isActive,
                 })}
                 disabled={isPending}
                 isActive={isActive}
