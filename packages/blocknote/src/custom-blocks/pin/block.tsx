@@ -11,6 +11,7 @@ import { Button } from "@mapform/ui/components/button";
 import { Input } from "@mapform/ui/components/input";
 import { AsteriskIcon } from "lucide-react";
 import { useCustomBlockContext } from "../../context";
+import { AutoSizeTextArea } from "@mapform/ui/components/autosize-text-area";
 
 export const Pin = createReactBlockSpec(
   {
@@ -45,16 +46,15 @@ export const Pin = createReactBlockSpec(
         return (
           <div className="mb-4 flex w-full flex-col gap-2">
             <div className="flex flex-1 justify-between">
-              <input
-                className="flex-1 border-0 border-transparent bg-transparent p-0 text-base font-medium placeholder-gray-300 outline-none focus:border-transparent focus:ring-0"
-                onChange={(e) =>
+              <AutoSizeTextArea
+                className="p-0 text-base font-medium placeholder-gray-300"
+                value={block.props.label}
+                onChange={(label) =>
                   editor.updateBlock(block, {
                     type: "pin",
-                    props: { label: e.target.value },
+                    props: { label },
                   })
                 }
-                placeholder="Type a question"
-                value={block.props.label}
               />
               {block.props.required ? (
                 <AsteriskIcon height={14} width={14} />
