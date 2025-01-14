@@ -24,7 +24,13 @@ export function ShareContent({
   isDirty: boolean;
   numberOfVersions: number;
 }) {
-  const { execute, status } = useAction(publishProjectAction, {
+  const { execute, isPending } = useAction(publishProjectAction, {
+    onSuccess: () => {
+      toast({
+        title: "Success!",
+        description: "Your project has been published.",
+      });
+    },
     onError: ({ error }) => {
       if (error.serverError) {
         toast({
@@ -88,13 +94,13 @@ export function ShareContent({
       ) : null}
       <Button
         className="mt-4 w-full"
-        disabled={!isDirty || status === "executing" || isMissingEndPage}
+        disabled={!isDirty || isPending || isMissingEndPage}
         onClick={() => {
           execute({ projectId: project.id });
         }}
         variant="outline"
       >
-        {status === "executing" ? <Spinner variant="dark" /> : "Publish"}
+        {isPending ? <Spinner variant="dark" /> : "Publish"}
       </Button>
     </div>
   );
