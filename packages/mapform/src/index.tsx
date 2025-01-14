@@ -20,7 +20,12 @@ import {
 import type { ViewState } from "@mapform/map-utils/types";
 import type { GetPageData } from "@mapform/backend/data/datalayer/get-page-data";
 import { Button } from "@mapform/ui/components/button";
-import { ArrowLeftIcon, ArrowRightIcon, ChevronsRightIcon } from "lucide-react";
+import {
+  ArrowLeftIcon,
+  ArrowRightIcon,
+  ChevronsRightIcon,
+  Link,
+} from "lucide-react";
 import { Blocknote } from "./block-note";
 import { Map, LocationMarker } from "./map";
 import "./style.css";
@@ -121,30 +126,30 @@ export function MapForm({
               className="absolute left-0"
               disabled={editable}
               onClick={onPrev}
-              size="sm"
               type="button"
               variant="ghost"
             >
-              <ArrowLeftIcon className="mr-1 size-4" />
-              Prev
+              <ArrowLeftIcon className="-ml-1 mr-1 size-4" />
+              Back
             </Button>
           ) : null}
-          <p className="mx-auto text-xs text-gray-500">Powered by Mapform</p>
+          <p className="mx-auto text-xs text-gray-500">
+            Made with <a href="https://alpha.mapform.co">Mapform</a>
+          </p>
           {onStepSubmit && currentPage.pageType === "page" ? (
             <Button
               className="absolute right-0"
               disabled={editable}
-              size="sm"
               type="submit"
             >
               {nextPage?.pageType === "page_ending" ? "Submit" : "Next"}
-              <ArrowRightIcon className="ml-1 size-4" />
+              <ArrowRightIcon className="-mr-1 ml-1 size-4" />
             </Button>
           ) : null}
         </div>
       </div>
     ),
-    [editable, onPrev, onStepSubmit],
+    [editable, onPrev, onStepSubmit, currentPage.pageType, nextPage],
   );
 
   const pageContent = useMemo(
