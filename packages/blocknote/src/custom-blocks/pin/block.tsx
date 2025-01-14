@@ -17,7 +17,7 @@ export const Pin = createReactBlockSpec(
     type: "pin",
     propSchema: {
       label: {
-        default: "My Label",
+        default: "",
         type: "string",
       },
       text: {
@@ -43,29 +43,40 @@ export const Pin = createReactBlockSpec(
 
       if (editable) {
         return (
-          <Button
-            className="relative w-full cursor-default"
-            size="sm"
-            variant="outline"
-          >
-            <input
-              className="w-full border-0 border-transparent bg-transparent p-0 text-center text-sm font-medium outline-none focus:border-transparent focus:ring-0"
-              onChange={(e) => {
-                editor.updateBlock(block, {
-                  type: "pin",
-                  props: { text: e.target.value },
-                });
-              }}
-              value={block.props.text}
-            />
-            {block.props.required ? (
-              <AsteriskIcon
-                className="absolute right-2"
-                height={14}
-                width={14}
+          <div className="mb-4 flex w-full flex-col gap-2">
+            <div className="flex flex-1 justify-between">
+              <input
+                className="flex-1 border-0 border-transparent bg-transparent p-0 text-base font-medium placeholder-gray-300 outline-none focus:border-transparent focus:ring-0"
+                onChange={(e) =>
+                  editor.updateBlock(block, {
+                    type: "pin",
+                    props: { label: e.target.value },
+                  })
+                }
+                placeholder="Type a question"
+                value={block.props.label}
               />
-            ) : null}
-          </Button>
+              {block.props.required ? (
+                <AsteriskIcon height={14} width={14} />
+              ) : null}
+            </div>
+            <Button
+              className="relative w-full cursor-default"
+              size="sm"
+              variant="outline"
+            >
+              <input
+                className="w-full border-0 border-transparent bg-transparent p-0 text-center text-sm font-medium outline-none focus:border-transparent focus:ring-0"
+                onChange={(e) => {
+                  editor.updateBlock(block, {
+                    type: "pin",
+                    props: { text: e.target.value },
+                  });
+                }}
+                value={block.props.text}
+              />
+            </Button>
+          </div>
         );
       }
 
@@ -73,7 +84,7 @@ export const Pin = createReactBlockSpec(
       const currentLongitude = form.watch(`${block.id}.longitude`);
 
       return (
-        <div className="fiex w-full flex-col">
+        <div className="fiex mb-4 w-full flex-col">
           {isSelectingPinLocationFor === block.id ? (
             <div className="flex flex-col gap-2">
               <Button
