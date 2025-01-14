@@ -1,4 +1,5 @@
 import { FormLabel } from "@mapform/ui/components/form";
+import { AutoSizeTextArea } from "@mapform/ui/components/autosize-text-area";
 import { AsteriskIcon } from "lucide-react";
 
 interface LabelProps {
@@ -17,11 +18,10 @@ export function Label({
   if (editable) {
     return (
       <div className="flex justify-between">
-        <input
-          className="flex-1 border-0 border-transparent bg-transparent p-0 text-base font-medium placeholder-gray-300 outline-none focus:border-transparent focus:ring-0"
-          onChange={(e) => onLabelChange(e.target.value)}
-          placeholder="Type a question"
+        <AutoSizeTextArea
+          className="p-0 text-base font-medium placeholder-gray-300"
           value={label}
+          onChange={onLabelChange}
         />
         {required ? <AsteriskIcon height={14} width={14} /> : null}
       </div>

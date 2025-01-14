@@ -1,18 +1,21 @@
 "use client";
 
+import { cn } from "@mapform/lib/classnames";
 import { useMeasure } from "@mapform/lib/hooks/use-measure";
 import { useCallback, useEffect } from "react";
 
 interface AutoSizeTextAreaProps {
   value: string;
+  className?: string;
   onChange: (value: string) => void;
-  onEnter: () => void;
+  onEnter?: () => void;
 }
 
 export function AutoSizeTextArea({
   value,
   onChange,
   onEnter,
+  className,
 }: AutoSizeTextAreaProps) {
   const { ref, bounds } = useMeasure<HTMLTextAreaElement>();
 
@@ -29,7 +32,10 @@ export function AutoSizeTextArea({
 
   return (
     <textarea
-      className="mb-2 w-full resize-none border-0 border-transparent bg-transparent p-0 text-3xl font-bold placeholder-gray-300 outline-none focus:border-transparent focus:ring-0"
+      className={cn(
+        className,
+        "w-full resize-none border-0 border-transparent bg-transparent p-0 outline-none focus:border-transparent focus:ring-0",
+      )}
       onChange={(e) => {
         onChange(e.target.value);
         updateHeight();
@@ -37,7 +43,7 @@ export function AutoSizeTextArea({
       onKeyDown={(e) => {
         if (e.key === "Enter") {
           e.preventDefault();
-          onEnter();
+          onEnter?.();
         }
       }}
       placeholder="Untitled"

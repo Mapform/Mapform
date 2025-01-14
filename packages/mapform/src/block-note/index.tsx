@@ -10,7 +10,7 @@ import { useState } from "react";
 import { SmilePlusIcon, XIcon } from "lucide-react";
 import { Button } from "@mapform/ui/components/button";
 import { EmojiPopover } from "@mapform/ui/components/emoji-picker";
-import { AutoSizeTextArea } from "../components/autosize-text-area";
+import { AutoSizeTextArea } from "@mapform/ui/components/autosize-text-area";
 
 interface BlocknoteProps {
   icon?: string | null;
@@ -100,9 +100,10 @@ export function Blocknote({
         {/* Title */}
         {editable ? (
           <AutoSizeTextArea
+            className="mb-2 text-3xl font-bold placeholder-gray-300"
             onChange={(val) => {
               setUncontrolledTitle(val);
-              onTitleChange && onTitleChange(val);
+              if (onTitleChange) onTitleChange(val);
             }}
             onEnter={() => {
               if (description?.content[0]) {
@@ -124,14 +125,13 @@ export function Blocknote({
           editor={editor}
           includeFormBlocks={includeFormBlocks}
           onChange={() => {
-            onDescriptionChange &&
+            if (onDescriptionChange)
               onDescriptionChange({
                 content: editor.document,
               });
           }}
         />
       </div>
-      {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions -- Disable a11y checks here */}
       <div
         className="flex-1"
         onClick={() => {

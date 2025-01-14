@@ -15,7 +15,7 @@
     "global.d.ts",
     "./eslintrc.js",
     "./tailwind.config.ts"
-  ],
+, "../ui/src/autosize-text-area.tsx"  ],
   "exclude": [
     "node_modules",
     "dist"
