@@ -124,11 +124,19 @@ export function ProjectProvider({
    * Actions
    */
   const updatePageServer = useAction(updatePageAction, {
-    onError: (response) => {
-      if (response.error.validationErrors || response.error.serverError) {
+    onError: ({ error }) => {
+      if (error.serverError) {
         toast({
           title: "Uh oh! Something went wrong.",
-          description: "An error occurred while updating the page.",
+          description: error.serverError,
+        });
+        return;
+      }
+
+      if (error.validationErrors) {
+        toast({
+          title: "Uh oh! Something went wrong.",
+          description: "We we unable to update your content. Please try again.",
         });
       }
     },

@@ -16,6 +16,7 @@ import {
 } from "@mapform/blocknote";
 import { updatePageSchema } from "./schema";
 import type { UserAuthClient } from "../../../lib/types";
+import { ServerError } from "../../../lib/server-error";
 
 const mapBlockTypeToDataType = (
   blockType: InputCustomBlockTypes,
@@ -110,7 +111,7 @@ export const updatePage = (authClient: UserAuthClient) =>
             (block) => block.type === "pin" || block.type === "textInput",
           )
         ) {
-          throw new Error("Page ending cannot have input blocks");
+          throw new ServerError("End screens cannot have input blocks.");
         }
 
         const datasetColumns = await db
