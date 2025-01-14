@@ -134,7 +134,10 @@ export function MapForm({
             </Button>
           ) : null}
           <p className="mx-auto text-xs text-gray-500">
-            Made with <a href="https://alpha.mapform.co">Mapform</a>
+            Made with{" "}
+            <a className="text-gray-500" href="https://alpha.mapform.co">
+              Mapform
+            </a>
           </p>
           {onStepSubmit && currentPage.pageType === "page" ? (
             <Button
