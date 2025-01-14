@@ -13,7 +13,6 @@ import { useSetQueryString } from "@mapform/lib/hooks/use-set-query-string";
 import { CustomBlockContext } from "@mapform/blocknote";
 import type { GetLayerPoint } from "@mapform/backend/data/datalayer/get-layer-point";
 import type { GetLayerMarker } from "@mapform/backend/data/datalayer/get-layer-marker";
-import type { GetProjectWithPages } from "@mapform/backend/data/projects/get-project-with-pages";
 import {
   type CustomBlock,
   getFormSchemaFromBlockNote,

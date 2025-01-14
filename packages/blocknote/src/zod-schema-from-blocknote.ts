@@ -31,7 +31,7 @@ const customBlocks = ["textInput", "pin"] as InputCustomBlockTypes[];
 
 export function getFormSchemaFromBlockNote(blocks: DocumentContent) {
   const filteredBlocks = blocks.filter((block) =>
-    customBlocks.includes(block.type as InputCustomBlockTypes)
+    customBlocks.includes(block.type as InputCustomBlockTypes),
   );
 
   const zodObj = filteredBlocks.reduce(
@@ -40,7 +40,7 @@ export function getFormSchemaFromBlockNote(blocks: DocumentContent) {
       // @ts-expect-error -- Complex TS type needed. Ignoring for now.
       [cur.id]: schemaMap[cur.type as InputCustomBlockTypes](cur.props),
     }),
-    {}
+    {},
   );
 
   return z.object(zodObj);

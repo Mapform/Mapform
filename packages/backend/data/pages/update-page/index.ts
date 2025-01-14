@@ -9,10 +9,10 @@ import {
   projects,
   type Column,
 } from "@mapform/db/schema";
-import type {
-  CustomBlock,
-  DocumentContent,
-  InputCustomBlockTypes,
+import {
+  type CustomBlock,
+  type DocumentContent,
+  type InputCustomBlockTypes,
 } from "@mapform/blocknote";
 import { updatePageSchema } from "./schema";
 import type { UserAuthClient } from "../../../lib/types";
@@ -70,6 +70,7 @@ export const updatePage = (authClient: UserAuthClient) =>
           where: eq(pages.id, id),
           columns: {
             id: true,
+            pageType: true,
           },
           with: {
             project: {
@@ -101,6 +102,15 @@ export const updatePage = (authClient: UserAuthClient) =>
 
         if (!page) {
           throw new Error("Page not found");
+        }
+
+        if (
+          page.pageType === "page_ending" &&
+          insertContent.content.some(
+            (block) => block.type === "pin" || block.type === "textInput",
+          )
+        ) {
+          throw new Error("Page ending cannot have input blocks");
         }
 
         const datasetColumns = await db

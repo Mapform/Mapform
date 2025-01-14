@@ -76,8 +76,6 @@ export function Item({ page, index }: ItemProps) {
     (p) => p.pageType === "page_ending",
   );
 
-  console.log(8888, index, firstEndingIndex);
-
   return (
     <DragItem id={page.id} key={page.id}>
       <ContextMenu>

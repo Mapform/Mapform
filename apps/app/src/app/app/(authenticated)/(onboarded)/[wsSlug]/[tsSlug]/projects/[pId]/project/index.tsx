@@ -63,7 +63,9 @@ function Project() {
         <MapForm
           currentPage={currentPage}
           editable
-          includeFormBlocks={projectWithPages.formsEnabled}
+          includeFormBlocks={
+            projectWithPages.formsEnabled && currentPage.pageType === "page"
+          }
           mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
           onDescriptionChange={(content, type) => {
             if (type === "page") {
