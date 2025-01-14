@@ -37,7 +37,7 @@ export function Map({
   const searchParams = useSearchParams();
 
   const p = searchParams.get("p");
-  const currentPage = projectWithPages?.pages.find((page) => page.id === p);
+  const currentPage = projectWithPages.pages.find((page) => page.id === p);
   const setCurrentPage = (page: Page) => {
     router.replace(`${pathname}?p=${page.id}`);
   };
@@ -125,23 +125,24 @@ export function Map({
     projectWithPages.pages.findIndex((page) => page.id === currentPage.id) - 1;
   const nextPageIndex =
     projectWithPages.pages.findIndex((page) => page.id === currentPage.id) + 1;
-  const prevStep = projectWithPages.pages[prevPageIndex];
-  const nextStep = projectWithPages.pages[nextPageIndex];
+  const prevPage = projectWithPages.pages[prevPageIndex];
+  const nextPage = projectWithPages.pages[nextPageIndex];
 
   return (
     <MapForm
       currentPage={currentPage}
       defaultFormValues={pageValues}
       mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
+      nextPage={nextPage}
       onPrev={
-        prevStep
+        prevPage
           ? () => {
-              setCurrentPageAndFly(prevStep);
+              setCurrentPageAndFly(prevPage);
             }
           : undefined
       }
       onStepSubmit={
-        nextStep
+        nextPage
           ? (data) => {
               if (currentSession) {
                 execute({
@@ -151,7 +152,7 @@ export function Map({
                 });
               }
 
-              setCurrentPageAndFly(nextStep);
+              setCurrentPageAndFly(nextPage);
             }
           : undefined
       }

@@ -33,6 +33,7 @@ interface MapFormProps {
   children?: React.ReactNode;
   mapboxAccessToken: string;
   currentPage: Page;
+  nextPage?: Page;
   defaultFormValues?: Record<string, string>;
   showBlocknote?: boolean;
   includeFormBlocks?: boolean;
@@ -60,6 +61,7 @@ export function MapForm({
   pageData,
   children,
   selectedFeature,
+  nextPage,
   currentPage,
   onIconChange,
   onStepSubmit,
@@ -128,14 +130,14 @@ export function MapForm({
             </Button>
           ) : null}
           <p className="mx-auto text-xs text-gray-500">Powered by Mapform</p>
-          {onStepSubmit ? (
+          {onStepSubmit && currentPage.pageType === "page" ? (
             <Button
               className="absolute right-0"
               disabled={editable}
               size="sm"
               type="submit"
             >
-              Next
+              {nextPage?.pageType === "page_ending" ? "Submit" : "Next"}
               <ArrowRightIcon className="ml-1 size-4" />
             </Button>
           ) : null}

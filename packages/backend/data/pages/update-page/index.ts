@@ -63,9 +63,11 @@ export const updatePage = (authClient: UserAuthClient) =>
           contentViewType,
         },
       }) => {
-        const insertContent = content as unknown as {
-          content: DocumentContent;
-        };
+        const insertContent = content as unknown as
+          | {
+              content: DocumentContent;
+            }
+          | undefined;
 
         const page = await db.query.pages.findFirst({
           where: eq(pages.id, id),
@@ -107,7 +109,7 @@ export const updatePage = (authClient: UserAuthClient) =>
 
         if (
           page.pageType === "page_ending" &&
-          insertContent.content.some(
+          insertContent?.content.some(
             (block) => block.type === "pin" || block.type === "textInput",
           )
         ) {
