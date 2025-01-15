@@ -20,12 +20,7 @@ import {
 import type { ViewState } from "@mapform/map-utils/types";
 import type { GetPageData } from "@mapform/backend/data/datalayer/get-page-data";
 import { Button } from "@mapform/ui/components/button";
-import {
-  ArrowLeftIcon,
-  ArrowRightIcon,
-  ChevronsRightIcon,
-  Link,
-} from "lucide-react";
+import { ArrowLeftIcon, ArrowRightIcon, ChevronsRightIcon } from "lucide-react";
 import { Blocknote } from "./block-note";
 import { Map, LocationMarker } from "./map";
 import "./style.css";
@@ -54,9 +49,6 @@ interface MapFormProps {
   onImageUpload?: (file: File) => Promise<string | null>;
   pageData?: GetPageData["data"];
   selectedFeature?: GetLayerPoint["data"] | GetLayerMarker["data"];
-  // editFields?: {
-  //   AddLocationDropdown: (input: { data: any }) => JSX.Element;
-  // };
 }
 
 export function MapForm({
@@ -85,7 +77,7 @@ export function MapForm({
     resolver: zodResolver(blocknoteStepSchema),
     defaultValues: defaultFormValues,
   });
-  const [isSelectingPinLocationFor, setIsSelectingPinLocationFor] = useState<
+  const [isSelectingPinLocation, setIsSelectingPinLocation] = useState<
     string | null
   >(null);
   const { width } = useWindowSize();
@@ -216,24 +208,10 @@ export function MapForm({
         }}
         onIconChange={(val) => {
           if (onIconChange) onIconChange(val, "feature");
-          // selectedFeature.icon &&
-          //   onPoiCellChange?.({
-          //     type: "icon",
-          //     rowId: selectedFeature.rowId,
-          //     columnId: selectedFeature.icon.columnId,
-          //     value: val,
-          //   });
         }}
         onPrev={onPrev}
         onTitleChange={(val) => {
           if (onTitleChange) onTitleChange(val, "feature");
-          // selectedFeature.title &&
-          //   onPoiCellChange?.({
-          //     type: "string",
-          //     rowId: selectedFeature.rowId,
-          //     columnId: selectedFeature.title.columnId,
-          //     value: val,
-          //   });
         }}
         title={selectedFeature.title?.stringCell?.value}
       />
@@ -259,8 +237,11 @@ export function MapForm({
             value={{
               editable,
               onImageUpload,
-              isSelectingPinLocationFor,
-              setIsSelectingPinLocationFor,
+              isSelectingPinLocation,
+              setIsSelectingPinLocation: (val) => {
+                setDrawerOpen(!val);
+                setIsSelectingPinLocation(val);
+              },
             }}
           >
             {/* MAP CONTAINER */}
@@ -377,84 +358,3 @@ MapForm.displayName = "MapForm";
 export { MapformProvider, useMapform, LocationMarker };
 export type { ViewState, MBMap };
 export type { MapboxEvent } from "mapbox-gl";
-
-// const pinBlocks = currentPage.content?.content.filter((c) => {
-//   return c.type === "pin";
-// });
-
-// const AddLocationDropdown = editFields?.AddLocationDropdown;
-
-/* {searchLocation ? (
-  <div
-    className={cn(
-      "group absolute bg-background z-10 w-full overflow-hidden",
-      currentPage.contentViewType === "text"
-        ? "h-full z-10"
-        : currentPage.contentViewType === "split"
-          ? `h-full ${contentWidth}`
-          : `h-initial ${contentWidth} rounded-lg shadow-lg md:m-2`
-    )}
-    ref={drawerRef}
-  >
-    <div
-      className={cn(
-        "h-full w-full flex flex-col prose max-md:max-w-full mx-auto relative",
-        {
-          "px-9": editable && currentPage.contentViewType === "text",
-          "pl-9": editable && currentPage.contentViewType !== "text",
-          "max-h-[300px]": currentPage.contentViewType === "map",
-        }
-      )}
-    >
-      <Blocknote
-        currentPage={currentPage}
-        description={searchLocation.description ?? undefined}
-        // Need key to force re-render, otherwise Blocknote state doesn't
-        // change when changing steps
-        editable={editable}
-        key={searchLocation.id}
-        locationEditorProps={{
-          onClose: () => {
-            setSearchLocation(null);
-          },
-        }}
-        onDescriptionChange={(val) => {
-          setSearchLocation((prev) => ({
-            id: prev?.id ?? "",
-            description: val,
-            name: prev?.name ?? "",
-            latitude: prev?.latitude ?? 0,
-            longitude: prev?.longitude ?? 0,
-          }));
-        }}
-        onTitleChange={(val) => {
-          setSearchLocation((prev) => ({
-            ...prev,
-            name: val,
-            id: prev?.id ?? "",
-            latitude: prev?.latitude ?? 0,
-            longitude: prev?.longitude ?? 0,
-          }));
-        }}
-        title={searchLocation.name}
-      />
-      {editable && AddLocationDropdown && currentPage.projectId ? (
-        <div className="p-4 ml-auto">
-          <AddLocationDropdown
-            data={{
-              type: "Feature",
-              geometry: {
-                type: "Point",
-                coordinates: [
-                  searchLocation.longitude,
-                  searchLocation.latitude,
-                ],
-              },
-              properties: {},
-            }}
-          />
-        </div>
-      ) : null}
-    </div>
-  </div>
-) : null} */

@@ -36,11 +36,8 @@ export const Pin = createReactBlockSpec(
   {
     render: ({ block, editor }) => {
       const form = useFormContext();
-      const {
-        editable,
-        isSelectingPinLocationFor,
-        setIsSelectingPinLocationFor,
-      } = useCustomBlockContext();
+      const { editable, isSelectingPinLocation, setIsSelectingPinLocation } =
+        useCustomBlockContext();
       // const [prevViewState, setPrevViewState] = useState(viewState);
 
       if (editable) {
@@ -91,86 +88,40 @@ export const Pin = createReactBlockSpec(
               <AsteriskIcon height={14} width={14} />
             ) : null}
           </FormLabel>
-          {isSelectingPinLocationFor === block.id ? (
-            <div className="flex flex-col gap-2">
-              <Button
-                className="w-full"
-                onClick={() => {
-                  // form.setValue(`${block.id}.latitude`, viewState.latitude);
-                  // form.setValue(`${block.id}.longitude`, viewState.longitude);
-                  // setViewState(prevViewState);
-                  if (setIsSelectingPinLocationFor) {
-                    setIsSelectingPinLocationFor(null);
-                  }
-                }}
-                size="sm"
-              >
-                Done
-              </Button>
-              {currentLatitude && currentLongitude ? (
-                <Button
-                  className="w-full"
-                  onClick={() => {
-                    form.setValue(`${block.id}.latitude`, "");
-                    form.setValue(`${block.id}.longitude`, "");
-                    // setViewState(prevViewState);
-                    if (setIsSelectingPinLocationFor) {
-                      setIsSelectingPinLocationFor(null);
-                    }
-                  }}
-                  variant="outline"
-                >
-                  Clear Selection
-                </Button>
-              ) : null}
-              <Button
-                className="w-full"
-                onClick={() => {
-                  // setViewState(prevViewState);
-                  if (setIsSelectingPinLocationFor) {
-                    setIsSelectingPinLocationFor(null);
-                  }
-                }}
-                size="sm"
-                variant="outline"
-              >
-                Cancel
-              </Button>
-            </div>
-          ) : (
-            <Button
-              className="relative w-full"
-              onClick={() => {
-                if (setIsSelectingPinLocationFor) {
-                  setIsSelectingPinLocationFor(block.id);
-                }
+          <Button
+            className="relative w-full"
+            onClick={() => {
+              if (setIsSelectingPinLocation) {
+                setIsSelectingPinLocation(block.id);
+              }
 
-                // setPrevViewState(viewState);
+              // setPrevViewState(viewState);
 
-                // setViewState({
-                //   ...viewState,
-                //   zoom: viewState.zoom * 1.2,
-                //   latitude: currentLatitude
-                //     ? currentLatitude
-                //     : viewState.latitude,
-                //   longitude: currentLongitude
-                //     ? currentLongitude
-                //     : viewState.longitude,
-                // });
-              }}
-              // size="sm"
-              variant="secondary"
-            >
-              {block.props.text}
-              {block.props.required ? (
-                <AsteriskIcon
-                  className="absolute right-2"
-                  height={14}
-                  width={14}
-                />
-              ) : null}
-            </Button>
-          )}
+              // setViewState({
+              //   ...viewState,
+              //   zoom: viewState.zoom * 1.2,
+              //   latitude: currentLatitude
+              //     ? currentLatitude
+              //     : viewState.latitude,
+              //   longitude: currentLongitude
+              //     ? currentLongitude
+              //     : viewState.longitude,
+              // });
+            }}
+            // size="sm"
+            type="button"
+            variant="secondary"
+          >
+            {block.props.text}
+            {block.props.required ? (
+              <AsteriskIcon
+                className="absolute right-2"
+                height={14}
+                width={14}
+              />
+            ) : null}
+          </Button>
+
           <FormField
             control={form.control}
             // disabled

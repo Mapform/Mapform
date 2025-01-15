@@ -8,8 +8,8 @@ import { useContext, createContext } from "react";
 export interface CustomBlockContextProps {
   editable: boolean;
   onImageUpload?: (file: File) => Promise<string | null>;
-  isSelectingPinLocationFor?: string | null;
-  setIsSelectingPinLocationFor?: React.Dispatch<
+  isSelectingPinLocation?: string | null;
+  setIsSelectingPinLocation?: React.Dispatch<
     React.SetStateAction<string | null>
   >;
 }
