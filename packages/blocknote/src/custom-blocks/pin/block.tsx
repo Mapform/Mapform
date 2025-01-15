@@ -126,7 +126,7 @@ export const Pin = createReactBlockSpec(
             control={form.control}
             // disabled
             // This is what allows us to match the user value back to the input
-            name={`${block.id}.latitude`}
+            name={`${block.id}.y`}
             render={({ field }) => (
               <FormItem className="flex-1">
                 <FormControl>
@@ -139,7 +139,7 @@ export const Pin = createReactBlockSpec(
             control={form.control}
             // disabled
             // This is what allows us to match the user value back to the input
-            name={`${block.id}.longitude`}
+            name={`${block.id}.x`}
             render={({ field }) => (
               <FormItem className="flex-1">
                 <FormControl>

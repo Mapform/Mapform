@@ -9,12 +9,12 @@ const schemaMap = {
   pin: (props: PinBlock["props"]) =>
     props.required
       ? z.object({
-          latitude: z.number(),
-          longitude: z.number(),
+          y: z.number(),
+          x: z.number(),
         })
       : z.object({
-          latitude: z.number().optional(),
-          longitude: z.number().optional(),
+          y: z.number().optional(),
+          x: z.number().optional(),
         }),
   textInput: (props: TextInputBlock["props"]) => {
     return props.required
