@@ -5,6 +5,7 @@ import {
   FormItem,
   FormControl,
   useFormContext,
+  FormLabel,
 } from "@mapform/ui/components/form";
 // import { useState } from "react";
 import { Button } from "@mapform/ui/components/button";
@@ -62,8 +63,7 @@ export const Pin = createReactBlockSpec(
             </div>
             <Button
               className="relative w-full cursor-default"
-              size="sm"
-              variant="outline"
+              variant="secondary"
             >
               <input
                 className="w-full border-0 border-transparent bg-transparent p-0 text-center text-sm font-medium outline-none focus:border-transparent focus:ring-0"
@@ -84,7 +84,13 @@ export const Pin = createReactBlockSpec(
       const currentLongitude = form.watch(`${block.id}.longitude`);
 
       return (
-        <div className="fiex mb-4 w-full flex-col">
+        <div className="fiex mb-4 w-full flex-col space-y-2">
+          <FormLabel className="flex justify-between text-base font-medium">
+            {block.props.label}
+            {block.props.required ? (
+              <AsteriskIcon height={14} width={14} />
+            ) : null}
+          </FormLabel>
           {isSelectingPinLocationFor === block.id ? (
             <div className="flex flex-col gap-2">
               <Button
@@ -152,8 +158,8 @@ export const Pin = createReactBlockSpec(
                 //     : viewState.longitude,
                 // });
               }}
-              size="sm"
-              variant="outline"
+              // size="sm"
+              variant="secondary"
             >
               {block.props.text}
               {block.props.required ? (

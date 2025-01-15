@@ -29,7 +29,7 @@ export function Label({
   }
 
   return (
-    <FormLabel className="flex justify-between">
+    <FormLabel className="flex justify-between text-base font-medium">
       {label}
       {required ? <AsteriskIcon height={14} width={14} /> : null}
     </FormLabel>
