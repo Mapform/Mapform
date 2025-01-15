@@ -256,6 +256,16 @@ export function MapForm({
               >
                 {children}
               </Map>
+              {isSelectingPinLocation ? (
+                <Button
+                  className="absolute bottom-0 left-0"
+                  onClick={() => {}}
+                  type="button"
+                  variant="default"
+                >
+                  Do some shiz yo
+                </Button>
+              ) : null}
             </div>
             <Button
               className={cn(
