@@ -40,6 +40,7 @@ import { upsertCellAction } from "~/data/cells/upsert-cell";
 import { compressImage } from "~/lib/compress-image";
 import { uploadImageAction } from "~/data/images";
 import { toast } from "@mapform/ui/components/toaster";
+import { a } from "node_modules/next-safe-action/dist/index.types-B2iGkRfD.mjs";
 
 const accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN!;
 
@@ -481,7 +482,9 @@ function PointInput({
       container: mapContainerRef.current ?? "",
       pitchWithRotate: false,
       dragRotate: false,
-      touchZoomRotate: false,
+      scrollZoom: {
+        around: "center",
+      },
     });
 
     map.on("move", () => {
