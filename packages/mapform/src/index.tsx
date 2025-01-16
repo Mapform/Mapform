@@ -6,7 +6,6 @@ import type { Page } from "@mapform/db/schema";
 import { Form, useForm, zodResolver } from "@mapform/ui/components/form";
 import type { z } from "zod";
 import { cn } from "@mapform/lib/classnames";
-import { motion, AnimatePresence } from "motion/react";
 import { useWindowSize } from "@mapform/lib/hooks/use-window-size";
 import type { FormSchema } from "@mapform/lib/schemas/form-step-schema";
 import { useSetQueryString } from "@mapform/lib/hooks/use-set-query-string";
@@ -27,7 +26,7 @@ import "./style.css";
 import { MapformProvider, useMapform, type MBMap } from "./context";
 import { DesktopDrawer } from "./drawers/desktop-drawer";
 import { MobileDrawer } from "./drawers/mobile-drawer";
-import { LocationPicker } from "./location-picker";
+import { SearchPicker } from "./search-picker";
 
 interface MapFormProps {
   editable?: boolean;
@@ -279,50 +278,27 @@ export function MapForm({
               <ChevronsRightIcon className="size-5" />
             </Button>
             {isMobile ? (
-              <AnimatePresence mode="popLayout">
-                <motion.div
-                  animate={{
-                    y: 0,
-                    opacity: 1,
-                    transition: {
-                      default: {
-                        type: "spring",
-                        bounce: 0.2,
-                        duration: 1,
-                      },
-                      opacity: { ease: "linear" },
-                    },
-                  }}
-                  className="rounded-t-xl shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]"
-                  exit={{ y: 200, opacity: 0 }}
-                  initial={{ y: 200, opacity: 0 }}
-                  key={selectedFeature?.rowId}
-                  layoutScroll
-                  style={{
-                    overflow: "scroll",
-                  }}
+              <>
+                <MobileDrawer
+                  open={drawerOpen && !selectedFeature}
+                  withPadding={editable}
                 >
-                  {!selectedFeature ? (
-                    <MobileDrawer open={drawerOpen} withPadding={editable}>
-                      {pageContent}
-                    </MobileDrawer>
-                  ) : (
-                    <MobileDrawer
-                      onClose={() => {
-                        window.scrollTo({ top: 0, behavior: "smooth" });
-                        setQueryString({
-                          key: "feature",
-                          value: null,
-                        });
-                      }}
-                      open={Boolean(selectedFeature)}
-                      withPadding={editable}
-                    >
-                      {selectedFeatureContent}
-                    </MobileDrawer>
-                  )}
-                </motion.div>
-              </AnimatePresence>
+                  {pageContent}
+                </MobileDrawer>
+                <MobileDrawer
+                  onClose={() => {
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                    setQueryString({
+                      key: "feature",
+                      value: null,
+                    });
+                  }}
+                  open={Boolean(selectedFeature)}
+                  withPadding={editable}
+                >
+                  {selectedFeatureContent}
+                </MobileDrawer>
+              </>
             ) : (
               <>
                 <DesktopDrawer
@@ -348,7 +324,7 @@ export function MapForm({
                 </DesktopDrawer>
               </>
             )}
-            <LocationPicker
+            <SearchPicker
               open={isSelectingPinBlockLocation}
               onClose={() => setIsSelectingPinBlockLocation(false)}
             />

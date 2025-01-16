@@ -18,18 +18,22 @@ import {
 } from "@mapform/ui/components/command";
 import { MobileDrawer } from "~/drawers/mobile-drawer";
 
-interface LocationPickerProps {
+interface SearchPickerProps {
   open: boolean;
   onClose: () => void;
 }
 
-export function LocationPicker({ open, onClose }: LocationPickerProps) {
+export function SearchPicker({ open, onClose }: SearchPickerProps) {
   const { width } = useWindowSize();
   const isMobile = !!width && width < 768;
 
   if (isMobile) {
     return (
-      <MobileDrawer open={open} onClose={onClose}>
+      <MobileDrawer
+        className="fixed top-10 h-screen overflow-hidden"
+        open={open}
+        onClose={onClose}
+      >
         <LocationSearch />
       </MobileDrawer>
     );
