@@ -1,8 +1,6 @@
 "use client";
 
 import { cn } from "@mapform/lib/classnames";
-import { Button } from "@mapform/ui/components/button";
-import { XIcon } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 
 export function MobileDrawer({
@@ -10,13 +8,11 @@ export function MobileDrawer({
   children,
   withPadding = false,
   className,
-  onClose,
 }: {
   open: boolean;
   withPadding?: boolean;
   children: React.ReactNode;
   className?: string;
-  onClose?: () => void;
 }) {
   return (
     <AnimatePresence mode="popLayout">
@@ -46,17 +42,6 @@ export function MobileDrawer({
             overflow: "scroll",
           }}
         >
-          {onClose ? (
-            <Button
-              className="absolute right-2 top-2"
-              onClick={onClose}
-              size="icon-sm"
-              type="button"
-              variant="ghost"
-            >
-              <XIcon className="size-5" />
-            </Button>
-          ) : null}
           {children}
         </motion.div>
       ) : null}

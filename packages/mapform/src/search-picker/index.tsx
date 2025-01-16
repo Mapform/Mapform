@@ -1,10 +1,8 @@
 "use client";
 
-import { useWindowSize } from "@mapform/lib/hooks/use-window-size";
 import type { PlacesSearchResponse } from "@mapform/map-utils/types";
 import { useEffect, useMemo, useState } from "react";
 import { useMapform } from "~/context";
-import { DesktopDrawer } from "~/drawers/desktop-drawer";
 import { useQuery } from "@tanstack/react-query";
 import { useDebounce } from "@mapform/lib/hooks/use-debounce";
 import { cn } from "@mapform/lib/classnames";
@@ -16,7 +14,7 @@ import {
   CommandInput,
   Command,
 } from "@mapform/ui/components/command";
-import { MobileDrawer } from "~/drawers/mobile-drawer";
+import { Drawer } from "~/drawer";
 
 interface SearchPickerProps {
   open: boolean;
@@ -24,25 +22,14 @@ interface SearchPickerProps {
 }
 
 export function SearchPicker({ open, onClose }: SearchPickerProps) {
-  const { width } = useWindowSize();
-  const isMobile = !!width && width < 768;
-
-  if (isMobile) {
-    return (
-      <MobileDrawer
-        className="fixed top-10 h-screen overflow-hidden"
-        open={open}
-        onClose={onClose}
-      >
-        <LocationSearch />
-      </MobileDrawer>
-    );
-  }
-
   return (
-    <DesktopDrawer open={open} onClose={onClose}>
+    <Drawer
+      open={open}
+      onClose={onClose}
+      // className="fixed top-0 h-screen rounded-none"
+    >
       <LocationSearch />
-    </DesktopDrawer>
+    </Drawer>
   );
 }
 

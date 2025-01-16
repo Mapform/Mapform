@@ -1,19 +1,17 @@
 "use client";
 
 import { cn } from "@mapform/lib/classnames";
-import { Button } from "@mapform/ui/components/button";
-import { ChevronsLeftIcon } from "lucide-react";
 
 export function DesktopDrawer({
   children,
   withPadding = false,
-  onClose,
   open,
+  className,
 }: {
   open: boolean;
   withPadding?: boolean;
   children: React.ReactNode;
-  onClose: () => void;
+  className?: string;
 }) {
   return (
     <div
@@ -23,17 +21,9 @@ export function DesktopDrawer({
         open
           ? "visible translate-x-0 opacity-100"
           : "-translate-x-full opacity-0",
+        className,
       )}
     >
-      <Button
-        className="absolute right-2 top-2"
-        onClick={onClose}
-        size="icon-sm"
-        type="button"
-        variant="ghost"
-      >
-        <ChevronsLeftIcon className="size-5" />
-      </Button>
       {children}
     </div>
   );

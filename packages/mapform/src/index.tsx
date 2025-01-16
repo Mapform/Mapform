@@ -24,9 +24,10 @@ import { Blocknote } from "./block-note";
 import { Map, LocationMarker } from "./map";
 import "./style.css";
 import { MapformProvider, useMapform, type MBMap } from "./context";
-import { DesktopDrawer } from "./drawers/desktop-drawer";
-import { MobileDrawer } from "./drawers/mobile-drawer";
+import { DesktopDrawer } from "./drawer/desktop-drawer";
+import { MobileDrawer } from "./drawer/mobile-drawer";
 import { SearchPicker } from "./search-picker";
+import { Drawer } from "./drawer";
 
 interface MapFormProps {
   editable?: boolean;
@@ -277,7 +278,28 @@ export function MapForm({
             >
               <ChevronsRightIcon className="size-5" />
             </Button>
-            {isMobile ? (
+            <Drawer
+              onClose={() => {
+                setDrawerOpen(false);
+              }}
+              open={drawerOpen && !selectedFeature}
+            >
+              {pageContent}
+            </Drawer>
+            {/* <Drawer
+              onClose={() => {
+                window.scrollTo({ top: 0, behavior: "smooth" });
+                setQueryString({
+                  key: "feature",
+                  value: null,
+                });
+              }}
+              open={Boolean(selectedFeature)}
+              withPadding={editable}
+            >
+              {selectedFeatureContent}
+            </Drawer> */}
+            {/* {isMobile ? (
               <>
                 <MobileDrawer
                   open={drawerOpen && !selectedFeature}
@@ -323,7 +345,7 @@ export function MapForm({
                   {selectedFeatureContent}
                 </DesktopDrawer>
               </>
-            )}
+            )} */}
             <SearchPicker
               open={isSelectingPinBlockLocation}
               onClose={() => setIsSelectingPinBlockLocation(false)}
