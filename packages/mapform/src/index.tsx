@@ -24,8 +24,6 @@ import { Blocknote } from "./block-note";
 import { Map, LocationMarker } from "./map";
 import "./style.css";
 import { MapformProvider, useMapform, type MBMap } from "./context";
-import { DesktopDrawer } from "./drawer/desktop-drawer";
-import { MobileDrawer } from "./drawer/mobile-drawer";
 import { SearchPicker } from "./search-picker";
 import { Drawer } from "./drawer";
 
@@ -279,14 +277,18 @@ export function MapForm({
               <ChevronsRightIcon className="size-5" />
             </Button>
             <Drawer
-              onClose={() => {
-                setDrawerOpen(false);
-              }}
+              onClose={
+                !isMobile
+                  ? () => {
+                      setDrawerOpen(false);
+                    }
+                  : undefined
+              }
               open={drawerOpen && !selectedFeature}
             >
               {pageContent}
             </Drawer>
-            {/* <Drawer
+            <Drawer
               onClose={() => {
                 window.scrollTo({ top: 0, behavior: "smooth" });
                 setQueryString({
@@ -298,54 +300,7 @@ export function MapForm({
               withPadding={editable}
             >
               {selectedFeatureContent}
-            </Drawer> */}
-            {/* {isMobile ? (
-              <>
-                <MobileDrawer
-                  open={drawerOpen && !selectedFeature}
-                  withPadding={editable}
-                >
-                  {pageContent}
-                </MobileDrawer>
-                <MobileDrawer
-                  onClose={() => {
-                    window.scrollTo({ top: 0, behavior: "smooth" });
-                    setQueryString({
-                      key: "feature",
-                      value: null,
-                    });
-                  }}
-                  open={Boolean(selectedFeature)}
-                  withPadding={editable}
-                >
-                  {selectedFeatureContent}
-                </MobileDrawer>
-              </>
-            ) : (
-              <>
-                <DesktopDrawer
-                  onClose={() => {
-                    setDrawerOpen(false);
-                  }}
-                  open={drawerOpen}
-                  withPadding={editable}
-                >
-                  {pageContent}
-                </DesktopDrawer>
-                <DesktopDrawer
-                  onClose={() => {
-                    setQueryString({
-                      key: "feature",
-                      value: null,
-                    });
-                  }}
-                  open={Boolean(selectedFeature)}
-                  withPadding={editable}
-                >
-                  {selectedFeatureContent}
-                </DesktopDrawer>
-              </>
-            )} */}
+            </Drawer>
             <SearchPicker
               open={isSelectingPinBlockLocation}
               onClose={() => setIsSelectingPinBlockLocation(false)}
