@@ -16,6 +16,7 @@
     "@blocknote/react": "catalog:",
     "@mapform/lib": "workspace:*",
     "@mapform/ui": "workspace:*",
+    "@tanstack/react-query": "catalog:",
     "lucide-react": "catalog:",
     "next": "catalog:",
     "zod": "catalog:"

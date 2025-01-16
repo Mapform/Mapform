@@ -36,8 +36,7 @@ export const Pin = createReactBlockSpec(
   {
     render: ({ block, editor }) => {
       const form = useFormContext();
-      const { editable, isSelectingPinLocation, setIsSelectingPinLocation } =
-        useCustomBlockContext();
+      const { editable, pinBlock } = useCustomBlockContext();
       // const [prevViewState, setPrevViewState] = useState(viewState);
 
       if (editable) {
@@ -91,9 +90,7 @@ export const Pin = createReactBlockSpec(
           <Button
             className="relative w-full"
             onClick={() => {
-              if (setIsSelectingPinLocation) {
-                setIsSelectingPinLocation(block.id);
-              }
+              pinBlock?.setIsSelectingLocation(true);
 
               // setPrevViewState(viewState);
 

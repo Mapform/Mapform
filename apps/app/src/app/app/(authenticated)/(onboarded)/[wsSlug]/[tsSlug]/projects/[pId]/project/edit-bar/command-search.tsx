@@ -1,10 +1,8 @@
 import { cn } from "@mapform/lib/classnames";
-import { debounce } from "@mapform/lib/lodash";
 import { useMapform } from "@mapform/mapform";
 import {
   CommandInput,
   CommandList,
-  CommandEmpty,
   CommandGroup,
   CommandItem,
   CommandShortcut,
@@ -16,7 +14,6 @@ import type {
   PlacesSearchResponse,
 } from "@mapform/map-utils/types";
 import { useDebounce } from "@mapform/lib/hooks/use-debounce";
-import { useProject } from "../../project-context";
 
 interface CommandSearchProps {
   setOpenSearch: React.Dispatch<React.SetStateAction<boolean>>;

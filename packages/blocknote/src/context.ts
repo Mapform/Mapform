@@ -8,10 +8,15 @@ import { useContext, createContext } from "react";
 export interface CustomBlockContextProps {
   editable: boolean;
   onImageUpload?: (file: File) => Promise<string | null>;
-  isSelectingPinLocation?: string | null;
-  setIsSelectingPinLocation?: React.Dispatch<
-    React.SetStateAction<string | null>
-  >;
+
+  pinBlock?: {
+    location: { x: number; y: number } | null;
+    setLocation: React.Dispatch<
+      React.SetStateAction<{ x: number; y: number } | null>
+    >;
+    isSelectingLocation: boolean;
+    setIsSelectingLocation: React.Dispatch<React.SetStateAction<boolean>>;
+  };
 }
 
 export const CustomBlockContext = createContext<CustomBlockContextProps>(

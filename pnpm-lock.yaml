@@ -701,6 +701,9 @@ importers:
       '@mapform/ui':
         specifier: workspace:*
         version: link:../ui
+      '@tanstack/react-query':
+        specifier: 'catalog:'
+        version: 5.29.0(react@19.0.0)
       lucide-react:
         specifier: 'catalog:'
         version: 0.446.0(react@19.0.0)

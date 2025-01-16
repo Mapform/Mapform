@@ -27,6 +27,7 @@ import "./style.css";
 import { MapformProvider, useMapform, type MBMap } from "./context";
 import { DesktopDrawer } from "./drawers/desktop-drawer";
 import { MobileDrawer } from "./drawers/mobile-drawer";
+import { LocationPicker } from "./location-picker";
 
 interface MapFormProps {
   editable?: boolean;
@@ -77,9 +78,12 @@ export function MapForm({
     resolver: zodResolver(blocknoteStepSchema),
     defaultValues: defaultFormValues,
   });
-  const [isSelectingPinLocation, setIsSelectingPinLocation] = useState<
-    string | null
-  >(null);
+  const [pinBlockLocation, setPinBlockLocation] = useState<{
+    x: number;
+    y: number;
+  } | null>(null);
+  const [isSelectingPinBlockLocation, setIsSelectingPinBlockLocation] =
+    useState(false);
   const { width } = useWindowSize();
 
   const initialViewState = {
@@ -237,10 +241,11 @@ export function MapForm({
             value={{
               editable,
               onImageUpload,
-              isSelectingPinLocation,
-              setIsSelectingPinLocation: (val) => {
-                setDrawerOpen(!val);
-                setIsSelectingPinLocation(val);
+              pinBlock: {
+                location: pinBlockLocation,
+                setLocation: setPinBlockLocation,
+                isSelectingLocation: isSelectingPinBlockLocation,
+                setIsSelectingLocation: setIsSelectingPinBlockLocation,
               },
             }}
           >
@@ -256,16 +261,6 @@ export function MapForm({
               >
                 {children}
               </Map>
-              {isSelectingPinLocation ? (
-                <Button
-                  className="absolute bottom-0 left-0"
-                  onClick={() => {}}
-                  type="button"
-                  variant="default"
-                >
-                  Do some shiz yo
-                </Button>
-              ) : null}
             </div>
             <Button
               className={cn(
@@ -353,6 +348,10 @@ export function MapForm({
                 </DesktopDrawer>
               </>
             )}
+            <LocationPicker
+              open={isSelectingPinBlockLocation}
+              onClose={() => setIsSelectingPinBlockLocation(false)}
+            />
           </CustomBlockContext.Provider>
         </div>
         <div className="fixed bottom-0 z-50 w-full bg-white md:hidden">
