@@ -2,7 +2,7 @@
 
 import type { PlacesSearchResponse } from "@mapform/map-utils/types";
 import { useEffect, useMemo, useState } from "react";
-import { useMapform } from "~/context";
+import type mapboxgl from "mapbox-gl";
 import { useQuery } from "@tanstack/react-query";
 import { useDebounce } from "@mapform/lib/hooks/use-debounce";
 import { cn } from "@mapform/lib/classnames";
@@ -16,25 +16,27 @@ import {
 } from "@mapform/ui/components/command";
 import { Drawer } from "~/drawer";
 
+export type MBMap = mapboxgl.Map;
+
 interface SearchPickerProps {
+  map?: MBMap;
   open: boolean;
   onClose: () => void;
 }
 
-export function SearchPicker({ open, onClose }: SearchPickerProps) {
+export function SearchPicker({ map, open, onClose }: SearchPickerProps) {
   return (
     <Drawer
       open={open}
       onClose={onClose}
       className="max-md:fixed max-md:top-0 max-md:h-screen max-md:rounded-none"
     >
-      <LocationSearch />
+      <LocationSearch map={map} />
     </Drawer>
   );
 }
 
-export function LocationSearch() {
-  const { map, setDrawerOpen } = useMapform();
+export function LocationSearch({ map }: { map?: MBMap }) {
   const [query, setQuery] = useState("");
 
   const debouncedSearchQuery = useDebounce(query, 200);
@@ -83,7 +85,6 @@ export function LocationSearch() {
           },
         );
 
-        setDrawerOpen(false);
         // setSearchLocation({
         //   title: feature.properties.name ?? feature.properties.address_line1,
         //   latitude: feature.properties.lat,
@@ -118,7 +119,7 @@ export function LocationSearch() {
         }
       });
     };
-  }, [data?.features, map, setDrawerOpen]);
+  }, [data?.features, map]);
 
   // Only show unique features with properties and bbox
   const features =
@@ -173,7 +174,6 @@ export function LocationSearch() {
                     },
                   );
 
-                  setDrawerOpen(false);
                   // setSearchLocation({
                   //   title:
                   //     feature.properties.name ?? feature.properties.address_line1,
@@ -199,7 +199,7 @@ export function LocationSearch() {
         </CommandGroup>
       </CommandList>
     );
-  }, [enabled, features, isFetching, map, setDrawerOpen]);
+  }, [enabled, features, isFetching, map]);
 
   return (
     <Command shouldFilter={false}>
