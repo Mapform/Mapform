@@ -16,6 +16,7 @@ import {
   CommandInput,
   Command,
 } from "@mapform/ui/components/command";
+import { MobileDrawer } from "~/drawers/mobile-drawer";
 
 interface LocationPickerProps {
   open: boolean;
@@ -23,11 +24,27 @@ interface LocationPickerProps {
 }
 
 export function LocationPicker({ open, onClose }: LocationPickerProps) {
-  const { map, setDrawerOpen } = useMapform();
   const { width } = useWindowSize();
-  const [query, setQuery] = useState("");
-
   const isMobile = !!width && width < 768;
+
+  if (isMobile) {
+    return (
+      <MobileDrawer open={open} onClose={onClose}>
+        <LocationSearch />
+      </MobileDrawer>
+    );
+  }
+
+  return (
+    <DesktopDrawer open={open} onClose={onClose}>
+      <LocationSearch />
+    </DesktopDrawer>
+  );
+}
+
+export function LocationSearch() {
+  const { map, setDrawerOpen } = useMapform();
+  const [query, setQuery] = useState("");
 
   const debouncedSearchQuery = useDebounce(query, 200);
 
@@ -194,19 +211,17 @@ export function LocationPicker({ open, onClose }: LocationPickerProps) {
   }, [enabled, features, isFetching, map, setDrawerOpen]);
 
   return (
-    <DesktopDrawer open={open} onClose={onClose}>
-      <Command shouldFilter={false}>
-        <CommandInput
-          className="h-12 border-none focus:ring-0"
-          onValueChange={(search) => {
-            setQuery(search);
-          }}
-          placeholder="Search for places..."
-          value={query}
-        />
-        {searchResultsList}
-      </Command>
-    </DesktopDrawer>
+    <Command shouldFilter={false}>
+      <CommandInput
+        className="h-12 border-none focus:ring-0"
+        onValueChange={(search) => {
+          setQuery(search);
+        }}
+        placeholder="Search for places..."
+        value={query}
+      />
+      {searchResultsList}
+    </Command>
   );
 }
 
