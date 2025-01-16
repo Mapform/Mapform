@@ -1,6 +1,10 @@
+import type mapboxgl from "mapbox-gl";
 import { Drawer } from "~/drawer";
 
+export type MBMap = mapboxgl.Map;
+
 interface PinPickerProps {
+  map?: MBMap;
   open: boolean;
   onClose: () => void;
 }

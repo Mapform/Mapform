@@ -26,6 +26,7 @@ import "./style.css";
 import { MapformProvider, useMapform, type MBMap } from "./context";
 import { SearchPicker } from "./search-picker";
 import { Drawer } from "./drawer";
+import { PinPicker } from "./pin-picker";
 
 interface MapFormProps {
   editable?: boolean;
@@ -68,6 +69,7 @@ export function MapForm({
   includeFormBlocks = false,
 }: MapFormProps) {
   const setQueryString = useSetQueryString();
+  const [pinPickerOpen, setPinPickerOpen] = useState(false);
   const { drawerOpen, setDrawerOpen } = useMapform();
   const blocknoteStepSchema = getFormSchemaFromBlockNote(
     currentPage.content?.content || [],
@@ -304,6 +306,11 @@ export function MapForm({
             <SearchPicker
               open={isSelectingPinBlockLocation}
               onClose={() => setIsSelectingPinBlockLocation(false)}
+              onOpenPinPicker={() => setPinPickerOpen(true)}
+            />
+            <PinPicker
+              open={pinPickerOpen}
+              onClose={() => setPinPickerOpen(false)}
             />
           </CustomBlockContext.Provider>
         </div>

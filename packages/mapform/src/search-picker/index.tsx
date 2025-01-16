@@ -15,6 +15,7 @@ import {
   Command,
 } from "@mapform/ui/components/command";
 import { Drawer } from "~/drawer";
+import { Button } from "@mapform/ui/components/button";
 
 export type MBMap = mapboxgl.Map;
 
@@ -22,21 +23,33 @@ interface SearchPickerProps {
   map?: MBMap;
   open: boolean;
   onClose: () => void;
+  onOpenPinPicker?: () => void;
 }
 
-export function SearchPicker({ map, open, onClose }: SearchPickerProps) {
+export function SearchPicker({
+  map,
+  open,
+  onClose,
+  onOpenPinPicker,
+}: SearchPickerProps) {
   return (
     <Drawer
       open={open}
       onClose={onClose}
       className="max-md:fixed max-md:top-0 max-md:h-screen max-md:rounded-none"
     >
-      <LocationSearch map={map} />
+      <LocationSearch map={map} onOpenPinPicker={onOpenPinPicker} />
     </Drawer>
   );
 }
 
-export function LocationSearch({ map }: { map?: MBMap }) {
+export function LocationSearch({
+  map,
+  onOpenPinPicker,
+}: {
+  map?: MBMap;
+  onOpenPinPicker?: () => void;
+}) {
   const [query, setQuery] = useState("");
 
   const debouncedSearchQuery = useDebounce(query, 200);
@@ -202,17 +215,25 @@ export function LocationSearch({ map }: { map?: MBMap }) {
   }, [enabled, features, isFetching, map]);
 
   return (
-    <Command shouldFilter={false}>
-      <CommandInput
-        className="h-12 border-none focus:ring-0"
-        onValueChange={(search) => {
-          setQuery(search);
-        }}
-        placeholder="Search for places..."
-        value={query}
-      />
-      {searchResultsList}
-    </Command>
+    <>
+      <Command shouldFilter={false}>
+        <CommandInput
+          className="h-12 border-none focus:ring-0"
+          onValueChange={(search) => {
+            setQuery(search);
+          }}
+          placeholder="Search for places..."
+          value={query}
+        />
+        <Button
+          onClick={onOpenPinPicker ? () => onOpenPinPicker() : undefined}
+          type="button"
+        >
+          Select on map
+        </Button>
+        {searchResultsList}
+      </Command>
+    </>
   );
 }
 
