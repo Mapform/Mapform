@@ -26,7 +26,7 @@ export function SearchPicker({ open, onClose }: SearchPickerProps) {
     <Drawer
       open={open}
       onClose={onClose}
-      // className="fixed top-0 h-screen rounded-none"
+      className="max-md:fixed max-md:top-0 max-md:h-screen max-md:rounded-none"
     >
       <LocationSearch />
     </Drawer>

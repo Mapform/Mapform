@@ -31,16 +31,13 @@ export function MobileDrawer({
             },
           }}
           className={cn(
-            "bg-background prose relative z-40 flex h-full min-h-[200px] w-full max-w-full flex-col overflow-hidden rounded-t-xl shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] outline-none",
+            "bg-background prose relative z-40 flex h-full min-h-[200px] w-full max-w-full flex-col overflow-hidden overflow-y-auto rounded-t-xl shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] outline-none",
             withPadding ? "pl-8" : "pl-0",
             className,
           )}
           exit={{ y: 200, opacity: 0 }}
           initial={{ y: 200, opacity: 0 }}
           layoutScroll
-          style={{
-            overflow: "scroll",
-          }}
         >
           {children}
         </motion.div>
