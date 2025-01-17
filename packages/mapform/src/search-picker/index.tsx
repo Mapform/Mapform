@@ -20,7 +20,7 @@ import { Button } from "@mapform/ui/components/button";
 export type MBMap = mapboxgl.Map;
 
 interface SearchPickerProps {
-  map?: MBMap;
+  map: MBMap;
   open: boolean;
   onClose: () => void;
   onOpenPinPicker?: () => void;
@@ -47,7 +47,7 @@ export function LocationSearch({
   map,
   onOpenPinPicker,
 }: {
-  map?: MBMap;
+  map: MBMap;
   onOpenPinPicker?: () => void;
 }) {
   const [query, setQuery] = useState("");
@@ -61,7 +61,7 @@ export function LocationSearch({
     queryKey: ["search", debouncedSearchQuery],
     queryFn: () =>
       fetchPlaces(debouncedSearchQuery, {
-        bounds: map?.getBounds().toArray().flat() as [
+        bounds: map.getBounds().toArray().flat() as [
           number,
           number,
           number,
@@ -88,7 +88,7 @@ export function LocationSearch({
         e.preventDefault();
         e.stopPropagation();
 
-        map?.fitBounds(
+        map.fitBounds(
           [
             [bbox[0], bbox[1]],
             [bbox[2], bbox[3]],
@@ -177,7 +177,7 @@ export function LocationSearch({
                     return;
                   }
 
-                  map?.fitBounds(
+                  map.fitBounds(
                     [
                       [feature.bbox[0], feature.bbox[1]],
                       [feature.bbox[2], feature.bbox[3]],

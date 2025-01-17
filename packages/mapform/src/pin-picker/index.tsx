@@ -4,7 +4,7 @@ import { Drawer } from "~/drawer";
 export type MBMap = mapboxgl.Map;
 
 interface PinPickerProps {
-  map?: MBMap;
+  map: MBMap;
   open: boolean;
   onClose: () => void;
 }
