@@ -14,7 +14,7 @@ export function PinPicker({ open, onClose }: PinPickerProps) {
     <Drawer
       open={open}
       onClose={onClose}
-      className="max-md:fixed max-md:top-0 max-md:h-screen max-md:rounded-none"
+      className="max-md:bottom max-md:absolute max-md:max-h-fit"
     >
       Test
     </Drawer>

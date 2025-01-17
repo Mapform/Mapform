@@ -286,7 +286,9 @@ export function MapForm({
                     }
                   : undefined
               }
-              open={drawerOpen && !selectedFeature}
+              open={
+                drawerOpen && !selectedFeature && !isSelectingPinBlockLocation
+              }
             >
               {pageContent}
             </Drawer>
@@ -304,12 +306,12 @@ export function MapForm({
               {selectedFeatureContent}
             </Drawer>
             <SearchPicker
-              open={isSelectingPinBlockLocation}
+              open={isSelectingPinBlockLocation && !pinPickerOpen}
               onClose={() => setIsSelectingPinBlockLocation(false)}
               onOpenPinPicker={() => setPinPickerOpen(true)}
             />
             <PinPicker
-              open={pinPickerOpen}
+              open={pinPickerOpen && isSelectingPinBlockLocation}
               onClose={() => setPinPickerOpen(false)}
             />
           </CustomBlockContext.Provider>
