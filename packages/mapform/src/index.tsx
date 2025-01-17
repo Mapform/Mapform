@@ -24,9 +24,7 @@ import { Blocknote } from "./block-note";
 import { Map, LocationMarker } from "./map";
 import "./style.css";
 import { MapformProvider, useMapform, type MBMap } from "./context";
-import { SearchPicker } from "./search-picker";
 import { Drawer } from "./drawer";
-import { PinPicker } from "./pin-picker";
 import { LocationPicker } from "./location-picker";
 
 interface MapFormProps {
@@ -113,44 +111,6 @@ export function MapForm({
     right: 0,
   };
 
-  const actionButtons = useMemo(
-    () => (
-      <div className="px-2">
-        <div className="relative flex h-[50px] w-full items-center justify-between bg-white">
-          {onPrev ? (
-            <Button
-              className="absolute left-0"
-              disabled={editable}
-              onClick={onPrev}
-              type="button"
-              variant="ghost"
-            >
-              <ArrowLeftIcon className="-ml-1 mr-1 size-4" />
-              Back
-            </Button>
-          ) : null}
-          <p className="mx-auto text-xs text-gray-500">
-            Made with{" "}
-            <a className="text-gray-500" href="https://alpha.mapform.co">
-              Mapform
-            </a>
-          </p>
-          {onStepSubmit && currentPage.pageType === "page" ? (
-            <Button
-              className="absolute right-0"
-              disabled={editable}
-              type="submit"
-            >
-              {nextPage?.pageType === "page_ending" ? "Submit" : "Next"}
-              <ArrowRightIcon className="-mr-1 ml-1 size-4" />
-            </Button>
-          ) : null}
-        </div>
-      </div>
-    ),
-    [editable, onPrev, onStepSubmit, currentPage.pageType, nextPage],
-  );
-
   const pageContent = useMemo(
     () => (
       <>
@@ -173,24 +133,59 @@ export function MapForm({
           title={currentPage.title}
         />
         <div
-          className={cn({
-            hidden: editable || isMobile,
+          className={cn("fixed bottom-0 w-full", {
+            hidden: editable,
           })}
         >
-          {actionButtons}
+          <div className="px-2">
+            <div className="relative flex h-[50px] w-full items-center justify-between bg-white">
+              {onPrev ? (
+                <Button
+                  className="absolute left-0"
+                  disabled={editable}
+                  onClick={onPrev}
+                  type="button"
+                  variant="ghost"
+                >
+                  <ArrowLeftIcon className="-ml-1 mr-1 size-4" />
+                  Back
+                </Button>
+              ) : null}
+              <p className="mx-auto text-xs text-gray-500">
+                Made with{" "}
+                <a className="text-gray-500" href="https://alpha.mapform.co">
+                  Mapform
+                </a>
+              </p>
+              {onStepSubmit && currentPage.pageType === "page" ? (
+                <Button
+                  className="absolute right-0"
+                  disabled={editable}
+                  type="submit"
+                >
+                  {nextPage?.pageType === "page_ending" ? "Submit" : "Next"}
+                  <ArrowRightIcon className="-mr-1 ml-1 size-4" />
+                </Button>
+              ) : null}
+            </div>
+          </div>
         </div>
       </>
     ),
     [
-      actionButtons,
-      currentPage,
+      currentPage.content,
+      currentPage.icon,
+      currentPage.id,
+      currentPage.title,
+      currentPage.pageType,
       editable,
-      isMobile,
+      includeFormBlocks,
+      onPrev,
+      onStepSubmit,
+      nextPage?.pageType,
       onDescriptionChange,
       onIconChange,
-      onPrev,
       onTitleChange,
-      includeFormBlocks,
     ],
   );
 
@@ -310,9 +305,6 @@ export function MapForm({
               setIsSelectingPinBlockLocation={setIsSelectingPinBlockLocation}
             />
           </CustomBlockContext.Provider>
-        </div>
-        <div className="fixed bottom-0 z-50 w-full bg-white md:hidden">
-          {actionButtons}
         </div>
       </form>
     </Form>
