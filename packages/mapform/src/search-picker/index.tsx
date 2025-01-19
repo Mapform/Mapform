@@ -1,8 +1,8 @@
 "use client";
 
 import type { PlacesSearchResponse } from "@mapform/map-utils/types";
-import { useEffect, useMemo, useState } from "react";
-import type mapboxgl from "mapbox-gl";
+import { useEffect, useMemo, useRef, useState } from "react";
+import mapboxgl from "mapbox-gl";
 import { useQuery } from "@tanstack/react-query";
 import { useDebounce } from "@mapform/lib/hooks/use-debounce";
 import { cn } from "@mapform/lib/classnames";
@@ -16,6 +16,8 @@ import {
 } from "@mapform/ui/components/command";
 import { Drawer } from "~/drawer";
 import { Button } from "@mapform/ui/components/button";
+import * as Portal from "@radix-ui/react-portal";
+import { LocationMarker } from "~/map";
 
 export type MBMap = mapboxgl.Map;
 
@@ -51,6 +53,8 @@ export function LocationSearch({
   onOpenPinPicker?: () => void;
 }) {
   const [query, setQuery] = useState("");
+  const markerEl = useRef<mapboxgl.Marker | null>(null);
+  const markerElInner = useRef<HTMLDivElement>(document.createElement("div"));
 
   const debouncedSearchQuery = useDebounce(query, 200);
 
@@ -70,6 +74,19 @@ export function LocationSearch({
       }),
     placeholderData: (prev) => prev,
   });
+
+  useEffect(() => {
+    const currentLocation = map.getCenter();
+    // const marker = new mapboxgl.Marker().setLngLat([0, 0]).addTo(map);
+    markerEl.current = new mapboxgl.Marker(markerElInner.current)
+      .setLngLat([currentLocation.lng, currentLocation.lat])
+      .addTo(map);
+
+    map.on("move", () => {
+      console.log(`Current Map Center: ${map.getCenter()}`);
+      markerEl.current?.setLngLat(map.getCenter());
+    });
+  }, [map]);
 
   // Controls hot keys for selecting search results
   useEffect(() => {
@@ -233,6 +250,12 @@ export function LocationSearch({
         </Button>
         {searchResultsList}
       </Command>
+      <Portal.Root container={markerElInner.current}>
+        <div className="flex -translate-y-1/2 flex-col items-center">
+          <div className="z-10 size-4 rounded-full border-4 border-black bg-white" />
+          <div className="-mt-1.5 h-8 w-[5px] bg-black" />
+        </div>
+      </Portal.Root>
     </>
   );
 }

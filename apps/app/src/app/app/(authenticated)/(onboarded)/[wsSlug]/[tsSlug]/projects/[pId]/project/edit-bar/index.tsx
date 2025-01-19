@@ -300,20 +300,23 @@ function EditBarInner({ currentPage }: EditBarInnerProps) {
           </TooltipProvider>
         </div>
 
-        <LocationMarker
-          markerOptions={{
-            anchor: "bottom",
-            offset: [0, -16],
-          }}
-          searchLocationMarker={searchLocation}
-        >
-          <SearchLocationMarker
-            pageLayers={pageLayers}
-            searchLocation={searchLocation}
-            setDrawerOpen={setDrawerOpen}
-            setSearchLocation={setSearchLocation}
-          />
-        </LocationMarker>
+        {searchLocation ? (
+          <LocationMarker
+            markerOptions={{
+              anchor: "bottom",
+              offset: [0, -16],
+            }}
+            latitude={searchLocation.latitude}
+            longitude={searchLocation.longitude}
+          >
+            <SearchLocationMarker
+              pageLayers={pageLayers}
+              searchLocation={searchLocation}
+              setDrawerOpen={setDrawerOpen}
+              setSearchLocation={setSearchLocation}
+            />
+          </LocationMarker>
+        ) : null}
       </div>
 
       {isSelectingPoint ? (

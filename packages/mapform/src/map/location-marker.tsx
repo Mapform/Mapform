@@ -1,7 +1,6 @@
 import type mapboxgl from "mapbox-gl";
 import { Marker } from "mapbox-gl";
 import { useRef, useEffect } from "react";
-import type { SearchFeature } from "@mapform/map-utils/types";
 import * as Portal from "@radix-ui/react-portal";
 import { useMapform } from "../context";
 
@@ -9,11 +8,13 @@ import { useMapform } from "../context";
  * Update searchLocationMarker marker
  */
 export function LocationMarker({
-  searchLocationMarker,
+  longitude,
+  latitude,
   markerOptions,
   children,
 }: {
-  searchLocationMarker: SearchFeature | null;
+  longitude: number;
+  latitude: number;
   markerOptions?: mapboxgl.MarkerOptions;
   children: React.ReactNode;
 }) {
@@ -25,23 +26,19 @@ export function LocationMarker({
     const currentLngLat = markerEl.current?.getLngLat();
     if (
       map &&
-      searchLocationMarker &&
-      currentLngLat?.lat !== searchLocationMarker.latitude &&
-      currentLngLat?.lng !== searchLocationMarker.longitude
+      currentLngLat?.lat !== latitude &&
+      currentLngLat?.lng !== longitude
     ) {
       markerEl.current?.remove();
       markerEl.current = new Marker(markerElInner.current, markerOptions)
-        .setLngLat([
-          searchLocationMarker.longitude,
-          searchLocationMarker.latitude,
-        ])
+        .setLngLat([longitude, latitude])
         .addTo(map);
     }
 
-    if (map && !searchLocationMarker) {
+    return () => {
       markerEl.current?.remove();
-    }
-  }, [map, searchLocationMarker, children, markerOptions]);
+    };
+  }, [map, children, markerOptions, latitude, longitude]);
 
   return (
     <Portal.Root container={markerElInner.current}>{children}</Portal.Root>

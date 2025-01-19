@@ -356,11 +356,8 @@ export function Map({
             return (
               <LocationMarker
                 key={cluster.id}
-                searchLocationMarker={{
-                  latitude,
-                  longitude,
-                  icon: "city",
-                }}
+                latitude={latitude}
+                longitude={longitude}
               >
                 <Cluster
                   onClick={() => {
@@ -384,11 +381,8 @@ export function Map({
           return (
             <LocationMarker
               key={cluster.properties.id}
-              searchLocationMarker={{
-                latitude,
-                longitude,
-                icon: "city",
-              }}
+              latitude={latitude}
+              longitude={longitude}
             >
               <motion.button
                 animate={{ opacity: 1, y: 0 }}
@@ -396,7 +390,7 @@ export function Map({
                 exit={{ opacity: 0, y: 20 }}
                 initial={{ opacity: 0, y: -20 }}
                 onClick={() => {
-                  isMobile && window.scrollTo({ top: 0, behavior: "smooth" });
+                  if (isMobile) window.scrollTo({ top: 0, behavior: "smooth" });
                   setQueryString({
                     key: "feature",
                     value: `marker_${cluster.properties.rowId}_${cluster.properties.pointLayerId}`,
