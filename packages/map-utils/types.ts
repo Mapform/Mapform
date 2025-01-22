@@ -59,6 +59,41 @@ export interface PlacesSearchResponse {
   }[];
 }
 
+export interface ReverseGeocodeResponse {
+  place_id: string;
+  name?: string;
+  country: string;
+  country_code: string;
+  region: string;
+  state: string;
+  city: string;
+  lon: number;
+  lat: number;
+  result_type:
+    | "unknown"
+    | "amenity"
+    | "building"
+    | "street"
+    | "suburb"
+    | "district"
+    | "postcode"
+    | "city"
+    | "county"
+    | "state"
+    | "country";
+  formatted: string;
+  address_line1: string;
+  address_line2: string;
+  category: string;
+  rank: {
+    importance: number;
+    confidence: number;
+    confidence_city_level: number;
+    match_type: string;
+  };
+  bbox?: [number, number, number, number];
+}
+
 // Simplified version of the response from the places search API
 export type SearchFeature = {
   title?: string;
