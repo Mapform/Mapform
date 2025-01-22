@@ -133,7 +133,7 @@ export function MapForm({
           title={currentPage.title}
         />
         <div
-          className={cn("fixed bottom-0 w-full", {
+          className={cn("fixed bottom-0 w-full md:absolute", {
             hidden: editable,
           })}
         >

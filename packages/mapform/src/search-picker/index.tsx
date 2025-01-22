@@ -15,9 +15,13 @@ import {
   Command,
 } from "@mapform/ui/components/command";
 import { Drawer } from "~/drawer";
-import { Button } from "@mapform/ui/components/button";
 import * as Portal from "@radix-ui/react-portal";
-import { LocationMarker } from "~/map";
+import { AnimatePresence, motion } from "motion/react";
+import {
+  Popover,
+  PopoverAnchor,
+  PopoverContent,
+} from "@mapform/ui/components/popover";
 
 export type MBMap = mapboxgl.Map;
 
@@ -35,13 +39,15 @@ export function SearchPicker({
   onOpenPinPicker,
 }: SearchPickerProps) {
   return (
-    <Drawer
-      open={open}
-      onClose={onClose}
-      className="max-md:fixed max-md:top-0 max-md:h-screen max-md:rounded-none"
-    >
-      <LocationSearch map={map} onOpenPinPicker={onOpenPinPicker} />
-    </Drawer>
+    <AnimatePresence>
+      <Drawer
+        open={open}
+        onClose={onClose}
+        className="max-md:fixed max-md:top-0 max-md:h-screen max-md:rounded-none"
+      >
+        <LocationSearch map={map} onOpenPinPicker={onOpenPinPicker} />
+      </Drawer>
+    </AnimatePresence>
   );
 }
 
@@ -53,6 +59,10 @@ export function LocationSearch({
   onOpenPinPicker?: () => void;
 }) {
   const [query, setQuery] = useState("");
+  const [selectedFeature, setSelectedFeature] = useState<
+    PlacesSearchResponse["features"][number] | null
+  >(null);
+  const [isMapMoving, setIsMapMoving] = useState(false);
   const markerEl = useRef<mapboxgl.Marker | null>(null);
   const markerElInner = useRef<HTMLDivElement>(document.createElement("div"));
 
@@ -83,9 +93,21 @@ export function LocationSearch({
       .addTo(map);
 
     map.on("move", () => {
-      console.log(`Current Map Center: ${map.getCenter()}`);
       markerEl.current?.setLngLat(map.getCenter());
     });
+
+    map.on("movestart", () => {
+      setIsMapMoving(true);
+    });
+
+    map.on("moveend", () => {
+      setIsMapMoving(false);
+    });
+
+    return () => {
+      markerEl.current?.remove();
+      setIsMapMoving(false);
+    };
   }, [map]);
 
   // Controls hot keys for selecting search results
@@ -96,24 +118,24 @@ export function LocationSearch({
       e: KeyboardEvent,
     ) => {
       if (e.key === key.toString() && (e.metaKey || e.ctrlKey)) {
-        const bbox = feature.bbox;
-
-        if (!bbox || !feature.properties) {
-          return;
-        }
-
         e.preventDefault();
         e.stopPropagation();
 
-        map.fitBounds(
-          [
-            [bbox[0], bbox[1]],
-            [bbox[2], bbox[3]],
-          ],
-          {
-            duration: 0,
-          },
-        );
+        if (!feature.bbox || !feature.properties) {
+          return;
+        }
+
+        map
+          .fitBounds(
+            [
+              [feature.bbox[0], feature.bbox[1]],
+              [feature.bbox[2], feature.bbox[3]],
+            ],
+            {
+              duration: 0,
+            },
+          )
+          .setCenter([feature.properties.lon, feature.properties.lat]);
 
         // setSearchLocation({
         //   title: feature.properties.name ?? feature.properties.address_line1,
@@ -194,23 +216,22 @@ export function LocationSearch({
                     return;
                   }
 
-                  map.fitBounds(
-                    [
-                      [feature.bbox[0], feature.bbox[1]],
-                      [feature.bbox[2], feature.bbox[3]],
-                    ],
-                    {
-                      duration: 0,
-                    },
-                  );
+                  map
+                    .fitBounds(
+                      [
+                        [feature.bbox[0], feature.bbox[1]],
+                        [feature.bbox[2], feature.bbox[3]],
+                      ],
+                      {
+                        duration: 0,
+                      },
+                    )
+                    .setCenter([
+                      feature.properties.lon,
+                      feature.properties.lat,
+                    ]);
 
-                  // setSearchLocation({
-                  //   title:
-                  //     feature.properties.name ?? feature.properties.address_line1,
-                  //   latitude: feature.properties.lat,
-                  //   longitude: feature.properties.lon,
-                  //   icon: "unknown",
-                  // });
+                  setSelectedFeature(feature);
                 }}
               >
                 <span className="truncate pr-2">
@@ -242,19 +263,53 @@ export function LocationSearch({
           placeholder="Search for places..."
           value={query}
         />
-        <Button
+        {/* <Button
           onClick={onOpenPinPicker ? () => onOpenPinPicker() : undefined}
           type="button"
         >
           Select on map
-        </Button>
+        </Button> */}
         {searchResultsList}
       </Command>
       <Portal.Root container={markerElInner.current}>
-        <div className="flex -translate-y-1/2 flex-col items-center">
-          <div className="z-10 size-4 rounded-full border-4 border-black bg-white" />
-          <div className="-mt-1.5 h-8 w-[5px] bg-black" />
-        </div>
+        <Popover open={!isMapMoving}>
+          <PopoverAnchor>
+            <motion.div
+              animate={{
+                opacity: 1,
+              }}
+              className="flex -translate-y-1/2 flex-col items-center"
+              key="pin"
+              initial={{ opacity: 0 }}
+              exit={{ opacity: 0 }}
+            >
+              <div className="z-10 size-4 rounded-full border-4 border-black bg-white" />
+              <div className="-mt-1.5 h-8 w-[5px] bg-black" />
+            </motion.div>
+          </PopoverAnchor>
+          <PopoverContent
+            className={cn({ "w-[200px]": !selectedFeature })}
+            sideOffset={32}
+            side="top"
+          >
+            <div className="p-2">
+              {selectedFeature ? (
+                <div className="">
+                  <div className="text-lg font-semibold">
+                    {selectedFeature.properties?.name ??
+                      selectedFeature.properties?.address_line1}
+                  </div>
+                  <div className="text-muted-foreground">
+                    {selectedFeature.properties?.address_line2}
+                  </div>
+                  <div className=""></div>
+                </div>
+              ) : (
+                <div className="text-center">Drag map or search</div>
+              )}
+            </div>
+          </PopoverContent>
+        </Popover>
       </Portal.Root>
     </>
   );

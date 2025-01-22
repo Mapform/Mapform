@@ -158,9 +158,14 @@ export function Map({
         bearing: initialViewState.bearing,
         maxZoom: 20,
         logoPosition: "bottom-right",
-        scrollZoom: !isMobile,
+        scrollZoom: isMobile
+          ? false
+          : {
+              around: "center",
+            },
         // We override the internal resize observer because we are using our own
         trackResize: false,
+
         // fitBoundsOptions: {
         //   padding: { top: 10, bottom: 25, left: 800, right: 5 },
         // },
