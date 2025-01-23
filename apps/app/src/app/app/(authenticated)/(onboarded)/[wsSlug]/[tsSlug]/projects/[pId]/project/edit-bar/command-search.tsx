@@ -9,10 +9,7 @@ import {
 } from "@mapform/ui/components/command";
 import { useQuery } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
-import type {
-  SearchFeature,
-  PlacesSearchResponse,
-} from "@mapform/map-utils/types";
+import type { SearchFeature, GeoapifyPlace } from "@mapform/map-utils/types";
 import { useDebounce } from "@mapform/lib/hooks/use-debounce";
 
 interface CommandSearchProps {
@@ -80,7 +77,7 @@ function SearchResults({
   useEffect(() => {
     const down = (
       key: string,
-      feature: PlacesSearchResponse["features"][number],
+      feature: GeoapifyPlace["features"][number],
       e: KeyboardEvent,
     ) => {
       if (e.key === key.toString() && (e.metaKey || e.ctrlKey)) {
@@ -239,5 +236,5 @@ async function fetchPlaces(
 
   const json = await response.json();
 
-  return json.data as PlacesSearchResponse;
+  return json.data as GeoapifyPlace;
 }

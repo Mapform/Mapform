@@ -1,6 +1,6 @@
 "use client";
 
-import type { PlacesSearchResponse } from "@mapform/map-utils/types";
+import type { GeoapifyPlace } from "@mapform/map-utils/types";
 import { useEffect, useMemo, useRef, useState } from "react";
 import mapboxgl from "mapbox-gl";
 import { useQuery } from "@tanstack/react-query";
@@ -53,14 +53,13 @@ export function SearchPicker({
 
 export function LocationSearch({
   map,
-  onOpenPinPicker,
 }: {
   map: MBMap;
   onOpenPinPicker?: () => void;
 }) {
   const [query, setQuery] = useState("");
   const [selectedFeature, setSelectedFeature] = useState<
-    PlacesSearchResponse["features"][number] | null
+    GeoapifyPlace["features"][number] | null
   >(null);
   const [isMapMoving, setIsMapMoving] = useState(false);
   const markerEl = useRef<mapboxgl.Marker | null>(null);
@@ -68,19 +67,48 @@ export function LocationSearch({
 
   const debouncedSearchQuery = useDebounce(query, 200);
 
-  const enabled = !!debouncedSearchQuery;
+  const reverseGeocode = async ({ lat, lng }: { lat: number; lng: number }) => {
+    const response = await fetch(
+      `/api/places/reverse-geocode?lat=${lat}&lng=${lng}`,
+    );
 
-  const { data, isFetching } = useQuery({
-    enabled,
+    if (!response.ok) {
+      throw new Error(`Response status: ${response.status}`);
+    }
+
+    const json = await response.json();
+    const result = json.data as GeoapifyPlace;
+    const firstFeature = result.features[0];
+
+    if (firstFeature) {
+      setSelectedFeature(firstFeature);
+    }
+
+    return result;
+  };
+
+  const { data: searchResults, isFetching } = useQuery({
+    enabled: !!debouncedSearchQuery,
     queryKey: ["search", debouncedSearchQuery],
     queryFn: () =>
-      fetchPlaces(debouncedSearchQuery, {
+      searchPlaces(debouncedSearchQuery, {
         bounds: map.getBounds().toArray().flat() as [
           number,
           number,
           number,
           number,
         ],
+      }),
+    placeholderData: (prev) => prev,
+  });
+
+  const { isFetching: isFetchingRGResults } = useQuery({
+    enabled: !isMapMoving,
+    queryKey: ["reverse-geocode", map.getCenter().lat, map.getCenter().lng],
+    queryFn: () =>
+      reverseGeocode({
+        lat: map.getCenter().lat,
+        lng: map.getCenter().lng,
       }),
     placeholderData: (prev) => prev,
   });
@@ -114,7 +142,7 @@ export function LocationSearch({
   useEffect(() => {
     const down = (
       key: string,
-      feature: PlacesSearchResponse["features"][number],
+      feature: GeoapifyPlace["features"][number],
       e: KeyboardEvent,
     ) => {
       if (e.key === key.toString() && (e.metaKey || e.ctrlKey)) {
@@ -136,17 +164,10 @@ export function LocationSearch({
             },
           )
           .setCenter([feature.properties.lon, feature.properties.lat]);
-
-        // setSearchLocation({
-        //   title: feature.properties.name ?? feature.properties.address_line1,
-        //   latitude: feature.properties.lat,
-        //   longitude: feature.properties.lon,
-        //   icon: "unknown",
-        // });
       }
     };
 
-    data?.features.forEach((feature, i) => {
+    searchResults?.features.forEach((feature, i) => {
       const key = i + 1;
 
       if (key <= 5) {
@@ -159,7 +180,7 @@ export function LocationSearch({
     });
 
     return () => {
-      data?.features.forEach((feature, i) => {
+      searchResults?.features.forEach((feature, i) => {
         const key = i + 1;
 
         if (i <= 5) {
@@ -171,11 +192,11 @@ export function LocationSearch({
         }
       });
     };
-  }, [data?.features, map]);
+  }, [searchResults?.features, map]);
 
   // Only show unique features with properties and bbox
   const features =
-    data?.features.filter(
+    searchResults?.features.filter(
       (f, i, self) =>
         f.properties &&
         f.bbox &&
@@ -186,7 +207,7 @@ export function LocationSearch({
     ) ?? [];
 
   const searchResultsList = useMemo(() => {
-    if (!enabled) return null;
+    if (!debouncedSearchQuery) return null;
 
     return (
       <CommandList className={cn(isFetching && "animate-pulse")}>
@@ -210,8 +231,6 @@ export function LocationSearch({
               <CommandItem
                 key={feature.properties?.place_id}
                 onSelect={() => {
-                  // setOpenSearch(false);
-
                   if (!feature.bbox || !feature.properties) {
                     return;
                   }
@@ -250,7 +269,7 @@ export function LocationSearch({
         </CommandGroup>
       </CommandList>
     );
-  }, [enabled, features, isFetching, map]);
+  }, [debouncedSearchQuery, features, isFetching, map]);
 
   return (
     <>
@@ -263,12 +282,6 @@ export function LocationSearch({
           placeholder="Search for places..."
           value={query}
         />
-        {/* <Button
-          onClick={onOpenPinPicker ? () => onOpenPinPicker() : undefined}
-          type="button"
-        >
-          Select on map
-        </Button> */}
         {searchResultsList}
       </Command>
       <Portal.Root container={markerElInner.current}>
@@ -315,7 +328,7 @@ export function LocationSearch({
   );
 }
 
-async function fetchPlaces(
+async function searchPlaces(
   query?: string,
   { bounds }: { bounds?: [number, number, number, number] } = {},
 ) {
@@ -333,5 +346,5 @@ async function fetchPlaces(
 
   const json = await response.json();
 
-  return json.data as PlacesSearchResponse;
+  return json.data as GeoapifyPlace;
 }
