@@ -21,9 +21,6 @@ export function LocationMarker(props: LocationMarkerProps) {
   return <LocationMarkerWithMap {...props} map={map} />;
 }
 
-/**
- * Update searchLocationMarker marker
- */
 export function LocationMarkerWithMap({
   longitude,
   latitude,

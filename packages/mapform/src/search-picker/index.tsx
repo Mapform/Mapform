@@ -2,7 +2,7 @@
 
 import type { GeoapifyPlace } from "@mapform/map-utils/types";
 import { useEffect, useMemo, useRef, useState } from "react";
-import mapboxgl from "mapbox-gl";
+import mapboxgl, { Marker } from "mapbox-gl";
 import { useQuery } from "@tanstack/react-query";
 import { useDebounce } from "@mapform/lib/hooks/use-debounce";
 import { cn } from "@mapform/lib/classnames";
@@ -62,8 +62,6 @@ export function LocationSearch({
     GeoapifyPlace["features"][number] | null
   >(null);
   const [isMapMoving, setIsMapMoving] = useState(false);
-  const markerEl = useRef<mapboxgl.Marker | null>(null);
-  const markerElInner = useRef<HTMLDivElement>(document.createElement("div"));
 
   const debouncedSearchQuery = useDebounce(query, 200);
 
@@ -113,15 +111,13 @@ export function LocationSearch({
     placeholderData: (prev) => prev,
   });
 
-  useEffect(() => {
+  const marker = useMemo(() => {
     const currentLocation = map.getCenter();
-    // const marker = new mapboxgl.Marker().setLngLat([0, 0]).addTo(map);
-    markerEl.current = new mapboxgl.Marker(markerElInner.current)
-      .setLngLat([currentLocation.lng, currentLocation.lat])
-      .addTo(map);
+    const el = document.createElement("div");
+    const mk = new Marker(el).setLngLat(currentLocation);
 
     map.on("move", () => {
-      markerEl.current?.setLngLat(map.getCenter());
+      mk.setLngLat(map.getCenter());
     });
 
     map.on("movestart", () => {
@@ -132,11 +128,17 @@ export function LocationSearch({
       setIsMapMoving(false);
     });
 
-    return () => {
-      markerEl.current?.remove();
-      setIsMapMoving(false);
-    };
+    return mk;
   }, [map]);
+
+  useEffect(() => {
+    marker.addTo(map);
+
+    return () => {
+      setIsMapMoving(false);
+      marker.remove();
+    };
+  }, []);
 
   // Controls hot keys for selecting search results
   useEffect(() => {
@@ -284,7 +286,7 @@ export function LocationSearch({
         />
         {searchResultsList}
       </Command>
-      <Portal.Root container={markerElInner.current}>
+      <Portal.Root container={marker.getElement()}>
         <Popover open={!isMapMoving}>
           <PopoverAnchor>
             <motion.div
@@ -315,7 +317,6 @@ export function LocationSearch({
                   <div className="text-muted-foreground">
                     {selectedFeature.properties?.address_line2}
                   </div>
-                  <div className=""></div>
                 </div>
               ) : (
                 <div className="text-center">Drag map or search</div>
