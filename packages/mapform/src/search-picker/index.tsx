@@ -1,8 +1,8 @@
 "use client";
 
 import type { GeoapifyPlace } from "@mapform/map-utils/types";
-import { useEffect, useMemo, useRef, useState } from "react";
-import mapboxgl, { Marker } from "mapbox-gl";
+import { useEffect, useMemo, useState } from "react";
+import { Marker, type Map as MBMap } from "mapbox-gl";
 import { useQuery } from "@tanstack/react-query";
 import { useDebounce } from "@mapform/lib/hooks/use-debounce";
 import { cn } from "@mapform/lib/classnames";
@@ -22,8 +22,6 @@ import {
   PopoverAnchor,
   PopoverContent,
 } from "@mapform/ui/components/popover";
-
-export type MBMap = mapboxgl.Map;
 
 interface SearchPickerProps {
   map: MBMap;
