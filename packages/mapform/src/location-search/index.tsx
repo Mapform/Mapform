@@ -2,7 +2,7 @@
 
 import type { GeoapifyPlace } from "@mapform/map-utils/types";
 import { useEffect, useMemo, useState } from "react";
-import { Marker, type Map as MBMap } from "mapbox-gl";
+import { Marker } from "mapbox-gl";
 import { useQuery } from "@tanstack/react-query";
 import { useDebounce } from "@mapform/lib/hooks/use-debounce";
 import { cn } from "@mapform/lib/classnames";
@@ -14,7 +14,6 @@ import {
   CommandInput,
   Command,
 } from "@mapform/ui/components/command";
-import { Drawer } from "~/drawer";
 import * as Portal from "@radix-ui/react-portal";
 import { motion } from "motion/react";
 import {
@@ -22,38 +21,19 @@ import {
   PopoverAnchor,
   PopoverContent,
 } from "@mapform/ui/components/popover";
+import { useMapform } from "~/context";
 
-interface SearchPickerProps {
-  map: MBMap;
-  open: boolean;
-  onClose: () => void;
-  onOpenPinPicker?: () => void;
+export function LocationSearch() {
+  const { map } = useMapform();
+
+  if (!map) {
+    return null;
+  }
+
+  return <LocationSearchWithMap map={map} />;
 }
 
-export function SearchPicker({
-  map,
-  open,
-  onClose,
-  onOpenPinPicker,
-}: SearchPickerProps) {
-  return (
-    <Drawer
-      open={open}
-      onClose={onClose}
-      positionDesktop="absolute"
-      // positionMobile="fixed"
-    >
-      <LocationSearch map={map} onOpenPinPicker={onOpenPinPicker} />
-    </Drawer>
-  );
-}
-
-export function LocationSearch({
-  map,
-}: {
-  map: MBMap;
-  onOpenPinPicker?: () => void;
-}) {
+export function LocationSearchWithMap({ map }: { map: mapboxgl.Map }) {
   const [query, setQuery] = useState("");
   const [selectedFeature, setSelectedFeature] = useState<
     GeoapifyPlace["features"][number] | null
