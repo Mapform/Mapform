@@ -231,16 +231,18 @@ export function LocationSearchWithMap({ map }: { map: mapboxgl.Map }) {
                   setSelectedFeature(feature);
                 }}
               >
-                <span className="truncate pr-2">
-                  <span className="font-medium">
+                <span className="truncate sm:pr-2">
+                  <div className="text-sm font-medium">
                     {feature.properties?.name ??
                       feature.properties?.address_line1}
-                  </span>
-                  <span className="text-muted-foreground ml-2 text-sm">
+                  </div>
+                  <span className="text-muted-foreground">
                     {feature.properties?.address_line2}
                   </span>
                 </span>
-                <CommandShortcut>⌘{i + 1}</CommandShortcut>
+                <CommandShortcut className="hidden sm:block">
+                  ⌘{i + 1}
+                </CommandShortcut>
               </CommandItem>
             );
           })}
