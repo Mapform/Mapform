@@ -1,46 +1,50 @@
 import type mapboxgl from "mapbox-gl";
 import { Marker } from "mapbox-gl";
-import { useRef, useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import * as Portal from "@radix-ui/react-portal";
 import { useMapform } from "../context";
 
-/**
- * Update searchLocationMarker marker
- */
-export function LocationMarker({
-  longitude,
-  latitude,
-  markerOptions,
-  children,
-}: {
+interface LocationMarkerProps {
   longitude: number;
   latitude: number;
   markerOptions?: mapboxgl.MarkerOptions;
   children: React.ReactNode;
-}) {
+}
+
+export function LocationMarker(props: LocationMarkerProps) {
   const { map } = useMapform();
-  const markerEl = useRef<mapboxgl.Marker | null>(null);
-  const markerElInner = useRef<HTMLDivElement>(document.createElement("div"));
+
+  if (!map) {
+    return null;
+  }
+
+  return <LocationMarkerWithMap {...props} map={map} />;
+}
+
+/**
+ * Update searchLocationMarker marker
+ */
+export function LocationMarkerWithMap({
+  longitude,
+  latitude,
+  markerOptions,
+  children,
+  map,
+}: LocationMarkerProps & { map: mapboxgl.Map }) {
+  const marker = useMemo(() => {
+    const el = document.createElement("div");
+    const mk = new Marker(el, markerOptions).setLngLat([longitude, latitude]);
+
+    return mk;
+  }, [markerOptions, latitude, longitude]);
 
   useEffect(() => {
-    const currentLngLat = markerEl.current?.getLngLat();
-    if (
-      map &&
-      currentLngLat?.lat !== latitude &&
-      currentLngLat?.lng !== longitude
-    ) {
-      markerEl.current?.remove();
-      markerEl.current = new Marker(markerElInner.current, markerOptions)
-        .setLngLat([longitude, latitude])
-        .addTo(map);
-    }
+    marker.addTo(map);
 
     return () => {
-      markerEl.current?.remove();
+      marker.remove();
     };
-  }, [map, children, markerOptions, latitude, longitude]);
+  }, []);
 
-  return (
-    <Portal.Root container={markerElInner.current}>{children}</Portal.Root>
-  );
+  return <Portal.Root container={marker.getElement()}>{children}</Portal.Root>;
 }

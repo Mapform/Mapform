@@ -215,6 +215,12 @@ export function Map({
     }
   }, [map, mapContainerBounds]);
 
+  useEffect(() => {
+    return () => {
+      console.log("UNMOUNT 1");
+    };
+  }, []);
+
   /**
    * Bind event handlers
    */
