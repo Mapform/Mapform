@@ -16,7 +16,7 @@ import {
 } from "@mapform/ui/components/command";
 import { Drawer } from "~/drawer";
 import * as Portal from "@radix-ui/react-portal";
-import { AnimatePresence, motion } from "motion/react";
+import { motion } from "motion/react";
 import {
   Popover,
   PopoverAnchor,
@@ -37,11 +37,14 @@ export function SearchPicker({
   onOpenPinPicker,
 }: SearchPickerProps) {
   return (
-    <AnimatePresence>
-      <Drawer open={open} onClose={onClose} positionMobile="fixed">
-        <LocationSearch map={map} onOpenPinPicker={onOpenPinPicker} />
-      </Drawer>
-    </AnimatePresence>
+    <Drawer
+      open={open}
+      onClose={onClose}
+      positionDesktop="absolute"
+      // positionMobile="fixed"
+    >
+      <LocationSearch map={map} onOpenPinPicker={onOpenPinPicker} />
+    </Drawer>
   );
 }
 

@@ -63,10 +63,7 @@ export function Drawer({
           initial="closed"
           exit="closed"
           transition={{
-            default: {
-              ease: "linear",
-            },
-            duration: 0.2,
+            duration: 2,
           }}
           variants={{
             open: {
