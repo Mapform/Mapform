@@ -274,6 +274,7 @@ export function MapForm({
               <ChevronsRightIcon className="size-5" />
             </Button>
             <Drawer
+              className="max-sm:min-h-[200px]"
               onClose={
                 !isMobile
                   ? () => {
@@ -284,10 +285,12 @@ export function MapForm({
               open={
                 drawerOpen && !selectedFeature && !isSelectingPinBlockLocation
               }
+              positionDesktop="absolute"
             >
               {pageContent}
             </Drawer>
             <Drawer
+              className="max-sm:min-h-[200px]"
               onClose={() => {
                 window.scrollTo({ top: 0, behavior: "smooth" });
                 setQueryString({
@@ -296,7 +299,8 @@ export function MapForm({
                 });
               }}
               open={Boolean(selectedFeature)}
-              withPadding={editable}
+              isEditing={editable}
+              positionDesktop="absolute"
             >
               {selectedFeatureContent}
             </Drawer>
