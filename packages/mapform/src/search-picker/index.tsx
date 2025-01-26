@@ -42,6 +42,7 @@ export function SearchPicker({
         open={open}
         onClose={onClose}
         className="max-md:fixed max-md:top-0 max-md:h-screen max-md:rounded-none"
+        positionMobile="fixed"
       >
         <LocationSearch map={map} onOpenPinPicker={onOpenPinPicker} />
       </Drawer>
