@@ -1,7 +1,5 @@
 import { Button } from "@mapform/ui/components/button";
 import { XIcon } from "lucide-react";
-import { DesktopDrawer } from "./desktop-drawer";
-import { MobileDrawer } from "./mobile-drawer";
 import { AnimatePresence, motion } from "motion/react";
 import { cn } from "@mapform/lib/classnames";
 
@@ -29,29 +27,21 @@ export function Drawer({
     <AnimatePresence mode="popLayout">
       {open ? (
         <motion.div
-          animate={{
-            // y: 0,
-            opacity: 1,
-            transition: {
-              default: {
-                type: "spring",
-                bounce: 0.2,
-                duration: 1,
-              },
-              opacity: { ease: "linear" },
-            },
-          }}
           className={cn(
-            // DESKTOP (BASE) STYLES
-            "bg-background prose group z-40 flex h-full w-[360px] flex-col shadow-lg outline-none",
+            // BASE STYLES
+            "bg-background prose group z-40 flex h-full flex-col shadow-lg outline-none",
+
+            // DESKTOP STYLES
+            "sm:w-[360px] sm:[--x-from:-100%] sm:[--x-to:0]",
             {
-              "absolute bottom-0 left-0": positionDesktop === "absolute",
-              "fixed bottom-0 left-0": positionDesktop === "fixed",
-              relative: positionDesktop === "relative",
+              "sm:absolute sm:bottom-0 sm:left-0":
+                positionDesktop === "absolute",
+              "sm:fixed sm:bottom-0 sm:left-0": positionDesktop === "fixed",
+              "sm:relative": positionDesktop === "relative",
             },
 
             // MOBILE STYLES
-            "max-sm:w-full max-sm:overflow-y-auto max-sm:rounded-t-xl max-sm:shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]",
+            "max-sm:w-full max-sm:overflow-y-auto max-sm:rounded-t-xl max-sm:shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] max-sm:[--y-from:200px] max-sm:[--y-to:0]",
             {
               "max-sm:absolute max-sm:bottom-0 max-sm:left-0":
                 positionMobile === "absolute",
@@ -68,9 +58,28 @@ export function Drawer({
 
             className,
           )}
-          // exit={{ y: 200, opacity: 0 }}
-          // initial={{ y: 200, opacity: 0 }}
           layoutScroll
+          animate="open"
+          initial="closed"
+          exit="closed"
+          transition={{
+            default: {
+              ease: "linear",
+            },
+            duration: 0.2,
+          }}
+          variants={{
+            open: {
+              opacity: 1,
+              y: "var(--y-to, 0)",
+              x: "var(--x-to, 0)",
+            },
+            closed: {
+              opacity: 0,
+              y: "var(--y-from, 0)",
+              x: "var(--x-from, 0)",
+            },
+          }}
         >
           {onClose ? (
             <Button
