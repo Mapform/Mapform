@@ -22,6 +22,7 @@ import {
   PopoverContent,
 } from "@mapform/ui/components/popover";
 import { useMapform } from "~/context";
+import { Button } from "@mapform/ui/components/button";
 
 export function LocationSearch() {
   const { map } = useMapform();
@@ -186,8 +187,6 @@ export function LocationSearchWithMap({ map }: { map: mapboxgl.Map }) {
     ) ?? [];
 
   const searchResultsList = useMemo(() => {
-    if (!debouncedSearchQuery) return null;
-
     return (
       <CommandList className={cn(isFetching && "animate-pulse")}>
         {isFetching && features.length === 0 && (
@@ -248,11 +247,11 @@ export function LocationSearchWithMap({ map }: { map: mapboxgl.Map }) {
         </CommandGroup>
       </CommandList>
     );
-  }, [debouncedSearchQuery, features, isFetching, map]);
+  }, [features, isFetching, map]);
 
   return (
     <>
-      <Command shouldFilter={false}>
+      <Command className="flex min-h-[200px] flex-col" shouldFilter={false}>
         <CommandInput
           className="h-12 border-none focus:ring-0"
           onValueChange={(search) => {
@@ -262,6 +261,11 @@ export function LocationSearchWithMap({ map }: { map: mapboxgl.Map }) {
           value={query}
         />
         {searchResultsList}
+        <div className="mt-auto p-2">
+          <Button className="w-full" disabled={!selectedFeature} type="button">
+            Confirm
+          </Button>
+        </div>
       </Command>
       <Portal.Root container={marker.getElement()}>
         <Popover open={!isMapMoving}>
