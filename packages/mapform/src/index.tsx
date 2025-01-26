@@ -132,44 +132,6 @@ export function MapForm({
           }}
           title={currentPage.title}
         />
-        <div
-          className={cn("fixed bottom-0 w-full md:absolute", {
-            hidden: editable,
-          })}
-        >
-          <div className="px-2">
-            <div className="relative flex h-[50px] w-full items-center justify-between bg-white">
-              {onPrev ? (
-                <Button
-                  className="absolute left-0"
-                  disabled={editable}
-                  onClick={onPrev}
-                  type="button"
-                  variant="ghost"
-                >
-                  <ArrowLeftIcon className="-ml-1 mr-1 size-4" />
-                  Back
-                </Button>
-              ) : null}
-              <p className="mx-auto text-xs text-gray-500">
-                Made with{" "}
-                <a className="text-gray-500" href="https://alpha.mapform.co">
-                  Mapform
-                </a>
-              </p>
-              {onStepSubmit && currentPage.pageType === "page" ? (
-                <Button
-                  className="absolute right-0"
-                  disabled={editable}
-                  type="submit"
-                >
-                  {nextPage?.pageType === "page_ending" ? "Submit" : "Next"}
-                  <ArrowRightIcon className="-mr-1 ml-1 size-4" />
-                </Button>
-              ) : null}
-            </div>
-          </div>
-        </div>
       </>
     ),
     [
@@ -177,17 +139,63 @@ export function MapForm({
       currentPage.icon,
       currentPage.id,
       currentPage.title,
-      currentPage.pageType,
       editable,
       includeFormBlocks,
       onPrev,
-      onStepSubmit,
-      nextPage?.pageType,
       onDescriptionChange,
       onIconChange,
       onTitleChange,
     ],
   );
+
+  const controls = useMemo(() => {
+    return (
+      <div
+        className={cn("fixed bottom-0 z-50 w-full bg-white md:absolute", {
+          hidden: editable,
+        })}
+      >
+        <div className="px-2">
+          <div className="relative flex h-[50px] w-full items-center justify-between">
+            {onPrev ? (
+              <Button
+                className="absolute left-0"
+                disabled={editable}
+                onClick={onPrev}
+                type="button"
+                variant="ghost"
+              >
+                <ArrowLeftIcon className="-ml-1 mr-1 size-4" />
+                Back
+              </Button>
+            ) : null}
+            <p className="mx-auto text-xs text-gray-500">
+              Made with{" "}
+              <a className="text-gray-500" href="https://alpha.mapform.co">
+                Mapform
+              </a>
+            </p>
+            {onStepSubmit && currentPage.pageType === "page" ? (
+              <Button
+                className="absolute right-0"
+                disabled={editable}
+                type="submit"
+              >
+                {nextPage?.pageType === "page_ending" ? "Submit" : "Next"}
+                <ArrowRightIcon className="-mr-1 ml-1 size-4" />
+              </Button>
+            ) : null}
+          </div>
+        </div>
+      </div>
+    );
+  }, [
+    currentPage.pageType,
+    editable,
+    nextPage?.pageType,
+    onPrev,
+    onStepSubmit,
+  ]);
 
   const selectedFeatureContent = useMemo(() => {
     if (!selectedFeature) {
@@ -288,7 +296,9 @@ export function MapForm({
               positionDesktop="absolute"
             >
               {pageContent}
+              {!isMobile && controls}
             </Drawer>
+            {isMobile && !isSelectingPinBlockLocation && controls}
             <Drawer
               className="max-sm:min-h-[200px]"
               onClose={() => {

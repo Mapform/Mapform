@@ -38,12 +38,7 @@ export function SearchPicker({
 }: SearchPickerProps) {
   return (
     <AnimatePresence>
-      <Drawer
-        open={open}
-        onClose={onClose}
-        className="max-md:fixed max-md:top-0 max-md:h-screen max-md:rounded-none"
-        positionMobile="fixed"
-      >
+      <Drawer open={open} onClose={onClose} positionMobile="fixed">
         <LocationSearch map={map} onOpenPinPicker={onOpenPinPicker} />
       </Drawer>
     </AnimatePresence>

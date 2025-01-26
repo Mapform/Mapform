@@ -5,8 +5,8 @@ import { cn } from "@mapform/lib/classnames";
 
 interface DrawerProps {
   open: boolean;
-  // withPadding?: boolean;
   children: React.ReactNode;
+  // This is a workaround to render the bottom bar since position fixed doesn't work
   positionDesktop?: "relative" | "fixed" | "absolute";
   positionMobile?: "relative" | "fixed" | "absolute";
   isEditing?: boolean;
@@ -29,10 +29,10 @@ export function Drawer({
         <motion.div
           className={cn(
             // BASE STYLES
-            "bg-background prose group z-40 flex h-full flex-col shadow-lg outline-none",
+            "bg-background prose group z-40 flex flex-col shadow-lg outline-none",
 
             // DESKTOP STYLES
-            "sm:w-[360px] sm:[--x-from:-100%] sm:[--x-to:0]",
+            "sm:h-full sm:w-[360px] sm:[--x-from:-100%] sm:[--x-to:0]",
             {
               "sm:absolute sm:bottom-0 sm:left-0":
                 positionDesktop === "absolute",
