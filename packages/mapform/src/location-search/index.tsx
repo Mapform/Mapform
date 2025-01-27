@@ -1,9 +1,9 @@
 "use client";
 
 import type { GeoapifyPlace } from "@mapform/map-utils/types";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Marker } from "mapbox-gl";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useDebounce } from "@mapform/lib/hooks/use-debounce";
 import { cn } from "@mapform/lib/classnames";
 import {
@@ -35,7 +35,9 @@ export function LocationSearch() {
 }
 
 export function LocationSearchWithMap({ map }: { map: mapboxgl.Map }) {
+  const inputRef = useRef<HTMLInputElement>(null);
   const [query, setQuery] = useState("");
+  const queryClient = useQueryClient();
   const [selectedFeature, setSelectedFeature] = useState<
     GeoapifyPlace["features"][number] | null
   >(null);
@@ -111,6 +113,9 @@ export function LocationSearchWithMap({ map }: { map: mapboxgl.Map }) {
 
   useEffect(() => {
     marker.addTo(map);
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 100);
 
     return () => {
       setIsMapMoving(false);
@@ -187,6 +192,10 @@ export function LocationSearchWithMap({ map }: { map: mapboxgl.Map }) {
     ) ?? [];
 
   const searchResultsList = useMemo(() => {
+    if (!searchResults) {
+      return null;
+    }
+
     return (
       <CommandList className={cn(isFetching && "animate-pulse")}>
         {isFetching && features.length === 0 && (
@@ -249,20 +258,49 @@ export function LocationSearchWithMap({ map }: { map: mapboxgl.Map }) {
         </CommandGroup>
       </CommandList>
     );
-  }, [features, isFetching, map]);
+  }, [features, isFetching, map, searchResults]);
 
   return (
     <>
       <Command className="flex min-h-[200px] flex-col" shouldFilter={false}>
-        <CommandInput
-          className="h-12 border-none focus:ring-0"
-          onValueChange={(search) => {
-            setQuery(search);
-          }}
-          placeholder="Search for places..."
-          value={query}
-        />
-        {searchResultsList}
+        <div
+          className="peer relative"
+          onClick={() => inputRef.current?.focus()}
+        >
+          <CommandInput
+            className="peer h-12 border-none focus:ring-0"
+            onValueChange={(search) => {
+              setQuery(search);
+            }}
+            placeholder="Search for places..."
+            ref={inputRef}
+            value={query}
+          />
+          <div
+            className={cn(
+              "absolute right-10 top-0 flex h-full flex-col justify-center transition-opacity",
+              {
+                "pointer-events-none opacity-0": !query,
+              },
+            )}
+          >
+            <Button
+              className="hover:bg-accent bg-white"
+              onClick={() => {
+                queryClient.removeQueries({
+                  queryKey: ["search", query],
+                });
+                setQuery("");
+              }}
+              size="sm"
+              variant="ghost"
+              type="button"
+            >
+              Clear
+            </Button>
+          </div>
+        </div>
+        {query.length ? searchResultsList : null}
         <div className="mt-auto p-2">
           <Button className="w-full" disabled={!selectedFeature} type="button">
             Confirm

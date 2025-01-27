@@ -80,7 +80,7 @@ export function Drawer({
         >
           {onClose ? (
             <Button
-              className="absolute right-2 top-2"
+              className="absolute right-2 top-2 z-50"
               onClick={onClose}
               size="icon-sm"
               type="button"
