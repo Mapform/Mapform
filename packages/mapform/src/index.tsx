@@ -25,7 +25,7 @@ import { Map, LocationMarker } from "./map";
 import "./style.css";
 import { MapformProvider, useMapform, type MBMap } from "./context";
 import { Drawer } from "./drawer";
-import { LocationSearch } from "./location-search";
+import { LocationSearch, LocationSearchButton } from "./location-search";
 
 interface MapFormProps {
   editable?: boolean;
@@ -329,7 +329,15 @@ export function MapForm({
               positionDesktop="absolute"
               positionMobile="fixed"
             >
-              <LocationSearch />
+              <LocationSearch>
+                <LocationSearchButton
+                  onClick={(selectedFeature) => {
+                    console.log(9999, selectedFeature);
+                  }}
+                >
+                  Select Location
+                </LocationSearchButton>
+              </LocationSearch>
             </Drawer>
           </CustomBlockContext.Provider>
         </div>

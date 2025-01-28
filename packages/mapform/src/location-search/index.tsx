@@ -1,7 +1,14 @@
 "use client";
 
 import type { GeoapifyPlace } from "@mapform/map-utils/types";
-import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { Marker } from "mapbox-gl";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useDebounce } from "@mapform/lib/hooks/use-debounce";
@@ -22,20 +29,36 @@ import {
   PopoverContent,
 } from "@mapform/ui/components/popover";
 import { useMapform } from "~/context";
-import { Button } from "@mapform/ui/components/button";
+import { Button, type ButtonProps } from "@mapform/ui/components/button";
 import { Skeleton } from "@mapform/ui/components/skeleton";
 
-export function LocationSearch() {
+export function LocationSearch(props: { children?: React.ReactNode }) {
   const { map } = useMapform();
 
   if (!map) {
     return null;
   }
 
-  return <LocationSearchWithMap map={map} />;
+  return <LocationSearchWithMap map={map} {...props} />;
 }
 
-export function LocationSearchWithMap({ map }: { map: mapboxgl.Map }) {
+export interface LocationSearchContextProps {
+  selectedFeature: GeoapifyPlace["features"][number] | null;
+  isFetching: boolean;
+}
+
+export const LocationSearchContext = createContext<LocationSearchContextProps>(
+  {} as LocationSearchContextProps,
+);
+export const useLocationSearch = () => useContext(LocationSearchContext);
+
+export function LocationSearchWithMap({
+  map,
+  children,
+}: {
+  map: mapboxgl.Map;
+  children?: React.ReactNode;
+}) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [query, setQuery] = useState("");
   const queryClient = useQueryClient();
@@ -309,9 +332,14 @@ export function LocationSearchWithMap({ map }: { map: mapboxgl.Map }) {
         </div>
         {query.length ? searchResultsList : null}
         <div className="mt-auto p-2">
-          <Button className="w-full" disabled={!selectedFeature} type="button">
-            Confirm
-          </Button>
+          <LocationSearchContext.Provider
+            value={{
+              selectedFeature,
+              isFetching: isFetching || isFetchingRGResults,
+            }}
+          >
+            {children}
+          </LocationSearchContext.Provider>
         </div>
       </Command>
       <Portal.Root container={marker.getElement()}>
@@ -361,6 +389,26 @@ export function LocationSearchWithMap({ map }: { map: mapboxgl.Map }) {
         </Popover>
       </Portal.Root>
     </>
+  );
+}
+
+export function LocationSearchButton(
+  props: ButtonProps & {
+    onClick?: (
+      selectedFeatue: GeoapifyPlace["features"][number] | null,
+    ) => void;
+  },
+) {
+  const { selectedFeature, isFetching } = useLocationSearch();
+
+  return (
+    <Button
+      {...props}
+      className="w-full"
+      disabled={!selectedFeature || isFetching}
+      type="button"
+      onClick={() => props.onClick?.(selectedFeature)}
+    />
   );
 }
 
