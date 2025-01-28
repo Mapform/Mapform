@@ -23,6 +23,7 @@ import {
 } from "@mapform/ui/components/popover";
 import { useMapform } from "~/context";
 import { Button } from "@mapform/ui/components/button";
+import { Skeleton } from "@mapform/ui/components/skeleton";
 
 export function LocationSearch() {
   const { map } = useMapform();
@@ -41,6 +42,7 @@ export function LocationSearchWithMap({ map }: { map: mapboxgl.Map }) {
   const [selectedFeature, setSelectedFeature] = useState<
     GeoapifyPlace["features"][number] | null
   >(null);
+  const [hasMapMoved, setHasMapMoved] = useState(false);
   const [isMapMoving, setIsMapMoving] = useState(false);
 
   const debouncedSearchQuery = useDebounce(query, 200);
@@ -81,7 +83,7 @@ export function LocationSearchWithMap({ map }: { map: mapboxgl.Map }) {
   });
 
   const { isFetching: isFetchingRGResults } = useQuery({
-    enabled: !isMapMoving,
+    enabled: !isMapMoving && hasMapMoved,
     queryKey: ["reverse-geocode", map.getCenter().lat, map.getCenter().lng],
     queryFn: () =>
       reverseGeocode({
@@ -102,6 +104,7 @@ export function LocationSearchWithMap({ map }: { map: mapboxgl.Map }) {
 
     map.on("movestart", () => {
       setIsMapMoving(true);
+      setHasMapMoved(true);
     });
 
     map.on("moveend", () => {
@@ -324,12 +327,19 @@ export function LocationSearchWithMap({ map }: { map: mapboxgl.Map }) {
             </motion.div>
           </PopoverAnchor>
           <PopoverContent
-            className={cn({ "w-[200px]": !selectedFeature })}
+            className={cn({
+              "w-[200px]": !selectedFeature && !isFetchingRGResults,
+            })}
             sideOffset={32}
             side="top"
           >
             <div className="p-2">
-              {selectedFeature ? (
+              {isFetchingRGResults ? (
+                <>
+                  <Skeleton className="mb-2 h-8" />
+                  <Skeleton className="h-4" />
+                </>
+              ) : selectedFeature ? (
                 <div className="">
                   <div className="text-lg font-semibold">
                     {selectedFeature.properties?.name ??
