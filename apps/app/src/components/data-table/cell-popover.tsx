@@ -482,9 +482,20 @@ function PointInput({
       container: mapContainerRef.current ?? "",
       pitchWithRotate: false,
       dragRotate: false,
+      doubleClickZoom: false,
       scrollZoom: {
         around: "center",
       },
+    });
+
+    map.on("dblclick", () => {
+      // Prevent the default double-click zoom behavior
+      map.doubleClickZoom.disable();
+
+      // Zoom in by increasing the zoom level, preserving the clicked location
+      map.zoomTo(map.getZoom() + 1, {
+        duration: 300, // Optional: set the animation duration
+      });
     });
 
     map.on("move", () => {

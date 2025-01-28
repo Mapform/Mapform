@@ -102,12 +102,15 @@ export function LocationSearchWithMap({ map }: { map: mapboxgl.Map }) {
       mk.setLngLat(map.getCenter());
     });
 
-    map.on("movestart", () => {
+    map.on("dragstart", () => {
+      console.log(9999);
       setIsMapMoving(true);
       setHasMapMoved(true);
     });
 
-    map.on("moveend", () => {
+    // map.on("")
+
+    map.on("dragend", () => {
       setIsMapMoving(false);
     });
 

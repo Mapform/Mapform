@@ -164,11 +164,22 @@ export function Map({
               around: "center",
             },
         // We override the internal resize observer because we are using our own
+        doubleClickZoom: false,
         trackResize: false,
 
         // fitBoundsOptions: {
         //   padding: { top: 10, bottom: 25, left: 800, right: 5 },
         // },
+      });
+
+      m.on("dblclick", () => {
+        // Prevent the default double-click zoom behavior
+        m.doubleClickZoom.disable();
+
+        // Zoom in by increasing the zoom level, preserving the clicked location
+        m.zoomTo(m.getZoom() + 1, {
+          duration: 300, // Optional: set the animation duration
+        });
       });
 
       // Add zoom controls
