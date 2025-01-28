@@ -35,7 +35,7 @@ export default function Page() {
                 </Tooltip>
               </span>
               <div className="lg:max-w-[500px]">
-                <h1 className="text-foreground mt-4 text-4xl font-medium lg:text-7xl">
+                <h1 className="text-foreground mt-4 text-5xl font-medium lg:text-7xl">
                   The Workspace For Place.
                 </h1>
                 <p className="text-muted-foreground mb-10 mt-4 text-xl leading-8 sm:mb-10 sm:mt-6 sm:text-2xl">
