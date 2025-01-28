@@ -14,8 +14,10 @@ export interface CustomBlockContextProps {
     setLocation: React.Dispatch<
       React.SetStateAction<{ x: number; y: number } | null>
     >;
-    isSelectingLocation: boolean;
-    setIsSelectingLocation: React.Dispatch<React.SetStateAction<boolean>>;
+    isSelectingLocationFor: string | null;
+    setIsSelectingLocationFor: React.Dispatch<
+      React.SetStateAction<string | null>
+    >;
   };
 }
 

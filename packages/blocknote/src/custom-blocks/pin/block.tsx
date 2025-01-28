@@ -79,6 +79,9 @@ export const Pin = createReactBlockSpec(
       const currentLatitude = form.watch(`${block.id}.latitude`);
       const currentLongitude = form.watch(`${block.id}.longitude`);
 
+      console.log("currentLatitude", currentLatitude);
+      console.log("currentLongitude", currentLongitude);
+
       return (
         <div className="fiex mb-4 w-full flex-col space-y-2">
           <FormLabel className="flex justify-between text-base font-medium">
@@ -90,7 +93,7 @@ export const Pin = createReactBlockSpec(
           <Button
             className="relative w-full"
             onClick={() => {
-              pinBlock?.setIsSelectingLocation(true);
+              pinBlock?.setIsSelectingLocationFor(block.id);
 
               // setPrevViewState(viewState);
 

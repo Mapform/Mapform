@@ -393,7 +393,7 @@ export function LocationSearchWithMap({
 }
 
 export function LocationSearchButton(
-  props: ButtonProps & {
+  props: Omit<ButtonProps, "onClick"> & {
     onClick?: (
       selectedFeatue: GeoapifyPlace["features"][number] | null,
     ) => void;

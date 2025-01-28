@@ -80,8 +80,8 @@ export function MapForm({
     x: number;
     y: number;
   } | null>(null);
-  const [isSelectingPinBlockLocation, setIsSelectingPinBlockLocation] =
-    useState(false);
+  const [isSelectingPinBlockLocationFor, setIsSelectingPinBlockLocationFor] =
+    useState<string | null>(null);
   const { width } = useWindowSize();
 
   const initialViewState = {
@@ -247,14 +247,14 @@ export function MapForm({
               pinBlock: {
                 location: pinBlockLocation,
                 setLocation: setPinBlockLocation,
-                isSelectingLocation: isSelectingPinBlockLocation,
-                setIsSelectingLocation: (val) => {
+                isSelectingLocationFor: isSelectingPinBlockLocationFor,
+                setIsSelectingLocationFor: (val) => {
                   // TODO: Improve this temporary workaround. If you don't
                   // scroll to the bottom first, there is a jarring animation
                   // when opening the next drawer
                   window.scrollTo({ top: 0, behavior: "smooth" });
                   setTimeout(() => {
-                    setIsSelectingPinBlockLocation(val);
+                    setIsSelectingPinBlockLocationFor(val);
                   }, 500);
                 },
               },
@@ -299,14 +299,16 @@ export function MapForm({
                   : undefined
               }
               open={
-                drawerOpen && !selectedFeature && !isSelectingPinBlockLocation
+                drawerOpen &&
+                !selectedFeature &&
+                !isSelectingPinBlockLocationFor
               }
               positionDesktop="absolute"
             >
               {pageContent}
               {!isMobile && controls}
             </Drawer>
-            {isMobile && !isSelectingPinBlockLocation && controls}
+            {isMobile && !isSelectingPinBlockLocationFor && controls}
             <Drawer
               className="max-sm:min-h-[200px]"
               onClose={() => {
@@ -324,15 +326,23 @@ export function MapForm({
             </Drawer>
             <Drawer
               className="max-sm:min-h-[200px]" // Shouldn't need to add this.
-              open={isSelectingPinBlockLocation}
-              onClose={() => setIsSelectingPinBlockLocation(false)}
+              open={!!isSelectingPinBlockLocationFor}
+              onClose={() => setIsSelectingPinBlockLocationFor(null)}
               positionDesktop="absolute"
               positionMobile="fixed"
             >
               <LocationSearch>
                 <LocationSearchButton
                   onClick={(selectedFeature) => {
-                    console.log(9999, selectedFeature);
+                    form.setValue(
+                      `${isSelectingPinBlockLocationFor}.latitude`,
+                      selectedFeature?.properties?.lat,
+                    );
+                    form.setValue(
+                      `${isSelectingPinBlockLocationFor}.longitude`,
+                      selectedFeature?.properties?.lon,
+                    );
+                    setIsSelectingPinBlockLocationFor(null);
                   }}
                 >
                   Select Location
