@@ -103,7 +103,6 @@ export function LocationSearchWithMap({ map }: { map: mapboxgl.Map }) {
     });
 
     map.on("dragstart", () => {
-      console.log(9999);
       setIsMapMoving(true);
       setHasMapMoved(true);
     });
@@ -155,6 +154,8 @@ export function LocationSearchWithMap({ map }: { map: mapboxgl.Map }) {
             },
           )
           .setCenter([feature.properties.lon, feature.properties.lat]);
+
+        setSelectedFeature(feature);
       }
     };
 
@@ -320,7 +321,7 @@ export function LocationSearchWithMap({ map }: { map: mapboxgl.Map }) {
               animate={{
                 opacity: 1,
               }}
-              className="flex -translate-y-1/2 flex-col items-center"
+              className="z-50 flex -translate-y-1/2 flex-col items-center"
               key="pin"
               initial={{ opacity: 0 }}
               exit={{ opacity: 0 }}
