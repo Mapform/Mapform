@@ -34,16 +34,8 @@ export default function Page() {
                   </TooltipContent>
                 </Tooltip>
               </span>
-              <h1 className="text-muted-foreground mt-4 text-4xl font-medium lg:text-6xl">
-                A place for
-                <br />
-                everything.
-                <br />
-                <div className="text-foreground mt-4">
-                  Everything
-                  <br />
-                  in its place.
-                </div>
+              <h1 className="text-foreground mt-4 text-4xl font-medium lg:text-7xl">
+                The Workspace For Place.
               </h1>
               <p className="text-muted-foreground mb-10 mt-4 text-xl leading-8 sm:mb-10 sm:mt-6 sm:text-2xl">
                 Mapform helps you track, manage, and share the places that
