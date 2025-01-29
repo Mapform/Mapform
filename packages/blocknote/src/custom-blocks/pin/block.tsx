@@ -74,8 +74,8 @@ export const Pin = createReactBlockSpec(
         );
       }
 
-      const currentLatitude = form.watch(`${block.id}.latitude`) as number;
-      const currentLongitude = form.watch(`${block.id}.longitude`) as number;
+      const currentLatitude = form.watch(`${block.id}.y`) as number;
+      const currentLongitude = form.watch(`${block.id}.x`) as number;
 
       const hasLocation = currentLatitude && currentLongitude;
 

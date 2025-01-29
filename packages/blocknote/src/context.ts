@@ -10,10 +10,6 @@ export interface CustomBlockContextProps {
   onImageUpload?: (file: File) => Promise<string | null>;
 
   pinBlock?: {
-    location: { x: number; y: number } | null;
-    setLocation: React.Dispatch<
-      React.SetStateAction<{ x: number; y: number } | null>
-    >;
     isSelectingLocationFor: string | null;
     setIsSelectingLocationFor: React.Dispatch<
       React.SetStateAction<string | null>

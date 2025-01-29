@@ -76,10 +76,6 @@ export function MapForm({
     resolver: zodResolver(blocknoteStepSchema),
     defaultValues: defaultFormValues,
   });
-  const [pinBlockLocation, setPinBlockLocation] = useState<{
-    x: number;
-    y: number;
-  } | null>(null);
   const [isSelectingPinBlockLocationFor, setIsSelectingPinBlockLocationFor] =
     useState<string | null>(null);
   const { width } = useWindowSize();
@@ -245,8 +241,6 @@ export function MapForm({
               editable,
               onImageUpload,
               pinBlock: {
-                location: pinBlockLocation,
-                setLocation: setPinBlockLocation,
                 isSelectingLocationFor: isSelectingPinBlockLocationFor,
                 setIsSelectingLocationFor: (val) => {
                   // TODO: Improve this temporary workaround. If you don't
@@ -335,11 +329,11 @@ export function MapForm({
                 <LocationSearchButton
                   onClick={(selectedFeature) => {
                     form.setValue(
-                      `${isSelectingPinBlockLocationFor}.latitude`,
+                      `${isSelectingPinBlockLocationFor}.y`,
                       selectedFeature?.properties?.lat,
                     );
                     form.setValue(
-                      `${isSelectingPinBlockLocationFor}.longitude`,
+                      `${isSelectingPinBlockLocationFor}.x`,
                       selectedFeature?.properties?.lon,
                     );
                     setIsSelectingPinBlockLocationFor(null);

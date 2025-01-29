@@ -105,7 +105,7 @@ export function Map({
       const cellValue = formValues.find(
         (v) => v.column.blockNoteId === block.id,
       );
-      const value = cellValue?.stringCell?.value ?? cellValue?.pointCell?.value;
+      const value = cellValue?.stringCell?.value ?? cellValue?.pointCell;
 
       if (value) {
         // @ts-expect-error -- It's ok
