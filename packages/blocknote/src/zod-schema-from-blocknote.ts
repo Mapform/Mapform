@@ -34,7 +34,7 @@ export function getFormSchemaFromBlockNote(blocks: DocumentContent) {
     customBlocks.includes(block.type as InputCustomBlockTypes),
   );
 
-  const zodObj = filteredBlocks.reduce(
+  const zodObj: Record<string, any> = filteredBlocks.reduce(
     (acc, cur) => ({
       ...acc,
       // @ts-expect-error -- Complex TS type needed. Ignoring for now.

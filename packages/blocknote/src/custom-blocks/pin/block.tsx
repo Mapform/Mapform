@@ -91,25 +91,10 @@ export const Pin = createReactBlockSpec(
             className="relative w-full"
             onClick={() => {
               pinBlock?.setIsSelectingLocationFor(block.id);
-
-              // setPrevViewState(viewState);
-
-              // setViewState({
-              //   ...viewState,
-              //   zoom: viewState.zoom * 1.2,
-              //   latitude: currentLatitude
-              //     ? currentLatitude
-              //     : viewState.latitude,
-              //   longitude: currentLongitude
-              //     ? currentLongitude
-              //     : viewState.longitude,
-              // });
             }}
-            // size="sm"
             type="button"
             variant="secondary"
           >
-            {/* {block.props.text} */}
             {hasLocation
               ? `Selected: ${currentLatitude.toFixed(5)},${currentLongitude.toFixed(5)}`
               : block.props.text}
