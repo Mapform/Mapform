@@ -7,7 +7,6 @@ import {
   useFormContext,
   FormLabel,
 } from "@mapform/ui/components/form";
-// import { useState } from "react";
 import { Button } from "@mapform/ui/components/button";
 import { Input } from "@mapform/ui/components/input";
 import { AsteriskIcon } from "lucide-react";
@@ -37,7 +36,6 @@ export const Pin = createReactBlockSpec(
     render: ({ block, editor }) => {
       const form = useFormContext();
       const { editable, pinBlock } = useCustomBlockContext();
-      // const [prevViewState, setPrevViewState] = useState(viewState);
 
       if (editable) {
         return (
@@ -76,11 +74,10 @@ export const Pin = createReactBlockSpec(
         );
       }
 
-      const currentLatitude = form.watch(`${block.id}.latitude`);
-      const currentLongitude = form.watch(`${block.id}.longitude`);
+      const currentLatitude = form.watch(`${block.id}.latitude`) as number;
+      const currentLongitude = form.watch(`${block.id}.longitude`) as number;
 
-      console.log("currentLatitude", currentLatitude);
-      console.log("currentLongitude", currentLongitude);
+      const hasLocation = currentLatitude && currentLongitude;
 
       return (
         <div className="fiex mb-4 w-full flex-col space-y-2">
@@ -112,7 +109,10 @@ export const Pin = createReactBlockSpec(
             type="button"
             variant="secondary"
           >
-            {block.props.text}
+            {/* {block.props.text} */}
+            {hasLocation
+              ? `Selected: ${currentLatitude.toFixed(5)},${currentLongitude.toFixed(5)}`
+              : block.props.text}
             {block.props.required ? (
               <AsteriskIcon
                 className="absolute right-2"
