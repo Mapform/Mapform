@@ -7,7 +7,7 @@ import {
   cells,
   columns,
   pages,
-  rows,
+  pointCells,
   stringCells,
 } from "@mapform/db/schema";
 import { submitPageSchema } from "./schema";
@@ -67,19 +67,13 @@ export const submitPage = (authClient: PublicClient) =>
 
             let cell: Cell | undefined;
 
-            /**
-             * Try to find the cell
-             */
-            cell = await tx.query.cells.findFirst({
-              where: and(eq(columns.id, column.id), eq(rows.id, row.id)),
-              with: {
-                booleanCell: true,
-                pointCell: true,
-                stringCell: true,
-                dateCell: true,
-                numberCell: true,
-              },
-            });
+            [cell] = await tx
+              .select()
+              .from(cells)
+              .where(
+                and(eq(cells.columnId, column.id), eq(cells.rowId, row.id)),
+              )
+              .limit(1);
 
             /**
              * If cell doesn't exist, create it
@@ -108,21 +102,21 @@ export const submitPage = (authClient: PublicClient) =>
                   cellId: cell.id,
                 })
                 .onConflictDoUpdate({
-                  target: stringCells.id,
+                  target: stringCells.cellId,
                   set: { value: value as string },
                 });
             }
 
             if (block.type === "pin") {
               return tx
-                .insert(stringCells)
+                .insert(pointCells)
                 .values({
-                  value: value as string,
+                  value: value as { x: number; y: number },
                   cellId: cell.id,
                 })
                 .onConflictDoUpdate({
-                  target: stringCells.id,
-                  set: { value: value as string },
+                  target: pointCells.cellId,
+                  set: { value: value as { x: number; y: number } },
                 });
             }
           }),

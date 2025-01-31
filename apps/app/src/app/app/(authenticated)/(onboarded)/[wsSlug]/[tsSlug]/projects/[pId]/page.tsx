@@ -94,6 +94,7 @@ export default async function ProjectPage(props: {
   searchParams?: Promise<{
     page?: string;
     layer?: string;
+    ending?: string;
     feature?: string;
   }>;
 }) {

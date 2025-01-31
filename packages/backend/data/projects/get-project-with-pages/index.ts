@@ -27,6 +27,7 @@ export const getProjectWithPages = (
               : undefined,
           ),
           with: {
+            ending: true,
             teamspace: {
               columns: {
                 id: true,
@@ -36,6 +37,15 @@ export const getProjectWithPages = (
                 workspace: {
                   columns: {
                     id: true,
+                    slug: true,
+                  },
+                  with: {
+                    plan: {
+                      columns: {
+                        id: true,
+                        rowLimit: true,
+                      },
+                    },
                   },
                 },
               },

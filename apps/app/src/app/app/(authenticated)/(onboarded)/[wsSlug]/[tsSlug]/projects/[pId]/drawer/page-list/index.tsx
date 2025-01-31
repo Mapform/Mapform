@@ -29,6 +29,8 @@ import { updatePageOrderAction } from "~/data/pages/update-page-order";
 import { createPageAction } from "~/data/pages/create-page";
 import { useProject } from "../../project-context";
 import { Item } from "./item";
+import { toast } from "@mapform/ui/components/toaster";
+import { Ending } from "./ending";
 
 export function PageList() {
   const { map } = useMapform();
@@ -39,7 +41,7 @@ export function PageList() {
   const { executeAsync: updatePageOrderAsync } = useAction(
     updatePageOrderAction,
   );
-  const { execute: executeCreatePage, status: createPageStatus } = useAction(
+  const { execute: executeCreatePage, isPending: createIsPending } = useAction(
     createPageAction,
     {
       onSuccess: (newPage) => {
@@ -48,6 +50,12 @@ export function PageList() {
         if (!newPageData) return;
 
         setActivePage(newPageData);
+      },
+      onError: ({ error }) => {
+        toast({
+          title: "Uh oh! Something went wrong.",
+          description: error.serverError,
+        });
       },
     },
   );
@@ -88,10 +96,10 @@ export function PageList() {
 
   return (
     <SidebarContent className="h-full">
-      <SidebarGroup className="h-full">
+      <SidebarGroup>
         <SidebarGroupLabel>Pages</SidebarGroupLabel>
         <SidebarGroupAction
-          disabled={createPageStatus === "executing"}
+          disabled={createIsPending}
           onClick={() => {
             const loc = map?.getCenter();
             const zoom = map?.getZoom();
@@ -116,12 +124,12 @@ export function PageList() {
           }}
           title="Add Page"
         >
-          {createPageStatus === "executing" ? (
+          {createIsPending ? (
             <Spinner size="sm" variant="dark" />
           ) : (
             <PlusIcon />
           )}
-          <span className="sr-only">Add Project</span>
+          <span className="sr-only">Add Ending</span>
         </SidebarGroupAction>
         <SidebarGroupContent>
           <SidebarMenu>
@@ -142,6 +150,7 @@ export function PageList() {
           </SidebarMenu>
         </SidebarGroupContent>
       </SidebarGroup>
+      <Ending />
     </SidebarContent>
   );
 }

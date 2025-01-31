@@ -4,7 +4,7 @@ import { db } from "@mapform/db";
 import { eq, and, isNull, desc } from "@mapform/db/utils";
 import { projects, teamspaces } from "@mapform/db/schema";
 import { getRecentProjectsSchema } from "./schema";
-import { UserAuthClient } from "../../../lib/types";
+import type { UserAuthClient } from "../../../lib/types";
 
 export const getRecentProjects = (authClient: UserAuthClient) =>
   authClient

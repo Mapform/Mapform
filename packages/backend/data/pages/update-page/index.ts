@@ -1,7 +1,7 @@
 "server-only";
 
 import { db } from "@mapform/db";
-import { count, eq, inArray } from "@mapform/db/utils";
+import { count, eq, inArray, type SQL, sql } from "@mapform/db/utils";
 import {
   cells,
   columns,
@@ -15,7 +15,7 @@ import type {
   InputCustomBlockTypes,
 } from "@mapform/blocknote";
 import { updatePageSchema } from "./schema";
-import { UserAuthClient } from "../../../lib/types";
+import type { UserAuthClient } from "../../../lib/types";
 
 const mapBlockTypeToDataType = (
   blockType: InputCustomBlockTypes,
@@ -105,6 +105,7 @@ export const updatePage = (authClient: UserAuthClient) =>
 
         const datasetColumns = await db
           .select({
+            name: columns.name,
             columnId: columns.id,
             blockNoteId: columns.blockNoteId,
             cellCount: count(cells.id),
@@ -136,7 +137,7 @@ export const updatePage = (authClient: UserAuthClient) =>
                 );
               })
               .map((block) => ({
-                name: `${mapBlockTypeToDataType(block.type)}-${block.id}`,
+                name: block.props.label,
                 type: mapBlockTypeToDataType(block.type),
                 blockNoteId: block.id,
                 datasetId: page.project.submissionsDataset!.id,
@@ -151,6 +152,31 @@ export const updatePage = (authClient: UserAuthClient) =>
             col.cellCount === 0
           );
         });
+
+        // Input blocks to update
+        const inputBlocksToUpdate = pageBlock
+          .filter((block) => {
+            return datasetColumns.find((col) => {
+              return (
+                col.blockNoteId === block.id && col.name !== block.props.label
+              );
+            });
+          })
+          .map((block) => ({
+            name: block.props.label,
+            blockNoteId: block.id,
+          }));
+
+        // To update many columns at once, we need to use a case statement as per: https://orm.drizzle.team/docs/guides/update-many-with-different-value
+        const sqlChunks: SQL[] = [];
+        sqlChunks.push(sql`(case`);
+        for (const input of inputBlocksToUpdate) {
+          sqlChunks.push(
+            sql`when ${columns.blockNoteId} = ${input.blockNoteId} then ${input.name}`,
+          );
+        }
+        sqlChunks.push(sql`end)`);
+        const updateBlocksSql: SQL = sql.join(sqlChunks, sql.raw(" "));
 
         await db.transaction(async (tx) => {
           await Promise.all([
@@ -182,6 +208,19 @@ export const updatePage = (authClient: UserAuthClient) =>
                 inputBlocksToDelete.map((col) => col.columnId),
               ),
             ),
+
+            inputBlocksToUpdate.length &&
+              tx
+                .update(columns)
+                .set({
+                  name: updateBlocksSql,
+                })
+                .where(
+                  inArray(
+                    columns.blockNoteId,
+                    inputBlocksToUpdate.map((col) => col.blockNoteId),
+                  ),
+                ),
           ]);
         });
 

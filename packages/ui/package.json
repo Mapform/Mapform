@@ -37,6 +37,7 @@
     "@radix-ui/react-slider": "catalog:",
     "@radix-ui/react-slot": "catalog:",
     "@radix-ui/react-switch": "catalog:",
+    "@radix-ui/react-tabs": "^1.1.2",
     "@radix-ui/react-toast": "catalog:",
     "@radix-ui/react-tooltip": "catalog:",
     "@tailwindcss/container-queries": "catalog:",

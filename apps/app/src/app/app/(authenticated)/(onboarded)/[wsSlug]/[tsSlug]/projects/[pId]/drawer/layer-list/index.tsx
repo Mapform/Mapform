@@ -36,6 +36,7 @@ import {
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarMenu,
+  SidebarMenuItem,
 } from "@mapform/ui/components/sidebar";
 import { updateLayerOrderAction } from "~/data/layers/update-layer-order";
 import { createPageLayerAction } from "~/data/layers-to-pages/create-page-layer";
@@ -223,20 +224,28 @@ export function LayerList() {
         </LayerPopoverRoot>
         <SidebarGroupContent>
           <SidebarMenu>
-            <DndContext
-              collisionDetection={closestCenter}
-              onDragEnd={reorderLayers}
-              sensors={sensors}
-            >
-              <SortableContext
-                items={dragLayers}
-                strategy={verticalListSortingStrategy}
+            {dragLayers.length ? (
+              <DndContext
+                collisionDetection={closestCenter}
+                onDragEnd={reorderLayers}
+                sensors={sensors}
               >
-                {dragLayers.map((layer) => {
-                  return <Item key={layer.id} layer={layer} />;
-                })}
-              </SortableContext>
-            </DndContext>
+                <SortableContext
+                  items={dragLayers}
+                  strategy={verticalListSortingStrategy}
+                >
+                  {dragLayers.map((layer) => {
+                    return <Item key={layer.id} layer={layer} />;
+                  })}
+                </SortableContext>
+              </DndContext>
+            ) : (
+              <SidebarMenuItem>
+                <div className="bg-sidebar-accent text-muted-foreground flex flex-col items-center rounded-md py-4">
+                  <p className="text-center text-sm">No layers added</p>
+                </div>
+              </SidebarMenuItem>
+            )}
           </SidebarMenu>
         </SidebarGroupContent>
       </SidebarGroup>

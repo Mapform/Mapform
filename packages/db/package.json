@@ -11,7 +11,9 @@
     "db:studio": "drizzle-kit studio",
     "db:deploy": "drizzle-kit generate && drizzle-kit migrate",
     "db:undo-migration": "pnpm db:drop && pnpm db:generate && pnpm db:migrate",
-    "postinstall": "pnpm db:generate"
+    "postinstall": "pnpm db:generate",
+    "with-env": "dotenv -e .env -c --",
+    "data-migration:plans": "pnpm with-env tsx ./data-migrations/0024_blue_snowbird.ts"
   },
   "devDependencies": {
     "@mapform/blocknote": "workspace:*",
@@ -21,9 +23,10 @@
     "@types/pg": "catalog:",
     "@types/uuid": "catalog:",
     "@types/ws": "catalog:",
+    "dotenv-cli": "^8.0.0",
     "drizzle-kit": "catalog:",
     "eslint": "catalog:",
-    "ts-node": "catalog:",
+    "stripe": "catalog:",
     "typescript": "catalog:"
   },
   "dependencies": {

@@ -3,6 +3,7 @@ import { datasets } from "../datasets/schema";
 import { pages } from "../pages/schema";
 import { teamspaces } from "../teamspaces/schema";
 import { projects } from "./schema";
+import { endings } from "../endings/schema";
 
 export const projectsRelations = relations(projects, ({ one, many }) => ({
   pages: many(pages),
@@ -22,4 +23,5 @@ export const projectsRelations = relations(projects, ({ one, many }) => ({
     fields: [projects.datasetId],
     references: [datasets.id],
   }),
+  ending: one(endings),
 }));

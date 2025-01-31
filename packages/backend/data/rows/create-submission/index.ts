@@ -5,6 +5,8 @@ import { eq } from "@mapform/db/utils";
 import { projects, rows } from "@mapform/db/schema";
 import { createSubmissionSchema } from "./schema";
 import type { PublicClient } from "../../../lib/types";
+import { ServerError } from "../../../lib/server-error";
+import { getRowAndPageCount } from "../../usage/get-row-and-page-count";
 
 export const createSubmission = (authClient: PublicClient) =>
   authClient
@@ -14,6 +16,15 @@ export const createSubmission = (authClient: PublicClient) =>
         where: eq(projects.id, projectId),
         with: {
           submissionsDataset: true,
+          teamspace: {
+            with: {
+              workspace: {
+                with: {
+                  plan: true,
+                },
+              },
+            },
+          },
         },
       });
 
@@ -23,6 +34,22 @@ export const createSubmission = (authClient: PublicClient) =>
 
       if (!project.submissionsDataset) {
         throw new Error("Submissions dataset not found");
+      }
+
+      const response = await getRowAndPageCount(authClient)({
+        workspaceSlug: project.teamspace.workspaceSlug,
+      });
+      const rowCount = response?.data?.rowCount;
+      const pageCount = response?.data?.pageCount;
+
+      if (rowCount === undefined || pageCount === undefined) {
+        throw new Error("Row count or page count is undefined.");
+      }
+
+      if (rowCount + pageCount >= project.teamspace.workspace.plan!.rowLimit) {
+        throw new ServerError(
+          "Row limit exceeded. Delete some rows, or upgrade your plan.",
+        );
       }
 
       const [row] = await db

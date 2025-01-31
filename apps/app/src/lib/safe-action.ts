@@ -49,6 +49,10 @@ import { getSession } from "@mapform/backend/data/rows/get-session";
 import { getCurrentSession } from "@mapform/backend/data/auth/get-current-session";
 import { createDatasetFromGeojson } from "@mapform/backend/data/datasets/create-from-geojson";
 import { completeOnboarding } from "@mapform/backend/data/workspaces/complete-onboarding";
+import { createCheckoutSession } from "@mapform/backend/data/stripe/create-checkout-session";
+import { createBillingSession } from "@mapform/backend/data/stripe/create-billing-session";
+import { createEnding } from "@mapform/backend/data/endings/create-ending";
+import { deleteEnding } from "@mapform/backend/data/endings/delete-ending";
 import {
   baseClient,
   UserAccess,
@@ -137,6 +141,10 @@ const createUserAuthClient = () => {
     listTeamspaceDatasets: listTeamspaceDatasets(extendedClient),
     createDatasetFromGeojson: createDatasetFromGeojson(extendedClient),
 
+    // Endings
+    createEnding: createEnding(extendedClient),
+    deleteEnding: deleteEnding(extendedClient),
+
     // Images
     uploadImage: uploadImage(extendedClient),
 
@@ -170,6 +178,10 @@ const createUserAuthClient = () => {
     deleteRows: deleteRows(extendedClient),
     duplicateRows: duplicateRows(extendedClient),
     getRowAndPageCount: getRowAndPageCount(extendedClient),
+
+    // Stripe
+    createBillingSession: createBillingSession(extendedClient),
+    createCheckoutSession: createCheckoutSession(extendedClient),
 
     // Teamspaces
     getTeamspaceWithProjects: getTeamspaceWithProjects(extendedClient),

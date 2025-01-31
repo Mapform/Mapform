@@ -16,7 +16,9 @@ export const config = [
   {
     languageOptions: {
       parserOptions: {
-        projectService: true,
+        projectService: {
+          allowDefaultProject: ["*.js", "*.mjs"],
+        },
         tsconfigRootDir: import.meta.dirname,
       },
     },
@@ -27,6 +29,7 @@ export const config = [
     },
     rules: {
       "turbo/no-undeclared-env-vars": "warn",
+      "@typescript-eslint/consistent-type-imports": "warn",
       "@typescript-eslint/no-unnecessary-condition": "warn",
     },
   },

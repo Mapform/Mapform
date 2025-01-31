@@ -27,8 +27,9 @@ const insertPin = (edtr: typeof schema.BlockNoteEditor) => ({
     });
   },
   aliases: ["location", "pins"],
-  group: "Inputs",
-  icon: <MapPinIcon />,
+  group: "Input blocks",
+  icon: <MapPinIcon className="size-4" />,
+  subtext: "Capture location from user",
 });
 
 const insertTextInput = (edtr: typeof schema.BlockNoteEditor) => ({
@@ -39,8 +40,9 @@ const insertTextInput = (edtr: typeof schema.BlockNoteEditor) => ({
     });
   },
   aliases: ["input", "short-text"],
-  group: "Inputs",
-  icon: <TextIcon />,
+  group: "Input blocks",
+  icon: <TextIcon className="size-4" />,
+  subtext: "Capture text from user",
 });
 
 const insertImage = (edtr: typeof schema.BlockNoteEditor) => ({
@@ -51,8 +53,9 @@ const insertImage = (edtr: typeof schema.BlockNoteEditor) => ({
     });
   },
   aliases: ["photo"],
-  group: "Media",
+  group: "Basic blocks",
   icon: <ImageIcon className="size-4" />,
+  subtext: "Upload an image",
 });
 
 interface BlocknoteEditorProps {
@@ -87,36 +90,59 @@ export function BlocknoteEditor({
               ...getDefaultReactSlashMenuItems(editor).filter(
                 (i) => i.title !== "Emoji",
               ),
+              insertImage(editor),
               // Only provide inputs for pages
               ...(includeFormBlocks
                 ? [insertTextInput(editor), insertPin(editor)]
                 : []),
-              insertImage(editor),
             ],
             query,
           );
         }}
-        suggestionMenuComponent={({ items, selectedIndex, onItemClick }) => (
-          <div className="bg-popover text-popover-foreground z-50 min-w-[200px] space-y-1 overflow-hidden rounded-md border p-1 shadow-md">
-            {items.map((item, index) => (
-              <div
-                className={cn(
-                  "focus:bg-accent focus:text-accent-foreground hover:bg-accent hover:text-accent-foreground relative flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-1 text-sm outline-none transition-colors data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
-                  {
-                    "bg-accent text-accent-foreground": selectedIndex === index,
-                  },
-                )}
-                key={item.title}
-                onClick={() => {
-                  onItemClick?.(item);
-                }}
-              >
+        suggestionMenuComponent={({ items, selectedIndex, onItemClick }) => {
+          const groupedItems = Object.groupBy(items, (item) => item.group!);
+
+          const renderItem = (item: (typeof items)[0]) => (
+            <div
+              className={cn(
+                "focus:bg-accent focus:text-accent-foreground hover:bg-accent hover:text-accent-foreground relative flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-1 text-sm outline-none transition-colors data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+                {
+                  "bg-accent text-accent-foreground":
+                    items.indexOf(item) === selectedIndex,
+                },
+              )}
+              key={item.title}
+              onClick={() => {
+                onItemClick?.(item);
+              }}
+            >
+              <div className="flex size-10 flex-shrink-0 items-center justify-center rounded-lg bg-gray-50">
                 <span className="size-4">{item.icon}</span>
-                {item.title}
               </div>
-            ))}
-          </div>
-        )}
+              <div className="flex flex-col">
+                <div>{item.title}</div>
+                <div className="text-muted-foreground text-xs">
+                  {item.subtext}
+                </div>
+              </div>
+            </div>
+          );
+
+          return (
+            <div className="bg-popover text-popover-foreground z-50 w-[300px] space-y-1 overflow-hidden overflow-y-auto rounded-md border shadow-md">
+              {Object.entries(groupedItems).map(([group, items]) => (
+                <div key={group} className="border-b last:border-0">
+                  <div className="space-y-1 p-1">
+                    <div className="text-sidebar-foreground/70 ring-sidebar-ring ml-2 flex h-6 shrink-0 items-center rounded-md text-xs font-medium outline-none transition-[margin,opa] duration-200 ease-linear focus-visible:ring-2">
+                      {group}
+                    </div>
+                    {items?.map(renderItem)}
+                  </div>
+                </div>
+              ))}
+            </div>
+          );
+        }}
         triggerCharacter="/"
       />
       <SideMenuController sideMenu={CustomSideMenu} />

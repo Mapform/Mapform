@@ -37,6 +37,7 @@ export interface ProjectContextProps {
   currentPage: PageWithLayers | undefined;
   currentPageData: PageData | undefined;
   availableDatasets: TeamspaceDatasets;
+  projectWithPages: ProjectWithPages;
 
   uploadImageServer: InferUseActionHookReturn<typeof uploadImageAction>;
   upsertCellServer: InferUseActionHookReturn<typeof upsertCellAction>;
@@ -45,7 +46,6 @@ export interface ProjectContextProps {
   setActivePage: (
     page?: Pick<PageWithLayers, "id" | "center" | "zoom" | "pitch" | "bearing">,
   ) => void;
-  setEditMode: (open: boolean) => void;
 
   updateProjectOptimistic: (
     action: NonNullable<GetProjectWithPages["data"]>,
@@ -216,27 +216,12 @@ export function ProjectProvider({
     router.push(`${pathname}${query}`);
   };
 
-  const setEditMode = (open: boolean) => {
-    const current = new URLSearchParams(Array.from(searchParams.entries()));
-
-    if (!open) {
-      current.delete("edit");
-    } else {
-      current.set("edit", "1");
-    }
-
-    const search = current.toString();
-    const query = search ? `?${search}` : "";
-
-    router.push(`${pathname}${query}`);
-  };
-
   return (
     <ProjectContext.Provider
       value={{
-        setEditMode,
         isEditingPage,
         setActivePage,
+        projectWithPages,
         availableDatasets,
 
         // Optimistic state

@@ -13,6 +13,7 @@ import { useSetQueryString } from "@mapform/lib/hooks/use-set-query-string";
 import { CustomBlockContext } from "@mapform/blocknote";
 import type { GetLayerPoint } from "@mapform/backend/data/datalayer/get-layer-point";
 import type { GetLayerMarker } from "@mapform/backend/data/datalayer/get-layer-marker";
+import type { GetProjectWithPages } from "@mapform/backend/data/projects/get-project-with-pages";
 import {
   type CustomBlock,
   getFormSchemaFromBlockNote,
@@ -35,6 +36,8 @@ interface MapFormProps {
   currentPage: Page;
   defaultFormValues?: Record<string, string>;
   showBlocknote?: boolean;
+  includeFormBlocks?: boolean;
+  ending?: NonNullable<GetProjectWithPages["data"]>["ending"];
   onPrev?: () => void;
   onLoad?: () => void;
   onIconChange?: (icon: string | null, type: "page" | "feature") => void;
@@ -56,6 +59,7 @@ export function MapForm({
   editable = false,
   onPrev,
   onLoad,
+  ending,
   pageData,
   children,
   selectedFeature,
@@ -66,6 +70,7 @@ export function MapForm({
   onImageUpload,
   defaultFormValues,
   onDescriptionChange,
+  includeFormBlocks = false,
 }: MapFormProps) {
   const setQueryString = useSetQueryString();
   const { drawerOpen, setDrawerOpen } = useMapform();
@@ -150,17 +155,17 @@ export function MapForm({
           description={currentPage.content as { content: CustomBlock[] }}
           editable={editable}
           icon={currentPage.icon}
-          isPage
+          includeFormBlocks={includeFormBlocks}
           key={currentPage.id}
           onDescriptionChange={(val) => {
-            onDescriptionChange && onDescriptionChange(val, "page");
+            if (onDescriptionChange) onDescriptionChange(val, "page");
           }}
           onIconChange={(val) => {
-            onIconChange && onIconChange(val, "page");
+            if (onIconChange) onIconChange(val, "page");
           }}
           onPrev={onPrev}
           onTitleChange={(val) => {
-            onTitleChange && onTitleChange(val, "page");
+            if (onTitleChange) onTitleChange(val, "page");
           }}
           title={currentPage.title}
         />
@@ -182,6 +187,7 @@ export function MapForm({
       onIconChange,
       onPrev,
       onTitleChange,
+      includeFormBlocks,
     ],
   );
 
@@ -197,13 +203,12 @@ export function MapForm({
         }
         editable={editable}
         icon={selectedFeature.icon?.iconCell?.value}
-        isPage
         key={`${currentPage.id}-${selectedFeature.rowId}`}
         onDescriptionChange={(val) => {
-          onDescriptionChange && onDescriptionChange(val, "feature");
+          if (onDescriptionChange) onDescriptionChange(val, "feature");
         }}
         onIconChange={(val) => {
-          onIconChange && onIconChange(val, "feature");
+          if (onIconChange) onIconChange(val, "feature");
           // selectedFeature.icon &&
           //   onPoiCellChange?.({
           //     type: "icon",
@@ -214,7 +219,7 @@ export function MapForm({
         }}
         onPrev={onPrev}
         onTitleChange={(val) => {
-          onTitleChange && onTitleChange(val, "feature");
+          if (onTitleChange) onTitleChange(val, "feature");
           // selectedFeature.title &&
           //   onPoiCellChange?.({
           //     type: "string",
@@ -235,6 +240,14 @@ export function MapForm({
     onIconChange,
     onTitleChange,
   ]);
+
+  if (ending?.endingType === "page") {
+    return (
+      <div className="flex h-full w-full items-center justify-center">
+        <h1>Ending!</h1>
+      </div>
+    );
+  }
 
   return (
     <Form {...form}>

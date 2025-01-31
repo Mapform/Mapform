@@ -1,9 +1,12 @@
 "server-only";
 
 import { db } from "@mapform/db";
-import { pages, projects } from "@mapform/db/schema";
+import { datasets, pages, projects, teamspaces } from "@mapform/db/schema";
 import { createProjectSchema } from "./schema";
 import type { UserAuthClient } from "../../../lib/types";
+import { ServerError } from "../../../lib/server-error";
+import { getRowAndPageCount } from "../../usage/get-row-and-page-count";
+import { eq } from "@mapform/db/utils";
 
 const INITIAL_VIEW_STATE = {
   longitude: 0,
@@ -17,28 +20,70 @@ export const createProject = (authClient: UserAuthClient) =>
   authClient
     .schema(createProjectSchema)
     .action(
-      async ({ parsedInput: { name, teamspaceId }, ctx: { userAccess } }) => {
+      async ({
+        parsedInput: { name, teamspaceId, formsEnabled },
+        ctx: { userAccess },
+      }) => {
         if (!userAccess.teamspace.checkAccessById(teamspaceId)) {
           throw new Error("Unauthorized");
         }
 
+        const teamspace = await db.query.teamspaces.findFirst({
+          where: eq(teamspaces.id, teamspaceId),
+          with: {
+            workspace: {
+              with: {
+                plan: true,
+              },
+            },
+          },
+        });
+
+        if (!teamspace) {
+          throw new Error("Teamspace not found");
+        }
+
+        const rowAndPageCountResponse = await getRowAndPageCount(authClient)({
+          workspaceSlug: teamspace.workspaceSlug,
+        });
+
+        if (!rowAndPageCountResponse?.data) {
+          throw new Error("Row and page count not found");
+        }
+
+        const { rowCount, pageCount } = rowAndPageCountResponse.data;
+
+        if (rowCount === undefined || pageCount === undefined) {
+          throw new Error("Row and page count not found");
+        }
+
+        if (rowCount + pageCount >= teamspace.workspace.plan!.rowLimit) {
+          throw new ServerError(
+            "Row limit exceeded. Delete some rows, or upgrade your plan.",
+          );
+        }
+
         return db.transaction(async (tx) => {
+          let datasetId: string | undefined;
           /**
            * Create submissions dataset
-           * TODO: Add this back in (conditionally) when I support forms again
            */
-          // const [dataset] = await tx
-          //   .insert(datasets)
-          //   .values({
-          //     name: `Responses for ${name}`,
-          //     teamspaceId,
-          //     type: "submissions",
-          //   })
-          //   .returning();
+          if (formsEnabled) {
+            const [dataset] = await tx
+              .insert(datasets)
+              .values({
+                name: `Responses for ${name}`,
+                teamspaceId,
+                type: "submissions",
+              })
+              .returning();
 
-          // if (!dataset) {
-          //   throw new Error("Failed to create dataset");
-          // }
+            if (!dataset) {
+              throw new Error("Failed to create dataset");
+            }
+
+            datasetId = dataset.id;
+          }
 
           /**
            * Create project
@@ -48,7 +93,8 @@ export const createProject = (authClient: UserAuthClient) =>
             .values({
               name,
               teamspaceId,
-              // datasetId: dataset.id,
+              formsEnabled,
+              datasetId,
             })
             .returning();
 
