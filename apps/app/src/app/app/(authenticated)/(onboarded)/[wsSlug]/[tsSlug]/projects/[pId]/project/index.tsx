@@ -55,10 +55,6 @@ function Project() {
     return null;
   }
 
-  const submissionColBlockIds =
-    projectWithPages.submissionsDataset?.columns.map((c) => c.blockNoteId) ??
-    [];
-
   return (
     <div className="flex flex-1 justify-center overflow-hidden p-4">
       <div className="flex flex-1">
@@ -68,7 +64,6 @@ function Project() {
           includeFormBlocks={
             projectWithPages.formsEnabled && currentPage.pageType === "page"
           }
-          submissionColBlockIds={submissionColBlockIds}
           mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
           onDescriptionChange={(content, type) => {
             if (type === "page") {

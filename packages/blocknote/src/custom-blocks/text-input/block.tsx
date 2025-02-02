@@ -10,7 +10,6 @@ import {
 import { Input } from "@mapform/ui/components/input";
 import { useCustomBlockContext } from "../../context";
 import { Label } from "../../components/label";
-import { Disconnected } from "~/components/disconnected";
 
 export const TextInput = createReactBlockSpec(
   {
@@ -34,11 +33,7 @@ export const TextInput = createReactBlockSpec(
   {
     render: ({ block, editor }) => {
       const form = useFormContext();
-      const { editable, submissionColBlockIds } = useCustomBlockContext();
-
-      if (!submissionColBlockIds.includes(block.id)) {
-        return <Disconnected label={block.props.label} />;
-      }
+      const { editable } = useCustomBlockContext();
 
       return (
         <FormField

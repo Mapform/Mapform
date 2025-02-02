@@ -12,7 +12,6 @@ import { Input } from "@mapform/ui/components/input";
 import { AsteriskIcon } from "lucide-react";
 import { useCustomBlockContext } from "../../context";
 import { AutoSizeTextArea } from "@mapform/ui/components/autosize-text-area";
-import { Disconnected } from "~/components/disconnected";
 
 export const Pin = createReactBlockSpec(
   {
@@ -36,12 +35,7 @@ export const Pin = createReactBlockSpec(
   {
     render: ({ block, editor }) => {
       const form = useFormContext();
-      const { editable, pinBlock, submissionColBlockIds } =
-        useCustomBlockContext();
-
-      if (!submissionColBlockIds.includes(block.id)) {
-        return <Disconnected label={block.props.label} />;
-      }
+      const { editable, pinBlock } = useCustomBlockContext();
 
       if (editable) {
         return (
