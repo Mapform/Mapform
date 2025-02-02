@@ -8,7 +8,6 @@ import { compressImage } from "~/lib/compress-image";
 import { env } from "~/env.mjs";
 import { useProject } from "../project-context";
 import { EditBar } from "./edit-bar";
-import { useSearchParams } from "next/navigation";
 
 function Project() {
   const {
@@ -22,7 +21,6 @@ function Project() {
     updatePageOptimistic,
     updateSelectedFeatureOptimistic,
   } = useProject();
-  const searchParams = useSearchParams();
 
   /**
    * NOTE: Optimistic updates DO NOT work with debounced server actions. To work
@@ -57,6 +55,10 @@ function Project() {
     return null;
   }
 
+  const submissionColBlockIds =
+    projectWithPages.submissionsDataset?.columns.map((c) => c.blockNoteId) ??
+    [];
+
   return (
     <div className="flex flex-1 justify-center overflow-hidden p-4">
       <div className="flex flex-1">
@@ -66,6 +68,7 @@ function Project() {
           includeFormBlocks={
             projectWithPages.formsEnabled && currentPage.pageType === "page"
           }
+          submissionColBlockIds={submissionColBlockIds}
           mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
           onDescriptionChange={(content, type) => {
             if (type === "page") {

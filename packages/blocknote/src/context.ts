@@ -9,6 +9,11 @@ export interface CustomBlockContextProps {
   editable: boolean;
   onImageUpload?: (file: File) => Promise<string | null>;
 
+  // Used to establish a connection between an input block (Text, pin, etc) and
+  // the dataset. If no connection is established, the form connection is null
+  // and a warning must be displayed.
+  submissionColBlockIds: string[];
+
   pinBlock?: {
     isSelectingLocationFor: string | null;
     setIsSelectingLocationFor: React.Dispatch<

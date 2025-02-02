@@ -36,6 +36,7 @@ interface MapFormProps {
   defaultFormValues?: Record<string, string>;
   showBlocknote?: boolean;
   includeFormBlocks?: boolean;
+  submissionColBlockIds: string[];
   onPrev?: () => void;
   onLoad?: () => void;
   onIconChange?: (icon: string | null, type: "page" | "feature") => void;
@@ -61,6 +62,7 @@ export function MapForm({
   currentPage,
   onIconChange,
   onStepSubmit,
+  submissionColBlockIds,
   onTitleChange,
   onImageUpload,
   defaultFormValues,
@@ -240,6 +242,7 @@ export function MapForm({
             value={{
               editable,
               onImageUpload,
+              submissionColBlockIds,
               pinBlock: {
                 isSelectingLocationFor: isSelectingPinBlockLocationFor,
                 setIsSelectingLocationFor: (val) => {

@@ -58,6 +58,13 @@ export const getProjectWithPages = (
               columns: {
                 id: true,
               },
+              with: {
+                columns: {
+                  columns: {
+                    blockNoteId: true,
+                  },
+                },
+              },
             },
           },
         }),
