@@ -17,6 +17,12 @@ export const getDataset = (authClient: UserAuthClient) =>
         ),
         with: {
           columns: true,
+          project: {
+            columns: {
+              id: true,
+              name: true,
+            },
+          },
           rows: {
             with: {
               cells: {
