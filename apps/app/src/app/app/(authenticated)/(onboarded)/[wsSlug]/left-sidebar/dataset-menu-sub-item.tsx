@@ -35,6 +35,7 @@ interface DatasetMenuSubItemProps {
     title: string;
     url: string;
     isActive: boolean;
+    hasProject: boolean;
   };
   teamspaceSlug: string;
 }
@@ -96,6 +97,7 @@ export function DatasetMenuSubItem({
             <AlertDialogTrigger asChild>
               <DropdownMenuItem
                 className="flex items-center gap-2"
+                disabled={dataset.hasProject}
                 onSelect={(e) => {
                   e.preventDefault();
                 }}

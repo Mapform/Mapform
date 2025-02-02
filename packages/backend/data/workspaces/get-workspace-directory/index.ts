@@ -34,6 +34,13 @@ export const getWorkspaceDirectory = (authClient: UserAuthClient) =>
                   name: true,
                   createdAt: true,
                 },
+                with: {
+                  project: {
+                    columns: {
+                      id: true,
+                    },
+                  },
+                },
                 orderBy: (datasets, { asc }) => [asc(datasets.createdAt)],
               },
               projects: {

@@ -124,6 +124,7 @@ export function LeftSidebar() {
           isActive:
             pathname ===
             `/app/${workspaceSlug}/${teamspace.slug}/datasets/${dataset.id}`,
+          hasProject: !!dataset.project?.id,
         })),
       },
     })),
