@@ -285,6 +285,7 @@ export function MapForm({
             </Button>
             <Drawer
               className="max-sm:min-h-[200px]"
+              isEditing={editable}
               onClose={
                 !isMobile
                   ? () => {
