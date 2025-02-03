@@ -1,5 +1,5 @@
 import { cn } from "@mapform/lib/classnames";
-import { useMapform } from "@mapform/mapform";
+import { useMapform } from "~/components/mapform";
 import {
   CommandInput,
   CommandList,

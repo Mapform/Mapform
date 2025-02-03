@@ -1,6 +1,6 @@
 "use client";
 
-import { MapForm, useMapform } from "@mapform/mapform";
+import { MapForm, useMapform } from "~/components/mapform";
 import { useAction } from "next-safe-action/hooks";
 import React, { useEffect, useState } from "react";
 import type { GetPageData } from "@mapform/backend/data/datalayer/get-page-data";

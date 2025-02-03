@@ -12,7 +12,7 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from "@mapform/ui/components/popover";
-import type { SearchFeature } from "@mapform/map-utils/types";
+import type { GeoapifyPlace } from "@mapform/map-utils/types";
 import {
   XIcon,
   StoreIcon,

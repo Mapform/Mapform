@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { useCallback } from "react";
-import { MapForm } from "@mapform/mapform";
+import { MapForm } from "~/components/mapform";
 import { debounce } from "@mapform/lib/lodash";
 import { compressImage } from "~/lib/compress-image";
 import { env } from "~/env.mjs";

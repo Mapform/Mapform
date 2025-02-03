@@ -14,7 +14,7 @@ import {
   SortableContext,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { useMapform } from "@mapform/mapform";
+import { useMapform } from "~/components/mapform";
 import {
   SidebarContent,
   SidebarGroup,

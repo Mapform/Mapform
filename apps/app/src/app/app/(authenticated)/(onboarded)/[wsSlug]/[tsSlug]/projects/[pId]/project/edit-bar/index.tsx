@@ -16,10 +16,10 @@ import {
   TooltipTrigger,
 } from "@mapform/ui/components/tooltip";
 import type { MapMouseEvent } from "mapbox-gl";
-import { useMapform, type MapboxEvent } from "@mapform/mapform";
+import { useMapform, type MapboxEvent } from "~/components/mapform";
 import { cn } from "@mapform/lib/classnames";
 import type { SearchFeature } from "@mapform/map-utils/types";
-import { LocationMarker } from "@mapform/mapform";
+import { LocationMarker } from "~/components/mapform";
 import type { GetPageWithLayers } from "@mapform/backend/data/pages/get-page-with-layers";
 import { useProject } from "../../project-context";
 import { SearchLocationMarker } from "./search-location-marker";

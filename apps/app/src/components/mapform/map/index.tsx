@@ -329,6 +329,7 @@ export function Map({
       });
     }
   }, [map, pointGeojson]);
+
   return (
     <div
       className={cn("relative flex-1 overflow-hidden", {

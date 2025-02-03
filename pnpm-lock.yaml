@@ -261,9 +261,6 @@ catalogs:
     lucide-react:
       specifier: ^0.446.0
       version: 0.446.0
-    lucide-static:
-      specifier: ^0.454.0
-      version: 0.454.0
     mapbox-gl:
       specifier: ^3.2.0
       version: 3.2.0
@@ -425,9 +422,6 @@ importers:
       '@mapform/map-utils':
         specifier: workspace:*
         version: link:../../packages/map-utils
-      '@mapform/mapform':
-        specifier: workspace:*
-        version: link:../../packages/mapform
       '@mapform/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -470,6 +464,9 @@ importers:
       date-fns:
         specifier: 'catalog:'
         version: 3.6.0
+      geojson:
+        specifier: 'catalog:'
+        version: 0.5.0
       lucide-react:
         specifier: 'catalog:'
         version: 0.446.0(react@19.0.0)
@@ -503,9 +500,15 @@ importers:
       stripe:
         specifier: 'catalog:'
         version: 17.5.0
+      supercluster:
+        specifier: 'catalog:'
+        version: 8.0.1
       unique-slug:
         specifier: 'catalog:'
         version: 4.0.0
+      use-supercluster:
+        specifier: 'catalog:'
+        version: 1.2.0(react@19.0.0)(supercluster@8.0.1)
       uuid:
         specifier: 'catalog:'
         version: 9.0.1
@@ -519,6 +522,9 @@ importers:
       '@mapform/typescript-config':
         specifier: workspace:*
         version: link:../../packages/typescript-config
+      '@types/geojson':
+        specifier: 'catalog:'
+        version: 7946.0.14
       '@types/node':
         specifier: 'catalog:'
         version: 20.11.25
@@ -531,6 +537,9 @@ importers:
       '@types/react-dom':
         specifier: 'catalog:'
         version: 19.0.2(@types/react@19.0.1)
+      '@types/supercluster':
+        specifier: 'catalog:'
+        version: 7.1.3
       '@types/unique-slug':
         specifier: 'catalog:'
         version: 4.0.0
@@ -958,106 +967,6 @@ importers:
       react-dom:
         specifier: 19.0.0-rc-e4953922-20240919
         version: 19.0.0-rc-e4953922-20240919(react@19.0.0-rc-e4953922-20240919)
-      typescript:
-        specifier: 'catalog:'
-        version: 5.6.3
-
-  packages/mapform:
-    dependencies:
-      '@mapform/backend':
-        specifier: workspace:*
-        version: link:../backend
-      '@mapform/blocknote':
-        specifier: workspace:*
-        version: link:../blocknote
-      '@mapform/db':
-        specifier: workspace:*
-        version: link:../db
-      '@mapform/lib':
-        specifier: workspace:*
-        version: link:../lib
-      '@mapform/map-utils':
-        specifier: workspace:*
-        version: link:../map-utils
-      '@mapform/ui':
-        specifier: workspace:*
-        version: link:../ui
-      '@radix-ui/react-portal':
-        specifier: 'catalog:'
-        version: 1.1.2(@types/react-dom@19.0.2(@types/react@19.0.1))(@types/react@19.0.1)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
-      '@types/mapbox-gl':
-        specifier: 'catalog:'
-        version: 3.1.0
-      geojson:
-        specifier: 'catalog:'
-        version: 0.5.0
-      lucide-react:
-        specifier: 'catalog:'
-        version: 0.446.0(react@19.0.0)
-      lucide-static:
-        specifier: 'catalog:'
-        version: 0.454.0
-      mapbox-gl:
-        specifier: 'catalog:'
-        version: 3.2.0
-      motion:
-        specifier: 'catalog:'
-        version: 12.0.0-alpha.2(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
-      next:
-        specifier: 'catalog:'
-        version: 15.0.3(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
-      supercluster:
-        specifier: 'catalog:'
-        version: 8.0.1
-      use-supercluster:
-        specifier: 'catalog:'
-        version: 1.2.0(react@19.0.0)(supercluster@8.0.1)
-      zod:
-        specifier: 'catalog:'
-        version: 3.23.8
-    devDependencies:
-      '@blocknote/core':
-        specifier: 'catalog:'
-        version: 0.23.1(@types/hast@3.0.4)
-      '@mapform/eslint-config':
-        specifier: workspace:*
-        version: link:../eslint-config
-      '@mapform/typescript-config':
-        specifier: workspace:*
-        version: link:../typescript-config
-      '@tanstack/react-query':
-        specifier: 'catalog:'
-        version: 5.29.0(react@19.0.0)
-      '@types/eslint':
-        specifier: 'catalog:'
-        version: 8.56.5
-      '@types/geojson':
-        specifier: 'catalog:'
-        version: 7946.0.14
-      '@types/node':
-        specifier: 'catalog:'
-        version: 20.11.25
-      '@types/react':
-        specifier: 'catalog:'
-        version: 19.0.1
-      '@types/react-dom':
-        specifier: 'catalog:'
-        version: 19.0.2(@types/react@19.0.1)
-      '@types/supercluster':
-        specifier: 'catalog:'
-        version: 7.1.3
-      eslint:
-        specifier: 'catalog:'
-        version: 9.16.0(jiti@1.21.6)
-      react:
-        specifier: 'catalog:'
-        version: 19.0.0
-      react-dom:
-        specifier: 'catalog:'
-        version: 19.0.0(react@19.0.0)
-      tailwindcss:
-        specifier: 'catalog:'
-        version: 3.4.17(ts-node@10.9.2(@types/node@20.11.25)(typescript@5.6.3))
       typescript:
         specifier: 'catalog:'
         version: 5.6.3
@@ -5364,9 +5273,6 @@ packages:
     resolution: {integrity: sha512-BU7gy8MfBMqvEdDPH79VhOXSEgyG8TSPOKWaExWGCQVqnGH7wGgDngPbofu+KdtVjPQBWbEmnfMTq90CTiiDRg==}
     peerDependencies:
       react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0-rc
-
-  lucide-static@0.454.0:
-    resolution: {integrity: sha512-Jr6Xbn/WOXUy5ULRp191s+JUEqoHxEBIG6tlqEZw7sHnRVIgfIKF8T5VsoOb63p/oODGdEA4BRZ+qtaVFXt/6A==}
 
   magic-string@0.30.11:
     resolution: {integrity: sha512-+Wri9p0QHMy+545hKww7YAu5NyzF8iomPL/RQazugQ9+Ez4Ic3mERMd8ZTX5rfK944j+560ZJi8iAwgak1Ac7A==}
@@ -11104,8 +11010,6 @@ snapshots:
   lucide-react@0.446.0(react@19.0.0):
     dependencies:
       react: 19.0.0
-
-  lucide-static@0.454.0: {}
 
   magic-string@0.30.11:
     dependencies:
