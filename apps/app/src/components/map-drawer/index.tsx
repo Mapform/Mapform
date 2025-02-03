@@ -3,7 +3,7 @@ import { XIcon } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { cn } from "@mapform/lib/classnames";
 
-interface DrawerProps {
+interface MapDrawerProps {
   open: boolean;
   children: React.ReactNode;
   // This is a workaround to render the bottom bar since position fixed doesn't work
@@ -14,7 +14,7 @@ interface DrawerProps {
   className?: string;
 }
 
-export function Drawer({
+export function MapDrawer({
   open,
   children,
   className,
@@ -22,7 +22,7 @@ export function Drawer({
   positionDesktop = "relative",
   positionMobile = "relative",
   isEditing = false,
-}: DrawerProps) {
+}: MapDrawerProps) {
   return (
     <AnimatePresence mode="popLayout">
       {open ? (

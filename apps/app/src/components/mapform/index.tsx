@@ -24,8 +24,8 @@ import { Blocknote } from "./block-note";
 import { Map, LocationMarker } from "./map";
 import "./style.css";
 import { MapformProvider, useMapform, type MBMap } from "./context";
-import { Drawer } from "./drawer";
-import { LocationSearch, LocationSearchButton } from "./location-search";
+import { MapDrawer } from "../map-drawer";
+import { LocationSearch, LocationSearchButton } from "../location-search";
 
 interface MapFormProps {
   editable?: boolean;
@@ -283,7 +283,7 @@ export function MapForm({
             >
               <ChevronsRightIcon className="size-5" />
             </Button>
-            <Drawer
+            <MapDrawer
               className="max-sm:min-h-[200px]"
               isEditing={editable}
               onClose={
@@ -302,9 +302,9 @@ export function MapForm({
             >
               {pageContent}
               {!isMobile && controls}
-            </Drawer>
+            </MapDrawer>
             {isMobile && !isSelectingPinBlockLocationFor && controls}
-            <Drawer
+            <MapDrawer
               className="max-sm:min-h-[200px]"
               onClose={() => {
                 window.scrollTo({ top: 0, behavior: "smooth" });
@@ -318,8 +318,8 @@ export function MapForm({
               positionDesktop="absolute"
             >
               {selectedFeatureContent}
-            </Drawer>
-            <Drawer
+            </MapDrawer>
+            <MapDrawer
               className="max-sm:min-h-[200px]" // Shouldn't need to add this.
               open={!!isSelectingPinBlockLocationFor}
               onClose={() => setIsSelectingPinBlockLocationFor(null)}
@@ -343,7 +343,7 @@ export function MapForm({
                   Select Location
                 </LocationSearchButton>
               </LocationSearch>
-            </Drawer>
+            </MapDrawer>
           </CustomBlockContext.Provider>
         </div>
       </form>
