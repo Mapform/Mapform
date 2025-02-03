@@ -24,6 +24,12 @@ import type { GetPageWithLayers } from "@mapform/backend/data/pages/get-page-wit
 import { useProject } from "../../project-context";
 import { SearchLocationMarker } from "./search-location-marker";
 import { CommandSearch } from "./command-search";
+import { MapDrawer } from "~/components/map-drawer";
+import {
+  LocationSearch,
+  LocationSearchButton,
+} from "~/components/location-search";
+import { set } from "date-fns";
 
 interface EditBarInnerProps {
   currentPage: NonNullable<GetPageWithLayers["data"]>;
@@ -196,6 +202,7 @@ function EditBarInner({ currentPage }: EditBarInnerProps) {
                 <Button
                   onClick={() => {
                     setOpenSearch(true);
+                    // setDrawerOpen(false);
                   }}
                   size="icon"
                   variant="ghost"
@@ -205,7 +212,7 @@ function EditBarInner({ currentPage }: EditBarInnerProps) {
               </TooltipTrigger>
               <TooltipContent>Search Locations</TooltipContent>
             </Tooltip>
-            <CommandDialog
+            {/* <CommandDialog
               dialogContentClassName="-translate-y-[150px]"
               onOpenChange={setOpenSearch}
               open={openSearch}
@@ -215,7 +222,7 @@ function EditBarInner({ currentPage }: EditBarInnerProps) {
                 setOpenSearch={setOpenSearch}
                 setSearchLocation={setSearchLocation}
               />
-            </CommandDialog>
+            </CommandDialog> */}
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
@@ -328,6 +335,23 @@ function EditBarInner({ currentPage }: EditBarInnerProps) {
           }}
         />
       ) : null}
+      <MapDrawer
+        className="z-50 max-sm:min-h-[200px]" // Shouldn't need to add this.
+        open={openSearch}
+        isEditing
+        onClose={() => {
+          setOpenSearch(false);
+          // setDrawerOpen(true);
+        }}
+        positionDesktop="absolute"
+        positionMobile="absolute"
+      >
+        <LocationSearch>
+          <LocationSearchButton onClick={(selectedFeature) => {}}>
+            Select Location
+          </LocationSearchButton>
+        </LocationSearch>
+      </MapDrawer>
     </>
   );
 }
