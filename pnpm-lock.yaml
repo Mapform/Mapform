@@ -7,14 +7,14 @@ settings:
 catalogs:
   default:
     '@blocknote/core':
-      specifier: ^0.22.0
-      version: 0.22.0
+      specifier: ^0.23.1
+      version: 0.23.1
     '@blocknote/mantine':
-      specifier: ^0.22.0
-      version: 0.22.0
+      specifier: ^0.23.1
+      version: 0.23.1
     '@blocknote/react':
-      specifier: ^0.22.0
-      version: 0.22.0
+      specifier: ^0.23.1
+      version: 0.23.1
     '@dnd-kit/core':
       specifier: ^6.1.0
       version: 6.1.0
@@ -688,13 +688,13 @@ importers:
     dependencies:
       '@blocknote/core':
         specifier: 'catalog:'
-        version: 0.22.0(@types/hast@3.0.4)
+        version: 0.23.1(@types/hast@3.0.4)
       '@blocknote/mantine':
         specifier: 'catalog:'
-        version: 0.22.0(@tiptap/pm@2.7.2)(@types/hast@3.0.4)(@types/react@19.0.1)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+        version: 0.23.1(@tiptap/pm@2.7.2)(@types/hast@3.0.4)(@types/react@19.0.1)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@blocknote/react':
         specifier: 'catalog:'
-        version: 0.22.0(@tiptap/pm@2.7.2)(@types/hast@3.0.4)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+        version: 0.23.1(@tiptap/pm@2.7.2)(@types/hast@3.0.4)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@mapform/lib':
         specifier: workspace:*
         version: link:../lib
@@ -1018,7 +1018,7 @@ importers:
     devDependencies:
       '@blocknote/core':
         specifier: 'catalog:'
-        version: 0.22.0(@types/hast@3.0.4)
+        version: 0.23.1(@types/hast@3.0.4)
       '@mapform/eslint-config':
         specifier: workspace:*
         version: link:../eslint-config
@@ -1358,17 +1358,17 @@ packages:
     resolution: {integrity: sha512-Z/yiTPj+lDVnF7lWeKCIJzaIkI0vYO87dMpZ4bg4TDrFe4XXLFWL1TbXU27gBP3QccxV9mZICCrnjnYlJjXHOA==}
     engines: {node: '>=6.9.0'}
 
-  '@blocknote/core@0.22.0':
-    resolution: {integrity: sha512-AAEx01zK6u+b1SsZniMm/aogEMjasF4vA9ZHgFGj04G7AwK5Hjwa0Sxre58qcW+KzuvR09CQHTkwjmgVmJX/HA==}
+  '@blocknote/core@0.23.1':
+    resolution: {integrity: sha512-yKVlolFFfUWyC48QPQqPuWEYnmkfGeBaXd9ZS7fRxh9z1dNOWTYdrKutIyyEVRjgCx8nUihC0DikZxTFVhbmxQ==}
 
-  '@blocknote/mantine@0.22.0':
-    resolution: {integrity: sha512-6irIKCGUpE47X8qWLx9oa5ndztSrvLEHgVRp+fdVUHMJCx0/OzijJyYTTFKw8yEI9qc01pjmwdYMZrMMZybyGw==}
+  '@blocknote/mantine@0.23.1':
+    resolution: {integrity: sha512-JWFck2itM41vZ+RlY62pm3dhKhF80IIgEVw4BT3utALVIbBxteJ6hOX9kFxdB3UU+xu42WR91YiLI+eX0CoG8Q==}
     peerDependencies:
       react: ^18.0 || ^19.0 || >= 19.0.0-rc
       react-dom: ^18.0 || ^19.0 || >= 19.0.0-rc
 
-  '@blocknote/react@0.22.0':
-    resolution: {integrity: sha512-Y6Oj99iOKnlh2FE/lgy8kO5PziPnA8MyEJyjCH9Jbvlc9t493L9EFmLK8iKBZek7sh0TOzhXGBOA6lIpk02X6A==}
+  '@blocknote/react@0.23.1':
+    resolution: {integrity: sha512-c8SwYYLui1FIXaOuOSNWemvZRsvSxpWZjcbtbf8NefOrwBJUoAiKtylIXKoPuR58kz/SNasfOAYZNzwcOc6uMg==}
     peerDependencies:
       react: ^18.0 || ^19.0 || >= 19.0.0-rc
       react-dom: ^18.0 || ^19.0 || >= 19.0.0-rc
@@ -7260,7 +7260,7 @@ snapshots:
       '@babel/helper-string-parser': 7.25.9
       '@babel/helper-validator-identifier': 7.25.9
 
-  '@blocknote/core@0.22.0(@types/hast@3.0.4)':
+  '@blocknote/core@0.23.1(@types/hast@3.0.4)':
     dependencies:
       '@emoji-mart/data': 1.2.1
       '@tiptap/core': 2.7.4(@tiptap/pm@2.7.2)
@@ -7313,10 +7313,10 @@ snapshots:
       - sugar-high
       - supports-color
 
-  '@blocknote/mantine@0.22.0(@tiptap/pm@2.7.2)(@types/hast@3.0.4)(@types/react@19.0.1)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
+  '@blocknote/mantine@0.23.1(@tiptap/pm@2.7.2)(@types/hast@3.0.4)(@types/react@19.0.1)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
     dependencies:
-      '@blocknote/core': 0.22.0(@types/hast@3.0.4)
-      '@blocknote/react': 0.22.0(@tiptap/pm@2.7.2)(@types/hast@3.0.4)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      '@blocknote/core': 0.23.1(@types/hast@3.0.4)
+      '@blocknote/react': 0.23.1(@tiptap/pm@2.7.2)(@types/hast@3.0.4)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@mantine/core': 7.10.1(@mantine/hooks@7.10.1(react@19.0.0))(@types/react@19.0.1)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@mantine/hooks': 7.10.1(react@19.0.0)
       '@mantine/utils': 6.0.21(react@19.0.0)
@@ -7333,9 +7333,9 @@ snapshots:
       - sugar-high
       - supports-color
 
-  '@blocknote/react@0.22.0(@tiptap/pm@2.7.2)(@types/hast@3.0.4)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
+  '@blocknote/react@0.23.1(@tiptap/pm@2.7.2)(@types/hast@3.0.4)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
     dependencies:
-      '@blocknote/core': 0.22.0(@types/hast@3.0.4)
+      '@blocknote/core': 0.23.1(@types/hast@3.0.4)
       '@floating-ui/react': 0.26.12(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@tiptap/core': 2.7.4(@tiptap/pm@2.7.2)
       '@tiptap/react': 2.7.4(@tiptap/core@2.7.4(@tiptap/pm@2.7.2))(@tiptap/pm@2.7.2)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
