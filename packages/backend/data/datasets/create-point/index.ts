@@ -19,7 +19,7 @@ import {
 import { eq, and, inArray } from "@mapform/db/utils";
 import { createPointSchema } from "./schema";
 import type { UserAuthClient } from "../../../lib/types";
-import { DocumentContent } from "@mapform/blocknote";
+import type { DocumentContent } from "@mapform/blocknote";
 import { ServerError } from "../../../lib/server-error";
 import { getRowAndPageCount } from "../../usage/get-row-and-page-count";
 

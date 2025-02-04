@@ -67,7 +67,7 @@ export const LayerPopoverContent = forwardRef<
     resolver: zodResolver(upsertLayerSchema),
   });
 
-  const { execute, status } = useAction(upsertLayerAction, {
+  const { execute, isPending } = useAction(upsertLayerAction, {
     onSuccess: ({ data }) => {
       if (onSuccess && data?.id) {
         onSuccess(data.id);
@@ -160,7 +160,7 @@ export const LayerPopoverContent = forwardRef<
 
             <Button
               className="col-span-2"
-              disabled={status === "executing" || !form.formState.isValid}
+              disabled={isPending || !form.formState.isValid}
               size="sm"
               type="submit"
             >

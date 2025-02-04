@@ -12,7 +12,8 @@ import {
   projects,
 } from "@mapform/db/schema";
 import { publishProjectSchema } from "./schema";
-import { UserAuthClient } from "../../../lib/types";
+import type { UserAuthClient } from "../../../lib/types";
+import { ServerError } from "../../../lib/server-error";
 
 /**
  * When we publish, we always create a new form version. By keeping track of
@@ -61,6 +62,15 @@ export const publishProject = (authClient: UserAuthClient) =>
         results.map((result) => result.point_layer).filter(notEmpty),
         isEqual,
       );
+
+      if (
+        rootProjectResponse.formsEnabled &&
+        !aggregatePages.some((page) => page.pageType === "page_ending")
+      ) {
+        throw new ServerError(
+          "You must have at least one End Screen in your project.",
+        );
+      }
 
       /**
        * Generate UUIDs for all the records we're going to create. This will allow

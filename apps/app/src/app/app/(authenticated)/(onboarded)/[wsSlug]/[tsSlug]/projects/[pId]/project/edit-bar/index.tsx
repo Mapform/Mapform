@@ -8,7 +8,6 @@ import {
 } from "lucide-react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { CommandDialog } from "@mapform/ui/components/command";
 import {
   Tooltip,
   TooltipContent,
@@ -16,14 +15,18 @@ import {
   TooltipTrigger,
 } from "@mapform/ui/components/tooltip";
 import type { MapMouseEvent } from "mapbox-gl";
-import { useMapform, type MapboxEvent } from "@mapform/mapform";
+import { useMapform, type MapboxEvent } from "~/components/mapform";
 import { cn } from "@mapform/lib/classnames";
 import type { SearchFeature } from "@mapform/map-utils/types";
-import { LocationMarker } from "@mapform/mapform";
+import { LocationMarker } from "~/components/mapform";
 import type { GetPageWithLayers } from "@mapform/backend/data/pages/get-page-with-layers";
 import { useProject } from "../../project-context";
 import { SearchLocationMarker } from "./search-location-marker";
-import { CommandSearch } from "./command-search";
+import { MapDrawer } from "~/components/map-drawer";
+import {
+  LocationSearch,
+  LocationSearchButton,
+} from "~/components/location-search";
 
 interface EditBarInnerProps {
   currentPage: NonNullable<GetPageWithLayers["data"]>;
@@ -196,6 +199,7 @@ function EditBarInner({ currentPage }: EditBarInnerProps) {
                 <Button
                   onClick={() => {
                     setOpenSearch(true);
+                    // setDrawerOpen(false);
                   }}
                   size="icon"
                   variant="ghost"
@@ -205,17 +209,6 @@ function EditBarInner({ currentPage }: EditBarInnerProps) {
               </TooltipTrigger>
               <TooltipContent>Search Locations</TooltipContent>
             </Tooltip>
-            <CommandDialog
-              dialogContentClassName="-translate-y-[150px]"
-              onOpenChange={setOpenSearch}
-              open={openSearch}
-              shouldFilter={false}
-            >
-              <CommandSearch
-                setOpenSearch={setOpenSearch}
-                setSearchLocation={setSearchLocation}
-              />
-            </CommandDialog>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
@@ -300,20 +293,23 @@ function EditBarInner({ currentPage }: EditBarInnerProps) {
           </TooltipProvider>
         </div>
 
-        <LocationMarker
-          markerOptions={{
-            anchor: "bottom",
-            offset: [0, -16],
-          }}
-          searchLocationMarker={searchLocation}
-        >
-          <SearchLocationMarker
-            pageLayers={pageLayers}
-            searchLocation={searchLocation}
-            setDrawerOpen={setDrawerOpen}
-            setSearchLocation={setSearchLocation}
-          />
-        </LocationMarker>
+        {searchLocation ? (
+          <LocationMarker
+            markerOptions={{
+              anchor: "bottom",
+              offset: [0, -16],
+            }}
+            latitude={searchLocation.latitude}
+            longitude={searchLocation.longitude}
+          >
+            <SearchLocationMarker
+              pageLayers={pageLayers}
+              searchLocation={searchLocation}
+              setDrawerOpen={setDrawerOpen}
+              setSearchLocation={setSearchLocation}
+            />
+          </LocationMarker>
+        ) : null}
       </div>
 
       {isSelectingPoint ? (
@@ -325,6 +321,23 @@ function EditBarInner({ currentPage }: EditBarInnerProps) {
           }}
         />
       ) : null}
+      <MapDrawer
+        className="z-50 max-sm:min-h-[200px]" // Shouldn't need to add this.
+        open={openSearch}
+        isEditing
+        onClose={() => {
+          setOpenSearch(false);
+          // setDrawerOpen(true);
+        }}
+        positionDesktop="absolute"
+        positionMobile="absolute"
+      >
+        <LocationSearch>
+          <LocationSearchButton onClick={(selectedFeature) => {}}>
+            Select Location
+          </LocationSearchButton>
+        </LocationSearch>
+      </MapDrawer>
     </>
   );
 }

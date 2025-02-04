@@ -9,12 +9,12 @@ const schemaMap = {
   pin: (props: PinBlock["props"]) =>
     props.required
       ? z.object({
-          latitude: z.number(),
-          longitude: z.number(),
+          y: z.number(),
+          x: z.number(),
         })
       : z.object({
-          latitude: z.number().optional(),
-          longitude: z.number().optional(),
+          y: z.number().optional(),
+          x: z.number().optional(),
         }),
   textInput: (props: TextInputBlock["props"]) => {
     return props.required
@@ -31,16 +31,16 @@ const customBlocks = ["textInput", "pin"] as InputCustomBlockTypes[];
 
 export function getFormSchemaFromBlockNote(blocks: DocumentContent) {
   const filteredBlocks = blocks.filter((block) =>
-    customBlocks.includes(block.type as InputCustomBlockTypes)
+    customBlocks.includes(block.type as InputCustomBlockTypes),
   );
 
-  const zodObj = filteredBlocks.reduce(
+  const zodObj: Record<string, any> = filteredBlocks.reduce(
     (acc, cur) => ({
       ...acc,
       // @ts-expect-error -- Complex TS type needed. Ignoring for now.
       [cur.id]: schemaMap[cur.type as InputCustomBlockTypes](cur.props),
     }),
-    {}
+    {},
   );
 
   return z.object(zodObj);

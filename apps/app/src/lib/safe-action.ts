@@ -33,7 +33,6 @@ import { getPageWithLayers } from "@mapform/backend/data/pages/get-page-with-lay
 import { updatePage } from "@mapform/backend/data/pages/update-page";
 import { updatePageOrder } from "@mapform/backend/data/pages/update-page-order";
 import { getProjectWithPages } from "@mapform/backend/data/projects/get-project-with-pages";
-import { getProjectWithTeamspace } from "@mapform/backend/data/projects/get-project-with-teamspace";
 import { publishProject } from "@mapform/backend/data/projects/publish-project";
 import { getTeamspaceWithProjects } from "@mapform/backend/data/teamspaces/get-teamspace-with-projects";
 import { deleteColumn } from "@mapform/backend/data/columns/delete-column";
@@ -51,8 +50,6 @@ import { createDatasetFromGeojson } from "@mapform/backend/data/datasets/create-
 import { completeOnboarding } from "@mapform/backend/data/workspaces/complete-onboarding";
 import { createCheckoutSession } from "@mapform/backend/data/stripe/create-checkout-session";
 import { createBillingSession } from "@mapform/backend/data/stripe/create-billing-session";
-import { createEnding } from "@mapform/backend/data/endings/create-ending";
-import { deleteEnding } from "@mapform/backend/data/endings/delete-ending";
 import {
   baseClient,
   UserAccess,
@@ -141,10 +138,6 @@ const createUserAuthClient = () => {
     listTeamspaceDatasets: listTeamspaceDatasets(extendedClient),
     createDatasetFromGeojson: createDatasetFromGeojson(extendedClient),
 
-    // Endings
-    createEnding: createEnding(extendedClient),
-    deleteEnding: deleteEnding(extendedClient),
-
     // Images
     uploadImage: uploadImage(extendedClient),
 
@@ -171,7 +164,6 @@ const createUserAuthClient = () => {
     publishProject: publishProject(extendedClient),
     getRecentProjects: getRecentProjects(extendedClient),
     getProjectWithPages: getProjectWithPages(extendedClient),
-    getProjectWithTeamspace: getProjectWithTeamspace(extendedClient),
 
     // Rows
     createRow: createRow(extendedClient),

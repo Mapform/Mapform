@@ -4,18 +4,18 @@ import { env } from "~/env.mjs";
 
 // TODO: We may want to rate limit this, and / or cache the results
 export async function GET(request: Request) {
-  const text = new URL(request.url).searchParams.get("query") ?? "";
-  const bounds = new URL(request.url).searchParams.get("bounds") ?? "";
+  const lat = new URL(request.url).searchParams.get("lat") ?? "";
+  const lon = new URL(request.url).searchParams.get("lng") ?? "";
 
   try {
     const searchParams = new URLSearchParams({
       apiKey: env.GEOAPIFY_API_KEY,
-      text,
-      ...(bounds ? { bias: `rect:${bounds}` } : {}),
+      lat,
+      lon,
     }).toString();
 
     const response = await fetch(
-      `https://api.geoapify.com/v1/geocode/autocomplete?${searchParams}`,
+      `https://api.geoapify.com/v1/geocode/reverse?${searchParams}`,
       {
         method: "GET",
         headers: {

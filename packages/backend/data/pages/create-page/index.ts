@@ -12,7 +12,9 @@ export const createPage = (authClient: UserAuthClient) =>
   authClient
     .schema(createPageSchema)
     .action(
-      async ({ parsedInput: { projectId, center, zoom, pitch, bearing } }) => {
+      async ({
+        parsedInput: { projectId, center, zoom, pitch, bearing, pageType },
+      }) => {
         const projectWithPagesResponse = await getProjectWithPages(authClient)({
           id: projectId,
         });
@@ -55,6 +57,7 @@ export const createPage = (authClient: UserAuthClient) =>
             pitch,
             bearing,
             center,
+            pageType,
           })
           .returning();
 

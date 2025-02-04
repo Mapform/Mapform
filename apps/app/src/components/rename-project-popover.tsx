@@ -34,7 +34,7 @@ export function RenameProjectPopover({
   onOpenChange,
   open,
 }: RenameProjectPopoverContentProps) {
-  const { executeAsync, status } = useAction(updateProjectAction);
+  const { executeAsync, isPending } = useAction(updateProjectAction);
   const form = useForm<UpdateProjectSchema>({
     defaultValues: {
       name: project.title,
@@ -84,7 +84,7 @@ export function RenameProjectPopover({
                       autoComplete="off"
                       data-lpignore="true"
                       data-1p-ignore
-                      disabled={field.disabled || status === "executing"}
+                      disabled={field.disabled || isPending}
                       name={field.name}
                       onChange={field.onChange}
                       ref={field.ref}

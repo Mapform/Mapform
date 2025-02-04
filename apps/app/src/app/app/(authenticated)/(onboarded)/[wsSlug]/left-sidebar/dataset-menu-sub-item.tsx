@@ -27,6 +27,7 @@ import { useState } from "react";
 import { RenameDatasetPopover } from "~/components/rename-dataset-popover";
 import { deleteDatasetAction } from "~/data/datasets/delete-dataset";
 import { useWorkspace } from "../workspace-context";
+import { toast } from "@mapform/ui/components/toaster";
 
 interface DatasetMenuSubItemProps {
   dataset: {
@@ -34,6 +35,7 @@ interface DatasetMenuSubItemProps {
     title: string;
     url: string;
     isActive: boolean;
+    hasProject: boolean;
   };
   teamspaceSlug: string;
 }
@@ -43,7 +45,14 @@ export function DatasetMenuSubItem({
   teamspaceSlug,
 }: DatasetMenuSubItemProps) {
   const { execute: executeDeleteDataset, status: statusDeleteDataset } =
-    useAction(deleteDatasetAction);
+    useAction(deleteDatasetAction, {
+      onError: ({ error }) => {
+        toast({
+          title: "Uh oh! Something went wrong.",
+          description: error.serverError,
+        });
+      },
+    });
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [dropdownMenuOpen, setDropdownMenuOpen] = useState(false);
   const { workspaceSlug } = useWorkspace();
@@ -88,6 +97,7 @@ export function DatasetMenuSubItem({
             <AlertDialogTrigger asChild>
               <DropdownMenuItem
                 className="flex items-center gap-2"
+                disabled={dataset.hasProject}
                 onSelect={(e) => {
                   e.preventDefault();
                 }}

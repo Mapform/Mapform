@@ -8,6 +8,7 @@ export const createPageSchema = z.object({
   pitch: insertPageSchema.shape.pitch,
   bearing: insertPageSchema.shape.bearing,
   title: insertPageSchema.shape.title,
+  pageType: insertPageSchema.shape.pageType,
 });
 
 export type CreatePageSchema = z.infer<typeof createPageSchema>;

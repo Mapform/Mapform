@@ -17,7 +17,14 @@ import {
 import { Checkbox } from "@mapform/ui/components/checkbox";
 import { Button } from "@mapform/ui/components/button";
 import type { GetDataset } from "@mapform/backend/data/datasets/get-dataset";
-import { CopyIcon, PlusIcon, Trash2Icon } from "lucide-react";
+import {
+  BoxIcon,
+  CopyIcon,
+  LinkIcon,
+  LockIcon,
+  PlusIcon,
+  Trash2Icon,
+} from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import { createRowAction } from "~/data/rows/create-row";
 import { deleteRowsAction } from "~/data/rows/delete-rows";
@@ -26,6 +33,12 @@ import { ColumnAdder } from "./column-adder";
 import { CellPopover } from "./cell-popover";
 import { ColumnEditor } from "./column-editor";
 import { toast } from "@mapform/ui/components/toaster";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@mapform/ui/components/tooltip";
 
 interface TableProps {
   dataset: NonNullable<GetDataset["data"]>;
@@ -112,7 +125,22 @@ export const DataTable = function DataTable({ dataset }: TableProps) {
   return (
     <div className="relative flex flex-1 flex-col overflow-auto bg-white p-4 pt-0">
       {/* Top bar */}
-      <div className="sticky top-0 z-10 -mb-1 box-content flex h-8 flex-shrink-0 items-center gap-2 border-b bg-white pb-2 pt-4">
+      <div className="sticky top-0 z-20 -mb-1 box-content flex h-8 flex-shrink-0 items-center gap-2 border-b bg-white pb-2 pt-4">
+        {dataset.project ? (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger className="text-muted-foreground mr-4 flex items-center gap-1 text-sm">
+                <BoxIcon className="size-4" />
+                Submissions Database
+              </TooltipTrigger>
+              <TooltipContent className="max-w-[200px]">
+                Submissions will be logged here for your{" "}
+                <strong>{dataset.project.name}</strong> project. This dataset
+                cannot be deleted unless the project is deleted first.
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        ) : null}
         <div className="text-muted-foreground text-sm">
           {numberOfSelectedRows} of {totalNumberOfRows} row(s) selected.
         </div>

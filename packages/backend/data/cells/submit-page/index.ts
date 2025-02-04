@@ -2,8 +2,8 @@
 
 import { db } from "@mapform/db";
 import { and, eq } from "@mapform/db/utils";
+import type { Cell } from "@mapform/db/schema";
 import {
-  Cell,
   cells,
   columns,
   pages,
@@ -108,15 +108,21 @@ export const submitPage = (authClient: PublicClient) =>
             }
 
             if (block.type === "pin") {
+              const pinValue = value as { x?: number; y?: number };
+
+              if (!pinValue.x || !pinValue.y) {
+                return;
+              }
+
               return tx
                 .insert(pointCells)
                 .values({
-                  value: value as { x: number; y: number },
+                  value: { x: pinValue.x, y: pinValue.y },
                   cellId: cell.id,
                 })
                 .onConflictDoUpdate({
                   target: pointCells.cellId,
-                  set: { value: value as { x: number; y: number } },
+                  set: { value: { x: pinValue.x, y: pinValue.y } },
                 });
             }
           }),

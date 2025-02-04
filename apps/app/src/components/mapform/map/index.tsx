@@ -158,12 +158,28 @@ export function Map({
         bearing: initialViewState.bearing,
         maxZoom: 20,
         logoPosition: "bottom-right",
-        scrollZoom: !isMobile,
+        scrollZoom: isMobile
+          ? false
+          : {
+              around: "center",
+            },
         // We override the internal resize observer because we are using our own
+        doubleClickZoom: false,
         trackResize: false,
+
         // fitBoundsOptions: {
         //   padding: { top: 10, bottom: 25, left: 800, right: 5 },
         // },
+      });
+
+      m.on("dblclick", () => {
+        // Prevent the default double-click zoom behavior
+        m.doubleClickZoom.disable();
+
+        // Zoom in by increasing the zoom level, preserving the clicked location
+        m.zoomTo(m.getZoom() + 1, {
+          duration: 300, // Optional: set the animation duration
+        });
       });
 
       // Add zoom controls
@@ -313,6 +329,7 @@ export function Map({
       });
     }
   }, [map, pointGeojson]);
+
   return (
     <div
       className={cn("relative flex-1 overflow-hidden", {
@@ -356,11 +373,8 @@ export function Map({
             return (
               <LocationMarker
                 key={cluster.id}
-                searchLocationMarker={{
-                  latitude,
-                  longitude,
-                  icon: "city",
-                }}
+                latitude={latitude}
+                longitude={longitude}
               >
                 <Cluster
                   onClick={() => {
@@ -384,11 +398,8 @@ export function Map({
           return (
             <LocationMarker
               key={cluster.properties.id}
-              searchLocationMarker={{
-                latitude,
-                longitude,
-                icon: "city",
-              }}
+              latitude={latitude}
+              longitude={longitude}
             >
               <motion.button
                 animate={{ opacity: 1, y: 0 }}
@@ -396,7 +407,7 @@ export function Map({
                 exit={{ opacity: 0, y: 20 }}
                 initial={{ opacity: 0, y: -20 }}
                 onClick={() => {
-                  isMobile && window.scrollTo({ top: 0, behavior: "smooth" });
+                  if (isMobile) window.scrollTo({ top: 0, behavior: "smooth" });
                   setQueryString({
                     key: "feature",
                     value: `marker_${cluster.properties.rowId}_${cluster.properties.pointLayerId}`,

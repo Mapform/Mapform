@@ -1,0 +1,7 @@
+/* Media query, when screen less than 768 */
+@media (max-width: 768px) {
+  .mapboxgl-ctrl-bottom-right,
+  .mapboxgl-ctrl-bottom-left {
+    bottom: 200px;
+  }
+}

@@ -105,17 +105,33 @@ export const createProject = (authClient: UserAuthClient) =>
           /**
            * Create default page
            */
-          await tx.insert(pages).values({
-            position: 1,
-            projectId: project.id,
-            zoom: INITIAL_VIEW_STATE.zoom,
-            pitch: INITIAL_VIEW_STATE.pitch,
-            bearing: INITIAL_VIEW_STATE.bearing,
-            center: {
-              x: INITIAL_VIEW_STATE.longitude,
-              y: INITIAL_VIEW_STATE.latitude,
-            },
-          });
+          await Promise.all([
+            tx.insert(pages).values({
+              position: 1,
+              projectId: project.id,
+              zoom: INITIAL_VIEW_STATE.zoom,
+              pitch: INITIAL_VIEW_STATE.pitch,
+              bearing: INITIAL_VIEW_STATE.bearing,
+              center: {
+                x: INITIAL_VIEW_STATE.longitude,
+                y: INITIAL_VIEW_STATE.latitude,
+              },
+            }),
+
+            formsEnabled &&
+              tx.insert(pages).values({
+                position: 2,
+                projectId: project.id,
+                zoom: INITIAL_VIEW_STATE.zoom,
+                pitch: INITIAL_VIEW_STATE.pitch,
+                bearing: INITIAL_VIEW_STATE.bearing,
+                center: {
+                  x: INITIAL_VIEW_STATE.longitude,
+                  y: INITIAL_VIEW_STATE.latitude,
+                },
+                pageType: "page_ending",
+              }),
+          ]);
 
           return project;
         });

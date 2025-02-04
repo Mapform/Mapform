@@ -2,13 +2,12 @@
 
 import dynamic from "next/dynamic";
 import { useCallback } from "react";
-import { MapForm } from "@mapform/mapform";
+import { MapForm } from "~/components/mapform";
 import { debounce } from "@mapform/lib/lodash";
 import { compressImage } from "~/lib/compress-image";
 import { env } from "~/env.mjs";
 import { useProject } from "../project-context";
 import { EditBar } from "./edit-bar";
-import { useSearchParams } from "next/navigation";
 
 function Project() {
   const {
@@ -22,7 +21,6 @@ function Project() {
     updatePageOptimistic,
     updateSelectedFeatureOptimistic,
   } = useProject();
-  const searchParams = useSearchParams();
 
   /**
    * NOTE: Optimistic updates DO NOT work with debounced server actions. To work
@@ -63,8 +61,9 @@ function Project() {
         <MapForm
           currentPage={currentPage}
           editable
-          ending={searchParams.get("ending") ? projectWithPages.ending : null}
-          includeFormBlocks={projectWithPages.formsEnabled}
+          includeFormBlocks={
+            projectWithPages.formsEnabled && currentPage.pageType === "page"
+          }
           mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
           onDescriptionChange={(content, type) => {
             if (type === "page") {

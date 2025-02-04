@@ -27,7 +27,11 @@ export const getProjectWithPages = (
               : undefined,
           ),
           with: {
-            ending: true,
+            childProjects: {
+              columns: {
+                id: true,
+              },
+            },
             teamspace: {
               columns: {
                 id: true,
@@ -53,6 +57,13 @@ export const getProjectWithPages = (
             submissionsDataset: {
               columns: {
                 id: true,
+              },
+              with: {
+                columns: {
+                  columns: {
+                    blockNoteId: true,
+                  },
+                },
               },
             },
           },

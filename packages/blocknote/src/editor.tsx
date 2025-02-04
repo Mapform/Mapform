@@ -18,6 +18,7 @@ import { MapPinIcon, TextIcon, ImageIcon } from "lucide-react";
 import type { schema } from "./block-note-schema";
 import { PinMenu, TextInputMenu } from "./block-note-schema";
 import { cn } from "../../lib/classnames";
+import "./style.css";
 
 const insertPin = (edtr: typeof schema.BlockNoteEditor) => ({
   title: "Pin",

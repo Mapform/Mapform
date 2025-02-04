@@ -1,3 +1,9 @@
+/* Get rid of blue outline around selected nodes: https://github.com/TypeCellOS/BlockNote/issues/998 */
+.ProseMirror-selectednode > .bn-block-content > *,
+.bn-block-content.ProseMirror-selectednode > * {
+  outline: none !important;
+}
+
 .bn-editor {
   padding: 0;
 }
@@ -33,12 +39,4 @@ h3.bn-inline-content {
   --bn-color-highlight-colors: #ffffff;
   --bn-border-radius: 4px;
   --bn-font-family: Helvetica Neue, sans-serif; */
-}
-
-/* Media query, when screen less than 768 */
-@media (max-width: 768px) {
-  .mapboxgl-ctrl-bottom-right,
-  .mapboxgl-ctrl-bottom-left {
-    bottom: 200px;
-  }
 }

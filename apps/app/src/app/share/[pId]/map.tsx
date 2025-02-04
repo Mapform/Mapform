@@ -1,6 +1,6 @@
 "use client";
 
-import { MapForm, useMapform } from "@mapform/mapform";
+import { MapForm, useMapform } from "~/components/mapform";
 import { useAction } from "next-safe-action/hooks";
 import React, { useEffect, useState } from "react";
 import type { GetPageData } from "@mapform/backend/data/datalayer/get-page-data";
@@ -37,7 +37,7 @@ export function Map({
   const searchParams = useSearchParams();
 
   const p = searchParams.get("p");
-  const currentPage = projectWithPages?.pages.find((page) => page.id === p);
+  const currentPage = projectWithPages.pages.find((page) => page.id === p);
   const setCurrentPage = (page: Page) => {
     router.replace(`${pathname}?p=${page.id}`);
   };
@@ -105,7 +105,7 @@ export function Map({
       const cellValue = formValues.find(
         (v) => v.column.blockNoteId === block.id,
       );
-      const value = cellValue?.stringCell?.value ?? cellValue?.pointCell?.value;
+      const value = cellValue?.stringCell?.value ?? cellValue?.pointCell;
 
       if (value) {
         // @ts-expect-error -- It's ok
@@ -125,23 +125,24 @@ export function Map({
     projectWithPages.pages.findIndex((page) => page.id === currentPage.id) - 1;
   const nextPageIndex =
     projectWithPages.pages.findIndex((page) => page.id === currentPage.id) + 1;
-  const prevStep = projectWithPages.pages[prevPageIndex];
-  const nextStep = projectWithPages.pages[nextPageIndex];
+  const prevPage = projectWithPages.pages[prevPageIndex];
+  const nextPage = projectWithPages.pages[nextPageIndex];
 
   return (
     <MapForm
       currentPage={currentPage}
       defaultFormValues={pageValues}
       mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
+      nextPage={nextPage}
       onPrev={
-        prevStep
+        prevPage
           ? () => {
-              setCurrentPageAndFly(prevStep);
+              setCurrentPageAndFly(prevPage);
             }
           : undefined
       }
       onStepSubmit={
-        nextStep
+        nextPage
           ? (data) => {
               if (currentSession) {
                 execute({
@@ -151,7 +152,7 @@ export function Map({
                 });
               }
 
-              setCurrentPageAndFly(nextStep);
+              setCurrentPageAndFly(nextPage);
             }
           : undefined
       }
