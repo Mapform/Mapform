@@ -239,7 +239,9 @@ export function MapForm({
           <CustomBlockContext.Provider
             value={{
               editable,
-              onImageUpload,
+              imageBlock: {
+                onImageUpload,
+              },
               pinBlock: {
                 isSelectingLocationFor: isSelectingPinBlockLocationFor,
                 setIsSelectingLocationFor: (val) => {

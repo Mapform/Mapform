@@ -8,7 +8,6 @@ import {
 } from "lucide-react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { CommandDialog } from "@mapform/ui/components/command";
 import {
   Tooltip,
   TooltipContent,
@@ -23,13 +22,11 @@ import { LocationMarker } from "~/components/mapform";
 import type { GetPageWithLayers } from "@mapform/backend/data/pages/get-page-with-layers";
 import { useProject } from "../../project-context";
 import { SearchLocationMarker } from "./search-location-marker";
-import { CommandSearch } from "./command-search";
 import { MapDrawer } from "~/components/map-drawer";
 import {
   LocationSearch,
   LocationSearchButton,
 } from "~/components/location-search";
-import { set } from "date-fns";
 
 interface EditBarInnerProps {
   currentPage: NonNullable<GetPageWithLayers["data"]>;
@@ -212,17 +209,6 @@ function EditBarInner({ currentPage }: EditBarInnerProps) {
               </TooltipTrigger>
               <TooltipContent>Search Locations</TooltipContent>
             </Tooltip>
-            {/* <CommandDialog
-              dialogContentClassName="-translate-y-[150px]"
-              onOpenChange={setOpenSearch}
-              open={openSearch}
-              shouldFilter={false}
-            >
-              <CommandSearch
-                setOpenSearch={setOpenSearch}
-                setSearchLocation={setSearchLocation}
-              />
-            </CommandDialog> */}
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
