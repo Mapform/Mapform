@@ -2,7 +2,7 @@ import type mapboxgl from "mapbox-gl";
 import { Marker } from "mapbox-gl";
 import { useEffect, useMemo } from "react";
 import * as Portal from "@radix-ui/react-portal";
-import { useMapform } from "../context";
+import { useMapform } from "../index";
 
 interface LocationMarkerProps {
   longitude: number;

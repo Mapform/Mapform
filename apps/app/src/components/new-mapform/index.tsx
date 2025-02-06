@@ -27,74 +27,89 @@ export interface ActivePoint {
 
 interface MapformProps {
   children: React.ReactNode;
-  drawerValues: string[] | null;
-  onDrawerValuesChange: (values: string[]) => void;
-  isEditing: boolean;
 }
 
-interface MapformProviderContextProps {
+interface MapformContextProps {
   map?: MBMap;
   setMap: Dispatch<SetStateAction<MBMap | undefined>>;
   mapContainer: React.RefObject<HTMLDivElement | null>;
   mapContainerBounds: DOMRectReadOnly | undefined;
-  drawerValues: string[] | null;
-  onDrawerValuesChange: (values: string[]) => void;
-  isEditing: boolean;
 }
 
-export const MapformProviderContext =
-  createContext<MapformProviderContextProps>({} as MapformProviderContextProps);
-export const useMapform = () => useContext(MapformProviderContext);
+export const MapformContext = createContext<MapformContextProps>(
+  {} as MapformContextProps,
+);
+export const useMapform = () => useContext(MapformContext);
 
-export function Mapform({
-  children,
-  drawerValues,
-  onDrawerValuesChange,
-  isEditing,
-}: MapformProps) {
+export function Mapform({ children }: MapformProps) {
   const [map, setMap] = useState<MBMap>();
   const { ref: mapContainer, bounds } = useMeasure<HTMLDivElement>();
 
   const mapContainerBounds = bounds;
 
   return (
-    <MapformProviderContext.Provider
+    <MapformContext.Provider
       value={{
         map,
         setMap,
         mapContainer,
         mapContainerBounds,
-        drawerValues,
-        onDrawerValuesChange,
-        isEditing,
       }}
     >
       {children}
-    </MapformProviderContext.Provider>
+    </MapformContext.Provider>
   );
 }
 
-export function MapformContainer({ children }: { children: React.ReactNode }) {
+interface MapformContainerProps {
+  children: React.ReactNode;
+  drawerValues: string[] | null;
+  onDrawerValuesChange: (values: string[]) => void;
+  isEditing?: boolean;
+}
+
+interface MapformContainerContextProps {
+  drawerValues: string[] | null;
+  onDrawerValuesChange: (values: string[]) => void;
+  isEditing?: boolean;
+}
+
+export const MapformContainerContext =
+  createContext<MapformContainerContextProps>(
+    {} as MapformContainerContextProps,
+  );
+export const useMapformContainer = () => useContext(MapformContainerContext);
+
+export function MapformContainer({
+  children,
+  isEditing,
+  drawerValues,
+  onDrawerValuesChange,
+}: MapformContainerProps) {
   return (
-    <div className="relative flex-1 md:flex md:overflow-hidden">
-      {children}
-      <Button
-        className={cn(
-          "absolute left-2 top-2 z-10 shadow-sm transition-opacity delay-300 duration-300 max-md:hidden",
-          {
-            // "opacity-0": drawerOpen,
-          },
-        )}
-        onClick={() => {
-          // setDrawerOpen(true);
-        }}
-        size="icon-sm"
-        type="button"
-        variant="outline"
-      >
-        <ChevronsRightIcon className="size-5" />
-      </Button>
-    </div>
+    <MapformContainerContext.Provider
+      value={{ isEditing, drawerValues, onDrawerValuesChange }}
+    >
+      <div className="relative flex-1 md:flex md:overflow-hidden">
+        {children}
+        <Button
+          className={cn(
+            "absolute left-2 top-2 z-10 shadow-sm transition-opacity delay-300 duration-300 max-md:hidden",
+            {
+              // "opacity-0": drawerOpen,
+            },
+          )}
+          onClick={() => {
+            // setDrawerOpen(true);
+          }}
+          size="icon-sm"
+          type="button"
+          variant="outline"
+        >
+          <ChevronsRightIcon className="size-5" />
+        </Button>
+      </div>
+    </MapformContainerContext.Provider>
   );
 }
 
@@ -102,11 +117,11 @@ export function MapformMap({
   children,
   initialViewState,
 }: {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   initialViewState: ViewState;
 }) {
   const { width } = useWindowSize();
-  const { drawerValues, isEditing } = useMapform();
+  const { drawerValues, isEditing } = useMapformContainer();
   const isMobile = !!width && width < 768;
 
   const mapPadding = {

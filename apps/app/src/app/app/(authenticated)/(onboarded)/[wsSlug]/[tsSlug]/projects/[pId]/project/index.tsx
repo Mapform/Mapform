@@ -8,6 +8,7 @@ import { compressImage } from "~/lib/compress-image";
 import { env } from "~/env.mjs";
 import { useProject } from "../project-context";
 import { EditBar } from "./edit-bar";
+import { MapformContainer, MapformMap } from "~/components/new-mapform";
 
 function Project() {
   const {
@@ -58,7 +59,28 @@ function Project() {
   return (
     <div className="flex flex-1 justify-center overflow-hidden p-4">
       <div className="flex flex-1">
-        <MapForm
+        <MapformContainer
+          drawerValues={[]}
+          onDrawerValuesChange={() => console.log(111)}
+          isEditing
+        >
+          <MapformMap
+            initialViewState={{
+              longitude: currentPage.center.x,
+              latitude: currentPage.center.y,
+              zoom: currentPage.zoom,
+              bearing: currentPage.bearing,
+              pitch: currentPage.pitch,
+              padding: {
+                top: 0,
+                bottom: 0,
+                left: 0,
+                right: 0,
+              },
+            }}
+          />
+        </MapformContainer>
+        {/* <MapForm
           currentPage={currentPage}
           isEditing
           includeFormBlocks={
@@ -165,7 +187,7 @@ function Project() {
           selectedFeature={selectedFeature}
         >
           <EditBar key={currentPage.id} />
-        </MapForm>
+        </MapForm> */}
       </div>
     </div>
   );
