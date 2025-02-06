@@ -61,7 +61,7 @@ const insertImage = (edtr: typeof schema.BlockNoteEditor) => ({
 
 interface BlocknoteEditorProps {
   editor: typeof schema.BlockNoteEditor;
-  editable?: boolean;
+  isEditing?: boolean;
   includeFormBlocks?: boolean;
   onChange?: () => void;
 }
@@ -69,13 +69,13 @@ interface BlocknoteEditorProps {
 export function BlocknoteEditor({
   editor,
   onChange,
-  editable = true,
+  isEditing = true,
   includeFormBlocks = false,
 }: BlocknoteEditorProps) {
   return (
     <BlockNoteView
       className="flex-1"
-      editable={editable}
+      isEditing={isEditing}
       editor={editor}
       emojiPicker={false}
       onChange={onChange}

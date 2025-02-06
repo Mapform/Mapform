@@ -28,7 +28,7 @@ import { MapDrawer } from "../map-drawer";
 import { LocationSearch, LocationSearchButton } from "../location-search";
 
 interface MapFormProps {
-  editable?: boolean;
+  isEditing?: boolean;
   children?: React.ReactNode;
   mapboxAccessToken: string;
   currentPage: Page;
@@ -51,7 +51,7 @@ interface MapFormProps {
 }
 
 export function MapForm({
-  editable = false,
+  isEditing = false,
   onPrev,
   onLoad,
   pageData,
@@ -103,7 +103,7 @@ export function MapForm({
   const mapPadding = {
     top: 0,
     bottom: isMobile ? 200 : 0,
-    left: drawerOpen && !isMobile ? (editable ? 392 : 360) : 0,
+    left: drawerOpen && !isMobile ? (isEditing ? 392 : 360) : 0,
     right: 0,
   };
 
@@ -112,7 +112,7 @@ export function MapForm({
       <>
         <Blocknote
           description={currentPage.content as { content: CustomBlock[] }}
-          editable={editable}
+          isEditing={isEditing}
           icon={currentPage.icon}
           includeFormBlocks={includeFormBlocks}
           key={currentPage.id}
@@ -135,7 +135,7 @@ export function MapForm({
       currentPage.icon,
       currentPage.id,
       currentPage.title,
-      editable,
+      isEditing,
       includeFormBlocks,
       onPrev,
       onDescriptionChange,
@@ -148,7 +148,7 @@ export function MapForm({
     return (
       <div
         className={cn("fixed bottom-0 z-50 w-full bg-white md:absolute", {
-          hidden: editable,
+          hidden: isEditing,
         })}
       >
         <div className="px-2">
@@ -156,7 +156,7 @@ export function MapForm({
             {onPrev ? (
               <Button
                 className="absolute left-0"
-                disabled={editable}
+                disabled={isEditing}
                 onClick={onPrev}
                 type="button"
                 variant="ghost"
@@ -174,7 +174,7 @@ export function MapForm({
             {onStepSubmit && currentPage.pageType === "page" ? (
               <Button
                 className="absolute right-0"
-                disabled={editable}
+                disabled={isEditing}
                 type="submit"
               >
                 {nextPage?.pageType === "page_ending" ? "Submit" : "Next"}
@@ -187,7 +187,7 @@ export function MapForm({
     );
   }, [
     currentPage.pageType,
-    editable,
+    isEditing,
     nextPage?.pageType,
     onPrev,
     onStepSubmit,
@@ -203,7 +203,7 @@ export function MapForm({
         description={
           selectedFeature.description?.richtextCell?.value ?? undefined
         }
-        editable={editable}
+        isEditing={isEditing}
         icon={selectedFeature.icon?.iconCell?.value}
         key={`${currentPage.id}-${selectedFeature.rowId}`}
         onDescriptionChange={(val) => {
@@ -221,7 +221,7 @@ export function MapForm({
     );
   }, [
     selectedFeature,
-    editable,
+    isEditing,
     currentPage.id,
     onPrev,
     onDescriptionChange,
@@ -238,7 +238,7 @@ export function MapForm({
         <div className="relative flex-1 md:flex md:overflow-hidden">
           <CustomBlockContext.Provider
             value={{
-              editable,
+              isEditing,
               imageBlock: {
                 onImageUpload,
               },
@@ -259,7 +259,7 @@ export function MapForm({
             {/* MAP CONTAINER */}
             <div className="top-0 flex flex-1 max-md:sticky max-md:mb-[-200px] max-md:h-dvh">
               <Map
-                editable={editable}
+                isEditing={isEditing}
                 initialViewState={initialViewState}
                 isMobile={isMobile}
                 mapPadding={mapPadding}
@@ -287,7 +287,7 @@ export function MapForm({
             </Button>
             <MapDrawer
               className="max-sm:min-h-[200px]"
-              isEditing={editable}
+              isEditing={isEditing}
               onClose={
                 !isMobile
                   ? () => {
@@ -316,7 +316,7 @@ export function MapForm({
                 });
               }}
               open={Boolean(selectedFeature)}
-              isEditing={editable}
+              isEditing={isEditing}
               positionDesktop="absolute"
             >
               {selectedFeatureContent}

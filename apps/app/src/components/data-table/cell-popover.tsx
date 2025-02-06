@@ -417,7 +417,7 @@ function RichtextInput({
   return (
     <CustomBlockContext.Provider
       value={{
-        editable: true,
+        isEditing: true,
         onImageUpload: async (file: File) => {
           const compressedFile = await compressImage(
             file,
@@ -447,7 +447,7 @@ function RichtextInput({
             <FormItem className="flex-1">
               <FormControl>
                 <BlocknoteEditor
-                  editable
+                  isEditing
                   editor={editor}
                   includeFormBlocks={false}
                   onChange={() => {

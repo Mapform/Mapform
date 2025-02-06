@@ -35,9 +35,9 @@ export const Pin = createReactBlockSpec(
   {
     render: ({ block, editor }) => {
       const form = useFormContext();
-      const { editable, pinBlock } = useCustomBlockContext();
+      const { isEditing, pinBlock } = useCustomBlockContext();
 
-      if (editable) {
+      if (isEditing) {
         return (
           <div className="mb-4 flex w-full flex-col gap-2">
             <div className="flex flex-1 justify-between">

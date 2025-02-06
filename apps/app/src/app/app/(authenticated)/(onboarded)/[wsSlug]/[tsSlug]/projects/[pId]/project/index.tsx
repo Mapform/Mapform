@@ -60,7 +60,7 @@ function Project() {
       <div className="flex flex-1">
         <MapForm
           currentPage={currentPage}
-          editable
+          isEditing
           includeFormBlocks={
             projectWithPages.formsEnabled && currentPage.pageType === "page"
           }

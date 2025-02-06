@@ -9,7 +9,7 @@ import { useSetQueryString } from "@mapform/lib/hooks/use-set-query-string";
 import type Supercluster from "supercluster";
 import useSupercluster from "use-supercluster";
 import { AnimatePresence, motion } from "motion/react";
-import { useMapform } from "../context";
+import { useMapform } from "../index";
 import { LocationMarker } from "./location-marker";
 import { Cluster } from "./cluster";
 

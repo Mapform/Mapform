@@ -6,7 +6,7 @@ import { useContext, createContext } from "react";
  * Context needed to support custom blocks
  */
 export interface CustomBlockContextProps {
-  editable: boolean;
+  isEditing: boolean;
 
   imageBlock?: {
     onImageUpload?: (file: File) => Promise<string | null>;

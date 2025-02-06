@@ -33,7 +33,7 @@ export const TextInput = createReactBlockSpec(
   {
     render: ({ block, editor }) => {
       const form = useFormContext();
-      const { editable } = useCustomBlockContext();
+      const { isEditing } = useCustomBlockContext();
 
       return (
         <FormField
@@ -44,7 +44,7 @@ export const TextInput = createReactBlockSpec(
           render={({ field }) => (
             <FormItem className="mb-4 w-full">
               <Label
-                editable={editable}
+                isEditing={isEditing}
                 label={block.props.label}
                 required={block.props.required}
                 onLabelChange={(label) => {
@@ -55,7 +55,7 @@ export const TextInput = createReactBlockSpec(
                 }}
               />
               <FormControl>
-                {editable ? (
+                {isEditing ? (
                   <Input
                     className="text-muted-foreground bg-white"
                     onChange={(e) => {

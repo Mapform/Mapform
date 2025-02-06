@@ -3,19 +3,19 @@ import { AutoSizeTextArea } from "@mapform/ui/components/autosize-text-area";
 import { AsteriskIcon } from "lucide-react";
 
 interface LabelProps {
-  editable: boolean;
+  isEditing: boolean;
   label: string;
   required: boolean;
   onLabelChange: (label: string) => void;
 }
 
 export function Label({
-  editable,
+  isEditing,
   label,
   required,
   onLabelChange,
 }: LabelProps) {
-  if (editable) {
+  if (isEditing) {
     return (
       <div className="flex justify-between">
         <AutoSizeTextArea
