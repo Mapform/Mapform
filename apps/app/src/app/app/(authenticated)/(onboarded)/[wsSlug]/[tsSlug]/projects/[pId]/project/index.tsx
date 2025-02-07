@@ -15,6 +15,8 @@ import {
   MapformDrawers,
   MapformMap,
 } from "~/components/new-mapform";
+import { CustomBlock } from "@mapform/blocknote";
+import { Blocknote } from "~/components/mapform/block-note";
 
 function Project() {
   const {
@@ -73,7 +75,40 @@ function Project() {
         >
           <MapformDrawers>
             <MapformDrawer positionDesktop="absolute" value="1">
-              Test
+              <Blocknote
+                description={currentPage.content as { content: CustomBlock[] }}
+                isEditing
+                icon={currentPage.icon}
+                includeFormBlocks={
+                  projectWithPages.formsEnabled &&
+                  currentPage.pageType === "page"
+                }
+                key={currentPage.id}
+                onDescriptionChange={(val) => {
+                  debouncedUpdatePageDescription({
+                    id: currentPage.id,
+                    content: val,
+                  });
+                }}
+                onIconChange={(val) => {
+                  updatePageOptimistic({
+                    ...currentPage,
+                    icon: val,
+                  });
+
+                  updatePageServer.execute({
+                    id: currentPage.id,
+                    icon: val,
+                  });
+                }}
+                onTitleChange={(val) => {
+                  debouncedUpdatePageTitle({
+                    id: currentPage.id,
+                    title: val,
+                  });
+                }}
+                title={currentPage.title}
+              />
             </MapformDrawer>
           </MapformDrawers>
           <MapformDrawerButton
