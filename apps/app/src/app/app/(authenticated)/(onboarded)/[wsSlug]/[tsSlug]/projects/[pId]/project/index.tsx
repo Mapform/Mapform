@@ -1,14 +1,20 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { MapForm } from "~/components/mapform";
 import { debounce } from "@mapform/lib/lodash";
 import { compressImage } from "~/lib/compress-image";
 import { env } from "~/env.mjs";
 import { useProject } from "../project-context";
 import { EditBar } from "./edit-bar";
-import { MapformContainer, MapformMap } from "~/components/new-mapform";
+import {
+  MapformContent,
+  MapformDrawer,
+  MapformDrawerButton,
+  MapformDrawers,
+  MapformMap,
+} from "~/components/new-mapform";
 
 function Project() {
   const {
@@ -22,6 +28,7 @@ function Project() {
     updatePageOptimistic,
     updateSelectedFeatureOptimistic,
   } = useProject();
+  const [drawerValues, setDrawerValues] = useState<string[]>(["1"]);
 
   /**
    * NOTE: Optimistic updates DO NOT work with debounced server actions. To work
@@ -59,11 +66,19 @@ function Project() {
   return (
     <div className="flex flex-1 justify-center overflow-hidden p-4">
       <div className="flex flex-1">
-        <MapformContainer
-          drawerValues={[]}
-          onDrawerValuesChange={() => console.log(111)}
+        <MapformContent
+          drawerValues={drawerValues}
+          onDrawerValuesChange={setDrawerValues}
           isEditing
         >
+          <MapformDrawers>
+            <MapformDrawer positionDesktop="absolute" value="1">
+              Test
+            </MapformDrawer>
+          </MapformDrawers>
+          <MapformDrawerButton
+            onOpen={() => setDrawerValues([...drawerValues, "1"])}
+          />
           <MapformMap
             initialViewState={{
               longitude: currentPage.center.x,
@@ -79,7 +94,7 @@ function Project() {
               },
             }}
           />
-        </MapformContainer>
+        </MapformContent>
         {/* <MapForm
           currentPage={currentPage}
           isEditing
