@@ -17,7 +17,7 @@ import {
 import type { MapMouseEvent } from "mapbox-gl";
 import { useMapform, type MapboxEvent } from "~/components/new-mapform";
 import { cn } from "@mapform/lib/classnames";
-import type { SearchFeature } from "@mapform/map-utils/types";
+// import type { SearchFeature } from "@mapform/map-utils/types";
 import { LocationMarker } from "~/components/mapform";
 import type { GetPageWithLayers } from "@mapform/backend/data/pages/get-page-with-layers";
 import { useProject } from "../../project-context";
@@ -49,7 +49,7 @@ export function EditBar() {
 }
 
 function EditBarInner({ currentPage }: EditBarInnerProps) {
-  const { map, setDrawerOpen, mapContainer, drawerOpen } = useMapform();
+  const { map, mapContainer } = useMapform();
   const { currentProject, updatePageServer, updatePageOptimistic } =
     useProject();
   const [openSearch, setOpenSearch] = useState(false);
@@ -72,9 +72,9 @@ function EditBarInner({ currentPage }: EditBarInnerProps) {
     pitch: currentPage.pitch,
     bearing: currentPage.bearing,
   });
-  const [searchLocation, setSearchLocation] = useState<SearchFeature | null>(
-    null,
-  );
+  // const [searchLocation, setSearchLocation] = useState<SearchFeature | null>(
+  //   null,
+  // );
 
   const handleOnMove = (e: MapboxEvent) => {
     setMovedCoords({
@@ -130,11 +130,11 @@ function EditBarInner({ currentPage }: EditBarInnerProps) {
     };
 
     const handleLocationSelect = (e: MapMouseEvent) => {
-      setSearchLocation({
-        latitude: e.lngLat.lat,
-        longitude: e.lngLat.lng,
-        icon: "unknown",
-      });
+      // setSearchLocation({
+      //   latitude: e.lngLat.lat,
+      //   longitude: e.lngLat.lng,
+      //   icon: "unknown",
+      // });
       setIsSelectingPoint(false);
     };
 
@@ -182,118 +182,110 @@ function EditBarInner({ currentPage }: EditBarInnerProps) {
   return (
     <>
       {/* This container is used to center the controls within the map-side of the map. There is probably a better way to do this. */}
+
       <div
         className={cn(
-          "pointer-events-none absolute bottom-0 right-0 top-0 transition-[width] duration-200",
-          drawerOpen ? "w-[calc(100%-392px)]" : "w-full",
+          "pointer-events-auto absolute bottom-8 left-1/2 z-10 flex -translate-x-1/2 transform items-center rounded-lg border bg-white p-1 shadow-lg",
         )}
       >
-        <div
-          className={cn(
-            "pointer-events-auto absolute bottom-8 left-1/2 z-10 flex -translate-x-1/2 transform items-center rounded-lg border bg-white p-1 shadow-lg",
-          )}
-        >
-          <TooltipProvider delayDuration={200}>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  onClick={() => {
-                    setOpenSearch(true);
-                    // setDrawerOpen(false);
-                  }}
-                  size="icon"
-                  variant="ghost"
-                >
-                  <SearchIcon className="size-5" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Search Locations</TooltipContent>
-            </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  className={cn({
-                    "bg-accent": isSelectingPoint,
-                  })}
-                  onClick={() => {
-                    setIsSelectingPoint(!isSelectingPoint);
-                  }}
-                  size="icon"
-                  variant="ghost"
-                >
-                  <MapPinPlusIcon className="size-5" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Add Point to Map</TooltipContent>
-            </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  disabled={!hasMoved}
-                  onClick={() => {
-                    map?.setCenter([
-                      currentPage.center.x,
-                      currentPage.center.y,
-                    ]);
-                    map?.setZoom(currentPage.zoom);
-                    map?.setPitch(currentPage.pitch);
-                    map?.setBearing(currentPage.bearing);
-                  }}
-                  size="icon"
-                  variant="ghost"
-                >
-                  <Undo2Icon className="size-5" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Go Back To Last Pinned Location</TooltipContent>
-            </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  disabled={!hasMoved}
-                  onClick={() => {
-                    const center = map?.getCenter();
-                    const zoom = map?.getZoom();
-                    const pitch = map?.getPitch();
-                    const bearing = map?.getBearing();
+        <TooltipProvider delayDuration={200}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                onClick={() => {
+                  setOpenSearch(true);
+                  // setDrawerOpen(false);
+                }}
+                size="icon"
+                variant="ghost"
+              >
+                <SearchIcon className="size-5" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Search Locations</TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                className={cn({
+                  "bg-accent": isSelectingPoint,
+                })}
+                onClick={() => {
+                  setIsSelectingPoint(!isSelectingPoint);
+                }}
+                size="icon"
+                variant="ghost"
+              >
+                <MapPinPlusIcon className="size-5" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Add Point to Map</TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                disabled={!hasMoved}
+                onClick={() => {
+                  map?.setCenter([currentPage.center.x, currentPage.center.y]);
+                  map?.setZoom(currentPage.zoom);
+                  map?.setPitch(currentPage.pitch);
+                  map?.setBearing(currentPage.bearing);
+                }}
+                size="icon"
+                variant="ghost"
+              >
+                <Undo2Icon className="size-5" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Go Back To Last Pinned Location</TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                disabled={!hasMoved}
+                onClick={() => {
+                  const center = map?.getCenter();
+                  const zoom = map?.getZoom();
+                  const pitch = map?.getPitch();
+                  const bearing = map?.getBearing();
 
-                    if (
-                      center !== undefined &&
-                      zoom !== undefined &&
-                      pitch !== undefined &&
-                      bearing !== undefined
-                    ) {
-                      const payload = {
-                        id: currentPage.id,
-                        center: {
-                          x: center.lng,
-                          y: center.lat,
-                        },
-                        zoom,
-                        pitch,
-                        bearing,
-                      };
+                  if (
+                    center !== undefined &&
+                    zoom !== undefined &&
+                    pitch !== undefined &&
+                    bearing !== undefined
+                  ) {
+                    const payload = {
+                      id: currentPage.id,
+                      center: {
+                        x: center.lng,
+                        y: center.lat,
+                      },
+                      zoom,
+                      pitch,
+                      bearing,
+                    };
 
-                      updatePageServer.execute(payload);
+                    updatePageServer.execute(payload);
 
-                      updatePageOptimistic({
-                        ...currentPage,
-                        ...payload,
-                      });
-                    }
-                  }}
-                  size="icon"
-                  variant="ghost"
-                >
-                  <PinIcon className="size-5" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Pin Map Position</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </div>
+                    updatePageOptimistic({
+                      ...currentPage,
+                      ...payload,
+                    });
+                  }
+                }}
+                size="icon"
+                variant="ghost"
+              >
+                <PinIcon className="size-5" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Pin Map Position</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </div>
 
-        {searchLocation ? (
+      {/* {searchLocation ? (
           <LocationMarker
             markerOptions={{
               anchor: "bottom",
@@ -309,8 +301,7 @@ function EditBarInner({ currentPage }: EditBarInnerProps) {
               setSearchLocation={setSearchLocation}
             />
           </LocationMarker>
-        ) : null}
-      </div>
+        ) : null} */}
 
       {isSelectingPoint ? (
         <MapPinIcon

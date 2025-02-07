@@ -220,8 +220,9 @@ function Project() {
                 right: 0,
               },
             }}
-          />
-          <EditBar key={currentPage.id} />
+          >
+            <EditBar key={currentPage.id} />
+          </MapformMap>
         </MapformContent>
         {/* <MapForm
           currentPage={currentPage}
