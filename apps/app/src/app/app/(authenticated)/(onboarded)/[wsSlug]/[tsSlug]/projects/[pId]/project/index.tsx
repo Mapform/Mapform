@@ -2,7 +2,6 @@
 
 import dynamic from "next/dynamic";
 import { useCallback, useState } from "react";
-import { MapForm } from "~/components/mapform";
 import { debounce } from "@mapform/lib/lodash";
 import { compressImage } from "~/lib/compress-image";
 import { env } from "~/env.mjs";
@@ -17,6 +16,11 @@ import {
 } from "~/components/new-mapform";
 import { CustomBlockProvider, type CustomBlock } from "@mapform/blocknote";
 import { Blocknote } from "~/components/mapform/block-note";
+// import {
+//   LocationSearch,
+//   LocationSearchButton,
+// } from "~/components/location-search";
+import { LocationSearchDrawer } from "./location-search-drawer";
 
 function Project() {
   const {
@@ -30,9 +34,8 @@ function Project() {
     updatePageOptimistic,
     updateSelectedFeatureOptimistic,
   } = useProject();
-  const [drawerValues, setDrawerValues] = useState<string[]>(["page-content"]);
 
-  console.log(11111, selectedFeature);
+  const [drawerValues, setDrawerValues] = useState<string[]>(["page-content"]);
 
   /**
    * NOTE: Optimistic updates DO NOT work with debounced server actions. To work
@@ -202,6 +205,7 @@ function Project() {
                 />
               </MapformDrawer>
             </CustomBlockProvider>
+            <LocationSearchDrawer currentPage={currentPage} />
           </MapformDrawers>
           <MapformDrawerButton
             onOpen={() => setDrawerValues([...drawerValues, "page-content"])}

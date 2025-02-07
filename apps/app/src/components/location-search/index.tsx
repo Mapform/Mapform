@@ -28,7 +28,7 @@ import {
   PopoverAnchor,
   PopoverContent,
 } from "@mapform/ui/components/popover";
-import { useMapform } from "~/components/mapform";
+import { useMapform } from "~/components/new-mapform";
 import { Button, type ButtonProps } from "@mapform/ui/components/button";
 import { Skeleton } from "@mapform/ui/components/skeleton";
 
@@ -393,7 +393,8 @@ export function LocationSearchWithMap({
 }
 
 export function LocationSearchButton(
-  props: Omit<ButtonProps, "onClick"> & {
+  props: Omit<ButtonProps, "onClick" | "disabled"> & {
+    disabled?: boolean;
     onClick?: (
       selectedFeatue: GeoapifyPlace["features"][number] | null,
     ) => void;
@@ -405,7 +406,7 @@ export function LocationSearchButton(
     <Button
       {...props}
       className="w-full"
-      disabled={!selectedFeature || isFetching}
+      disabled={props.disabled || !selectedFeature || isFetching}
       type="button"
       onClick={() => props.onClick?.(selectedFeature)}
     />
