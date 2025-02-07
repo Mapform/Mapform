@@ -17,6 +17,7 @@ import { ChevronsRightIcon, XIcon } from "lucide-react";
 import { Map } from "./map";
 import { useWindowSize } from "@mapform/lib/hooks/use-window-size";
 import { AnimatePresence, motion } from "motion/react";
+import { GetPageData } from "@mapform/backend/data/datalayer/get-page-data";
 
 export type MBMap = mapboxgl.Map;
 export interface ActivePoint {
@@ -67,12 +68,14 @@ interface MapformContentProps {
   drawerValues: string[];
   onDrawerValuesChange: (values: string[]) => void;
   isEditing?: boolean;
+  pageData?: GetPageData["data"];
 }
 
 interface MapformContentContextProps {
   drawerValues: string[];
   onDrawerValuesChange: (values: string[]) => void;
   isEditing?: boolean;
+  pageData?: GetPageData["data"];
 }
 
 export const MapformContentContext = createContext<MapformContentContextProps>(
@@ -82,13 +85,14 @@ export const useMapformContent = () => useContext(MapformContentContext);
 
 export function MapformContent({
   children,
+  pageData,
   isEditing,
   drawerValues,
   onDrawerValuesChange,
 }: MapformContentProps) {
   return (
     <MapformContentContext.Provider
-      value={{ isEditing, drawerValues, onDrawerValuesChange }}
+      value={{ isEditing, drawerValues, onDrawerValuesChange, pageData }}
     >
       <div className="relative flex-1 md:flex md:overflow-hidden">
         {children}
@@ -121,7 +125,7 @@ export function MapformMap({
   initialViewState: ViewState;
 }) {
   const { width } = useWindowSize();
-  const { drawerValues, isEditing } = useMapformContent();
+  const { drawerValues, isEditing, pageData } = useMapformContent();
   const isMobile = !!width && width < 768;
 
   const mapPadding = {
@@ -139,7 +143,7 @@ export function MapformMap({
         isMobile={isMobile}
         mapPadding={mapPadding}
         // onLoad={onLoad}
-        // pageData={pageData}
+        pageData={pageData}
       >
         {children}
       </Map>
@@ -265,3 +269,5 @@ export function MapformDrawerButton({ onOpen }: { onOpen: () => void }) {
     </Button>
   );
 }
+
+export type { MapboxEvent } from "mapbox-gl";

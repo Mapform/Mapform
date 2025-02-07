@@ -15,7 +15,7 @@ import {
   MapformDrawers,
   MapformMap,
 } from "~/components/new-mapform";
-import { CustomBlock } from "@mapform/blocknote";
+import type { CustomBlock } from "@mapform/blocknote";
 import { Blocknote } from "~/components/mapform/block-note";
 
 function Project() {
@@ -30,7 +30,7 @@ function Project() {
     updatePageOptimistic,
     updateSelectedFeatureOptimistic,
   } = useProject();
-  const [drawerValues, setDrawerValues] = useState<string[]>(["1"]);
+  const [drawerValues, setDrawerValues] = useState<string[]>(["page-content"]);
 
   /**
    * NOTE: Optimistic updates DO NOT work with debounced server actions. To work
@@ -69,12 +69,13 @@ function Project() {
     <div className="flex flex-1 justify-center overflow-hidden p-4">
       <div className="flex flex-1">
         <MapformContent
+          isEditing
           drawerValues={drawerValues}
           onDrawerValuesChange={setDrawerValues}
-          isEditing
+          pageData={currentPageData}
         >
           <MapformDrawers>
-            <MapformDrawer positionDesktop="absolute" value="1">
+            <MapformDrawer positionDesktop="absolute" value="page-content">
               <Blocknote
                 description={currentPage.content as { content: CustomBlock[] }}
                 isEditing
@@ -110,9 +111,69 @@ function Project() {
                 title={currentPage.title}
               />
             </MapformDrawer>
+            <MapformDrawer positionDesktop="absolute" value="feature">
+              <Blocknote
+                description={
+                  selectedFeature?.description?.richtextCell?.value ?? undefined
+                }
+                isEditing
+                icon={selectedFeature?.icon?.iconCell?.value}
+                key={`${currentPage.id}-${selectedFeature?.rowId}`}
+                onDescriptionChange={(value) => {
+                  if (!selectedFeature?.description) {
+                    return;
+                  }
+
+                  debouncedUpdateCellRichtext({
+                    type: "richtext",
+                    value,
+                    rowId: selectedFeature.rowId,
+                    columnId: selectedFeature.description.columnId,
+                  });
+                }}
+                onIconChange={(value) => {
+                  if (!selectedFeature?.icon || !currentPageData) {
+                    return;
+                  }
+
+                  if (selectedFeature.icon.iconCell) {
+                    updateSelectedFeatureOptimistic({
+                      ...selectedFeature,
+                      icon: {
+                        ...selectedFeature.icon,
+                        iconCell: {
+                          ...selectedFeature.icon.iconCell,
+                          value,
+                        },
+                      },
+                    });
+                  }
+
+                  upsertCellServer.execute({
+                    type: "icon",
+                    value,
+                    rowId: selectedFeature.rowId,
+                    columnId: selectedFeature.icon.columnId,
+                  });
+                }}
+                onTitleChange={(value) => {
+                  if (!selectedFeature?.title) {
+                    return;
+                  }
+
+                  debouncedUpdateCellString({
+                    type: "string",
+                    value,
+                    rowId: selectedFeature.rowId,
+                    columnId: selectedFeature.title.columnId,
+                  });
+                }}
+                title={selectedFeature?.title?.stringCell?.value}
+              />
+            </MapformDrawer>
           </MapformDrawers>
           <MapformDrawerButton
-            onOpen={() => setDrawerValues([...drawerValues, "1"])}
+            onOpen={() => setDrawerValues([...drawerValues, "page-content"])}
           />
           <MapformMap
             initialViewState={{
@@ -129,6 +190,7 @@ function Project() {
               },
             }}
           />
+          <EditBar key={currentPage.id} />
         </MapformContent>
         {/* <MapForm
           currentPage={currentPage}

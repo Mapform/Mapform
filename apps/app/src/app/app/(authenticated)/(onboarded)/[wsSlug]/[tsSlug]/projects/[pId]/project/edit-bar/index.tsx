@@ -15,7 +15,7 @@ import {
   TooltipTrigger,
 } from "@mapform/ui/components/tooltip";
 import type { MapMouseEvent } from "mapbox-gl";
-import { useMapform, type MapboxEvent } from "~/components/mapform";
+import { useMapform, type MapboxEvent } from "~/components/new-mapform";
 import { cn } from "@mapform/lib/classnames";
 import type { SearchFeature } from "@mapform/map-utils/types";
 import { LocationMarker } from "~/components/mapform";
