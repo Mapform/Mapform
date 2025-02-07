@@ -15,7 +15,7 @@ import {
   MapformDrawers,
   MapformMap,
 } from "~/components/new-mapform";
-import type { CustomBlock } from "@mapform/blocknote";
+import { CustomBlockProvider, type CustomBlock } from "@mapform/blocknote";
 import { Blocknote } from "~/components/mapform/block-note";
 
 function Project() {
@@ -31,6 +31,8 @@ function Project() {
     updateSelectedFeatureOptimistic,
   } = useProject();
   const [drawerValues, setDrawerValues] = useState<string[]>(["page-content"]);
+
+  console.log(11111, selectedFeature);
 
   /**
    * NOTE: Optimistic updates DO NOT work with debounced server actions. To work
@@ -75,102 +77,131 @@ function Project() {
           pageData={currentPageData}
         >
           <MapformDrawers>
-            <MapformDrawer positionDesktop="absolute" value="page-content">
-              <Blocknote
-                description={currentPage.content as { content: CustomBlock[] }}
-                isEditing
-                icon={currentPage.icon}
-                includeFormBlocks={
-                  projectWithPages.formsEnabled &&
-                  currentPage.pageType === "page"
-                }
-                key={currentPage.id}
-                onDescriptionChange={(val) => {
-                  debouncedUpdatePageDescription({
-                    id: currentPage.id,
-                    content: val,
-                  });
-                }}
-                onIconChange={(val) => {
-                  updatePageOptimistic({
-                    ...currentPage,
-                    icon: val,
-                  });
+            <CustomBlockProvider
+              isEditing
+              imageBlock={{
+                onImageUpload: async (file: File) => {
+                  const compressedFile = await compressImage(
+                    file,
+                    0.8,
+                    2000,
+                    2000,
+                    1000,
+                  );
+                  const formData = new FormData();
+                  formData.append("image", compressedFile);
 
-                  updatePageServer.execute({
-                    id: currentPage.id,
-                    icon: val,
-                  });
-                }}
-                onTitleChange={(val) => {
-                  debouncedUpdatePageTitle({
-                    id: currentPage.id,
-                    title: val,
-                  });
-                }}
-                title={currentPage.title}
-              />
-            </MapformDrawer>
-            <MapformDrawer positionDesktop="absolute" value="feature">
-              <Blocknote
-                description={
-                  selectedFeature?.description?.richtextCell?.value ?? undefined
-                }
-                isEditing
-                icon={selectedFeature?.icon?.iconCell?.value}
-                key={`${currentPage.id}-${selectedFeature?.rowId}`}
-                onDescriptionChange={(value) => {
-                  if (!selectedFeature?.description) {
-                    return;
+                  const response =
+                    await uploadImageServer.executeAsync(formData);
+
+                  if (response?.serverError) {
+                    return null;
                   }
 
-                  debouncedUpdateCellRichtext({
-                    type: "richtext",
-                    value,
-                    rowId: selectedFeature.rowId,
-                    columnId: selectedFeature.description.columnId,
-                  });
-                }}
-                onIconChange={(value) => {
-                  if (!selectedFeature?.icon || !currentPageData) {
-                    return;
+                  return response?.data?.url || null;
+                },
+              }}
+            >
+              <MapformDrawer positionDesktop="absolute" value="page-content">
+                <Blocknote
+                  description={
+                    currentPage.content as { content: CustomBlock[] }
                   }
-
-                  if (selectedFeature.icon.iconCell) {
-                    updateSelectedFeatureOptimistic({
-                      ...selectedFeature,
-                      icon: {
-                        ...selectedFeature.icon,
-                        iconCell: {
-                          ...selectedFeature.icon.iconCell,
-                          value,
-                        },
-                      },
+                  isEditing
+                  icon={currentPage.icon}
+                  includeFormBlocks={
+                    projectWithPages.formsEnabled &&
+                    currentPage.pageType === "page"
+                  }
+                  key={currentPage.id}
+                  onDescriptionChange={(val) => {
+                    debouncedUpdatePageDescription({
+                      id: currentPage.id,
+                      content: val,
                     });
-                  }
+                  }}
+                  onIconChange={(val) => {
+                    updatePageOptimistic({
+                      ...currentPage,
+                      icon: val,
+                    });
 
-                  upsertCellServer.execute({
-                    type: "icon",
-                    value,
-                    rowId: selectedFeature.rowId,
-                    columnId: selectedFeature.icon.columnId,
-                  });
-                }}
-                onTitleChange={(value) => {
-                  if (!selectedFeature?.title) {
-                    return;
+                    updatePageServer.execute({
+                      id: currentPage.id,
+                      icon: val,
+                    });
+                  }}
+                  onTitleChange={(val) => {
+                    debouncedUpdatePageTitle({
+                      id: currentPage.id,
+                      title: val,
+                    });
+                  }}
+                  title={currentPage.title}
+                />
+              </MapformDrawer>
+              <MapformDrawer positionDesktop="absolute" value="feature">
+                <Blocknote
+                  description={
+                    selectedFeature?.description?.richtextCell?.value ??
+                    undefined
                   }
+                  isEditing
+                  icon={selectedFeature?.icon?.iconCell?.value}
+                  key={`${currentPage.id}-${selectedFeature?.rowId}`}
+                  onDescriptionChange={(value) => {
+                    if (!selectedFeature?.description) {
+                      return;
+                    }
 
-                  debouncedUpdateCellString({
-                    type: "string",
-                    value,
-                    rowId: selectedFeature.rowId,
-                    columnId: selectedFeature.title.columnId,
-                  });
-                }}
-                title={selectedFeature?.title?.stringCell?.value}
-              />
-            </MapformDrawer>
+                    debouncedUpdateCellRichtext({
+                      type: "richtext",
+                      value,
+                      rowId: selectedFeature.rowId,
+                      columnId: selectedFeature.description.columnId,
+                    });
+                  }}
+                  onIconChange={(value) => {
+                    if (!selectedFeature?.icon || !currentPageData) {
+                      return;
+                    }
+
+                    if (selectedFeature.icon.iconCell) {
+                      updateSelectedFeatureOptimistic({
+                        ...selectedFeature,
+                        icon: {
+                          ...selectedFeature.icon,
+                          iconCell: {
+                            ...selectedFeature.icon.iconCell,
+                            value,
+                          },
+                        },
+                      });
+                    }
+
+                    upsertCellServer.execute({
+                      type: "icon",
+                      value,
+                      rowId: selectedFeature.rowId,
+                      columnId: selectedFeature.icon.columnId,
+                    });
+                  }}
+                  onTitleChange={(value) => {
+                    if (!selectedFeature?.title) {
+                      return;
+                    }
+
+                    debouncedUpdateCellString({
+                      type: "string",
+                      value,
+                      rowId: selectedFeature.rowId,
+                      columnId: selectedFeature.title.columnId,
+                    });
+                  }}
+                  title={selectedFeature?.title?.stringCell?.value}
+                />
+              </MapformDrawer>
+            </CustomBlockProvider>
           </MapformDrawers>
           <MapformDrawerButton
             onOpen={() => setDrawerValues([...drawerValues, "page-content"])}

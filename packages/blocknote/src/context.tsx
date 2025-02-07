@@ -24,3 +24,18 @@ export const CustomBlockContext = createContext<CustomBlockContextProps>(
   {} as CustomBlockContextProps,
 );
 export const useCustomBlockContext = () => useContext(CustomBlockContext);
+
+type CustomBlockProviderProps = CustomBlockContextProps & {
+  children: React.ReactNode;
+};
+
+export const CustomBlockProvider = ({
+  children,
+  ...props
+}: CustomBlockProviderProps) => {
+  return (
+    <CustomBlockContext.Provider value={props}>
+      {children}
+    </CustomBlockContext.Provider>
+  );
+};
