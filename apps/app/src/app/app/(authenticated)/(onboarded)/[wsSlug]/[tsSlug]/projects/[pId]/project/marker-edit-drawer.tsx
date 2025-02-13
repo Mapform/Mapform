@@ -79,11 +79,9 @@ export function MarkerEditDrawerInner({ currentPage }: MarkerEditDrawerProps) {
       (layer.type === "point" || layer.type === "marker"),
   );
 
-  if (!selectedFeature?.properties) return null;
-
   const location = {
-    x: selectedFeature.properties.lon,
-    y: selectedFeature.properties.lat,
+    x: selectedFeature?.properties?.lon ?? 0,
+    y: selectedFeature?.properties?.lat ?? 0,
   };
 
   return (
@@ -99,7 +97,11 @@ export function MarkerEditDrawerInner({ currentPage }: MarkerEditDrawerProps) {
         // open={open}
       >
         <PopoverTrigger asChild>
-          <LocationSearchButton className="w-full" role="combobox">
+          <LocationSearchButton
+            className="w-full"
+            disabled={!selectedFeature?.properties}
+            role="combobox"
+          >
             Add to Layer
           </LocationSearchButton>
         </PopoverTrigger>
