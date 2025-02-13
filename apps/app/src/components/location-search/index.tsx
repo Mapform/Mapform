@@ -66,7 +66,7 @@ export function LocationSearchWithMap({
     GeoapifyPlace["features"][number] | null
   >(null);
   const [hasMapMoved, setHasMapMoved] = useState(false);
-  const [isMapMoving, setIsMapMoving] = useState(false);
+  const [showPinPopover, setShowPinPopover] = useState(true);
 
   const debouncedSearchQuery = useDebounce(query, 200);
 
@@ -106,7 +106,7 @@ export function LocationSearchWithMap({
   });
 
   const { isFetching: isFetchingRGResults } = useQuery({
-    enabled: !isMapMoving && hasMapMoved,
+    enabled: !showPinPopover && hasMapMoved,
     queryKey: ["reverse-geocode", map.getCenter().lat, map.getCenter().lng],
     queryFn: () =>
       reverseGeocode({
@@ -121,19 +121,23 @@ export function LocationSearchWithMap({
     const el = document.createElement("div");
     const mk = new Marker(el).setLngLat(currentLocation);
 
+    map.on("click", () => {
+      setShowPinPopover(false);
+    });
+
     map.on("move", () => {
       mk.setLngLat(map.getCenter());
     });
 
     map.on("dragstart", () => {
-      setIsMapMoving(true);
+      setShowPinPopover(false);
       setHasMapMoved(true);
     });
 
     // map.on("")
 
     map.on("dragend", () => {
-      setIsMapMoving(false);
+      setShowPinPopover(true);
     });
 
     return mk;
@@ -146,7 +150,7 @@ export function LocationSearchWithMap({
     }, 100);
 
     return () => {
-      setIsMapMoving(false);
+      setShowPinPopover(true);
       marker.remove();
     };
   }, []);
@@ -343,13 +347,13 @@ export function LocationSearchWithMap({
         </div>
       </Command>
       <Portal.Root container={marker.getElement()}>
-        <Popover open={!isMapMoving}>
+        <Popover open={showPinPopover}>
           <PopoverAnchor>
             <motion.div
               animate={{
                 opacity: 1,
               }}
-              className="z-50 flex -translate-y-1/2 flex-col items-center"
+              className="z-[100] flex -translate-y-1/2 flex-col items-center"
               key="pin"
               initial={{ opacity: 0 }}
               exit={{ opacity: 0 }}
@@ -393,10 +397,11 @@ export function LocationSearchWithMap({
 }
 
 export function LocationSearchButton(
-  props: Omit<ButtonProps, "onClick" | "disabled"> & {
+  props: Omit<ButtonProps, "onClick" | "disabled" | "className"> & {
     disabled?: boolean;
+    className?: string;
     onClick?: (
-      selectedFeatue: GeoapifyPlace["features"][number] | null,
+      selectedFeature: GeoapifyPlace["features"][number] | null,
     ) => void;
   },
 ) {
@@ -405,7 +410,7 @@ export function LocationSearchButton(
   return (
     <Button
       {...props}
-      className="w-full"
+      className={cn(props.className, "w-full")}
       disabled={props.disabled || !selectedFeature || isFetching}
       type="button"
       onClick={() => props.onClick?.(selectedFeature)}
