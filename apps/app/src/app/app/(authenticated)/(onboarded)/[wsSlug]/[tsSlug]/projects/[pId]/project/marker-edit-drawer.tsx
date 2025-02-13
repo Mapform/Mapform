@@ -20,7 +20,6 @@ import {
   PopoverContent,
 } from "@mapform/ui/components/popover";
 import { PlusIcon, Layers2Icon } from "lucide-react";
-import { title } from "process";
 import {
   LayerPopoverRoot,
   LayerPopoverAnchor,
@@ -83,6 +82,10 @@ export function MarkerEditDrawerInner({ currentPage }: MarkerEditDrawerProps) {
     x: selectedFeature?.properties?.lon ?? 0,
     y: selectedFeature?.properties?.lat ?? 0,
   };
+
+  const title =
+    selectedFeature?.properties?.name ??
+    selectedFeature?.properties?.address_line1;
 
   return (
     <>
