@@ -21,6 +21,7 @@ import { Blocknote } from "~/components/mapform/block-note";
 //   LocationSearchButton,
 // } from "~/components/location-search";
 import { LocationSearchDrawer } from "./location-search-drawer";
+import { MarkerEditDrawer } from "./marker-edit-drawer";
 
 function Project() {
   const {
@@ -206,6 +207,7 @@ function Project() {
               </MapformDrawer>
             </CustomBlockProvider>
             <LocationSearchDrawer currentPage={currentPage} />
+            <MarkerEditDrawer currentPage={currentPage} />
           </MapformDrawers>
           <MapformDrawerButton
             onOpen={() => setDrawerValues([...drawerValues, "page-content"])}

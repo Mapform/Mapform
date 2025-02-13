@@ -11,12 +11,15 @@ import { cn } from "@mapform/lib/classnames";
 import { useProject } from "../project-context";
 import { FocusIcon, HandIcon, MapPinPlusIcon, SearchIcon } from "lucide-react";
 
+const EDIT_BAR_DRAWERS = ["location-search", "marker-edit"];
+
 export function EditBar() {
   const { map } = useMapform();
   const { currentPage } = useProject();
   const { drawerValues, onDrawerValuesChange } = useMapformContent();
 
   const isSearchOpen = drawerValues.includes("location-search");
+  const isMarkerEditOpen = drawerValues.includes("marker-edit");
 
   if (!currentPage) {
     return null;
@@ -26,7 +29,7 @@ export function EditBar() {
     <TooltipProvider delayDuration={200}>
       <div
         className={cn(
-          "pointer-events-auto absolute bottom-8 left-1/2 z-10 flex -translate-x-1/2 transform items-center divide-x rounded-lg border bg-white p-1.5 shadow-lg",
+          "pointer-events-auto absolute bottom-8 left-1/2 z-10 flex -translate-x-1/2 transform items-center divide-x rounded-xl border bg-white p-1.5 shadow-lg",
         )}
       >
         <div className="flex gap-1 pr-1.5">
@@ -35,11 +38,13 @@ export function EditBar() {
               <Button
                 onClick={() => {
                   onDrawerValuesChange(
-                    drawerValues.filter((value) => value !== "location-search"),
+                    drawerValues.filter(
+                      (value) => !EDIT_BAR_DRAWERS.includes(value),
+                    ),
                   );
                 }}
                 size="icon"
-                variant={isSearchOpen ? "ghost" : "default"}
+                variant={isSearchOpen || isMarkerEditOpen ? "ghost" : "default"}
               >
                 <HandIcon className="size-5" />
               </Button>
@@ -53,7 +58,12 @@ export function EditBar() {
               <Button
                 onClick={() => {
                   if (!isSearchOpen) {
-                    onDrawerValuesChange([...drawerValues, "location-search"]);
+                    onDrawerValuesChange([
+                      ...drawerValues.filter(
+                        (value) => !EDIT_BAR_DRAWERS.includes(value),
+                      ),
+                      "location-search",
+                    ]);
                   }
                 }}
                 size="icon"
@@ -66,7 +76,20 @@ export function EditBar() {
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button size="icon" variant="ghost">
+              <Button
+                onClick={() => {
+                  if (!isMarkerEditOpen) {
+                    onDrawerValuesChange([
+                      ...drawerValues.filter(
+                        (value) => !EDIT_BAR_DRAWERS.includes(value),
+                      ),
+                      "marker-edit",
+                    ]);
+                  }
+                }}
+                size="icon"
+                variant={isMarkerEditOpen ? "default" : "ghost"}
+              >
                 <MapPinPlusIcon className="size-5" />
               </Button>
             </TooltipTrigger>
@@ -92,7 +115,7 @@ export function EditBar() {
               </Button>
             </TooltipTrigger>
             <TooltipContent>
-              <p>Recenter map</p>
+              <p>Re-center map</p>
             </TooltipContent>
           </Tooltip>
         </div>
