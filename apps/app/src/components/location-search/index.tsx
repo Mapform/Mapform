@@ -62,6 +62,7 @@ export function LocationSearchWithMap({
   const inputRef = useRef<HTMLInputElement>(null);
   const [query, setQuery] = useState("");
   const queryClient = useQueryClient();
+  const [isFetchingRGResults, setIsFetchingRGResults] = useState(false);
   const [selectedFeature, setSelectedFeature] = useState<
     GeoapifyPlace["features"][number] | null
   >(null);
@@ -70,9 +71,12 @@ export function LocationSearchWithMap({
   const debouncedSearchQuery = useDebounce(query, 200);
 
   const reverseGeocode = async ({ lat, lng }: { lat: number; lng: number }) => {
+    setIsFetchingRGResults(true);
     const response = await fetch(
       `/api/places/reverse-geocode?lat=${lat}&lng=${lng}`,
     );
+
+    setIsFetchingRGResults(false);
 
     if (!response.ok) {
       throw new Error(`Response status: ${response.status}`);
@@ -113,7 +117,7 @@ export function LocationSearchWithMap({
     placeholderData: (prev) => prev,
   });
 
-  const { isFetching: isFetchingRGResults, refetch } = useQuery({
+  const { refetch } = useQuery({
     enabled: false,
     queryKey: ["reverse-geocode", map.getCenter().lat, map.getCenter().lng],
     queryFn: () =>
