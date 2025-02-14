@@ -193,6 +193,7 @@ export function Map({
                   // when opening the next drawer
                   window.scrollTo({ top: 0, behavior: "smooth" });
                   setTimeout(() => {
+                    setDrawerValues([...drawerValues, "location-search"]);
                     setIsSelectingPinBlockLocationFor(val);
                   }, 500);
                 },
@@ -228,7 +229,11 @@ export function Map({
                 />
               </MapformDrawer>
             </CustomBlockProvider>
-            <MapformDrawer positionDesktop="absolute" value="location-search">
+            <MapformDrawer
+              positionDesktop="absolute"
+              positionMobile="fixed"
+              value="location-search"
+            >
               <LocationSearch></LocationSearch>
             </MapformDrawer>
           </MapformContent>
