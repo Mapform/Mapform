@@ -25,16 +25,17 @@ export const CustomBlockContext = createContext<CustomBlockContextProps>(
 );
 export const useCustomBlockContext = () => useContext(CustomBlockContext);
 
-type CustomBlockProviderProps = CustomBlockContextProps & {
+type CustomBlockProviderProps = Partial<CustomBlockContextProps> & {
   children: React.ReactNode;
 };
 
 export const CustomBlockProvider = ({
   children,
+  isEditing = false,
   ...props
 }: CustomBlockProviderProps) => {
   return (
-    <CustomBlockContext.Provider value={props}>
+    <CustomBlockContext.Provider value={{ isEditing, ...props }}>
       {children}
     </CustomBlockContext.Provider>
   );

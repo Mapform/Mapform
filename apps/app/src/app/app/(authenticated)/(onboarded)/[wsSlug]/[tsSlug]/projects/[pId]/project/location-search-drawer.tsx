@@ -63,9 +63,6 @@ export function LocationSearchDrawerInner({
 
   const { execute: executeCreatePoint } = useAction(createPointAction, {
     onSuccess: () => {
-      // setSearchLocation(null);
-      // setDrawerOpen(true);
-      // setOpen(false);
       setLayerPopoverOpen(false);
       toast({
         title: "Success!",
@@ -73,15 +70,6 @@ export function LocationSearchDrawerInner({
       });
     },
   });
-
-  // const roundLocation = (num: number) => Math.round(num * 1000000) / 1000000;
-
-  // const hasMoved =
-  //   roundLocation(movedCoords.lat) !== roundLocation(currentPage.center.y) ||
-  //   roundLocation(movedCoords.lng) !== roundLocation(currentPage.center.x) ||
-  //   movedCoords.zoom !== currentPage.zoom ||
-  //   movedCoords.pitch !== currentPage.pitch ||
-  //   movedCoords.bearing !== currentPage.bearing;
 
   const pageLayers = currentProject.pageLayers.filter(
     (layer) =>
@@ -139,12 +127,10 @@ export function LocationSearchDrawerInner({
       <Popover
         modal
         onOpenChange={(val) => {
-          // setOpen(val);
           if (val) {
             setQuery("");
           }
         }}
-        // open={open}
       >
         <PopoverTrigger asChild>
           <LocationSearchButton
@@ -185,7 +171,6 @@ export function LocationSearchDrawerInner({
                 <CommandItem
                   onSelect={() => {
                     setLayerPopoverOpen(true);
-                    // setOpen(false);
                   }}
                 >
                   <div className="flex items-center overflow-hidden">
