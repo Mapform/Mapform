@@ -417,7 +417,10 @@ export function Map({
                     value: `marker_${cluster.properties.rowId}_${cluster.properties.pointLayerId}`,
                   });
 
-                  onDrawerValuesChange([...drawerValues, "feature"]);
+                  onDrawerValuesChange([
+                    ...drawerValues.filter((v) => v !== "feature"),
+                    "feature",
+                  ]);
                 }}
                 style={{ backgroundColor: cluster.properties.color }}
                 type="button"
