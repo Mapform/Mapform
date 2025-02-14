@@ -14,7 +14,7 @@ import { AutoSizeTextArea } from "@mapform/ui/components/autosize-text-area";
 
 interface BlocknoteProps {
   icon?: string | null;
-  isEditing: boolean;
+  isEditing?: boolean;
   title?: string | null;
   description?: {
     content: CustomBlock[];
@@ -30,7 +30,7 @@ interface BlocknoteProps {
 }
 
 export function Blocknote({
-  isEditing,
+  isEditing = false,
   icon,
   title,
   description,

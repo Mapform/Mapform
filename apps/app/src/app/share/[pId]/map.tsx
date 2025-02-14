@@ -26,6 +26,7 @@ import {
 import { Blocknote } from "~/components/mapform/block-note";
 import { Form, useForm, zodResolver } from "@mapform/ui/components/form";
 import type { z } from "zod";
+import { LocationSearch } from "~/components/location-search";
 
 interface MapProps {
   pageData: GetPageData["data"];
@@ -206,17 +207,30 @@ export function Map({
                   description={
                     currentPage.content as { content: CustomBlock[] }
                   }
-                  isEditing
                   icon={currentPage.icon}
-                  includeFormBlocks={
-                    projectWithPages.formsEnabled &&
-                    currentPage.pageType === "page"
-                  }
                   key={currentPage.id}
                   title={currentPage.title}
                 />
               </MapformDrawer>
+              <MapformDrawer
+                className="max-sm:min-h-[200px]"
+                value="feature"
+                positionDesktop="absolute"
+              >
+                <Blocknote
+                  description={
+                    selectedFeature?.description?.richtextCell?.value ??
+                    undefined
+                  }
+                  icon={selectedFeature?.icon?.iconCell?.value}
+                  key={`${currentPage.id}-${selectedFeature?.rowId}`}
+                  title={selectedFeature?.title?.stringCell?.value}
+                />
+              </MapformDrawer>
             </CustomBlockProvider>
+            <MapformDrawer positionDesktop="absolute" value="location-search">
+              <LocationSearch></LocationSearch>
+            </MapformDrawer>
           </MapformContent>
         </form>
       </Form>
