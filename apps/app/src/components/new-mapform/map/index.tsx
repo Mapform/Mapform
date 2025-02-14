@@ -430,7 +430,7 @@ export function Map({
       </AnimatePresence>
       <div
         className={cn(
-          "absolute bottom-0 left-0 right-0 top-0 transition-all duration-200",
+          "absolute bottom-0 left-0 right-0 top-0 transition-all duration-[250]",
         )}
         style={mapPadding}
       >

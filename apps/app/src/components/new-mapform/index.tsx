@@ -17,7 +17,7 @@ import { ChevronsRightIcon, XIcon } from "lucide-react";
 import { Map } from "./map";
 import { useWindowSize } from "@mapform/lib/hooks/use-window-size";
 import { AnimatePresence, motion } from "motion/react";
-import { GetPageData } from "@mapform/backend/data/datalayer/get-page-data";
+import type { GetPageData } from "@mapform/backend/data/datalayer/get-page-data";
 
 export type MBMap = mapboxgl.Map;
 export interface ActivePoint {
@@ -96,22 +96,6 @@ export function MapformContent({
     >
       <div className="relative flex-1 md:flex md:overflow-hidden">
         {children}
-        {/* <Button
-          className={cn(
-            "absolute left-2 top-2 z-10 shadow-sm transition-opacity delay-300 duration-300 max-md:hidden",
-            {
-              // "opacity-0": drawerOpen,
-            },
-          )}
-          onClick={() => {
-            // setDrawerOpen(true);
-          }}
-          size="icon-sm"
-          type="button"
-          variant="outline"
-        >
-          <ChevronsRightIcon className="size-5" />
-        </Button> */}
       </div>
     </MapformContentContext.Provider>
   );
@@ -151,10 +135,6 @@ export function MapformMap({
   );
 }
 
-export function MapformDrawers({ children }: { children: React.ReactNode }) {
-  return <AnimatePresence mode="popLayout">{children}</AnimatePresence>;
-}
-
 export function MapformDrawer({
   children,
   className,
@@ -171,75 +151,76 @@ export function MapformDrawer({
 }) {
   const { drawerValues, isEditing, onDrawerValuesChange } = useMapformContent();
 
-  if (!drawerValues.includes(value)) {
-    return null;
-  }
-
   return (
-    <motion.div
-      className={cn(
-        // BASE STYLES
-        "bg-background prose group z-40 flex flex-col shadow-lg outline-none",
+    <AnimatePresence mode="popLayout">
+      {drawerValues.includes(value) ? (
+        <motion.div
+          className={cn(
+            // BASE STYLES
+            "bg-background prose group z-40 flex flex-col shadow-lg outline-none",
 
-        // DESKTOP STYLES
-        "sm:h-full sm:w-[360px] sm:[--x-from:-100%] sm:[--x-to:0]",
-        {
-          "sm:absolute sm:bottom-0 sm:left-0": positionDesktop === "absolute",
-          "sm:fixed sm:bottom-0 sm:left-0": positionDesktop === "fixed",
-          "sm:relative": positionDesktop === "relative",
-        },
+            // DESKTOP STYLES
+            "sm:h-full sm:w-[360px] sm:[--x-from:-100%] sm:[--x-to:0]",
+            {
+              "sm:absolute sm:bottom-0 sm:left-0":
+                positionDesktop === "absolute",
+              "sm:fixed sm:bottom-0 sm:left-0": positionDesktop === "fixed",
+              "sm:relative": positionDesktop === "relative",
+            },
 
-        // MOBILE STYLES
-        "max-sm:w-full max-sm:overflow-y-auto max-sm:rounded-t-xl max-sm:shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] max-sm:[--y-from:200px] max-sm:[--y-to:0]",
-        {
-          "max-sm:absolute max-sm:bottom-0 max-sm:left-0":
-            positionMobile === "absolute",
-          "max-sm:fixed max-sm:bottom-0 max-sm:left-0":
-            positionMobile === "fixed",
-          "max-sm:relative": positionMobile === "relative",
-        },
+            // MOBILE STYLES
+            "max-sm:w-full max-sm:overflow-y-auto max-sm:rounded-t-xl max-sm:shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] max-sm:[--y-from:200px] max-sm:[--y-to:0]",
+            {
+              "max-sm:absolute max-sm:bottom-0 max-sm:left-0":
+                positionMobile === "absolute",
+              "max-sm:fixed max-sm:bottom-0 max-sm:left-0":
+                positionMobile === "fixed",
+              "max-sm:relative": positionMobile === "relative",
+            },
 
-        // EDITING STYLES
-        {
-          "pl-8 sm:w-[392px]": isEditing,
-          "overflow-hidden": !isEditing,
-        },
+            // EDITING STYLES
+            {
+              "pl-8 sm:w-[392px]": isEditing,
+              "overflow-hidden": !isEditing,
+            },
 
-        className,
-      )}
-      layoutScroll
-      animate="open"
-      initial="closed"
-      exit="closed"
-      transition={{
-        duration: 0.2,
-      }}
-      variants={{
-        open: {
-          opacity: 1,
-          y: "var(--y-to, 0)",
-          x: "var(--x-to, 0)",
-        },
-        closed: {
-          opacity: 0,
-          y: "var(--y-from, 0)",
-          x: "var(--x-from, 0)",
-        },
-      }}
-    >
-      <Button
-        className="absolute right-2 top-2 z-50"
-        onClick={() =>
-          onDrawerValuesChange(drawerValues.filter((v) => v !== value))
-        }
-        size="icon-sm"
-        type="button"
-        variant="ghost"
-      >
-        <XIcon className="size-5" />
-      </Button>
-      {children}
-    </motion.div>
+            className,
+          )}
+          layoutScroll
+          animate="open"
+          initial="closed"
+          exit="closed"
+          transition={{
+            duration: 0.25,
+          }}
+          variants={{
+            open: {
+              opacity: 1,
+              y: "var(--y-to, 0)",
+              x: "var(--x-to, 0)",
+            },
+            closed: {
+              opacity: 0,
+              y: "var(--y-from, 0)",
+              x: "var(--x-from, 0)",
+            },
+          }}
+        >
+          <Button
+            className="absolute right-2 top-2 z-50"
+            onClick={() =>
+              onDrawerValuesChange(drawerValues.filter((v) => v !== value))
+            }
+            size="icon-sm"
+            type="button"
+            variant="ghost"
+          >
+            <XIcon className="size-5" />
+          </Button>
+          {children}
+        </motion.div>
+      ) : null}
+    </AnimatePresence>
   );
 }
 
