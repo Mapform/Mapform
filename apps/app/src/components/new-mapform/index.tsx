@@ -150,6 +150,9 @@ export function MapformDrawer({
   className?: string;
 }) {
   const { drawerValues, isEditing, onDrawerValuesChange } = useMapformContent();
+  const valueIndex = drawerValues.indexOf(value);
+  const reveresedValues = drawerValues.concat().reverse();
+  const reverseValueIndex = reveresedValues.indexOf(value);
 
   return (
     <AnimatePresence mode="popLayout">
@@ -157,7 +160,7 @@ export function MapformDrawer({
         <motion.div
           className={cn(
             // BASE STYLES
-            "bg-background prose group z-40 flex flex-col shadow-lg outline-none",
+            "bg-background prose group z-40 flex flex-col shadow-lg outline-none transition-[filter,margin-left] duration-[250]",
 
             // DESKTOP STYLES
             "sm:h-full sm:w-[360px] sm:[--x-from:-100%] sm:[--x-to:0]",
@@ -190,6 +193,11 @@ export function MapformDrawer({
           animate="open"
           initial="closed"
           exit="closed"
+          style={{
+            zIndex: 40 + valueIndex,
+            marginLeft: 1 * reverseValueIndex * 10,
+            filter: `brightness(${1 - reverseValueIndex * 0.1})`,
+          }}
           transition={{
             duration: 0.25,
           }}

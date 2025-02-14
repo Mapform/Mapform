@@ -145,13 +145,12 @@ export function LocationSearchWithMap({
     });
 
     map.on("moveend", () => {
-      console.log(1111);
-      refetch();
+      void refetch();
       setShowPinPopover(true);
     });
 
     return mk;
-  }, [map]);
+  }, [map, refetch]);
 
   useEffect(() => {
     marker.addTo(map);
