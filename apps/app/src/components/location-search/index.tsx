@@ -67,7 +67,6 @@ export function LocationSearchWithMap({
     GeoapifyPlace["features"][number] | null
   >(null);
   const [showPinPopover, setShowPinPopover] = useState(true);
-
   const debouncedSearchQuery = useDebounce(query, 200);
 
   const reverseGeocode = async ({ lat, lng }: { lat: number; lng: number }) => {
@@ -146,6 +145,7 @@ export function LocationSearchWithMap({
     });
 
     map.on("moveend", () => {
+      console.log(1111);
       refetch();
       setShowPinPopover(true);
     });
@@ -193,6 +193,10 @@ export function LocationSearchWithMap({
           .setCenter([feature.properties.lon, feature.properties.lat]);
 
         setSelectedFeature(feature);
+
+        setTimeout(() => {
+          inputRef.current?.blur();
+        }, 0);
       }
     };
 
@@ -236,12 +240,13 @@ export function LocationSearchWithMap({
     ) ?? [];
 
   const searchResultsList = useMemo(() => {
-    if (!searchResults) {
-      return null;
-    }
-
     return (
-      <CommandList className={cn(isFetching && "animate-pulse")}>
+      <CommandList
+        className={cn(
+          "absolute left-2 right-2 mt-2 w-[calc(100%-1rem)] rounded-lg border bg-white shadow-md",
+          isFetching && "animate-pulse",
+        )}
+      >
         {isFetching && features.length === 0 && (
           <div className="text-muted-foreground m-2 rounded bg-gray-100 px-2 py-3 text-center text-sm">
             Searching...
@@ -261,6 +266,9 @@ export function LocationSearchWithMap({
             return (
               <CommandItem
                 key={feature.properties?.place_id}
+                onClick={(e) => {
+                  e.preventDefault();
+                }}
                 onSelect={() => {
                   if (!feature.bbox || !feature.properties) {
                     return;
@@ -282,6 +290,10 @@ export function LocationSearchWithMap({
                     ]);
 
                   setSelectedFeature(feature);
+
+                  setTimeout(() => {
+                    inputRef.current?.blur();
+                  }, 0);
                 }}
               >
                 <span className="truncate sm:pr-2">
@@ -302,13 +314,13 @@ export function LocationSearchWithMap({
         </CommandGroup>
       </CommandList>
     );
-  }, [features, isFetching, map, searchResults]);
+  }, [features, isFetching, map]);
 
   return (
     <>
       <Command className="flex min-h-[200px] flex-col" shouldFilter={false}>
         <div
-          className="peer relative"
+          className="group peer relative"
           onClick={() => inputRef.current?.focus()}
         >
           <CommandInput
@@ -343,8 +355,10 @@ export function LocationSearchWithMap({
               Clear
             </Button>
           </div>
+          <div className="hidden group-focus-within:block">
+            {query.length ? searchResultsList : null}
+          </div>
         </div>
-        {query.length ? searchResultsList : null}
         <div className="mt-auto p-2">
           <LocationSearchContext.Provider
             value={{
