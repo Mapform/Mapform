@@ -9,7 +9,7 @@ import {
 import { useMapform, useMapformContent } from "~/components/new-mapform";
 import { cn } from "@mapform/lib/classnames";
 import { useProject } from "../project-context";
-import { FocusIcon, HandIcon, MapPinPlusIcon, SearchIcon } from "lucide-react";
+import { FocusIcon, HandIcon, PencilIcon } from "lucide-react";
 
 const EDIT_BAR_DRAWERS = ["location-search", "marker-edit"];
 
@@ -69,12 +69,12 @@ export function EditBar() {
                 size="icon"
                 variant={isSearchOpen ? "default" : "ghost"}
               >
-                <SearchIcon className="size-5" />
+                <PencilIcon className="size-5" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Search and change map position</TooltipContent>
+            <TooltipContent>Edit map</TooltipContent>
           </Tooltip>
-          <Tooltip>
+          {/* <Tooltip>
             <TooltipTrigger asChild>
               <Button
                 onClick={() => {
@@ -96,7 +96,7 @@ export function EditBar() {
             <TooltipContent>
               <p>Add markers</p>
             </TooltipContent>
-          </Tooltip>
+          </Tooltip> */}
         </div>
         <div className="flex gap-1 pl-1.5">
           <Tooltip>

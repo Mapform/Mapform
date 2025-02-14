@@ -65,7 +65,6 @@ export function LocationSearchWithMap({
   const [selectedFeature, setSelectedFeature] = useState<
     GeoapifyPlace["features"][number] | null
   >(null);
-  const [hasMapMoved, setHasMapMoved] = useState(false);
   const [showPinPopover, setShowPinPopover] = useState(true);
 
   const debouncedSearchQuery = useDebounce(query, 200);
@@ -84,7 +83,16 @@ export function LocationSearchWithMap({
     const firstFeature = result.features[0];
 
     if (firstFeature) {
-      setSelectedFeature(firstFeature);
+      setSelectedFeature({
+        ...firstFeature,
+        ...(firstFeature.properties && {
+          properties: {
+            ...firstFeature.properties,
+            lat,
+            lon: lng,
+          },
+        }),
+      });
     }
 
     return result;
@@ -105,8 +113,8 @@ export function LocationSearchWithMap({
     placeholderData: (prev) => prev,
   });
 
-  const { isFetching: isFetchingRGResults } = useQuery({
-    enabled: !showPinPopover && hasMapMoved,
+  const { isFetching: isFetchingRGResults, refetch } = useQuery({
+    enabled: false,
     queryKey: ["reverse-geocode", map.getCenter().lat, map.getCenter().lng],
     queryFn: () =>
       reverseGeocode({
@@ -129,14 +137,12 @@ export function LocationSearchWithMap({
       mk.setLngLat(map.getCenter());
     });
 
-    map.on("dragstart", () => {
+    map.on("movestart", () => {
       setShowPinPopover(false);
-      setHasMapMoved(true);
     });
 
-    // map.on("")
-
-    map.on("dragend", () => {
+    map.on("moveend", () => {
+      refetch();
       setShowPinPopover(true);
     });
 
