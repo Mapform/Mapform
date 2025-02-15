@@ -26,7 +26,10 @@ import {
 import { Blocknote } from "~/components/mapform/block-note";
 import { Form, useForm, zodResolver } from "@mapform/ui/components/form";
 import type { z } from "zod";
-import { LocationSearch } from "~/components/location-search";
+import {
+  LocationSearch,
+  LocationSearchButton,
+} from "~/components/location-search";
 import { Button } from "@mapform/ui/components/button";
 import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
 
@@ -285,7 +288,26 @@ export function Map({
               positionMobile="fixed"
               value="location-search"
             >
-              <LocationSearch></LocationSearch>
+              <LocationSearch>
+                <LocationSearchButton
+                  onClick={(selectedFeature) => {
+                    form.setValue(
+                      `${isSelectingPinBlockLocationFor}.y`,
+                      selectedFeature?.properties?.lat,
+                    );
+                    form.setValue(
+                      `${isSelectingPinBlockLocationFor}.x`,
+                      selectedFeature?.properties?.lon,
+                    );
+                    setIsSelectingPinBlockLocationFor(null);
+                    setDrawerValues(
+                      drawerValues.filter((v) => v !== "location-search"),
+                    );
+                  }}
+                >
+                  Select Location
+                </LocationSearchButton>
+              </LocationSearch>
             </MapformDrawer>
           </MapformContent>
         </form>
