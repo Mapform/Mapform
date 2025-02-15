@@ -32,6 +32,7 @@ import {
 } from "~/components/location-search";
 import { Button } from "@mapform/ui/components/button";
 import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
+import { cn } from "@mapform/lib/classnames";
 
 interface MapProps {
   pageData: GetPageData["data"];
@@ -253,8 +254,8 @@ export function Map({
               }}
             >
               <MapformDrawer
+                className="max-sm:min-h-[200px]"
                 positionDesktop="absolute"
-                positionMobile="relative"
                 value="page-content"
               >
                 <Blocknote
@@ -265,10 +266,20 @@ export function Map({
                   key={currentPage.id}
                   title={currentPage.title}
                 />
-                {controls}
+                <div className="hidden md:block">{controls}</div>
               </MapformDrawer>
+              <div
+                className={cn("hidden max-md:block", {
+                  hidden: isSelectingPinBlockLocationFor,
+                })}
+              >
+                {controls}
+              </div>
               <MapformDrawer
                 className="max-sm:min-h-[200px]"
+                onClose={() => {
+                  setDrawerValues(drawerValues.filter((v) => v !== "feature"));
+                }}
                 value="feature"
                 positionDesktop="absolute"
               >
@@ -287,6 +298,11 @@ export function Map({
               positionDesktop="absolute"
               positionMobile="fixed"
               value="location-search"
+              onClose={() => {
+                setDrawerValues(
+                  drawerValues.filter((v) => v !== "location-search"),
+                );
+              }}
             >
               <LocationSearch>
                 <LocationSearchButton

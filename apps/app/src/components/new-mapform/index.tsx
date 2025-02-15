@@ -141,6 +141,7 @@ export function MapformDrawer({
   value,
   positionDesktop = "relative",
   positionMobile = "relative",
+  onClose,
 }: {
   children: React.ReactNode;
   value: string;
@@ -148,8 +149,9 @@ export function MapformDrawer({
   positionDesktop?: "relative" | "fixed" | "absolute";
   positionMobile?: "relative" | "fixed" | "absolute";
   className?: string;
+  onClose?: () => void;
 }) {
-  const { drawerValues, isEditing, onDrawerValuesChange } = useMapformContent();
+  const { drawerValues, isEditing } = useMapformContent();
   const valueIndex = drawerValues.indexOf(value);
   const reveresedValues = drawerValues.concat().reverse();
   const reverseValueIndex = reveresedValues.indexOf(value);
@@ -186,7 +188,6 @@ export function MapformDrawer({
               "pl-8 sm:w-[392px]": isEditing,
               "overflow-hidden": !isEditing,
             },
-
             className,
           )}
           layoutScroll
@@ -214,17 +215,17 @@ export function MapformDrawer({
             },
           }}
         >
-          <Button
-            className="absolute right-2 top-2 z-50"
-            onClick={() =>
-              onDrawerValuesChange(drawerValues.filter((v) => v !== value))
-            }
-            size="icon-sm"
-            type="button"
-            variant="ghost"
-          >
-            <XIcon className="size-5" />
-          </Button>
+          {onClose ? (
+            <Button
+              className="absolute right-2 top-2 z-50"
+              onClick={onClose}
+              size="icon-sm"
+              type="button"
+              variant="ghost"
+            >
+              <XIcon className="size-5" />
+            </Button>
+          ) : null}
           {children}
         </motion.div>
       ) : null}

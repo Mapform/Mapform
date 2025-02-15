@@ -97,10 +97,17 @@ function Project() {
               },
             }}
           >
-            <MapformDrawer positionDesktop="absolute" value="page-content">
+            <MapformDrawer
+              onClose={() => {
+                setDrawerValues(
+                  drawerValues.filter((v) => v !== "page-content"),
+                );
+              }}
+              positionDesktop="absolute"
+              value="page-content"
+            >
               <Blocknote
                 description={currentPage.content as { content: CustomBlock[] }}
-                isEditing
                 icon={currentPage.icon}
                 includeFormBlocks={
                   projectWithPages.formsEnabled &&
@@ -133,12 +140,17 @@ function Project() {
                 title={currentPage.title}
               />
             </MapformDrawer>
-            <MapformDrawer positionDesktop="absolute" value="feature">
+            <MapformDrawer
+              onClose={() => {
+                setDrawerValues(drawerValues.filter((v) => v !== "feature"));
+              }}
+              positionDesktop="absolute"
+              value="feature"
+            >
               <Blocknote
                 description={
                   selectedFeature?.description?.richtextCell?.value ?? undefined
                 }
-                isEditing
                 icon={selectedFeature?.icon?.iconCell?.value}
                 key={`${currentPage.id}-${selectedFeature?.rowId}`}
                 onDescriptionChange={(value) => {

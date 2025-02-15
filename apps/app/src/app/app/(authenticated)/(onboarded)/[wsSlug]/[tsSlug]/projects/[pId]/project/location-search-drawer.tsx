@@ -41,8 +41,18 @@ interface LocationSearchDrawerProps {
 export function LocationSearchDrawer({
   currentPage,
 }: LocationSearchDrawerProps) {
+  const { drawerValues, onDrawerValuesChange } = useMapformContent();
+
   return (
-    <MapformDrawer positionDesktop="absolute" value="location-search">
+    <MapformDrawer
+      onClose={() => {
+        onDrawerValuesChange(
+          drawerValues.filter((v) => v !== "location-search"),
+        );
+      }}
+      positionDesktop="absolute"
+      value="location-search"
+    >
       <LocationSearch>
         <LocationSearchDrawerInner currentPage={currentPage} />
       </LocationSearch>
