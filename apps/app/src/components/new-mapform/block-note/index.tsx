@@ -5,6 +5,7 @@ import {
   type CustomBlock,
   BlocknoteEditor,
   useCreateBlockNote,
+  useCustomBlockContext,
 } from "@mapform/blocknote";
 import { useState } from "react";
 import { SmilePlusIcon, XIcon } from "lucide-react";
@@ -14,7 +15,6 @@ import { AutoSizeTextArea } from "@mapform/ui/components/autosize-text-area";
 
 interface BlocknoteProps {
   icon?: string | null;
-  isEditing: boolean;
   title?: string | null;
   description?: {
     content: CustomBlock[];
@@ -30,7 +30,6 @@ interface BlocknoteProps {
 }
 
 export function Blocknote({
-  isEditing,
   icon,
   title,
   description,
@@ -40,6 +39,7 @@ export function Blocknote({
   onDescriptionChange,
   locationEditorProps,
 }: BlocknoteProps) {
+  const { isEditing } = useCustomBlockContext();
   const [uncontrolledTitle, setUncontrolledTitle] = useState<string>(
     title || "",
   );
@@ -121,7 +121,6 @@ export function Blocknote({
 
         {/* Description */}
         <BlocknoteEditor
-          isEditing={isEditing}
           editor={editor}
           includeFormBlocks={includeFormBlocks}
           onChange={() => {

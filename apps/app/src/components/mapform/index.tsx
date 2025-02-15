@@ -112,7 +112,6 @@ export function MapForm({
       <>
         <Blocknote
           description={currentPage.content as { content: CustomBlock[] }}
-          isEditing={isEditing}
           icon={currentPage.icon}
           includeFormBlocks={includeFormBlocks}
           key={currentPage.id}
@@ -203,7 +202,6 @@ export function MapForm({
         description={
           selectedFeature.description?.richtextCell?.value ?? undefined
         }
-        isEditing={isEditing}
         icon={selectedFeature.icon?.iconCell?.value}
         key={`${currentPage.id}-${selectedFeature.rowId}`}
         onDescriptionChange={(val) => {

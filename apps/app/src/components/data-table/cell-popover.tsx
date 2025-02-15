@@ -27,6 +27,7 @@ import {
   BlocknoteEditor,
   useCreateBlockNote,
   CustomBlockContext,
+  CustomBlockProvider,
 } from "@mapform/blocknote";
 import { format } from "date-fns";
 import { enUS } from "date-fns/locale";
@@ -415,9 +416,9 @@ function RichtextInput({
   });
 
   return (
-    <CustomBlockContext.Provider
-      value={{
-        isEditing: true,
+    <CustomBlockProvider
+      isEditing
+      imageBlock={{
         onImageUpload: async (file: File) => {
           const compressedFile = await compressImage(
             file,
@@ -447,7 +448,6 @@ function RichtextInput({
             <FormItem className="flex-1">
               <FormControl>
                 <BlocknoteEditor
-                  isEditing
                   editor={editor}
                   includeFormBlocks={false}
                   onChange={() => {
@@ -459,7 +459,7 @@ function RichtextInput({
           )}
         />
       </div>
-    </CustomBlockContext.Provider>
+    </CustomBlockProvider>
   );
 }
 

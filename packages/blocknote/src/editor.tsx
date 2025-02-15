@@ -19,6 +19,7 @@ import type { schema } from "./block-note-schema";
 import { PinMenu, TextInputMenu } from "./block-note-schema";
 import { cn } from "../../lib/classnames";
 import "./style.css";
+import { useCustomBlockContext } from "./context";
 
 const insertPin = (edtr: typeof schema.BlockNoteEditor) => ({
   title: "Pin",
@@ -61,7 +62,6 @@ const insertImage = (edtr: typeof schema.BlockNoteEditor) => ({
 
 interface BlocknoteEditorProps {
   editor: typeof schema.BlockNoteEditor;
-  isEditing?: boolean;
   includeFormBlocks?: boolean;
   onChange?: () => void;
 }
@@ -69,13 +69,14 @@ interface BlocknoteEditorProps {
 export function BlocknoteEditor({
   editor,
   onChange,
-  isEditing = true,
   includeFormBlocks = false,
 }: BlocknoteEditorProps) {
+  const { isEditing } = useCustomBlockContext();
+
   return (
     <BlockNoteView
       className="flex-1"
-      isEditing={isEditing}
+      editable={isEditing}
       editor={editor}
       emojiPicker={false}
       onChange={onChange}
