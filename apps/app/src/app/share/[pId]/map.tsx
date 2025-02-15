@@ -1,6 +1,6 @@
 "use client";
 
-import { MapForm, useMapform } from "~/components/mapform";
+import { useMapform } from "~/components/mapform";
 import { useAction } from "next-safe-action/hooks";
 import React, { useEffect, useState } from "react";
 import type { GetPageData } from "@mapform/backend/data/datalayer/get-page-data";
@@ -27,6 +27,8 @@ import { Blocknote } from "~/components/mapform/block-note";
 import { Form, useForm, zodResolver } from "@mapform/ui/components/form";
 import type { z } from "zod";
 import { LocationSearch } from "~/components/location-search";
+import { Button } from "@mapform/ui/components/button";
+import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
 
 interface MapProps {
   pageData: GetPageData["data"];
@@ -154,12 +156,60 @@ export function Map({
   const prevPage = projectWithPages.pages[prevPageIndex];
   const nextPage = projectWithPages.pages[nextPageIndex];
 
+  const onStepSubmit = (data: Record<string, string>) => {
+    if (currentSession) {
+      execute({
+        pageId: currentPage.id,
+        submissionId: currentSession,
+        payload: data,
+      });
+    }
+
+    if (nextPage) {
+      setCurrentPageAndFly(nextPage);
+    }
+  };
+
+  const controls = (
+    <div className="fixed bottom-0 z-50 w-full bg-white md:absolute">
+      <div className="px-2">
+        <div className="relative flex h-[50px] w-full items-center justify-between">
+          {prevPage ? (
+            <Button
+              className="absolute left-0"
+              onClick={() => {
+                setCurrentPageAndFly(prevPage);
+              }}
+              type="button"
+              variant="ghost"
+            >
+              <ArrowLeftIcon className="-ml-1 mr-1 size-4" />
+              Back
+            </Button>
+          ) : null}
+          <p className="mx-auto text-xs text-gray-500">
+            Made with{" "}
+            <a className="text-gray-500" href="https://alpha.mapform.co">
+              Mapform
+            </a>
+          </p>
+          {nextPage && currentPage.pageType === "page" ? (
+            <Button className="absolute right-0" type="submit">
+              {nextPage.pageType === "page_ending" ? "Submit" : "Next"}
+              <ArrowRightIcon className="-mr-1 ml-1 size-4" />
+            </Button>
+          ) : null}
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <Mapform>
       <Form {...form}>
         <form
           className="flex h-full w-full flex-col md:overflow-hidden"
-          // onSubmit={form.handleSubmit(onSubmit)}
+          onSubmit={form.handleSubmit(onStepSubmit)}
         >
           <MapformContent
             drawerValues={drawerValues}
@@ -212,6 +262,7 @@ export function Map({
                   key={currentPage.id}
                   title={currentPage.title}
                 />
+                {controls}
               </MapformDrawer>
               <MapformDrawer
                 className="max-sm:min-h-[200px]"
@@ -241,37 +292,4 @@ export function Map({
       </Form>
     </Mapform>
   );
-
-  // return (
-  //   <MapForm
-  //     currentPage={currentPage}
-  //     defaultFormValues={pageValues}
-  //     mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
-  //     nextPage={nextPage}
-  //     onPrev={
-  //       prevPage
-  //         ? () => {
-  //             setCurrentPageAndFly(prevPage);
-  //           }
-  //         : undefined
-  //     }
-  // onStepSubmit={
-  // nextPage
-  //   ? (data) => {
-  //       if (currentSession) {
-  //         execute({
-  //           pageId: currentPage.id,
-  //           submissionId: currentSession,
-  //           payload: data,
-  //         });
-  //       }
-
-  //       setCurrentPageAndFly(nextPage);
-  //     }
-  //   : undefined
-  // }
-  //     pageData={pageData}
-  //     selectedFeature={selectedFeature}
-  //   />
-  // );
 }
