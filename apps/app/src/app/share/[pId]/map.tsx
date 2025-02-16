@@ -287,7 +287,7 @@ export function Map({
               </MapformDrawer>
             </CustomBlockProvider>
             <MapformDrawer
-              className="max-md:fixed"
+              className="bottom-0 max-sm:fixed"
               value="location-search"
               onClose={() => {
                 setDrawerValues(

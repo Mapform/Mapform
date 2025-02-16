@@ -318,7 +318,7 @@ export function LocationSearchWithMap({
 
   return (
     <>
-      <Command className="flex min-h-[200px] flex-col" shouldFilter={false}>
+      <Command className="flex flex-col" shouldFilter={false}>
         <div className="group" onClick={() => inputRef.current?.focus()}>
           <div className="relative">
             <CommandInput
