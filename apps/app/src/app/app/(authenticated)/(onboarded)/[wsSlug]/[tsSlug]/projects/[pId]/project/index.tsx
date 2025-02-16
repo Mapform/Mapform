@@ -103,7 +103,6 @@ function Project() {
                   drawerValues.filter((v) => v !== "page-content"),
                 );
               }}
-              positionDesktop="absolute"
               value="page-content"
             >
               <Blocknote
@@ -144,7 +143,6 @@ function Project() {
               onClose={() => {
                 setDrawerValues(drawerValues.filter((v) => v !== "feature"));
               }}
-              positionDesktop="absolute"
               value="feature"
             >
               <Blocknote

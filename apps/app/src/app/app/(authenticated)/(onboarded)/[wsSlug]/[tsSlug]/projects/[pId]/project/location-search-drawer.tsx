@@ -50,7 +50,6 @@ export function LocationSearchDrawer({
           drawerValues.filter((v) => v !== "location-search"),
         );
       }}
-      positionDesktop="absolute"
       value="location-search"
     >
       <LocationSearch>

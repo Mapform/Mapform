@@ -298,7 +298,6 @@ export function MapForm({
                 !selectedFeature &&
                 !isSelectingPinBlockLocationFor
               }
-              positionDesktop="absolute"
             >
               {pageContent}
               {!isMobile && controls}
@@ -315,7 +314,6 @@ export function MapForm({
               }}
               open={Boolean(selectedFeature)}
               isEditing={isEditing}
-              positionDesktop="absolute"
             >
               {selectedFeatureContent}
             </MapDrawer>
@@ -323,8 +321,6 @@ export function MapForm({
               className="max-sm:min-h-[200px]" // Shouldn't need to add this.
               open={!!isSelectingPinBlockLocationFor}
               onClose={() => setIsSelectingPinBlockLocationFor(null)}
-              positionDesktop="absolute"
-              positionMobile="fixed"
             >
               <LocationSearch>
                 <LocationSearchButton

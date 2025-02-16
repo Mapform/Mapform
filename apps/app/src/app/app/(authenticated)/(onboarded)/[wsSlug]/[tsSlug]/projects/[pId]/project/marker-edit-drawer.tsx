@@ -36,7 +36,7 @@ interface MarkerEditDrawerProps {
 
 export function MarkerEditDrawer({ currentPage }: MarkerEditDrawerProps) {
   return (
-    <MapformDrawer positionDesktop="absolute" value="marker-edit">
+    <MapformDrawer value="marker-edit">
       <LocationSearch>
         <MarkerEditDrawerInner currentPage={currentPage} />
       </LocationSearch>

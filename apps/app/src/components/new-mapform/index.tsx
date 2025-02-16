@@ -138,15 +138,11 @@ export function MapformDrawer({
   children,
   className,
   value,
-  positionDesktop = "relative",
-  positionMobile = "relative",
   onClose,
 }: {
   children: React.ReactNode;
   value: string;
   // This is a workaround to render the bottom bar since position fixed doesn't work
-  positionDesktop?: "relative" | "fixed" | "absolute";
-  positionMobile?: "relative" | "fixed" | "absolute";
   className?: string;
   onClose?: () => void;
 }) {
@@ -165,23 +161,10 @@ export function MapformDrawer({
             "bg-background prose group z-40 flex flex-col shadow-lg outline-none transition-[filter,margin-left] duration-[250]",
 
             // DESKTOP STYLES
-            "sm:h-full sm:w-[360px] sm:[--x-from:-100%] sm:[--x-to:0]",
-            {
-              "sm:absolute sm:bottom-0 sm:left-0":
-                positionDesktop === "absolute",
-              "sm:fixed sm:bottom-0 sm:left-0": positionDesktop === "fixed",
-              "sm:relative": positionDesktop === "relative",
-            },
+            "sm:absolute sm:bottom-0 sm:left-0 sm:h-full sm:w-[360px] sm:[--x-from:-100%] sm:[--x-to:0]",
 
             // MOBILE STYLES
-            "max-sm:w-full max-sm:overflow-y-auto max-sm:rounded-t-xl max-sm:shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] max-sm:[--y-from:200px] max-sm:[--y-to:0]",
-            {
-              "max-sm:absolute max-sm:bottom-0 max-sm:left-0":
-                positionMobile === "absolute",
-              "max-sm:fixed max-sm:bottom-0 max-sm:left-0":
-                positionMobile === "fixed",
-              "max-sm:relative": positionMobile === "relative",
-            },
+            "max-sm:relative max-sm:w-full max-sm:overflow-y-auto max-sm:rounded-t-xl max-sm:shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] max-sm:[--y-from:200px] max-sm:[--y-to:0]",
 
             // EDITING STYLES
             {

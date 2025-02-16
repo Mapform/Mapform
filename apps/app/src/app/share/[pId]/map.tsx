@@ -255,7 +255,6 @@ export function Map({
             >
               <MapformDrawer
                 className="max-sm:min-h-[200px]"
-                positionDesktop="absolute"
                 value="page-content"
               >
                 <Blocknote
@@ -281,7 +280,6 @@ export function Map({
                   setDrawerValues(drawerValues.filter((v) => v !== "feature"));
                 }}
                 value="feature"
-                positionDesktop="absolute"
               >
                 <Blocknote
                   description={
@@ -295,8 +293,7 @@ export function Map({
               </MapformDrawer>
             </CustomBlockProvider>
             <MapformDrawer
-              positionDesktop="absolute"
-              positionMobile="fixed"
+              className="max-md:fixed"
               value="location-search"
               onClose={() => {
                 setDrawerValues(
