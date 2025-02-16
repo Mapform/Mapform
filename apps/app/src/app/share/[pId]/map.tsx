@@ -175,7 +175,7 @@ export function Map({
   };
 
   const controls = (
-    <div className="fixed bottom-0 z-50 w-full bg-white md:absolute">
+    <div className={"fixed bottom-0 z-50 w-full bg-white md:absolute"}>
       <div className="px-2">
         <div className="relative flex h-[50px] w-full items-center justify-between">
           {prevPage ? (
@@ -253,10 +253,7 @@ export function Map({
                 },
               }}
             >
-              <MapformDrawer
-                className="max-sm:min-h-[200px]"
-                value="page-content"
-              >
+              <MapformDrawer value="page-content">
                 <Blocknote
                   description={
                     currentPage.content as { content: CustomBlock[] }
@@ -265,17 +262,14 @@ export function Map({
                   key={currentPage.id}
                   title={currentPage.title}
                 />
-                <div className="hidden md:block">{controls}</div>
+                {drawerValues.length > 1 ? null : (
+                  <div className="hidden sm:block">{controls}</div>
+                )}
               </MapformDrawer>
-              <div
-                className={cn("hidden max-md:block", {
-                  hidden: isSelectingPinBlockLocationFor,
-                })}
-              >
-                {controls}
-              </div>
+              {drawerValues.length > 1 ? null : (
+                <div className="hidden max-sm:block">{controls}</div>
+              )}
               <MapformDrawer
-                className="max-sm:min-h-[200px]"
                 onClose={() => {
                   setDrawerValues(drawerValues.filter((v) => v !== "feature"));
                 }}

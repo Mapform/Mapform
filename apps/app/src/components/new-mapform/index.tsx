@@ -182,6 +182,7 @@ export function MapformDrawer({
             marginLeft: isMobile ? 0 : 1 * reverseValueIndex * 10,
             marginBottom: isMobile ? 1 * reverseValueIndex * 10 : 0,
             filter: `brightness(${1 - reverseValueIndex * 0.1})`,
+            display: isMobile && reverseValueIndex !== 0 ? "none" : "block",
           }}
           transition={{
             duration: 0.25,
