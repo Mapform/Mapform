@@ -31,6 +31,7 @@ import {
 import { useMapform } from "~/components/new-mapform";
 import { Button, type ButtonProps } from "@mapform/ui/components/button";
 import { Skeleton } from "@mapform/ui/components/skeleton";
+import { useIsMobile } from "@mapform/lib/hooks/use-is-mobile";
 
 export function LocationSearch(props: { children?: React.ReactNode }) {
   const { map } = useMapform();
@@ -242,7 +243,7 @@ export function LocationSearchWithMap({
     return (
       <CommandList
         className={cn(
-          "absolute left-2 right-2 mt-2 w-[calc(100%-1rem)] rounded-lg border bg-white shadow-md",
+          "md:absolute md:left-2 md:right-2 md:mt-2 md:w-[calc(100%-1rem)] md:rounded-lg md:border md:bg-white md:shadow-md",
           isFetching && "animate-pulse",
         )}
       >
@@ -318,41 +319,40 @@ export function LocationSearchWithMap({
   return (
     <>
       <Command className="flex min-h-[200px] flex-col" shouldFilter={false}>
-        <div
-          className="group peer relative"
-          onClick={() => inputRef.current?.focus()}
-        >
-          <CommandInput
-            className="peer h-12 border-none focus:ring-0"
-            onValueChange={(search) => {
-              setQuery(search);
-            }}
-            placeholder="Search for places..."
-            ref={inputRef}
-            value={query}
-          />
-          <div
-            className={cn(
-              "absolute right-10 top-0 flex h-full flex-col justify-center transition-opacity",
-              {
-                "pointer-events-none opacity-0": !query,
-              },
-            )}
-          >
-            <Button
-              className="hover:bg-accent bg-white"
-              onClick={() => {
-                queryClient.removeQueries({
-                  queryKey: ["search", query],
-                });
-                setQuery("");
+        <div className="group" onClick={() => inputRef.current?.focus()}>
+          <div className="relative">
+            <CommandInput
+              className="peer h-12 border-none focus:ring-0"
+              onValueChange={(search) => {
+                setQuery(search);
               }}
-              size="sm"
-              variant="ghost"
-              type="button"
+              placeholder="Search for places..."
+              ref={inputRef}
+              value={query}
+            />
+            <div
+              className={cn(
+                "absolute right-10 top-0 flex h-full flex-col justify-center transition-opacity",
+                {
+                  "pointer-events-none opacity-0": !query,
+                },
+              )}
             >
-              Clear
-            </Button>
+              <Button
+                className="hover:bg-accent bg-white"
+                onClick={() => {
+                  queryClient.removeQueries({
+                    queryKey: ["search", query],
+                  });
+                  setQuery("");
+                }}
+                size="sm"
+                variant="ghost"
+                type="button"
+              >
+                Clear
+              </Button>
+            </div>
           </div>
           <div className="hidden group-focus-within:block">
             {query.length ? searchResultsList : null}
