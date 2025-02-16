@@ -1,6 +1,6 @@
 "use client";
 
-import { useMapform } from "~/components/new-mapform";
+import { useMapform } from "~/components/mapform";
 import { useAction } from "next-safe-action/hooks";
 import React, { useEffect, useState } from "react";
 import type { GetPageData } from "@mapform/backend/data/datalayer/get-page-data";
@@ -23,7 +23,7 @@ import {
   MapformDrawerButton,
   MapformMap,
 } from "~/components/new-mapform";
-import { Blocknote } from "~/components/new-mapform/block-note";
+import { Blocknote } from "~/components/mapform/block-note";
 import { Form, useForm, zodResolver } from "@mapform/ui/components/form";
 import type { z } from "zod";
 import {
@@ -32,6 +32,7 @@ import {
 } from "~/components/location-search";
 import { Button } from "@mapform/ui/components/button";
 import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
+import { cn } from "@mapform/lib/classnames";
 
 interface MapProps {
   pageData: GetPageData["data"];
