@@ -15,7 +15,7 @@ import { Button } from "@mapform/ui/components/button";
 import { ChevronsRightIcon, XIcon } from "lucide-react";
 
 import { Map } from "./map";
-import { useWindowSize } from "@mapform/lib/hooks/use-window-size";
+import { useIsMobile } from "@mapform/lib/hooks/use-is-mobile";
 import { AnimatePresence, motion } from "motion/react";
 import type { GetPageData } from "@mapform/backend/data/datalayer/get-page-data";
 
@@ -108,9 +108,8 @@ export function MapformMap({
   children?: React.ReactNode;
   initialViewState: ViewState;
 }) {
-  const { width } = useWindowSize();
+  const isMobile = useIsMobile();
   const { drawerValues, isEditing, pageData } = useMapformContent();
-  const isMobile = !!width && width < 768;
 
   const mapPadding = {
     top: 0,
@@ -151,6 +150,7 @@ export function MapformDrawer({
   className?: string;
   onClose?: () => void;
 }) {
+  const isMobile = useIsMobile();
   const { drawerValues, isEditing } = useMapformContent();
   const valueIndex = drawerValues.indexOf(value);
   const reveresedValues = drawerValues.concat().reverse();
@@ -196,7 +196,8 @@ export function MapformDrawer({
           exit="closed"
           style={{
             zIndex: 40 + valueIndex,
-            marginLeft: 1 * reverseValueIndex * 10,
+            marginLeft: isMobile ? 0 : 1 * reverseValueIndex * 10,
+            marginBottom: isMobile ? 1 * reverseValueIndex * 10 : 0,
             filter: `brightness(${1 - reverseValueIndex * 0.1})`,
           }}
           transition={{
