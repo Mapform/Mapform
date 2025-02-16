@@ -12,7 +12,7 @@ import type { GetLayerPoint } from "@mapform/backend/data/datalayer/get-layer-po
 import type { GetLayerMarker } from "@mapform/backend/data/datalayer/get-layer-marker";
 import { useCreateQueryString } from "@mapform/lib/hooks/use-create-query-string";
 import type { GetProjectWithPages } from "@mapform/backend/data/projects/get-project-with-pages";
-import { useMapform } from "~/components/mapform";
+import { useMapform } from "~/components/new-mapform";
 import type { GetPageWithLayers } from "@mapform/backend/data/pages/get-page-with-layers";
 import { toast } from "@mapform/ui/components/toaster";
 import type { InferUseActionHookReturn } from "next-safe-action/hooks";
