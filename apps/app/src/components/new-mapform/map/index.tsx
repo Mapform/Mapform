@@ -1,3 +1,5 @@
+import "mapbox-gl/dist/mapbox-gl.css";
+
 import { useCallback, useEffect, useMemo, useState } from "react";
 import mapboxgl from "mapbox-gl";
 import { cn } from "@mapform/lib/classnames";
