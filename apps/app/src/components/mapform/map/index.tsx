@@ -11,7 +11,7 @@ import { useSetQueryString } from "@mapform/lib/hooks/use-set-query-string";
 import type Supercluster from "supercluster";
 import useSupercluster from "use-supercluster";
 import { AnimatePresence, motion } from "motion/react";
-import { useMapform } from "../index";
+import { useMapform, useMapformContent } from "../index";
 import { LocationMarker } from "./location-marker";
 import { Cluster } from "./cluster";
 
@@ -59,6 +59,7 @@ export function Map({
   >(undefined);
   const [zoom, setZoom] = useState<number>(initialViewState.zoom);
   const { map, setMap, mapContainer, mapContainerBounds } = useMapform();
+  const { onDrawerValuesChange, drawerValues } = useMapformContent();
   // Condition in usePrevious resolves issue where map padding is not updated on first render
   const prevMapPadding = usePrevious(map ? mapPadding : undefined);
 
@@ -409,11 +410,19 @@ export function Map({
                 exit={{ opacity: 0, y: 20 }}
                 initial={{ opacity: 0, y: -20 }}
                 onClick={() => {
+                  // TODO: It might make sense to de-couple this from the map
+                  // and isntead pass an onClick callback. The parent can do
+                  // this.
                   if (isMobile) window.scrollTo({ top: 0, behavior: "smooth" });
                   setQueryString({
                     key: "feature",
                     value: `marker_${cluster.properties.rowId}_${cluster.properties.pointLayerId}`,
                   });
+
+                  onDrawerValuesChange([
+                    ...drawerValues.filter((v) => v !== "feature"),
+                    "feature",
+                  ]);
                 }}
                 style={{ backgroundColor: cluster.properties.color }}
                 type="button"
@@ -424,7 +433,14 @@ export function Map({
           );
         })}
       </AnimatePresence>
-      {children}
+      <div
+        className={cn(
+          "absolute bottom-0 left-0 right-0 top-0 transition-all duration-[250]",
+        )}
+        style={mapPadding}
+      >
+        {children}
+      </div>
     </div>
   );
 }
