@@ -1,6 +1,6 @@
 import React, { cache } from "react";
 import { cookies } from "next/headers";
-import { MapformProvider } from "~/components/mapform";
+import { Mapform } from "~/components/new-mapform";
 import { type Row } from "@mapform/db/schema";
 import { publicClient } from "~/lib/safe-action";
 import { Map } from "./map";
@@ -110,7 +110,7 @@ export default async function Page(props: {
 
   return (
     <div className="md:h-screen">
-      <MapformProvider>
+      <Mapform>
         <Map
           formValues={formValues}
           isUsingSessions={isUsingSessions}
@@ -120,7 +120,7 @@ export default async function Page(props: {
           // We clear the session id if the form id doesn't match the current form
           sessionId={!projectVersionMismatch && session ? session.id : null}
         />
-      </MapformProvider>
+      </Mapform>
     </div>
   );
 }
