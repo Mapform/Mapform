@@ -29,7 +29,10 @@ function Project() {
     updateSelectedFeatureOptimistic,
   } = useProject();
 
-  const [drawerValues, setDrawerValues] = useState<string[]>(["page-content"]);
+  const [drawerValues, setDrawerValues] = useState<string[]>([
+    "page-content",
+    ...(selectedFeature ? ["feature"] : []),
+  ]);
 
   /**
    * NOTE: Optimistic updates DO NOT work with debounced server actions. To work

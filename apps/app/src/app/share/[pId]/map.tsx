@@ -32,7 +32,6 @@ import {
 } from "~/components/location-search";
 import { Button } from "@mapform/ui/components/button";
 import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
-import { cn } from "@mapform/lib/classnames";
 
 interface MapProps {
   pageData: GetPageData["data"];
@@ -58,7 +57,10 @@ export function Map({
   const searchParams = useSearchParams();
   const p = searchParams.get("p");
   const currentPage = projectWithPages.pages.find((page) => page.id === p);
-  const [drawerValues, setDrawerValues] = useState<string[]>(["page-content"]);
+  const [drawerValues, setDrawerValues] = useState<string[]>([
+    "page-content",
+    ...(selectedFeature ? ["feature"] : []),
+  ]);
   const [isSelectingPinBlockLocationFor, setIsSelectingPinBlockLocationFor] =
     useState<string | null>(null);
   const blocknoteStepSchema = getFormSchemaFromBlockNote(

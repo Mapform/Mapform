@@ -241,7 +241,9 @@ export function Map({
       const feature = e.features?.[0];
 
       if (feature?.properties) {
-        isMobile && window.scrollTo({ top: 0, behavior: "smooth" });
+        if (isMobile) {
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
         setQueryString({
           key: "feature",
           value: `point_${feature.properties.rowId}_${feature.properties.pointLayerId}`,
