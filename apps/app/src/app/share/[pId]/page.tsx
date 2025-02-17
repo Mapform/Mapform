@@ -1,6 +1,6 @@
 import React, { cache } from "react";
 import { cookies } from "next/headers";
-import { Mapform } from "~/components/new-mapform";
+import { Mapform } from "~/components/mapform";
 import { type Row } from "@mapform/db/schema";
 import { publicClient } from "~/lib/safe-action";
 import { Map } from "./map";

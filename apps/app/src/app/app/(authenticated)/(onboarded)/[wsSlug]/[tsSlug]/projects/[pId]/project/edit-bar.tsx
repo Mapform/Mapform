@@ -6,7 +6,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@mapform/ui/components/tooltip";
-import { useMapform, useMapformContent } from "~/components/new-mapform";
+import { useMapform, useMapformContent } from "~/components/mapform";
 import { cn } from "@mapform/lib/classnames";
 import { useProject } from "../project-context";
 import { FocusIcon, HandIcon, PencilIcon } from "lucide-react";

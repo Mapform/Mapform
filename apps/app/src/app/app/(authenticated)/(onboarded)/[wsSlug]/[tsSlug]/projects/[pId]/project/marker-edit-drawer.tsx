@@ -3,7 +3,7 @@ import {
   LocationSearchButton,
   useLocationSearch,
 } from "~/components/location-search";
-import { MapformDrawer } from "~/components/new-mapform";
+import { MapformDrawer } from "~/components/mapform";
 import { useProject } from "../project-context";
 import type { GetPageWithLayers } from "@mapform/backend/data/pages/get-page-with-layers";
 import {

@@ -1,5 +1,5 @@
 import { cache } from "react";
-import { Mapform } from "~/components/new-mapform";
+import { Mapform } from "~/components/mapform";
 import { redirect } from "next/navigation";
 import { ProjectProvider } from "./project-context";
 import Project from "./project";

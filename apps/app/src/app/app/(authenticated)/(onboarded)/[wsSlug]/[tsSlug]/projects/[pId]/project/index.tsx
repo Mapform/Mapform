@@ -11,9 +11,9 @@ import {
   MapformDrawer,
   MapformDrawerButton,
   MapformMap,
-} from "~/components/new-mapform";
+} from "~/components/mapform";
 import { CustomBlockProvider, type CustomBlock } from "@mapform/blocknote";
-import { Blocknote } from "~/components/new-mapform/block-note";
+import { Blocknote } from "~/components/mapform/block-note";
 import { LocationSearchDrawer } from "./location-search-drawer";
 
 function Project() {

@@ -28,7 +28,7 @@ import {
   PopoverAnchor,
   PopoverContent,
 } from "@mapform/ui/components/popover";
-import { useMapform } from "~/components/new-mapform";
+import { useMapform } from "~/components/mapform";
 import { Button, type ButtonProps } from "@mapform/ui/components/button";
 import { Skeleton } from "@mapform/ui/components/skeleton";
 import { useIsMobile } from "@mapform/lib/hooks/use-is-mobile";

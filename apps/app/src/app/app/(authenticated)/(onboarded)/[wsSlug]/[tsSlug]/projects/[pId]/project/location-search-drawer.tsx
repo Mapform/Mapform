@@ -7,7 +7,7 @@ import {
   MapformDrawer,
   useMapform,
   useMapformContent,
-} from "~/components/new-mapform";
+} from "~/components/mapform";
 import { useProject } from "../project-context";
 import type { GetPageWithLayers } from "@mapform/backend/data/pages/get-page-with-layers";
 import {
