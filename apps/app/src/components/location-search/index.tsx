@@ -31,7 +31,6 @@ import {
 import { useMapform } from "~/components/mapform";
 import { Button, type ButtonProps } from "@mapform/ui/components/button";
 import { Skeleton } from "@mapform/ui/components/skeleton";
-import { useIsMobile } from "@mapform/lib/hooks/use-is-mobile";
 
 export function LocationSearch(props: { children?: React.ReactNode }) {
   const { map } = useMapform();
@@ -318,7 +317,7 @@ export function LocationSearchWithMap({
 
   return (
     <>
-      <Command className="flex flex-col" shouldFilter={false}>
+      <Command className="flex flex-1 flex-col" shouldFilter={false}>
         <div className="group" onClick={() => inputRef.current?.focus()}>
           <div className="relative">
             <CommandInput
