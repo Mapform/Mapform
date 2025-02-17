@@ -157,7 +157,7 @@ export function MapformDrawer({
         <motion.div
           className={cn(
             // BASE STYLES
-            "bg-background prose group z-40 flex flex-col shadow-lg outline-none transition-[filter,margin-left] duration-[250]",
+            "bg-background prose group z-40 flex min-h-[200px] flex-col shadow-lg outline-none transition-[filter,margin-left] duration-[250]",
 
             // DESKTOP STYLES
             "sm:absolute sm:bottom-0 sm:left-0 sm:h-full sm:w-[360px] sm:[--x-from:-100%] sm:[--x-to:0]",
