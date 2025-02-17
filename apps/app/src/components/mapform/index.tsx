@@ -125,7 +125,6 @@ export function MapformMap({
         initialViewState={initialViewState}
         isMobile={isMobile}
         mapPadding={mapPadding}
-        // onLoad={onLoad}
         pageData={pageData}
       >
         {children}

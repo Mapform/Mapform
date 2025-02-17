@@ -21,7 +21,6 @@ interface MapProps {
   pageData?: GetPageData["data"];
   isEditing?: boolean;
   mapPadding: ViewState["padding"];
-  onLoad?: () => void;
   initialViewState: ViewState;
   children?: React.ReactNode;
   isMobile?: boolean;
@@ -49,7 +48,6 @@ export function Map({
   isEditing = false,
   mapPadding,
   pageData,
-  onLoad,
   children,
   isMobile,
 }: MapProps) {
@@ -190,13 +188,7 @@ export function Map({
 
       // Add your custom markers and lines here
       m.on("load", () => {
-        // const img = new Image(20, 20);
-        // img.src = globeSvg.src;
-        // img.onload = () => {
-        //   m.addImage("cafe", img);
-        // };
         setMap(m);
-        onLoad && onLoad();
       });
 
       // Clean up on unmount
