@@ -45,7 +45,11 @@ export function Drawer() {
             </ResizablePanel>
           </ResizablePanelGroup>
         </TabsContent>
-        <TabsContent value="password">Change your password here.</TabsContent>
+        <TabsContent value="password">
+          <div className="p-2">
+            <p>Coming soon.</p>
+          </div>
+        </TabsContent>
       </Tabs>
     </Portal.Root>
   );
