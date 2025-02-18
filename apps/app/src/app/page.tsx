@@ -34,21 +34,15 @@ export default function Page() {
                   </TooltipContent>
                 </Tooltip>
               </span>
-              <h1 className="text-muted-foreground mt-4 text-4xl font-medium lg:text-6xl">
-                A place for
-                <br />
-                everything.
-                <br />
-                <div className="text-foreground mt-4">
-                  Everything
-                  <br />
-                  in its place.
-                </div>
-              </h1>
-              <p className="text-muted-foreground mb-10 mt-4 text-xl leading-8 sm:mb-10 sm:mt-6 sm:text-2xl">
-                Mapform helps you track, manage, and share the places that
-                matter to you.
-              </p>
+              <div className="lg:max-w-[500px]">
+                <h1 className="text-foreground mt-4 text-5xl font-medium lg:text-7xl">
+                  The Workspace For Place.
+                </h1>
+                <p className="text-muted-foreground mb-10 mt-4 text-xl leading-8 sm:mb-10 sm:mt-6 sm:text-2xl">
+                  Mapform helps you track, manage, and share the places that
+                  matter to you.
+                </p>
+              </div>
               <div className="flex flex-col justify-center gap-2 sm:flex-row sm:justify-start">
                 <Link className="max-lg:shadow-sm" href="/app" target="_blank">
                   <Button size="lg">Try it out</Button>

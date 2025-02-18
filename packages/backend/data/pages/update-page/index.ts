@@ -9,13 +9,14 @@ import {
   projects,
   type Column,
 } from "@mapform/db/schema";
-import type {
-  CustomBlock,
-  DocumentContent,
-  InputCustomBlockTypes,
+import {
+  type CustomBlock,
+  type DocumentContent,
+  type InputCustomBlockTypes,
 } from "@mapform/blocknote";
 import { updatePageSchema } from "./schema";
 import type { UserAuthClient } from "../../../lib/types";
+import { ServerError } from "../../../lib/server-error";
 
 const mapBlockTypeToDataType = (
   blockType: InputCustomBlockTypes,
@@ -62,14 +63,17 @@ export const updatePage = (authClient: UserAuthClient) =>
           contentViewType,
         },
       }) => {
-        const insertContent = content as unknown as {
-          content: DocumentContent;
-        };
+        const insertContent = content as unknown as
+          | {
+              content: DocumentContent;
+            }
+          | undefined;
 
         const page = await db.query.pages.findFirst({
           where: eq(pages.id, id),
           columns: {
             id: true,
+            pageType: true,
           },
           with: {
             project: {
@@ -101,6 +105,15 @@ export const updatePage = (authClient: UserAuthClient) =>
 
         if (!page) {
           throw new Error("Page not found");
+        }
+
+        if (
+          page.pageType === "page_ending" &&
+          insertContent?.content.some(
+            (block) => block.type === "pin" || block.type === "textInput",
+          )
+        ) {
+          throw new ServerError("End screens cannot have input blocks.");
         }
 
         const datasetColumns = await db

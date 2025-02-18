@@ -1,11 +1,4 @@
-import {
-  timestamp,
-  pgTable,
-  uuid,
-  text,
-  pgEnum,
-  unique,
-} from "drizzle-orm/pg-core";
+import { timestamp, pgTable, uuid, text, pgEnum } from "drizzle-orm/pg-core";
 import { datasets } from "../datasets/schema";
 import { pages } from "../pages/schema";
 

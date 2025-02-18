@@ -27,6 +27,7 @@ import {
   BlocknoteEditor,
   useCreateBlockNote,
   CustomBlockContext,
+  CustomBlockProvider,
 } from "@mapform/blocknote";
 import { format } from "date-fns";
 import { enUS } from "date-fns/locale";
@@ -40,6 +41,7 @@ import { upsertCellAction } from "~/data/cells/upsert-cell";
 import { compressImage } from "~/lib/compress-image";
 import { uploadImageAction } from "~/data/images";
 import { toast } from "@mapform/ui/components/toaster";
+import { a } from "node_modules/next-safe-action/dist/index.types-B2iGkRfD.mjs";
 
 const accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN!;
 
@@ -414,9 +416,9 @@ function RichtextInput({
   });
 
   return (
-    <CustomBlockContext.Provider
-      value={{
-        editable: true,
+    <CustomBlockProvider
+      isEditing
+      imageBlock={{
         onImageUpload: async (file: File) => {
           const compressedFile = await compressImage(
             file,
@@ -446,7 +448,6 @@ function RichtextInput({
             <FormItem className="flex-1">
               <FormControl>
                 <BlocknoteEditor
-                  editable
                   editor={editor}
                   includeFormBlocks={false}
                   onChange={() => {
@@ -458,7 +459,7 @@ function RichtextInput({
           )}
         />
       </div>
-    </CustomBlockContext.Provider>
+    </CustomBlockProvider>
   );
 }
 
@@ -481,7 +482,20 @@ function PointInput({
       container: mapContainerRef.current ?? "",
       pitchWithRotate: false,
       dragRotate: false,
-      touchZoomRotate: false,
+      doubleClickZoom: false,
+      scrollZoom: {
+        around: "center",
+      },
+    });
+
+    map.on("dblclick", () => {
+      // Prevent the default double-click zoom behavior
+      map.doubleClickZoom.disable();
+
+      // Zoom in by increasing the zoom level, preserving the clicked location
+      map.zoomTo(map.getZoom() + 1, {
+        duration: 300, // Optional: set the animation duration
+      });
     });
 
     map.on("move", () => {

@@ -12,7 +12,7 @@ import type { GetLayerPoint } from "@mapform/backend/data/datalayer/get-layer-po
 import type { GetLayerMarker } from "@mapform/backend/data/datalayer/get-layer-marker";
 import { useCreateQueryString } from "@mapform/lib/hooks/use-create-query-string";
 import type { GetProjectWithPages } from "@mapform/backend/data/projects/get-project-with-pages";
-import { useMapform } from "@mapform/mapform";
+import { useMapform } from "~/components/mapform";
 import type { GetPageWithLayers } from "@mapform/backend/data/pages/get-page-with-layers";
 import { toast } from "@mapform/ui/components/toaster";
 import type { InferUseActionHookReturn } from "next-safe-action/hooks";
@@ -124,11 +124,19 @@ export function ProjectProvider({
    * Actions
    */
   const updatePageServer = useAction(updatePageAction, {
-    onError: (response) => {
-      if (response.error.validationErrors || response.error.serverError) {
+    onError: ({ error }) => {
+      if (error.serverError) {
         toast({
           title: "Uh oh! Something went wrong.",
-          description: "An error occurred while updating the page.",
+          description: error.serverError,
+        });
+        return;
+      }
+
+      if (error.validationErrors) {
+        toast({
+          title: "Uh oh! Something went wrong.",
+          description: "We we unable to update your content. Please try again.",
         });
       }
     },

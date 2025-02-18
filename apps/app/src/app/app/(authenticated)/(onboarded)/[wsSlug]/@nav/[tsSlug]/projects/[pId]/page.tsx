@@ -14,7 +14,7 @@ export default async function Nav(props: {
   params: Promise<{ wsSlug: string; tsSlug: string; pId: string }>;
 }) {
   const params = await props.params;
-  const projectResponse = await authClient.getProjectWithTeamspace({
+  const projectResponse = await authClient.getProjectWithPages({
     id: params.pId,
   });
   const project = projectResponse?.data;
@@ -46,7 +46,7 @@ export default async function Nav(props: {
               <ShareContent
                 isDirty={project.isDirty}
                 numberOfVersions={project.childProjects.length}
-                projectId={params.pId}
+                project={project}
               />
             </PopoverContent>
           </Popover>

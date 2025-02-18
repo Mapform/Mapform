@@ -1,5 +1,5 @@
 {
-  "id": "2ea6e8bb-99d5-466b-a505-f9ec14fb45b6",
+  "id": "b2647e49-8cf0-41c9-9bc7-fccd21975c0c",
   "prevId": "3be18b45-439a-4821-80e4-df897e692ded",
   "version": "7",
   "dialect": "postgresql",
@@ -530,6 +530,14 @@
           "type": "uuid",
           "primaryKey": false,
           "notNull": true
+        },
+        "page_type": {
+          "name": "page_type",
+          "type": "page_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'page'"
         },
         "banner_image": {
           "name": "banner_image",
@@ -1910,86 +1918,6 @@
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
-    },
-    "public.ending": {
-      "name": "ending",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "uuid",
-          "primaryKey": true,
-          "notNull": true,
-          "default": "gen_random_uuid()"
-        },
-        "project_id": {
-          "name": "project_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "ending_type": {
-          "name": "ending_type",
-          "type": "ending_type",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "'page'"
-        },
-        "redirect_url": {
-          "name": "redirect_url",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "page_title": {
-          "name": "page_title",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "page_content": {
-          "name": "page_content",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "ending_project_id_project_id_fk": {
-          "name": "ending_project_id_project_id_fk",
-          "tableFrom": "ending",
-          "tableTo": "project",
-          "columnsFrom": [
-            "project_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
     }
   },
   "enums": {
@@ -2024,6 +1952,14 @@
         "map",
         "split",
         "text"
+      ]
+    },
+    "public.page_type": {
+      "name": "page_type",
+      "schema": "public",
+      "values": [
+        "page",
+        "page_ending"
       ]
     },
     "public.color": {
@@ -2062,14 +1998,6 @@
         "point",
         "richtext",
         "icon"
-      ]
-    },
-    "public.ending_type": {
-      "name": "ending_type",
-      "schema": "public",
-      "values": [
-        "redirect",
-        "page"
       ]
     }
   },

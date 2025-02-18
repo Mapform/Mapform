@@ -18,6 +18,8 @@ import { MapPinIcon, TextIcon, ImageIcon } from "lucide-react";
 import type { schema } from "./block-note-schema";
 import { PinMenu, TextInputMenu } from "./block-note-schema";
 import { cn } from "../../lib/classnames";
+import "./style.css";
+import { useCustomBlockContext } from "./context";
 
 const insertPin = (edtr: typeof schema.BlockNoteEditor) => ({
   title: "Pin",
@@ -60,7 +62,6 @@ const insertImage = (edtr: typeof schema.BlockNoteEditor) => ({
 
 interface BlocknoteEditorProps {
   editor: typeof schema.BlockNoteEditor;
-  editable?: boolean;
   includeFormBlocks?: boolean;
   onChange?: () => void;
 }
@@ -68,13 +69,14 @@ interface BlocknoteEditorProps {
 export function BlocknoteEditor({
   editor,
   onChange,
-  editable = true,
   includeFormBlocks = false,
 }: BlocknoteEditorProps) {
+  const { isEditing } = useCustomBlockContext();
+
   return (
     <BlockNoteView
       className="flex-1"
-      editable={editable}
+      editable={isEditing}
       editor={editor}
       emojiPicker={false}
       onChange={onChange}
