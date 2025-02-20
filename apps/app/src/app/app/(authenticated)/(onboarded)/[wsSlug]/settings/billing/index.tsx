@@ -9,7 +9,7 @@ const BASIC_FEATURES = ["Unlimited projects", "Unlimited datasets", "100 rows"];
 
 const PRO_FEATURES = [
   "Everything in Basic",
-  "Teams (coming soon)",
+  "Collect data with Forms",
   "1,000 rows",
 ];
 
