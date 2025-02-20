@@ -7,6 +7,12 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@mapform/ui/components/resizable";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@mapform/ui/components/tabs";
 import { useProject } from "../project-context";
 import { LayerList } from "./layer-list";
 import { PageList } from "./page-list";
@@ -21,15 +27,30 @@ export function Drawer() {
 
   return (
     <Portal.Root className="flex-1 overflow-hidden" container={container}>
-      <ResizablePanelGroup direction="vertical">
-        <ResizablePanel>
-          <PageList />
-        </ResizablePanel>
-        <ResizableHandle />
-        <ResizablePanel>
-          <LayerList key={currentPage?.id} />
-        </ResizablePanel>
-      </ResizablePanelGroup>
+      <Tabs defaultValue="settings" className="flex h-full w-full flex-col">
+        <div className="flex h-16 items-center p-2">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="settings">Content</TabsTrigger>
+            <TabsTrigger value="password">Settings</TabsTrigger>
+          </TabsList>
+        </div>
+        <TabsContent className="mt-0 flex-1" value="settings">
+          <ResizablePanelGroup direction="vertical">
+            <ResizablePanel minSize={15}>
+              <PageList />
+            </ResizablePanel>
+            <ResizableHandle />
+            <ResizablePanel minSize={15}>
+              <LayerList key={currentPage?.id} />
+            </ResizablePanel>
+          </ResizablePanelGroup>
+        </TabsContent>
+        <TabsContent value="password">
+          <div className="p-2">
+            <p>Coming soon.</p>
+          </div>
+        </TabsContent>
+      </Tabs>
     </Portal.Root>
   );
 }

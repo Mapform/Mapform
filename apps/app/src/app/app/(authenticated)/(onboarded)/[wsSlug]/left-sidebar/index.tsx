@@ -124,6 +124,7 @@ export function LeftSidebar() {
           isActive:
             pathname ===
             `/app/${workspaceSlug}/${teamspace.slug}/datasets/${dataset.id}`,
+          hasProject: !!dataset.project?.id,
         })),
       },
     })),
@@ -220,44 +221,6 @@ export function LeftSidebar() {
         {data.spaces.map((space) => (
           <SidebarGroup key={space.title}>
             <SidebarGroupLabel>{space.title}</SidebarGroupLabel>
-            {/* <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <SidebarGroupAction>
-                  <PlusIcon />
-                </SidebarGroupAction>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" side="right">
-                <DropdownMenuItem
-                  className="flex items-center gap-2"
-                  disabled={statusCreateProject === "executing"}
-                  onSelect={(e) => {
-                    e.preventDefault();
-                    executeCreateProject({
-                      name: "New project",
-                      teamspaceId: space.id,
-                    });
-                  }}
-                >
-                  <PlusIcon className="size-4 flex-shrink-0" />
-                  Create project
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  className="flex items-center gap-2"
-                  disabled={statusCreateEmptyDataset === "executing"}
-                  onSelect={(e) => {
-                    e.preventDefault();
-                    executeCreateEmptyDataset({
-                      name: "New dataset",
-                      teamspaceId: space.id,
-                    });
-                  }}
-                >
-                  <PlusIcon className="size-4 flex-shrink-0" />
-                  Create dataset
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu> */}
-
             {/* Projects */}
             <SidebarMenu>
               <Collapsible className="group/collapsible" defaultOpen>

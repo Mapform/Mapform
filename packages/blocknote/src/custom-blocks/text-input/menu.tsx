@@ -26,20 +26,4 @@ export function TextInputMenu({ blockId }: { blockId: string }) {
       {block.props.required ? "Unrequire" : "Require"}
     </Components.Generic.Menu.Item>
   );
-
-  // TODO: Implement switches when fully customized menu is supported.
-  // return (
-  //   <Label className="flex justify-between items-center">
-  //     Required
-  //     <Switch
-  //       checked={block.props.required}
-  //       onCheckedChange={(e) => {
-  // editor.updateBlock(block, {
-  //   type: "pin",
-  //   props: { required: e },
-  // });
-  //       }}
-  //     />
-  //   </Label>
-  // );
 }

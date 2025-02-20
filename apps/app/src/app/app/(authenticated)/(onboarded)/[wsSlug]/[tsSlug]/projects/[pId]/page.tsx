@@ -1,5 +1,5 @@
 import { cache } from "react";
-import { MapformProvider } from "@mapform/mapform";
+import { Mapform } from "~/components/mapform";
 import { redirect } from "next/navigation";
 import { ProjectProvider } from "./project-context";
 import Project from "./project";
@@ -133,7 +133,7 @@ export default async function ProjectPage(props: {
 
   return (
     <div className="flex flex-1 flex-col overflow-hidden p-4">
-      <MapformProvider>
+      <Mapform>
         <ProjectProvider
           availableDatasets={availableDatasets ?? []}
           pageData={pageData}
@@ -146,7 +146,7 @@ export default async function ProjectPage(props: {
           </div>
           <Drawer />
         </ProjectProvider>
-      </MapformProvider>
+      </Mapform>
     </div>
   );
 }

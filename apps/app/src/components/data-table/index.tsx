@@ -17,7 +17,14 @@ import {
 import { Checkbox } from "@mapform/ui/components/checkbox";
 import { Button } from "@mapform/ui/components/button";
 import type { GetDataset } from "@mapform/backend/data/datasets/get-dataset";
-import { CopyIcon, PlusIcon, Trash2Icon } from "lucide-react";
+import {
+  BoxIcon,
+  CopyIcon,
+  LinkIcon,
+  LockIcon,
+  PlusIcon,
+  Trash2Icon,
+} from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import { createRowAction } from "~/data/rows/create-row";
 import { deleteRowsAction } from "~/data/rows/delete-rows";
@@ -25,6 +32,13 @@ import { duplicateRowsAction } from "~/data/rows/duplicate-rows";
 import { ColumnAdder } from "./column-adder";
 import { CellPopover } from "./cell-popover";
 import { ColumnEditor } from "./column-editor";
+import { toast } from "@mapform/ui/components/toaster";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@mapform/ui/components/tooltip";
 
 interface TableProps {
   dataset: NonNullable<GetDataset["data"]>;
@@ -34,9 +48,31 @@ export const DataTable = function DataTable({ dataset }: TableProps) {
   const { execute: executeDeleteRows, status: statusDeleteRows } =
     useAction(deleteRowsAction);
   const { execute: executeDuplicateRows, status: statusDuplicateRows } =
-    useAction(duplicateRowsAction);
-  const { execute: executeCreateRow, status: statusCreateRow } =
-    useAction(createRowAction);
+    useAction(duplicateRowsAction, {
+      onError: ({ error }) => {
+        if (error.serverError) {
+          toast({
+            title: "Uh oh! Something went wrong.",
+            description: error.serverError,
+          });
+          return;
+        }
+      },
+    });
+  const { execute: executeCreateRow, status: statusCreateRow } = useAction(
+    createRowAction,
+    {
+      onError: ({ error }) => {
+        if (error.serverError) {
+          toast({
+            title: "Uh oh! Something went wrong.",
+            description: error.serverError,
+          });
+          return;
+        }
+      },
+    },
+  );
   const columns = useMemo(() => getColumns(dataset), [dataset]);
   const rows = useMemo(
     () =>
@@ -89,7 +125,22 @@ export const DataTable = function DataTable({ dataset }: TableProps) {
   return (
     <div className="relative flex flex-1 flex-col overflow-auto bg-white p-4 pt-0">
       {/* Top bar */}
-      <div className="sticky top-0 z-10 -mb-1 box-content flex h-8 flex-shrink-0 items-center gap-2 border-b bg-white pb-2 pt-4">
+      <div className="sticky top-0 z-20 -mb-1 box-content flex h-8 flex-shrink-0 items-center gap-2 border-b bg-white pb-2 pt-4">
+        {dataset.project ? (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger className="text-muted-foreground mr-4 flex items-center gap-1 text-sm">
+                <BoxIcon className="size-4" />
+                Submissions Database
+              </TooltipTrigger>
+              <TooltipContent className="max-w-[200px]">
+                Submissions will be logged here for your{" "}
+                <strong>{dataset.project.name}</strong> project. This dataset
+                cannot be deleted unless the project is deleted first.
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        ) : null}
         <div className="text-muted-foreground text-sm">
           {numberOfSelectedRows} of {totalNumberOfRows} row(s) selected.
         </div>
@@ -130,7 +181,7 @@ export const DataTable = function DataTable({ dataset }: TableProps) {
           </>
         ) : null}
       </div>
-      <Table>
+      <Table className="border-b">
         <TableHeader
           className="sticky top-[53px] z-10 bg-white"
           style={{
@@ -141,7 +192,7 @@ export const DataTable = function DataTable({ dataset }: TableProps) {
             <TableRow className="border-none" key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
                 return (
-                  <TableHead key={header.id}>
+                  <TableHead className="truncate" key={header.id}>
                     {header.isPlaceholder
                       ? null
                       : flexRender(
@@ -176,7 +227,7 @@ export const DataTable = function DataTable({ dataset }: TableProps) {
         </TableBody>
       </Table>
       <button
-        className="hover:bg-muted/50 flex items-center border-t p-2 text-left text-sm disabled:pointer-events-none disabled:opacity-50"
+        className="hover:bg-muted/50 sticky left-0 flex items-center p-2 text-left text-sm disabled:pointer-events-none disabled:opacity-50"
         disabled={statusCreateRow === "executing"}
         onClick={() => {
           executeCreateRow({ datasetId: dataset.id });

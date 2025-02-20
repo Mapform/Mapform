@@ -5,17 +5,22 @@ import {
   FormItem,
   FormControl,
   useFormContext,
+  FormLabel,
 } from "@mapform/ui/components/form";
-// import { useState } from "react";
 import { Button } from "@mapform/ui/components/button";
 import { Input } from "@mapform/ui/components/input";
 import { AsteriskIcon } from "lucide-react";
 import { useCustomBlockContext } from "../../context";
+import { AutoSizeTextArea } from "@mapform/ui/components/autosize-text-area";
 
 export const Pin = createReactBlockSpec(
   {
     type: "pin",
     propSchema: {
+      label: {
+        default: "",
+        type: "string",
+      },
       text: {
         default: "Pick a Location",
         type: "string",
@@ -30,30 +35,69 @@ export const Pin = createReactBlockSpec(
   {
     render: ({ block, editor }) => {
       const form = useFormContext();
-      const {
-        editable,
-        isSelectingPinLocationFor,
-        setIsSelectingPinLocationFor,
-      } = useCustomBlockContext();
-      // const [prevViewState, setPrevViewState] = useState(viewState);
+      const { isEditing, pinBlock } = useCustomBlockContext();
 
-      if (editable) {
+      if (isEditing) {
         return (
+          <div className="mb-4 flex w-full flex-col gap-2">
+            <div className="flex flex-1 justify-between">
+              <AutoSizeTextArea
+                className="p-0 text-base font-medium placeholder-gray-300"
+                value={block.props.label}
+                onChange={(label) =>
+                  editor.updateBlock(block, {
+                    type: "pin",
+                    props: { label },
+                  })
+                }
+              />
+              {block.props.required ? (
+                <AsteriskIcon height={14} width={14} />
+              ) : null}
+            </div>
+            <Button
+              className="relative w-full cursor-default"
+              variant="secondary"
+            >
+              <input
+                className="w-full border-0 border-transparent bg-transparent p-0 text-center text-sm font-medium outline-none focus:border-transparent focus:ring-0"
+                onChange={(e) => {
+                  editor.updateBlock(block, {
+                    type: "pin",
+                    props: { text: e.target.value },
+                  });
+                }}
+                value={block.props.text}
+              />
+            </Button>
+          </div>
+        );
+      }
+
+      const currentLatitude = form.watch(`${block.id}.y`) as number;
+      const currentLongitude = form.watch(`${block.id}.x`) as number;
+
+      const hasLocation = currentLatitude && currentLongitude;
+
+      return (
+        <div className="fiex mb-4 w-full flex-col space-y-2">
+          <FormLabel className="flex justify-between text-base font-medium">
+            {block.props.label}
+            {block.props.required ? (
+              <AsteriskIcon height={14} width={14} />
+            ) : null}
+          </FormLabel>
           <Button
-            className="relative w-full cursor-default"
-            size="sm"
-            variant="outline"
+            className="relative w-full"
+            onClick={() => {
+              pinBlock?.setIsSelectingLocationFor(block.id);
+            }}
+            type="button"
+            variant="secondary"
           >
-            <input
-              className="w-full border-0 border-transparent bg-transparent p-0 text-center text-sm font-medium outline-none focus:border-transparent focus:ring-0"
-              onChange={(e) => {
-                editor.updateBlock(block, {
-                  type: "pin",
-                  props: { text: e.target.value },
-                });
-              }}
-              value={block.props.text}
-            />
+            {hasLocation
+              ? `Selected: ${currentLatitude.toFixed(5)},${currentLongitude.toFixed(5)}`
+              : block.props.text}
             {block.props.required ? (
               <AsteriskIcon
                 className="absolute right-2"
@@ -62,99 +106,12 @@ export const Pin = createReactBlockSpec(
               />
             ) : null}
           </Button>
-        );
-      }
 
-      const currentLatitude = form.watch(`${block.id}.latitude`);
-      const currentLongitude = form.watch(`${block.id}.longitude`);
-
-      return (
-        <div className="fiex w-full flex-col">
-          {isSelectingPinLocationFor === block.id ? (
-            <div className="flex flex-col gap-2">
-              <Button
-                className="w-full"
-                onClick={() => {
-                  // form.setValue(`${block.id}.latitude`, viewState.latitude);
-                  // form.setValue(`${block.id}.longitude`, viewState.longitude);
-                  // setViewState(prevViewState);
-                  if (setIsSelectingPinLocationFor) {
-                    setIsSelectingPinLocationFor(null);
-                  }
-                }}
-                size="sm"
-              >
-                Done
-              </Button>
-              {currentLatitude && currentLongitude ? (
-                <Button
-                  className="w-full"
-                  onClick={() => {
-                    form.setValue(`${block.id}.latitude`, "");
-                    form.setValue(`${block.id}.longitude`, "");
-                    // setViewState(prevViewState);
-                    if (setIsSelectingPinLocationFor) {
-                      setIsSelectingPinLocationFor(null);
-                    }
-                  }}
-                  variant="outline"
-                >
-                  Clear Selection
-                </Button>
-              ) : null}
-              <Button
-                className="w-full"
-                onClick={() => {
-                  // setViewState(prevViewState);
-                  if (setIsSelectingPinLocationFor) {
-                    setIsSelectingPinLocationFor(null);
-                  }
-                }}
-                size="sm"
-                variant="outline"
-              >
-                Cancel
-              </Button>
-            </div>
-          ) : (
-            <Button
-              className="relative w-full"
-              onClick={() => {
-                if (setIsSelectingPinLocationFor) {
-                  setIsSelectingPinLocationFor(block.id);
-                }
-
-                // setPrevViewState(viewState);
-
-                // setViewState({
-                //   ...viewState,
-                //   zoom: viewState.zoom * 1.2,
-                //   latitude: currentLatitude
-                //     ? currentLatitude
-                //     : viewState.latitude,
-                //   longitude: currentLongitude
-                //     ? currentLongitude
-                //     : viewState.longitude,
-                // });
-              }}
-              size="sm"
-              variant="outline"
-            >
-              {block.props.text}
-              {block.props.required ? (
-                <AsteriskIcon
-                  className="absolute right-2"
-                  height={14}
-                  width={14}
-                />
-              ) : null}
-            </Button>
-          )}
           <FormField
             control={form.control}
             // disabled
             // This is what allows us to match the user value back to the input
-            name={`${block.id}.latitude`}
+            name={`${block.id}.y`}
             render={({ field }) => (
               <FormItem className="flex-1">
                 <FormControl>
@@ -167,7 +124,7 @@ export const Pin = createReactBlockSpec(
             control={form.control}
             // disabled
             // This is what allows us to match the user value back to the input
-            name={`${block.id}.longitude`}
+            name={`${block.id}.x`}
             render={({ field }) => (
               <FormItem className="flex-1">
                 <FormControl>

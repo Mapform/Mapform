@@ -7,17 +7,21 @@ import {
   iconsCells,
   layers,
   markerLayers,
+  plans,
   pointCells,
   pointLayers,
   richtextCells,
   rows,
   stringCells,
   teamspaces,
+  workspaces,
 } from "@mapform/db/schema";
 import { eq, and, inArray } from "@mapform/db/utils";
 import { createPointSchema } from "./schema";
 import type { UserAuthClient } from "../../../lib/types";
-import { DocumentContent } from "@mapform/blocknote";
+import type { DocumentContent } from "@mapform/blocknote";
+import { ServerError } from "../../../lib/server-error";
+import { getRowAndPageCount } from "../../usage/get-row-and-page-count";
 
 export const createPoint = (authClient: UserAuthClient) =>
   authClient
@@ -35,6 +39,8 @@ export const createPoint = (authClient: UserAuthClient) =>
             .leftJoin(markerLayers, eq(layers.id, markerLayers.layerId))
             .leftJoin(datasets, eq(layers.datasetId, datasets.id))
             .leftJoin(teamspaces, eq(datasets.teamspaceId, teamspaces.id))
+            .leftJoin(workspaces, eq(teamspaces.workspaceSlug, workspaces.slug))
+            .leftJoin(plans, eq(plans.workspaceSlug, workspaces.slug))
             .where(
               and(
                 eq(layers.id, layerId),
@@ -49,6 +55,30 @@ export const createPoint = (authClient: UserAuthClient) =>
 
           if (layer.type !== "point" && layer.type !== "marker") {
             throw new Error("Layer is not a point or marker layer");
+          }
+
+          if (!result.teamspace) {
+            throw new Error("Teamspace not found");
+          }
+
+          if (!result.plan) {
+            throw new Error("Plan not found");
+          }
+
+          const response = await getRowAndPageCount(authClient)({
+            workspaceSlug: result.teamspace.workspaceSlug,
+          });
+          const rowCount = response?.data?.rowCount;
+          const pageCount = response?.data?.pageCount;
+
+          if (rowCount === undefined || pageCount === undefined) {
+            throw new Error("Row count or page count is undefined.");
+          }
+
+          if (rowCount + pageCount >= result.plan.rowLimit) {
+            throw new ServerError(
+              "Row limit exceeded. Delete some rows, or upgrade your plan.",
+            );
           }
 
           const pointColumnId =

@@ -3,21 +3,20 @@ import { createReactBlockSpec } from "@blocknote/react";
 import {
   FormField,
   FormItem,
-  FormLabel,
   FormControl,
   FormMessage,
   useFormContext,
 } from "@mapform/ui/components/form";
 import { Input } from "@mapform/ui/components/input";
-import { AsteriskIcon } from "lucide-react";
 import { useCustomBlockContext } from "../../context";
+import { Label } from "../../components/label";
 
 export const TextInput = createReactBlockSpec(
   {
     type: "textInput",
     propSchema: {
       label: {
-        default: "My Label",
+        default: "",
         type: "string",
       },
       placeholder: {
@@ -34,7 +33,7 @@ export const TextInput = createReactBlockSpec(
   {
     render: ({ block, editor }) => {
       const form = useFormContext();
-      const { editable } = useCustomBlockContext();
+      const { isEditing } = useCustomBlockContext();
 
       return (
         <FormField
@@ -43,34 +42,20 @@ export const TextInput = createReactBlockSpec(
           // This is what allows us to match the user value back to the input
           name={block.id}
           render={({ field }) => (
-            <FormItem className="w-full">
-              {editable ? (
-                <div className="flex justify-between">
-                  <input
-                    className="flex-1 text-sm font-medium border-0 p-0 outline-none border-transparent focus:border-transparent focus:ring-0 placeholder-gray-300 bg-transparent"
-                    onChange={(e) => {
-                      editor.updateBlock(block, {
-                        type: "textInput",
-                        props: { label: e.target.value },
-                      });
-                    }}
-                    placeholder="Label"
-                    value={block.props.label}
-                  />
-                  {block.props.required ? (
-                    <AsteriskIcon height={14} width={14} />
-                  ) : null}
-                </div>
-              ) : (
-                <FormLabel className="flex justify-between">
-                  {block.props.label}
-                  {block.props.required ? (
-                    <AsteriskIcon height={14} width={14} />
-                  ) : null}
-                </FormLabel>
-              )}
+            <FormItem className="mb-4 w-full">
+              <Label
+                isEditing={isEditing}
+                label={block.props.label}
+                required={block.props.required}
+                onLabelChange={(label) => {
+                  editor.updateBlock(block, {
+                    type: "textInput",
+                    props: { label },
+                  });
+                }}
+              />
               <FormControl>
-                {editable ? (
+                {isEditing ? (
                   <Input
                     className="text-muted-foreground bg-white"
                     onChange={(e) => {
@@ -96,5 +81,5 @@ export const TextInput = createReactBlockSpec(
         />
       );
     },
-  }
+  },
 );

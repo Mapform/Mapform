@@ -14,5 +14,5 @@ export const datasetsRelations = relations(datasets, ({ one, many }) => ({
   layers: many(layers),
   rows: many(rows),
   columns: many(columns),
-  project: many(projects),
+  project: one(projects),
 }));

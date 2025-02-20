@@ -33,7 +33,6 @@ import { getPageWithLayers } from "@mapform/backend/data/pages/get-page-with-lay
 import { updatePage } from "@mapform/backend/data/pages/update-page";
 import { updatePageOrder } from "@mapform/backend/data/pages/update-page-order";
 import { getProjectWithPages } from "@mapform/backend/data/projects/get-project-with-pages";
-import { getProjectWithTeamspace } from "@mapform/backend/data/projects/get-project-with-teamspace";
 import { publishProject } from "@mapform/backend/data/projects/publish-project";
 import { getTeamspaceWithProjects } from "@mapform/backend/data/teamspaces/get-teamspace-with-projects";
 import { deleteColumn } from "@mapform/backend/data/columns/delete-column";
@@ -49,6 +48,8 @@ import { getSession } from "@mapform/backend/data/rows/get-session";
 import { getCurrentSession } from "@mapform/backend/data/auth/get-current-session";
 import { createDatasetFromGeojson } from "@mapform/backend/data/datasets/create-from-geojson";
 import { completeOnboarding } from "@mapform/backend/data/workspaces/complete-onboarding";
+import { createCheckoutSession } from "@mapform/backend/data/stripe/create-checkout-session";
+import { createBillingSession } from "@mapform/backend/data/stripe/create-billing-session";
 import {
   baseClient,
   UserAccess,
@@ -163,13 +164,16 @@ const createUserAuthClient = () => {
     publishProject: publishProject(extendedClient),
     getRecentProjects: getRecentProjects(extendedClient),
     getProjectWithPages: getProjectWithPages(extendedClient),
-    getProjectWithTeamspace: getProjectWithTeamspace(extendedClient),
 
     // Rows
     createRow: createRow(extendedClient),
     deleteRows: deleteRows(extendedClient),
     duplicateRows: duplicateRows(extendedClient),
     getRowAndPageCount: getRowAndPageCount(extendedClient),
+
+    // Stripe
+    createBillingSession: createBillingSession(extendedClient),
+    createCheckoutSession: createCheckoutSession(extendedClient),
 
     // Teamspaces
     getTeamspaceWithProjects: getTeamspaceWithProjects(extendedClient),

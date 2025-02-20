@@ -11,13 +11,16 @@ import {
 } from "@mapform/db/schema";
 import { and, count, eq, isNull } from "@mapform/db/utils";
 import { getRowAndPageCountSchema } from "./schema";
-import type { UserAuthClient } from "../../../lib/types";
+import type { UserAuthClient, PublicClient } from "../../../lib/types";
 
-export const getRowAndPageCount = (authClient: UserAuthClient) =>
+export const getRowAndPageCount = (authClient: UserAuthClient | PublicClient) =>
   authClient
     .schema(getRowAndPageCountSchema)
-    .action(async ({ parsedInput: { workspaceSlug }, ctx: { userAccess } }) => {
-      if (!userAccess.workspace.checkAccessBySlug(workspaceSlug)) {
+    .action(async ({ parsedInput: { workspaceSlug }, ctx }) => {
+      if (
+        ctx.authType === "user" &&
+        !ctx.userAccess.workspace.checkAccessBySlug(workspaceSlug)
+      ) {
         throw new Error("Unauthorized");
       }
 

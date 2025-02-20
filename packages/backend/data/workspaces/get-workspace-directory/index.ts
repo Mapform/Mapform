@@ -19,6 +19,7 @@ export const getWorkspaceDirectory = (authClient: UserAuthClient) =>
           createdAt: true,
         },
         with: {
+          plan: true,
           teamspaces: {
             columns: {
               id: true,
@@ -32,6 +33,13 @@ export const getWorkspaceDirectory = (authClient: UserAuthClient) =>
                   id: true,
                   name: true,
                   createdAt: true,
+                },
+                with: {
+                  project: {
+                    columns: {
+                      id: true,
+                    },
+                  },
                 },
                 orderBy: (datasets, { asc }) => [asc(datasets.createdAt)],
               },

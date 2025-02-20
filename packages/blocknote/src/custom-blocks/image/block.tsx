@@ -25,7 +25,7 @@ export const Image = createReactBlockSpec(
   {
     render: ({ block, editor }) => {
       const [isUploading, setIsUploading] = useState(false);
-      const { editable, onImageUpload } = useCustomBlockContext();
+      const { isEditing, imageBlock } = useCustomBlockContext();
 
       const renderImage = () => (
         <NextImage
@@ -45,9 +45,9 @@ export const Image = createReactBlockSpec(
           return;
         }
 
-        if (onImageUpload) {
+        if (imageBlock?.onImageUpload) {
           setIsUploading(true);
-          const image = await onImageUpload(file);
+          const image = await imageBlock.onImageUpload(file);
           setIsUploading(false);
 
           if (!image) {
@@ -61,7 +61,7 @@ export const Image = createReactBlockSpec(
         }
       };
 
-      if (editable) {
+      if (isEditing) {
         if (block.props.imageUrl) {
           return renderImage();
         }
