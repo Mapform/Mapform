@@ -24,29 +24,30 @@ async function runDataMigration() {
     },
   });
 
-  await Promise.all(
-    workspaces.map(async (workspace) => {
-      // Create a Stripe customer for each workspace
-      const email = workspace.workspaceMemberships[0]?.user.email;
+  for (const workspace of workspaces) {
+    // Create a Stripe customer for each workspace
+    const email = workspace.workspaceMemberships[0]?.user.email;
 
-      if (!email) {
-        throw new Error(`No email found for workspace with ID ${workspace.id}`);
-      }
+    if (!email) {
+      throw new Error(`No email found for workspace with ID ${workspace.id}`);
+    }
 
-      const customer = await stripe.customers.create({
-        name: workspace.name, // Workspace name
-        email, // Billing email associated with the workspace
-      });
+    const customer = await stripe.customers.create({
+      name: workspace.name, // Workspace name
+      email, // Billing email associated with the workspace
+    });
 
-      // Create a plan for each workspace
-      await db.insert(schema.plans).values({
-        name: "Basic",
-        workspaceSlug: workspace.slug,
-        stripeCustomerId: customer.id,
-        rowLimit: 100,
-      });
-    }),
-  );
+    // Create a plan for each workspace
+    await db.insert(schema.plans).values({
+      name: "Basic",
+      workspaceSlug: workspace.slug,
+      stripeCustomerId: customer.id,
+      rowLimit: 100,
+    });
+
+    // Add 1 second delay between iterations
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+  }
 
   console.log("Data migration completed!");
 }
