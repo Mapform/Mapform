@@ -33,6 +33,7 @@ import { createProjectAction } from "~/data/projects/create-project";
 import { useWorkspace } from "~/app/app/(authenticated)/(onboarded)/[wsSlug]/workspace-context";
 import { useRouter } from "next/navigation";
 import { Switch } from "@mapform/ui/components/switch";
+import { Badge } from "@mapform/ui/components/badge";
 
 interface CreateProjectDialogProps {
   tsSlug: string;
@@ -131,7 +132,9 @@ export function CreateProjectDialog({
                 render={({ field }) => (
                   <FormItem className="flex flex-row items-center justify-between">
                     <div className="space-y-0.5">
-                      <FormLabel>Enable Forms</FormLabel>
+                      <FormLabel className="flex items-center gap-x-2">
+                        Enable Forms <Badge size="sm">Pro</Badge>
+                      </FormLabel>
                       <FormDescription>
                         Collect data from user inputs and enable interactive
                         experiences.
