@@ -1,10 +1,11 @@
-import Stripe from "stripe";
+import type Stripe from "stripe";
 
 import { db } from "@mapform/db";
 import { plans } from "@mapform/db/schema";
 import { eq } from "@mapform/db/utils";
 import { stripe } from "@mapform/lib/stripe";
-import { NextRequest, NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 import { PLANS } from "@mapform/lib/constants/plans";
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
@@ -29,7 +30,7 @@ export async function POST(request: NextRequest) {
     case "customer.subscription.created":
     case "customer.subscription.updated":
     case "customer.subscription.deleted":
-      const subscription = event.data.object as Stripe.Subscription;
+      const subscription = event.data.object;
       await handleSubscriptionChange(subscription);
 
       break;

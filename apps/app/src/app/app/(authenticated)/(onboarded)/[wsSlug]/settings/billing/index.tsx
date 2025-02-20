@@ -3,7 +3,7 @@ import { ProButtons } from "./pro-buttons";
 import { PLANS } from "@mapform/lib/constants/plans";
 import type { WorkspaceDirectory } from "@mapform/backend/data/workspaces/get-workspace-directory";
 import { BasicButtons } from "./basic-buttons";
-import { getStripePrices } from "@mapform/lib/stripe";
+import type { getStripePrices } from "@mapform/lib/stripe";
 
 const BASIC_FEATURES = ["Unlimited projects", "Unlimited datasets", "100 rows"];
 

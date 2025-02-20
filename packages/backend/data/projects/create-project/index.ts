@@ -43,6 +43,10 @@ export const createProject = (authClient: UserAuthClient) =>
           throw new Error("Teamspace not found");
         }
 
+        if (formsEnabled && !teamspace.workspace.plan?.stripeSubscriptionId) {
+          throw new ServerError("Upgrade your plan to enable forms.");
+        }
+
         const rowAndPageCountResponse = await getRowAndPageCount(authClient)({
           workspaceSlug: teamspace.workspaceSlug,
         });
