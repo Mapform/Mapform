@@ -4,7 +4,7 @@ const navigation = {
     { name: "Changelog", href: "https://mapform.productlane.com/changelog" },
     { name: "Roadmap", href: "https://mapform.productlane.com/roadmap" },
     { name: "Terms of service", href: "/terms-of-use" },
-    { name: "Privacy policy", href: "#" },
+    { name: "Privacy policy", href: "/privacy-policy" },
   ],
 };
 
