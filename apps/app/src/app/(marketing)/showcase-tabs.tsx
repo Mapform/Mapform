@@ -14,7 +14,7 @@ import {
 const TABS = [
   {
     id: "map",
-    title: "Beautiful Maps",
+    title: "Maps",
     image: "/static/images/map.jpeg",
     alt: "Map view interface",
     icon: EarthIcon,
@@ -53,7 +53,7 @@ export function ShowcaseTabs() {
   return (
     <TabsPrimitive.Root
       defaultValue="map"
-      className="relative mx-auto h-full w-full max-w-screen-xl overflow-hidden"
+      className="relative mx-auto h-full w-full max-w-screen-2xl overflow-hidden"
     >
       <TabsPrimitive.List className="mb-4 flex justify-center gap-6 py-2">
         {TABS.map((tab) => (

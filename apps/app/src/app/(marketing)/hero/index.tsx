@@ -11,7 +11,7 @@ import { ArrowUpRightIcon } from "lucide-react";
 
 export function Hero() {
   return (
-    <div className="-mt-[50px] flex h-full w-full flex-col justify-center">
+    <div className="mb-16 flex h-full w-full flex-col justify-center">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <section className="lg:flex lg:items-center lg:gap-x-12">
           <div className="mx-auto flex max-w-2xl flex-col items-center text-center sm:items-baseline sm:text-left lg:mx-0 lg:flex-auto">
