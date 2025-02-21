@@ -1,6 +1,7 @@
 import { Nav } from "~/components/landing/nav";
 import { Hero } from "./hero";
 import { TabsShowcase } from "./tabs";
+import Footer from "./footer";
 
 export default function Page() {
   return (
@@ -9,6 +10,7 @@ export default function Page() {
       <div className="flex flex-col gap-20">
         <Hero />
         <TabsShowcase />
+        <Footer />
       </div>
     </div>
   );
