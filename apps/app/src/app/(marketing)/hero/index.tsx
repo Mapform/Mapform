@@ -6,7 +6,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@mapform/ui/components/tooltip";
-import { Globe } from "~/components/landing/globe";
+import { Globe } from "./globe";
 import { ArrowUpRightIcon } from "lucide-react";
 
 export function Hero() {

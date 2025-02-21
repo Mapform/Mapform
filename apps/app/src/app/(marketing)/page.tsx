@@ -1,4 +1,4 @@
-import { Nav } from "~/components/landing/nav";
+import { Nav } from "~/app/(marketing)/nav";
 import { Hero } from "./hero";
 import { TabsShowcase } from "./tabs";
 import Footer from "./footer";
