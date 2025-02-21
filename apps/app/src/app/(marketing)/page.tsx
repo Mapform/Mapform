@@ -9,6 +9,7 @@ import {
 import { Globe } from "~/components/landing/globe";
 import { Nav } from "~/components/landing/nav";
 import { ArrowUpRightIcon } from "lucide-react";
+import { TabsShowcase } from "./tabs";
 
 export default function Page() {
   return (
@@ -69,6 +70,7 @@ export default function Page() {
           </section>
         </div>
       </div>
+      <TabsShowcase />
     </div>
   );
 }
