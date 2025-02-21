@@ -17,7 +17,6 @@ import {
 } from "@mapform/blocknote";
 import { submitPageAction } from "./actions";
 import {
-  Mapform,
   MapformContent,
   MapformDrawer,
   MapformDrawerButton,
@@ -211,116 +210,111 @@ export function Map({
   );
 
   return (
-    <Mapform>
-      <Form {...form}>
-        <form
-          className="flex h-full w-full flex-col md:overflow-hidden"
-          onSubmit={form.handleSubmit(onStepSubmit)}
+    <Form {...form}>
+      <form
+        className="flex h-full w-full flex-col md:overflow-hidden"
+        onSubmit={form.handleSubmit(onStepSubmit)}
+      >
+        <MapformContent
+          drawerValues={drawerValues}
+          onDrawerValuesChange={setDrawerValues}
+          pageData={pageData}
         >
-          <MapformContent
-            drawerValues={drawerValues}
-            onDrawerValuesChange={setDrawerValues}
-            pageData={pageData}
+          <MapformDrawerButton
+            onOpen={() => setDrawerValues([...drawerValues, "page-content"])}
+          />
+          <MapformMap
+            initialViewState={{
+              longitude: currentPage.center.x,
+              latitude: currentPage.center.y,
+              zoom: currentPage.zoom,
+              bearing: currentPage.bearing,
+              pitch: currentPage.pitch,
+              padding: {
+                top: 0,
+                bottom: 0,
+                left: 0,
+                right: 0,
+              },
+            }}
+          />
+          <CustomBlockProvider
+            pinBlock={{
+              isSelectingLocationFor: isSelectingPinBlockLocationFor,
+              setIsSelectingLocationFor: (val) => {
+                // TODO: Improve this temporary workaround. If you don't
+                // scroll to the bottom first, there is a jarring animation
+                // when opening the next drawer
+                window.scrollTo({ top: 0, behavior: "smooth" });
+                setTimeout(() => {
+                  setDrawerValues([...drawerValues, "location-search"]);
+                  setIsSelectingPinBlockLocationFor(val);
+                }, 500);
+              },
+            }}
           >
-            <MapformDrawerButton
-              onOpen={() => setDrawerValues([...drawerValues, "page-content"])}
-            />
-            <MapformMap
-              initialViewState={{
-                longitude: currentPage.center.x,
-                latitude: currentPage.center.y,
-                zoom: currentPage.zoom,
-                bearing: currentPage.bearing,
-                pitch: currentPage.pitch,
-                padding: {
-                  top: 0,
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                },
-              }}
-            />
-            <CustomBlockProvider
-              pinBlock={{
-                isSelectingLocationFor: isSelectingPinBlockLocationFor,
-                setIsSelectingLocationFor: (val) => {
-                  // TODO: Improve this temporary workaround. If you don't
-                  // scroll to the bottom first, there is a jarring animation
-                  // when opening the next drawer
-                  window.scrollTo({ top: 0, behavior: "smooth" });
-                  setTimeout(() => {
-                    setDrawerValues([...drawerValues, "location-search"]);
-                    setIsSelectingPinBlockLocationFor(val);
-                  }, 500);
-                },
-              }}
-            >
-              <MapformDrawer value="page-content">
-                <Blocknote
-                  description={
-                    currentPage.content as { content: CustomBlock[] }
-                  }
-                  icon={currentPage.icon}
-                  key={currentPage.id}
-                  title={currentPage.title}
-                />
-                {drawerValues.length > 1 ? null : (
-                  <div className="hidden sm:block">{controls}</div>
-                )}
-              </MapformDrawer>
+            <MapformDrawer value="page-content">
+              <Blocknote
+                description={currentPage.content as { content: CustomBlock[] }}
+                icon={currentPage.icon}
+                key={currentPage.id}
+                title={currentPage.title}
+              />
               {drawerValues.length > 1 ? null : (
-                <div className="hidden max-sm:block">{controls}</div>
+                <div className="hidden sm:block">{controls}</div>
               )}
-              <MapformDrawer
-                onClose={() => {
-                  setDrawerValues(drawerValues.filter((v) => v !== "feature"));
-                }}
-                value="feature"
-              >
-                <Blocknote
-                  description={
-                    selectedFeature?.description?.richtextCell?.value ??
-                    undefined
-                  }
-                  icon={selectedFeature?.icon?.iconCell?.value}
-                  key={`${currentPage.id}-${selectedFeature?.rowId}`}
-                  title={selectedFeature?.title?.stringCell?.value}
-                />
-              </MapformDrawer>
-            </CustomBlockProvider>
-            <MapformDrawer
-              className="bottom-0 max-sm:fixed"
-              value="location-search"
-              onClose={() => {
-                setDrawerValues(
-                  drawerValues.filter((v) => v !== "location-search"),
-                );
-              }}
-            >
-              <LocationSearch>
-                <LocationSearchButton
-                  onClick={(selectedFeature) => {
-                    form.setValue(
-                      `${isSelectingPinBlockLocationFor}.y`,
-                      selectedFeature?.properties?.lat,
-                    );
-                    form.setValue(
-                      `${isSelectingPinBlockLocationFor}.x`,
-                      selectedFeature?.properties?.lon,
-                    );
-                    setIsSelectingPinBlockLocationFor(null);
-                    setDrawerValues(
-                      drawerValues.filter((v) => v !== "location-search"),
-                    );
-                  }}
-                >
-                  Select Location
-                </LocationSearchButton>
-              </LocationSearch>
             </MapformDrawer>
-          </MapformContent>
-        </form>
-      </Form>
-    </Mapform>
+            {drawerValues.length > 1 ? null : (
+              <div className="hidden max-sm:block">{controls}</div>
+            )}
+            <MapformDrawer
+              onClose={() => {
+                setDrawerValues(drawerValues.filter((v) => v !== "feature"));
+              }}
+              value="feature"
+            >
+              <Blocknote
+                description={
+                  selectedFeature?.description?.richtextCell?.value ?? undefined
+                }
+                icon={selectedFeature?.icon?.iconCell?.value}
+                key={`${currentPage.id}-${selectedFeature?.rowId}`}
+                title={selectedFeature?.title?.stringCell?.value}
+              />
+            </MapformDrawer>
+          </CustomBlockProvider>
+          <MapformDrawer
+            className="bottom-0 max-sm:fixed"
+            value="location-search"
+            onClose={() => {
+              setDrawerValues(
+                drawerValues.filter((v) => v !== "location-search"),
+              );
+            }}
+          >
+            <LocationSearch>
+              <LocationSearchButton
+                onClick={(selectedFeature) => {
+                  form.setValue(
+                    `${isSelectingPinBlockLocationFor}.y`,
+                    selectedFeature?.properties?.lat,
+                  );
+                  form.setValue(
+                    `${isSelectingPinBlockLocationFor}.x`,
+                    selectedFeature?.properties?.lon,
+                  );
+                  setIsSelectingPinBlockLocationFor(null);
+                  setDrawerValues(
+                    drawerValues.filter((v) => v !== "location-search"),
+                  );
+                }}
+              >
+                Select Location
+              </LocationSearchButton>
+            </LocationSearch>
+          </MapformDrawer>
+        </MapformContent>
+      </form>
+    </Form>
   );
 }
