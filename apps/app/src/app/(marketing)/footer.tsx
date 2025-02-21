@@ -1,11 +1,10 @@
 const navigation = {
   main: [
-    { name: "About", href: "#" },
-    { name: "Blog", href: "#" },
-    { name: "Jobs", href: "#" },
-    { name: "Press", href: "#" },
-    { name: "Accessibility", href: "#" },
-    { name: "Partners", href: "#" },
+    { name: "Contact", href: "mailto:contact@mapform.co" },
+    { name: "Changelog", href: "https://mapform.productlane.com/changelog" },
+    { name: "Roadmap", href: "https://mapform.productlane.com/roadmap" },
+    { name: "Terms of service", href: "#" },
+    { name: "Privacy policy", href: "#" },
   ],
 };
 
