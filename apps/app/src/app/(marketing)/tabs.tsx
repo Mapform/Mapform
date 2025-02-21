@@ -52,7 +52,7 @@ const TABS = [
 export function TabsShowcase() {
   return (
     <TabsPrimitive.Root defaultValue="map" className="mx-auto w-full max-w-3xl">
-      <TabsPrimitive.List className="flex gap-2">
+      <TabsPrimitive.List className="flex justify-center gap-6 py-2">
         {TABS.map((tab) => (
           <TabsPrimitive.Trigger
             className="flex items-center gap-2 font-medium"

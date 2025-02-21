@@ -6,8 +6,10 @@ export default function Page() {
   return (
     <div className="relative flex h-screen flex-col">
       <Nav />
-      <Hero />
-      <TabsShowcase />
+      <div className="flex flex-col gap-20">
+        <Hero />
+        <TabsShowcase />
+      </div>
     </div>
   );
 }
