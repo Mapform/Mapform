@@ -1,8 +1,7 @@
 import { Hero } from "./hero";
 import { ShowcaseTabs } from "./showcase-tabs";
-import Footer from "./footer";
-import { Storytelling } from "./storytelling";
-import { Forms } from "./forms";
+import { Bento } from "./bento";
+import { UseCases } from "./use-cases";
 
 export default function Page() {
   return (
@@ -10,9 +9,8 @@ export default function Page() {
       <Hero />
       <div className="flex flex-col gap-40">
         <ShowcaseTabs />
-        <Storytelling />
-        <Forms />
-        <Footer />
+        <Bento />
+        <UseCases />
       </div>
     </>
   );

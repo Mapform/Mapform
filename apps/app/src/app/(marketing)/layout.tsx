@@ -1,5 +1,5 @@
 import { Nav } from "./nav";
-
+import Footer from "./footer";
 export default function MarketingLayout({
   children,
 }: {
@@ -9,6 +9,7 @@ export default function MarketingLayout({
     <>
       <Nav />
       {children}
+      <Footer />
     </>
   );
 }
