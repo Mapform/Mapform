@@ -10,9 +10,9 @@ export default function TermsOfUse() {
       <section className="mb-8">
         <h2 className="mb-4 text-xl font-semibold">1. Acceptance of Terms</h2>
         <p>
-          By accessing or using Mapform ("Service"), you agree to be bound by
-          these Terms of Use ("Terms"). If you do not agree to these Terms, do
-          not access or use the Service.
+          By accessing or using Mapform (&quot;Service&quot;), you agree to be
+          bound by these Terms of Use (&quot;Terms&quot;). If you do not agree
+          to these Terms, do not access or use the Service.
         </p>
       </section>
 
@@ -110,12 +110,17 @@ export default function TermsOfUse() {
           7. Data Collection and Privacy
         </h2>
         <p>
-          Mapform collects and processes certain personal data, including but
-          not limited to your email address and location information. By using
-          the Service, you agree to the collection and use of your information
-          in accordance with Mapform's Privacy Policy. We do not sell or share
-          your personal information with third parties without your consent,
-          except as required by law.
+          Mapform collects and processes only basic personally identifiable
+          information (PII), such as your email address. No other PII or
+          location data is stored by Mapform directly. However, users of the
+          Service have the ability to store data at their discretion, which may
+          include PII or other sensitive information. By using the Service, you
+          agree to the collection and use of your basic information in
+          accordance with Mapform&apos;s Privacy Policy. Mapform does not sell
+          or share your personal information with third parties without your
+          consent, except as required by law. Users are responsible for ensuring
+          that the data they store complies with applicable laws, including data
+          protection and privacy regulations.
         </p>
       </section>
 
@@ -124,10 +129,10 @@ export default function TermsOfUse() {
           8. Limitation of Liability
         </h2>
         <p>
-          The Service is provided on an "as is" and "as available" basis without
-          any warranties, express or implied. Mapform makes no guarantee that
-          the Service will meet your needs, be error-free, uninterrupted, or
-          secure.
+          The Service is provided on an &quot;as is&quot; and &quot;as
+          available&quot; basis without any warranties, express or implied.
+          Mapform makes no guarantee that the Service will meet your needs, be
+          error-free, uninterrupted, or secure.
         </p>
         <p className="mt-4">
           In no event shall Mapform or its affiliates, partners, or licensors be

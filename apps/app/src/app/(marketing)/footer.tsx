@@ -3,7 +3,7 @@ const navigation = {
     { name: "Contact", href: "mailto:contact@mapform.co" },
     { name: "Changelog", href: "https://mapform.productlane.com/changelog" },
     { name: "Roadmap", href: "https://mapform.productlane.com/roadmap" },
-    { name: "Terms of service", href: "#" },
+    { name: "Terms of service", href: "/terms-of-use" },
     { name: "Privacy policy", href: "#" },
   ],
 };
