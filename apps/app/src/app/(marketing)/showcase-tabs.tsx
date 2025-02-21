@@ -10,7 +10,6 @@ import {
   TableIcon,
   TextCursorInputIcon,
 } from "lucide-react";
-import { cn } from "@mapform/lib/classnames";
 
 const TABS = [
   {
@@ -50,11 +49,11 @@ const TABS = [
   },
 ];
 
-export function TabsShowcase() {
+export function ShowcaseTabs() {
   return (
     <TabsPrimitive.Root
       defaultValue="map"
-      className="mx-auto w-full max-w-screen-xl"
+      className="relative mx-auto h-full w-full max-w-screen-xl overflow-hidden"
     >
       <TabsPrimitive.List className="mb-4 flex justify-center gap-6 py-2">
         {TABS.map((tab) => (
@@ -82,13 +81,13 @@ export function TabsShowcase() {
               className="mb-[-12%] rounded-xl shadow-2xl ring-1 ring-gray-900/10"
               fill
               style={{
-                objectFit: "cover", // cover, contain, none
+                objectFit: "cover",
               }}
             />
-            <div className="absolute -inset-x-20 bottom-0 bg-gradient-to-t from-white pt-[7%]" />
           </motion.div>
         </TabsPrimitive.Content>
       ))}
+      <div className="absolute -inset-x-20 bottom-0 bg-gradient-to-t from-white pt-[7%]" />
     </TabsPrimitive.Root>
   );
 }
