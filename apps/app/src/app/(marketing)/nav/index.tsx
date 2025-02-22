@@ -43,9 +43,6 @@ export function Nav() {
           </Link>
         </div>
         <div className="flex flex-1 items-center justify-end gap-x-4">
-          <Link className="text-sm font-medium" href="/pricing">
-            Pricing
-          </Link>
           <SignIn />
         </div>
       </nav>

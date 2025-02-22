@@ -60,7 +60,7 @@ export function UseCases() {
     <section>
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-base font-semibold leading-7 text-indigo-600">
+          <h2 className="text-base font-semibold leading-7 text-gray-600">
             Use Cases
           </h2>
           <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
@@ -85,7 +85,7 @@ export function UseCases() {
               {USE_CASES.map((useCase, index) => (
                 <CarouselItem key={index} className="pl-2 md:basis-1/3 md:pl-4">
                   <div className="flex flex-col overflow-hidden rounded-xl border p-6">
-                    <useCase.icon className="size-8 text-indigo-600" />
+                    <useCase.icon className="size-8 text-gray-600" />
                     <h3 className="mt-4 text-lg font-semibold leading-7 text-gray-900">
                       {useCase.title}
                     </h3>
