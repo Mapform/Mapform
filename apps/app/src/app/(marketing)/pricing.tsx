@@ -14,6 +14,7 @@ import {
   TableIcon,
   RectangleHorizontalIcon,
   TextCursorInputIcon,
+  TrophyIcon,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -78,6 +79,10 @@ const tiers = [
       {
         text: "Priority support",
         icon: HeadphonesIcon,
+      },
+      {
+        text: "Early backer",
+        icon: TrophyIcon,
       },
     ],
     cta: "Start free trial",
