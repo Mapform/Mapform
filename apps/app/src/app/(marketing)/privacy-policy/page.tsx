@@ -135,10 +135,10 @@ export default function PrivacyPolicy() {
           If you have any questions about this Privacy Policy or our data
           practices, please contact us at{" "}
           <a
-            href="mailto:contact@mapform.com"
+            href="mailto:contact@mapform.co"
             className="text-blue-600 hover:underline"
           >
-            contact@mapform.com
+            contact@mapform.co
           </a>
           .
         </p>

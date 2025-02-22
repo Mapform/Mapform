@@ -169,10 +169,10 @@ export default function TermsOfUse() {
         <p>
           If you have any questions about these Terms, please contact us at{" "}
           <a
-            href="mailto:contact@mapform.com"
+            href="mailto:contact@mapform.co"
             className="text-blue-600 hover:underline"
           >
-            contact@mapform.com
+            contact@mapform.co
           </a>
           .
         </p>
