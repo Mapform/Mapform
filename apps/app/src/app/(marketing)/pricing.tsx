@@ -85,7 +85,7 @@ const tiers = [
         icon: TrophyIcon,
       },
     ],
-    cta: "Start free trial",
+    cta: "Get started",
     href: "/app/signup?plan=pro",
     featured: true,
   },
