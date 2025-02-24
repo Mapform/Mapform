@@ -2,7 +2,7 @@ import { Hero } from "./hero";
 import { ShowcaseTabs } from "./showcase-tabs";
 // import { Bento } from "./bento";
 // import { UseCases } from "./use-cases";
-import { Pricing } from "./pricing";
+// import { Pricing } from "./pricing";
 export default function Page() {
   return (
     <>
@@ -11,7 +11,7 @@ export default function Page() {
         <ShowcaseTabs />
         {/* <Bento />
         <UseCases /> */}
-        <Pricing />
+        {/* <Pricing /> */}
       </div>
     </>
   );
