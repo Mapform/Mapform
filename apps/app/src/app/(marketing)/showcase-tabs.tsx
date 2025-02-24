@@ -10,40 +10,45 @@ import {
   TableIcon,
   TextCursorInputIcon,
 } from "lucide-react";
+import datasetImage from "public/static/images/dataset.png";
+import formsImage from "public/static/images/forms.jpeg";
+import guideImage from "public/static/images/guide.png";
+import mapImage from "public/static/images/map.jpeg";
+import shareImage from "public/static/images/share.png";
 
 const TABS = [
   {
     id: "map",
     title: "Maps",
-    image: "/static/images/map.jpeg",
+    image: mapImage,
     alt: "Map view interface",
     icon: EarthIcon,
   },
   {
     id: "dataset",
     title: "Datasets",
-    image: "/static/images/dataset.png",
+    image: datasetImage,
     alt: "Dataset interface",
     icon: TableIcon,
   },
   {
     id: "guide",
     title: "Guides",
-    image: "/static/images/guide.png",
+    image: guideImage,
     alt: "Guide interface",
     icon: BookMarkedIcon,
   },
   {
     id: "forms",
     title: "Forms",
-    image: "/static/images/forms.jpeg",
+    image: formsImage,
     alt: "Forms interface",
     icon: TextCursorInputIcon,
   },
   {
     id: "publish",
     title: "Publish",
-    image: "/static/images/share.png",
+    image: shareImage,
     alt: "Publish interface",
     icon: SquareArrowOutUpRightIcon,
   },
@@ -83,6 +88,7 @@ export function ShowcaseTabs() {
               style={{
                 objectFit: "cover",
               }}
+              placeholder="blur"
             />
           </motion.div>
         </TabsPrimitive.Content>
