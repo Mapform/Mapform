@@ -38,7 +38,7 @@ export function Storytelling() {
           <div className="mx-auto max-w-2xl lg:max-w-none">
             <div className="flex flex-wrap items-center justify-center">
               <Card
-                className="z-20 -rotate-6"
+                className="z-20 h-[356px] -rotate-6"
                 emoji="🗽"
                 title="Trip to New York"
               >
@@ -50,7 +50,11 @@ export function Storytelling() {
                 <Skeleton className="h-4 w-1/2" pulse={false} />
               </Card>
 
-              <Card className="z-10 rotate-6" emoji="🌳" title="Central Park">
+              <Card
+                className="z-10 h-[356px] rotate-6"
+                emoji="🌳"
+                title="Central Park"
+              >
                 <Skeleton className="h-4 w-full" pulse={false} />
                 <Skeleton className="mb-4 h-4 w-1/2" pulse={false} />
 
@@ -64,7 +68,7 @@ export function Storytelling() {
                 </div>
               </Card>
 
-              <Card className="-rotate-6" emoji="🖼️" title="MoMA">
+              <Card className="h-[356px] -rotate-6" emoji="🖼️" title="MoMA">
                 <Skeleton className="h-4 w-full" pulse={false} />
                 <Skeleton className="mb-4 h-4 w-1/2" pulse={false} />
                 <Skeleton className="h-4 w-full" pulse={false} />

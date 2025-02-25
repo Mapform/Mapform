@@ -4,6 +4,7 @@ import { ShowcaseTabs } from "./showcase-tabs";
 // import { UseCases } from "./use-cases";
 import { Pricing } from "./pricing";
 import { Storytelling } from "./storytelling";
+import { Forms } from "./forms";
 
 export default function Page() {
   return (
@@ -12,6 +13,7 @@ export default function Page() {
       <div className="flex flex-col gap-40">
         <ShowcaseTabs />
         <Storytelling />
+        <Forms />
         {/* <Bento />
         <UseCases /> */}
         <Pricing />
