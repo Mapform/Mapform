@@ -1,12 +1,17 @@
 import { cn } from "@mapform/lib/classnames";
 
-function Skeleton({
-  className,
-  ...props
-}: React.HTMLAttributes<HTMLDivElement>) {
+interface SkeletonProps extends React.HTMLAttributes<HTMLDivElement> {
+  pulse?: boolean;
+}
+
+function Skeleton({ className, pulse = true, ...props }: SkeletonProps) {
   return (
     <div
-      className={cn("animate-pulse rounded-md bg-gray-100", className)}
+      className={cn(
+        "rounded-md bg-gray-100",
+        pulse && "animate-pulse",
+        className,
+      )}
       {...props}
     />
   );
