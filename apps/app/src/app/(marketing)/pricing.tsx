@@ -73,7 +73,7 @@ const tiers = [
         icon: RectangleHorizontalIcon,
       },
       {
-        text: "Collect user input",
+        text: "Forms",
         icon: TextCursorInputIcon,
       },
       {

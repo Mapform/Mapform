@@ -1,9 +1,9 @@
-import { cn } from "@mapform/lib/classnames";
 import { Skeleton } from "@mapform/ui/components/skeleton";
 import Image from "next/image";
 import CentralPark from "./central-park.jpg";
 import MapBackground from "./map.png";
 import { MapPinIcon, PinIcon } from "lucide-react";
+import { Card } from "../card";
 
 export function Storytelling() {
   return (
@@ -68,7 +68,7 @@ export function Storytelling() {
                 </div>
               </Card>
 
-              <Card className="h-[356px] -rotate-6" emoji="🖼️" title="MoMA">
+              <Card className="h-[356px] -rotate-2" emoji="🖼️" title="MoMA">
                 <Skeleton className="h-4 w-full" pulse={false} />
                 <Skeleton className="mb-4 h-4 w-1/2" pulse={false} />
                 <Skeleton className="h-4 w-full" pulse={false} />
@@ -84,36 +84,3 @@ export function Storytelling() {
     </section>
   );
 }
-
-const Card = ({
-  emoji,
-  title,
-  children,
-  className,
-}: {
-  emoji: string;
-  title: string;
-  children: React.ReactNode;
-  className?: string;
-}) => {
-  return (
-    <div className="flex flex-col">
-      <div
-        className={cn(
-          "w-[300px] rounded-2xl border bg-white p-4 shadow-lg",
-          className,
-        )}
-      >
-        <div className="flex flex-col gap-2">
-          <span className="text-6xl">{emoji}</span>
-          <h3 className="mb-4 text-3xl font-semibold">{title}</h3>
-          {children}
-        </div>
-      </div>
-
-      {/* <div className="mx-auto mt-4 flex size-10 flex-shrink-0 items-center justify-center rounded-full border-2 border-white bg-green-500 shadow-lg">
-        <MapPinIcon className="size-5 text-white" fill="currentColor" />
-      </div> */}
-    </div>
-  );
-};
