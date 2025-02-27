@@ -59,11 +59,19 @@ export function ShowcaseTabs() {
     <TabsPrimitive.Root
       defaultValue="map"
       className="relative mx-auto h-full w-full max-w-screen-2xl overflow-hidden"
+      onValueChange={(value) => {
+        document.getElementById(value)?.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+          inline: "nearest",
+        });
+      }}
     >
-      <TabsPrimitive.List className="mb-4 flex justify-center gap-6 py-2">
+      <TabsPrimitive.List className="no-scrollbar mb-4 flex justify-start gap-6 overflow-x-auto whitespace-nowrap px-4 py-2 md:justify-center md:px-0">
         {TABS.map((tab) => (
           <TabsPrimitive.Trigger
-            className="flex items-center gap-2 font-medium opacity-50 transition-opacity duration-300 hover:opacity-70 data-[state=active]:opacity-100"
+            className="flex shrink-0 items-center gap-2 font-medium opacity-50 transition-opacity duration-300 hover:opacity-70 data-[state=active]:opacity-100"
+            id={tab.id}
             key={tab.id}
             value={tab.id}
           >
@@ -78,7 +86,7 @@ export function ShowcaseTabs() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="relative mx-auto aspect-[2512/1712] w-10/12 max-w-screen-xl"
+            className="relative mx-auto aspect-[2512/1712] w-11/12 max-w-screen-xl md:w-10/12"
           >
             <Image
               src={tab.image}

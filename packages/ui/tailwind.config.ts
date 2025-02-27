@@ -4,6 +4,7 @@ import typography from "@tailwindcss/typography";
 import animate from "tailwindcss-animate";
 import container from "@tailwindcss/container-queries";
 import { Config } from "tailwindcss/types/config";
+import plugin from "tailwindcss/plugin";
 
 const config: Config = {
   content: ["**/*.{js,ts,jsx,tsx}"],
@@ -85,7 +86,25 @@ const config: Config = {
       },
     },
   },
-  plugins: [forms, typography, animate, container],
+  plugins: [
+    forms,
+    typography,
+    animate,
+    container,
+    plugin(({ addUtilities }) => {
+      addUtilities({
+        ".no-scrollbar": {
+          /* Hide scrollbar for Chrome, Safari and Opera */
+          "&::-webkit-scrollbar": {
+            display: "none",
+          },
+          /* Hide scrollbar for IE, Edge and Firefox */
+          "-ms-overflow-style": "none",
+          "scrollbar-width": "none",
+        },
+      });
+    }),
+  ],
 };
 
 export default config;
