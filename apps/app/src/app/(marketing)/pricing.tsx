@@ -108,10 +108,10 @@ export function Pricing() {
           features.
         </p>
 
-        <div className="mt-16 flex justify-center gap-8">
+        <div className="mt-16 flex justify-center gap-8 max-md:flex-col">
           {tiers.map((tier) => (
             <div
-              className={cn("w-full max-w-60 rounded-xl p-4", {
+              className={cn("w-full rounded-xl p-4 max-md:border md:max-w-60", {
                 "bg-gray-100": tier.featured,
               })}
               key={tier.id}
