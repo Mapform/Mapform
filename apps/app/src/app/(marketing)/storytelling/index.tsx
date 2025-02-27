@@ -34,50 +34,48 @@ export function Storytelling() {
         </div> */}
 
         {/* Cards content */}
-        <div className="relative z-10 mx-auto max-w-7xl px-6 py-24 lg:px-8">
-          <div className="mx-auto max-w-2xl lg:max-w-none">
-            <div className="flex flex-wrap items-center justify-center">
-              <Card
-                className="z-20 h-[356px] -rotate-6"
-                emoji="🗽"
-                title="Trip to New York"
-              >
-                <Skeleton className="h-4 w-full" pulse={false} />
-                <Skeleton className="h-4 w-[calc(100%-20px)]" pulse={false} />
-                <Skeleton className="mb-4 h-4 w-full" pulse={false} />
-                <Skeleton className="h-4 w-full" pulse={false} />
-                <Skeleton className="h-4 w-[calc(100%-20px)]" pulse={false} />
-                <Skeleton className="h-4 w-1/2" pulse={false} />
-              </Card>
+        <div className="relative mx-auto max-w-2xl overflow-hidden py-24 lg:max-w-none">
+          <div className="flex flex-wrap items-center justify-center">
+            <Card
+              className="z-20 h-[356px] -rotate-6"
+              emoji="🗽"
+              title="Trip to New York"
+            >
+              <Skeleton className="h-4 w-full" pulse={false} />
+              <Skeleton className="h-4 w-[calc(100%-20px)]" pulse={false} />
+              <Skeleton className="mb-4 h-4 w-full" pulse={false} />
+              <Skeleton className="h-4 w-full" pulse={false} />
+              <Skeleton className="h-4 w-[calc(100%-20px)]" pulse={false} />
+              <Skeleton className="h-4 w-1/2" pulse={false} />
+            </Card>
 
-              <Card
-                className="z-10 h-[356px] rotate-6"
-                emoji="🌳"
-                title="Central Park"
-              >
-                <Skeleton className="h-4 w-full" pulse={false} />
-                <Skeleton className="mb-4 h-4 w-1/2" pulse={false} />
+            <Card
+              className="z-10 h-[356px] rotate-6"
+              emoji="🌳"
+              title="Central Park"
+            >
+              <Skeleton className="h-4 w-full" pulse={false} />
+              <Skeleton className="mb-4 h-4 w-1/2" pulse={false} />
 
-                <div className="relative h-32 w-full overflow-hidden rounded-lg border">
-                  <Image
-                    src={CentralPark}
-                    alt="Central Park"
-                    fill
-                    className="object-cover opacity-50 blur-lg brightness-125"
-                  />
-                </div>
-              </Card>
+              <div className="relative h-32 w-full overflow-hidden rounded-lg border">
+                <Image
+                  src={CentralPark}
+                  alt="Central Park"
+                  fill
+                  className="object-cover opacity-50 blur-lg brightness-125"
+                />
+              </div>
+            </Card>
 
-              <Card className="h-[356px] -rotate-2" emoji="🖼️" title="MoMA">
-                <Skeleton className="h-4 w-full" pulse={false} />
-                <Skeleton className="mb-4 h-4 w-1/2" pulse={false} />
-                <Skeleton className="h-4 w-full" pulse={false} />
-                <Skeleton className="h-4 w-[calc(100%-20px)]" pulse={false} />
-                <Skeleton className="h-4 w-full" pulse={false} />
-                <Skeleton className="h-4 w-[calc(100%-20px)]" pulse={false} />
-                <Skeleton className="h-4 w-1/2" pulse={false} />
-              </Card>
-            </div>
+            <Card className="h-[356px] -rotate-2" emoji="🖼️" title="MoMA">
+              <Skeleton className="h-4 w-full" pulse={false} />
+              <Skeleton className="mb-4 h-4 w-1/2" pulse={false} />
+              <Skeleton className="h-4 w-full" pulse={false} />
+              <Skeleton className="h-4 w-[calc(100%-20px)]" pulse={false} />
+              <Skeleton className="h-4 w-full" pulse={false} />
+              <Skeleton className="h-4 w-[calc(100%-20px)]" pulse={false} />
+              <Skeleton className="h-4 w-1/2" pulse={false} />
+            </Card>
           </div>
         </div>
       </div>
