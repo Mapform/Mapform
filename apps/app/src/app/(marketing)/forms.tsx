@@ -8,11 +8,12 @@ export function Forms() {
       <div className="mx-auto max-w-2xl lg:text-center">
         <div className="flex flex-wrap items-center justify-center">
           <p className="mt-2 text-pretty text-4xl font-semibold tracking-tight text-gray-900 sm:text-5xl lg:text-balance">
-            Show and <span className="line-through">tell</span> ask.
+            {/* Show and <span className="line-through">tell</span> ask. */}
+            Maps ↔️ Forms
           </p>
           <p className="text-muted-foreground mt-4 text-xl leading-8">
-            Enable your audience to ask questions and get answers you can show
-            on your map.
+            Forms integrate deeply with your maps, allowing you to collect and
+            visualize locations and other data from your users.
           </p>
         </div>
       </div>

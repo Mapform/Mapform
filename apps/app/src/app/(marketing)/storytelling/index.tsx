@@ -13,7 +13,7 @@ export function Storytelling() {
           <p className="mt-2 text-pretty text-4xl font-semibold tracking-tight text-gray-900 sm:text-5xl lg:text-balance">
             Tell a story.
           </p>
-          <p className="text-muted-foreground mt-4 text-xl leading-8">
+          <p className="text-muted-foreground mt-4 text-lg leading-8 sm:text-xl">
             Mapform goes beyond just maps. Combine data, text, and images into
             an interactive storytelling experience.
           </p>
@@ -21,9 +21,9 @@ export function Storytelling() {
       </div>
 
       {/* Map section with cards */}
-      <div className="relative">
+      <div className="relative mt-16">
         {/* Map background */}
-        {/* <div className="absolute inset-0 z-0 overflow-hidden">
+        <div className="absolute inset-0 z-0 overflow-hidden">
           <Image
             src={MapBackground}
             alt="Map of New York"
@@ -31,7 +31,7 @@ export function Storytelling() {
             className="object-cover opacity-50 blur-sm"
             priority
           />
-        </div> */}
+        </div>
 
         {/* Cards content */}
         <div className="relative mx-auto max-w-2xl overflow-hidden py-24 lg:max-w-none">

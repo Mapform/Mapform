@@ -38,8 +38,8 @@ export function Hero() {
               <p className="text-muted-foreground mb-10 mt-4 text-xl leading-8 sm:mb-10 sm:mt-6 sm:text-2xl">
                 {/* Mapform helps you track, manage, and share the places that
                 matter to you. */}
-                Mapform combines data, content, user input, and more to create
-                engaging maps.
+                Mapform combines data, content, forms, and more to create maps
+                for anything.
               </p>
             </div>
             <div className="flex flex-col justify-center gap-2 sm:flex-row sm:justify-start">
