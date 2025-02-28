@@ -11,8 +11,8 @@ export function Forms() {
           Maps ↔️ Forms
         </h3>
         <p className="text-muted-foreground mt-4 text-xl leading-8">
-          Forms integrate deeply with your maps, allowing you to collect and
-          visualize locations and other data from your users.
+          Forms integrate seamlessly with your maps, enabling you to collect and
+          visualize locations and other user data.
         </p>
       </div>
       <div className="relative z-10 mx-auto max-w-3xl px-6 py-24 lg:px-8">
