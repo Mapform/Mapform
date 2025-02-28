@@ -121,13 +121,13 @@ export const LayerPopoverContent = forwardRef<
           className="flex flex-1 flex-col"
           onSubmit={form.handleSubmit(onSubmit)}
         >
-          <div className="grid auto-cols-auto grid-cols-[auto_1fr] items-center gap-x-6 gap-y-3">
+          <div className="grid grid-cols-[77px_minmax(0,1fr)] items-center gap-x-6 gap-y-3">
             <FormField
               control={form.control}
               name="name"
               render={({ field }) => (
                 <>
-                  <FormLabel className="w-[77px]">Name</FormLabel>
+                  <FormLabel>Name</FormLabel>
                   <div className="flex-1">
                     <FormControl>
                       <Input
