@@ -95,18 +95,25 @@ export function Pricing() {
   return (
     <section>
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        <div className="mx-auto max-w-4xl text-center">
-          <h2 className="text-base font-semibold leading-7 text-gray-600">
-            Pricing
-          </h2>
-          <p className="mt-2 text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
-            Simple, transparent pricing
+        {/* <div className="mx-auto flex max-w-2xl flex-wrap items-center justify-center sm:text-center">
+          <h3 className="mt-2 text-pretty text-4xl font-semibold tracking-tight text-gray-900 sm:text-5xl lg:text-balance">
+            Mapform Pricing
+          </h3>
+          <p className="text-muted-foreground mt-4 text-xl leading-8">
+            Choose the plan that works for you. <br />
+            (More plans coming soon!)
+          </p>
+        </div> */}
+        <div className="mx-auto max-w-2xl sm:text-center">
+          <h3 className="mt-2 text-pretty text-4xl font-semibold tracking-tight text-gray-900 sm:text-5xl lg:text-balance">
+            Mapform Pricing
+          </h3>
+          <p className="text-muted-foreground mt-4 text-xl leading-8">
+            Choose the plan that works for you.{" "}
+            <br className="hidden sm:block" />
+            (More plans coming soon!)
           </p>
         </div>
-        <p className="mx-auto mt-6 max-w-2xl text-center text-lg leading-8 text-gray-600">
-          Choose the plan that best fits your needs. All plans include core
-          features.
-        </p>
 
         <div className="mt-16 flex justify-center gap-8 max-md:flex-col">
           {tiers.map((tier) => (

@@ -2,17 +2,16 @@ import { Skeleton } from "@mapform/ui/components/skeleton";
 import Image from "next/image";
 import CentralPark from "./central-park.jpg";
 import MapBackground from "./map.png";
-import { MapPinIcon, PinIcon } from "lucide-react";
 import { Card } from "../card";
 
 export function Storytelling() {
   return (
     <section>
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        <div className="mx-auto max-w-2xl lg:text-center">
-          <p className="mt-2 text-pretty text-4xl font-semibold tracking-tight text-gray-900 sm:text-5xl lg:text-balance">
+        <div className="mx-auto max-w-2xl sm:text-center">
+          <h3 className="mt-2 text-pretty text-4xl font-semibold tracking-tight text-gray-900 sm:text-5xl lg:text-balance">
             Tell a story.
-          </p>
+          </h3>
           <p className="text-muted-foreground mt-4 text-lg leading-8 sm:text-xl">
             Mapform goes beyond just maps. Combine data, text, and images into
             an interactive storytelling experience.
@@ -21,7 +20,7 @@ export function Storytelling() {
       </div>
 
       {/* Map section with cards */}
-      <div className="relative mt-16">
+      <div className="relative mt-8 lg:mt-16">
         {/* Map background */}
         <div className="absolute inset-0 z-0 overflow-hidden">
           <Image
