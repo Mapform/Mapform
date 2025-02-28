@@ -117,7 +117,7 @@ export function Pricing() {
               <div>
                 <h3 className="text-base text-gray-600">{tier.name}</h3>
               </div>
-              <p className="text-primary my-2 text-xl font-semibold">
+              <p className="text-primary my-2 text-2xl font-semibold">
                 <span>{tier.price}</span>
                 {tier.period && <span>{tier.period}</span>}
               </p>
