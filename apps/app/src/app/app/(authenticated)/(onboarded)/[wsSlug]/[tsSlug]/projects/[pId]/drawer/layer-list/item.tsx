@@ -220,7 +220,7 @@ export function Item({ layer }: ItemProps) {
         open={layerPopoverOpen}
       >
         <LayerPopoverAnchor />
-        <LayerPopoverContent layerToEdit={layer} />
+        <LayerPopoverContent layerToEdit={layer} side="left" />
       </LayerPopoverRoot>
     </DragItem>
   );
