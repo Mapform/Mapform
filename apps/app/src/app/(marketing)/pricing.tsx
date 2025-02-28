@@ -95,15 +95,6 @@ export function Pricing() {
   return (
     <section>
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        {/* <div className="mx-auto flex max-w-2xl flex-wrap items-center justify-center sm:text-center">
-          <h3 className="mt-2 text-pretty text-4xl font-semibold tracking-tight text-gray-900 sm:text-5xl lg:text-balance">
-            Mapform Pricing
-          </h3>
-          <p className="text-muted-foreground mt-4 text-xl leading-8">
-            Choose the plan that works for you. <br />
-            (More plans coming soon!)
-          </p>
-        </div> */}
         <div className="mx-auto max-w-2xl sm:text-center">
           <h3 className="mt-2 text-pretty text-4xl font-semibold tracking-tight text-gray-900 sm:text-5xl lg:text-balance">
             Mapform Pricing
