@@ -335,7 +335,7 @@ function useDebouncedOptimisticAction(
       setIsPendingDebounced(true);
       startTransition(() => {
         setOptimisticState({
-          ...actionOptimisticState,
+          ...optimisticState,
           ...args,
         });
       });
