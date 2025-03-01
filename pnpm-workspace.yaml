@@ -103,7 +103,7 @@ catalog:
   mapbox-gl: ^3.2.0
   motion: 12.0.0-alpha.2
   next: 15.0.3
-  next-safe-action: ^7.9.3
+  next-safe-action: ^7.10.4
   next-themes: ^0.3.0
   papaparse: ^5.4.1
   pg: ^8.13.0

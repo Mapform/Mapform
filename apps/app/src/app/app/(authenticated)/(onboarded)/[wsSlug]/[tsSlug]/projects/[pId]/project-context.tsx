@@ -23,7 +23,6 @@ import {
   type InferUseActionHookReturn,
   useOptimisticAction,
 } from "next-safe-action/hooks";
-import { useAction } from "next-safe-action/hooks";
 import type { GetPageData } from "@mapform/backend/data/datalayer/get-page-data";
 import type { ListTeamspaceDatasets } from "@mapform/backend/data/datasets/list-teamspace-datasets";
 import { upsertCellAction } from "~/data/cells/upsert-cell";
@@ -47,10 +46,6 @@ export interface ProjectContextProps {
   availableDatasets: TeamspaceDatasets;
   projectWithPages: ProjectWithPages;
 
-  uploadImageServer: InferUseActionHookReturn<typeof uploadImageAction>;
-  upsertCellServer: InferUseActionHookReturn<typeof upsertCellAction>;
-  updatePageServer: InferUseActionHookReturn<typeof updatePageAction>;
-
   setActivePage: (
     page?: Pick<PageWithLayers, "id" | "center" | "zoom" | "pitch" | "bearing">,
   ) => void;
@@ -62,9 +57,23 @@ export interface ProjectContextProps {
   updatePageDataOptimistic: (action: PageData) => void;
   updateSelectedFeatureOptimistic: (action: LayerPoint | LayerMarker) => void;
 
-  updatePageServerTest: {
-    execute: (args: Parameters<(input: any) => void>[0]) => void;
-    optimisticState: unknown;
+  updatePageServerAction: {
+    execute: (args: Parameters<typeof updatePageAction>[0]) => Promise<void>;
+    optimisticState: PageWithLayers | undefined;
+    isPending: boolean;
+  };
+  upsertCellServerAction: {
+    execute: (args: Parameters<typeof upsertCellAction>[0]) => Promise<void>;
+    optimisticState:
+      | InferUseActionHookReturn<typeof upsertCellAction>
+      | undefined;
+    isPending: boolean;
+  };
+  uploadImageServerAction: {
+    execute: (args: Parameters<typeof uploadImageAction>[0]) => Promise<void>;
+    optimisticState:
+      | InferUseActionHookReturn<typeof uploadImageAction>
+      | undefined;
     isPending: boolean;
   };
 }
@@ -134,53 +143,37 @@ export function ProjectProvider({
       ...newFeature,
     }));
 
-  const updatePageServerTest = useDebouncedOptimisticAction(updatePageAction, {
-    currentState: optimisticPage,
-    updateFn: (state: any, newPage) => ({
-      ...state,
-      ...newPage,
-    }),
-    onError: ({ error }) => {
-      if (error.serverError) {
-        toast({
-          title: "Uh oh! Something went wrong.",
-          description: error.serverError,
-        });
-        return;
-      }
-
-      if (error.validationErrors) {
-        toast({
-          title: "Uh oh! Something went wrong.",
-          description: "We we unable to update your content. Please try again.",
-        });
-      }
-    },
-  });
-
   /**
    * Actions
    */
-  const updatePageServer = useAction(updatePageAction, {
+  const updatePageServerAction = useDebouncedOptimisticAction<
+    PageWithLayers,
+    Parameters<typeof updatePageAction>[0]
+  >(updatePageAction, {
+    currentState: optimisticPage,
+    updateFn: (state, newPage) => ({
+      ...(state as PageWithLayers),
+      ...(newPage as PageWithLayers),
+    }),
     onError: ({ error }) => {
-      if (error.serverError) {
-        toast({
-          title: "Uh oh! Something went wrong.",
-          description: error.serverError,
-        });
-        return;
-      }
-
-      if (error.validationErrors) {
-        toast({
-          title: "Uh oh! Something went wrong.",
-          description: "We we unable to update your content. Please try again.",
-        });
-      }
+      toast({
+        title: "Uh oh! Something went wrong.",
+        description:
+          (error.serverError as string | undefined) ??
+          "We we unable to update your content. Please try again.",
+      });
     },
   });
 
-  const upsertCellServer = useAction(upsertCellAction, {
+  const upsertCellServerAction = useDebouncedOptimisticAction<
+    InferUseActionHookReturn<typeof upsertCellAction>,
+    Parameters<typeof upsertCellAction>[0]
+  >(upsertCellAction, {
+    currentState: optimisticPage,
+    updateFn: (state, newCell) => ({
+      ...(state as InferUseActionHookReturn<typeof upsertCellAction>),
+      ...(newCell as InferUseActionHookReturn<typeof upsertCellAction>),
+    }),
     onError: () => {
       toast({
         title: "Uh oh! Something went wrong.",
@@ -189,15 +182,22 @@ export function ProjectProvider({
     },
   });
 
-  const uploadImageServer = useAction(uploadImageAction, {
-    onError: (response) => {
-      if (
-        response.error.validationErrors &&
-        "image" in response.error.validationErrors
-      ) {
+  const uploadImageServerAction = useDebouncedOptimisticAction<
+    InferUseActionHookReturn<typeof uploadImageAction>,
+    Parameters<typeof uploadImageAction>[0]
+  >(uploadImageAction, {
+    currentState: optimisticPage,
+    updateFn: (state, newImage) => ({
+      ...(state as InferUseActionHookReturn<typeof uploadImageAction>),
+      ...(newImage as InferUseActionHookReturn<typeof uploadImageAction>),
+    }),
+    onError: ({ error }) => {
+      const err = error as any;
+
+      if (err.validationErrors && "image" in err.validationErrors) {
         toast({
           title: "Uh oh! Something went wrong.",
-          description: response.error.validationErrors.image?._errors?.[0],
+          description: err.validationErrors.image?._errors?.[0],
         });
 
         return;
@@ -209,11 +209,6 @@ export function ProjectProvider({
       });
     },
   });
-
-  // Prevent page unload
-  usePreventPageUnload(updatePageServer.isExecuting);
-  usePreventPageUnload(upsertCellServer.isExecuting);
-  usePreventPageUnload(uploadImageServer.isExecuting);
 
   useEffect(() => {
     if (projectWithPages.pages[0] && !page) {
@@ -304,12 +299,9 @@ export function ProjectProvider({
         },
 
         // Actions
-        updatePageServer,
-        upsertCellServer,
-        uploadImageServer,
-
-        // Test
-        updatePageServerTest,
+        updatePageServerAction,
+        upsertCellServerAction,
+        uploadImageServerAction,
       }}
     >
       {children}
@@ -318,38 +310,45 @@ export function ProjectProvider({
 }
 
 // This function takes in useAction arguments as the first and second arguments, and returns { execute, isPending, optimisticState }
-function useDebouncedOptimisticAction(
+function useDebouncedOptimisticAction<TState, TAction>(
   ...args: Parameters<typeof useOptimisticAction>
 ) {
   const {
-    execute,
+    executeAsync,
     optimisticState: actionOptimisticState,
     isPending: isExecutePending,
   } = useOptimisticAction(...args);
   const [_, startTransition] = useTransition();
   const [isPendingDebounced, setIsPendingDebounced] = useState(false);
-  const [optimisticState, setOptimisticState] = useState(actionOptimisticState);
+  const [optimisticState, setOptimisticState] = useState<TState>(
+    actionOptimisticState as TState,
+  );
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const debouncedExecute = useCallback(
-    (args: Parameters<typeof execute>[0]) => {
-      setIsPendingDebounced(true);
-      startTransition(() => {
-        setOptimisticState({
-          ...optimisticState,
-          ...args,
+    (args: TAction) => {
+      const newState = {
+        ...optimisticState,
+        ...args,
+      };
+
+      return new Promise((resolve) => {
+        setIsPendingDebounced(true);
+        startTransition(() => {
+          setOptimisticState(newState);
         });
+
+        if (timerRef.current) {
+          clearTimeout(timerRef.current);
+        }
+
+        timerRef.current = setTimeout(async () => {
+          const result = await executeAsync(newState);
+          setIsPendingDebounced(false);
+          resolve(result);
+        }, 2000);
       });
-
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-      }
-
-      timerRef.current = setTimeout(() => {
-        execute(args);
-        setIsPendingDebounced(false);
-      }, 2000);
     },
-    [actionOptimisticState, execute],
+    [executeAsync, optimisticState],
   );
 
   const isPending = useMemo(() => {
