@@ -74,29 +74,6 @@ export function EditBar() {
             </TooltipTrigger>
             <TooltipContent>Edit map</TooltipContent>
           </Tooltip>
-          {/* <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                onClick={() => {
-                  if (!isMarkerEditOpen) {
-                    onDrawerValuesChange([
-                      ...drawerValues.filter(
-                        (value) => !EDIT_BAR_DRAWERS.includes(value),
-                      ),
-                      "marker-edit",
-                    ]);
-                  }
-                }}
-                size="icon"
-                variant={isMarkerEditOpen ? "default" : "ghost"}
-              >
-                <MapPinPlusIcon className="size-5" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Add markers</p>
-            </TooltipContent>
-          </Tooltip> */}
         </div>
         <div className="flex gap-1 pl-1.5">
           <Tooltip>
