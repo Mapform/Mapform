@@ -49,12 +49,14 @@ import {
 import { Item } from "./item";
 
 export function LayerList() {
-  const { currentProject, currentPage, updatePageOptimistic } = useProject();
+  const { currentProject, updatePageServerAction } = useProject();
   const [open, setOpen] = useState(false);
   const [layerPopoverOpen, setLayerPopoverOpen] = useState(false);
   const [query, setQuery] = useState<string>("");
 
-  const dragLayers = currentPage?.layersToPages.map((ltp) => ltp.layer);
+  const dragLayers = updatePageServerAction.optimisticState?.layersToPages.map(
+    (ltp) => ltp.layer,
+  );
   const { executeAsync } = useAction(updateLayerOrderAction);
   const { execute: executeCreatePageLayer } = useAction(createPageLayerAction, {
     onSuccess: () => {
@@ -71,7 +73,7 @@ export function LayerList() {
   );
 
   const layersFromOtherPages = currentProject.pageLayers
-    .filter((l) => l.pageId !== currentPage?.id)
+    .filter((l) => l.pageId !== updatePageServerAction.optimisticState?.id)
     .filter((l) => !dragLayers?.find((dl) => dl.id === l.layerId))
     // filter for uniqueness
     .filter((l, i, arr) => arr.findIndex((a) => a.layerId === l.layerId) === i);
@@ -81,7 +83,7 @@ export function LayerList() {
   }
 
   const reorderLayers = async (e: DragEndEvent) => {
-    if (!e.over || !currentPage?.id) return;
+    if (!e.over || !updatePageServerAction.optimisticState?.id) return;
 
     if (e.active.id !== e.over.id) {
       const activeLayerIndex = dragLayers.findIndex(
@@ -99,29 +101,30 @@ export function LayerList() {
         overLayerIndex,
       );
 
-      updatePageOptimistic({
-        ...currentPage,
-        layersToPages: currentPage.layersToPages.sort((a, b) => {
-          const aIndex = newLayerList.findIndex((l) => l.id === a.layer.id);
-          const bIndex = newLayerList.findIndex((l) => l.id === b.layer.id);
+      updatePageServerAction.execute({
+        ...updatePageServerAction.optimisticState,
+        layersToPages:
+          updatePageServerAction.optimisticState.layersToPages.sort((a, b) => {
+            const aIndex = newLayerList.findIndex((l) => l.id === a.layer.id);
+            const bIndex = newLayerList.findIndex((l) => l.id === b.layer.id);
 
-          return aIndex - bIndex;
-        }),
+            return aIndex - bIndex;
+          }),
       });
 
       await executeAsync({
-        pageId: currentPage.id,
+        pageId: updatePageServerAction.optimisticState.id,
         layerOrder: newLayerList.map((layer) => layer.id),
       });
     }
   };
 
   const handleCreatePageLayer = (layerId: string) => {
-    if (!currentPage) return;
+    if (!updatePageServerAction.optimisticState) return;
 
     executeCreatePageLayer({
       layerId,
-      pageId: currentPage.id,
+      pageId: updatePageServerAction.optimisticState.id,
     });
   };
 

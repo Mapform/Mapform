@@ -67,8 +67,7 @@ export function LocationSearchDrawerInner({
   const { selectedFeature } = useLocationSearch();
   const { drawerValues, onDrawerValuesChange } = useMapformContent();
   const [layerPopoverOpen, setLayerPopoverOpen] = useState(false);
-  const { currentProject, updatePageServerAction, updatePageOptimistic } =
-    useProject();
+  const { currentProject, updatePageServerAction } = useProject();
 
   const { execute: executeCreatePoint } = useAction(createPointAction, {
     onSuccess: () => {
@@ -118,12 +117,10 @@ export function LocationSearchDrawerInner({
         bearing,
       };
 
-      updatePageOptimistic({
+      updatePageServerAction.execute({
         ...currentPage,
         ...payload,
       });
-
-      await updatePageServerAction.execute(payload);
 
       onDrawerValuesChange(
         drawerValues.filter((value) => value !== "location-search"),

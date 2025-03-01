@@ -15,11 +15,13 @@ const EDIT_BAR_DRAWERS = ["location-search", "marker-edit"];
 
 export function EditBar() {
   const { map } = useMapform();
-  const { currentPage } = useProject();
+  const { updatePageServerAction } = useProject();
   const { drawerValues, onDrawerValuesChange } = useMapformContent();
 
   const isSearchOpen = drawerValues.includes("location-search");
   const isMarkerEditOpen = drawerValues.includes("marker-edit");
+
+  const currentPage = updatePageServerAction.optimisticState;
 
   if (!currentPage) {
     return null;

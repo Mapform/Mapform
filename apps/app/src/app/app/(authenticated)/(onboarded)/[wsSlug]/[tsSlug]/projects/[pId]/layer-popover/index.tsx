@@ -44,7 +44,7 @@ export const LayerPopoverContent = forwardRef<
 >(({ layerToEdit, initialName, onSuccess, ...props }, ref) => {
   const { ...rest } = useProject();
 
-  const currentPage = rest.currentPage!;
+  const currentPage = rest.updatePageServerAction.optimisticState!;
 
   const form = useForm<UpsertLayerSchema>({
     defaultValues: {

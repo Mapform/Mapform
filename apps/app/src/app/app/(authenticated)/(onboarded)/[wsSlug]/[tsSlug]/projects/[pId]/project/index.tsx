@@ -18,7 +18,6 @@ import { Form as DummyForm, useForm } from "@mapform/ui/components/form";
 
 function Project() {
   const {
-    currentPage,
     selectedFeature,
     currentPageData,
     projectWithPages,
@@ -36,6 +35,8 @@ function Project() {
     "page-content",
     ...(selectedFeature ? ["feature"] : []),
   ]);
+
+  const currentPage = updatePageServerAction.optimisticState;
 
   if (!currentPage) {
     return null;

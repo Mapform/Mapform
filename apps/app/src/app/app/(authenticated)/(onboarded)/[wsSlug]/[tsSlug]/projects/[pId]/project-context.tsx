@@ -42,7 +42,6 @@ export interface ProjectContextProps {
   selectedFeature?: LayerPoint | LayerMarker;
   currentProject: ProjectWithPages;
   isEditingPage: boolean;
-  currentPage: PageWithLayers | undefined;
   currentPageData: PageData | undefined;
   availableDatasets: TeamspaceDatasets;
   projectWithPages: ProjectWithPages;
@@ -54,7 +53,6 @@ export interface ProjectContextProps {
   updateProjectOptimistic: (
     action: NonNullable<GetProjectWithPages["data"]>,
   ) => void;
-  updatePageOptimistic: (action: PageWithLayers) => void;
   updatePageDataOptimistic: (action: PageData) => void;
   updateSelectedFeatureOptimistic: (action: LayerPoint | LayerMarker) => void;
 
@@ -105,14 +103,6 @@ export function ProjectProvider({
   const [_, startTransition] = useTransition();
   const page = searchParams.get("page");
 
-  const [optimisticPage, updatePageOptimistic] = useOptimistic<
-    PageWithLayers | undefined,
-    PageWithLayers
-  >(pageWithLayers, (state, newPage) => ({
-    ...state,
-    ...newPage,
-  }));
-
   const [optimisticProject, updateProjectOptimistic] = useOptimistic<
     ProjectWithPages,
     ProjectWithPages
@@ -145,7 +135,7 @@ export function ProjectProvider({
     PageWithLayers,
     Parameters<typeof updatePageAction>[0]
   >(updatePageAction, {
-    currentState: optimisticPage,
+    currentState: pageWithLayers,
     updateFn: (state, newPage) => ({
       ...(state as PageWithLayers),
       ...(newPage as PageWithLayers),
@@ -164,7 +154,7 @@ export function ProjectProvider({
     InferUseActionHookReturn<typeof upsertCellAction>,
     Parameters<typeof upsertCellAction>[0]
   >(upsertCellAction, {
-    currentState: optimisticPage,
+    currentState: pageWithLayers,
     updateFn: (state, newCell) => ({
       ...(state as InferUseActionHookReturn<typeof upsertCellAction>),
       ...(newCell as InferUseActionHookReturn<typeof upsertCellAction>),
@@ -259,17 +249,11 @@ export function ProjectProvider({
         availableDatasets,
 
         // Optimistic state
-        currentPage: optimisticPage,
         currentProject: optimisticProject,
         currentPageData: optimisticPageData,
         selectedFeature: optimisticSelectedFeature,
 
         // For optimistic state updates
-        updatePageOptimistic: (...args) => {
-          startTransition(() => {
-            updatePageOptimistic(...args);
-          });
-        },
         updateProjectOptimistic: (...args) => {
           startTransition(() => {
             updateProjectOptimistic(...args);
