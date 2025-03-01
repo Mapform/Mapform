@@ -66,7 +66,7 @@ function Project() {
                   formData.append("image", compressedFile);
 
                   const response =
-                    await uploadImageServerAction.execute(formData);
+                    await uploadImageServerAction.executeAsync(formData);
 
                   if (response?.serverError) {
                     return null;
@@ -95,19 +95,19 @@ function Project() {
                   }
                   key={currentPage.id}
                   onDescriptionChange={(val) => {
-                    updatePageServerAction.execute({
+                    void updatePageServerAction.execute({
                       id: currentPage.id,
                       content: val,
                     });
                   }}
                   onIconChange={(val) => {
-                    updatePageServerAction.execute({
+                    void updatePageServerAction.execute({
                       id: currentPage.id,
                       icon: val,
                     });
                   }}
                   onTitleChange={(val) => {
-                    updatePageServerAction.execute({
+                    void updatePageServerAction.execute({
                       id: currentPage.id,
                       title: val,
                     });
@@ -133,7 +133,7 @@ function Project() {
                       return;
                     }
 
-                    upsertCellServerAction.execute({
+                    void upsertCellServerAction.execute({
                       type: "richtext",
                       value,
                       rowId: selectedFeature.rowId,
@@ -158,7 +158,7 @@ function Project() {
                       });
                     }
 
-                    upsertCellServerAction.execute({
+                    void upsertCellServerAction.execute({
                       type: "icon",
                       value,
                       rowId: selectedFeature.rowId,
@@ -170,7 +170,7 @@ function Project() {
                       return;
                     }
 
-                    upsertCellServerAction.execute({
+                    void upsertCellServerAction.execute({
                       type: "string",
                       value,
                       rowId: selectedFeature.rowId,

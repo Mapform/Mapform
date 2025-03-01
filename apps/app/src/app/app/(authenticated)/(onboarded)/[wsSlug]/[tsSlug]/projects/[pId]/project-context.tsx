@@ -21,6 +21,7 @@ import type { GetPageWithLayers } from "@mapform/backend/data/pages/get-page-wit
 import { toast } from "@mapform/ui/components/toaster";
 import {
   type InferUseActionHookReturn,
+  useAction,
   useOptimisticAction,
 } from "next-safe-action/hooks";
 import type { GetPageData } from "@mapform/backend/data/datalayer/get-page-data";
@@ -58,24 +59,18 @@ export interface ProjectContextProps {
   updateSelectedFeatureOptimistic: (action: LayerPoint | LayerMarker) => void;
 
   updatePageServerAction: {
-    execute: (args: Parameters<typeof updatePageAction>[0]) => Promise<void>;
+    execute: (args: Parameters<typeof updatePageAction>[0]) => void;
     optimisticState: PageWithLayers | undefined;
     isPending: boolean;
   };
   upsertCellServerAction: {
-    execute: (args: Parameters<typeof upsertCellAction>[0]) => Promise<void>;
+    execute: (args: Parameters<typeof upsertCellAction>[0]) => void;
     optimisticState:
       | InferUseActionHookReturn<typeof upsertCellAction>
       | undefined;
     isPending: boolean;
   };
-  uploadImageServerAction: {
-    execute: (args: Parameters<typeof uploadImageAction>[0]) => Promise<void>;
-    optimisticState:
-      | InferUseActionHookReturn<typeof uploadImageAction>
-      | undefined;
-    isPending: boolean;
-  };
+  uploadImageServerAction: InferUseActionHookReturn<typeof uploadImageAction>;
 }
 
 export const ProjectContext = createContext<ProjectContextProps>(
@@ -182,22 +177,15 @@ export function ProjectProvider({
     },
   });
 
-  const uploadImageServerAction = useDebouncedOptimisticAction<
-    InferUseActionHookReturn<typeof uploadImageAction>,
-    Parameters<typeof uploadImageAction>[0]
-  >(uploadImageAction, {
-    currentState: optimisticPage,
-    updateFn: (state, newImage) => ({
-      ...(state as InferUseActionHookReturn<typeof uploadImageAction>),
-      ...(newImage as InferUseActionHookReturn<typeof uploadImageAction>),
-    }),
-    onError: ({ error }) => {
-      const err = error as any;
-
-      if (err.validationErrors && "image" in err.validationErrors) {
+  const uploadImageServerAction = useAction(uploadImageAction, {
+    onError: (response) => {
+      if (
+        response.error.validationErrors &&
+        "image" in response.error.validationErrors
+      ) {
         toast({
           title: "Uh oh! Something went wrong.",
-          description: err.validationErrors.image?._errors?.[0],
+          description: response.error.validationErrors.image?._errors?.[0],
         });
 
         return;
@@ -314,7 +302,7 @@ function useDebouncedOptimisticAction<TState, TAction>(
   ...args: Parameters<typeof useOptimisticAction>
 ) {
   const {
-    executeAsync,
+    execute,
     optimisticState: actionOptimisticState,
     isPending: isExecutePending,
   } = useOptimisticAction(...args);
@@ -331,24 +319,21 @@ function useDebouncedOptimisticAction<TState, TAction>(
         ...args,
       };
 
-      return new Promise((resolve) => {
-        setIsPendingDebounced(true);
-        startTransition(() => {
-          setOptimisticState(newState);
-        });
-
-        if (timerRef.current) {
-          clearTimeout(timerRef.current);
-        }
-
-        timerRef.current = setTimeout(async () => {
-          const result = await executeAsync(newState);
-          setIsPendingDebounced(false);
-          resolve(result);
-        }, 2000);
+      setIsPendingDebounced(true);
+      startTransition(() => {
+        setOptimisticState(newState);
       });
+
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+
+      timerRef.current = setTimeout(() => {
+        execute(newState);
+        setIsPendingDebounced(false);
+      }, 2000);
     },
-    [executeAsync, optimisticState],
+    [execute, optimisticState],
   );
 
   const isPending = useMemo(() => {
