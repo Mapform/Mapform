@@ -17,14 +17,7 @@ import {
 import { Checkbox } from "@mapform/ui/components/checkbox";
 import { Button } from "@mapform/ui/components/button";
 import type { GetDataset } from "@mapform/backend/data/datasets/get-dataset";
-import {
-  BoxIcon,
-  CopyIcon,
-  LinkIcon,
-  LockIcon,
-  PlusIcon,
-  Trash2Icon,
-} from "lucide-react";
+import { BoxIcon, CopyIcon, PlusIcon, Trash2Icon } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import { createRowAction } from "~/data/rows/create-row";
 import { deleteRowsAction } from "~/data/rows/delete-rows";

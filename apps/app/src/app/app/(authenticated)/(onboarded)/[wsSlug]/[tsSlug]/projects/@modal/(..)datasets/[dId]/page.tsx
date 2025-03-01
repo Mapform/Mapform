@@ -11,13 +11,7 @@ export default async function DatasetPage(props: {
   });
   const dataset = datasetResponse?.data;
 
-  if (!dataset) {
-    return null;
-  }
-
   return (
-    <Modal>
-      <DataTable dataset={dataset} />
-    </Modal>
+    <Modal open={!!dataset}>{dataset && <DataTable dataset={dataset} />}</Modal>
   );
 }
