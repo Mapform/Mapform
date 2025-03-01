@@ -1,8 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useCallback, useState } from "react";
-import { debounce } from "@mapform/lib/lodash";
+import { useCallback, useEffect, useState } from "react";
 import { compressImage } from "~/lib/compress-image";
 import { useProject } from "../project-context";
 import { EditBar } from "./edit-bar";
@@ -17,6 +16,25 @@ import { Blocknote } from "~/components/mapform/block-note";
 import { LocationSearchDrawer } from "./location-search-drawer";
 import { Form as DummyForm, useForm } from "@mapform/ui/components/form";
 
+function debounce<T extends (...args: any[]) => any>(fn: T, delay: number) {
+  let timerId: ReturnType<typeof setTimeout> | null = null;
+
+  function debounced(...args: Parameters<T>) {
+    if (timerId) clearTimeout(timerId);
+    timerId = setTimeout(() => {
+      fn(...args);
+      timerId = null; // Reset timerId after the function has executed
+    }, delay);
+  }
+
+  // Method to check if the debounce is pending
+  debounced.isWaiting = function () {
+    return !!timerId;
+  };
+
+  return debounced;
+}
+
 function Project() {
   const {
     currentPage,
@@ -28,6 +46,7 @@ function Project() {
     uploadImageServer,
     updatePageOptimistic,
     updateSelectedFeatureOptimistic,
+    updatePageServerTest,
   } = useProject();
 
   // This is just used to prevent the input blocks from throwing an error when
@@ -67,6 +86,22 @@ function Project() {
     debounce(upsertCellServer.execute, 2000),
     [upsertCellServer],
   );
+
+  useEffect(() => {
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      console.log("isLoading", debouncedUpdatePageDescription.isWaiting());
+      if (debouncedUpdatePageDescription.isWaiting()) {
+        event.preventDefault();
+        event.returnValue = "";
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [debouncedUpdatePageDescription]);
 
   if (!currentPage) {
     return null;
@@ -119,7 +154,7 @@ function Project() {
                   description={
                     currentPage.content as { content: CustomBlock[] }
                   }
-                  icon={currentPage.icon}
+                  icon={updatePageServerTest.optimisticState.icon}
                   includeFormBlocks={
                     projectWithPages.formsEnabled &&
                     currentPage.pageType === "page"
@@ -132,23 +167,31 @@ function Project() {
                     });
                   }}
                   onIconChange={(val) => {
-                    updatePageOptimistic({
-                      ...currentPage,
-                      icon: val,
-                    });
+                    // updatePageOptimistic({
+                    //   ...currentPage,
+                    //   icon: val,
+                    // });
 
-                    updatePageServer.execute({
+                    // updatePageServer.execute({
+                    //   id: currentPage.id,
+                    //   icon: val,
+                    // });
+                    updatePageServerTest.execute({
                       id: currentPage.id,
                       icon: val,
                     });
                   }}
                   onTitleChange={(val) => {
-                    debouncedUpdatePageTitle({
+                    // debouncedUpdatePageTitle({
+                    //   id: currentPage.id,
+                    //   title: val,
+                    // });
+                    updatePageServerTest.execute({
                       id: currentPage.id,
                       title: val,
                     });
                   }}
-                  title={currentPage.title}
+                  title={updatePageServerTest.optimisticState.title}
                 />
               </MapformDrawer>
               <MapformDrawer

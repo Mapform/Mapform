@@ -7,7 +7,6 @@ import {
   useCreateBlockNote,
   useCustomBlockContext,
 } from "@mapform/blocknote";
-import { useState } from "react";
 import { SmilePlusIcon, XIcon } from "lucide-react";
 import { Button } from "@mapform/ui/components/button";
 import { EmojiPopover } from "@mapform/ui/components/emoji-picker";
@@ -40,9 +39,6 @@ export function Blocknote({
   locationEditorProps,
 }: BlocknoteProps) {
   const { isEditing } = useCustomBlockContext();
-  const [uncontrolledTitle, setUncontrolledTitle] = useState<string>(
-    title || "",
-  );
 
   const editor = useCreateBlockNote({
     animations: false,
@@ -102,7 +98,6 @@ export function Blocknote({
           <AutoSizeTextArea
             className="mb-2 text-3xl font-bold placeholder-gray-300"
             onChange={(val) => {
-              setUncontrolledTitle(val);
               if (onTitleChange) onTitleChange(val);
             }}
             onEnter={() => {
@@ -111,7 +106,7 @@ export function Blocknote({
               }
               editor.focus();
             }}
-            value={uncontrolledTitle}
+            value={title ?? ""}
           />
         ) : (
           <h1 className="mb-2 w-full border-0 p-0 text-3xl font-bold">

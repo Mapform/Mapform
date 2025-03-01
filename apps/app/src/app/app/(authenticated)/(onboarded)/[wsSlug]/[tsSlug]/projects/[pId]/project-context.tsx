@@ -3,9 +3,13 @@
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import {
   createContext,
+  useCallback,
   useContext,
   useEffect,
+  useMemo,
   useOptimistic,
+  useRef,
+  useState,
   useTransition,
 } from "react";
 import type { GetLayerPoint } from "@mapform/backend/data/datalayer/get-layer-point";
@@ -15,13 +19,17 @@ import type { GetProjectWithPages } from "@mapform/backend/data/projects/get-pro
 import { useMapform } from "~/components/mapform";
 import type { GetPageWithLayers } from "@mapform/backend/data/pages/get-page-with-layers";
 import { toast } from "@mapform/ui/components/toaster";
-import type { InferUseActionHookReturn } from "next-safe-action/hooks";
+import {
+  type InferUseActionHookReturn,
+  useOptimisticAction,
+} from "next-safe-action/hooks";
 import { useAction } from "next-safe-action/hooks";
 import type { GetPageData } from "@mapform/backend/data/datalayer/get-page-data";
 import type { ListTeamspaceDatasets } from "@mapform/backend/data/datasets/list-teamspace-datasets";
 import { upsertCellAction } from "~/data/cells/upsert-cell";
 import { uploadImageAction } from "~/data/images";
 import { updatePageAction } from "~/data/pages/update-page";
+import { usePreventPageUnload } from "@mapform/lib/hooks/use-prevent-page-unload";
 
 type LayerPoint = NonNullable<GetLayerPoint["data"]>;
 type LayerMarker = NonNullable<GetLayerMarker["data"]>;
@@ -53,6 +61,12 @@ export interface ProjectContextProps {
   updatePageOptimistic: (action: PageWithLayers) => void;
   updatePageDataOptimistic: (action: PageData) => void;
   updateSelectedFeatureOptimistic: (action: LayerPoint | LayerMarker) => void;
+
+  updatePageServerTest: {
+    execute: (args: Parameters<(input: any) => void>[0]) => void;
+    optimisticState: unknown;
+    isPending: boolean;
+  };
 }
 
 export const ProjectContext = createContext<ProjectContextProps>(
@@ -120,6 +134,30 @@ export function ProjectProvider({
       ...newFeature,
     }));
 
+  const updatePageServerTest = useDebouncedOptimisticAction(updatePageAction, {
+    currentState: optimisticPage,
+    updateFn: (state: any, newPage) => ({
+      ...state,
+      ...newPage,
+    }),
+    onError: ({ error }) => {
+      if (error.serverError) {
+        toast({
+          title: "Uh oh! Something went wrong.",
+          description: error.serverError,
+        });
+        return;
+      }
+
+      if (error.validationErrors) {
+        toast({
+          title: "Uh oh! Something went wrong.",
+          description: "We we unable to update your content. Please try again.",
+        });
+      }
+    },
+  });
+
   /**
    * Actions
    */
@@ -171,6 +209,11 @@ export function ProjectProvider({
       });
     },
   });
+
+  // Prevent page unload
+  usePreventPageUnload(updatePageServer.isExecuting);
+  usePreventPageUnload(upsertCellServer.isExecuting);
+  usePreventPageUnload(uploadImageServer.isExecuting);
 
   useEffect(() => {
     if (projectWithPages.pages[0] && !page) {
@@ -264,9 +307,56 @@ export function ProjectProvider({
         updatePageServer,
         upsertCellServer,
         uploadImageServer,
+
+        // Test
+        updatePageServerTest,
       }}
     >
       {children}
     </ProjectContext.Provider>
   );
+}
+
+// This function takes in useAction arguments as the first and second arguments, and returns { execute, isPending, optimisticState }
+function useDebouncedOptimisticAction(
+  ...args: Parameters<typeof useOptimisticAction>
+) {
+  const {
+    execute,
+    optimisticState: actionOptimisticState,
+    isPending: isExecutePending,
+  } = useOptimisticAction(...args);
+  const [_, startTransition] = useTransition();
+  const [isPendingDebounced, setIsPendingDebounced] = useState(false);
+  const [optimisticState, setOptimisticState] = useState(actionOptimisticState);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const debouncedExecute = useCallback(
+    (args: Parameters<typeof execute>[0]) => {
+      setIsPendingDebounced(true);
+      startTransition(() => {
+        setOptimisticState({
+          ...actionOptimisticState,
+          ...args,
+        });
+      });
+
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+
+      timerRef.current = setTimeout(() => {
+        execute(args);
+        setIsPendingDebounced(false);
+      }, 2000);
+    },
+    [actionOptimisticState, execute],
+  );
+
+  const isPending = useMemo(() => {
+    return isPendingDebounced || isExecutePending;
+  }, [isPendingDebounced, isExecutePending]);
+
+  usePreventPageUnload(isPending);
+
+  return { execute: debouncedExecute, optimisticState, isPending };
 }
