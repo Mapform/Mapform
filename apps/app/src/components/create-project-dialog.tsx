@@ -57,7 +57,7 @@ export function CreateProjectDialog({
     },
     resolver: zodResolver(createProjectSchema),
   });
-  const { execute, status } = useAction(createProjectAction, {
+  const { execute, isPending } = useAction(createProjectAction, {
     onError: ({ error }) => {
       if (error.serverError) {
         toast({
@@ -152,7 +152,7 @@ export function CreateProjectDialog({
             </div>
             <DialogFooter>
               <Button
-                disabled={status === "executing" || !form.formState.isValid}
+                disabled={isPending || !form.formState.isValid}
                 type="submit"
               >
                 Create

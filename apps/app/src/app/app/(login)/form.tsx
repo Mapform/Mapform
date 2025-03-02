@@ -51,7 +51,7 @@ const errors: Record<MagicLinkErrors, { text: string; icon: LucideIcon }> = {
 export function SignInForm({ type }: { type: "signin" | "signup" }) {
   const searchParams = useSearchParams();
   const [emailSent, setEmailSent] = useState(false);
-  const { execute, status } = useAction(requestMagicLinkAction, {
+  const { execute, isPending } = useAction(requestMagicLinkAction, {
     onSuccess: () => {
       setEmailSent(true);
     },
@@ -135,12 +135,8 @@ export function SignInForm({ type }: { type: "signin" | "signup" }) {
               </FormItem>
             )}
           />
-          <Button
-            className="w-full"
-            disabled={status === "executing"}
-            type="submit"
-          >
-            Submit
+          <Button className="w-full" disabled={isPending} type="submit">
+            {isPending ? "Sending magic link..." : "Submit"}
           </Button>
         </form>
       </Form>

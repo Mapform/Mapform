@@ -52,7 +52,7 @@ export function CreateDatasetDialog({
     },
     resolver: zodResolver(createEmptyDatasetSchema),
   });
-  const { execute, status } = useAction(createEmptyDatasetAction, {
+  const { execute, isPending } = useAction(createEmptyDatasetAction, {
     onError: ({ error }) => {
       if (error.serverError) {
         toast({
@@ -120,7 +120,7 @@ export function CreateDatasetDialog({
             </div>
             <DialogFooter>
               <Button
-                disabled={status === "executing" || !form.formState.isValid}
+                disabled={isPending || !form.formState.isValid}
                 type="submit"
               >
                 Create
