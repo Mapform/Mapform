@@ -188,6 +188,9 @@ export function MarkerEditDrawerInner({ currentPage }: MarkerEditDrawerProps) {
           align="start"
           initialName={query}
           key={query}
+          onClose={() => {
+            setLayerPopoverOpen(false);
+          }}
           onSuccess={(layerId) => {
             executeCreatePoint({
               layerId,

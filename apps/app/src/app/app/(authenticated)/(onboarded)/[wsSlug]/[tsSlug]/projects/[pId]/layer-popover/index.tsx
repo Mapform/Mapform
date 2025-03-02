@@ -36,12 +36,13 @@ interface LayerPopoverProps {
     GetPageWithLayers["data"]
   >["layersToPages"][number]["layer"];
   onSuccess?: (layerId: string) => void;
+  onClose?: () => void;
 }
 
 export const LayerPopoverContent = forwardRef<
   React.ElementRef<typeof PopoverContent>,
   React.ComponentPropsWithoutRef<typeof PopoverContent> & LayerPopoverProps
->(({ layerToEdit, initialName, onSuccess, ...props }, ref) => {
+>(({ layerToEdit, initialName, onSuccess, onClose, ...props }, ref) => {
   const { ...rest } = useProject();
 
   const currentPage = rest.updatePageServerAction.optimisticState!;
@@ -71,6 +72,7 @@ export const LayerPopoverContent = forwardRef<
     onSuccess: ({ data }) => {
       if (onSuccess && data?.id) {
         onSuccess(data.id);
+        onClose?.();
         return;
       }
 
@@ -80,6 +82,7 @@ export const LayerPopoverContent = forwardRef<
           ? "Your layer has been updated."
           : "Your layer has been created.",
       });
+      onClose?.();
     },
     onError: ({ error }) => {
       if (error.serverError) {

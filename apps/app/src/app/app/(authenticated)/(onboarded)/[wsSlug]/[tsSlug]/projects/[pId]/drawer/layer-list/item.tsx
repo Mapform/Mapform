@@ -220,7 +220,13 @@ export function Item({ layer }: ItemProps) {
         open={layerPopoverOpen}
       >
         <LayerPopoverAnchor />
-        <LayerPopoverContent layerToEdit={layer} side="left" />
+        <LayerPopoverContent
+          layerToEdit={layer}
+          side="left"
+          onClose={() => {
+            setLayerPopoverOpen(false);
+          }}
+        />
       </LayerPopoverRoot>
     </DragItem>
   );

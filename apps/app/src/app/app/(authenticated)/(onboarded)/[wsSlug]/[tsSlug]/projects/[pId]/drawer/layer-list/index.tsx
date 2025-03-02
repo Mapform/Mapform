@@ -223,7 +223,13 @@ export function LayerList() {
           open={layerPopoverOpen}
         >
           <LayerPopoverAnchor />
-          <LayerPopoverContent initialName={query} key={query} />
+          <LayerPopoverContent
+            initialName={query}
+            key={query}
+            onClose={() => {
+              setLayerPopoverOpen(false);
+            }}
+          />
         </LayerPopoverRoot>
         <SidebarGroupContent>
           <SidebarMenu>

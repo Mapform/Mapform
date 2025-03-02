@@ -238,6 +238,9 @@ export function LocationSearchDrawerInner({
           align="start"
           initialName={query}
           key={query}
+          onClose={() => {
+            setLayerPopoverOpen(false);
+          }}
           onSuccess={(layerId) => {
             if (location.x === undefined || location.y === undefined) return;
 
