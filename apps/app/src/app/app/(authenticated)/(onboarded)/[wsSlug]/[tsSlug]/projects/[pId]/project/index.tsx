@@ -11,6 +11,7 @@ import {
   MapformDrawerButton,
   MapformMap,
 } from "~/components/mapform";
+import { useSetQueryString } from "@mapform/lib/hooks/use-set-query-string";
 import { CustomBlockProvider, type CustomBlock } from "@mapform/blocknote";
 import { Blocknote } from "~/components/mapform/block-note";
 import { LocationSearchDrawer } from "./location-search-drawer";
@@ -30,6 +31,7 @@ function Project() {
   // This is just used to prevent the input blocks from throwing an error when
   // calling useFormContext
   const dummyForm = useForm();
+  const setQueryString = useSetQueryString();
 
   const [drawerValues, setDrawerValues] = useState<string[]>([
     "page-content",
@@ -119,6 +121,10 @@ function Project() {
               <MapformDrawer
                 onClose={() => {
                   setDrawerValues(drawerValues.filter((v) => v !== "feature"));
+                  setQueryString({
+                    key: "feature",
+                    value: null,
+                  });
                 }}
                 value="feature"
               >
