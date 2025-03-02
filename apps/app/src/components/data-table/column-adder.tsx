@@ -137,6 +137,8 @@ export function ColumnAdder({ datasetId }: ColumnAdderProps) {
                                 key={type}
                                 onSelect={() => {
                                   form.setValue("type", type);
+                                  // Used to trigger the validation
+                                  void form.trigger("type");
                                   setQuery("");
                                   setOpen(false);
                                 }}
