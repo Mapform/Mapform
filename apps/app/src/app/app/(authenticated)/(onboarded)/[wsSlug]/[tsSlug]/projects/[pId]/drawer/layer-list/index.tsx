@@ -101,7 +101,7 @@ export function LayerList() {
         overLayerIndex,
       );
 
-      updatePageServerAction.execute({
+      updatePageServerAction.setOptimisticState({
         ...updatePageServerAction.optimisticState,
         layersToPages:
           updatePageServerAction.optimisticState.layersToPages.sort((a, b) => {

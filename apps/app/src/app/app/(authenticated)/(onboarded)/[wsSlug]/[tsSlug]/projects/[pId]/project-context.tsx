@@ -60,6 +60,7 @@ export interface ProjectContextProps {
     execute: (args: Parameters<typeof updatePageAction>[0]) => void;
     optimisticState: PageWithLayers | undefined;
     isPending: boolean;
+    setOptimisticState: (state: PageWithLayers) => void;
   };
   upsertCellServerAction: {
     execute: (args: Parameters<typeof upsertCellAction>[0]) => void;
@@ -67,6 +68,9 @@ export interface ProjectContextProps {
       | InferUseActionHookReturn<typeof upsertCellAction>
       | undefined;
     isPending: boolean;
+    setOptimisticState: (
+      state: InferUseActionHookReturn<typeof upsertCellAction>,
+    ) => void;
   };
   uploadImageServerAction: InferUseActionHookReturn<typeof uploadImageAction>;
 }
@@ -295,6 +299,7 @@ function useDebouncedOptimisticAction<TState, TAction>(
   const [optimisticState, setOptimisticState] = useState<TState>(
     actionOptimisticState as TState,
   );
+
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const debouncedExecute = useCallback(
     (args: TAction) => {
@@ -324,7 +329,21 @@ function useDebouncedOptimisticAction<TState, TAction>(
     return isPendingDebounced || isExecutePending;
   }, [isPendingDebounced, isExecutePending]);
 
+  // Update optimistic state when new args are available and no longer pending.
+  // This is so that if state is updated via an SSR change, the client state is
+  // updated.
+  useEffect(() => {
+    if (!isPending) {
+      setOptimisticState(actionOptimisticState as TState);
+    }
+  }, [actionOptimisticState, isPending]);
+
   usePreventPageUnload(isPending);
 
-  return { execute: debouncedExecute, optimisticState, isPending };
+  return {
+    execute: debouncedExecute,
+    optimisticState,
+    isPending,
+    setOptimisticState,
+  };
 }

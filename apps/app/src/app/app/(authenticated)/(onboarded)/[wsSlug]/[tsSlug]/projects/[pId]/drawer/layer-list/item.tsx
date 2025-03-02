@@ -81,9 +81,7 @@ export function Item({ layer }: ItemProps) {
       layerId: layer.id,
     });
 
-    // Note: it is not necessary to set isPendingDebounce to true here since we
-    // are not debouncing
-    updatePageServerAction.execute({
+    updatePageServerAction.setOptimisticState({
       ...updatePageServerAction.optimisticState,
       layersToPages: newLayers,
     });
@@ -104,7 +102,7 @@ export function Item({ layer }: ItemProps) {
 
     // Note: it is not necessary to set isPendingDebounce to true here since we
     // are not debouncing
-    updatePageServerAction.execute({
+    updatePageServerAction.setOptimisticState({
       ...updatePageServerAction.optimisticState,
       layersToPages: newLayers,
     });
