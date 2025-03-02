@@ -40,7 +40,7 @@ interface ColumnAdderProps {
 export function ColumnAdder({ datasetId }: ColumnAdderProps) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
-  const { execute, status } = useAction(createColumnAction);
+  const { execute, isPending } = useAction(createColumnAction);
   const form = useForm<CreateColumnSchema>({
     defaultValues: {
       datasetId,
@@ -163,7 +163,7 @@ export function ColumnAdder({ datasetId }: ColumnAdderProps) {
               />
               <Button
                 className="col-span-2"
-                disabled={status === "executing" || !form.formState.isValid}
+                disabled={isPending || !form.formState.isValid}
                 size="sm"
                 type="submit"
               >
