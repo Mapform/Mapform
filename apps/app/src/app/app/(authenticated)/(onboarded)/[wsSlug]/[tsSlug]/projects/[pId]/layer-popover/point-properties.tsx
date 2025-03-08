@@ -206,14 +206,16 @@ function DataColField({
           <div className="flex w-full flex-shrink-0 justify-end">
             <PopoverTrigger asChild>
               <Button
-                className="ring-offset-background placeholder:text-muted-foreground focus:ring-ring flex h-7 w-full items-center justify-between whitespace-nowrap rounded-md border-0 bg-stone-100 px-2 py-0.5 text-sm font-normal shadow-sm focus:outline-none focus:ring-1 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
+                className="ring-offset-background placeholder:text-muted-foreground focus:ring-ring flex h-7 w-full items-center justify-between whitespace-nowrap rounded-md border-0 bg-stone-100 px-2 py-0.5 text-sm font-normal shadow-sm focus:outline-none focus:ring-1 disabled:cursor-not-allowed disabled:opacity-50"
                 id={name}
                 size="icon-xs"
                 variant="ghost"
               >
-                {availableColumns.find((col) => col.id === field.value)?.name ??
-                  "Select..."}
-                <ChevronsUpDownIcon className="size-4 opacity-50" />
+                <span className="flex-1 truncate text-left">
+                  {availableColumns.find((col) => col.id === field.value)
+                    ?.name ?? "Select..."}
+                </span>
+                <ChevronsUpDownIcon className="size-4 flex-shrink-0 opacity-50" />
               </Button>
             </PopoverTrigger>
             <PopoverContent
@@ -289,7 +291,9 @@ function DataColField({
                           }}
                           value={col.id}
                         >
-                          {col.name}
+                          <span className="flex-1 truncate text-left">
+                            {col.name}
+                          </span>
                           <CheckIcon
                             className={cn(
                               "ml-auto size-4",

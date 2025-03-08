@@ -52,15 +52,17 @@ export function TypePopover({ form }: TypePopoverProps) {
           <PopoverTrigger asChild>
             <FormControl>
               <Button
-                className="ring-offset-background placeholder:text-muted-foreground focus:ring-ring flex h-7 w-full items-center justify-between whitespace-nowrap rounded-md border-0 bg-stone-100 px-2 py-0.5 text-sm font-normal shadow-sm focus:outline-none focus:ring-1 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
+                className="ring-offset-background placeholder:text-muted-foreground focus:ring-ring flex h-7 w-full items-center justify-between whitespace-nowrap rounded-md border-0 bg-stone-100 px-2 py-0.5 text-sm font-normal shadow-sm focus:outline-none focus:ring-1 disabled:cursor-not-allowed disabled:opacity-50"
                 id="type"
                 size="icon-xs"
                 variant="ghost"
               >
-                {form.watch("type")
-                  ? types.find((type) => type.value === field.value)?.label
-                  : "Select type..."}
-                <ChevronsUpDownIcon className="size-4 opacity-50" />
+                <span className="flex-1 truncate text-left">
+                  {form.watch("type")
+                    ? types.find((type) => type.value === field.value)?.label
+                    : "Select type..."}
+                </span>
+                <ChevronsUpDownIcon className="size-4 flex-shrink-0 opacity-50" />
               </Button>
             </FormControl>
           </PopoverTrigger>
@@ -87,7 +89,9 @@ export function TypePopover({ form }: TypePopoverProps) {
                         setOpen(false);
                       }}
                     >
-                      {type.label}
+                      <span className="flex-1 truncate text-left">
+                        {type.label}
+                      </span>
                       <CheckIcon
                         className={cn(
                           "ml-auto size-4",
