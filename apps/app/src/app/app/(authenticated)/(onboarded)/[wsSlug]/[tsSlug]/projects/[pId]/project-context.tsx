@@ -39,6 +39,15 @@ type PageData = NonNullable<GetPageData["data"]>;
 type TeamspaceDatasets = NonNullable<ListTeamspaceDatasets["data"]>;
 type ProjectWithPages = NonNullable<GetProjectWithPages["data"]>;
 
+type CellServerAction = {
+  execute: (
+    args: InferSafeActionFnInput<typeof upsertCellAction>["clientInput"],
+  ) => void;
+  optimisticState: LayerPoint | LayerMarker | undefined;
+  isPending: boolean;
+  setOptimisticState: (state: LayerPoint | LayerMarker) => void;
+};
+
 export interface ProjectContextProps {
   selectedFeature?: LayerPoint | LayerMarker;
   currentProject: ProjectWithPages;
@@ -62,14 +71,9 @@ export interface ProjectContextProps {
     isPending: boolean;
     setOptimisticState: (state: PageWithLayers) => void;
   };
-  upsertCellServerAction: {
-    execute: (
-      args: InferSafeActionFnInput<typeof upsertCellAction>["clientInput"],
-    ) => void;
-    optimisticState: LayerPoint | LayerMarker | undefined;
-    isPending: boolean;
-    setOptimisticState: (state: LayerPoint | LayerMarker) => void;
-  };
+  upsertIconCellServerAction: CellServerAction;
+  upsertStringCellServerAction: CellServerAction;
+  upsertRichtextCellServerAction: CellServerAction;
   uploadImageServerAction: InferUseActionHookReturn<typeof uploadImageAction>;
 }
 
@@ -143,7 +147,7 @@ export function ProjectProvider({
     },
   });
 
-  const upsertCellServerAction = useDebouncedOptimisticAction<
+  const upsertIconCellServerAction = useDebouncedOptimisticAction<
     LayerPoint | LayerMarker,
     InferSafeActionFnInput<typeof upsertCellAction>["clientInput"]
   >(upsertCellAction, {
@@ -153,53 +157,83 @@ export function ProjectProvider({
       payload: InferSafeActionFnInput<typeof upsertCellAction>["clientInput"],
     ) => {
       const typedState = state as LayerPoint | LayerMarker | undefined;
-      if (!typedState) return state;
+      if (!typedState || !typedState.icon || payload.type !== "icon")
+        return state;
 
-      switch (payload.type) {
-        case "icon":
-          if (typedState.icon) {
-            return {
-              ...typedState,
-              icon: {
-                ...typedState.icon,
-                iconCell: {
-                  ...typedState.icon.iconCell,
-                  value: payload.value,
-                },
-              },
-            };
-          }
-          break;
-        case "string":
-          if (typedState.title) {
-            return {
-              ...typedState,
-              title: {
-                ...typedState.title,
-                stringCell: {
-                  ...typedState.title.stringCell,
-                  value: payload.value,
-                },
-              },
-            };
-          }
-          break;
-        case "richtext":
-          if (typedState.description) {
-            return {
-              ...typedState,
-              description: {
-                ...typedState.description,
-                richtextCell: {
-                  ...typedState.description.richtextCell,
-                  value: payload.value,
-                },
-              },
-            };
-          }
-          break;
-      }
-      return state;
+      return {
+        ...typedState,
+        icon: {
+          ...typedState.icon,
+          iconCell: {
+            ...typedState.icon.iconCell,
+            value: payload.value,
+          },
+        },
+      };
+    },
+    onError: () => {
+      toast({
+        title: "Uh oh! Something went wrong.",
+        description: "We we unable to update your content. Please try again.",
+      });
+    },
+  });
+
+  const upsertStringCellServerAction = useDebouncedOptimisticAction<
+    LayerPoint | LayerMarker,
+    InferSafeActionFnInput<typeof upsertCellAction>["clientInput"]
+  >(upsertCellAction, {
+    currentState: selectedFeature,
+    updateFn: (
+      state: unknown,
+      payload: InferSafeActionFnInput<typeof upsertCellAction>["clientInput"],
+    ) => {
+      const typedState = state as LayerPoint | LayerMarker | undefined;
+      if (!typedState || !typedState.title || payload.type !== "string")
+        return state;
+
+      return {
+        ...typedState,
+        title: {
+          ...typedState.title,
+          stringCell: {
+            ...typedState.title.stringCell,
+            value: payload.value,
+          },
+        },
+      };
+    },
+    onError: () => {
+      toast({
+        title: "Uh oh! Something went wrong.",
+        description: "We we unable to update your content. Please try again.",
+      });
+    },
+  });
+
+  const upsertRichtextCellServerAction = useDebouncedOptimisticAction<
+    LayerPoint | LayerMarker,
+    InferSafeActionFnInput<typeof upsertCellAction>["clientInput"]
+  >(upsertCellAction, {
+    currentState: selectedFeature,
+    updateFn: (
+      state: unknown,
+      payload: InferSafeActionFnInput<typeof upsertCellAction>["clientInput"],
+    ) => {
+      const typedState = state as LayerPoint | LayerMarker | undefined;
+      if (!typedState || !typedState.description || payload.type !== "richtext")
+        return state;
+
+      return {
+        ...typedState,
+        description: {
+          ...typedState.description,
+          richtextCell: {
+            ...typedState.description.richtextCell,
+            value: payload.value,
+          },
+        },
+      };
     },
     onError: () => {
       toast({
@@ -307,7 +341,9 @@ export function ProjectProvider({
 
         // Actions
         updatePageServerAction,
-        upsertCellServerAction,
+        upsertIconCellServerAction,
+        upsertStringCellServerAction,
+        upsertRichtextCellServerAction,
         uploadImageServerAction,
       }}
     >
@@ -335,6 +371,7 @@ function useDebouncedOptimisticAction<TState, TAction>(
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const debouncedExecute = useCallback(
     (args: TAction) => {
+      // Update using the same useOptimisticAction updateFn
       const newState = updateFn(optimisticState, args);
 
       setIsPendingDebounced(true);

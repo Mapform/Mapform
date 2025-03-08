@@ -22,7 +22,9 @@ function Project() {
     currentPageData,
     projectWithPages,
     updatePageServerAction,
-    upsertCellServerAction,
+    upsertIconCellServerAction,
+    upsertStringCellServerAction,
+    upsertRichtextCellServerAction,
     uploadImageServerAction,
   } = useProject();
 
@@ -32,11 +34,18 @@ function Project() {
   const setQueryString = useSetQueryString();
 
   const currentPage = updatePageServerAction.optimisticState;
-  const selectedFeature = upsertCellServerAction.optimisticState;
+  const selectedFeatureIcon = upsertIconCellServerAction.optimisticState;
+  const selectedFeatureTitle = upsertStringCellServerAction.optimisticState;
+  const selectedFeatureDescription =
+    upsertRichtextCellServerAction.optimisticState;
 
   const [drawerValues, setDrawerValues] = useState<string[]>([
     "page-content",
-    ...(selectedFeature ? ["feature"] : []),
+    ...(selectedFeatureIcon ||
+    selectedFeatureTitle ||
+    selectedFeatureDescription
+      ? ["feature"]
+      : []),
   ]);
 
   if (!currentPage) {
@@ -98,19 +107,19 @@ function Project() {
                   key={currentPage.id}
                   onDescriptionChange={(val) => {
                     void updatePageServerAction.execute({
-                      id: currentPage.id,
+                      ...currentPage,
                       content: val,
                     });
                   }}
                   onIconChange={(val) => {
                     void updatePageServerAction.execute({
-                      id: currentPage.id,
+                      ...currentPage,
                       icon: val,
                     });
                   }}
                   onTitleChange={(val) => {
                     void updatePageServerAction.execute({
-                      id: currentPage.id,
+                      ...currentPage,
                       title: val,
                     });
                   }}
@@ -129,61 +138,48 @@ function Project() {
               >
                 <Blocknote
                   description={
-                    selectedFeature?.description?.richtextCell?.value ??
-                    undefined
+                    selectedFeatureDescription?.description?.richtextCell
+                      ?.value ?? undefined
                   }
-                  icon={selectedFeature?.icon?.iconCell?.value}
-                  key={`${currentPage.id}-${selectedFeature?.rowId}`}
+                  icon={selectedFeatureIcon?.icon?.iconCell?.value}
+                  key={`${currentPage.id}-${selectedFeatureIcon?.rowId}`}
                   onDescriptionChange={(value) => {
-                    if (selectedFeature?.description === undefined) {
+                    if (selectedFeatureDescription?.description === undefined) {
                       return;
                     }
 
-                    void upsertCellServerAction.execute({
+                    void upsertRichtextCellServerAction.execute({
                       type: "richtext",
                       value,
-                      rowId: selectedFeature.rowId,
-                      columnId: selectedFeature.description.columnId,
+                      rowId: selectedFeatureDescription.rowId,
+                      columnId: selectedFeatureDescription.description.columnId,
                     });
                   }}
                   onIconChange={(value) => {
-                    if (!selectedFeature?.icon || !currentPageData) {
+                    if (!selectedFeatureIcon?.icon || !currentPageData) {
                       return;
                     }
 
-                    // if (selectedFeature.icon.iconCell) {
-                    //   upsertCellServerAction.setOptimisticState({
-                    //     ...selectedFeature,
-                    //     icon: {
-                    //       ...selectedFeature.icon,
-                    //       iconCell: {
-                    //         ...selectedFeature.icon.iconCell,
-                    //         value,
-                    //       },
-                    //     },
-                    //   });
-                    // }
-
-                    void upsertCellServerAction.execute({
+                    void upsertIconCellServerAction.execute({
                       type: "icon",
                       value,
-                      rowId: selectedFeature.rowId,
-                      columnId: selectedFeature.icon.columnId,
+                      rowId: selectedFeatureIcon.rowId,
+                      columnId: selectedFeatureIcon.icon.columnId,
                     });
                   }}
                   onTitleChange={(value) => {
-                    if (!selectedFeature?.title) {
+                    if (!selectedFeatureTitle?.title) {
                       return;
                     }
 
-                    void upsertCellServerAction.execute({
+                    void upsertStringCellServerAction.execute({
                       type: "string",
                       value,
-                      rowId: selectedFeature.rowId,
-                      columnId: selectedFeature.title.columnId,
+                      rowId: selectedFeatureTitle.rowId,
+                      columnId: selectedFeatureTitle.title.columnId,
                     });
                   }}
-                  title={selectedFeature?.title?.stringCell?.value}
+                  title={selectedFeatureTitle?.title?.stringCell?.value}
                 />
               </MapformDrawer>
               <LocationSearchDrawer currentPage={currentPage} />
