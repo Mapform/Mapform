@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { compressImage } from "~/lib/compress-image";
 import { useProject } from "../project-context";
 import { EditBar } from "./edit-bar";
@@ -46,6 +46,27 @@ function Project() {
     selectedFeatureDescription
       ? ["feature"]
       : []),
+  ]);
+
+  useEffect(() => {
+    const featureIsOpen = drawerValues.includes("feature");
+
+    if (
+      selectedFeatureIcon ||
+      selectedFeatureTitle ||
+      selectedFeatureDescription
+    ) {
+      if (!featureIsOpen) {
+        setDrawerValues([...drawerValues, "feature"]);
+      }
+    } else if (featureIsOpen) {
+      setDrawerValues(drawerValues.filter((v) => v !== "feature"));
+    }
+  }, [
+    selectedFeatureIcon,
+    selectedFeatureTitle,
+    selectedFeatureDescription,
+    drawerValues,
   ]);
 
   if (!currentPage) {
@@ -128,7 +149,6 @@ function Project() {
               </MapformDrawer>
               <MapformDrawer
                 onClose={() => {
-                  setDrawerValues(drawerValues.filter((v) => v !== "feature"));
                   setQueryString({
                     key: "feature",
                     value: null,

@@ -309,6 +309,7 @@ export function ProjectProvider({
 
     // Remove editMode
     current.delete("edit");
+    current.delete("feature");
 
     const search = current.toString();
     const query = search ? `?${search}` : "";
