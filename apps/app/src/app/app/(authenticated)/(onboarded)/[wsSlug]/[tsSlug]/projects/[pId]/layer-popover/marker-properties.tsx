@@ -51,27 +51,53 @@ export function MarkerProperties({ form }: MarkerPropertiesProps) {
 
   useEffect(() => {
     if (type === "marker") {
-      form.setValue(
+      const currentPointColumnId = form.getValues(
         "markerProperties.pointColumnId",
-        getAvailableColumns("point")?.find((c) => c.type === "point")?.id ?? "",
       );
-
-      form.setValue(
+      const currentTitleColumnId = form.getValues(
         "markerProperties.titleColumnId",
-        getAvailableColumns("string")?.find((c) => c.type === "string")?.id ??
-          "",
       );
-
-      form.setValue(
+      const currentDescriptionColumnId = form.getValues(
         "markerProperties.descriptionColumnId",
-        getAvailableColumns("richtext")?.find((c) => c.type === "richtext")
-          ?.id ?? "",
+      );
+      const currentIconColumnId = form.getValues(
+        "markerProperties.iconColumnId",
       );
 
-      form.setValue(
-        "markerProperties.iconColumnId",
-        getAvailableColumns("icon")?.find((c) => c.type === "icon")?.id ?? "",
-      );
+      if (currentPointColumnId === undefined || currentPointColumnId === "") {
+        form.setValue(
+          "markerProperties.pointColumnId",
+          getAvailableColumns("point")?.find((c) => c.type === "point")?.id ??
+            "",
+        );
+      }
+
+      if (currentTitleColumnId === undefined || currentTitleColumnId === "") {
+        form.setValue(
+          "markerProperties.titleColumnId",
+          getAvailableColumns("string")?.find((c) => c.type === "string")?.id ??
+            null,
+        );
+      }
+
+      if (
+        currentDescriptionColumnId === undefined ||
+        currentDescriptionColumnId === ""
+      ) {
+        form.setValue(
+          "markerProperties.descriptionColumnId",
+          getAvailableColumns("richtext")?.find((c) => c.type === "richtext")
+            ?.id ?? null,
+        );
+      }
+
+      if (currentIconColumnId === undefined || currentIconColumnId === "") {
+        form.setValue(
+          "markerProperties.iconColumnId",
+          getAvailableColumns("icon")?.find((c) => c.type === "icon")?.id ??
+            null,
+        );
+      }
     }
   }, [dataset, form, type, getAvailableColumns, datasetId]);
 
@@ -146,17 +172,21 @@ function DataColField({
     onSuccess: ({ data, input }) => {
       if (!data?.id) return;
 
-      input.type === "point" &&
+      if (input.type === "point") {
         form.setValue("markerProperties.pointColumnId", data.id);
+      }
 
-      input.type === "string" &&
+      if (input.type === "string") {
         form.setValue("markerProperties.titleColumnId", data.id);
+      }
 
-      input.type === "richtext" &&
+      if (input.type === "richtext") {
         form.setValue("markerProperties.descriptionColumnId", data.id);
+      }
 
-      input.type === "icon" &&
+      if (input.type === "icon") {
         form.setValue("markerProperties.iconColumnId", data.id);
+      }
     },
 
     onError: () => {
@@ -256,7 +286,9 @@ function DataColField({
                           onSelect={(currentValue) => {
                             form.setValue(
                               name,
-                              currentValue === field.value ? "" : currentValue,
+                              currentValue === field.value
+                                ? null
+                                : currentValue,
                             );
                             setOpen(false);
                           }}

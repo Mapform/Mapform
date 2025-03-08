@@ -51,27 +51,52 @@ export function PointProperties({ form }: PointPropertiesProps) {
 
   useEffect(() => {
     if (type === "point") {
-      form.setValue(
+      const currentPointColumnId = form.getValues(
         "pointProperties.pointColumnId",
-        getAvailableColumns("point")?.find((c) => c.type === "point")?.id ?? "",
       );
-
-      form.setValue(
+      const currentTitleColumnId = form.getValues(
         "pointProperties.titleColumnId",
-        getAvailableColumns("string")?.find((c) => c.type === "string")?.id ??
-          "",
       );
-
-      form.setValue(
+      const currentDescriptionColumnId = form.getValues(
         "pointProperties.descriptionColumnId",
-        getAvailableColumns("richtext")?.find((c) => c.type === "richtext")
-          ?.id ?? "",
+      );
+      const currentIconColumnId = form.getValues(
+        "pointProperties.iconColumnId",
       );
 
-      form.setValue(
-        "pointProperties.iconColumnId",
-        getAvailableColumns("icon")?.find((c) => c.type === "icon")?.id ?? "",
-      );
+      if (currentPointColumnId === undefined || currentPointColumnId === "") {
+        form.setValue(
+          "pointProperties.pointColumnId",
+          getAvailableColumns("point")?.find((c) => c.type === "point")?.id ??
+            "",
+        );
+      }
+
+      if (currentTitleColumnId === undefined || currentTitleColumnId === "") {
+        form.setValue(
+          "pointProperties.titleColumnId",
+          getAvailableColumns("string")?.find((c) => c.type === "string")?.id ??
+            "",
+        );
+      }
+
+      if (
+        currentDescriptionColumnId === undefined ||
+        currentDescriptionColumnId === ""
+      ) {
+        form.setValue(
+          "pointProperties.descriptionColumnId",
+          getAvailableColumns("richtext")?.find((c) => c.type === "richtext")
+            ?.id ?? "",
+        );
+      }
+
+      if (currentIconColumnId === undefined || currentIconColumnId === "") {
+        form.setValue(
+          "pointProperties.iconColumnId",
+          getAvailableColumns("icon")?.find((c) => c.type === "icon")?.id ?? "",
+        );
+      }
     }
   }, [dataset, form, type, getAvailableColumns]);
 
@@ -146,17 +171,21 @@ function DataColField({
     onSuccess: ({ data, input }) => {
       if (!data?.id) return;
 
-      input.type === "point" &&
+      if (input.type === "point") {
         form.setValue("pointProperties.pointColumnId", data.id);
+      }
 
-      input.type === "string" &&
+      if (input.type === "string") {
         form.setValue("pointProperties.titleColumnId", data.id);
+      }
 
-      input.type === "richtext" &&
+      if (input.type === "richtext") {
         form.setValue("pointProperties.descriptionColumnId", data.id);
+      }
 
-      input.type === "icon" &&
+      if (input.type === "icon") {
         form.setValue("pointProperties.iconColumnId", data.id);
+      }
     },
 
     onError: () => {
