@@ -30,6 +30,7 @@ import { upsertCellAction } from "~/data/cells/upsert-cell";
 import { uploadImageAction } from "~/data/images";
 import { updatePageAction } from "~/data/pages/update-page";
 import { usePreventPageUnload } from "@mapform/lib/hooks/use-prevent-page-unload";
+import type { InferSafeActionFnInput } from "next-safe-action";
 
 type LayerPoint = NonNullable<GetLayerPoint["data"]>;
 type LayerMarker = NonNullable<GetLayerMarker["data"]>;
@@ -54,7 +55,6 @@ export interface ProjectContextProps {
     action: NonNullable<GetProjectWithPages["data"]>,
   ) => void;
   updatePageDataOptimistic: (action: PageData) => void;
-  updateSelectedFeatureOptimistic: (action: LayerPoint | LayerMarker) => void;
 
   updatePageServerAction: {
     execute: (args: Parameters<typeof updatePageAction>[0]) => void;
@@ -63,14 +63,12 @@ export interface ProjectContextProps {
     setOptimisticState: (state: PageWithLayers) => void;
   };
   upsertCellServerAction: {
-    execute: (args: Parameters<typeof upsertCellAction>[0]) => void;
-    optimisticState:
-      | InferUseActionHookReturn<typeof upsertCellAction>
-      | undefined;
-    isPending: boolean;
-    setOptimisticState: (
-      state: InferUseActionHookReturn<typeof upsertCellAction>,
+    execute: (
+      args: InferSafeActionFnInput<typeof upsertCellAction>["clientInput"],
     ) => void;
+    optimisticState: LayerPoint | LayerMarker | undefined;
+    isPending: boolean;
+    setOptimisticState: (state: LayerPoint | LayerMarker) => void;
   };
   uploadImageServerAction: InferUseActionHookReturn<typeof uploadImageAction>;
 }
@@ -123,15 +121,6 @@ export function ProjectProvider({
     ...newData,
   }));
 
-  const [optimisticSelectedFeature, updateSelectedFeatureOptimistic] =
-    useOptimistic<
-      LayerPoint | LayerMarker | undefined,
-      LayerPoint | LayerMarker
-    >(selectedFeature, (state, newFeature) => ({
-      ...state,
-      ...newFeature,
-    }));
-
   /**
    * Actions
    */
@@ -155,14 +144,63 @@ export function ProjectProvider({
   });
 
   const upsertCellServerAction = useDebouncedOptimisticAction<
-    InferUseActionHookReturn<typeof upsertCellAction>,
-    Parameters<typeof upsertCellAction>[0]
+    LayerPoint | LayerMarker,
+    InferSafeActionFnInput<typeof upsertCellAction>["clientInput"]
   >(upsertCellAction, {
-    currentState: pageWithLayers,
-    updateFn: (state, newCell) => ({
-      ...(state as InferUseActionHookReturn<typeof upsertCellAction>),
-      ...(newCell as InferUseActionHookReturn<typeof upsertCellAction>),
-    }),
+    currentState: selectedFeature,
+    updateFn: (
+      state: unknown,
+      payload: InferSafeActionFnInput<typeof upsertCellAction>["clientInput"],
+    ) => {
+      const typedState = state as LayerPoint | LayerMarker | undefined;
+      if (!typedState) return state;
+
+      switch (payload.type) {
+        case "icon":
+          if (typedState.icon) {
+            return {
+              ...typedState,
+              icon: {
+                ...typedState.icon,
+                iconCell: {
+                  ...typedState.icon.iconCell,
+                  value: payload.value,
+                },
+              },
+            };
+          }
+          break;
+        case "string":
+          if (typedState.title) {
+            return {
+              ...typedState,
+              title: {
+                ...typedState.title,
+                stringCell: {
+                  ...typedState.title.stringCell,
+                  value: payload.value,
+                },
+              },
+            };
+          }
+          break;
+        case "richtext":
+          if (typedState.description) {
+            return {
+              ...typedState,
+              description: {
+                ...typedState.description,
+                richtextCell: {
+                  ...typedState.description.richtextCell,
+                  value: payload.value,
+                },
+              },
+            };
+          }
+          break;
+      }
+      return state;
+    },
     onError: () => {
       toast({
         title: "Uh oh! Something went wrong.",
@@ -255,8 +293,6 @@ export function ProjectProvider({
         // Optimistic state
         currentProject: optimisticProject,
         currentPageData: optimisticPageData,
-        selectedFeature: optimisticSelectedFeature,
-
         // For optimistic state updates
         updateProjectOptimistic: (...args) => {
           startTransition(() => {
@@ -266,11 +302,6 @@ export function ProjectProvider({
         updatePageDataOptimistic: (...args) => {
           startTransition(() => {
             updatePageDataOptimistic(...args);
-          });
-        },
-        updateSelectedFeatureOptimistic: (...args) => {
-          startTransition(() => {
-            updateSelectedFeatureOptimistic(...args);
           });
         },
 
@@ -284,11 +315,12 @@ export function ProjectProvider({
     </ProjectContext.Provider>
   );
 }
-
 // This function takes in useAction arguments as the first and second arguments, and returns { execute, isPending, optimisticState }
 function useDebouncedOptimisticAction<TState, TAction>(
   ...args: Parameters<typeof useOptimisticAction>
 ) {
+  const updateFn = args[1].updateFn;
+
   const {
     execute,
     optimisticState: actionOptimisticState,
@@ -303,14 +335,11 @@ function useDebouncedOptimisticAction<TState, TAction>(
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const debouncedExecute = useCallback(
     (args: TAction) => {
-      const newState = {
-        ...optimisticState,
-        ...args,
-      };
+      const newState = updateFn(optimisticState, args);
 
       setIsPendingDebounced(true);
       startTransition(() => {
-        setOptimisticState(newState);
+        setOptimisticState(newState as TState);
       });
 
       if (timerRef.current) {
@@ -318,11 +347,11 @@ function useDebouncedOptimisticAction<TState, TAction>(
       }
 
       timerRef.current = setTimeout(() => {
-        execute(newState);
+        execute(args);
         setIsPendingDebounced(false);
       }, 2000);
     },
-    [execute, optimisticState],
+    [execute, optimisticState, updateFn],
   );
 
   const isPending = useMemo(() => {

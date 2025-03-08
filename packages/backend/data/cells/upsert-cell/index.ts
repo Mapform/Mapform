@@ -18,7 +18,7 @@ import {
 import { and, eq, inArray } from "@mapform/db/utils";
 import { upsertCellSchema } from "./schema";
 import type { UserAuthClient } from "../../../lib/types";
-import { DocumentContent } from "@mapform/blocknote";
+import type { DocumentContent } from "@mapform/blocknote";
 
 export const upsertCell = (authClient: UserAuthClient) =>
   authClient

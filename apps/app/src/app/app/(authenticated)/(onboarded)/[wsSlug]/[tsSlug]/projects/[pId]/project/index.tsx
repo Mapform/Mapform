@@ -19,10 +19,8 @@ import { Form as DummyForm, useForm } from "@mapform/ui/components/form";
 
 function Project() {
   const {
-    selectedFeature,
     currentPageData,
     projectWithPages,
-    updateSelectedFeatureOptimistic,
     updatePageServerAction,
     upsertCellServerAction,
     uploadImageServerAction,
@@ -33,12 +31,13 @@ function Project() {
   const dummyForm = useForm();
   const setQueryString = useSetQueryString();
 
+  const currentPage = updatePageServerAction.optimisticState;
+  const selectedFeature = upsertCellServerAction.optimisticState;
+
   const [drawerValues, setDrawerValues] = useState<string[]>([
     "page-content",
     ...(selectedFeature ? ["feature"] : []),
   ]);
-
-  const currentPage = updatePageServerAction.optimisticState;
 
   if (!currentPage) {
     return null;
@@ -136,7 +135,7 @@ function Project() {
                   icon={selectedFeature?.icon?.iconCell?.value}
                   key={`${currentPage.id}-${selectedFeature?.rowId}`}
                   onDescriptionChange={(value) => {
-                    if (!selectedFeature?.description) {
+                    if (selectedFeature?.description === undefined) {
                       return;
                     }
 
@@ -152,18 +151,18 @@ function Project() {
                       return;
                     }
 
-                    if (selectedFeature.icon.iconCell) {
-                      updateSelectedFeatureOptimistic({
-                        ...selectedFeature,
-                        icon: {
-                          ...selectedFeature.icon,
-                          iconCell: {
-                            ...selectedFeature.icon.iconCell,
-                            value,
-                          },
-                        },
-                      });
-                    }
+                    // if (selectedFeature.icon.iconCell) {
+                    //   upsertCellServerAction.setOptimisticState({
+                    //     ...selectedFeature,
+                    //     icon: {
+                    //       ...selectedFeature.icon,
+                    //       iconCell: {
+                    //         ...selectedFeature.icon.iconCell,
+                    //         value,
+                    //       },
+                    //     },
+                    //   });
+                    // }
 
                     void upsertCellServerAction.execute({
                       type: "icon",
