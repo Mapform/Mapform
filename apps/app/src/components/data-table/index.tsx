@@ -190,7 +190,7 @@ export const DataTable = function DataTable({ dataset }: TableProps) {
   return (
     <div className="relative flex flex-1 flex-col overflow-auto bg-white p-4 pt-0">
       {/* Top bar */}
-      <div className="sticky top-0 z-20 -mb-1 box-content flex h-8 flex-shrink-0 items-center gap-2 border-b bg-white pb-2 pt-4">
+      <div className="sticky top-0 z-20 mb-0 box-content flex h-8 flex-shrink-0 items-center gap-2 border-b bg-white pb-2 pt-4">
         {dataset.project ? (
           <TooltipProvider>
             <Tooltip>
@@ -248,7 +248,7 @@ export const DataTable = function DataTable({ dataset }: TableProps) {
       </div>
       <Table className="border-b">
         <TableHeader
-          className="sticky top-[53px] z-10 bg-white"
+          className="sticky top-[57px] z-10 bg-white"
           style={{
             boxShadow: "inset 0 -1px 0 #e5e7eb",
           }}
