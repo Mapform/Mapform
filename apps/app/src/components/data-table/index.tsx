@@ -26,6 +26,7 @@ import { ColumnAdder } from "./column-adder";
 import { CellPopover } from "./cell-popover";
 import { ColumnEditor } from "./column-editor";
 import { toast } from "@mapform/ui/components/toaster";
+import { usePreventPageUnload } from "@mapform/lib/hooks/use-prevent-page-unload";
 import {
   Tooltip,
   TooltipContent,
@@ -63,34 +64,41 @@ const SelectColumnCell = memo(({ row }: any) => (
 ));
 
 export const DataTable = function DataTable({ dataset }: TableProps) {
-  const { execute: executeDeleteRows, status: statusDeleteRows } =
-    useAction(deleteRowsAction);
-  const { execute: executeDuplicateRows, status: statusDuplicateRows } =
-    useAction(duplicateRowsAction, {
-      onError: ({ error }) => {
-        if (error.serverError) {
-          toast({
-            title: "Uh oh! Something went wrong.",
-            description: error.serverError,
-          });
-          return;
-        }
-      },
-    });
-  const { execute: executeCreateRow, status: statusCreateRow } = useAction(
-    createRowAction,
-    {
-      onError: ({ error }) => {
-        if (error.serverError) {
-          toast({
-            title: "Uh oh! Something went wrong.",
-            description: error.serverError,
-          });
-          return;
-        }
-      },
+  const {
+    execute: executeDeleteRows,
+    status: statusDeleteRows,
+    isPending: isPendingDeleteRows,
+  } = useAction(deleteRowsAction);
+  const {
+    execute: executeDuplicateRows,
+    status: statusDuplicateRows,
+    isPending: isPendingDuplicateRows,
+  } = useAction(duplicateRowsAction, {
+    onError: ({ error }) => {
+      if (error.serverError) {
+        toast({
+          title: "Uh oh! Something went wrong.",
+          description: error.serverError,
+        });
+        return;
+      }
     },
-  );
+  });
+  const {
+    execute: executeCreateRow,
+    status: statusCreateRow,
+    isPending: isPendingCreateRow,
+  } = useAction(createRowAction, {
+    onError: ({ error }) => {
+      if (error.serverError) {
+        toast({
+          title: "Uh oh! Something went wrong.",
+          description: error.serverError,
+        });
+        return;
+      }
+    },
+  });
 
   const columns = useMemo(() => {
     const sortedColumns = [...dataset.columns].sort(
@@ -158,6 +166,10 @@ export const DataTable = function DataTable({ dataset }: TableProps) {
         );
       }),
     [dataset.rows],
+  );
+
+  usePreventPageUnload(
+    isPendingCreateRow || isPendingDeleteRows || isPendingDuplicateRows,
   );
 
   const table = useReactTable({

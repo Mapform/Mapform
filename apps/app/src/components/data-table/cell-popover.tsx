@@ -22,6 +22,7 @@ import { DateTimePicker } from "@mapform/ui/components/datetime-picker";
 import { flexRender, type Cell } from "@tanstack/react-table";
 import { useAction } from "next-safe-action/hooks";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { usePreventPageUnload } from "@mapform/lib/hooks/use-prevent-page-unload";
 import {
   schema,
   BlocknoteEditor,
@@ -67,8 +68,10 @@ export function CellPopover({
     },
     resolver: zodResolver(upsertCellSchema),
   });
-  const { execute: executeUpsertCell } = useAction(upsertCellAction);
+  const { execute: executeUpsertCell, isPending } = useAction(upsertCellAction);
   const [open, setOpen] = useState(false);
+
+  usePreventPageUnload(isPending);
 
   const onSubmit = (values: UpsertCellSchema) => {
     setOpen(false);

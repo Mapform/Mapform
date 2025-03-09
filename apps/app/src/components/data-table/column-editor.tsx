@@ -17,6 +17,7 @@ import {
 import { Trash2Icon } from "lucide-react";
 import type { Column } from "@mapform/db/schema";
 import { useAction } from "next-safe-action/hooks";
+import { usePreventPageUnload } from "@mapform/lib/hooks/use-prevent-page-unload";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -49,8 +50,10 @@ export function ColumnEditor({
 }: ColumnEditorProps) {
   const Icon = COLUMN_ICONS[columnType];
   const [open, setOpen] = useState(false);
-  const { execute, isPending } = useAction(deleteColumnAction);
-  const { execute: executeEditColumn } = useAction(editColumnAction);
+  const { execute: executeDeleteColumn, isPending: isPendingDeleteColumn } =
+    useAction(deleteColumnAction);
+  const { execute: executeEditColumn, isPending: isPendingEditColumn } =
+    useAction(editColumnAction);
   const form = useForm<EditColumnSchema>({
     defaultValues: {
       id: columnId,
@@ -63,6 +66,8 @@ export function ColumnEditor({
     setOpen(false);
     executeEditColumn(values);
   };
+
+  usePreventPageUnload(isPendingDeleteColumn || isPendingEditColumn);
 
   return (
     <Popover
@@ -127,7 +132,7 @@ export function ColumnEditor({
               <AlertDialogTrigger asChild>
                 <button
                   className="hover:bg-accent hover:text-accent-foreground flex w-full cursor-default items-center rounded-sm px-2 py-1.5 text-left text-sm outline-none transition-colors"
-                  disabled={isPending}
+                  disabled={isPendingDeleteColumn}
                   type="button"
                 >
                   <Trash2Icon className="mr-2 size-4" /> Delete
@@ -143,9 +148,9 @@ export function ColumnEditor({
                 <AlertDialogFooter>
                   <AlertDialogCancel>Cancel</AlertDialogCancel>
                   <AlertDialogAction
-                    disabled={isPending}
+                    disabled={isPendingDeleteColumn}
                     onClick={() => {
-                      execute({ id: columnId });
+                      executeDeleteColumn({ id: columnId });
                     }}
                   >
                     Continue
