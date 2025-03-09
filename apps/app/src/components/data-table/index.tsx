@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, memo } from "react";
 import {
   flexRender,
   getCoreRowModel,
@@ -37,6 +37,31 @@ interface TableProps {
   dataset: NonNullable<GetDataset["data"]>;
 }
 
+const MemoizedColumnEditor = memo(ColumnEditor);
+
+const SelectColumnHeader = memo(({ table }: any) => (
+  <Checkbox
+    aria-label="Select all"
+    checked={
+      table.getIsAllPageRowsSelected() ||
+      (table.getIsSomePageRowsSelected() && "indeterminate")
+    }
+    onCheckedChange={(value) => {
+      table.toggleAllPageRowsSelected(Boolean(value));
+    }}
+  />
+));
+
+const SelectColumnCell = memo(({ row }: any) => (
+  <Checkbox
+    aria-label="Select row"
+    checked={row.getIsSelected()}
+    onCheckedChange={(value) => {
+      row.toggleSelected(Boolean(value));
+    }}
+  />
+));
+
 export const DataTable = function DataTable({ dataset }: TableProps) {
   const { execute: executeDeleteRows, status: statusDeleteRows } =
     useAction(deleteRowsAction);
@@ -66,7 +91,39 @@ export const DataTable = function DataTable({ dataset }: TableProps) {
       },
     },
   );
-  const columns = useMemo(() => getColumns(dataset), [dataset]);
+
+  const columns = useMemo(() => {
+    const sortedColumns = [...dataset.columns].sort(
+      (a, b) => a.createdAt.getTime() - b.createdAt.getTime(),
+    );
+
+    return [
+      {
+        id: "select",
+        header: SelectColumnHeader,
+        cell: SelectColumnCell,
+        enableSorting: false,
+        enableHiding: false,
+      },
+      ...sortedColumns.map((column) => ({
+        accessorKey: column.id,
+        header: (
+          <MemoizedColumnEditor
+            columnId={column.id}
+            columnName={column.name}
+            columnType={column.type}
+          />
+        ),
+      })),
+      {
+        id: "create-column",
+        header: <ColumnAdder datasetId={dataset.id} />,
+        enableSorting: false,
+        enableHiding: false,
+      },
+    ];
+  }, [dataset.columns, dataset.id]);
+
   const rows = useMemo(
     () =>
       dataset.rows.map((row) => {
@@ -105,6 +162,11 @@ export const DataTable = function DataTable({ dataset }: TableProps) {
 
   const table = useReactTable({
     data: rows,
+    // @ts-expect-error -- This is caused by not returning the headers from an
+    // anonynous function above. Eg. header: () => <ColumnAdder
+    // datasetId={dataset.id} /> However, returning from a function causes the
+    // column headers to re-mount when data changes, causing the popovers to
+    // close
     columns,
     getCoreRowModel: getCoreRowModel(),
     getRowId: (row) => {
@@ -232,59 +294,4 @@ export const DataTable = function DataTable({ dataset }: TableProps) {
       </button>
     </div>
   );
-};
-
-const getColumns = (dataset: NonNullable<GetDataset["data"]>) => {
-  return [
-    {
-      id: "select",
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Not worth creating a workaround type
-      header: ({ table }: any) => (
-        <Checkbox
-          aria-label="Select all"
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && "indeterminate")
-          }
-          onCheckedChange={(value) => {
-            table.toggleAllPageRowsSelected(Boolean(value));
-          }}
-        />
-      ),
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Not worth creating a workaround type
-      cell: ({ row }: any) => (
-        <Checkbox
-          aria-label="Select row"
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => {
-            row.toggleSelected(Boolean(value));
-          }}
-        />
-      ),
-      enableSorting: false,
-      enableHiding: false,
-    },
-    ...dataset.columns
-      .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
-      .map((column) => {
-        return {
-          accessorKey: column.id,
-          header: () => (
-            <ColumnEditor
-              columnId={column.id}
-              columnName={column.name}
-              columnType={column.type}
-            />
-          ),
-        };
-      }),
-
-    // Add column
-    {
-      id: "create-column",
-      header: () => <ColumnAdder datasetId={dataset.id} />,
-      enableSorting: false,
-      enableHiding: false,
-    },
-  ];
 };
