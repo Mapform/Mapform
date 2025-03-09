@@ -307,17 +307,19 @@ export const DataTable = function DataTable({ dataset }: TableProps) {
           )}
         </TableBody>
       </Table>
-      <button
-        className="hover:bg-muted/50 sticky bottom-0 left-0 flex items-center bg-white p-2 pb-8 text-left text-sm disabled:pointer-events-none disabled:opacity-50"
-        disabled={statusCreateRow === "executing"}
-        onClick={() => {
-          executeCreateRow({ datasetId: dataset.id });
-        }}
-        type="button"
-      >
-        <PlusIcon className="mr-2 size-4" />
-        Add row
-      </button>
+      <div className="sticky -bottom-4 left-0 flex items-center bg-white pb-8">
+        <button
+          className="hover:bg-muted/50 flex h-10 flex-1 items-center text-left text-sm disabled:pointer-events-none disabled:opacity-50"
+          disabled={statusCreateRow === "executing"}
+          onClick={() => {
+            executeCreateRow({ datasetId: dataset.id });
+          }}
+          type="button"
+        >
+          <PlusIcon className="mr-2 size-4" />
+          Add row
+        </button>
+      </div>
     </div>
   );
 };
