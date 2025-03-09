@@ -40,29 +40,6 @@ interface TableProps {
 
 const MemoizedColumnEditor = memo(ColumnEditor);
 
-const SelectColumnHeader = memo(({ table }: any) => (
-  <Checkbox
-    aria-label="Select all"
-    checked={
-      table.getIsAllPageRowsSelected() ||
-      (table.getIsSomePageRowsSelected() && "indeterminate")
-    }
-    onCheckedChange={(value) => {
-      table.toggleAllPageRowsSelected(Boolean(value));
-    }}
-  />
-));
-
-const SelectColumnCell = memo(({ row }: any) => (
-  <Checkbox
-    aria-label="Select row"
-    checked={row.getIsSelected()}
-    onCheckedChange={(value) => {
-      row.toggleSelected(Boolean(value));
-    }}
-  />
-));
-
 export const DataTable = function DataTable({ dataset }: TableProps) {
   const {
     execute: executeDeleteRows,
@@ -108,8 +85,29 @@ export const DataTable = function DataTable({ dataset }: TableProps) {
     return [
       {
         id: "select",
-        header: SelectColumnHeader,
-        cell: SelectColumnCell,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Not worth creating a workaround type
+        header: ({ table }: any) => (
+          <Checkbox
+            aria-label="Select all"
+            checked={
+              table.getIsAllPageRowsSelected() ||
+              (table.getIsSomePageRowsSelected() && "indeterminate")
+            }
+            onCheckedChange={(value) => {
+              table.toggleAllPageRowsSelected(Boolean(value));
+            }}
+          />
+        ),
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Not worth creating a workaround type
+        cell: ({ row }: any) => (
+          <Checkbox
+            aria-label="Select row"
+            checked={row.getIsSelected()}
+            onCheckedChange={(value) => {
+              row.toggleSelected(Boolean(value));
+            }}
+          />
+        ),
         enableSorting: false,
         enableHiding: false,
       },
