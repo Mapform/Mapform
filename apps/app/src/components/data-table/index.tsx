@@ -85,6 +85,9 @@ export const DataTable = function DataTable({ dataset }: TableProps) {
     return [
       {
         id: "select",
+        size: 50,
+        minSize: 50,
+        maxSize: 50,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Not worth creating a workaround type
         header: ({ table }: any) => (
           <Checkbox
@@ -182,6 +185,11 @@ export const DataTable = function DataTable({ dataset }: TableProps) {
     getRowId: (row) => {
       return row.rowId;
     },
+    defaultColumn: {
+      size: 200, //starting column size
+      minSize: 200, //enforced during column resizing
+      maxSize: 200, //enforced during column resizing
+    },
   });
 
   const numberOfSelectedRows = table.getFilteredSelectedRowModel().rows.length;
@@ -190,7 +198,7 @@ export const DataTable = function DataTable({ dataset }: TableProps) {
   return (
     <div className="relative flex flex-1 flex-col overflow-auto bg-white p-4 pt-0">
       {/* Top bar */}
-      <div className="sticky top-0 z-20 mb-0 box-content flex h-8 flex-shrink-0 items-center gap-2 border-b bg-white pb-2 pt-4">
+      <div className="sticky left-0 top-0 z-20 mb-0 box-content flex h-8 flex-shrink-0 items-center gap-2 border-b bg-white pb-2 pt-4">
         {dataset.project ? (
           <TooltipProvider>
             <Tooltip>
@@ -257,7 +265,15 @@ export const DataTable = function DataTable({ dataset }: TableProps) {
             <TableRow className="border-none" key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
                 return (
-                  <TableHead className="truncate" key={header.id}>
+                  <TableHead
+                    className="flex-grow-0 truncate"
+                    key={header.id}
+                    style={{
+                      width: `${header.getSize()}px`,
+                      minWidth: `${header.getSize()}px`,
+                      maxWidth: `${header.getSize()}px`,
+                    }}
+                  >
                     {header.isPlaceholder
                       ? null
                       : flexRender(
