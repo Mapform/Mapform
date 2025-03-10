@@ -63,21 +63,26 @@ export function LocationSearchDrawerInner({
   currentPage,
 }: LocationSearchDrawerProps) {
   const { map } = useMapform();
+  const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState<string>("");
   const { selectedFeature } = useLocationSearch();
   const { drawerValues, onDrawerValuesChange } = useMapformContent();
   const [layerPopoverOpen, setLayerPopoverOpen] = useState(false);
   const { currentProject, updatePageServerAction } = useProject();
 
-  const { execute: executeCreatePoint } = useAction(createPointAction, {
-    onSuccess: () => {
-      setLayerPopoverOpen(false);
-      toast({
-        title: "Success!",
-        description: "Point created.",
-      });
+  const { execute: executeCreatePoint, isPending } = useAction(
+    createPointAction,
+    {
+      onSuccess: () => {
+        setLayerPopoverOpen(false);
+        setIsOpen(false);
+        toast({
+          title: "Success!",
+          description: "Point created.",
+        });
+      },
     },
-  });
+  );
 
   const pageLayers = currentProject.pageLayers.filter(
     (layer) =>
@@ -132,10 +137,12 @@ export function LocationSearchDrawerInner({
     <>
       <Popover
         modal
+        open={isOpen}
         onOpenChange={(val) => {
           if (val) {
             setQuery("");
           }
+          setIsOpen(val);
         }}
       >
         <PopoverTrigger asChild>
@@ -193,6 +200,7 @@ export function LocationSearchDrawerInner({
                 <CommandGroup heading="Layers">
                   {pageLayers.map((pageLayer) => (
                     <CommandItem
+                      disabled={isPending}
                       key={pageLayer.layerId}
                       keywords={[pageLayer.name ?? "Untitled"]}
                       onSelect={() => {
