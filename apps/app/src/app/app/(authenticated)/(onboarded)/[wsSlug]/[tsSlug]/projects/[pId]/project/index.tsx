@@ -168,6 +168,10 @@ function Project() {
                       return;
                     }
 
+                    if (!selectedFeatureDescription.description.columnId) {
+                      return;
+                    }
+
                     void upsertRichtextCellServerAction.execute({
                       type: "richtext",
                       value,
@@ -180,6 +184,10 @@ function Project() {
                       return;
                     }
 
+                    if (!selectedFeatureIcon.icon.columnId) {
+                      return;
+                    }
+
                     void upsertIconCellServerAction.execute({
                       type: "icon",
                       value,
@@ -189,6 +197,10 @@ function Project() {
                   }}
                   onTitleChange={(value) => {
                     if (!selectedFeatureTitle?.title) {
+                      return;
+                    }
+
+                    if (!selectedFeatureTitle.title.columnId) {
                       return;
                     }
 

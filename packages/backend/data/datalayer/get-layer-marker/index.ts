@@ -48,7 +48,7 @@ export const getLayerMarker = (authClient: UserAuthClient | PublicClient) =>
           .leftJoin(teamspaces, eq(teamspaces.id, datasets.teamspaceId))
           .where(and(eq(rows.id, rowId), inArray(teamspaces.id, teamspaceIds)));
 
-        if (!rowResult?.length) {
+        if (!rowResult.length) {
           throw new Error("Row not found");
         }
       }
@@ -93,17 +93,42 @@ export const getLayerMarker = (authClient: UserAuthClient | PublicClient) =>
         throw new Error("Marker layer not found");
       }
 
+      const titleCellParent = row.cells.find(
+        (c) => c.columnId === markerLayer.titleColumnId,
+      );
+      const descriptionCellParent = row.cells.find(
+        (c) => c.columnId === markerLayer.descriptionColumnId,
+      );
+      const pointCellParent = row.cells.find(
+        (c) => c.columnId === markerLayer.pointColumnId,
+      );
+      const iconCellParent = row.cells.find(
+        (c) => c.columnId === markerLayer.iconColumnId,
+      );
+
+      const emptyCell = {
+        value: undefined,
+      };
+
       return {
         rowId,
         markerLayerId,
-        title: row.cells.find((c) => c.columnId === markerLayer.titleColumnId),
-        description: row.cells.find(
-          (c) => c.columnId === markerLayer.descriptionColumnId,
-        ),
-        location: row.cells.find(
-          (c) => c.columnId === markerLayer.pointColumnId,
-        ),
-        icon: row.cells.find((c) => c.columnId === markerLayer.iconColumnId),
+        title: titleCellParent ?? {
+          stringCell: emptyCell,
+          columnId: markerLayer.titleColumnId,
+        },
+        description: descriptionCellParent ?? {
+          richtextCell: emptyCell,
+          columnId: markerLayer.descriptionColumnId,
+        },
+        location: pointCellParent ?? {
+          pointCell: emptyCell,
+          columnId: markerLayer.pointColumnId,
+        },
+        icon: iconCellParent ?? {
+          iconCell: emptyCell,
+          columnId: markerLayer.iconColumnId,
+        },
         cells: row.cells.filter(
           (c) =>
             c.columnId !== markerLayer.pointColumnId &&
