@@ -26,9 +26,6 @@ export function Modal({
             animate={{ opacity: 0.5 }}
             className="fixed inset-0 bg-black"
             onClick={() => {
-              // We need to go back twice because the query params get set and add an
-              // extra push to the route history
-              router.back();
               router.back();
             }}
             exit={{ opacity: 0 }}
@@ -64,7 +61,6 @@ export function Modal({
               onClick={() => {
                 // We need to go back twice because the query params get set and add an
                 // extra push to the route history
-                router.back();
                 router.back();
               }}
             >

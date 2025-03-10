@@ -70,7 +70,9 @@ export function DatasetMenuSubItem({
           className="pr-8"
           isActive={dataset.isActive}
         >
-          <Link href={`/app/${workspaceSlug}/redirect?url=${dataset.url}`}>
+          <Link
+            href={`/app/${workspaceSlug}/${teamspaceSlug}/datasets/${dataset.id}`}
+          >
             <span>{dataset.title || "Untitled"}</span>
           </Link>
         </SidebarLeftMenuButton>
