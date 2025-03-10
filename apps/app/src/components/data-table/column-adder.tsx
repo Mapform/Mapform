@@ -38,9 +38,16 @@ interface ColumnAdderProps {
 }
 
 export function ColumnAdder({ datasetId }: ColumnAdderProps) {
+  const [popoverOpen, setPopoverOpen] = useState(false);
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
-  const { execute, isPending } = useAction(createColumnAction);
+  const { execute, isPending } = useAction(createColumnAction, {
+    onSuccess: () => {
+      console.log("success");
+      setPopoverOpen(false);
+      form.reset();
+    },
+  });
   const form = useForm<CreateColumnSchema>({
     defaultValues: {
       datasetId,
@@ -53,7 +60,7 @@ export function ColumnAdder({ datasetId }: ColumnAdderProps) {
   };
 
   return (
-    <Popover modal>
+    <Popover modal open={popoverOpen} onOpenChange={setPopoverOpen}>
       <PopoverTrigger asChild>
         <Button size="icon-xs" variant="ghost">
           <PlusIcon className="size-4" />
