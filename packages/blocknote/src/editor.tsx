@@ -8,6 +8,7 @@ import type {
   DefaultReactSuggestionItem,
   DragHandleMenuProps,
   SideMenuProps,
+  SuggestionMenuProps,
 } from "@blocknote/react";
 import {
   SuggestionMenuController,
@@ -24,8 +25,7 @@ import { PinMenu, TextInputMenu } from "./block-note-schema";
 import { cn } from "../../lib/classnames";
 import "./style.css";
 import { useCustomBlockContext } from "./context";
-import { useEffect } from "react";
-import React from "react";
+import React, { FunctionComponent } from "react";
 
 const insertPin = (edtr: typeof schema.BlockNoteEditor) => ({
   title: "Pin",
@@ -107,15 +107,7 @@ export const BlocknoteEditor = React.memo(function BlocknoteEditor({
             query,
           );
         }}
-        suggestionMenuComponent={({ items, selectedIndex, onItemClick }) => {
-          return (
-            <SuggestionMenu
-              items={items}
-              selectedIndex={selectedIndex}
-              onItemClick={onItemClick}
-            />
-          );
-        }}
+        suggestionMenuComponent={SuggestionMenu}
         triggerCharacter="/"
       />
       <SideMenuController sideMenu={CustomSideMenu} />
@@ -160,11 +152,7 @@ function SuggestionMenu({
   items,
   selectedIndex,
   onItemClick,
-}: {
-  items: DefaultReactSuggestionItem[];
-  selectedIndex: number | undefined;
-  onItemClick: ((item: DefaultReactSuggestionItem) => void) | undefined;
-}) {
+}: SuggestionMenuProps<DefaultReactSuggestionItem>) {
   const groupedItems = Object.groupBy(items, (item) => item.group!);
 
   const renderItem = (item: (typeof items)[0]) => (
