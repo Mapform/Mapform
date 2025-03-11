@@ -169,7 +169,7 @@ export function LayerList() {
                 onValueChange={(value: string) => {
                   setQuery(value);
                 }}
-                placeholder="Create or search..."
+                placeholder="Search or create..."
                 value={query}
               />
               <CommandList>
@@ -193,7 +193,7 @@ export function LayerList() {
                 </CommandGroup>
                 <CommandSeparator />
                 {layersFromOtherPages.length > 0 ? (
-                  <CommandGroup heading="Layers">
+                  <CommandGroup heading="Connect existing layer">
                     {layersFromOtherPages.map((layer) => (
                       <CommandItem
                         key={layer.layerId}

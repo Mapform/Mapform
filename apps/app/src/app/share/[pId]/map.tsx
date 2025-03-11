@@ -274,6 +274,7 @@ export function Map({
               value="feature"
             >
               <Blocknote
+                isFeature
                 description={
                   selectedFeature?.description?.richtextCell?.value ?? undefined
                 }

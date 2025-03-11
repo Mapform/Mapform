@@ -157,6 +157,7 @@ function Project() {
                 value="feature"
               >
                 <Blocknote
+                  isFeature
                   description={
                     selectedFeatureDescription?.description?.richtextCell
                       ?.value ?? undefined

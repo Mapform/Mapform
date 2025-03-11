@@ -109,7 +109,7 @@ export function PointProperties({ form }: PointPropertiesProps) {
     <>
       <div className="col-span-2 mt-1 w-full border-t pt-3">
         <h3 className="-mb-2 text-xs font-semibold leading-6 text-stone-400">
-          Data
+          Properties
         </h3>
       </div>
       <DataColField
@@ -247,7 +247,7 @@ function DataColField({
                   onValueChange={(v: string) => {
                     setQuery(v);
                   }}
-                  placeholder="Create or search..."
+                  placeholder="Search or create..."
                   value={query}
                 />
                 <CommandList>
@@ -277,7 +277,7 @@ function DataColField({
                   </CommandGroup>
                   <CommandSeparator />
                   {availableColumns.length > 0 ? (
-                    <CommandGroup heading="Properties">
+                    <CommandGroup heading="Connect to existing property">
                       {availableColumns.map((col) => (
                         <CommandItem
                           key={col.id}

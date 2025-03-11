@@ -117,7 +117,7 @@ export function DatasetPopover({ form }: DatasetPopoverProps) {
                   onValueChange={(v: string) => {
                     setQuery(v);
                   }}
-                  placeholder="Create or search..."
+                  placeholder="Search or create..."
                   value={query}
                 />
                 <CommandList>
@@ -147,7 +147,7 @@ export function DatasetPopover({ form }: DatasetPopoverProps) {
                   </CommandGroup>
                   <CommandSeparator />
                   {availableDatasets.length > 0 ? (
-                    <CommandGroup heading="Datasets">
+                    <CommandGroup heading="Connect to existing dataset">
                       {availableDatasets.map((dataset) => (
                         <CommandItem
                           key={dataset.id}

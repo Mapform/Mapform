@@ -21,6 +21,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@mapform/ui/components/popover";
+import { PropertiesPopover } from "./properties-popover";
 
 interface BlocknoteProps {
   icon?: string | null;
@@ -32,6 +33,7 @@ interface BlocknoteProps {
   locationEditorProps?: {
     onClose: () => void;
   };
+  isFeature?: boolean;
   onPrev?: () => void;
   onIconChange?: (icon: string | null) => void;
   onTitleChange?: (content: string) => void;
@@ -44,6 +46,7 @@ export function Blocknote({
   description,
   onIconChange,
   onTitleChange,
+  isFeature = false,
   includeFormBlocks = false,
   onDescriptionChange,
   locationEditorProps,
@@ -89,16 +92,7 @@ export function Blocknote({
             <Button size="icon-sm" type="button" variant="ghost">
               <ImagePlusIcon className="size-4" />
             </Button>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button size="icon-sm" type="button" variant="ghost">
-                  <ListPlusIcon className="size-4" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent>
-                <div></div>
-              </PopoverContent>
-            </Popover>
+            <PropertiesPopover />
           </div>
         ) : null}
         {icon ? (

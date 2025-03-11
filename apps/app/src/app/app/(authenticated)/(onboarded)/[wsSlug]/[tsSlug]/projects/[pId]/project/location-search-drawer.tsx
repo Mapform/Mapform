@@ -176,7 +176,7 @@ export function LocationSearchDrawerInner({
               onValueChange={(value: string) => {
                 setQuery(value);
               }}
-              placeholder="Create or search..."
+              placeholder="Search or create..."
               value={query}
             />
             <CommandList>
@@ -197,7 +197,7 @@ export function LocationSearchDrawerInner({
               </CommandGroup>
               <CommandSeparator />
               {pageLayers.length > 0 ? (
-                <CommandGroup heading="Layers">
+                <CommandGroup heading="Add to existing layer">
                   {pageLayers.map((pageLayer) => (
                     <CommandItem
                       disabled={isPending}

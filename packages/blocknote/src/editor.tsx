@@ -25,7 +25,7 @@ import { PinMenu, TextInputMenu } from "./block-note-schema";
 import { cn } from "../../lib/classnames";
 import "./style.css";
 import { useCustomBlockContext } from "./context";
-import React, { FunctionComponent } from "react";
+import React from "react";
 
 const insertPin = (edtr: typeof schema.BlockNoteEditor) => ({
   title: "Pin",
