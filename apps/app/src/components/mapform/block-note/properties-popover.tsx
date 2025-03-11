@@ -14,6 +14,11 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from "@mapform/ui/components/popover";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@mapform/ui/components/tooltip";
 import { Button } from "@mapform/ui/components/button";
 
 export function PropertiesPopover() {
@@ -27,11 +32,16 @@ export function PropertiesPopover() {
 
   return (
     <Popover modal>
-      <PopoverTrigger asChild>
-        <Button size="icon-sm" type="button" variant="ghost">
-          <ListPlusIcon className="size-4" />
-        </Button>
-      </PopoverTrigger>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <PopoverTrigger asChild>
+            <Button size="icon-sm" type="button" variant="ghost">
+              <ListPlusIcon className="size-4" />
+            </Button>
+          </PopoverTrigger>
+        </TooltipTrigger>
+        <TooltipContent>Add property</TooltipContent>
+      </Tooltip>
       <PopoverContent align="start" className="w-[200px] p-0" side="right">
         <Command>
           <CommandInput

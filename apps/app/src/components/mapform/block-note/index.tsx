@@ -21,6 +21,11 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@mapform/ui/components/popover";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@mapform/ui/components/tooltip";
 import { PropertiesPopover } from "./properties-popover";
 
 interface BlocknoteProps {
@@ -83,15 +88,25 @@ export function Blocknote({
         {isEditing ? (
           <div className="text-muted-foreground -ml-2 -mt-2 flex gap-0.5 pb-2">
             {!icon ? (
-              <EmojiPopover onIconChange={onIconChange}>
-                <Button size="icon-sm" type="button" variant="ghost">
-                  <SmilePlusIcon className="size-4" />
-                </Button>
-              </EmojiPopover>
+              <Tooltip>
+                <EmojiPopover onIconChange={onIconChange}>
+                  <TooltipTrigger asChild>
+                    <Button size="icon-sm" type="button" variant="ghost">
+                      <SmilePlusIcon className="size-4" />
+                    </Button>
+                  </TooltipTrigger>
+                </EmojiPopover>
+                <TooltipContent>Add emoji</TooltipContent>
+              </Tooltip>
             ) : null}
-            <Button size="icon-sm" type="button" variant="ghost">
-              <ImagePlusIcon className="size-4" />
-            </Button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button size="icon-sm" type="button" variant="ghost">
+                  <ImagePlusIcon className="size-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Add image</TooltipContent>
+            </Tooltip>
             <PropertiesPopover />
           </div>
         ) : null}
