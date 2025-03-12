@@ -36,7 +36,7 @@ export const getLayerPoint = (authClient: UserAuthClient | PublicClient) =>
           .leftJoin(teamspaces, eq(teamspaces.id, datasets.teamspaceId))
           .where(and(eq(rows.id, rowId), inArray(teamspaces.id, teamspaceIds)));
 
-        if (!rowResult?.length) {
+        if (!rowResult.length) {
           throw new Error("Row not found");
         }
       }
@@ -95,7 +95,8 @@ export const getLayerPoint = (authClient: UserAuthClient | PublicClient) =>
           (c) =>
             c.columnId !== pointLayer.pointColumnId &&
             c.columnId !== pointLayer.titleColumnId &&
-            c.columnId !== pointLayer.descriptionColumnId,
+            c.columnId !== pointLayer.descriptionColumnId &&
+            c.columnId !== pointLayer.iconColumnId,
         ),
       };
     });

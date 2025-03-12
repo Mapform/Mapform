@@ -73,6 +73,8 @@ function Project() {
     return null;
   }
 
+  console.log(3333, selectedFeatureIcon?.icon);
+
   return (
     <DummyForm {...dummyForm}>
       <div className="flex flex-1 justify-center overflow-hidden p-4">
@@ -162,7 +164,11 @@ function Project() {
                     selectedFeatureDescription?.description?.richtextCell
                       ?.value ?? undefined
                   }
-                  icon={selectedFeatureIcon?.icon?.iconCell?.value}
+                  icon={
+                    selectedFeatureIcon?.icon?.columnId
+                      ? selectedFeatureIcon.icon.iconCell?.value ?? null
+                      : undefined
+                  }
                   key={`${currentPage.id}-${selectedFeatureIcon?.rowId}`}
                   onDescriptionChange={(value) => {
                     if (selectedFeatureDescription?.description === undefined) {

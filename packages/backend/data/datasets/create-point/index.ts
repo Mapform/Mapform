@@ -148,8 +148,6 @@ export const createPoint = (authClient: UserAuthClient) =>
             ])
             .returning();
 
-          console.log(1111, pointCell);
-
           if (!pointCell) {
             throw new Error("Cells not created");
           }

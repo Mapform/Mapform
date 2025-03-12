@@ -29,8 +29,11 @@ import {
 import { PropertiesPopover } from "./properties-popover";
 
 interface BlocknoteProps {
+  // null means the property exists but no value, undefined means the property does not exist
   icon?: string | null;
+  // null means the property exists but no value, undefined means the property does not exist
   title?: string | null;
+  // null means the property exists but no value, undefined means the property does not exist
   description?: {
     content: CustomBlock[];
   };
@@ -39,6 +42,7 @@ interface BlocknoteProps {
     onClose: () => void;
   };
   isFeature?: boolean;
+  editBar?: React.ReactNode;
   onPrev?: () => void;
   onIconChange?: (icon: string | null) => void;
   onTitleChange?: (content: string) => void;
@@ -48,6 +52,7 @@ interface BlocknoteProps {
 export function Blocknote({
   icon,
   title,
+  editBar,
   description,
   onIconChange,
   onTitleChange,
@@ -84,10 +89,15 @@ export function Blocknote({
 
       {/* Content */}
       <div className="p-4 md:overflow-y-auto">
+        {editBar ? (
+          <div className="text-muted-foreground absolute left-0 top-0 -ml-2 -mt-2 flex gap-0.5 pb-2">
+            {editBar}
+          </div>
+        ) : null}
         {/* Emoji */}
         {isEditing ? (
           <div className="text-muted-foreground -ml-2 -mt-2 flex gap-0.5 pb-2">
-            {!icon ? (
+            {icon === null ? (
               <Tooltip>
                 <EmojiPopover onIconChange={onIconChange}>
                   <TooltipTrigger asChild>
@@ -107,7 +117,7 @@ export function Blocknote({
               </TooltipTrigger>
               <TooltipContent>Add image</TooltipContent>
             </Tooltip>
-            <PropertiesPopover />
+            {isFeature ? <PropertiesPopover /> : null}
           </div>
         ) : null}
         {icon ? (
