@@ -31,7 +31,7 @@ export function BlocknoteControls({ onIconChange }: BlocknoteControlsProps) {
             <ImagePlusIcon className="size-4" />
           </Button>
         </TooltipTrigger>
-        <TooltipContent>Add image</TooltipContent>
+        <TooltipContent>Add cover</TooltipContent>
       </Tooltip>
       <PropertiesPopover />
     </>

@@ -31,6 +31,7 @@ export const config = [
       "turbo/no-undeclared-env-vars": "warn",
       "@typescript-eslint/consistent-type-imports": "warn",
       "@typescript-eslint/no-unnecessary-condition": "warn",
+      "@typescript-eslint/no-misused-promises": "off",
     },
   },
   {
