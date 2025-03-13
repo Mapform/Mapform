@@ -49,12 +49,12 @@ type CellServerAction = {
 };
 
 export interface ProjectContextProps {
-  selectedFeature?: LayerPoint | LayerMarker;
   currentProject: ProjectWithPages;
   isEditingPage: boolean;
   currentPageData: PageData | undefined;
   availableDatasets: TeamspaceDatasets;
   projectWithPages: ProjectWithPages;
+  selectedFeature?: LayerPoint | LayerMarker;
 
   setActivePage: (
     page?: Pick<PageWithLayers, "id" | "center" | "zoom" | "pitch" | "bearing">,
@@ -324,6 +324,7 @@ export function ProjectProvider({
         setActivePage,
         projectWithPages,
         availableDatasets,
+        selectedFeature,
 
         // Optimistic state
         currentProject: optimisticProject,

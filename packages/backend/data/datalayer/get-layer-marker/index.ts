@@ -57,6 +57,13 @@ export const getLayerMarker = (authClient: UserAuthClient | PublicClient) =>
       const [markerLayer, row] = await Promise.all([
         db.query.markerLayers.findFirst({
           where: eq(markerLayers.id, markerLayerId),
+          with: {
+            layer: {
+              columns: {
+                id: true,
+              },
+            },
+          },
         }),
         db.query.rows.findFirst({
           where: eq(rows.id, rowId),
@@ -113,6 +120,7 @@ export const getLayerMarker = (authClient: UserAuthClient | PublicClient) =>
       return {
         rowId,
         markerLayerId,
+        layerId: markerLayer.layer.id,
         title: titleCellParent ?? {
           stringCell: emptyCell,
           columnId: markerLayer.titleColumnId,

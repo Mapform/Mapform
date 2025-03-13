@@ -44,6 +44,13 @@ export const getLayerPoint = (authClient: UserAuthClient | PublicClient) =>
       const [pointLayer, row] = await Promise.all([
         db.query.pointLayers.findFirst({
           where: eq(pointLayers.id, pointLayerId),
+          with: {
+            layer: {
+              columns: {
+                id: true,
+              },
+            },
+          },
         }),
         db.query.rows.findFirst({
           where: eq(rows.id, rowId),
@@ -83,6 +90,7 @@ export const getLayerPoint = (authClient: UserAuthClient | PublicClient) =>
       return {
         rowId,
         pointLayerId,
+        layerId: pointLayer.layer.id,
         title: row.cells.find((c) => c.columnId === pointLayer.titleColumnId),
         description: row.cells.find(
           (c) => c.columnId === pointLayer.descriptionColumnId,

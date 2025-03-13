@@ -1,7 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { TextIcon, ListPlusIcon, TextQuoteIcon, SmileIcon } from "lucide-react";
+import {
+  TextIcon,
+  ListPlusIcon,
+  TextQuoteIcon,
+  SmileIcon,
+  LucideIcon,
+} from "lucide-react";
 import {
   Command,
   CommandInput,
@@ -19,23 +25,32 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@mapform/ui/components/tooltip";
+import type { Column } from "@mapform/db/schema";
 import { Button } from "@mapform/ui/components/button";
-import {
-  PropertyPopover,
-  PropertyPopoverAnchor,
-  PropertyPopoverContent,
-} from "~/components/property-popover";
+import { SubMenu } from "./sub-menu";
 
 export function PropertiesPopover() {
   const [query, setQuery] = useState("");
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
-  const [isPropertyPopoverOpen, setIsPropertyPopoverOpen] = useState(false);
+  const [selectedProperty, setSelectedProperty] = useState<
+    Column["type"] | null
+  >(null);
 
   const properties = [
-    { id: "title", label: "Title", icon: TextIcon },
-    { id: "description", label: "Description", icon: TextQuoteIcon },
-    { id: "icon", label: "Icon", icon: SmileIcon },
-  ];
+    { id: "title", label: "Title", icon: TextIcon, type: "string" },
+    {
+      id: "description",
+      label: "Description",
+      icon: TextQuoteIcon,
+      type: "richtext",
+    },
+    { id: "icon", label: "Icon", icon: SmileIcon, type: "icon" },
+  ] satisfies {
+    id: string;
+    label: string;
+    icon: LucideIcon;
+    type: Column["type"];
+  }[];
 
   return (
     <>
@@ -64,7 +79,7 @@ export function PropertiesPopover() {
                     key={property.id}
                     onSelect={() => {
                       setIsPopoverOpen(false);
-                      setIsPropertyPopoverOpen(true);
+                      setSelectedProperty(property.type);
                     }}
                   >
                     <div className="flex items-center space-x-2">
@@ -78,34 +93,11 @@ export function PropertiesPopover() {
           </Command>
         </PopoverContent>
       </Popover>
-      <PropertyPopover
-        modal
-        open={isPropertyPopoverOpen}
-        onOpenChange={setIsPropertyPopoverOpen}
-      >
-        <PropertyPopoverAnchor />
-        <PropertyPopoverContent
-          align="start"
-          side="right"
-          value={null}
-          query={query}
-          setQuery={setQuery}
-          availableItems={[]}
-          onSelect={(value) => {
-            // form.setValue(name, value as string | null);
-            // setOpen(false);
-          }}
-          onCreate={async (name) => {
-            // await executeAsync({
-            //   name,
-            //   datasetId: form.watch("datasetId"),
-            //   type,
-            // });
-            // setQuery("");
-            // setOpen(false);
-          }}
-        />
-      </PropertyPopover>
+      <SubMenu
+        type={selectedProperty}
+        isPropertyPopoverOpen={Boolean(selectedProperty)}
+        setIsPropertyPopoverOpen={() => setSelectedProperty(null)}
+      />
     </>
   );
 }

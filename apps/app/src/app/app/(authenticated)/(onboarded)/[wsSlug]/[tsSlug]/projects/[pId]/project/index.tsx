@@ -74,8 +74,6 @@ function Project() {
     return null;
   }
 
-  console.log(3333, selectedFeatureIcon?.icon);
-
   return (
     <DummyForm {...dummyForm}>
       <div className="flex flex-1 justify-center overflow-hidden p-4">
