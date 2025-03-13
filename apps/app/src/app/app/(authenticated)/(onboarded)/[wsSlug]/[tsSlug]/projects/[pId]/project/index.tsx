@@ -16,6 +16,7 @@ import { CustomBlockProvider, type CustomBlock } from "@mapform/blocknote";
 import { Blocknote } from "~/components/mapform/block-note";
 import { LocationSearchDrawer } from "./location-search-drawer";
 import { Form as DummyForm, useForm } from "@mapform/ui/components/form";
+import { BlocknoteControls } from "./blocknote-controls";
 
 function Project() {
   const {
@@ -160,6 +161,26 @@ function Project() {
               >
                 <Blocknote
                   isFeature
+                  controls={
+                    <BlocknoteControls
+                      onIconChange={(value) => {
+                        if (!selectedFeatureIcon?.icon || !currentPageData) {
+                          return;
+                        }
+
+                        if (!selectedFeatureIcon.icon.columnId) {
+                          return;
+                        }
+
+                        void upsertIconCellServerAction.execute({
+                          type: "icon",
+                          value,
+                          rowId: selectedFeatureIcon.rowId,
+                          columnId: selectedFeatureIcon.icon.columnId,
+                        });
+                      }}
+                    />
+                  }
                   description={
                     selectedFeatureDescription?.description?.richtextCell
                       ?.value ?? undefined

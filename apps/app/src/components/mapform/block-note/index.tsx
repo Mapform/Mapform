@@ -26,7 +26,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@mapform/ui/components/tooltip";
-import { PropertiesPopover } from "./properties-popover";
+import { cn } from "@mapform/lib/classnames";
 
 interface BlocknoteProps {
   // null means the property exists but no value, undefined means the property does not exist
@@ -42,7 +42,7 @@ interface BlocknoteProps {
     onClose: () => void;
   };
   isFeature?: boolean;
-  editBar?: React.ReactNode;
+  controls?: React.ReactNode;
   onPrev?: () => void;
   onIconChange?: (icon: string | null) => void;
   onTitleChange?: (content: string) => void;
@@ -52,11 +52,10 @@ interface BlocknoteProps {
 export function Blocknote({
   icon,
   title,
-  editBar,
+  controls,
   description,
   onIconChange,
   onTitleChange,
-  isFeature = false,
   includeFormBlocks = false,
   onDescriptionChange,
   locationEditorProps,
@@ -74,7 +73,13 @@ export function Blocknote({
 
   // Renders the editor instance using a React component.
   return (
-    <div className="flex max-h-full flex-1 flex-col md:overflow-y-auto">
+    <div className="relative flex max-h-full flex-1 flex-col md:overflow-y-auto">
+      {controls ? (
+        <div className="text-muted-foreground absolute left-2 top-2 flex gap-0.5">
+          {controls}
+        </div>
+      ) : null}
+
       {locationEditorProps ? (
         <Button
           className="absolute right-2 top-2"
@@ -88,14 +93,9 @@ export function Blocknote({
       ) : null}
 
       {/* Content */}
-      <div className="p-4 md:overflow-y-auto">
-        {editBar ? (
-          <div className="text-muted-foreground absolute left-0 top-0 -ml-2 -mt-2 flex gap-0.5 pb-2">
-            {editBar}
-          </div>
-        ) : null}
+      <div className={cn("p-4 md:overflow-y-auto", controls ? "mt-8" : "")}>
         {/* Emoji */}
-        {isEditing ? (
+        {/* {isEditing ? (
           <div className="text-muted-foreground -ml-2 -mt-2 flex gap-0.5 pb-2">
             {icon === null ? (
               <Tooltip>
@@ -119,7 +119,7 @@ export function Blocknote({
             </Tooltip>
             {isFeature ? <PropertiesPopover /> : null}
           </div>
-        ) : null}
+        ) : null} */}
         {icon ? (
           isEditing ? (
             <EmojiPopover onIconChange={onIconChange}>
