@@ -1,10 +1,11 @@
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import {
   PropertyPopover,
   PropertyPopoverAnchor,
   PropertyPopoverContent,
 } from "~/components/property-popover";
 import {
+  FieldPath,
   Form,
   FormControl,
   FormField,
@@ -22,12 +23,23 @@ import { toast } from "@mapform/ui/components/toaster";
 import { useAction } from "next-safe-action/hooks";
 import { upsertLayerAction } from "~/data/cells/submit-page";
 import { useProject } from "../../project-context";
+import { createColumnAction } from "~/data/columns/create-column";
 
 interface SubMenuProps {
   type: Column["type"] | null;
   isPropertyPopoverOpen: boolean;
   setIsPropertyPopoverOpen: (open: boolean) => void;
 }
+
+const typeToLayerColumnId = {
+  string: "titleColumnId",
+  richtext: "descriptionColumnId",
+  point: "pointColumnId",
+  icon: "iconColumnId",
+  number: "numberColumnId",
+  date: "dateColumnId",
+  bool: "boolColumnId",
+};
 
 export function SubMenu({
   type,
@@ -95,7 +107,52 @@ export function SubMenu({
     },
   });
 
-  if (!type || !dataset) {
+  const { executeAsync } = useAction(createColumnAction, {
+    onSuccess: ({ data, input }) => {
+      if (!data?.id) return;
+
+      if (input.type === "point") {
+        form.setValue("markerProperties.pointColumnId", data.id);
+      }
+
+      if (input.type === "string") {
+        form.setValue("markerProperties.titleColumnId", data.id);
+      }
+
+      if (input.type === "richtext") {
+        form.setValue("markerProperties.descriptionColumnId", data.id);
+      }
+
+      if (input.type === "icon") {
+        form.setValue("markerProperties.iconColumnId", data.id);
+      }
+    },
+
+    onError: () => {
+      toast({
+        title: "Uh oh! Something went wrong.",
+        description: "There was an error creating the column.",
+      });
+    },
+  });
+
+  const fieldName = useMemo(() => {
+    let object: "pointProperties" | "markerProperties" | null = null;
+
+    if (selectedFeature?.type === "point") {
+      object = "pointProperties";
+    } else if (selectedFeature?.type === "marker") {
+      object = "markerProperties";
+    }
+
+    if (!object || !type) {
+      return null;
+    }
+
+    return `${object}.${typeToLayerColumnId[type]}` as FieldPath<UpsertLayerSchema>;
+  }, [selectedFeature?.type, type]);
+
+  if (!type || !dataset || !fieldName) {
     return null;
   }
 
@@ -114,26 +171,33 @@ export function SubMenu({
           onOpenChange={setIsPropertyPopoverOpen}
         >
           <PropertyPopoverAnchor />
-          <PropertyPopoverContent
-            align="start"
-            side="right"
-            value={null}
-            query={query}
-            setQuery={setQuery}
-            availableItems={availableColumns ?? []}
-            onSelect={(value) => {
-              // form.setValue(name, value as string | null);
-              // setOpen(false);
-            }}
-            onCreate={async (name) => {
-              // await executeAsync({
-              //   name,
-              //   datasetId: form.watch("datasetId"),
-              //   type,
-              // });
-              // setQuery("");
-              // setOpen(false);
-            }}
+          <FormField
+            control={form.control}
+            name={fieldName}
+            render={({ field }) => (
+              <PropertyPopoverContent
+                align="start"
+                side="right"
+                value={field.value as string | null}
+                query={query}
+                setQuery={setQuery}
+                availableItems={availableColumns ?? []}
+                onSelect={(value) => {
+                  form.setValue(fieldName, value as string | null);
+                  setIsPropertyPopoverOpen(false);
+                  form.handleSubmit(onSubmit)();
+                }}
+                onCreate={async (name) => {
+                  await executeAsync({
+                    name,
+                    datasetId: form.watch("datasetId"),
+                    type,
+                  });
+                  setQuery("");
+                  setIsPropertyPopoverOpen(false);
+                }}
+              />
+            )}
           />
         </PropertyPopover>
       </form>

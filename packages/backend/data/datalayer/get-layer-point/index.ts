@@ -91,6 +91,7 @@ export const getLayerPoint = (authClient: UserAuthClient | PublicClient) =>
         rowId,
         pointLayerId,
         layerId: pointLayer.layer.id,
+        type: "point",
         title: row.cells.find((c) => c.columnId === pointLayer.titleColumnId),
         description: row.cells.find(
           (c) => c.columnId === pointLayer.descriptionColumnId,

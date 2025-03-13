@@ -120,6 +120,7 @@ export const getLayerMarker = (authClient: UserAuthClient | PublicClient) =>
       return {
         rowId,
         markerLayerId,
+        type: "marker",
         layerId: markerLayer.layer.id,
         title: titleCellParent ?? {
           stringCell: emptyCell,
