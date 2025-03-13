@@ -15,6 +15,7 @@ import {
   Popover,
   PopoverTrigger,
   PopoverContent,
+  PopoverAnchor,
 } from "@mapform/ui/components/popover";
 
 interface PropertyPopoverContentProps<T> {
@@ -107,4 +108,8 @@ export function PropertyPopoverContent<T extends string>({
   );
 }
 
-export { Popover as PropertyPopover, PopoverTrigger as PropertyPopoverTrigger };
+export {
+  Popover as PropertyPopover,
+  PopoverTrigger as PropertyPopoverTrigger,
+  PopoverAnchor as PropertyPopoverAnchor,
+};
