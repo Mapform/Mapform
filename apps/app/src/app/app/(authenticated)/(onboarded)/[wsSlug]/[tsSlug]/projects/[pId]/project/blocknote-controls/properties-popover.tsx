@@ -1,13 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import {
-  TextIcon,
-  ListPlusIcon,
-  TextQuoteIcon,
-  SmileIcon,
-  LucideIcon,
-} from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+import { TextIcon, ListPlusIcon, TextQuoteIcon, SmileIcon } from "lucide-react";
 import {
   Command,
   CommandInput,

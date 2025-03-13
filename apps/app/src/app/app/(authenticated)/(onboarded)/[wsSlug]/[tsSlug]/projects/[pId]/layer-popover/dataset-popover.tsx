@@ -147,7 +147,7 @@ export function DatasetPopover({ form }: DatasetPopoverProps) {
                   </CommandGroup>
                   <CommandSeparator />
                   {availableDatasets.length > 0 ? (
-                    <CommandGroup heading="Connect to existing dataset">
+                    <CommandGroup heading="Connect dataset">
                       {availableDatasets.map((dataset) => (
                         <CommandItem
                           key={dataset.id}

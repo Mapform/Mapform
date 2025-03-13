@@ -7,10 +7,7 @@ import {
 import {
   FieldPath,
   Form,
-  FormControl,
   FormField,
-  FormLabel,
-  FormMessage,
   useForm,
   zodResolver,
 } from "@mapform/ui/components/form";
@@ -91,6 +88,14 @@ export function SubMenu({
   });
 
   const { execute, isPending } = useAction(upsertLayerAction, {
+    onSuccess: () => {
+      toast({
+        title: "Layer updated",
+        description: "Your property changes have been applied.",
+      });
+      setIsPropertyPopoverOpen(false);
+      setQuery("");
+    },
     onError: ({ error }) => {
       if (error.serverError) {
         toast({
@@ -107,7 +112,10 @@ export function SubMenu({
     },
   });
 
-  const { executeAsync } = useAction(createColumnAction, {
+  const {
+    executeAsync: createColumnAsync,
+    isPending: isCreatingColumnPending,
+  } = useAction(createColumnAction, {
     onSuccess: ({ data, input }) => {
       if (!data?.id) return;
 
@@ -178,23 +186,23 @@ export function SubMenu({
               <PropertyPopoverContent
                 align="start"
                 side="right"
+                disabled={isCreatingColumnPending || isPending}
                 value={field.value as string | null}
                 query={query}
                 setQuery={setQuery}
                 availableItems={availableColumns ?? []}
                 onSelect={(value) => {
                   form.setValue(fieldName, value as string | null);
-                  setIsPropertyPopoverOpen(false);
-                  form.handleSubmit(onSubmit)();
+                  void form.handleSubmit(onSubmit)();
                 }}
                 onCreate={async (name) => {
-                  await executeAsync({
+                  const newColumn = await createColumnAsync({
                     name,
                     datasetId: form.watch("datasetId"),
                     type,
                   });
-                  setQuery("");
-                  setIsPropertyPopoverOpen(false);
+                  form.setValue(fieldName, newColumn?.data?.id);
+                  await form.handleSubmit(onSubmit)();
                 }}
               />
             )}

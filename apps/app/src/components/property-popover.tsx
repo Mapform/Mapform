@@ -22,6 +22,7 @@ interface PropertyPopoverContentProps<T> {
   value: T | null;
   query: string;
   availableItems: Array<{ id: string; name: string }>;
+  disabled?: boolean;
   setQuery: (query: string) => void;
   onSelect: (value: T | null) => void;
   onCreate: (name: string) => void;
@@ -34,6 +35,7 @@ export function PropertyPopoverContent<T extends string>({
   onCreate,
   query,
   setQuery,
+  disabled,
   ...props
 }: PropertyPopoverContentProps<T> &
   ComponentPropsWithoutRef<typeof PopoverContent>) {
@@ -64,7 +66,7 @@ export function PropertyPopoverContent<T extends string>({
           <>
             <CommandGroup>
               <CommandItem
-                disabled={query.length === 0}
+                disabled={query.length === 0 || disabled}
                 onSelect={() => onCreate(query)}
               >
                 <div className="flex items-center overflow-hidden">
@@ -79,10 +81,11 @@ export function PropertyPopoverContent<T extends string>({
             <CommandSeparator />
           </>
           {availableItems.length > 0 ? (
-            <CommandGroup heading="Connect to existing">
+            <CommandGroup heading="Connect property">
               {availableItems.map((item) => (
                 <CommandItem
                   key={item.id}
+                  disabled={disabled}
                   keywords={[item.name]}
                   onSelect={(currentValue) => {
                     onSelect(
