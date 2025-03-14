@@ -11,64 +11,44 @@ import {
   MapformDrawerButton,
   MapformMap,
 } from "~/components/mapform";
-import { useSetQueryString } from "@mapform/lib/hooks/use-set-query-string";
 import { CustomBlockProvider, type CustomBlock } from "@mapform/blocknote";
 import { Blocknote } from "~/components/mapform/block-note";
 import { LocationSearchDrawer } from "./location-search-drawer";
 import { Form as DummyForm, useForm } from "@mapform/ui/components/form";
 import { BlocknoteControls } from "./blocknote-controls";
+import { FeatureDrawer } from "./feature-drawer";
 
 function Project() {
   const {
+    selectedFeature,
     currentPageData,
     projectWithPages,
     updatePageServerAction,
-    upsertIconCellServerAction,
-    upsertStringCellServerAction,
-    upsertRichtextCellServerAction,
     uploadImageServerAction,
   } = useProject();
 
   // This is just used to prevent the input blocks from throwing an error when
   // calling useFormContext
   const dummyForm = useForm();
-  const setQueryString = useSetQueryString();
 
   const currentPage = updatePageServerAction.optimisticState;
-  const selectedFeatureIcon = upsertIconCellServerAction.optimisticState;
-  const selectedFeatureTitle = upsertStringCellServerAction.optimisticState;
-  const selectedFeatureDescription =
-    upsertRichtextCellServerAction.optimisticState;
 
   const [drawerValues, setDrawerValues] = useState<string[]>([
     "page-content",
-    ...(selectedFeatureIcon ||
-    selectedFeatureTitle ||
-    selectedFeatureDescription
-      ? ["feature"]
-      : []),
+    ...(selectedFeature ? ["feature"] : []),
   ]);
 
   useEffect(() => {
     const featureIsOpen = drawerValues.includes("feature");
 
-    if (
-      selectedFeatureIcon ||
-      selectedFeatureTitle ||
-      selectedFeatureDescription
-    ) {
+    if (selectedFeature) {
       if (!featureIsOpen) {
         setDrawerValues([...drawerValues, "feature"]);
       }
     } else if (featureIsOpen) {
       setDrawerValues(drawerValues.filter((v) => v !== "feature"));
     }
-  }, [
-    selectedFeatureIcon,
-    selectedFeatureTitle,
-    selectedFeatureDescription,
-    drawerValues,
-  ]);
+  }, [selectedFeature, drawerValues]);
 
   if (!currentPage) {
     return null;
@@ -161,109 +141,7 @@ function Project() {
                   title={updatePageServerAction.optimisticState?.title}
                 />
               </MapformDrawer>
-              <MapformDrawer
-                onClose={() => {
-                  setQueryString({
-                    key: "feature",
-                    value: null,
-                  });
-                }}
-                value="feature"
-              >
-                <Blocknote
-                  isFeature
-                  controls={
-                    <BlocknoteControls
-                      allowAddEmoji={
-                        !!selectedFeatureIcon?.icon?.columnId &&
-                        !selectedFeatureIcon.icon.iconCell?.value
-                      }
-                      allowAddProperties
-                      onIconChange={(value) => {
-                        if (!selectedFeatureIcon?.icon || !currentPageData) {
-                          return;
-                        }
-
-                        if (!selectedFeatureIcon.icon.columnId) {
-                          return;
-                        }
-
-                        void upsertIconCellServerAction.execute({
-                          type: "icon",
-                          value,
-                          rowId: selectedFeatureIcon.rowId,
-                          columnId: selectedFeatureIcon.icon.columnId,
-                        });
-                      }}
-                    />
-                  }
-                  description={
-                    selectedFeatureDescription?.description?.columnId
-                      ? selectedFeatureDescription.description.richtextCell
-                          ?.value ?? null
-                      : undefined
-                  }
-                  icon={
-                    selectedFeatureIcon?.icon?.columnId
-                      ? selectedFeatureIcon.icon.iconCell?.value ?? null
-                      : undefined
-                  }
-                  key={`${currentPage.id}-${selectedFeatureIcon?.rowId}-${selectedFeatureDescription?.description?.columnId}`}
-                  onDescriptionChange={(value) => {
-                    if (selectedFeatureDescription?.description === undefined) {
-                      return;
-                    }
-
-                    if (!selectedFeatureDescription.description.columnId) {
-                      return;
-                    }
-
-                    void upsertRichtextCellServerAction.execute({
-                      type: "richtext",
-                      value,
-                      rowId: selectedFeatureDescription.rowId,
-                      columnId: selectedFeatureDescription.description.columnId,
-                    });
-                  }}
-                  onIconChange={(value) => {
-                    if (!selectedFeatureIcon?.icon || !currentPageData) {
-                      return;
-                    }
-
-                    if (!selectedFeatureIcon.icon.columnId) {
-                      return;
-                    }
-
-                    void upsertIconCellServerAction.execute({
-                      type: "icon",
-                      value,
-                      rowId: selectedFeatureIcon.rowId,
-                      columnId: selectedFeatureIcon.icon.columnId,
-                    });
-                  }}
-                  onTitleChange={(value) => {
-                    if (!selectedFeatureTitle?.title) {
-                      return;
-                    }
-
-                    if (!selectedFeatureTitle.title.columnId) {
-                      return;
-                    }
-
-                    void upsertStringCellServerAction.execute({
-                      type: "string",
-                      value,
-                      rowId: selectedFeatureTitle.rowId,
-                      columnId: selectedFeatureTitle.title.columnId,
-                    });
-                  }}
-                  title={
-                    selectedFeatureTitle?.title?.columnId
-                      ? selectedFeatureTitle.title.stringCell?.value ?? null
-                      : undefined
-                  }
-                />
-              </MapformDrawer>
+              <FeatureDrawer />
               <LocationSearchDrawer currentPage={currentPage} />
             </CustomBlockProvider>
             <MapformDrawerButton
