@@ -31,6 +31,7 @@ import {
 import { useMapform } from "~/components/mapform";
 import { Button, type ButtonProps } from "@mapform/ui/components/button";
 import { Skeleton } from "@mapform/ui/components/skeleton";
+import { SelectionPin } from "../selection-pin";
 
 export function LocationSearch(props: { children?: React.ReactNode }) {
   const { map } = useMapform();
@@ -371,18 +372,7 @@ export function LocationSearchWithMap({
       <Portal.Root container={marker.getElement()}>
         <Popover open={showPinPopover}>
           <PopoverAnchor>
-            <motion.div
-              animate={{
-                opacity: 1,
-              }}
-              className="z-[100] flex -translate-y-1/2 flex-col items-center"
-              key="pin"
-              initial={{ opacity: 0 }}
-              exit={{ opacity: 0 }}
-            >
-              <div className="z-10 size-4 rounded-full border-4 border-black bg-white" />
-              <div className="-mt-1.5 h-8 w-[5px] bg-black" />
-            </motion.div>
+            <SelectionPin />
           </PopoverAnchor>
           <PopoverContent
             className={cn({

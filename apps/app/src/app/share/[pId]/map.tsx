@@ -2,7 +2,7 @@
 
 import { useMapform } from "~/components/mapform";
 import { useAction } from "next-safe-action/hooks";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import type { GetPageData } from "@mapform/backend/data/datalayer/get-page-data";
 import type { GetLayerPoint } from "@mapform/backend/data/datalayer/get-layer-point";
 import { type GetLayerMarker } from "@mapform/backend/data/datalayer/get-layer-marker";
@@ -31,6 +31,8 @@ import {
 } from "~/components/location-search";
 import { Button } from "@mapform/ui/components/button";
 import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
+import { LocationMarker } from "~/components/mapform/map";
+import { SelectionPin } from "~/components/selection-pin";
 
 interface MapProps {
   pageData: GetPageData["data"];
@@ -87,6 +89,38 @@ export function Map({
     resolver: zodResolver(blocknoteStepSchema),
     defaultValues: pageValues,
   });
+
+  const currentFormValues = form.getValues();
+
+  const selectedLocations = useMemo(() => {
+    return (
+      currentPage?.content?.content
+        .filter((block) => block.type === "pin")
+        .map((block) => {
+          const value = currentFormValues[block.id] as
+            | {
+                x: number;
+                y: number;
+              }
+            | undefined;
+
+          if (!value) {
+            return null;
+          }
+
+          return {
+            ...value,
+            blockId: block.id,
+          };
+        })
+        .filter(
+          (location) =>
+            location !== null &&
+            location.x !== undefined &&
+            location.y !== undefined,
+        ) ?? []
+    );
+  }, [currentPage, currentFormValues]);
 
   const setCurrentPage = (page: Page) => {
     router.replace(`${pathname}?p=${page.id}`);
@@ -240,7 +274,19 @@ export function Map({
                 right: 0,
               },
             }}
-          />
+          >
+            {!drawerValues.includes("location-search")
+              ? selectedLocations.map((location) => (
+                  <LocationMarker
+                    key={`${location.x}-${location.y}`}
+                    latitude={location.y}
+                    longitude={location.x}
+                  >
+                    <SelectionPin />
+                  </LocationMarker>
+                ))
+              : null}
+          </MapformMap>
           <CustomBlockProvider
             pinBlock={{
               isSelectingLocationFor: isSelectingPinBlockLocationFor,
