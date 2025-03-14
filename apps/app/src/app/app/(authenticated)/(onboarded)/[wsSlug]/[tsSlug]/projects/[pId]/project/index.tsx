@@ -118,6 +118,19 @@ function Project() {
                 value="page-content"
               >
                 <Blocknote
+                  controls={
+                    <BlocknoteControls
+                      allowAddEmoji={
+                        !updatePageServerAction.optimisticState?.icon
+                      }
+                      onIconChange={(value) => {
+                        void updatePageServerAction.execute({
+                          ...currentPage,
+                          icon: value,
+                        });
+                      }}
+                    />
+                  }
                   description={
                     currentPage.content as { content: CustomBlock[] }
                   }
@@ -161,6 +174,11 @@ function Project() {
                   isFeature
                   controls={
                     <BlocknoteControls
+                      allowAddEmoji={
+                        !!selectedFeatureIcon?.icon?.columnId &&
+                        !selectedFeatureIcon.icon.iconCell?.value
+                      }
+                      allowAddProperties
                       onIconChange={(value) => {
                         if (!selectedFeatureIcon?.icon || !currentPageData) {
                           return;

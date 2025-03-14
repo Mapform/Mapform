@@ -58,7 +58,7 @@ export function PropertiesPopover() {
               </Button>
             </PopoverTrigger>
           </TooltipTrigger>
-          <TooltipContent>Add property</TooltipContent>
+          <TooltipContent>Manage properties</TooltipContent>
         </Tooltip>
         <PopoverContent align="start" className="w-[200px] p-0" side="right">
           <Command>

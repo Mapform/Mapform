@@ -5,35 +5,43 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@mapform/ui/components/tooltip";
-import { SmilePlusIcon, ImagePlusIcon } from "lucide-react";
+import { SmilePlusIcon } from "lucide-react";
 import { PropertiesPopover } from "./properties-popover";
 
 interface BlocknoteControlsProps {
   onIconChange?: (icon: string | null) => void;
+  allowAddEmoji?: boolean;
+  allowAddProperties?: boolean;
 }
 
-export function BlocknoteControls({ onIconChange }: BlocknoteControlsProps) {
+export function BlocknoteControls({
+  onIconChange,
+  allowAddEmoji,
+  allowAddProperties,
+}: BlocknoteControlsProps) {
   return (
     <>
-      <Tooltip>
-        <EmojiPopover onIconChange={onIconChange}>
-          <TooltipTrigger asChild>
-            <Button size="icon-sm" type="button" variant="ghost">
-              <SmilePlusIcon className="size-4" />
-            </Button>
-          </TooltipTrigger>
-        </EmojiPopover>
-        <TooltipContent>Add emoji</TooltipContent>
-      </Tooltip>
-      <Tooltip>
+      {allowAddEmoji && (
+        <Tooltip>
+          <EmojiPopover onIconChange={onIconChange}>
+            <TooltipTrigger asChild>
+              <Button size="icon-sm" type="button" variant="ghost">
+                <SmilePlusIcon className="size-4" />
+              </Button>
+            </TooltipTrigger>
+          </EmojiPopover>
+          <TooltipContent>Add emoji</TooltipContent>
+        </Tooltip>
+      )}
+      {allowAddProperties && <PropertiesPopover />}
+      {/* <Tooltip>
         <TooltipTrigger asChild>
           <Button size="icon-sm" type="button" variant="ghost">
             <ImagePlusIcon className="size-4" />
           </Button>
         </TooltipTrigger>
         <TooltipContent>Add cover</TooltipContent>
-      </Tooltip>
-      <PropertiesPopover />
+      </Tooltip> */}
     </>
   );
 }
