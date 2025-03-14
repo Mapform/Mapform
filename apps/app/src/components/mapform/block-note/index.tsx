@@ -7,22 +7,28 @@ import {
   useCreateBlockNote,
   useCustomBlockContext,
 } from "@mapform/blocknote";
-import { useState } from "react";
-import { SmilePlusIcon, XIcon } from "lucide-react";
+import { XIcon } from "lucide-react";
 import { Button } from "@mapform/ui/components/button";
 import { EmojiPopover } from "@mapform/ui/components/emoji-picker";
 import { AutoSizeTextArea } from "@mapform/ui/components/autosize-text-area";
+import { cn } from "@mapform/lib/classnames";
+import { useMemo } from "react";
 
 interface BlocknoteProps {
+  // null means the property exists but no value, undefined means the property does not exist
   icon?: string | null;
+  // null means the property exists but no value, undefined means the property does not exist
   title?: string | null;
+  // null means the property exists but no value, undefined means the property does not exist
   description?: {
     content: CustomBlock[];
-  };
+  } | null;
   includeFormBlocks?: boolean;
   locationEditorProps?: {
     onClose: () => void;
   };
+  isFeature?: boolean;
+  controls?: React.ReactNode;
   onPrev?: () => void;
   onIconChange?: (icon: string | null) => void;
   onTitleChange?: (content: string) => void;
@@ -32,6 +38,7 @@ interface BlocknoteProps {
 export function Blocknote({
   icon,
   title,
+  controls,
   description,
   onIconChange,
   onTitleChange,
@@ -40,9 +47,6 @@ export function Blocknote({
   locationEditorProps,
 }: BlocknoteProps) {
   const { isEditing } = useCustomBlockContext();
-  const [uncontrolledTitle, setUncontrolledTitle] = useState<string>(
-    title || "",
-  );
 
   const editor = useCreateBlockNote({
     animations: false,
@@ -53,9 +57,82 @@ export function Blocknote({
     schema,
   });
 
+  const iconElement = useMemo(() => {
+    if (icon === undefined) {
+      return null;
+    }
+
+    if (isEditing) {
+      return (
+        <EmojiPopover onIconChange={onIconChange}>
+          <button className="mb-2 text-6xl" type="button">
+            {icon}
+          </button>
+        </EmojiPopover>
+      );
+    }
+
+    return <div className="mb-2 text-6xl">{icon}</div>;
+  }, [icon, isEditing, onIconChange]);
+
+  const titleElement = useMemo(() => {
+    if (title === undefined) {
+      return null;
+    }
+
+    if (isEditing) {
+      return (
+        <AutoSizeTextArea
+          className="mb-2 text-3xl font-bold placeholder-gray-300"
+          onChange={(val) => {
+            if (onTitleChange) onTitleChange(val);
+          }}
+          onEnter={() => {
+            if (description?.content[0]) {
+              editor.setTextCursorPosition(description.content[0], "start");
+            }
+            editor.focus();
+          }}
+          value={title ?? ""}
+        />
+      );
+    }
+
+    return (
+      <h1 className="mb-2 w-full border-0 p-0 text-3xl font-bold">
+        {title ?? "Untitled"}
+      </h1>
+    );
+  }, [title, isEditing, onTitleChange, description?.content, editor]);
+
+  const descriptionElement = useMemo(() => {
+    if (description === undefined) {
+      return null;
+    }
+
+    return (
+      <BlocknoteEditor
+        editor={editor}
+        includeFormBlocks={includeFormBlocks}
+        onChange={() => {
+          if (onDescriptionChange)
+            onDescriptionChange({
+              content: editor.document,
+            });
+        }}
+      />
+    );
+  }, [description, includeFormBlocks, editor, onDescriptionChange]);
+
   // Renders the editor instance using a React component.
   return (
-    <div className="flex max-h-full flex-1 flex-col md:overflow-y-auto">
+    <div className="relative flex max-h-full flex-1 flex-col md:overflow-y-auto">
+      {controls ? (
+        <div className="text-muted-foreground absolute left-2 top-2 flex gap-0.5">
+          {controls}
+        </div>
+      ) : null}
+
       {locationEditorProps ? (
         <Button
           className="absolute right-2 top-2"
@@ -69,67 +146,10 @@ export function Blocknote({
       ) : null}
 
       {/* Content */}
-      <div className="p-4 md:overflow-y-auto">
-        {/* Emoji */}
-        {isEditing ? (
-          <div className="text-muted-foreground -ml-2 -mt-2 flex gap-0.5 pb-2">
-            {!icon ? (
-              <EmojiPopover onIconChange={onIconChange}>
-                <Button size="icon-sm" type="button" variant="ghost">
-                  <SmilePlusIcon className="size-4" />
-                </Button>
-              </EmojiPopover>
-            ) : null}
-            {/* <Button size="icon-sm" type="button" variant="ghost">
-              <ImagePlusIcon className="size-4" />
-            </Button> */}
-          </div>
-        ) : null}
-        {icon ? (
-          isEditing ? (
-            <EmojiPopover onIconChange={onIconChange}>
-              <button className="mb-2 text-6xl" type="button">
-                {icon}
-              </button>
-            </EmojiPopover>
-          ) : (
-            <div className="mb-2 text-6xl">{icon}</div>
-          )
-        ) : null}
-
-        {/* Title */}
-        {isEditing ? (
-          <AutoSizeTextArea
-            className="mb-2 text-3xl font-bold placeholder-gray-300"
-            onChange={(val) => {
-              setUncontrolledTitle(val);
-              if (onTitleChange) onTitleChange(val);
-            }}
-            onEnter={() => {
-              if (description?.content[0]) {
-                editor.setTextCursorPosition(description.content[0], "start");
-              }
-              editor.focus();
-            }}
-            value={uncontrolledTitle}
-          />
-        ) : (
-          <h1 className="mb-2 w-full border-0 p-0 text-3xl font-bold">
-            {title ?? "Untitled"}
-          </h1>
-        )}
-
-        {/* Description */}
-        <BlocknoteEditor
-          editor={editor}
-          includeFormBlocks={includeFormBlocks}
-          onChange={() => {
-            if (onDescriptionChange)
-              onDescriptionChange({
-                content: editor.document,
-              });
-          }}
-        />
+      <div className={cn("p-4 md:overflow-y-auto", controls ? "mt-8" : "")}>
+        {iconElement}
+        {titleElement}
+        {descriptionElement}
       </div>
       <div
         className="flex-1"

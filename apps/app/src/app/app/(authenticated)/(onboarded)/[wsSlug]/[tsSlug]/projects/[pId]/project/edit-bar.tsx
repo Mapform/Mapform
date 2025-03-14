@@ -15,11 +15,13 @@ const EDIT_BAR_DRAWERS = ["location-search", "marker-edit"];
 
 export function EditBar() {
   const { map } = useMapform();
-  const { currentPage } = useProject();
+  const { updatePageServerAction } = useProject();
   const { drawerValues, onDrawerValuesChange } = useMapformContent();
 
   const isSearchOpen = drawerValues.includes("location-search");
   const isMarkerEditOpen = drawerValues.includes("marker-edit");
+
+  const currentPage = updatePageServerAction.optimisticState;
 
   if (!currentPage) {
     return null;
@@ -74,29 +76,6 @@ export function EditBar() {
             </TooltipTrigger>
             <TooltipContent>Edit map</TooltipContent>
           </Tooltip>
-          {/* <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                onClick={() => {
-                  if (!isMarkerEditOpen) {
-                    onDrawerValuesChange([
-                      ...drawerValues.filter(
-                        (value) => !EDIT_BAR_DRAWERS.includes(value),
-                      ),
-                      "marker-edit",
-                    ]);
-                  }
-                }}
-                size="icon"
-                variant={isMarkerEditOpen ? "default" : "ghost"}
-              >
-                <MapPinPlusIcon className="size-5" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Add markers</p>
-            </TooltipContent>
-          </Tooltip> */}
         </div>
         <div className="flex gap-1 pl-1.5">
           <Tooltip>

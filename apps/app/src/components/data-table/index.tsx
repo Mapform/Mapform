@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, memo } from "react";
 import {
   flexRender,
   getCoreRowModel,
@@ -17,14 +17,7 @@ import {
 import { Checkbox } from "@mapform/ui/components/checkbox";
 import { Button } from "@mapform/ui/components/button";
 import type { GetDataset } from "@mapform/backend/data/datasets/get-dataset";
-import {
-  BoxIcon,
-  CopyIcon,
-  LinkIcon,
-  LockIcon,
-  PlusIcon,
-  Trash2Icon,
-} from "lucide-react";
+import { BoxIcon, CopyIcon, PlusIcon, Trash2Icon } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import { createRowAction } from "~/data/rows/create-row";
 import { deleteRowsAction } from "~/data/rows/delete-rows";
@@ -33,6 +26,7 @@ import { ColumnAdder } from "./column-adder";
 import { CellPopover } from "./cell-popover";
 import { ColumnEditor } from "./column-editor";
 import { toast } from "@mapform/ui/components/toaster";
+import { usePreventPageUnload } from "@mapform/lib/hooks/use-prevent-page-unload";
 import {
   Tooltip,
   TooltipContent,
@@ -44,36 +38,101 @@ interface TableProps {
   dataset: NonNullable<GetDataset["data"]>;
 }
 
+const MemoizedColumnEditor = memo(ColumnEditor);
+
 export const DataTable = function DataTable({ dataset }: TableProps) {
-  const { execute: executeDeleteRows, status: statusDeleteRows } =
-    useAction(deleteRowsAction);
-  const { execute: executeDuplicateRows, status: statusDuplicateRows } =
-    useAction(duplicateRowsAction, {
-      onError: ({ error }) => {
-        if (error.serverError) {
-          toast({
-            title: "Uh oh! Something went wrong.",
-            description: error.serverError,
-          });
-          return;
-        }
-      },
-    });
-  const { execute: executeCreateRow, status: statusCreateRow } = useAction(
-    createRowAction,
-    {
-      onError: ({ error }) => {
-        if (error.serverError) {
-          toast({
-            title: "Uh oh! Something went wrong.",
-            description: error.serverError,
-          });
-          return;
-        }
-      },
+  const {
+    execute: executeDeleteRows,
+    status: statusDeleteRows,
+    isPending: isPendingDeleteRows,
+  } = useAction(deleteRowsAction);
+  const {
+    execute: executeDuplicateRows,
+    status: statusDuplicateRows,
+    isPending: isPendingDuplicateRows,
+  } = useAction(duplicateRowsAction, {
+    onError: ({ error }) => {
+      if (error.serverError) {
+        toast({
+          title: "Uh oh! Something went wrong.",
+          description: error.serverError,
+        });
+        return;
+      }
     },
-  );
-  const columns = useMemo(() => getColumns(dataset), [dataset]);
+  });
+  const {
+    execute: executeCreateRow,
+    status: statusCreateRow,
+    isPending: isPendingCreateRow,
+  } = useAction(createRowAction, {
+    onError: ({ error }) => {
+      if (error.serverError) {
+        toast({
+          title: "Uh oh! Something went wrong.",
+          description: error.serverError,
+        });
+        return;
+      }
+    },
+  });
+
+  const columns = useMemo(() => {
+    const sortedColumns = [...dataset.columns].sort(
+      (a, b) => a.createdAt.getTime() - b.createdAt.getTime(),
+    );
+
+    return [
+      {
+        id: "select",
+        size: 50,
+        minSize: 50,
+        maxSize: 50,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Not worth creating a workaround type
+        header: ({ table }: any) => (
+          <Checkbox
+            aria-label="Select all"
+            checked={
+              table.getIsAllPageRowsSelected() ||
+              (table.getIsSomePageRowsSelected() && "indeterminate")
+            }
+            onCheckedChange={(value) => {
+              table.toggleAllPageRowsSelected(Boolean(value));
+            }}
+          />
+        ),
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Not worth creating a workaround type
+        cell: ({ row }: any) => (
+          <Checkbox
+            aria-label="Select row"
+            checked={row.getIsSelected()}
+            onCheckedChange={(value) => {
+              row.toggleSelected(Boolean(value));
+            }}
+          />
+        ),
+        enableSorting: false,
+        enableHiding: false,
+      },
+      ...sortedColumns.map((column) => ({
+        accessorKey: column.id,
+        header: (
+          <MemoizedColumnEditor
+            columnId={column.id}
+            columnName={column.name}
+            columnType={column.type}
+          />
+        ),
+      })),
+      {
+        id: "create-column",
+        header: <ColumnAdder datasetId={dataset.id} />,
+        enableSorting: false,
+        enableHiding: false,
+      },
+    ];
+  }, [dataset.columns, dataset.id]);
+
   const rows = useMemo(
     () =>
       dataset.rows.map((row) => {
@@ -110,12 +169,26 @@ export const DataTable = function DataTable({ dataset }: TableProps) {
     [dataset.rows],
   );
 
+  usePreventPageUnload(
+    isPendingCreateRow || isPendingDeleteRows || isPendingDuplicateRows,
+  );
+
   const table = useReactTable({
     data: rows,
+    // @ts-expect-error -- This is caused by not returning the headers from an
+    // anonynous function above. Eg. header: () => <ColumnAdder
+    // datasetId={dataset.id} /> However, returning from a function causes the
+    // column headers to re-mount when data changes, causing the popovers to
+    // close
     columns,
     getCoreRowModel: getCoreRowModel(),
     getRowId: (row) => {
       return row.rowId;
+    },
+    defaultColumn: {
+      size: 200, //starting column size
+      minSize: 200, //enforced during column resizing
+      maxSize: 200, //enforced during column resizing
     },
   });
 
@@ -125,7 +198,7 @@ export const DataTable = function DataTable({ dataset }: TableProps) {
   return (
     <div className="relative flex flex-1 flex-col overflow-auto bg-white p-4 pt-0">
       {/* Top bar */}
-      <div className="sticky top-0 z-20 -mb-1 box-content flex h-8 flex-shrink-0 items-center gap-2 border-b bg-white pb-2 pt-4">
+      <div className="sticky left-0 top-0 z-20 mb-0 box-content flex h-8 flex-shrink-0 items-center gap-2 border-b bg-white pb-2 pt-4">
         {dataset.project ? (
           <TooltipProvider>
             <Tooltip>
@@ -183,7 +256,7 @@ export const DataTable = function DataTable({ dataset }: TableProps) {
       </div>
       <Table className="border-b">
         <TableHeader
-          className="sticky top-[53px] z-10 bg-white"
+          className="sticky top-[57px] z-10 bg-white"
           style={{
             boxShadow: "inset 0 -1px 0 #e5e7eb",
           }}
@@ -192,7 +265,15 @@ export const DataTable = function DataTable({ dataset }: TableProps) {
             <TableRow className="border-none" key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
                 return (
-                  <TableHead className="truncate" key={header.id}>
+                  <TableHead
+                    className="flex-grow-0 truncate"
+                    key={header.id}
+                    style={{
+                      width: `${header.getSize()}px`,
+                      minWidth: `${header.getSize()}px`,
+                      maxWidth: `${header.getSize()}px`,
+                    }}
+                  >
                     {header.isPlaceholder
                       ? null
                       : flexRender(
@@ -226,72 +307,19 @@ export const DataTable = function DataTable({ dataset }: TableProps) {
           )}
         </TableBody>
       </Table>
-      <button
-        className="hover:bg-muted/50 sticky left-0 flex items-center p-2 text-left text-sm disabled:pointer-events-none disabled:opacity-50"
-        disabled={statusCreateRow === "executing"}
-        onClick={() => {
-          executeCreateRow({ datasetId: dataset.id });
-        }}
-        type="button"
-      >
-        <PlusIcon className="mr-2 size-4" />
-        Add row
-      </button>
+      <div className="sticky -bottom-4 left-0 flex items-center bg-white pb-8">
+        <button
+          className="hover:bg-muted/50 flex h-10 flex-1 items-center text-left text-sm disabled:pointer-events-none disabled:opacity-50"
+          disabled={statusCreateRow === "executing"}
+          onClick={() => {
+            executeCreateRow({ datasetId: dataset.id });
+          }}
+          type="button"
+        >
+          <PlusIcon className="mr-2 size-4" />
+          Add row
+        </button>
+      </div>
     </div>
   );
-};
-
-const getColumns = (dataset: NonNullable<GetDataset["data"]>) => {
-  return [
-    {
-      id: "select",
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Not worth creating a workaround type
-      header: ({ table }: any) => (
-        <Checkbox
-          aria-label="Select all"
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && "indeterminate")
-          }
-          onCheckedChange={(value) => {
-            table.toggleAllPageRowsSelected(Boolean(value));
-          }}
-        />
-      ),
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Not worth creating a workaround type
-      cell: ({ row }: any) => (
-        <Checkbox
-          aria-label="Select row"
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => {
-            row.toggleSelected(Boolean(value));
-          }}
-        />
-      ),
-      enableSorting: false,
-      enableHiding: false,
-    },
-    ...dataset.columns
-      .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
-      .map((column) => {
-        return {
-          accessorKey: column.id,
-          header: () => (
-            <ColumnEditor
-              columnId={column.id}
-              columnName={column.name}
-              columnType={column.type}
-            />
-          ),
-        };
-      }),
-
-    // Add column
-    {
-      id: "create-column",
-      header: () => <ColumnAdder datasetId={dataset.id} />,
-      enableSorting: false,
-      enableHiding: false,
-    },
-  ];
 };

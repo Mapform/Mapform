@@ -38,14 +38,14 @@ export function Item({ page, index }: ItemProps) {
     currentProject,
     updateProjectOptimistic,
     setActivePage,
-    currentPage,
+    updatePageServerAction,
   } = useProject();
   const pathname = usePathname();
   const { executeAsync: executeDeletePage, isPending } =
     useAction(deletePageAction);
 
   const isLastPage = currentProject.pages.length <= 1;
-  const isActive = page.id === currentPage?.id;
+  const isActive = page.id === updatePageServerAction.optimisticState?.id;
 
   const handleDelete = async () => {
     if (isLastPage) return;

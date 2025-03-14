@@ -2,29 +2,20 @@ import type { UseFormReturn, FieldPath } from "@mapform/ui/components/form";
 import { FormField, FormLabel } from "@mapform/ui/components/form";
 import { useCallback, useEffect, useState } from "react";
 import type { Column } from "@mapform/db/schema";
-import { cn } from "@mapform/lib/classnames";
 import { Button } from "@mapform/ui/components/button";
-import {
-  Command,
-  CommandInput,
-  CommandList,
-  CommandGroup,
-  CommandItem,
-  CommandSeparator,
-} from "@mapform/ui/components/command";
-import {
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-} from "@mapform/ui/components/popover";
 import type { ListTeamspaceDatasets } from "@mapform/backend/data/datasets/list-teamspace-datasets";
-import { ChevronsUpDownIcon, PlusIcon, CheckIcon } from "lucide-react";
+import { ChevronsUpDownIcon } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import type { UpsertLayerSchema } from "@mapform/backend/data/layers/upsert-layer/schema";
 import { toast } from "@mapform/ui/components/toaster";
 import { createColumnAction } from "~/data/columns/create-column";
 import { useProject } from "../project-context";
 import { ColorPicker } from "./color-picker";
+import {
+  PropertyPopover,
+  PropertyPopoverTrigger,
+  PropertyPopoverContent,
+} from "~/components/property-popover";
 
 interface PointPropertiesProps {
   form: UseFormReturn<UpsertLayerSchema>;
@@ -51,27 +42,52 @@ export function PointProperties({ form }: PointPropertiesProps) {
 
   useEffect(() => {
     if (type === "point") {
-      form.setValue(
+      const currentPointColumnId = form.getValues(
         "pointProperties.pointColumnId",
-        getAvailableColumns("point")?.find((c) => c.type === "point")?.id ?? "",
       );
-
-      form.setValue(
+      const currentTitleColumnId = form.getValues(
         "pointProperties.titleColumnId",
-        getAvailableColumns("string")?.find((c) => c.type === "string")?.id ??
-          "",
       );
-
-      form.setValue(
+      const currentDescriptionColumnId = form.getValues(
         "pointProperties.descriptionColumnId",
-        getAvailableColumns("richtext")?.find((c) => c.type === "richtext")
-          ?.id ?? "",
+      );
+      const currentIconColumnId = form.getValues(
+        "pointProperties.iconColumnId",
       );
 
-      form.setValue(
-        "pointProperties.iconColumnId",
-        getAvailableColumns("icon")?.find((c) => c.type === "icon")?.id ?? "",
-      );
+      if (currentPointColumnId === undefined || currentPointColumnId === "") {
+        form.setValue(
+          "pointProperties.pointColumnId",
+          getAvailableColumns("point")?.find((c) => c.type === "point")?.id ??
+            "",
+        );
+      }
+
+      if (currentTitleColumnId === undefined || currentTitleColumnId === "") {
+        form.setValue(
+          "pointProperties.titleColumnId",
+          getAvailableColumns("string")?.find((c) => c.type === "string")?.id ??
+            "",
+        );
+      }
+
+      if (
+        currentDescriptionColumnId === undefined ||
+        currentDescriptionColumnId === ""
+      ) {
+        form.setValue(
+          "pointProperties.descriptionColumnId",
+          getAvailableColumns("richtext")?.find((c) => c.type === "richtext")
+            ?.id ?? "",
+        );
+      }
+
+      if (currentIconColumnId === undefined || currentIconColumnId === "") {
+        form.setValue(
+          "pointProperties.iconColumnId",
+          getAvailableColumns("icon")?.find((c) => c.type === "icon")?.id ?? "",
+        );
+      }
     }
   }, [dataset, form, type, getAvailableColumns]);
 
@@ -84,7 +100,7 @@ export function PointProperties({ form }: PointPropertiesProps) {
     <>
       <div className="col-span-2 mt-1 w-full border-t pt-3">
         <h3 className="-mb-2 text-xs font-semibold leading-6 text-stone-400">
-          Data
+          Properties
         </h3>
       </div>
       <DataColField
@@ -146,17 +162,21 @@ function DataColField({
     onSuccess: ({ data, input }) => {
       if (!data?.id) return;
 
-      input.type === "point" &&
+      if (input.type === "point") {
         form.setValue("pointProperties.pointColumnId", data.id);
+      }
 
-      input.type === "string" &&
+      if (input.type === "string") {
         form.setValue("pointProperties.titleColumnId", data.id);
+      }
 
-      input.type === "richtext" &&
+      if (input.type === "richtext") {
         form.setValue("pointProperties.descriptionColumnId", data.id);
+      }
 
-      input.type === "icon" &&
+      if (input.type === "icon") {
         form.setValue("pointProperties.iconColumnId", data.id);
+      }
     },
 
     onError: () => {
@@ -172,112 +192,46 @@ function DataColField({
       control={form.control}
       name={name}
       render={({ field }) => (
-        <Popover modal onOpenChange={setOpen} open={open}>
+        <PropertyPopover modal onOpenChange={setOpen} open={open}>
           <FormLabel htmlFor={name}>{label}</FormLabel>
           <div className="flex w-full flex-shrink-0 justify-end">
-            <PopoverTrigger asChild>
+            <PropertyPopoverTrigger asChild>
               <Button
-                className="ring-offset-background placeholder:text-muted-foreground focus:ring-ring flex h-7 w-full items-center justify-between whitespace-nowrap rounded-md border-0 bg-stone-100 px-2 py-0.5 text-sm font-normal shadow-sm focus:outline-none focus:ring-1 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
+                className="ring-offset-background placeholder:text-muted-foreground focus:ring-ring flex h-7 w-full items-center justify-between whitespace-nowrap rounded-md border-0 bg-stone-100 px-2 py-0.5 text-sm font-normal shadow-sm focus:outline-none focus:ring-1 disabled:cursor-not-allowed disabled:opacity-50"
                 id={name}
                 size="icon-xs"
                 variant="ghost"
               >
-                {availableColumns.find((col) => col.id === field.value)?.name ??
-                  "Select..."}
-                <ChevronsUpDownIcon className="size-4 opacity-50" />
+                <span className="flex-1 truncate text-left">
+                  {availableColumns.find((col) => col.id === field.value)
+                    ?.name ?? "Select..."}
+                </span>
+                <ChevronsUpDownIcon className="size-4 flex-shrink-0 opacity-50" />
               </Button>
-            </PopoverTrigger>
-            <PopoverContent
+            </PropertyPopoverTrigger>
+            <PropertyPopoverContent
               align="start"
-              className="w-[200px] p-0"
               side="right"
-            >
-              <Command
-                filter={(value, search, keywords) => {
-                  if (value.includes("Create")) return 1;
-                  if (
-                    value
-                      .toLocaleLowerCase()
-                      .includes(search.toLocaleLowerCase())
-                  )
-                    return 1;
-                  if (
-                    keywords?.some((k) =>
-                      k
-                        .toLocaleLowerCase()
-                        .includes(search.toLocaleLowerCase()),
-                    )
-                  )
-                    return 1;
-                  return 0;
-                }}
-              >
-                <CommandInput
-                  onValueChange={(v: string) => {
-                    setQuery(v);
-                  }}
-                  placeholder="Create or search..."
-                  value={query}
-                />
-                <CommandList>
-                  <CommandGroup>
-                    <CommandItem
-                      disabled={query.length === 0}
-                      onSelect={async () => {
-                        await executeAsync({
-                          name: query,
-                          datasetId: form.watch("datasetId"),
-                          type,
-                        });
-                        setQuery("");
-                        setOpen(false);
-                      }}
-                    >
-                      <div className="flex items-center overflow-hidden">
-                        <p className="flex items-center font-semibold">
-                          <PlusIcon className="mr-2 size-4" />
-                          Create
-                        </p>
-                        <p className="text-primary ml-1 block truncate">
-                          {query}
-                        </p>
-                      </div>
-                    </CommandItem>
-                  </CommandGroup>
-                  <CommandSeparator />
-                  {availableColumns.length > 0 ? (
-                    <CommandGroup heading="Properties">
-                      {availableColumns.map((col) => (
-                        <CommandItem
-                          key={col.id}
-                          keywords={[col.name]}
-                          onSelect={(currentValue) => {
-                            form.setValue(
-                              name,
-                              currentValue === field.value ? "" : currentValue,
-                            );
-                            setOpen(false);
-                          }}
-                          value={col.id}
-                        >
-                          {col.name}
-                          <CheckIcon
-                            className={cn(
-                              "ml-auto size-4",
-                              field.value === col.id
-                                ? "opacity-100"
-                                : "opacity-0",
-                            )}
-                          />
-                        </CommandItem>
-                      ))}
-                    </CommandGroup>
-                  ) : null}
-                </CommandList>
-              </Command>
-            </PopoverContent>
+              value={field.value as string | null}
+              query={query}
+              setQuery={setQuery}
+              availableItems={availableColumns}
+              onSelect={(value) => {
+                form.setValue(name, value as string | null);
+                setOpen(false);
+              }}
+              onCreate={(name) => {
+                void executeAsync({
+                  name,
+                  datasetId: form.watch("datasetId"),
+                  type,
+                });
+                setQuery("");
+                setOpen(false);
+              }}
+            />
           </div>
-        </Popover>
+        </PropertyPopover>
       )}
     />
   );

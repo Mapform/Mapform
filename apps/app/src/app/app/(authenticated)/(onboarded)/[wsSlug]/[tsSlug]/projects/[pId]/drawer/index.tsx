@@ -19,7 +19,7 @@ import { PageList } from "./page-list";
 
 export function Drawer() {
   const isClient = useIsClient();
-  const { currentPage } = useProject();
+  const { updatePageServerAction } = useProject();
 
   if (!isClient) return null;
 
@@ -41,7 +41,7 @@ export function Drawer() {
             </ResizablePanel>
             <ResizableHandle />
             <ResizablePanel minSize={15}>
-              <LayerList key={currentPage?.id} />
+              <LayerList key={updatePageServerAction.optimisticState?.id} />
             </ResizablePanel>
           </ResizablePanelGroup>
         </TabsContent>

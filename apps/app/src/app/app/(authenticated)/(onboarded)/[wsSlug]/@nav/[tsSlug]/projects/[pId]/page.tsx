@@ -29,7 +29,7 @@ export default async function Nav(props: {
         <div className="flex items-center">
           {project.submissionsDataset ? (
             <Link
-              href={`/app/${params.wsSlug}/${params.tsSlug}/datasets/${project.submissionsDataset.id}`}
+              href={`/app/${params.wsSlug}/${params.tsSlug}/projects/${project.id}/responses/${project.submissionsDataset.id}`}
             >
               <Button size="sm" variant="ghost">
                 Responses

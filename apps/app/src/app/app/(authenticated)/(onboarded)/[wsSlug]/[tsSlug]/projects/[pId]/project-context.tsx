@@ -15,13 +15,15 @@ import type { GetProjectWithPages } from "@mapform/backend/data/projects/get-pro
 import { useMapform } from "~/components/mapform";
 import type { GetPageWithLayers } from "@mapform/backend/data/pages/get-page-with-layers";
 import { toast } from "@mapform/ui/components/toaster";
-import type { InferUseActionHookReturn } from "next-safe-action/hooks";
-import { useAction } from "next-safe-action/hooks";
+import {
+  type InferUseActionHookReturn,
+  useAction,
+} from "next-safe-action/hooks";
 import type { GetPageData } from "@mapform/backend/data/datalayer/get-page-data";
 import type { ListTeamspaceDatasets } from "@mapform/backend/data/datasets/list-teamspace-datasets";
-import { upsertCellAction } from "~/data/cells/upsert-cell";
 import { uploadImageAction } from "~/data/images";
 import { updatePageAction } from "~/data/pages/update-page";
+import { useDebouncedOptimisticAction } from "~/lib/use-debounced-optimistic-action";
 
 type LayerPoint = NonNullable<GetLayerPoint["data"]>;
 type LayerMarker = NonNullable<GetLayerMarker["data"]>;
@@ -31,17 +33,12 @@ type TeamspaceDatasets = NonNullable<ListTeamspaceDatasets["data"]>;
 type ProjectWithPages = NonNullable<GetProjectWithPages["data"]>;
 
 export interface ProjectContextProps {
-  selectedFeature?: LayerPoint | LayerMarker;
   currentProject: ProjectWithPages;
   isEditingPage: boolean;
-  currentPage: PageWithLayers | undefined;
   currentPageData: PageData | undefined;
   availableDatasets: TeamspaceDatasets;
   projectWithPages: ProjectWithPages;
-
-  uploadImageServer: InferUseActionHookReturn<typeof uploadImageAction>;
-  upsertCellServer: InferUseActionHookReturn<typeof upsertCellAction>;
-  updatePageServer: InferUseActionHookReturn<typeof updatePageAction>;
+  selectedFeature?: LayerPoint | LayerMarker;
 
   setActivePage: (
     page?: Pick<PageWithLayers, "id" | "center" | "zoom" | "pitch" | "bearing">,
@@ -50,9 +47,15 @@ export interface ProjectContextProps {
   updateProjectOptimistic: (
     action: NonNullable<GetProjectWithPages["data"]>,
   ) => void;
-  updatePageOptimistic: (action: PageWithLayers) => void;
   updatePageDataOptimistic: (action: PageData) => void;
-  updateSelectedFeatureOptimistic: (action: LayerPoint | LayerMarker) => void;
+
+  updatePageServerAction: {
+    execute: (args: Parameters<typeof updatePageAction>[0]) => void;
+    optimisticState: PageWithLayers | undefined;
+    isPending: boolean;
+    setOptimisticState: (state: PageWithLayers) => void;
+  };
+  uploadImageServerAction: InferUseActionHookReturn<typeof uploadImageAction>;
 }
 
 export const ProjectContext = createContext<ProjectContextProps>(
@@ -87,14 +90,6 @@ export function ProjectProvider({
   const [_, startTransition] = useTransition();
   const page = searchParams.get("page");
 
-  const [optimisticPage, updatePageOptimistic] = useOptimistic<
-    PageWithLayers | undefined,
-    PageWithLayers
-  >(pageWithLayers, (state, newPage) => ({
-    ...state,
-    ...newPage,
-  }));
-
   const [optimisticProject, updateProjectOptimistic] = useOptimistic<
     ProjectWithPages,
     ProjectWithPages
@@ -111,47 +106,29 @@ export function ProjectProvider({
     ...newData,
   }));
 
-  const [optimisticSelectedFeature, updateSelectedFeatureOptimistic] =
-    useOptimistic<
-      LayerPoint | LayerMarker | undefined,
-      LayerPoint | LayerMarker
-    >(selectedFeature, (state, newFeature) => ({
-      ...state,
-      ...newFeature,
-    }));
-
   /**
    * Actions
    */
-  const updatePageServer = useAction(updatePageAction, {
+  const updatePageServerAction = useDebouncedOptimisticAction<
+    PageWithLayers,
+    Parameters<typeof updatePageAction>[0]
+  >(updatePageAction, {
+    currentState: pageWithLayers,
+    updateFn: (state, newPage) => ({
+      ...(state as PageWithLayers),
+      ...(newPage as PageWithLayers),
+    }),
     onError: ({ error }) => {
-      if (error.serverError) {
-        toast({
-          title: "Uh oh! Something went wrong.",
-          description: error.serverError,
-        });
-        return;
-      }
-
-      if (error.validationErrors) {
-        toast({
-          title: "Uh oh! Something went wrong.",
-          description: "We we unable to update your content. Please try again.",
-        });
-      }
-    },
-  });
-
-  const upsertCellServer = useAction(upsertCellAction, {
-    onError: () => {
       toast({
         title: "Uh oh! Something went wrong.",
-        description: "We we unable to update your content. Please try again.",
+        description:
+          (error.serverError as string | undefined) ??
+          "We we unable to update your content. Please try again.",
       });
     },
   });
 
-  const uploadImageServer = useAction(uploadImageAction, {
+  const uploadImageServerAction = useAction(uploadImageAction, {
     onError: (response) => {
       if (
         response.error.validationErrors &&
@@ -217,6 +194,7 @@ export function ProjectProvider({
 
     // Remove editMode
     current.delete("edit");
+    current.delete("feature");
 
     const search = current.toString();
     const query = search ? `?${search}` : "";
@@ -231,19 +209,12 @@ export function ProjectProvider({
         setActivePage,
         projectWithPages,
         availableDatasets,
+        selectedFeature,
 
         // Optimistic state
-        currentPage: optimisticPage,
         currentProject: optimisticProject,
         currentPageData: optimisticPageData,
-        selectedFeature: optimisticSelectedFeature,
-
         // For optimistic state updates
-        updatePageOptimistic: (...args) => {
-          startTransition(() => {
-            updatePageOptimistic(...args);
-          });
-        },
         updateProjectOptimistic: (...args) => {
           startTransition(() => {
             updateProjectOptimistic(...args);
@@ -254,16 +225,10 @@ export function ProjectProvider({
             updatePageDataOptimistic(...args);
           });
         },
-        updateSelectedFeatureOptimistic: (...args) => {
-          startTransition(() => {
-            updateSelectedFeatureOptimistic(...args);
-          });
-        },
 
         // Actions
-        updatePageServer,
-        upsertCellServer,
-        uploadImageServer,
+        updatePageServerAction,
+        uploadImageServerAction,
       }}
     >
       {children}

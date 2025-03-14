@@ -60,7 +60,7 @@ interface ItemProps {
 }
 
 export function Item({ layer }: ItemProps) {
-  const { currentProject, currentPage, updatePageOptimistic } = useProject();
+  const { currentProject, updatePageServerAction } = useProject();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [layerPopoverOpen, setLayerPopoverOpen] = useState(false);
   const { execute: executeDeleteLayer } = useAction(deleteLayerAction);
@@ -70,40 +70,40 @@ export function Item({ layer }: ItemProps) {
   const isLastPage = currentProject.pages.length <= 1;
 
   const handleDelete = () => {
-    if (!currentPage) return;
+    if (!updatePageServerAction.optimisticState) return;
 
-    const newLayers = currentPage.layersToPages.filter(
-      (pageLayer) => pageLayer.layerId !== layer.id,
-    );
+    const newLayers =
+      updatePageServerAction.optimisticState.layersToPages.filter(
+        (pageLayer) => pageLayer.layerId !== layer.id,
+      );
 
     executeDeleteLayer({
       layerId: layer.id,
     });
 
-    // Note: it is not necessary to set isPendingDebounce to true here since we
-    // are not debouncing
-    updatePageOptimistic({
-      ...currentPage,
+    updatePageServerAction.setOptimisticState({
+      ...updatePageServerAction.optimisticState,
       layersToPages: newLayers,
     });
   };
 
   const handleRemoveFromPage = () => {
-    if (!currentPage) return;
+    if (!updatePageServerAction.optimisticState) return;
 
-    const newLayers = currentPage.layersToPages.filter(
-      (pageLayer) => pageLayer.layerId !== layer.id,
-    );
+    const newLayers =
+      updatePageServerAction.optimisticState.layersToPages.filter(
+        (pageLayer) => pageLayer.layerId !== layer.id,
+      );
 
     executeDeletePageLayer({
       layerId: layer.id,
-      pageId: currentPage.id,
+      pageId: updatePageServerAction.optimisticState.id,
     });
 
     // Note: it is not necessary to set isPendingDebounce to true here since we
     // are not debouncing
-    updatePageOptimistic({
-      ...currentPage,
+    updatePageServerAction.setOptimisticState({
+      ...updatePageServerAction.optimisticState,
       layersToPages: newLayers,
     });
   };
@@ -220,7 +220,13 @@ export function Item({ layer }: ItemProps) {
         open={layerPopoverOpen}
       >
         <LayerPopoverAnchor />
-        <LayerPopoverContent layerToEdit={layer} />
+        <LayerPopoverContent
+          layerToEdit={layer}
+          side="left"
+          onClose={() => {
+            setLayerPopoverOpen(false);
+          }}
+        />
       </LayerPopoverRoot>
     </DragItem>
   );

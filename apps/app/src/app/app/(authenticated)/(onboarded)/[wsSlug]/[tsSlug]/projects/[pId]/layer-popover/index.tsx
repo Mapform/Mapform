@@ -36,15 +36,16 @@ interface LayerPopoverProps {
     GetPageWithLayers["data"]
   >["layersToPages"][number]["layer"];
   onSuccess?: (layerId: string) => void;
+  onClose?: () => void;
 }
 
 export const LayerPopoverContent = forwardRef<
   React.ElementRef<typeof PopoverContent>,
   React.ComponentPropsWithoutRef<typeof PopoverContent> & LayerPopoverProps
->(({ layerToEdit, initialName, onSuccess, ...props }, ref) => {
+>(({ layerToEdit, initialName, onSuccess, onClose, ...props }, ref) => {
   const { ...rest } = useProject();
 
-  const currentPage = rest.currentPage!;
+  const currentPage = rest.updatePageServerAction.optimisticState!;
 
   const form = useForm<UpsertLayerSchema>({
     defaultValues: {
@@ -71,6 +72,7 @@ export const LayerPopoverContent = forwardRef<
     onSuccess: ({ data }) => {
       if (onSuccess && data?.id) {
         onSuccess(data.id);
+        onClose?.();
         return;
       }
 
@@ -80,6 +82,7 @@ export const LayerPopoverContent = forwardRef<
           ? "Your layer has been updated."
           : "Your layer has been created.",
       });
+      onClose?.();
     },
     onError: ({ error }) => {
       if (error.serverError) {
@@ -121,13 +124,13 @@ export const LayerPopoverContent = forwardRef<
           className="flex flex-1 flex-col"
           onSubmit={form.handleSubmit(onSubmit)}
         >
-          <div className="grid auto-cols-auto grid-cols-[auto_1fr] items-center gap-x-6 gap-y-3">
+          <div className="grid grid-cols-[77px_minmax(0,1fr)] items-center gap-x-6 gap-y-3">
             <FormField
               control={form.control}
               name="name"
               render={({ field }) => (
                 <>
-                  <FormLabel className="w-[77px]">Name</FormLabel>
+                  <FormLabel>Name</FormLabel>
                   <div className="flex-1">
                     <FormControl>
                       <Input

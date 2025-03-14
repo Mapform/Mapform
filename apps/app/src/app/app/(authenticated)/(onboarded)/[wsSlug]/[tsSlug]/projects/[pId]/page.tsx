@@ -93,7 +93,6 @@ export default async function ProjectPage(props: {
   params: Promise<{ wsSlug: string; tsSlug: string; pId: string }>;
   searchParams?: Promise<{
     page?: string;
-    layer?: string;
     feature?: string;
   }>;
 }) {

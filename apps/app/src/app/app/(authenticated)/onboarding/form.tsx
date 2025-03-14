@@ -40,7 +40,7 @@ export function OnboardingForm({ email }: OnboardingFormProps) {
     resolver: zodResolver(completeOnboardingSchema),
   });
 
-  const { execute, status } = useAction(completeOnboardingAction, {
+  const { execute, isPending } = useAction(completeOnboardingAction, {
     onSuccess: () => {
       toast({
         title: "Success!",
@@ -177,12 +177,10 @@ export function OnboardingForm({ email }: OnboardingFormProps) {
           />
           <Button
             className="mt-8 w-full"
-            disabled={status === "executing" || !form.formState.isValid}
+            disabled={isPending || !form.formState.isValid}
             type="submit"
           >
-            {status === "executing"
-              ? "Creating your account..."
-              : "Create account"}
+            {isPending ? "Creating your account..." : "Create account"}
           </Button>
         </form>
       </Form>

@@ -22,11 +22,11 @@ import { DateTimePicker } from "@mapform/ui/components/datetime-picker";
 import { flexRender, type Cell } from "@tanstack/react-table";
 import { useAction } from "next-safe-action/hooks";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { usePreventPageUnload } from "@mapform/lib/hooks/use-prevent-page-unload";
 import {
   schema,
   BlocknoteEditor,
   useCreateBlockNote,
-  CustomBlockContext,
   CustomBlockProvider,
 } from "@mapform/blocknote";
 import { format } from "date-fns";
@@ -41,7 +41,6 @@ import { upsertCellAction } from "~/data/cells/upsert-cell";
 import { compressImage } from "~/lib/compress-image";
 import { uploadImageAction } from "~/data/images";
 import { toast } from "@mapform/ui/components/toaster";
-import { a } from "node_modules/next-safe-action/dist/index.types-B2iGkRfD.mjs";
 
 const accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN!;
 
@@ -69,8 +68,10 @@ export function CellPopover({
     },
     resolver: zodResolver(upsertCellSchema),
   });
-  const { execute: executeUpsertCell } = useAction(upsertCellAction);
+  const { execute: executeUpsertCell, isPending } = useAction(upsertCellAction);
   const [open, setOpen] = useState(false);
+
+  usePreventPageUnload(isPending);
 
   const onSubmit = (values: UpsertCellSchema) => {
     setOpen(false);

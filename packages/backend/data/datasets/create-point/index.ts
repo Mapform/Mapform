@@ -98,14 +98,6 @@ export const createPoint = (authClient: UserAuthClient) =>
               ? result.point_layer?.iconColumnId
               : result.marker_layer?.iconColumnId;
 
-          if (!titleColumnId) {
-            throw new Error("Layer does not have a title column");
-          }
-
-          if (!descriptionColumnId) {
-            throw new Error("Layer does not have a description column");
-          }
-
           if (!pointColumnId) {
             throw new Error("Layer does not have a point column");
           }
@@ -121,21 +113,29 @@ export const createPoint = (authClient: UserAuthClient) =>
             throw new Error("Row not created");
           }
 
-          const [titleCell, descriptionCell, pointCell, iconCell] = await tx
+          const [pointCell, titleCell, descriptionCell, iconCell] = await tx
             .insert(cells)
             .values([
               {
                 rowId: row.id,
-                columnId: titleColumnId,
-              },
-              {
-                rowId: row.id,
-                columnId: descriptionColumnId,
-              },
-              {
-                rowId: row.id,
                 columnId: pointColumnId,
               },
+              ...(titleColumnId
+                ? [
+                    {
+                      rowId: row.id,
+                      columnId: titleColumnId,
+                    },
+                  ]
+                : []),
+              ...(descriptionColumnId
+                ? [
+                    {
+                      rowId: row.id,
+                      columnId: descriptionColumnId,
+                    },
+                  ]
+                : []),
               // If an icon column exists, create a cell for it, but we don't need to create an iconCell (just leave it empty)
               ...(iconColumnId
                 ? [
@@ -148,30 +148,32 @@ export const createPoint = (authClient: UserAuthClient) =>
             ])
             .returning();
 
-          if (!titleCell || !descriptionCell || !pointCell) {
+          if (!pointCell) {
             throw new Error("Cells not created");
           }
 
-          await tx.insert(stringCells).values({
-            cellId: titleCell.id,
-            value: title,
-          });
-
-          await tx.insert(richtextCells).values({
-            cellId: descriptionCell.id,
-            value: description as { content: DocumentContent },
-          });
-
-          await tx.insert(pointCells).values({
-            cellId: pointCell.id,
-            value: location,
-          });
-
-          if (iconCell) {
-            await tx.insert(iconsCells).values({
-              cellId: iconCell.id,
-            });
-          }
+          await Promise.all(
+            [
+              tx.insert(pointCells).values({
+                cellId: pointCell.id,
+                value: location,
+              }),
+              titleCell &&
+                tx.insert(stringCells).values({
+                  cellId: titleCell.id,
+                  value: title,
+                }),
+              descriptionCell &&
+                tx.insert(richtextCells).values({
+                  cellId: descriptionCell.id,
+                  value: description as { content: DocumentContent },
+                }),
+              iconCell &&
+                tx.insert(iconsCells).values({
+                  cellId: iconCell.id,
+                }),
+            ].filter(Boolean),
+          );
         });
       },
     );

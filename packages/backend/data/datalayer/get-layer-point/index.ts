@@ -36,7 +36,7 @@ export const getLayerPoint = (authClient: UserAuthClient | PublicClient) =>
           .leftJoin(teamspaces, eq(teamspaces.id, datasets.teamspaceId))
           .where(and(eq(rows.id, rowId), inArray(teamspaces.id, teamspaceIds)));
 
-        if (!rowResult?.length) {
+        if (!rowResult.length) {
           throw new Error("Row not found");
         }
       }
@@ -44,6 +44,13 @@ export const getLayerPoint = (authClient: UserAuthClient | PublicClient) =>
       const [pointLayer, row] = await Promise.all([
         db.query.pointLayers.findFirst({
           where: eq(pointLayers.id, pointLayerId),
+          with: {
+            layer: {
+              columns: {
+                id: true,
+              },
+            },
+          },
         }),
         db.query.rows.findFirst({
           where: eq(rows.id, rowId),
@@ -83,6 +90,8 @@ export const getLayerPoint = (authClient: UserAuthClient | PublicClient) =>
       return {
         rowId,
         pointLayerId,
+        layerId: pointLayer.layer.id,
+        type: "point",
         title: row.cells.find((c) => c.columnId === pointLayer.titleColumnId),
         description: row.cells.find(
           (c) => c.columnId === pointLayer.descriptionColumnId,
@@ -95,7 +104,8 @@ export const getLayerPoint = (authClient: UserAuthClient | PublicClient) =>
           (c) =>
             c.columnId !== pointLayer.pointColumnId &&
             c.columnId !== pointLayer.titleColumnId &&
-            c.columnId !== pointLayer.descriptionColumnId,
+            c.columnId !== pointLayer.descriptionColumnId &&
+            c.columnId !== pointLayer.iconColumnId,
         ),
       };
     });

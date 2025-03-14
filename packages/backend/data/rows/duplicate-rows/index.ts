@@ -125,24 +125,28 @@ export const duplicateRows = (authClient: UserAuthClient) =>
 
         const cellsToDuplicate = dataToDuplicate.flatMap((row) => row.cells);
 
-        const duplicatedCells = await tx
-          .insert(cells)
-          .values(
-            cellsToDuplicate.map((cell) => {
-              return {
-                rowId: rowIdMap[cell.rowId]!,
-                columnId: cell.columnId,
-              };
-            }),
-          )
-          .returning();
+        const duplicatedCells =
+          cellsToDuplicate.length > 0 &&
+          (await tx
+            .insert(cells)
+            .values(
+              cellsToDuplicate.map((cell) => {
+                return {
+                  rowId: rowIdMap[cell.rowId]!,
+                  columnId: cell.columnId,
+                };
+              }),
+            )
+            .returning());
 
-        const cellIdMap: Record<string, string> = Object.fromEntries(
-          cellsToDuplicate.map((cell, index) => [
-            cell.id,
-            duplicatedCells[index]!.id,
-          ]),
-        );
+        const cellIdMap: Record<string, string> = duplicatedCells
+          ? Object.fromEntries(
+              cellsToDuplicate.map((cell, index) => [
+                cell.id,
+                duplicatedCells[index]!.id,
+              ]),
+            )
+          : {};
 
         const pointCellsToDuplicate = cellsToDuplicate.filter(
           (cell) => cell.pointCell,

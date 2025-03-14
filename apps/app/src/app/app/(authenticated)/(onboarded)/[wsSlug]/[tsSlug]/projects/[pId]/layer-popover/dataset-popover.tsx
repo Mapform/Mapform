@@ -73,17 +73,19 @@ export function DatasetPopover({ form }: DatasetPopoverProps) {
           <div className="flex w-full flex-shrink-0 justify-end">
             <PopoverTrigger asChild>
               <Button
-                className="ring-offset-background placeholder:text-muted-foreground focus:ring-ring flex h-7 w-full items-center justify-between whitespace-nowrap rounded-md border-0 bg-stone-100 px-2 py-0.5 text-sm font-normal shadow-sm focus:outline-none focus:ring-1 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
+                className="ring-offset-background placeholder:text-muted-foreground focus:ring-ring flex h-7 w-full items-center justify-between whitespace-nowrap rounded-md border-0 bg-stone-100 px-2 py-0.5 text-sm font-normal shadow-sm focus:outline-none focus:ring-1 disabled:cursor-not-allowed disabled:opacity-50"
                 id="datasetSelect"
                 size="icon-xs"
                 variant="ghost"
               >
-                {form.watch("datasetId")
-                  ? availableDatasets.find(
-                      (dataset) => dataset.id === field.value,
-                    )?.name
-                  : "Select dataset..."}
-                <ChevronsUpDownIcon className="size-4 opacity-50" />
+                <span className="flex-1 truncate text-left">
+                  {form.watch("datasetId")
+                    ? availableDatasets.find(
+                        (dataset) => dataset.id === field.value,
+                      )?.name
+                    : "Select dataset..."}
+                </span>
+                <ChevronsUpDownIcon className="size-4 flex-shrink-0 opacity-50" />
               </Button>
             </PopoverTrigger>
             <PopoverContent
@@ -115,7 +117,7 @@ export function DatasetPopover({ form }: DatasetPopoverProps) {
                   onValueChange={(v: string) => {
                     setQuery(v);
                   }}
-                  placeholder="Create or search..."
+                  placeholder="Search or create..."
                   value={query}
                 />
                 <CommandList>
@@ -145,7 +147,7 @@ export function DatasetPopover({ form }: DatasetPopoverProps) {
                   </CommandGroup>
                   <CommandSeparator />
                   {availableDatasets.length > 0 ? (
-                    <CommandGroup heading="Datasets">
+                    <CommandGroup heading="Connect dataset">
                       {availableDatasets.map((dataset) => (
                         <CommandItem
                           key={dataset.id}
@@ -159,7 +161,9 @@ export function DatasetPopover({ form }: DatasetPopoverProps) {
                           }}
                           value={dataset.id}
                         >
-                          {dataset.name}
+                          <span className="flex-1 truncate text-left">
+                            {dataset.name}
+                          </span>
                           <CheckIcon
                             className={cn(
                               "ml-auto size-4",

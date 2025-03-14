@@ -1,8 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useCallback, useState } from "react";
-import { debounce } from "@mapform/lib/lodash";
+import { useEffect, useState } from "react";
 import { compressImage } from "~/lib/compress-image";
 import { useProject } from "../project-context";
 import { EditBar } from "./edit-bar";
@@ -16,57 +15,40 @@ import { CustomBlockProvider, type CustomBlock } from "@mapform/blocknote";
 import { Blocknote } from "~/components/mapform/block-note";
 import { LocationSearchDrawer } from "./location-search-drawer";
 import { Form as DummyForm, useForm } from "@mapform/ui/components/form";
+import { BlocknoteControls } from "./blocknote-controls";
+import { FeatureDrawer } from "./feature-drawer";
 
 function Project() {
   const {
-    currentPage,
     selectedFeature,
     currentPageData,
-    updatePageServer,
-    upsertCellServer,
     projectWithPages,
-    uploadImageServer,
-    updatePageOptimistic,
-    updateSelectedFeatureOptimistic,
+    updatePageServerAction,
+    uploadImageServerAction,
   } = useProject();
 
   // This is just used to prevent the input blocks from throwing an error when
   // calling useFormContext
   const dummyForm = useForm();
 
+  const currentPage = updatePageServerAction.optimisticState;
+
   const [drawerValues, setDrawerValues] = useState<string[]>([
     "page-content",
     ...(selectedFeature ? ["feature"] : []),
   ]);
 
-  /**
-   * NOTE: Optimistic updates DO NOT work with debounced server actions. To work
-   * around this either:
-   * - Pick one or the other
-   * - Add uncontrolled state to the component where it optimistic updates are
-   *   needed. For instance, the Blocknote richtext in an uncontrolled
-   *   component.
-   */
+  useEffect(() => {
+    const featureIsOpen = drawerValues.includes("feature");
 
-  // These need to be separate because if a title and description change are
-  // made quickly (within the debounce time), the update of the
-  // second would overwrite the first.
-  const debouncedUpdatePageTitle = useCallback(
-    debounce(updatePageServer.execute, 2000),
-    [updatePageServer],
-  );
-  const debouncedUpdatePageDescription = useCallback(
-    debounce(updatePageServer.execute, 2000),
-    [updatePageServer],
-  );
-  const debouncedUpdateCellRichtext = useCallback(
-    debounce(upsertCellServer.execute, 2000),
-    [upsertCellServer],
-  );
-  const debouncedUpdateCellString = useCallback(
-    debounce(upsertCellServer.execute, 2000),
-    [upsertCellServer],
-  );
+    if (selectedFeature) {
+      if (!featureIsOpen) {
+        setDrawerValues([...drawerValues, "feature"]);
+      }
+    } else if (featureIsOpen) {
+      setDrawerValues(drawerValues.filter((v) => v !== "feature"));
+    }
+  }, [selectedFeature, drawerValues]);
 
   if (!currentPage) {
     return null;
@@ -97,7 +79,7 @@ function Project() {
                   formData.append("image", compressedFile);
 
                   const response =
-                    await uploadImageServer.executeAsync(formData);
+                    await uploadImageServerAction.executeAsync(formData);
 
                   if (response?.serverError) {
                     return null;
@@ -116,106 +98,50 @@ function Project() {
                 value="page-content"
               >
                 <Blocknote
+                  controls={
+                    <BlocknoteControls
+                      allowAddEmoji={
+                        !updatePageServerAction.optimisticState?.icon
+                      }
+                      onIconChange={(value) => {
+                        void updatePageServerAction.execute({
+                          ...currentPage,
+                          icon: value,
+                        });
+                      }}
+                    />
+                  }
                   description={
                     currentPage.content as { content: CustomBlock[] }
                   }
-                  icon={currentPage.icon}
+                  icon={updatePageServerAction.optimisticState?.icon}
                   includeFormBlocks={
                     projectWithPages.formsEnabled &&
                     currentPage.pageType === "page"
                   }
                   key={currentPage.id}
                   onDescriptionChange={(val) => {
-                    debouncedUpdatePageDescription({
-                      id: currentPage.id,
+                    void updatePageServerAction.execute({
+                      ...currentPage,
                       content: val,
                     });
                   }}
                   onIconChange={(val) => {
-                    updatePageOptimistic({
+                    void updatePageServerAction.execute({
                       ...currentPage,
-                      icon: val,
-                    });
-
-                    updatePageServer.execute({
-                      id: currentPage.id,
                       icon: val,
                     });
                   }}
                   onTitleChange={(val) => {
-                    debouncedUpdatePageTitle({
-                      id: currentPage.id,
+                    void updatePageServerAction.execute({
+                      ...currentPage,
                       title: val,
                     });
                   }}
-                  title={currentPage.title}
+                  title={updatePageServerAction.optimisticState?.title}
                 />
               </MapformDrawer>
-              <MapformDrawer
-                onClose={() => {
-                  setDrawerValues(drawerValues.filter((v) => v !== "feature"));
-                }}
-                value="feature"
-              >
-                <Blocknote
-                  description={
-                    selectedFeature?.description?.richtextCell?.value ??
-                    undefined
-                  }
-                  icon={selectedFeature?.icon?.iconCell?.value}
-                  key={`${currentPage.id}-${selectedFeature?.rowId}`}
-                  onDescriptionChange={(value) => {
-                    if (!selectedFeature?.description) {
-                      return;
-                    }
-
-                    debouncedUpdateCellRichtext({
-                      type: "richtext",
-                      value,
-                      rowId: selectedFeature.rowId,
-                      columnId: selectedFeature.description.columnId,
-                    });
-                  }}
-                  onIconChange={(value) => {
-                    if (!selectedFeature?.icon || !currentPageData) {
-                      return;
-                    }
-
-                    if (selectedFeature.icon.iconCell) {
-                      updateSelectedFeatureOptimistic({
-                        ...selectedFeature,
-                        icon: {
-                          ...selectedFeature.icon,
-                          iconCell: {
-                            ...selectedFeature.icon.iconCell,
-                            value,
-                          },
-                        },
-                      });
-                    }
-
-                    upsertCellServer.execute({
-                      type: "icon",
-                      value,
-                      rowId: selectedFeature.rowId,
-                      columnId: selectedFeature.icon.columnId,
-                    });
-                  }}
-                  onTitleChange={(value) => {
-                    if (!selectedFeature?.title) {
-                      return;
-                    }
-
-                    debouncedUpdateCellString({
-                      type: "string",
-                      value,
-                      rowId: selectedFeature.rowId,
-                      columnId: selectedFeature.title.columnId,
-                    });
-                  }}
-                  title={selectedFeature?.title?.stringCell?.value}
-                />
-              </MapformDrawer>
+              <FeatureDrawer />
               <LocationSearchDrawer currentPage={currentPage} />
             </CustomBlockProvider>
             <MapformDrawerButton

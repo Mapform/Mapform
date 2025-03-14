@@ -63,22 +63,26 @@ export function LocationSearchDrawerInner({
   currentPage,
 }: LocationSearchDrawerProps) {
   const { map } = useMapform();
+  const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState<string>("");
   const { selectedFeature } = useLocationSearch();
   const { drawerValues, onDrawerValuesChange } = useMapformContent();
   const [layerPopoverOpen, setLayerPopoverOpen] = useState(false);
-  const { currentProject, updatePageServer, updatePageOptimistic } =
-    useProject();
+  const { currentProject, updatePageServerAction } = useProject();
 
-  const { execute: executeCreatePoint } = useAction(createPointAction, {
-    onSuccess: () => {
-      setLayerPopoverOpen(false);
-      toast({
-        title: "Success!",
-        description: "Point created.",
-      });
+  const { execute: executeCreatePoint, isPending } = useAction(
+    createPointAction,
+    {
+      onSuccess: () => {
+        setLayerPopoverOpen(false);
+        setIsOpen(false);
+        toast({
+          title: "Success!",
+          description: "Point created.",
+        });
+      },
     },
-  });
+  );
 
   const pageLayers = currentProject.pageLayers.filter(
     (layer) =>
@@ -118,12 +122,10 @@ export function LocationSearchDrawerInner({
         bearing,
       };
 
-      updatePageOptimistic({
+      updatePageServerAction.execute({
         ...currentPage,
         ...payload,
       });
-
-      await updatePageServer.executeAsync(payload);
 
       onDrawerValuesChange(
         drawerValues.filter((value) => value !== "location-search"),
@@ -135,10 +137,12 @@ export function LocationSearchDrawerInner({
     <>
       <Popover
         modal
+        open={isOpen}
         onOpenChange={(val) => {
           if (val) {
             setQuery("");
           }
+          setIsOpen(val);
         }}
       >
         <PopoverTrigger asChild>
@@ -172,7 +176,7 @@ export function LocationSearchDrawerInner({
               onValueChange={(value: string) => {
                 setQuery(value);
               }}
-              placeholder="Create or search..."
+              placeholder="Search or create..."
               value={query}
             />
             <CommandList>
@@ -193,9 +197,10 @@ export function LocationSearchDrawerInner({
               </CommandGroup>
               <CommandSeparator />
               {pageLayers.length > 0 ? (
-                <CommandGroup heading="Layers">
+                <CommandGroup heading="Add to existing layer">
                   {pageLayers.map((pageLayer) => (
                     <CommandItem
+                      disabled={isPending}
                       key={pageLayer.layerId}
                       keywords={[pageLayer.name ?? "Untitled"]}
                       onSelect={() => {
@@ -241,6 +246,9 @@ export function LocationSearchDrawerInner({
           align="start"
           initialName={query}
           key={query}
+          onClose={() => {
+            setLayerPopoverOpen(false);
+          }}
           onSuccess={(layerId) => {
             if (location.x === undefined || location.y === undefined) return;
 
@@ -259,7 +267,9 @@ export function LocationSearchDrawerInner({
       </LayerPopoverRoot>
 
       <LocationSearchButton
-        disabled={updatePageServer.isPending || !selectedFeature?.properties}
+        disabled={
+          updatePageServerAction.isPending || !selectedFeature?.properties
+        }
         onClick={() => void handleSaveMapPosition()}
       >
         Save Map Position

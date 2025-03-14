@@ -34,7 +34,7 @@ export function RenameDatasetPopover({
   onOpenChange,
   open,
 }: RenameDatasetPopoverContentProps) {
-  const { executeAsync, status } = useAction(updateDatasetAction);
+  const { executeAsync, isPending } = useAction(updateDatasetAction);
   const form = useForm<UpdateDatasetSchema>({
     defaultValues: {
       name: dataset.title,
@@ -84,7 +84,7 @@ export function RenameDatasetPopover({
                       autoComplete="off"
                       data-lpignore="true"
                       data-1p-ignore
-                      disabled={field.disabled || status === "executing"}
+                      disabled={field.disabled || isPending}
                       name={field.name}
                       onChange={field.onChange}
                       ref={field.ref}
