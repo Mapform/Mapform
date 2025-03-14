@@ -116,7 +116,9 @@ export function Map({
         .filter(
           (location) =>
             location !== null &&
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
             location.x !== undefined &&
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
             location.y !== undefined,
         ) ?? []
     );
@@ -276,15 +278,21 @@ export function Map({
             }}
           >
             {!drawerValues.includes("location-search")
-              ? selectedLocations.map((location) => (
-                  <LocationMarker
-                    key={`${location.x}-${location.y}`}
-                    latitude={location.y}
-                    longitude={location.x}
-                  >
-                    <SelectionPin />
-                  </LocationMarker>
-                ))
+              ? selectedLocations.map((location) => {
+                  if (!location) {
+                    return null;
+                  }
+
+                  return (
+                    <LocationMarker
+                      key={`${location.x}-${location.y}`}
+                      latitude={location.y}
+                      longitude={location.x}
+                    >
+                      <SelectionPin />
+                    </LocationMarker>
+                  );
+                })
               : null}
           </MapformMap>
           <CustomBlockProvider
