@@ -248,6 +248,28 @@ export function Map({
     </div>
   );
 
+  const handleLocationSearch = (val: string | null) => {
+    // TODO: Improve this temporary workaround. If you don't
+    // scroll to the bottom first, there is a jarring animation
+    // when opening the next drawer
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    setTimeout(() => {
+      setDrawerValues([...drawerValues, "location-search"]);
+      setIsSelectingPinBlockLocationFor(val);
+
+      const location = selectedLocations.find(
+        (location) => location?.blockId === val,
+      );
+
+      if (location) {
+        map?.flyTo({
+          center: [location.x, location.y],
+          duration: 0,
+        });
+      }
+    }, 500);
+  };
+
   return (
     <Form {...form}>
       <form
@@ -284,13 +306,19 @@ export function Map({
                   }
 
                   return (
-                    <LocationMarker
+                    <button
                       key={`${location.x}-${location.y}`}
-                      latitude={location.y}
-                      longitude={location.x}
+                      onClick={() => {
+                        handleLocationSearch(location.blockId);
+                      }}
                     >
-                      <SelectionPin />
-                    </LocationMarker>
+                      <LocationMarker
+                        latitude={location.y}
+                        longitude={location.x}
+                      >
+                        <SelectionPin />
+                      </LocationMarker>
+                    </button>
                   );
                 })
               : null}
@@ -298,16 +326,7 @@ export function Map({
           <CustomBlockProvider
             pinBlock={{
               isSelectingLocationFor: isSelectingPinBlockLocationFor,
-              setIsSelectingLocationFor: (val) => {
-                // TODO: Improve this temporary workaround. If you don't
-                // scroll to the bottom first, there is a jarring animation
-                // when opening the next drawer
-                window.scrollTo({ top: 0, behavior: "smooth" });
-                setTimeout(() => {
-                  setDrawerValues([...drawerValues, "location-search"]);
-                  setIsSelectingPinBlockLocationFor(val);
-                }, 500);
-              },
+              setIsSelectingLocationFor: handleLocationSearch,
             }}
           >
             <MapformDrawer value="page-content">
