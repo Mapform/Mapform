@@ -157,7 +157,7 @@ export function MapformDrawer({
         <motion.div
           className={cn(
             // BASE STYLES
-            "bg-background group z-40 flex min-h-[200px] flex-col shadow-lg outline-none transition-[filter,margin-left] duration-[250]",
+            "bg-background group z-40 flex min-h-[200px] flex-col shadow-lg outline-none transition-[filter,width,padding-left] duration-[250]",
 
             // DESKTOP STYLES
             "md:absolute md:bottom-0 md:left-0 md:h-full md:w-[360px] md:[--x-from:-100%] md:[--x-to:0]",
@@ -167,7 +167,6 @@ export function MapformDrawer({
 
             // EDITING STYLES
             {
-              "pl-8 md:w-[392px]": isEditing,
               "overflow-hidden": !isEditing,
             },
             className,
@@ -178,10 +177,13 @@ export function MapformDrawer({
           exit="closed"
           style={{
             zIndex: 40 + valueIndex,
-            marginLeft: isMobile ? 0 : 1 * reverseValueIndex * 10,
             marginBottom: isMobile ? 1 * reverseValueIndex * 10 : 0,
             filter: `brightness(${1 - reverseValueIndex * 0.1})`,
             display: isMobile && reverseValueIndex !== 0 ? "none" : "flex",
+            ...(!isMobile && {
+              width: (isEditing ? 392 : 360) + reverseValueIndex * 10,
+              paddingLeft: (isEditing ? 32 : 0) + reverseValueIndex * 10,
+            }),
           }}
           transition={{
             duration: 0.25,

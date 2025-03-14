@@ -194,7 +194,10 @@ export function Map({
           ) : null}
           <p className="mx-auto text-xs text-gray-500">
             Made with{" "}
-            <a className="text-gray-500" href="https://alpha.mapform.co">
+            <a
+              className="text-gray-500 underline"
+              href="https://alpha.mapform.co"
+            >
               Mapform
             </a>
           </p>
