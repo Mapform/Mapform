@@ -157,17 +157,17 @@ export function MapformDrawer({
         <motion.div
           className={cn(
             // BASE STYLES
-            "bg-background prose group z-40 flex min-h-[200px] flex-col shadow-lg outline-none transition-[filter,margin-left] duration-[250]",
+            "bg-background group z-40 flex min-h-[200px] flex-col shadow-lg outline-none transition-[filter,margin-left] duration-[250]",
 
             // DESKTOP STYLES
-            "sm:absolute sm:bottom-0 sm:left-0 sm:h-full sm:w-[360px] sm:[--x-from:-100%] sm:[--x-to:0]",
+            "md:absolute md:bottom-0 md:left-0 md:h-full md:w-[360px] md:[--x-from:-100%] md:[--x-to:0]",
 
             // MOBILE STYLES
-            "max-sm:relative max-sm:w-full max-sm:overflow-y-auto max-sm:rounded-t-xl max-sm:shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] max-sm:[--y-from:200px] max-sm:[--y-to:0]",
+            "max-md:relative max-md:w-full max-md:overflow-y-auto max-md:rounded-t-xl max-md:shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] max-md:[--y-from:200px] max-md:[--y-to:0]",
 
             // EDITING STYLES
             {
-              "pl-8 sm:w-[392px]": isEditing,
+              "pl-8 md:w-[392px]": isEditing,
               "overflow-hidden": !isEditing,
             },
             className,
