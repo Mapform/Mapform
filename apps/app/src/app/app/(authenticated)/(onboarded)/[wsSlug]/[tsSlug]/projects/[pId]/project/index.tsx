@@ -198,15 +198,17 @@ function Project() {
                     />
                   }
                   description={
-                    selectedFeatureDescription?.description?.richtextCell
-                      ?.value ?? undefined
+                    selectedFeatureDescription?.description?.columnId
+                      ? selectedFeatureDescription.description.richtextCell
+                          ?.value ?? null
+                      : undefined
                   }
                   icon={
                     selectedFeatureIcon?.icon?.columnId
                       ? selectedFeatureIcon.icon.iconCell?.value ?? null
                       : undefined
                   }
-                  key={`${currentPage.id}-${selectedFeatureIcon?.rowId}`}
+                  key={`${currentPage.id}-${selectedFeatureIcon?.rowId}-${selectedFeatureDescription?.description?.columnId}`}
                   onDescriptionChange={(value) => {
                     if (selectedFeatureDescription?.description === undefined) {
                       return;
@@ -255,7 +257,11 @@ function Project() {
                       columnId: selectedFeatureTitle.title.columnId,
                     });
                   }}
-                  title={selectedFeatureTitle?.title?.stringCell?.value}
+                  title={
+                    selectedFeatureTitle?.title?.columnId
+                      ? selectedFeatureTitle.title.stringCell?.value ?? null
+                      : undefined
+                  }
                 />
               </MapformDrawer>
               <LocationSearchDrawer currentPage={currentPage} />
