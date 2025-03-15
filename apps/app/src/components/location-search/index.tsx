@@ -22,7 +22,6 @@ import {
   Command,
 } from "@mapform/ui/components/command";
 import * as Portal from "@radix-ui/react-portal";
-import { motion } from "motion/react";
 import {
   Popover,
   PopoverAnchor,
@@ -155,6 +154,7 @@ export function LocationSearchWithMap({
 
   useEffect(() => {
     marker.addTo(map);
+    void refetch();
     setTimeout(() => {
       inputRef.current?.focus();
     }, 100);
