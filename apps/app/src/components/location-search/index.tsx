@@ -125,6 +125,7 @@ export function LocationSearchWithMap({
         lng: map.getCenter().lng,
       }),
     placeholderData: (prev) => prev,
+    staleTime: Infinity,
   });
 
   const marker = useMemo(() => {
@@ -145,12 +146,21 @@ export function LocationSearchWithMap({
     });
 
     map.on("moveend", () => {
-      void refetch();
+      const lat = map.getCenter().lat;
+      const lng = map.getCenter().lng;
+      const queryKey = ["reverse-geocode", lat, lng];
+
+      console.log(queryClient.getQueryData(queryKey));
+
+      // Only refetch if we don't have cached data for these coordinates
+      if (!queryClient.getQueryData(queryKey)) {
+        void refetch();
+      }
       setShowPinPopover(true);
     });
 
     return mk;
-  }, [map, refetch]);
+  }, [map, refetch, queryClient]);
 
   useEffect(() => {
     marker.addTo(map);
