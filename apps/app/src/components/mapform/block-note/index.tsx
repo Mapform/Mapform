@@ -126,7 +126,7 @@ export function Blocknote({
 
   // Renders the editor instance using a React component.
   return (
-    <div className="relative flex max-h-full flex-1 flex-col md:overflow-y-auto">
+    <div className="relative flex max-h-full flex-1 flex-col">
       {controls ? (
         <div className="text-muted-foreground absolute left-2 top-2 flex gap-0.5">
           {controls}

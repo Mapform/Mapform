@@ -2,7 +2,7 @@
 
 import { useMapform } from "~/components/mapform";
 import { useAction } from "next-safe-action/hooks";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import type { GetPageData } from "@mapform/backend/data/datalayer/get-page-data";
 import type { GetLayerPoint } from "@mapform/backend/data/datalayer/get-layer-point";
 import { type GetLayerMarker } from "@mapform/backend/data/datalayer/get-layer-marker";
@@ -24,6 +24,7 @@ import {
 } from "~/components/mapform";
 import { Blocknote } from "~/components/mapform/block-note";
 import { Form, useForm, zodResolver } from "@mapform/ui/components/form";
+import { useSetQueryString } from "@mapform/lib/hooks/use-set-query-string";
 import type { z } from "zod";
 import {
   LocationSearch,
@@ -31,6 +32,8 @@ import {
 } from "~/components/location-search";
 import { Button } from "@mapform/ui/components/button";
 import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
+import { LocationMarker } from "~/components/mapform/map";
+import { SelectionPin } from "~/components/selection-pin";
 
 interface MapProps {
   pageData: GetPageData["data"];
@@ -55,11 +58,19 @@ export function Map({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const p = searchParams.get("p");
+  const setQueryString = useSetQueryString();
   const currentPage = projectWithPages.pages.find((page) => page.id === p);
-  const [drawerValues, setDrawerValues] = useState<string[]>([
-    "page-content",
-    ...(selectedFeature ? ["feature"] : []),
-  ]);
+  const [isSearchOpen, setIsSearching] = useState(false);
+  const [isDrawerStackOpen, setIsDrawerStackOpen] = useState(true);
+  const drawerValues = useMemo(() => {
+    return isDrawerStackOpen
+      ? [
+          "page-content",
+          ...(selectedFeature ? ["feature"] : []),
+          ...(isSearchOpen ? ["location-search"] : []),
+        ]
+      : [];
+  }, [selectedFeature, isSearchOpen, isDrawerStackOpen]);
   const [isSelectingPinBlockLocationFor, setIsSelectingPinBlockLocationFor] =
     useState<string | null>(null);
   const blocknoteStepSchema = getFormSchemaFromBlockNote(
@@ -88,6 +99,40 @@ export function Map({
     defaultValues: pageValues,
   });
 
+  const currentFormValues = form.getValues();
+
+  const selectedLocations = useMemo(() => {
+    return (
+      currentPage?.content?.content
+        .filter((block) => block.type === "pin")
+        .map((block) => {
+          const value = currentFormValues[block.id] as
+            | {
+                x: number;
+                y: number;
+              }
+            | undefined;
+
+          if (!value) {
+            return null;
+          }
+
+          return {
+            ...value,
+            blockId: block.id,
+          };
+        })
+        .filter(
+          (location) =>
+            location !== null &&
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+            location.x !== undefined &&
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+            location.y !== undefined,
+        ) ?? []
+    );
+  }, [currentPage, currentFormValues]);
+
   const setCurrentPage = (page: Page) => {
     router.replace(`${pathname}?p=${page.id}`);
   };
@@ -108,6 +153,13 @@ export function Map({
       duration: 1000,
     });
   };
+
+  // Reset isDrawerStackOpen when the search or feature is opened
+  useEffect(() => {
+    if (isSearchOpen || !!selectedFeature) {
+      setIsDrawerStackOpen(true);
+    }
+  }, [isSearchOpen, selectedFeature]);
 
   useEffect(() => {
     void (async () => {
@@ -194,7 +246,10 @@ export function Map({
           ) : null}
           <p className="mx-auto text-xs text-gray-500">
             Made with{" "}
-            <a className="text-gray-500" href="https://alpha.mapform.co">
+            <a
+              className="text-gray-500 underline"
+              href="https://alpha.mapform.co"
+            >
               Mapform
             </a>
           </p>
@@ -209,20 +264,36 @@ export function Map({
     </div>
   );
 
+  const handleLocationSearch = (val: string | null) => {
+    // TODO: Improve this temporary workaround. If you don't
+    // scroll to the bottom first, there is a jarring animation
+    // when opening the next drawer
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    setTimeout(() => {
+      setIsSearching(true);
+      setIsSelectingPinBlockLocationFor(val);
+
+      const location = selectedLocations.find(
+        (location) => location?.blockId === val,
+      );
+
+      if (location) {
+        map?.flyTo({
+          center: [location.x, location.y],
+          duration: 0,
+        });
+      }
+    }, 500);
+  };
+
   return (
     <Form {...form}>
       <form
         className="flex h-full w-full flex-col md:overflow-hidden"
         onSubmit={form.handleSubmit(onStepSubmit)}
       >
-        <MapformContent
-          drawerValues={drawerValues}
-          onDrawerValuesChange={setDrawerValues}
-          pageData={pageData}
-        >
-          <MapformDrawerButton
-            onOpen={() => setDrawerValues([...drawerValues, "page-content"])}
-          />
+        <MapformContent drawerValues={drawerValues} pageData={pageData}>
+          <MapformDrawerButton onDrawerStackOpenChange={setIsDrawerStackOpen} />
           <MapformMap
             initialViewState={{
               longitude: currentPage.center.x,
@@ -237,23 +308,43 @@ export function Map({
                 right: 0,
               },
             }}
-          />
+          >
+            {!drawerValues.includes("location-search")
+              ? selectedLocations.map((location) => {
+                  if (!location) {
+                    return null;
+                  }
+
+                  return (
+                    <button
+                      key={`${location.x}-${location.y}`}
+                      onClick={() => {
+                        handleLocationSearch(location.blockId);
+                      }}
+                    >
+                      <LocationMarker
+                        latitude={location.y}
+                        longitude={location.x}
+                      >
+                        <SelectionPin />
+                      </LocationMarker>
+                    </button>
+                  );
+                })
+              : null}
+          </MapformMap>
           <CustomBlockProvider
             pinBlock={{
               isSelectingLocationFor: isSelectingPinBlockLocationFor,
-              setIsSelectingLocationFor: (val) => {
-                // TODO: Improve this temporary workaround. If you don't
-                // scroll to the bottom first, there is a jarring animation
-                // when opening the next drawer
-                window.scrollTo({ top: 0, behavior: "smooth" });
-                setTimeout(() => {
-                  setDrawerValues([...drawerValues, "location-search"]);
-                  setIsSelectingPinBlockLocationFor(val);
-                }, 500);
-              },
+              setIsSelectingLocationFor: handleLocationSearch,
             }}
           >
-            <MapformDrawer value="page-content">
+            <MapformDrawer
+              onClose={() => {
+                setIsDrawerStackOpen(false);
+              }}
+              value="page-content"
+            >
               <Blocknote
                 description={currentPage.content as { content: CustomBlock[] }}
                 icon={currentPage.icon}
@@ -269,7 +360,10 @@ export function Map({
             )}
             <MapformDrawer
               onClose={() => {
-                setDrawerValues(drawerValues.filter((v) => v !== "feature"));
+                setQueryString({
+                  key: "feature",
+                  value: null,
+                });
               }}
               value="feature"
             >
@@ -288,9 +382,7 @@ export function Map({
             className="bottom-0 max-sm:fixed"
             value="location-search"
             onClose={() => {
-              setDrawerValues(
-                drawerValues.filter((v) => v !== "location-search"),
-              );
+              setIsSearching(false);
             }}
           >
             <LocationSearch>
@@ -305,9 +397,7 @@ export function Map({
                     selectedFeature?.properties?.lon,
                   );
                   setIsSelectingPinBlockLocationFor(null);
-                  setDrawerValues(
-                    drawerValues.filter((v) => v !== "location-search"),
-                  );
+                  setIsSearching(false);
                 }}
               >
                 Select Location
