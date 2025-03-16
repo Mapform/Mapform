@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 import { compressImage } from "~/lib/compress-image";
 import { useProject } from "../project-context";
 import { EditBar } from "./edit-bar";
@@ -33,22 +33,20 @@ function Project() {
 
   const currentPage = updatePageServerAction.optimisticState;
 
-  const [drawerValues, setDrawerValues] = useState<string[]>([
-    "page-content",
-    ...(selectedFeature ? ["feature"] : []),
-  ]);
-
-  useEffect(() => {
-    const featureIsOpen = drawerValues.includes("feature");
-
-    if (selectedFeature) {
-      if (!featureIsOpen) {
-        setDrawerValues([...drawerValues, "feature"]);
-      }
-    } else if (featureIsOpen) {
-      setDrawerValues(drawerValues.filter((v) => v !== "feature"));
-    }
-  }, [selectedFeature, drawerValues]);
+  // Controls the location search drawer
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  // Controls the ChevronsRight button to open or close all drawers
+  const [isDrawerStackOpen, setIsDrawerStackOpen] = useState(true);
+  const drawerValues = useMemo(() => {
+    return isDrawerStackOpen
+      ? [
+          "page-content",
+          // The feature drawer only opens when the feature is specified in the URL
+          ...(selectedFeature ? ["feature"] : []),
+          ...(isSearchOpen ? ["location-search"] : []),
+        ]
+      : [];
+  }, [selectedFeature, isSearchOpen, isDrawerStackOpen]);
 
   if (!currentPage) {
     return null;
@@ -61,7 +59,6 @@ function Project() {
           <MapformContent
             isEditing
             drawerValues={drawerValues}
-            onDrawerValuesChange={setDrawerValues}
             pageData={currentPageData}
           >
             <CustomBlockProvider
@@ -91,9 +88,7 @@ function Project() {
             >
               <MapformDrawer
                 onClose={() => {
-                  setDrawerValues(
-                    drawerValues.filter((v) => v !== "page-content"),
-                  );
+                  setIsDrawerStackOpen(false);
                 }}
                 value="page-content"
               >
@@ -142,10 +137,13 @@ function Project() {
                 />
               </MapformDrawer>
               <FeatureDrawer />
-              <LocationSearchDrawer currentPage={currentPage} />
+              <LocationSearchDrawer
+                currentPage={currentPage}
+                onClose={() => setIsSearchOpen(false)}
+              />
             </CustomBlockProvider>
             <MapformDrawerButton
-              onOpen={() => setDrawerValues([...drawerValues, "page-content"])}
+              onDrawerStackOpenChange={setIsDrawerStackOpen}
             />
             <MapformMap
               initialViewState={{
@@ -162,7 +160,10 @@ function Project() {
                 },
               }}
             >
-              <EditBar key={currentPage.id} />
+              <EditBar
+                key={currentPage.id}
+                onSearchOpenChange={setIsSearchOpen}
+              />
             </MapformMap>
           </MapformContent>
         </div>

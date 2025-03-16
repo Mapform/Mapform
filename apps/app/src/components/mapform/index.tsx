@@ -66,14 +66,12 @@ export function Mapform({ children }: MapformProps) {
 interface MapformContentProps {
   children: React.ReactNode;
   drawerValues: string[];
-  onDrawerValuesChange: (values: string[]) => void;
   isEditing?: boolean;
   pageData?: GetPageData["data"];
 }
 
 interface MapformContentContextProps {
   drawerValues: string[];
-  onDrawerValuesChange: (values: string[]) => void;
   isEditing?: boolean;
   pageData?: GetPageData["data"];
 }
@@ -88,11 +86,10 @@ export function MapformContent({
   pageData,
   isEditing,
   drawerValues,
-  onDrawerValuesChange,
 }: MapformContentProps) {
   return (
     <MapformContentContext.Provider
-      value={{ isEditing, drawerValues, onDrawerValuesChange, pageData }}
+      value={{ isEditing, drawerValues, pageData }}
     >
       <div className="relative flex-1 md:flex md:overflow-hidden">
         {children}
@@ -219,8 +216,12 @@ export function MapformDrawer({
   );
 }
 
-export function MapformDrawerButton({ onOpen }: { onOpen: () => void }) {
-  const { drawerValues, onDrawerValuesChange } = useMapformContent();
+export function MapformDrawerButton({
+  onDrawerStackOpenChange,
+}: {
+  onDrawerStackOpenChange: (isOpen: boolean) => void;
+}) {
+  const { drawerValues } = useMapformContent();
 
   return (
     <Button
@@ -231,11 +232,7 @@ export function MapformDrawerButton({ onOpen }: { onOpen: () => void }) {
         },
       )}
       onClick={() => {
-        if (drawerValues.length) {
-          onDrawerValuesChange([]);
-        } else {
-          onOpen();
-        }
+        onDrawerStackOpenChange(!drawerValues.length);
       }}
       size="icon-sm"
       type="button"

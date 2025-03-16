@@ -24,6 +24,7 @@ import {
 } from "~/components/mapform";
 import { Blocknote } from "~/components/mapform/block-note";
 import { Form, useForm, zodResolver } from "@mapform/ui/components/form";
+import { useSetQueryString } from "@mapform/lib/hooks/use-set-query-string";
 import type { z } from "zod";
 import {
   LocationSearch,
@@ -57,11 +58,19 @@ export function Map({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const p = searchParams.get("p");
+  const setQueryString = useSetQueryString();
   const currentPage = projectWithPages.pages.find((page) => page.id === p);
-  const [drawerValues, setDrawerValues] = useState<string[]>([
-    "page-content",
-    ...(selectedFeature ? ["feature"] : []),
-  ]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [isDrawerStackOpen, setIsDrawerStackOpen] = useState(true);
+  const drawerValues = useMemo(() => {
+    return isDrawerStackOpen
+      ? [
+          "page-content",
+          ...(selectedFeature ? ["feature"] : []),
+          ...(isSearching ? ["location-search"] : []),
+        ]
+      : [];
+  }, [selectedFeature, isSearching, isDrawerStackOpen]);
   const [isSelectingPinBlockLocationFor, setIsSelectingPinBlockLocationFor] =
     useState<string | null>(null);
   const blocknoteStepSchema = getFormSchemaFromBlockNote(
@@ -254,7 +263,7 @@ export function Map({
     // when opening the next drawer
     window.scrollTo({ top: 0, behavior: "smooth" });
     setTimeout(() => {
-      setDrawerValues([...drawerValues, "location-search"]);
+      setIsSearching(true);
       setIsSelectingPinBlockLocationFor(val);
 
       const location = selectedLocations.find(
@@ -276,14 +285,8 @@ export function Map({
         className="flex h-full w-full flex-col md:overflow-hidden"
         onSubmit={form.handleSubmit(onStepSubmit)}
       >
-        <MapformContent
-          drawerValues={drawerValues}
-          onDrawerValuesChange={setDrawerValues}
-          pageData={pageData}
-        >
-          <MapformDrawerButton
-            onOpen={() => setDrawerValues([...drawerValues, "page-content"])}
-          />
+        <MapformContent drawerValues={drawerValues} pageData={pageData}>
+          <MapformDrawerButton onDrawerStackOpenChange={setIsDrawerStackOpen} />
           <MapformMap
             initialViewState={{
               longitude: currentPage.center.x,
@@ -329,7 +332,12 @@ export function Map({
               setIsSelectingLocationFor: handleLocationSearch,
             }}
           >
-            <MapformDrawer value="page-content">
+            <MapformDrawer
+              onClose={() => {
+                setIsDrawerStackOpen(false);
+              }}
+              value="page-content"
+            >
               <Blocknote
                 description={currentPage.content as { content: CustomBlock[] }}
                 icon={currentPage.icon}
@@ -345,7 +353,10 @@ export function Map({
             )}
             <MapformDrawer
               onClose={() => {
-                setDrawerValues(drawerValues.filter((v) => v !== "feature"));
+                setQueryString({
+                  key: "feature",
+                  value: null,
+                });
               }}
               value="feature"
             >
@@ -364,9 +375,7 @@ export function Map({
             className="bottom-0 max-sm:fixed"
             value="location-search"
             onClose={() => {
-              setDrawerValues(
-                drawerValues.filter((v) => v !== "location-search"),
-              );
+              setIsSearching(false);
             }}
           >
             <LocationSearch>
@@ -381,9 +390,7 @@ export function Map({
                     selectedFeature?.properties?.lon,
                   );
                   setIsSelectingPinBlockLocationFor(null);
-                  setDrawerValues(
-                    drawerValues.filter((v) => v !== "location-search"),
-                  );
+                  setIsSearching(false);
                 }}
               >
                 Select Location

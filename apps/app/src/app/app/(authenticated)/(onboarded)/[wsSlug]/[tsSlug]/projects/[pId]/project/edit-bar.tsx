@@ -11,12 +11,14 @@ import { cn } from "@mapform/lib/classnames";
 import { useProject } from "../project-context";
 import { FocusIcon, HandIcon, PencilIcon } from "lucide-react";
 
-const EDIT_BAR_DRAWERS = ["location-search", "marker-edit"];
+interface EditBarProps {
+  onSearchOpenChange: (isOpen: boolean) => void;
+}
 
-export function EditBar() {
+export function EditBar({ onSearchOpenChange }: EditBarProps) {
   const { map } = useMapform();
   const { updatePageServerAction } = useProject();
-  const { drawerValues, onDrawerValuesChange } = useMapformContent();
+  const { drawerValues } = useMapformContent();
 
   const isSearchOpen = drawerValues.includes("location-search");
   const isMarkerEditOpen = drawerValues.includes("marker-edit");
@@ -39,11 +41,7 @@ export function EditBar() {
             <TooltipTrigger asChild>
               <Button
                 onClick={() => {
-                  onDrawerValuesChange(
-                    drawerValues.filter(
-                      (value) => !EDIT_BAR_DRAWERS.includes(value),
-                    ),
-                  );
+                  onSearchOpenChange(false);
                 }}
                 size="icon"
                 variant={isSearchOpen || isMarkerEditOpen ? "ghost" : "default"}
@@ -60,12 +58,7 @@ export function EditBar() {
               <Button
                 onClick={() => {
                   if (!isSearchOpen) {
-                    onDrawerValuesChange([
-                      ...drawerValues.filter(
-                        (value) => !EDIT_BAR_DRAWERS.includes(value),
-                      ),
-                      "location-search",
-                    ]);
+                    onSearchOpenChange(true);
                   }
                 }}
                 size="icon"

@@ -3,11 +3,7 @@ import {
   LocationSearchButton,
   useLocationSearch,
 } from "~/components/location-search";
-import {
-  MapformDrawer,
-  useMapform,
-  useMapformContent,
-} from "~/components/mapform";
+import { MapformDrawer, useMapform } from "~/components/mapform";
 import { useProject } from "../project-context";
 import type { GetPageWithLayers } from "@mapform/backend/data/pages/get-page-with-layers";
 import {
@@ -36,24 +32,25 @@ import { useState } from "react";
 
 interface LocationSearchDrawerProps {
   currentPage: NonNullable<GetPageWithLayers["data"]>;
+  onClose: () => void;
 }
 
 export function LocationSearchDrawer({
   currentPage,
+  onClose,
 }: LocationSearchDrawerProps) {
-  const { drawerValues, onDrawerValuesChange } = useMapformContent();
-
   return (
     <MapformDrawer
       onClose={() => {
-        onDrawerValuesChange(
-          drawerValues.filter((v) => v !== "location-search"),
-        );
+        onClose();
       }}
       value="location-search"
     >
       <LocationSearch>
-        <LocationSearchDrawerInner currentPage={currentPage} />
+        <LocationSearchDrawerInner
+          currentPage={currentPage}
+          onClose={onClose}
+        />
       </LocationSearch>
     </MapformDrawer>
   );
@@ -61,12 +58,12 @@ export function LocationSearchDrawer({
 
 export function LocationSearchDrawerInner({
   currentPage,
+  onClose,
 }: LocationSearchDrawerProps) {
   const { map } = useMapform();
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState<string>("");
   const { selectedFeature } = useLocationSearch();
-  const { drawerValues, onDrawerValuesChange } = useMapformContent();
   const [layerPopoverOpen, setLayerPopoverOpen] = useState(false);
   const { currentProject, updatePageServerAction } = useProject();
 
@@ -99,7 +96,7 @@ export function LocationSearchDrawerInner({
     selectedFeature?.properties?.name ??
     selectedFeature?.properties?.address_line1;
 
-  const handleSaveMapPosition = async () => {
+  const handleSaveMapPosition = () => {
     const center = map?.getCenter();
     const zoom = map?.getZoom();
     const pitch = map?.getPitch();
@@ -127,9 +124,7 @@ export function LocationSearchDrawerInner({
         ...payload,
       });
 
-      onDrawerValuesChange(
-        drawerValues.filter((value) => value !== "location-search"),
-      );
+      onClose();
     }
   };
 
