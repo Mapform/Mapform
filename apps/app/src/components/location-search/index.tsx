@@ -22,7 +22,6 @@ import {
   Command,
 } from "@mapform/ui/components/command";
 import * as Portal from "@radix-ui/react-portal";
-import { motion } from "motion/react";
 import {
   Popover,
   PopoverAnchor,
@@ -31,6 +30,7 @@ import {
 import { useMapform } from "~/components/mapform";
 import { Button, type ButtonProps } from "@mapform/ui/components/button";
 import { Skeleton } from "@mapform/ui/components/skeleton";
+import { SelectionPin } from "../selection-pin";
 
 export function LocationSearch(props: { children?: React.ReactNode }) {
   const { map } = useMapform();
@@ -125,6 +125,7 @@ export function LocationSearchWithMap({
         lng: map.getCenter().lng,
       }),
     placeholderData: (prev) => prev,
+    staleTime: Infinity,
   });
 
   const marker = useMemo(() => {
@@ -132,35 +133,58 @@ export function LocationSearchWithMap({
     const el = document.createElement("div");
     const mk = new Marker(el).setLngLat(currentLocation);
 
-    map.on("click", () => {
-      setShowPinPopover(false);
-    });
-
-    map.on("move", () => {
-      mk.setLngLat(map.getCenter());
-    });
-
-    map.on("movestart", () => {
-      setShowPinPopover(false);
-    });
-
-    map.on("moveend", () => {
-      void refetch();
-      setShowPinPopover(true);
-    });
-
     return mk;
-  }, [map, refetch]);
+  }, [map]);
 
   useEffect(() => {
     marker.addTo(map);
+    // Fetch on mount
+    void refetch();
+
+    // Focus on input
     setTimeout(() => {
       inputRef.current?.focus();
     }, 100);
 
+    const handleClick = () => {
+      setShowPinPopover(false);
+    };
+
+    const handleMove = () => {
+      marker.setLngLat(map.getCenter());
+    };
+
+    const handleMoveStart = () => {
+      console.log("movestart");
+      setShowPinPopover(false);
+    };
+
+    const handleMoveEnd = () => {
+      const lat = map.getCenter().lat;
+      const lng = map.getCenter().lng;
+      const queryKey = ["reverse-geocode", lat, lng];
+
+      console.log(queryClient.getQueryData(queryKey));
+
+      // Only refetch if we don't have cached data for these coordinates
+      if (!queryClient.getQueryData(queryKey)) {
+        void refetch();
+      }
+      setShowPinPopover(true);
+    };
+
+    map.on("click", handleClick);
+    map.on("move", handleMove);
+    map.on("movestart", handleMoveStart);
+    map.on("moveend", handleMoveEnd);
+
     return () => {
       setShowPinPopover(true);
       marker.remove();
+      map.off("click", handleClick);
+      map.off("move", handleMove);
+      map.off("movestart", handleMoveStart);
+      map.off("moveend", handleMoveEnd);
     };
   }, []);
 
@@ -371,18 +395,7 @@ export function LocationSearchWithMap({
       <Portal.Root container={marker.getElement()}>
         <Popover open={showPinPopover}>
           <PopoverAnchor>
-            <motion.div
-              animate={{
-                opacity: 1,
-              }}
-              className="z-[100] flex -translate-y-1/2 flex-col items-center"
-              key="pin"
-              initial={{ opacity: 0 }}
-              exit={{ opacity: 0 }}
-            >
-              <div className="z-10 size-4 rounded-full border-4 border-black bg-white" />
-              <div className="-mt-1.5 h-8 w-[5px] bg-black" />
-            </motion.div>
+            <SelectionPin />
           </PopoverAnchor>
           <PopoverContent
             className={cn({

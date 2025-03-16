@@ -14,9 +14,7 @@ export interface CustomBlockContextProps {
 
   pinBlock?: {
     isSelectingLocationFor: string | null;
-    setIsSelectingLocationFor: React.Dispatch<
-      React.SetStateAction<string | null>
-    >;
+    setIsSelectingLocationFor: React.Dispatch<string | null>;
   };
 }
 

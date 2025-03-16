@@ -144,6 +144,10 @@ function FeatureDrawerInner() {
     return null;
   }
 
+  if (!selectedFeature) {
+    return null;
+  }
+
   return (
     <Blocknote
       isFeature

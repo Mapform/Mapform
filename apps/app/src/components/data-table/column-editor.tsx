@@ -83,9 +83,10 @@ export function ColumnEditor({
       }}
       open={open}
     >
-      <PopoverTrigger>
+      <PopoverTrigger className="w-full">
         <span className="flex items-center gap-1.5">
-          <Icon className="size-4" /> {form.watch("name")}
+          <Icon className="size-4" />{" "}
+          <span className="truncate">{form.watch("name")}</span>
         </span>
       </PopoverTrigger>
       <PopoverContent align="start" className="w-[240px] p-0" side="bottom">
