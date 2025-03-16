@@ -98,13 +98,6 @@ export const Pin = createReactBlockSpec(
             {hasLocation
               ? `Selected: ${currentLatitude.toFixed(5)},${currentLongitude.toFixed(5)}`
               : block.props.text}
-            {block.props.required ? (
-              <AsteriskIcon
-                className="absolute right-2"
-                height={14}
-                width={14}
-              />
-            ) : null}
           </Button>
 
           <FormField
