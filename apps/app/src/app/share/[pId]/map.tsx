@@ -396,6 +396,7 @@ export function Map({
                     `${isSelectingPinBlockLocationFor}.x`,
                     selectedFeature?.properties?.lon,
                   );
+                  void form.trigger();
                   setIsSelectingPinBlockLocationFor(null);
                   setIsSearching(false);
                 }}
