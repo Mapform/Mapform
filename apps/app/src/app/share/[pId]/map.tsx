@@ -60,17 +60,17 @@ export function Map({
   const p = searchParams.get("p");
   const setQueryString = useSetQueryString();
   const currentPage = projectWithPages.pages.find((page) => page.id === p);
-  const [isSearching, setIsSearching] = useState(false);
+  const [isSearchOpen, setIsSearching] = useState(false);
   const [isDrawerStackOpen, setIsDrawerStackOpen] = useState(true);
   const drawerValues = useMemo(() => {
     return isDrawerStackOpen
       ? [
           "page-content",
           ...(selectedFeature ? ["feature"] : []),
-          ...(isSearching ? ["location-search"] : []),
+          ...(isSearchOpen ? ["location-search"] : []),
         ]
       : [];
-  }, [selectedFeature, isSearching, isDrawerStackOpen]);
+  }, [selectedFeature, isSearchOpen, isDrawerStackOpen]);
   const [isSelectingPinBlockLocationFor, setIsSelectingPinBlockLocationFor] =
     useState<string | null>(null);
   const blocknoteStepSchema = getFormSchemaFromBlockNote(
@@ -153,6 +153,13 @@ export function Map({
       duration: 1000,
     });
   };
+
+  // Reset isDrawerStackOpen when the search or feature is opened
+  useEffect(() => {
+    if (isSearchOpen || !!selectedFeature) {
+      setIsDrawerStackOpen(true);
+    }
+  }, [isSearchOpen, selectedFeature]);
 
   useEffect(() => {
     void (async () => {

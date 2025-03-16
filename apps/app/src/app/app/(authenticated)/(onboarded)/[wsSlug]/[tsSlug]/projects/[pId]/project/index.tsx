@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { compressImage } from "~/lib/compress-image";
 import { useProject } from "../project-context";
 import { EditBar } from "./edit-bar";
@@ -38,7 +38,7 @@ function Project() {
   // Controls the ChevronsRight button to open or close all drawers
   const [isDrawerStackOpen, setIsDrawerStackOpen] = useState(true);
   const drawerValues = useMemo(() => {
-    return isDrawerStackOpen
+    return isDrawerStackOpen || selectedFeature || isSearchOpen
       ? [
           "page-content",
           // The feature drawer only opens when the feature is specified in the URL
@@ -47,6 +47,13 @@ function Project() {
         ]
       : [];
   }, [selectedFeature, isSearchOpen, isDrawerStackOpen]);
+
+  // Reset isDrawerStackOpen when the search or feature is opened
+  useEffect(() => {
+    if (isSearchOpen || !!selectedFeature) {
+      setIsDrawerStackOpen(true);
+    }
+  }, [isSearchOpen, selectedFeature]);
 
   if (!currentPage) {
     return null;
