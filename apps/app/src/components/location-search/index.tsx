@@ -133,19 +133,33 @@ export function LocationSearchWithMap({
     const el = document.createElement("div");
     const mk = new Marker(el).setLngLat(currentLocation);
 
-    map.on("click", () => {
+    return mk;
+  }, [map]);
+
+  useEffect(() => {
+    marker.addTo(map);
+    // Fetch on mount
+    void refetch();
+
+    // Focus on input
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 100);
+
+    const handleClick = () => {
       setShowPinPopover(false);
-    });
+    };
 
-    map.on("move", () => {
-      mk.setLngLat(map.getCenter());
-    });
+    const handleMove = () => {
+      marker.setLngLat(map.getCenter());
+    };
 
-    map.on("movestart", () => {
+    const handleMoveStart = () => {
+      console.log("movestart");
       setShowPinPopover(false);
-    });
+    };
 
-    map.on("moveend", () => {
+    const handleMoveEnd = () => {
       const lat = map.getCenter().lat;
       const lng = map.getCenter().lng;
       const queryKey = ["reverse-geocode", lat, lng];
@@ -157,21 +171,20 @@ export function LocationSearchWithMap({
         void refetch();
       }
       setShowPinPopover(true);
-    });
+    };
 
-    return mk;
-  }, [map, refetch, queryClient]);
-
-  useEffect(() => {
-    marker.addTo(map);
-    void refetch();
-    setTimeout(() => {
-      inputRef.current?.focus();
-    }, 100);
+    map.on("click", handleClick);
+    map.on("move", handleMove);
+    map.on("movestart", handleMoveStart);
+    map.on("moveend", handleMoveEnd);
 
     return () => {
       setShowPinPopover(true);
       marker.remove();
+      map.off("click", handleClick);
+      map.off("move", handleMove);
+      map.off("movestart", handleMoveStart);
+      map.off("moveend", handleMoveEnd);
     };
   }, []);
 
