@@ -471,7 +471,10 @@ function PointInput({
   form: UseFormReturn<Extract<UpsertCellSchema, { type: "point" }>>;
 }) {
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
-  const [center, setCenter] = useState([0, 0]);
+  const [center, setCenter] = useState([
+    form.getValues().value?.x || 0,
+    form.getValues().value?.y || 0,
+  ]);
 
   useEffect(() => {
     mapboxgl.accessToken = accessToken;
