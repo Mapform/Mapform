@@ -83,7 +83,11 @@ export function CellPopover({
 
   const renderCellContent = useCallback(() => {
     const v = form.getValues();
-    const { type: parsedType, value } = upsertCellSchema.parse(v);
+    const result = upsertCellSchema.safeParse(v);
+    if (!result.success) {
+      return null;
+    }
+    const { type: parsedType, value } = result.data;
 
     if (parsedType === "point") {
       if (!value) {
