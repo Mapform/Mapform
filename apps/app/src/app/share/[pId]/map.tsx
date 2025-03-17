@@ -228,39 +228,31 @@ export function Map({
   };
 
   const controls = (
-    <div className={"fixed bottom-0 z-50 w-full bg-white md:absolute"}>
-      <div className="px-2">
-        <div className="relative flex h-[50px] w-full items-center justify-between">
-          {prevPage ? (
-            <Button
-              className="absolute left-0"
-              onClick={() => {
-                setCurrentPageAndFly(prevPage);
-              }}
-              type="button"
-              variant="ghost"
-            >
-              <ArrowLeftIcon className="-ml-1 mr-1 size-4" />
-              Back
-            </Button>
-          ) : null}
-          <p className="mx-auto text-xs text-gray-500">
-            Made with{" "}
-            <a
-              className="text-gray-500 underline"
-              href="https://alpha.mapform.co"
-            >
-              Mapform
-            </a>
-          </p>
-          {nextPage && currentPage.pageType === "page" ? (
-            <Button className="absolute right-0" type="submit">
-              {nextPage.pageType === "page_ending" ? "Submit" : "Next"}
-              <ArrowRightIcon className="-mr-1 ml-1 size-4" />
-            </Button>
-          ) : null}
-        </div>
-      </div>
+    <div className="divide-x rounded-xl border bg-white p-1.5 shadow-lg">
+      {prevPage ? (
+        <Button
+          onClick={() => {
+            setCurrentPageAndFly(prevPage);
+          }}
+          type="button"
+          variant="ghost"
+        >
+          <ArrowLeftIcon className="-ml-1 mr-1 size-4" />
+          Back
+        </Button>
+      ) : null}
+      <p className="mx-auto text-xs text-gray-500">
+        Made with{" "}
+        <a className="text-gray-500 underline" href="https://alpha.mapform.co">
+          Mapform
+        </a>
+      </p>
+      {nextPage && currentPage.pageType === "page" ? (
+        <Button type="submit">
+          {nextPage.pageType === "page_ending" ? "Submit" : "Next"}
+          <ArrowRightIcon className="-mr-1 ml-1 size-4" />
+        </Button>
+      ) : null}
     </div>
   );
 
@@ -332,6 +324,9 @@ export function Map({
                   );
                 })
               : null}
+            <div className="pointer-events-auto absolute bottom-8 left-1/2 z-10 flex -translate-x-1/2 transform items-center">
+              {controls}
+            </div>
           </MapformMap>
           <CustomBlockProvider
             pinBlock={{
@@ -351,13 +346,13 @@ export function Map({
                 key={currentPage.id}
                 title={currentPage.title}
               />
-              {drawerValues.length > 1 ? null : (
+              {/* {drawerValues.length > 1 ? null : (
                 <div className="hidden sm:block">{controls}</div>
-              )}
+              )} */}
             </MapformDrawer>
-            {drawerValues.length > 1 ? null : (
+            {/* {drawerValues.length > 1 ? null : (
               <div className="hidden max-sm:block">{controls}</div>
-            )}
+            )} */}
             <MapformDrawer
               onClose={() => {
                 setQueryString({
