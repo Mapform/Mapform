@@ -381,6 +381,7 @@ function DateInput({
   );
 }
 
+// TODO: This would likely be better as a modal than a popover
 function RichtextInput({
   form,
 }: {
@@ -441,7 +442,7 @@ function RichtextInput({
         },
       }}
     >
-      <div className="h-[360px] w-[360px] overflow-y-auto">
+      <div className="box-content h-[360px] w-[360px] overflow-y-auto p-4 pl-16">
         <FormField
           control={form.control}
           name="value"
