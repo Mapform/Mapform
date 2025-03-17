@@ -18,7 +18,7 @@ const schemaMap = {
         }),
   textInput: (props: TextInputBlock["props"]) => {
     return props.required
-      ? z.string()
+      ? z.string().min(1)
       : z.string().optional().or(z.literal(""));
   },
 };

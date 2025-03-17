@@ -6,6 +6,7 @@ import {
   FormControl,
   useFormContext,
   FormLabel,
+  FormMessage,
 } from "@mapform/ui/components/form";
 import { Button } from "@mapform/ui/components/button";
 import { Input } from "@mapform/ui/components/input";
@@ -80,60 +81,55 @@ export const Pin = createReactBlockSpec(
       const hasLocation = currentLatitude && currentLongitude;
 
       return (
-        <div className="fiex mb-4 w-full flex-col space-y-2">
-          <FormLabel className="flex justify-between text-base font-medium">
-            {block.props.label}
-            {block.props.required ? (
-              <AsteriskIcon height={14} width={14} />
-            ) : null}
-          </FormLabel>
-          <Button
-            className="relative w-full"
-            onClick={() => {
-              pinBlock?.setIsSelectingLocationFor(block.id);
-            }}
-            type="button"
-            variant="secondary"
-          >
-            {hasLocation
-              ? `Selected: ${currentLatitude.toFixed(5)},${currentLongitude.toFixed(5)}`
-              : block.props.text}
-            {block.props.required ? (
-              <AsteriskIcon
-                className="absolute right-2"
-                height={14}
-                width={14}
-              />
-            ) : null}
-          </Button>
+        <FormField
+          control={form.control}
+          // disabled
+          // This is what allows us to match the user value back to the input
+          name={`${block.id}.x`}
+          render={({ field: longitudeField }) => (
+            <FormField
+              control={form.control}
+              // disabled
+              // This is what allows us to match the user value back to the input
+              name={`${block.id}.y`}
+              render={({ field: latitudeField }) => (
+                <div className="fiex mb-4 w-full flex-col space-y-2">
+                  <FormLabel className="flex justify-between text-base font-medium">
+                    {block.props.label}
+                    {block.props.required ? (
+                      <AsteriskIcon height={14} width={14} />
+                    ) : null}
+                  </FormLabel>
+                  <Button
+                    className="relative w-full"
+                    onClick={() => {
+                      pinBlock?.setIsSelectingLocationFor(block.id);
+                    }}
+                    type="button"
+                    variant="secondary"
+                  >
+                    {hasLocation
+                      ? `Selected: ${currentLatitude.toFixed(5)},${currentLongitude.toFixed(5)}`
+                      : block.props.text}
+                  </Button>
 
-          <FormField
-            control={form.control}
-            // disabled
-            // This is what allows us to match the user value back to the input
-            name={`${block.id}.y`}
-            render={({ field }) => (
-              <FormItem className="flex-1">
-                <FormControl>
-                  <Input placeholder="" {...field} type="hidden" />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            // disabled
-            // This is what allows us to match the user value back to the input
-            name={`${block.id}.x`}
-            render={({ field }) => (
-              <FormItem className="flex-1">
-                <FormControl>
-                  <Input placeholder="" {...field} type="hidden" />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-        </div>
+                  <FormItem className="flex-1">
+                    <FormControl>
+                      <Input placeholder="" {...longitudeField} type="hidden" />
+                    </FormControl>
+                  </FormItem>
+
+                  <FormItem className="flex-1">
+                    <FormControl>
+                      <Input placeholder="" {...latitudeField} type="hidden" />
+                    </FormControl>
+                  </FormItem>
+                  <FormMessage />
+                </div>
+              )}
+            />
+          )}
+        />
       );
     },
   },
