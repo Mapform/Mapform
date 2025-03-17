@@ -10,6 +10,7 @@ import type { GetProjectWithPages } from "@mapform/backend/data/projects/get-pro
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import type { Responses } from "@mapform/backend/data/rows/get-responses";
 import { createSubmissionAction } from "~/data/rows/create-submission";
+import { motion, AnimatePresence } from "motion/react";
 import {
   CustomBlockProvider,
   getFormSchemaFromBlockNote,
@@ -31,7 +32,7 @@ import {
   LocationSearchButton,
 } from "~/components/location-search";
 import { Button } from "@mapform/ui/components/button";
-import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
+import { ArrowLeftIcon, ArrowRightIcon, CheckIcon } from "lucide-react";
 import { LocationMarker } from "~/components/mapform/map";
 import { SelectionPin } from "~/components/selection-pin";
 
@@ -210,8 +211,12 @@ export function Map({
     projectWithPages.pages.findIndex((page) => page.id === currentPage.id) - 1;
   const nextPageIndex =
     projectWithPages.pages.findIndex((page) => page.id === currentPage.id) + 1;
+  const currentPageIndex = projectWithPages.pages.findIndex(
+    (page) => page.id === currentPage.id,
+  );
   const prevPage = projectWithPages.pages[prevPageIndex];
   const nextPage = projectWithPages.pages[nextPageIndex];
+  const isLastPage = currentPageIndex === projectWithPages.pages.length - 1;
 
   const onStepSubmit = (data: Record<string, string>) => {
     if (currentSession) {
@@ -228,32 +233,58 @@ export function Map({
   };
 
   const controls = (
-    <div className="divide-x rounded-xl border bg-white p-1.5 shadow-lg">
-      {prevPage ? (
-        <Button
-          onClick={() => {
-            setCurrentPageAndFly(prevPage);
-          }}
-          type="button"
-          variant="ghost"
+    <AnimatePresence>
+      {drawerValues.length <= 1 && (
+        <motion.div
+          className="w-full rounded-xl border bg-white py-1.5 shadow-lg"
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.95 }}
+          initial={{ opacity: 0, scale: 0.95 }}
         >
-          <ArrowLeftIcon className="-ml-1 mr-1 size-4" />
-          Back
-        </Button>
-      ) : null}
-      <p className="mx-auto text-xs text-gray-500">
-        Made with{" "}
-        <a className="text-gray-500 underline" href="https://alpha.mapform.co">
-          Mapform
-        </a>
-      </p>
-      {nextPage && currentPage.pageType === "page" ? (
-        <Button type="submit">
-          {nextPage.pageType === "page_ending" ? "Submit" : "Next"}
-          <ArrowRightIcon className="-mr-1 ml-1 size-4" />
-        </Button>
-      ) : null}
-    </div>
+          <div className="flex gap-1 px-1.5">
+            <Button
+              disabled={!prevPage}
+              onClick={() => {
+                prevPage && setCurrentPageAndFly(prevPage);
+              }}
+              // size="icon"
+              type="button"
+              variant="ghost"
+            >
+              <ArrowLeftIcon className="-ml-1 mr-1 size-5" />
+              Back
+            </Button>
+            <Button
+              className="flex-1"
+              disabled={!nextPage || currentPage.pageType !== "page"}
+              type="submit"
+            >
+              {nextPage
+                ? nextPage.pageType === "page_ending"
+                  ? "Submit"
+                  : "Next"
+                : isLastPage
+                  ? "Done"
+                  : null}
+              {nextPage ? (
+                <ArrowRightIcon className="-mr-1 ml-1 size-5" />
+              ) : (
+                <CheckIcon className="-mr-1 ml-1 size-5" />
+              )}
+            </Button>
+          </div>
+          <p className="mx-auto mt-1.5 border-t px-1.5 pt-1.5 text-center text-xs text-gray-500">
+            Made with{" "}
+            <a
+              className="text-gray-500 underline"
+              href="https://alpha.mapform.co"
+            >
+              Mapform
+            </a>
+          </p>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 
   const handleLocationSearch = (val: string | null) => {
@@ -324,7 +355,7 @@ export function Map({
                   );
                 })
               : null}
-            <div className="pointer-events-auto absolute bottom-8 left-1/2 z-10 flex -translate-x-1/2 transform items-center">
+            <div className="pointer-events-auto absolute bottom-8 left-1/2 z-10 flex min-w-[300px] -translate-x-1/2 transform items-center max-md:hidden">
               {controls}
             </div>
           </MapformMap>
@@ -353,6 +384,9 @@ export function Map({
             {/* {drawerValues.length > 1 ? null : (
               <div className="hidden max-sm:block">{controls}</div>
             )} */}
+            <div className="pointer-events-auto fixed bottom-2 left-1/2 z-50 flex w-[calc(100%-1rem)] -translate-x-1/2 transform items-center md:hidden">
+              {controls}
+            </div>
             <MapformDrawer
               onClose={() => {
                 setQueryString({
