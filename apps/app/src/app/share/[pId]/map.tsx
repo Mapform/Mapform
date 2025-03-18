@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useMapform } from "~/components/mapform";
 import { useAction } from "next-safe-action/hooks";
 import React, { useEffect, useMemo, useState } from "react";
@@ -11,6 +12,7 @@ import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import type { Responses } from "@mapform/backend/data/rows/get-responses";
 import { createSubmissionAction } from "~/data/rows/create-submission";
 import { motion, AnimatePresence } from "motion/react";
+import mapform from "public/static/images/mapform.svg";
 import {
   CustomBlockProvider,
   getFormSchemaFromBlockNote,
@@ -35,6 +37,12 @@ import { Button } from "@mapform/ui/components/button";
 import { ArrowLeftIcon, ArrowRightIcon, CheckIcon } from "lucide-react";
 import { LocationMarker } from "~/components/mapform/map";
 import { SelectionPin } from "~/components/selection-pin";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@mapform/ui/components/tooltip";
+import Link from "next/link";
 
 interface MapProps {
   pageData: GetPageData["data"];
@@ -241,19 +249,29 @@ export function Map({
           exit={{ opacity: 0, scale: 0.95 }}
           initial={{ opacity: 0, scale: 0.95 }}
         >
-          <div className="flex gap-1 px-1.5">
+          <div className="flex justify-between gap-1.5 px-1.5">
             <Button
+              className="flex-1"
               disabled={!prevPage}
               onClick={() => {
                 prevPage && setCurrentPageAndFly(prevPage);
               }}
-              // size="icon"
               type="button"
-              variant="ghost"
+              variant="secondary"
             >
               <ArrowLeftIcon className="-ml-1 mr-1 size-5" />
               Back
             </Button>
+            <Link className="underline" href="https://alpha.mapform.co">
+              <Button className="py-0" type="button" variant="ghost">
+                <div className="flex flex-col items-center justify-center gap-0.5">
+                  <Image alt="Mapform" className="size-3.5" src={mapform} />
+                  <span className="text-muted-foreground text-[10px] font-normal leading-none">
+                    Mapform
+                  </span>
+                </div>
+              </Button>
+            </Link>
             <Button
               className="flex-1"
               disabled={!nextPage || currentPage.pageType !== "page"}
@@ -273,15 +291,6 @@ export function Map({
               )}
             </Button>
           </div>
-          <p className="mx-auto mt-1.5 border-t px-1.5 pt-1.5 text-center text-xs text-gray-500">
-            Made with{" "}
-            <a
-              className="text-gray-500 underline"
-              href="https://alpha.mapform.co"
-            >
-              Mapform
-            </a>
-          </p>
         </motion.div>
       )}
     </AnimatePresence>
