@@ -86,6 +86,10 @@ function Project() {
                   );
                   const formData = new FormData();
                   formData.append("image", compressedFile);
+                  formData.append(
+                    "workspaceId",
+                    projectWithPages.teamspace.workspace.id,
+                  );
 
                   const response =
                     await uploadImageServerAction.executeAsync(formData);

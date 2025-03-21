@@ -4,7 +4,7 @@ import { db } from "@mapform/db";
 import { eq, and, inArray } from "@mapform/db/utils";
 import { projects } from "@mapform/db/schema";
 import { updateProjectSchema } from "./schema";
-import { UserAuthClient } from "../../../lib/types";
+import type { UserAuthClient } from "../../../lib/types";
 
 export const updateProject = (authClient: UserAuthClient) =>
   authClient

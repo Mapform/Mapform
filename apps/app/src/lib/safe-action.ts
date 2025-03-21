@@ -21,7 +21,7 @@ import { getLayerPoint } from "@mapform/backend/data/datalayer/get-layer-point";
 import { getPageData } from "@mapform/backend/data/datalayer/get-page-data";
 import { createPoint } from "@mapform/backend/data/datasets/create-point";
 import { listTeamspaceDatasets } from "@mapform/backend/data/datasets/list-teamspace-datasets";
-import { uploadImage } from "@mapform/backend/data/images";
+import { uploadImage } from "@mapform/backend/data/images/upload-image";
 import { createPageLayer } from "@mapform/backend/data/layers-to-pages/create-page-layer";
 import { deletePageLayer } from "@mapform/backend/data/layers-to-pages/delete-page-layer";
 import { upsertLayer } from "@mapform/backend/data/layers/upsert-layer";

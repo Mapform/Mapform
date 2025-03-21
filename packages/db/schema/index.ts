@@ -46,3 +46,4 @@ export * from "./rows/validation";
 export * from "./columns/validation";
 export * from "./cells/validation";
 export * from "./plans/validation";
+export * from "./blobs/validation";
