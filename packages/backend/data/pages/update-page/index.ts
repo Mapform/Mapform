@@ -17,6 +17,7 @@ import {
 import { updatePageSchema } from "./schema";
 import type { UserAuthClient } from "../../../lib/types";
 import { ServerError } from "../../../lib/server-error";
+import { updateImage } from "../../images/update-image";
 
 const mapBlockTypeToDataType = (
   blockType: InputCustomBlockTypes,
@@ -143,6 +144,32 @@ export const updatePage = (authClient: UserAuthClient) =>
         // Log image changes for debugging/tracking purposes
         console.log("Added images:", addedImages.length);
         console.log("Deleted images:", deletedImages.length);
+
+        if (addedImages.length > 0) {
+          // Mark added images as not queued for deletion
+          await Promise.all(
+            addedImages.map((image) =>
+              updateImage(authClient)({
+                url: image.props.imageUrl,
+                workspaceId: page.project.teamspace.workspace.id,
+                queuedForDeletionDate: null,
+              }),
+            ),
+          );
+        }
+
+        if (deletedImages.length > 0) {
+          // Queue deleted images for deletion
+          await Promise.all(
+            deletedImages.map((image) =>
+              updateImage(authClient)({
+                url: image.props.imageUrl,
+                workspaceId: page.project.teamspace.workspace.id,
+                queuedForDeletionDate: new Date(),
+              }),
+            ),
+          );
+        }
 
         if (
           page.pageType === "page_ending" &&

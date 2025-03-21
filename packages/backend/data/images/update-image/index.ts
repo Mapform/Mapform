@@ -6,7 +6,7 @@ import { updateImageSchema } from "./schema";
 import { blobs } from "@mapform/db/schema";
 import { eq } from "@mapform/db/utils";
 
-export const upsertImage = (authClient: UserAuthClient) =>
+export const updateImage = (authClient: UserAuthClient) =>
   authClient
     .schema(updateImageSchema)
     .action(
