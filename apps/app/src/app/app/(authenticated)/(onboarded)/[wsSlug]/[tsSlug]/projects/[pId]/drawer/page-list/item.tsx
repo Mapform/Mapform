@@ -131,7 +131,7 @@ export function Item({ page, index }: ItemProps) {
                   {page.title || "Untitled"}
                 </span>
               </SidebarRightMenuButton>
-              <DropdownMenu>
+              <DropdownMenu modal={false}>
                 <DropdownMenuTrigger asChild>
                   <SidebarMenuAction>
                     <EllipsisIcon />
