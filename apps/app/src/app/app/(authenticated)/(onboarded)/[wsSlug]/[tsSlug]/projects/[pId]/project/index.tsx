@@ -40,13 +40,18 @@ function Project() {
   const drawerValues = useMemo(() => {
     return isDrawerStackOpen || selectedFeature || isSearchOpen
       ? [
-          "page-content",
+          ...(currentPage?.contentViewType === "split" ? ["page-content"] : []),
           // The feature drawer only opens when the feature is specified in the URL
           ...(selectedFeature ? ["feature"] : []),
           ...(isSearchOpen ? ["location-search"] : []),
         ]
       : [];
-  }, [selectedFeature, isSearchOpen, isDrawerStackOpen]);
+  }, [
+    isDrawerStackOpen,
+    selectedFeature,
+    isSearchOpen,
+    currentPage?.contentViewType,
+  ]);
 
   // Reset isDrawerStackOpen when the search or feature is opened
   useEffect(() => {
@@ -149,9 +154,11 @@ function Project() {
                 onClose={() => setIsSearchOpen(false)}
               />
             </CustomBlockProvider>
-            <MapformDrawerButton
-              onDrawerStackOpenChange={setIsDrawerStackOpen}
-            />
+            {currentPage.contentViewType === "split" ? (
+              <MapformDrawerButton
+                onDrawerStackOpenChange={setIsDrawerStackOpen}
+              />
+            ) : null}
             <MapformMap
               initialViewState={{
                 longitude: currentPage.center.x,
