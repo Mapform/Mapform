@@ -10,7 +10,9 @@ import {
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
+  FormItem,
   FormLabel,
   FormMessage,
   useForm,
@@ -23,6 +25,7 @@ import { Input } from "@mapform/ui/components/input";
 import { updatePageSchema } from "@mapform/backend/data/pages/update-page/schema";
 import type { UpdatePageSchema } from "@mapform/backend/data/pages/update-page/schema";
 import { updatePageAction } from "~/data/pages/update-page";
+import { Switch } from "@mapform/ui/components/switch";
 
 interface EditPagePopoverProps {
   pageId: string;
@@ -107,16 +110,41 @@ export const EditPagePopoverContent = forwardRef<
                 </>
               )}
             />
-
-            <Button
-              className="col-span-2"
-              disabled={isPending || !form.formState.isValid}
-              size="sm"
-              type="submit"
-            >
-              Update Page
-            </Button>
           </div>
+
+          <FormField
+            control={form.control}
+            name="contentViewType"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-center justify-between">
+                <div className="space-y-0.5">
+                  <FormLabel className="flex items-center gap-x-2">
+                    Show Content
+                  </FormLabel>
+                  <FormDescription>
+                    Display the map with content on the side.
+                  </FormDescription>
+                </div>
+                <FormControl>
+                  <Switch
+                    checked={field.value === "split"}
+                    onCheckedChange={(checked) => {
+                      field.onChange(checked ? "split" : "map");
+                    }}
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+
+          <Button
+            className="col-span-2"
+            disabled={isPending || !form.formState.isValid}
+            size="sm"
+            type="submit"
+          >
+            Update Page
+          </Button>
         </form>
       </Form>
     </PopoverContent>
