@@ -159,6 +159,13 @@ export function Item({ layer }: ItemProps) {
                     <DropdownMenuGroup>
                       <DropdownMenuItem
                         className="flex items-center gap-2"
+                        onSelect={handleRemoveFromPage}
+                      >
+                        <UnlinkIcon className="size-4 flex-shrink-0" />
+                        Disconnect
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        className="flex items-center gap-2"
                         onSelect={(e) => {
                           e.preventDefault();
                           setDropdownOpen(false);
@@ -167,13 +174,6 @@ export function Item({ layer }: ItemProps) {
                       >
                         <Settings2Icon className="size-4 flex-shrink-0" />
                         Edit
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        className="flex items-center gap-2"
-                        onSelect={handleRemoveFromPage}
-                      >
-                        <UnlinkIcon className="size-4 flex-shrink-0" />
-                        Disconnect
                       </DropdownMenuItem>
                       <AlertDialogTrigger asChild>
                         <DropdownMenuItem
