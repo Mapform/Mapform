@@ -9,6 +9,7 @@ interface AutoSizeTextAreaProps {
   className?: string;
   onChange: (value: string) => void;
   onEnter?: () => void;
+  placeholder?: string;
 }
 
 export function AutoSizeTextArea({
@@ -16,6 +17,7 @@ export function AutoSizeTextArea({
   onChange,
   onEnter,
   className,
+  placeholder = "Untitled",
 }: AutoSizeTextAreaProps) {
   const { ref, bounds } = useMeasure<HTMLTextAreaElement>();
 
@@ -46,7 +48,7 @@ export function AutoSizeTextArea({
           onEnter?.();
         }
       }}
-      placeholder="Untitled"
+      placeholder={placeholder}
       ref={ref}
       // rows={1}
       value={value}
