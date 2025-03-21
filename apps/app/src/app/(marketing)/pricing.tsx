@@ -4,14 +4,8 @@ import {
   CheckIcon,
   MapIcon,
   PaintbrushIcon,
-  DatabaseIcon,
   HeadphonesIcon,
-  UserIcon,
-  LockIcon,
-  PaletteIcon,
-  UsersIcon,
   BoxIcon,
-  TableIcon,
   RectangleHorizontalIcon,
   TextCursorInputIcon,
   TrophyIcon,
@@ -34,24 +28,16 @@ const tiers = [
         icon: RectangleHorizontalIcon,
       },
       {
-        text: "Unlimited projects",
+        text: "10 MB storage",
         icon: BoxIcon,
       },
       {
-        text: "Unlimited datasets",
-        icon: TableIcon,
-      },
-      {
-        text: "Basic map customization",
+        text: "Map customization",
         icon: PaintbrushIcon,
       },
       {
         text: "Basic support",
         icon: HeadphonesIcon,
-      },
-      {
-        text: "1 team member",
-        icon: UserIcon,
       },
     ],
     cta: "Get started",
@@ -71,6 +57,10 @@ const tiers = [
       {
         text: "1,000 dataset rows",
         icon: RectangleHorizontalIcon,
+      },
+      {
+        text: "100 MB storage",
+        icon: BoxIcon,
       },
       {
         text: "Forms",
