@@ -10,6 +10,8 @@ import { Input } from "@mapform/ui/components/input";
 import NextImage from "next/image";
 import { ImageIcon, ImageOffIcon } from "lucide-react";
 import { useCustomBlockContext } from "../../context";
+import { DialogContent, DialogTrigger } from "@mapform/ui/components/dialog";
+import { Dialog } from "@mapform/ui/components/dialog";
 
 export const Image = createReactBlockSpec(
   {
@@ -28,19 +30,38 @@ export const Image = createReactBlockSpec(
       const { isEditing, imageBlock } = useCustomBlockContext();
 
       const renderImage = () => (
-        <NextImage
-          alt="Image"
-          height={0}
-          sizes="100vw"
-          src={block.props.imageUrl}
-          style={{
-            width: "100%",
-            height: "auto",
-            margin: 0,
-            borderRadius: "0.25rem",
-          }}
-          width={0}
-        />
+        <Dialog>
+          <DialogTrigger>
+            <NextImage
+              alt="Image"
+              height={0}
+              sizes="100vw"
+              src={block.props.imageUrl}
+              style={{
+                width: "100%",
+                height: "auto",
+                margin: 0,
+                borderRadius: "0.25rem",
+              }}
+              width={0}
+            />
+          </DialogTrigger>
+          <DialogContent className="border-none bg-transparent p-0">
+            <NextImage
+              alt="Image"
+              height={0}
+              sizes="100vw"
+              src={block.props.imageUrl}
+              style={{
+                width: "100%",
+                height: "auto",
+                margin: 0,
+                borderRadius: "0.25rem",
+              }}
+              width={0}
+            />
+          </DialogContent>
+        </Dialog>
       );
 
       const onFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
