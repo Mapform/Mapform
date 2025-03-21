@@ -33,7 +33,12 @@ export const Image = createReactBlockSpec(
           height={0}
           sizes="100vw"
           src={block.props.imageUrl}
-          style={{ width: "100%", height: "auto", margin: 0 }} // optional
+          style={{
+            width: "100%",
+            height: "auto",
+            margin: 0,
+            borderRadius: "0.25rem",
+          }}
           width={0}
         />
       );
