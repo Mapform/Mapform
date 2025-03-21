@@ -1,0 +1,1 @@
+ALTER TABLE "plan" ADD COLUMN "storage_limit" integer DEFAULT 10000000 NOT NULL;

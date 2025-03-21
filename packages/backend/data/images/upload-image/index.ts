@@ -15,6 +15,8 @@ export const uploadImage = (authClient: UserAuthClient) =>
           throw new Error("Unauthorized");
         }
 
+        console.log(11111, image.size);
+
         const response = await db.transaction(async (tx) => {
           const putResponse = await put(`${workspaceId}/${image.name}`, image, {
             access: "public",

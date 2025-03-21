@@ -50,6 +50,7 @@ import { createDatasetFromGeojson } from "@mapform/backend/data/datasets/create-
 import { completeOnboarding } from "@mapform/backend/data/workspaces/complete-onboarding";
 import { createCheckoutSession } from "@mapform/backend/data/stripe/create-checkout-session";
 import { createBillingSession } from "@mapform/backend/data/stripe/create-billing-session";
+import { getStorageUsage } from "@mapform/backend/data/usage/get-storage-usage";
 import {
   baseClient,
   UserAccess,
@@ -169,7 +170,6 @@ const createUserAuthClient = () => {
     createRow: createRow(extendedClient),
     deleteRows: deleteRows(extendedClient),
     duplicateRows: duplicateRows(extendedClient),
-    getRowAndPageCount: getRowAndPageCount(extendedClient),
 
     // Stripe
     createBillingSession: createBillingSession(extendedClient),
@@ -185,6 +185,10 @@ const createUserAuthClient = () => {
 
     // Workspace Memberships
     getUserWorkspaceMemberships: getUserWorkspaceMemberships(extendedClient),
+
+    // Usage
+    getRowAndPageCount: getRowAndPageCount(extendedClient),
+    getStorageUsage: getStorageUsage(extendedClient),
   };
 };
 

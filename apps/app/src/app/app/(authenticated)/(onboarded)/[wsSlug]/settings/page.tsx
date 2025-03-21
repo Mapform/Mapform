@@ -30,23 +30,36 @@ async function fetchWorkspacePlan(workspaceSlug: string) {
   return workspacePlan;
 }
 
+async function fetchStorageUsage(workspaceSlug: string) {
+  const response = await authClient.getStorageUsage({ workspaceSlug });
+  const totalStorageBytes = response?.data?.totalStorageBytes;
+
+  if (totalStorageBytes === undefined) {
+    return notFound();
+  }
+
+  return totalStorageBytes;
+}
+
 export default async function Settings(props: {
   params: Promise<{ wsSlug: string }>;
 }) {
   const params = await props.params;
-  const [stripePrices, stripeProducts, workspacePlan, rowsUsed] =
+  const [stripePrices, stripeProducts, workspacePlan, rowsUsed, storageUsed] =
     await Promise.all([
       getStripePrices(),
       getStripeProducts(),
       fetchWorkspacePlan(params.wsSlug),
       fetchRowAndPageCount(params.wsSlug),
+      fetchStorageUsage(params.wsSlug),
     ]);
 
   const proPlan = stripeProducts.find(
-    (product) => product.id === env.NEXT_PUBLIC_STRIPE_PRO_PRODUCT_ID,
+    (product: { id: string }) =>
+      product.id === env.NEXT_PUBLIC_STRIPE_PRO_PRODUCT_ID,
   );
   const proPrice = stripePrices.find(
-    (price) => price.productId === proPlan?.id,
+    (price: { productId: string }) => price.productId === proPlan?.id,
   );
 
   if (!proPrice) {
@@ -61,7 +74,12 @@ export default async function Settings(props: {
           proPrice={proPrice}
           workspaceSlug={params.wsSlug}
         />
-        <Usage rowLimit={workspacePlan.rowLimit} rowsUsed={rowsUsed} />
+        <Usage
+          rowLimit={workspacePlan.rowLimit}
+          rowsUsed={rowsUsed}
+          storageLimit={workspacePlan.storageLimit}
+          storageUsed={storageUsed}
+        />
         <WorkspaceSettings />
       </div>
     </div>
