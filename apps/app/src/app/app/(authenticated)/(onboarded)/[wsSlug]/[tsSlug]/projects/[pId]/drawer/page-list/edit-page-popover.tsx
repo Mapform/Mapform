@@ -26,10 +26,10 @@ import { updatePageSchema } from "@mapform/backend/data/pages/update-page/schema
 import type { UpdatePageSchema } from "@mapform/backend/data/pages/update-page/schema";
 import { updatePageAction } from "~/data/pages/update-page";
 import { Switch } from "@mapform/ui/components/switch";
+import type { GetProjectWithPages } from "@mapform/backend/data/projects/get-project-with-pages";
 
 interface EditPagePopoverProps {
-  pageId: string;
-  initialTitle?: string;
+  page: NonNullable<GetProjectWithPages["data"]>["pages"][number];
   onSuccess?: () => void;
   onClose?: () => void;
 }
@@ -37,11 +37,12 @@ interface EditPagePopoverProps {
 export const EditPagePopoverContent = forwardRef<
   React.ElementRef<typeof PopoverContent>,
   React.ComponentPropsWithoutRef<typeof PopoverContent> & EditPagePopoverProps
->(({ pageId, initialTitle, onSuccess, onClose, ...props }, ref) => {
+>(({ page, onSuccess, onClose, ...props }, ref) => {
   const form = useForm<UpdatePageSchema>({
     defaultValues: {
-      id: pageId,
-      title: initialTitle ?? "",
+      id: page.id,
+      title: page.title ?? "",
+      contentViewType: page.contentViewType,
     },
     resolver: zodResolver(updatePageSchema),
   });
@@ -79,7 +80,7 @@ export const EditPagePopoverContent = forwardRef<
     <PopoverContent ref={ref} {...props}>
       <Form {...form}>
         <form
-          className="flex flex-1 flex-col"
+          className="flex flex-1 flex-col gap-y-3"
           onSubmit={form.handleSubmit(onSubmit)}
         >
           <div className="grid grid-cols-[77px_minmax(0,1fr)] items-center gap-x-6 gap-y-3">
@@ -116,7 +117,7 @@ export const EditPagePopoverContent = forwardRef<
             control={form.control}
             name="contentViewType"
             render={({ field }) => (
-              <FormItem className="flex flex-row items-center justify-between">
+              <FormItem className="flex flex-row items-center justify-between gap-4">
                 <div className="space-y-0.5">
                   <FormLabel className="flex items-center gap-x-2">
                     Show Content

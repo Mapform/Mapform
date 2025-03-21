@@ -203,8 +203,7 @@ export function Item({ page, index }: ItemProps) {
       >
         <EditPagePopoverAnchor />
         <EditPagePopoverContent
-          pageId={page.id}
-          initialTitle={page.title ?? ""}
+          page={page}
           side="left"
           onClose={() => {
             setEditPagePopoverOpen(false);
