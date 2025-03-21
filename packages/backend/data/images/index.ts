@@ -1,6 +1,6 @@
 "server-only";
 
-import { UserAuthClient } from "../../lib/types";
+import type { UserAuthClient } from "../../lib/types";
 import { uploadImageSchema } from "./schema";
 import { put } from "@vercel/blob";
 

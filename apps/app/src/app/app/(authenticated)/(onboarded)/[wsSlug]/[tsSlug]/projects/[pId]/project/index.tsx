@@ -90,6 +90,8 @@ function Project() {
                   const response =
                     await uploadImageServerAction.executeAsync(formData);
 
+                  console.log("Image upload response", response);
+
                   if (response?.serverError) {
                     return null;
                   }
