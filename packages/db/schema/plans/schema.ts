@@ -24,6 +24,9 @@ export const plans = pgTable(
     }),
 
     rowLimit: integer("position").notNull(),
+    storageLimit: integer("storage_limit")
+      .notNull()
+      .default(10 * 1000 * 1000),
 
     workspaceSlug: varchar("workspace_slug")
       .notNull()

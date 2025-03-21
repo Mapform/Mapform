@@ -17,6 +17,7 @@ import {
 import { updatePageSchema } from "./schema";
 import type { UserAuthClient } from "../../../lib/types";
 import { ServerError } from "../../../lib/server-error";
+import { updateImage } from "../../images/update-image";
 
 const mapBlockTypeToDataType = (
   blockType: InputCustomBlockTypes,
@@ -44,6 +45,32 @@ const flattenBlockNoteContent = (
   }
 
   return flatBlocks;
+};
+
+const getImageBlockChanges = (
+  oldContent: DocumentContent | undefined,
+  newContent: DocumentContent,
+) => {
+  const oldBlocks = oldContent ? flattenBlockNoteContent(oldContent) : [];
+  const newBlocks = flattenBlockNoteContent(newContent);
+
+  const oldImageBlocks = oldBlocks.filter((block) => block.type === "image");
+  const newImageBlocks = newBlocks.filter((block) => block.type === "image");
+
+  const addedImages = newImageBlocks.filter(
+    (newBlock) =>
+      !oldImageBlocks.find((oldBlock) => oldBlock.id === newBlock.id),
+  );
+
+  const deletedImages = oldImageBlocks.filter(
+    (oldBlock) =>
+      !newImageBlocks.find((newBlock) => newBlock.id === oldBlock.id),
+  );
+
+  return {
+    addedImages,
+    deletedImages,
+  };
 };
 
 export const updatePage = (authClient: UserAuthClient) =>
@@ -74,6 +101,7 @@ export const updatePage = (authClient: UserAuthClient) =>
           columns: {
             id: true,
             pageType: true,
+            content: true,
           },
           with: {
             project: {
@@ -105,6 +133,42 @@ export const updatePage = (authClient: UserAuthClient) =>
 
         if (!page) {
           throw new Error("Page not found");
+        }
+
+        // Track image block changes
+        const { addedImages, deletedImages } = getImageBlockChanges(
+          (page.content as { content: DocumentContent } | undefined)?.content,
+          insertContent?.content ?? [],
+        );
+
+        // Log image changes for debugging/tracking purposes
+        console.log("Added images:", addedImages.length);
+        console.log("Deleted images:", deletedImages.length);
+
+        if (addedImages.length > 0) {
+          // Mark added images as not queued for deletion
+          await Promise.all(
+            addedImages.map((image) =>
+              updateImage(authClient)({
+                url: image.props.imageUrl,
+                workspaceId: page.project.teamspace.workspace.id,
+                queuedForDeletionDate: null,
+              }),
+            ),
+          );
+        }
+
+        if (deletedImages.length > 0) {
+          // Queue deleted images for deletion
+          await Promise.all(
+            deletedImages.map((image) =>
+              updateImage(authClient)({
+                url: image.props.imageUrl,
+                workspaceId: page.project.teamspace.workspace.id,
+                queuedForDeletionDate: new Date(),
+              }),
+            ),
+          );
         }
 
         if (
