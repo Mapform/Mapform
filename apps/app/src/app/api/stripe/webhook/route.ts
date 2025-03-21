@@ -67,6 +67,7 @@ async function handleSubscriptionChange(subscription: Stripe.Subscription) {
         name: (plan?.product as Stripe.Product).name,
         // TODO: When adding more plans will need to update this
         rowLimit: PLANS.pro.rowLimit,
+        storageLimit: PLANS.pro.storageLimit,
         subscriptionStatus: status,
       })
       .where(eq(plans.id, existingPlan.id));
@@ -79,6 +80,7 @@ async function handleSubscriptionChange(subscription: Stripe.Subscription) {
         stripePriceId: null,
         rowLimit: PLANS.basic.rowLimit,
         name: PLANS.basic.name,
+        storageLimit: PLANS.basic.storageLimit,
         subscriptionStatus: status,
       })
       .where(eq(plans.id, existingPlan.id));

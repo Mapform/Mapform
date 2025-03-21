@@ -5,12 +5,18 @@ import type { WorkspaceDirectory } from "@mapform/backend/data/workspaces/get-wo
 import { BasicButtons } from "./basic-buttons";
 import type { getStripePrices } from "@mapform/lib/stripe";
 
-const BASIC_FEATURES = ["Unlimited projects", "Unlimited datasets", "100 rows"];
+const BASIC_FEATURES = [
+  "Unlimited projects",
+  "Unlimited datasets",
+  "100 rows",
+  "10 MB storage",
+];
 
 const PRO_FEATURES = [
   "Everything in Basic",
   "Collect data with Forms",
   "1,000 rows",
+  "100 MB storage",
 ];
 
 export function Billing({

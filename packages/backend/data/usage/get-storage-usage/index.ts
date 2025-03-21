@@ -2,7 +2,7 @@
 
 import { db } from "@mapform/db";
 import { blobs, workspaces } from "@mapform/db/schema";
-import { and, eq, isNull, sumDistinct } from "@mapform/db/utils";
+import { and, eq, isNull, sum } from "@mapform/db/utils";
 import { getStorageUsageSchema } from "./schema";
 import type { UserAuthClient, PublicClient } from "../../../lib/types";
 
@@ -18,7 +18,7 @@ export const getStorageUsage = (authClient: UserAuthClient | PublicClient) =>
       }
 
       const [response] = await db
-        .select({ totalSize: sumDistinct(blobs.size).mapWith(Number) })
+        .select({ totalSize: sum(blobs.size).mapWith(Number) })
         .from(blobs)
         .leftJoin(workspaces, eq(workspaces.slug, workspaceSlug))
         .where(
