@@ -49,6 +49,11 @@ import {
   TooltipContent,
 } from "@mapform/ui/components/tooltip";
 import { cn } from "@mapform/lib/classnames";
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@mapform/ui/components/popover";
 
 interface MapProps {
   pageData: GetPageData["data"];
@@ -275,23 +280,46 @@ export function Map({
               </Button>
             </Link>
             <div className="pl-1.5">
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button size="icon" type="button" variant="ghost">
-                    <InfoIcon className="size-5" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent className="max-w-[300px]">
-                  <div className="flex flex-col gap-1">
-                    <p className="font-medium">{projectWithPages.name}</p>
-                    {projectWithPages.description && (
-                      <p className="text-gray-300">
-                        {projectWithPages.description}
-                      </p>
-                    )}
-                  </div>
-                </TooltipContent>
-              </Tooltip>
+              <div className="hidden md:block">
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button size="icon" type="button" variant="ghost">
+                      <InfoIcon className="size-5" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-[240px]">
+                    <div className="flex flex-col gap-1">
+                      <p className="font-medium">{projectWithPages.name}</p>
+                      {projectWithPages.description && (
+                        <p className="text-gray-300">
+                          {projectWithPages.description}
+                        </p>
+                      )}
+                    </div>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+              {/* Use popover for mobile since the tooltip doesn't work */}
+              <div className="md:hidden">
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button size="icon" type="button" variant="ghost">
+                      <InfoIcon className="size-5" />
+                    </Button>
+                  </PopoverTrigger>
+                  {/* Copied from tooltip.tsx */}
+                  <PopoverContent className="bg-primary text-primary-foreground animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 max-w-[240px] overflow-hidden rounded-md border-none px-3 py-1.5 text-xs">
+                    <div className="flex flex-col gap-1">
+                      <p className="font-medium">{projectWithPages.name}</p>
+                      {projectWithPages.description && (
+                        <p className="text-gray-300">
+                          {projectWithPages.description}
+                        </p>
+                      )}
+                    </div>
+                  </PopoverContent>
+                </Popover>
+              </div>
             </div>
             {projectWithPages.pages.length > 1 && (
               <div className="flex flex-1 gap-1.5 pl-1.5">
