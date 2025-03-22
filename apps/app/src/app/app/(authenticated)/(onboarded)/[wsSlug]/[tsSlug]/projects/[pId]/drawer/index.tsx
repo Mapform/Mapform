@@ -46,10 +46,8 @@ export function Drawer() {
             </ResizablePanel>
           </ResizablePanelGroup>
         </TabsContent>
-        <TabsContent value="password">
-          <div className="p-2">
-            <Settings />
-          </div>
+        <TabsContent className="flex flex-1 p-2" value="password">
+          <Settings />
         </TabsContent>
       </Tabs>
     </Portal.Root>

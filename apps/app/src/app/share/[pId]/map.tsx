@@ -34,10 +34,20 @@ import {
   LocationSearchButton,
 } from "~/components/location-search";
 import { Button } from "@mapform/ui/components/button";
-import { ArrowLeftIcon, ArrowRightIcon, CheckIcon } from "lucide-react";
+import {
+  ArrowLeftIcon,
+  ArrowRightIcon,
+  CheckIcon,
+  InfoIcon,
+} from "lucide-react";
 import { LocationMarker } from "~/components/mapform/map";
 import { SelectionPin } from "~/components/selection-pin";
 import Link from "next/link";
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from "@mapform/ui/components/tooltip";
 
 interface MapProps {
   pageData: GetPageData["data"];
@@ -252,23 +262,9 @@ export function Map({
           exit={{ opacity: 0, scale: 0.95 }}
           initial={{ opacity: 0, scale: 0.95 }}
         >
-          <div className="flex justify-between gap-1.5 px-1.5">
-            {projectWithPages.pages.length > 1 && (
-              <Button
-                className="flex-1"
-                disabled={!prevPage}
-                onClick={() => {
-                  prevPage && setCurrentPageAndFly(prevPage);
-                }}
-                type="button"
-                variant="secondary"
-              >
-                <ArrowLeftIcon className="-ml-1 mr-1 size-5" />
-                Back
-              </Button>
-            )}
+          <div className="flex justify-between gap-1.5 divide-x px-1.5">
             <Link className="underline" href="https://alpha.mapform.co">
-              <Button className="py-0" type="button" variant="ghost">
+              <Button className="px-2 py-0" type="button" variant="ghost">
                 <div className="flex flex-col items-center justify-center gap-0.5">
                   <Image alt="Mapform" className="size-3.5" src={mapform} />
                   <span className="text-muted-foreground text-[10px] font-normal leading-none">
@@ -277,25 +273,57 @@ export function Map({
                 </div>
               </Button>
             </Link>
+            <div className="pl-1.5">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button size="icon" type="button" variant="ghost">
+                    <InfoIcon className="size-5" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent className="max-w-[300px]">
+                  <div className="flex flex-col gap-1">
+                    <p className="font-medium">{projectWithPages.name}</p>
+                    {projectWithPages.description && (
+                      <p className="text-gray-300">
+                        {projectWithPages.description}
+                      </p>
+                    )}
+                  </div>
+                </TooltipContent>
+              </Tooltip>
+            </div>
             {projectWithPages.pages.length > 1 && (
-              <Button
-                className="flex-1"
-                disabled={!nextPage || currentPage.pageType !== "page"}
-                type="submit"
-              >
-                {nextPage
-                  ? nextPage.pageType === "page_ending"
-                    ? "Submit"
-                    : "Next"
-                  : isLastPage
-                    ? "Done"
-                    : null}
-                {nextPage ? (
-                  <ArrowRightIcon className="-mr-1 ml-1 size-5" />
-                ) : (
-                  <CheckIcon className="-mr-1 ml-1 size-5" />
-                )}
-              </Button>
+              <div className="flex flex-1 gap-1.5 pl-1.5">
+                <Button
+                  disabled={!prevPage}
+                  onClick={() => {
+                    prevPage && setCurrentPageAndFly(prevPage);
+                  }}
+                  size="icon"
+                  type="button"
+                  variant="ghost"
+                >
+                  <ArrowLeftIcon className="size-5" />
+                </Button>
+                <Button
+                  className="flex-1"
+                  disabled={!nextPage || currentPage.pageType !== "page"}
+                  type="submit"
+                >
+                  {nextPage
+                    ? nextPage.pageType === "page_ending"
+                      ? "Submit"
+                      : "Next"
+                    : isLastPage
+                      ? "Done"
+                      : null}
+                  {nextPage ? (
+                    <ArrowRightIcon className="-mr-1 ml-1 size-5" />
+                  ) : (
+                    <CheckIcon className="-mr-1 ml-1 size-5" />
+                  )}
+                </Button>
+              </div>
             )}
           </div>
         </motion.div>

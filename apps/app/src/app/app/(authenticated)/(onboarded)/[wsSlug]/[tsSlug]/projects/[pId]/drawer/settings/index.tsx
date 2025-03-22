@@ -44,9 +44,9 @@ export function Settings() {
   });
 
   return (
-    <div className="space-y-6 px-2">
+    <div className="mb-2 flex flex-1 flex-col space-y-6 px-2">
       <Form {...form}>
-        <form onSubmit={onSubmit} className="space-y-4">
+        <form onSubmit={onSubmit} className="flex flex-1 flex-col space-y-4">
           <FormField
             control={form.control}
             name="name"
@@ -69,6 +69,7 @@ export function Settings() {
                 <FormControl>
                   <Textarea
                     {...field}
+                    className="min-h-[120px]"
                     placeholder="Enter project description"
                     value={field.value || ""}
                   />
@@ -77,7 +78,11 @@ export function Settings() {
               </FormItem>
             )}
           />
-          <Button type="submit" disabled={status === "executing"}>
+          <Button
+            className="!mt-auto w-full"
+            type="submit"
+            disabled={status === "executing"}
+          >
             {status === "executing" ? "Saving..." : "Save Changes"}
           </Button>
         </form>
