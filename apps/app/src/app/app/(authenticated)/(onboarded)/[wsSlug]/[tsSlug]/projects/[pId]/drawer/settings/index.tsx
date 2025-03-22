@@ -1,6 +1,10 @@
 "use client";
 
-import { useForm, zodResolver } from "@mapform/ui/components/form";
+import {
+  FormDescription,
+  useForm,
+  zodResolver,
+} from "@mapform/ui/components/form";
 import { z } from "zod";
 import { useProject } from "../../project-context";
 import { Button } from "@mapform/ui/components/button";
@@ -70,10 +74,13 @@ export function Settings() {
                   <Textarea
                     {...field}
                     className="min-h-[120px]"
-                    placeholder="Enter project description"
+                    placeholder="Describe your project..."
                     value={field.value || ""}
                   />
                 </FormControl>
+                <FormDescription>
+                  This will be publicly visible when you share the project.
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}

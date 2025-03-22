@@ -22,6 +22,7 @@ import {
   zodResolver,
 } from "@mapform/ui/components/form";
 import { Input } from "@mapform/ui/components/input";
+import { Textarea } from "@mapform/ui/components/textarea";
 import { toast } from "@mapform/ui/components/toaster";
 import { useAction } from "next-safe-action/hooks";
 import { useState } from "react";
@@ -122,6 +123,27 @@ export function CreateProjectDialog({
                         value={field.value}
                       />
                     </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem className="flex-1">
+                    <FormLabel>Description</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        {...field}
+                        placeholder="Describe your project..."
+                        className="resize-none"
+                        value={field.value ?? ""}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      This will be publicly visible when you share the project.
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
