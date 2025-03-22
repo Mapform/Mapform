@@ -48,6 +48,7 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from "@mapform/ui/components/tooltip";
+import { cn } from "@mapform/lib/classnames";
 
 interface MapProps {
   pageData: GetPageData["data"];
@@ -426,7 +427,14 @@ export function Map({
                 title={currentPage.title}
               />
             </MapformDrawer>
-            <div className="pointer-events-auto fixed bottom-2 left-1/2 z-50 flex w-[calc(100%-1rem)] -translate-x-1/2 transform items-center md:hidden">
+            <div
+              className={cn(
+                "pointer-events-auto fixed bottom-2 left-1/2 z-50 flex -translate-x-1/2 transform items-center md:hidden",
+                {
+                  "w-[calc(100%-1rem)]": projectWithPages.pages.length > 1,
+                },
+              )}
+            >
               {controls}
             </div>
             <MapformDrawer
