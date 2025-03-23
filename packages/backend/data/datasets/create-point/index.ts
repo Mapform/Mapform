@@ -31,7 +31,7 @@ export const createPoint = (authClient: UserAuthClient) =>
         parsedInput: { layerId, title, description, location },
         ctx: { userAccess },
       }) => {
-        await db.transaction(async (tx) => {
+        return db.transaction(async (tx) => {
           const [result] = await tx
             .select()
             .from(layers)
@@ -174,6 +174,13 @@ export const createPoint = (authClient: UserAuthClient) =>
                 }),
             ].filter(Boolean),
           );
+
+          return {
+            row,
+            layer,
+            marker_layer: result.marker_layer,
+            point_layer: result.point_layer,
+          };
         });
       },
     );

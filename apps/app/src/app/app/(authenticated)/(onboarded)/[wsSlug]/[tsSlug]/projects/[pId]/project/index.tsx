@@ -186,7 +186,6 @@ function Project() {
               <EditBar
                 key={currentPage.id}
                 onSearchOpenChange={(open) => {
-                  setIsSearchOpen(open);
                   if (open) {
                     // Clear the feature when search is opened
                     setQueryString({
@@ -194,6 +193,7 @@ function Project() {
                       value: null,
                     });
                   }
+                  setIsSearchOpen(open);
                 }}
               />
             </MapformMap>

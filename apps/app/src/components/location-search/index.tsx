@@ -155,7 +155,6 @@ export function LocationSearchWithMap({
     };
 
     const handleMoveStart = () => {
-      console.log("movestart");
       setShowPinPopover(false);
     };
 

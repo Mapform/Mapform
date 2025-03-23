@@ -83,7 +83,7 @@ export function Blocknote({
     if (isEditing) {
       return (
         <AutoSizeTextArea
-          className="mb-2 text-3xl font-bold placeholder-gray-300"
+          className="mb-4 text-3xl font-bold placeholder-gray-300"
           onChange={(val) => {
             if (onTitleChange) onTitleChange(val);
           }}
