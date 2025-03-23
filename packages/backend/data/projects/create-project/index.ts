@@ -21,7 +21,7 @@ export const createProject = (authClient: UserAuthClient) =>
     .schema(createProjectSchema)
     .action(
       async ({
-        parsedInput: { name, teamspaceId, formsEnabled },
+        parsedInput: { teamspaceId, formsEnabled, ...rest },
         ctx: { userAccess },
       }) => {
         if (!userAccess.teamspace.checkAccessById(teamspaceId)) {
@@ -76,7 +76,7 @@ export const createProject = (authClient: UserAuthClient) =>
             const [dataset] = await tx
               .insert(datasets)
               .values({
-                name: `Responses for ${name}`,
+                name: `Responses for ${rest.name}`,
                 teamspaceId,
                 type: "submissions",
               })
@@ -95,7 +95,7 @@ export const createProject = (authClient: UserAuthClient) =>
           const [project] = await tx
             .insert(projects)
             .values({
-              name,
+              ...rest,
               teamspaceId,
               formsEnabled,
               datasetId,

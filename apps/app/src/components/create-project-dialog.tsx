@@ -55,6 +55,7 @@ export function CreateProjectDialog({
     defaultValues: {
       name: "",
       teamspaceId: teamspace?.id,
+      description: "",
     },
     resolver: zodResolver(createProjectSchema),
   });
