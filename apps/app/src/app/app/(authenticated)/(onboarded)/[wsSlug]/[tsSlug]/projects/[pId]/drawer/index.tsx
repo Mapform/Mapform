@@ -16,6 +16,7 @@ import {
 import { useProject } from "../project-context";
 import { LayerList } from "./layer-list";
 import { PageList } from "./page-list";
+import { Settings } from "./settings";
 
 export function Drawer() {
   const isClient = useIsClient();
@@ -45,10 +46,8 @@ export function Drawer() {
             </ResizablePanel>
           </ResizablePanelGroup>
         </TabsContent>
-        <TabsContent value="password">
-          <div className="p-2">
-            <p>Coming soon.</p>
-          </div>
+        <TabsContent className="flex flex-1 p-2" value="password">
+          <Settings />
         </TabsContent>
       </Tabs>
     </Portal.Root>

@@ -159,7 +159,6 @@ export function Map({
         pitch: initialViewState.pitch,
         bearing: initialViewState.bearing,
         maxZoom: 20,
-        logoPosition: "bottom-right",
         scrollZoom: isMobile
           ? false
           : {
@@ -168,10 +167,8 @@ export function Map({
         // We override the internal resize observer because we are using our own
         doubleClickZoom: false,
         trackResize: false,
-
-        // fitBoundsOptions: {
-        //   padding: { top: 10, bottom: 25, left: 800, right: 5 },
-        // },
+        logoPosition: isMobile ? "top-left" : "bottom-right",
+        attributionControl: !isMobile,
       });
 
       m.on("dblclick", () => {
@@ -185,6 +182,14 @@ export function Map({
       });
 
       // Add zoom controls
+      if (isMobile) {
+        m.addControl(
+          new mapboxgl.AttributionControl({
+            compact: true, // Makes the attribution more compact if there’s not enough space
+          }),
+          "top-right",
+        );
+      }
       m.addControl(new mapboxgl.NavigationControl(), "top-right");
 
       // Add your custom markers and lines here
@@ -199,7 +204,7 @@ export function Map({
       };
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- Just run on initial render
-  }, []);
+  }, [isMobile]);
 
   /**
    * React to drawer padding change

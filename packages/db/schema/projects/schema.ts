@@ -12,6 +12,7 @@ import { datasets } from "../datasets/schema";
 export const projects = pgTable("project", {
   id: uuid("id").primaryKey().defaultRandom(),
   name: varchar("name", { length: 256 }).notNull(),
+  description: varchar("description", { length: 512 }),
   icon: varchar("icon", { length: 256 }),
 
   formsEnabled: boolean("forms_enabled").default(false).notNull(),
