@@ -82,7 +82,7 @@ function Project() {
                 onImageUpload: async (file: File) => {
                   const compressedFile = await compressImage(
                     file,
-                    0.8,
+                    0.9,
                     2000,
                     2000,
                     1000,

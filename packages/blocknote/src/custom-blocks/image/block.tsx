@@ -52,7 +52,7 @@ export const Image = createReactBlockSpec(
                 width={0}
               />
             </DialogTrigger>
-            <DialogContent className="border-none bg-transparent p-0">
+            <DialogContent className="max-w-screen-lg border-none bg-transparent p-0">
               <div className="flex flex-col gap-2">
                 <NextImage
                   alt="Image"
