@@ -29,6 +29,7 @@ import { toast } from "@mapform/ui/components/toaster";
 import { useAction } from "next-safe-action/hooks";
 import { createPointAction } from "~/data/datasets/create-point";
 import { useState } from "react";
+import { useSetQueryString } from "@mapform/lib/hooks/use-set-query-string";
 
 interface LocationSearchDrawerProps {
   currentPage: NonNullable<GetPageWithLayers["data"]>;
@@ -64,18 +65,22 @@ export function LocationSearchDrawerInner({
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState<string>("");
   const { selectedFeature } = useLocationSearch();
+  const setQueryString = useSetQueryString();
   const [layerPopoverOpen, setLayerPopoverOpen] = useState(false);
   const { currentProject, updatePageServerAction } = useProject();
 
   const { execute: executeCreatePoint, isPending } = useAction(
     createPointAction,
     {
-      onSuccess: () => {
+      onSuccess: ({ data }) => {
         setLayerPopoverOpen(false);
         setIsOpen(false);
-        toast({
-          title: "Success!",
-          description: "Point created.",
+
+        if (!data) return;
+
+        setQueryString({
+          key: "feature",
+          value: `${data.layer.type}_${data.row.id}_${data.marker_layer?.id ?? data.point_layer?.id}`,
         });
       },
     },

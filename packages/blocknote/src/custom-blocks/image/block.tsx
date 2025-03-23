@@ -35,7 +35,7 @@ export const Image = createReactBlockSpec(
       const { isEditing, imageBlock } = useCustomBlockContext();
 
       const renderImage = () => (
-        <div className="mb-4 flex flex-col gap-2">
+        <div className="mx-auto mb-4 flex flex-col gap-2">
           <Dialog>
             <DialogTrigger>
               <NextImage

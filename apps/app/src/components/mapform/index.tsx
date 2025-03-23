@@ -203,7 +203,7 @@ export function MapformDrawer({
             },
           }}
         >
-          <div className="absolute left-1/2 top-3 -translate-x-1/2 md:hidden">
+          <div className="absolute left-1/2 top-1 -translate-x-1/2 md:hidden">
             <div className="h-1.5 w-12 rounded-full bg-gray-300" />
           </div>
           {onClose ? (
