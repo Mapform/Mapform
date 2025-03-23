@@ -261,102 +261,105 @@ export function Map({
 
   const controls = (
     <AnimatePresence>
-      {drawerValues.length <= 1 && (
-        <motion.div
-          className="w-full rounded-xl border bg-white py-1.5 shadow-lg"
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.95 }}
-          initial={{ opacity: 0, scale: 0.95 }}
-        >
-          <div className="flex justify-between gap-1.5 divide-x px-1.5">
-            <Link className="underline" href="https://alpha.mapform.co">
-              <Button className="px-2 py-0" type="button" variant="ghost">
-                <div className="flex flex-col items-center justify-center gap-0.5">
-                  <Image alt="Mapform" className="size-3.5" src={mapform} />
-                  <span className="text-muted-foreground text-[10px] font-normal leading-none">
-                    Mapform
-                  </span>
+      {drawerValues.length <= 1 &&
+        !(
+          drawerValues.length === 0 && currentPage.contentViewType === "split"
+        ) && (
+          <motion.div
+            className="w-full rounded-xl border bg-white py-1.5 shadow-lg"
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            initial={{ opacity: 0, scale: 0.95 }}
+          >
+            <div className="flex justify-between gap-1.5 divide-x px-1.5">
+              <Link className="underline" href="https://alpha.mapform.co">
+                <Button className="px-2 py-0" type="button" variant="ghost">
+                  <div className="flex flex-col items-center justify-center gap-0.5">
+                    <Image alt="Mapform" className="size-3.5" src={mapform} />
+                    <span className="text-muted-foreground text-[10px] font-normal leading-none">
+                      Mapform
+                    </span>
+                  </div>
+                </Button>
+              </Link>
+              <div className="pl-1.5">
+                <div className="hidden md:block">
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button size="icon" type="button" variant="ghost">
+                        <InfoIcon className="size-5" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent className="max-w-[240px]">
+                      <div className="flex flex-col gap-1">
+                        <p className="font-medium">{projectWithPages.name}</p>
+                        {projectWithPages.description && (
+                          <p className="text-gray-300">
+                            {projectWithPages.description}
+                          </p>
+                        )}
+                      </div>
+                    </TooltipContent>
+                  </Tooltip>
                 </div>
-              </Button>
-            </Link>
-            <div className="pl-1.5">
-              <div className="hidden md:block">
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button size="icon" type="button" variant="ghost">
-                      <InfoIcon className="size-5" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent className="max-w-[240px]">
-                    <div className="flex flex-col gap-1">
-                      <p className="font-medium">{projectWithPages.name}</p>
-                      {projectWithPages.description && (
-                        <p className="text-gray-300">
-                          {projectWithPages.description}
-                        </p>
-                      )}
-                    </div>
-                  </TooltipContent>
-                </Tooltip>
+                {/* Use popover for mobile since the tooltip doesn't work */}
+                <div className="md:hidden">
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button size="icon" type="button" variant="ghost">
+                        <InfoIcon className="size-5" />
+                      </Button>
+                    </PopoverTrigger>
+                    {/* Copied from tooltip.tsx */}
+                    <PopoverContent className="bg-primary text-primary-foreground animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 max-w-[240px] overflow-hidden rounded-md border-none px-3 py-1.5 text-xs">
+                      <div className="flex flex-col gap-1">
+                        <p className="font-medium">{projectWithPages.name}</p>
+                        {projectWithPages.description && (
+                          <p className="text-gray-300">
+                            {projectWithPages.description}
+                          </p>
+                        )}
+                      </div>
+                    </PopoverContent>
+                  </Popover>
+                </div>
               </div>
-              {/* Use popover for mobile since the tooltip doesn't work */}
-              <div className="md:hidden">
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button size="icon" type="button" variant="ghost">
-                      <InfoIcon className="size-5" />
-                    </Button>
-                  </PopoverTrigger>
-                  {/* Copied from tooltip.tsx */}
-                  <PopoverContent className="bg-primary text-primary-foreground animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 max-w-[240px] overflow-hidden rounded-md border-none px-3 py-1.5 text-xs">
-                    <div className="flex flex-col gap-1">
-                      <p className="font-medium">{projectWithPages.name}</p>
-                      {projectWithPages.description && (
-                        <p className="text-gray-300">
-                          {projectWithPages.description}
-                        </p>
-                      )}
-                    </div>
-                  </PopoverContent>
-                </Popover>
-              </div>
+              {projectWithPages.pages.length > 1 && (
+                <div className="flex flex-1 gap-1.5 pl-1.5">
+                  <Button
+                    disabled={!prevPage}
+                    onClick={() => {
+                      prevPage && setCurrentPageAndFly(prevPage);
+                    }}
+                    size="icon"
+                    type="button"
+                    variant="ghost"
+                  >
+                    <ArrowLeftIcon className="size-5" />
+                  </Button>
+                  <Button
+                    className="flex-1"
+                    disabled={!nextPage || currentPage.pageType !== "page"}
+                    type="submit"
+                  >
+                    {nextPage
+                      ? nextPage.pageType === "page_ending"
+                        ? "Submit"
+                        : "Next"
+                      : isLastPage
+                        ? "Done"
+                        : null}
+                    {nextPage ? (
+                      <ArrowRightIcon className="-mr-1 ml-1 size-5" />
+                    ) : (
+                      <CheckIcon className="-mr-1 ml-1 size-5" />
+                    )}
+                  </Button>
+                </div>
+              )}
             </div>
-            {projectWithPages.pages.length > 1 && (
-              <div className="flex flex-1 gap-1.5 pl-1.5">
-                <Button
-                  disabled={!prevPage}
-                  onClick={() => {
-                    prevPage && setCurrentPageAndFly(prevPage);
-                  }}
-                  size="icon"
-                  type="button"
-                  variant="ghost"
-                >
-                  <ArrowLeftIcon className="size-5" />
-                </Button>
-                <Button
-                  className="flex-1"
-                  disabled={!nextPage || currentPage.pageType !== "page"}
-                  type="submit"
-                >
-                  {nextPage
-                    ? nextPage.pageType === "page_ending"
-                      ? "Submit"
-                      : "Next"
-                    : isLastPage
-                      ? "Done"
-                      : null}
-                  {nextPage ? (
-                    <ArrowRightIcon className="-mr-1 ml-1 size-5" />
-                  ) : (
-                    <CheckIcon className="-mr-1 ml-1 size-5" />
-                  )}
-                </Button>
-              </div>
-            )}
-          </div>
-        </motion.div>
-      )}
+          </motion.div>
+        )}
     </AnimatePresence>
   );
 
@@ -456,6 +459,7 @@ export function Map({
                 title={currentPage.title}
               />
             </MapformDrawer>
+            {/* Mobile controls */}
             <div
               className={cn(
                 "pointer-events-auto fixed bottom-2 left-1/2 z-50 flex -translate-x-1/2 transform items-center md:hidden",

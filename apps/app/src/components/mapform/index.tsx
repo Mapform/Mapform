@@ -234,7 +234,7 @@ export function MapformDrawerButton({
   return (
     <Button
       className={cn(
-        "absolute left-2 top-2 z-10 shadow-sm transition-opacity delay-300 duration-300 max-md:hidden",
+        "fixed bottom-2 left-1/2 z-10 -translate-x-1/2 -rotate-90 shadow-sm transition-opacity delay-300 duration-300 md:absolute md:left-2 md:top-2 md:translate-x-0 md:rotate-0",
         {
           "opacity-0": drawerValues.length,
         },
