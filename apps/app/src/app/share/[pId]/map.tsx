@@ -86,8 +86,8 @@ export function Map({
     return isDrawerStackOpen
       ? [
           ...(currentPage?.contentViewType === "split" ? ["page-content"] : []),
-          ...(selectedFeature ? ["feature"] : []),
           ...(isSearchOpen ? ["location-search"] : []),
+          ...(selectedFeature ? ["feature"] : []),
         ]
       : [];
   }, [
@@ -367,6 +367,10 @@ export function Map({
     window.scrollTo({ top: 0, behavior: "smooth" });
     setTimeout(() => {
       setIsSearching(true);
+      setQueryString({
+        key: "feature",
+        value: null,
+      });
       setIsSelectingPinBlockLocationFor(val);
 
       const location = selectedLocations.find(

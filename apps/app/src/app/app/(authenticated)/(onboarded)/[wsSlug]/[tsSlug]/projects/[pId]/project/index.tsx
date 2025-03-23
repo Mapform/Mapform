@@ -17,6 +17,7 @@ import { LocationSearchDrawer } from "./location-search-drawer";
 import { Form as DummyForm, useForm } from "@mapform/ui/components/form";
 import { BlocknoteControls } from "./blocknote-controls";
 import { FeatureDrawer } from "./feature-drawer";
+import { useSetQueryString } from "@mapform/lib/hooks/use-set-query-string";
 
 function Project() {
   const {
@@ -35,6 +36,8 @@ function Project() {
 
   // Controls the location search drawer
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const setQueryString = useSetQueryString();
+
   // Controls the ChevronsRight button to open or close all drawers
   const [isDrawerStackOpen, setIsDrawerStackOpen] = useState(true);
   const drawerValues = useMemo(() => {
@@ -42,8 +45,8 @@ function Project() {
       ? [
           ...(currentPage?.contentViewType === "split" ? ["page-content"] : []),
           // The feature drawer only opens when the feature is specified in the URL
-          ...(selectedFeature ? ["feature"] : []),
           ...(isSearchOpen ? ["location-search"] : []),
+          ...(selectedFeature ? ["feature"] : []),
         ]
       : [];
   }, [
@@ -182,7 +185,16 @@ function Project() {
             >
               <EditBar
                 key={currentPage.id}
-                onSearchOpenChange={setIsSearchOpen}
+                onSearchOpenChange={(open) => {
+                  setIsSearchOpen(open);
+                  if (open) {
+                    // Clear the feature when search is opened
+                    setQueryString({
+                      key: "feature",
+                      value: null,
+                    });
+                  }
+                }}
               />
             </MapformMap>
           </MapformContent>
