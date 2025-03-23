@@ -186,6 +186,7 @@ export function Map({
 
       // Add zoom controls
       m.addControl(new mapboxgl.NavigationControl(), "top-right");
+      // m.addControl(new mapboxgl.AttributionControl(), "top-left");
 
       // Add your custom markers and lines here
       m.on("load", () => {

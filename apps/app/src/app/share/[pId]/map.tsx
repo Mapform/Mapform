@@ -446,6 +446,7 @@ export function Map({
               onClose={() => {
                 setIsDrawerStackOpen(false);
               }}
+              mobileBottomPadding
               value="page-content"
             >
               <Blocknote
@@ -466,6 +467,7 @@ export function Map({
               {controls}
             </div>
             <MapformDrawer
+              mobileBottomPadding
               onClose={() => {
                 setQueryString({
                   key: "feature",

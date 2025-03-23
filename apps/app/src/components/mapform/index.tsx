@@ -110,7 +110,7 @@ export function MapformMap({
 
   const mapPadding = {
     top: 0,
-    bottom: isMobile ? 200 : 0,
+    bottom: isMobile ? (drawerValues.length ? 200 : 0) : 0,
     left: !!drawerValues.length && !isMobile ? (isEditing ? 392 : 360) : 0,
     right: 0,
   };
@@ -135,12 +135,14 @@ export function MapformDrawer({
   className,
   value,
   onClose,
+  mobileBottomPadding,
 }: {
   children: React.ReactNode;
   value: string;
   // This is a workaround to render the bottom bar since position fixed doesn't work
   className?: string;
   onClose?: () => void;
+  mobileBottomPadding?: boolean;
 }) {
   const isMobile = useIsMobile();
   const { drawerValues, isEditing } = useMapformContent();
@@ -155,6 +157,9 @@ export function MapformDrawer({
           className={cn(
             // BASE STYLES
             "bg-background group z-40 flex min-h-[200px] flex-col shadow-lg outline-none transition-[filter,width,padding-left] duration-[250]",
+            {
+              "pb-20": isMobile && mobileBottomPadding,
+            },
 
             // DESKTOP STYLES
             "md:absolute md:bottom-0 md:left-0 md:h-full md:w-[360px] md:[--x-from:-100%] md:[--x-to:0]",
@@ -198,6 +203,9 @@ export function MapformDrawer({
             },
           }}
         >
+          <div className="absolute left-1/2 top-3 -translate-x-1/2 md:hidden">
+            <div className="h-1.5 w-12 rounded-full bg-gray-300" />
+          </div>
           {onClose ? (
             <Button
               className="absolute right-2 top-2 z-50"
