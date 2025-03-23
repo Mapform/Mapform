@@ -2,7 +2,7 @@
 
 import { db } from "@mapform/db";
 import { layers, layersToPages, pages, projects } from "@mapform/db/schema";
-import { and, eq, inArray, isNull } from "@mapform/db/utils";
+import { and, eq, inArray } from "@mapform/db/utils";
 import { getProjectWithPagesSchema } from "./schema";
 import type {
   UserAuthClient,
@@ -20,18 +20,12 @@ export const getProjectWithPages = (
         db.query.projects.findFirst({
           where: and(
             eq(projects.id, id),
-            isNull(projects.rootProjectId),
             // Check if the user has access to the project's teamspace
             ctx.authType === "user"
               ? inArray(projects.teamspaceId, ctx.userAccess.teamspace.ids)
               : undefined,
           ),
           with: {
-            childProjects: {
-              columns: {
-                id: true,
-              },
-            },
             teamspace: {
               columns: {
                 id: true,

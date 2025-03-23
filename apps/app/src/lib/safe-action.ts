@@ -33,7 +33,6 @@ import { getPageWithLayers } from "@mapform/backend/data/pages/get-page-with-lay
 import { updatePage } from "@mapform/backend/data/pages/update-page";
 import { updatePageOrder } from "@mapform/backend/data/pages/update-page-order";
 import { getProjectWithPages } from "@mapform/backend/data/projects/get-project-with-pages";
-import { publishProject } from "@mapform/backend/data/projects/publish-project";
 import { getTeamspaceWithProjects } from "@mapform/backend/data/teamspaces/get-teamspace-with-projects";
 import { deleteColumn } from "@mapform/backend/data/columns/delete-column";
 import { editColumn } from "@mapform/backend/data/columns/edit-column";
@@ -162,7 +161,6 @@ const createUserAuthClient = () => {
     createProject: createProject(extendedClient),
     deleteProject: deleteProject(extendedClient),
     updateProject: updateProject(extendedClient),
-    publishProject: publishProject(extendedClient),
     getRecentProjects: getRecentProjects(extendedClient),
     getProjectWithPages: getProjectWithPages(extendedClient),
 

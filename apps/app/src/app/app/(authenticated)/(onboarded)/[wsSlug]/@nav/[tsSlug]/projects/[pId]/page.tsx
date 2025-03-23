@@ -43,11 +43,7 @@ export default async function Nav(props: {
               </Button>
             </PopoverTrigger>
             <PopoverContent>
-              <ShareContent
-                isDirty={project.isDirty}
-                numberOfVersions={project.childProjects.length}
-                project={project}
-              />
+              <ShareContent project={project} />
             </PopoverContent>
           </Popover>
           <TogglePages />
