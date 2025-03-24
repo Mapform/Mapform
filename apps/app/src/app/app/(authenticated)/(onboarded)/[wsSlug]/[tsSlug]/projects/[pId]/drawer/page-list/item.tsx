@@ -63,24 +63,9 @@ export function Item({ page, index }: ItemProps) {
   } = useProject();
   const pathname = usePathname();
   const params = useParams<{ wsSlug: string; tsSlug: string; pId: string }>();
-  const { execute: executeDeletePage, isPending } = useAction(
+  const { executeAsync: executeDeletePage, isPending } = useAction(
     deletePageAction,
     {
-      onSuccess: () => {
-        startTransition(() => {
-          const newPages = currentProject.pages.filter((p) => p.id !== page.id);
-
-          updateProjectOptimistic({
-            ...currentProject,
-            pages: newPages,
-          });
-        });
-
-        toast({
-          title: "Success!",
-          description: "Your page has been deleted.",
-        });
-      },
       onError: ({ error }) => {
         toast({
           title: "Uh oh! Something went wrong.",
@@ -95,7 +80,7 @@ export function Item({ page, index }: ItemProps) {
   const isLastPage = currentProject.pages.length <= 1;
   const isActive = page.id === updatePageServerAction.optimisticState?.id;
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (isLastPage) return;
 
     const pageIndex = currentProject.pages.findIndex((p) => p.id === page.id);
@@ -104,10 +89,18 @@ export function Item({ page, index }: ItemProps) {
       currentProject.pages[pageIndex + 1] ||
       currentProject.pages[pageIndex - 1];
 
-    executeDeletePage({
+    await executeDeletePage({
       pageId: page.id,
       projectId: currentProject.id,
       redirect: nextPage ? `${pathname}?page=${nextPage.id}` : undefined,
+    });
+
+    const newPages = currentProject.pages.filter((p) => p.id !== page.id);
+    startTransition(() => {
+      updateProjectOptimistic({
+        ...currentProject,
+        pages: newPages,
+      });
     });
   };
 

@@ -6,7 +6,6 @@ import { publicClient } from "~/lib/safe-action";
 export const createSubmissionAction = async (
   params: Last<Parameters<typeof publicClient.createSubmission>>,
 ) => {
-  const projectId = params.projectId;
   const result = await publicClient.createSubmission(params);
 
   if (!result?.data) {
@@ -14,7 +13,6 @@ export const createSubmissionAction = async (
   }
 
   (await cookies()).set("mapform-submission", result.data.id);
-  (await cookies()).set("mapform-project-id", projectId);
 
   return result.data.id;
 };

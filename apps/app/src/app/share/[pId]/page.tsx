@@ -76,7 +76,6 @@ export default async function Page(props: {
 
   const cookieStore = await cookies();
   const submissionCookie = cookieStore.get("mapform-submission");
-  const projectCookie = cookieStore.get("mapform-project-id");
   const formValues: NonNullable<NonNullable<Responses>["data"]>["cells"] = [];
 
   let session: Row | undefined;
@@ -92,14 +91,13 @@ export default async function Page(props: {
   /**
    * A project version mismatch occurs when a new version has been released
    */
-  const projectVersionMismatch = projectCookie?.value !== projectWithPages.id;
   const isUsingSessions = Boolean(projectWithPages.submissionsDataset);
 
   if (isUsingSessions && submissionCookie) {
     session = (await publicClient.getSession({ rowId: submissionCookie.value }))
       ?.data;
 
-    if (session && !projectVersionMismatch) {
+    if (session) {
       const responsesResponse = await publicClient.getResponses({
         id: session.id,
       });
@@ -134,8 +132,7 @@ export default async function Page(props: {
           pageData={pageData}
           projectWithPages={projectWithPages}
           selectedFeature={selectedFeature}
-          // We clear the session id if the form id doesn't match the current form
-          sessionId={!projectVersionMismatch && session ? session.id : null}
+          sessionId={session?.id ?? null}
         />
       </Mapform>
     </div>
