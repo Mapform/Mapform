@@ -8,7 +8,7 @@ export const updateProjectAction = async (
 ) => {
   const result = await authClient.updateProject(params);
 
-  revalidatePath("/app/[wsSlug]", "page");
+  revalidatePath("/app/[wsSlug]/[tsSlug]/projects/[pId]/project", "page");
 
   return result;
 };

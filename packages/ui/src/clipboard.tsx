@@ -34,7 +34,7 @@ export function Clipboard({
 
   return (
     <Button
-      className={cn("gap-2", className)}
+      className={cn("gap-1", className)}
       onClick={async (e) => {
         e.preventDefault();
         await copyToClipboard();

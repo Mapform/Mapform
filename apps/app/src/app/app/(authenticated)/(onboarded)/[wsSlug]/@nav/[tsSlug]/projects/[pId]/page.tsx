@@ -42,7 +42,7 @@ export default async function Nav(props: {
                 Share
               </Button>
             </PopoverTrigger>
-            <PopoverContent>
+            <PopoverContent className="w-[400px]">
               <ShareContent project={project} />
             </PopoverContent>
           </Popover>
