@@ -5,6 +5,7 @@ import { type Row } from "@mapform/db/schema";
 import { publicClient } from "~/lib/safe-action";
 import { Map } from "./map";
 import type { Responses } from "@mapform/backend/data/rows/get-responses";
+import { BoxIcon } from "lucide-react";
 
 const fetchProjectWithPages = cache(async (id: string) => {
   const projectWithPagesResponse = await publicClient.getProjectWithPages({
@@ -106,6 +107,22 @@ export default async function Page(props: {
 
       formValues.push(...(responses?.cells ?? []));
     }
+  }
+
+  if (projectWithPages.visibility === "closed") {
+    return (
+      <div className="flex h-screen flex-1 flex-col justify-center px-2 pb-8">
+        <div className="text-center">
+          <BoxIcon className="mx-auto size-8 text-gray-400" />
+          <h3 className="text-foreground mt-2 text-xl font-semibold">
+            This project is closed
+          </h3>
+          <p className="text-based mt-1 text-gray-500">
+            If you have access to this project, you can view it by signing in.
+          </p>
+        </div>
+      </div>
+    );
   }
 
   return (
