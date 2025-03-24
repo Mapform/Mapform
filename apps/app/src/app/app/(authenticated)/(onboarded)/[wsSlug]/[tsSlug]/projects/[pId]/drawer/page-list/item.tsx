@@ -42,7 +42,7 @@ import {
   EditPagePopoverContent,
   EditPagePopoverAnchor,
 } from "./edit-page-popover";
-
+import { toast } from "@mapform/ui/components/toaster";
 interface ItemProps {
   index: number;
   page: NonNullable<GetProjectWithPages["data"]>["pages"][number];
@@ -57,17 +57,40 @@ export function Item({ page, index }: ItemProps) {
   } = useProject();
   const pathname = usePathname();
   const params = useParams<{ wsSlug: string; tsSlug: string; pId: string }>();
-  const { executeAsync: executeDeletePage, isPending } =
-    useAction(deletePageAction);
+  const { execute: executeDeletePage, isPending } = useAction(
+    deletePageAction,
+    {
+      onSuccess: () => {
+        startTransition(() => {
+          const newPages = currentProject.pages.filter((p) => p.id !== page.id);
+
+          updateProjectOptimistic({
+            ...currentProject,
+            pages: newPages,
+          });
+        });
+
+        toast({
+          title: "Success!",
+          description: "Your page has been deleted.",
+        });
+      },
+      onError: ({ error }) => {
+        toast({
+          title: "Uh oh! Something went wrong.",
+          description:
+            error.serverError ?? "There was an error updating the page.",
+        });
+      },
+    },
+  );
   const [editPagePopoverOpen, setEditPagePopoverOpen] = useState(false);
 
   const isLastPage = currentProject.pages.length <= 1;
   const isActive = page.id === updatePageServerAction.optimisticState?.id;
 
-  const handleDelete = async () => {
+  const handleDelete = () => {
     if (isLastPage) return;
-
-    const newPages = currentProject.pages.filter((p) => p.id !== page.id);
 
     const pageIndex = currentProject.pages.findIndex((p) => p.id === page.id);
 
@@ -75,17 +98,10 @@ export function Item({ page, index }: ItemProps) {
       currentProject.pages[pageIndex + 1] ||
       currentProject.pages[pageIndex - 1];
 
-    await executeDeletePage({
+    executeDeletePage({
       pageId: page.id,
       projectId: currentProject.id,
       redirect: nextPage ? `${pathname}?page=${nextPage.id}` : undefined,
-    });
-
-    startTransition(() => {
-      updateProjectOptimistic({
-        ...currentProject,
-        pages: newPages,
-      });
     });
   };
 
