@@ -88,9 +88,6 @@ export default async function Page(props: {
     return <div>Project has no pages</div>;
   }
 
-  /**
-   * A project version mismatch occurs when a new version has been released
-   */
   const isUsingSessions = Boolean(projectWithPages.submissionsDataset);
 
   if (isUsingSessions && submissionCookie) {

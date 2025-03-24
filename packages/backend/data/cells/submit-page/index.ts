@@ -48,6 +48,8 @@ export const submitPage = (authClient: PublicClient) =>
         throw new Error("Invalid payload");
       }
 
+      console.log("payload", payload);
+
       await db.transaction(async (tx) => {
         await Promise.all(
           Object.entries(data).map(async ([key, value]) => {
