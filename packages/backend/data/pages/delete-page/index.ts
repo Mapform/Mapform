@@ -19,7 +19,7 @@ export const deletePage = (authClient: UserAuthClient) =>
         throw new Error("Page not found");
       }
 
-      if (pageCount?.count <= 1) {
+      if (pageCount.count <= 1) {
         throw new Error("Cannot delete the last page");
       }
 
