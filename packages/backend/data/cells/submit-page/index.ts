@@ -70,8 +70,14 @@ export const submitPage = (authClient: PublicClient) =>
       }
 
       await db.transaction(async (tx) => {
-        await Promise.all(
-          Object.entries(data).map(async ([key, value]) => {
+        await Promise.all([
+          tx
+            .update(formSubmissions)
+            .set({
+              submittedAt: new Date(),
+            })
+            .where(eq(formSubmissions.id, formSubmission.id)),
+          ...Object.entries(data).map(async ([key, value]) => {
             const block = documentContent.find((b) => b.id === key);
 
             if (!block) {
@@ -150,6 +156,6 @@ export const submitPage = (authClient: PublicClient) =>
                 });
             }
           }),
-        );
+        ]);
       });
     });

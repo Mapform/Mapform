@@ -25,6 +25,7 @@ export const getDataset = (authClient: UserAuthClient) =>
           },
           rows: {
             with: {
+              formSubmission: true,
               cells: {
                 with: {
                   stringCell: true,

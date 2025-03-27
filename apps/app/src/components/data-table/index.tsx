@@ -17,7 +17,13 @@ import {
 import { Checkbox } from "@mapform/ui/components/checkbox";
 import { Button } from "@mapform/ui/components/button";
 import type { GetDataset } from "@mapform/backend/data/datasets/get-dataset";
-import { BoxIcon, CopyIcon, PlusIcon, Trash2Icon } from "lucide-react";
+import {
+  BoxIcon,
+  CalendarIcon,
+  CopyIcon,
+  PlusIcon,
+  Trash2Icon,
+} from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import { createRowAction } from "~/data/rows/create-row";
 import { deleteRowsAction } from "~/data/rows/delete-rows";
@@ -114,6 +120,22 @@ export const DataTable = function DataTable({ dataset }: TableProps) {
         enableSorting: false,
         enableHiding: false,
       },
+      ...(dataset.project
+        ? [
+            {
+              id: "submittedAt",
+              accessorKey: "submittedAt",
+              header: (
+                <div className="flex items-center gap-1.5">
+                  <CalendarIcon className="size-4" /> Submitted At
+                </div>
+              ),
+              enableSorting: false,
+              enableHiding: false,
+            },
+          ]
+        : []),
+
       ...sortedColumns.map((column) => ({
         accessorKey: column.id,
         header: (
@@ -131,40 +153,52 @@ export const DataTable = function DataTable({ dataset }: TableProps) {
         enableHiding: false,
       },
     ];
-  }, [dataset.columns, dataset.id]);
+  }, [dataset.columns, dataset.id, dataset.project]);
 
   const rows = useMemo(
     () =>
       dataset.rows.map((row) => {
         const rowCells = row.cells;
 
-        return rowCells.reduce<
-          Record<
-            string,
-            NonNullable<GetDataset["data"]>["rows"][number]["cells"][number]
-          >
-        >(
-          // @ts-expect-error -- It's all gucci baby
-          (acc, cell) => {
-            return {
-              ...acc,
-              [cell.columnId]:
-                cell.stringCell?.value ??
-                cell.numberCell?.value ??
-                cell.booleanCell?.value ??
-                cell.richtextCell?.value ??
-                cell.dateCell?.value ??
-                cell.iconCell?.value ??
-                (cell.pointCell && {
-                  x: cell.pointCell.x,
-                  y: cell.pointCell.y,
-                }),
-            };
-          },
-          {
-            rowId: row.id,
-          },
-        );
+        return {
+          ...rowCells.reduce<
+            Record<
+              string,
+              NonNullable<GetDataset["data"]>["rows"][number]["cells"][number]
+            >
+          >(
+            // @ts-expect-error -- It's all gucci baby
+            (acc, cell) => {
+              return {
+                ...acc,
+                [cell.columnId]:
+                  cell.stringCell?.value ??
+                  cell.numberCell?.value ??
+                  cell.booleanCell?.value ??
+                  cell.richtextCell?.value ??
+                  cell.dateCell?.value ??
+                  cell.iconCell?.value ??
+                  (cell.pointCell && {
+                    x: cell.pointCell.x,
+                    y: cell.pointCell.y,
+                  }),
+              };
+            },
+            {
+              rowId: row.id,
+            },
+          ),
+          submittedAt: row.formSubmission?.submittedAt
+            ? new Date(row.formSubmission.submittedAt).toLocaleString("en-US", {
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+                hour: "numeric",
+                minute: "2-digit",
+                hour12: true,
+              })
+            : null,
+        };
       }),
     [dataset.rows],
   );
