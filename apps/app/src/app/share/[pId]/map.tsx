@@ -9,8 +9,8 @@ import type { GetLayerPoint } from "@mapform/backend/data/datalayer/get-layer-po
 import { type GetLayerMarker } from "@mapform/backend/data/datalayer/get-layer-marker";
 import type { GetProjectWithPages } from "@mapform/backend/data/projects/get-project-with-pages";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
-import type { Responses } from "@mapform/backend/data/rows/get-responses";
-import { createSubmissionAction } from "~/data/rows/create-submission";
+import type { GetSubmission } from "@mapform/backend/data/form-submissions/get-submission";
+import { createSubmissionAction } from "~/data/form-submissions/create-submission";
 import { motion, AnimatePresence } from "motion/react";
 import mapform from "public/static/images/mapform.svg";
 import {
@@ -58,9 +58,9 @@ import {
 interface MapProps {
   pageData: GetPageData["data"];
   projectWithPages: NonNullable<GetProjectWithPages["data"]>;
-  formValues: NonNullable<NonNullable<Responses>["data"]>["cells"];
+  formValues: NonNullable<NonNullable<GetSubmission>["data"]>["row"]["cells"];
   selectedFeature?: GetLayerPoint["data"] | GetLayerMarker["data"];
-  sessionId: string | null;
+  formSubmissionId: string | null;
   isUsingSessions: boolean;
 }
 
@@ -68,7 +68,7 @@ type Page = NonNullable<GetProjectWithPages["data"]>["pages"][number];
 
 export function Map({
   pageData,
-  sessionId,
+  formSubmissionId,
   formValues,
   isUsingSessions,
   projectWithPages,
@@ -167,7 +167,9 @@ export function Map({
 
   const { map } = useMapform();
 
-  const [currentSession, setCurrentSession] = useState<string | null>(null);
+  const [currentFormSubmission, setCurrentFormSubmission] = useState<
+    string | null
+  >(null);
 
   const { execute } = useAction(submitPageAction);
 
@@ -191,25 +193,25 @@ export function Map({
 
   useEffect(() => {
     void (async () => {
-      let newSessionId = sessionId;
+      let newFormSubmissionId = formSubmissionId;
 
       // If we don't have a submissionsDataset, we are not create sessions
       if (!isUsingSessions) {
         return;
       }
 
-      if (!newSessionId) {
+      if (!newFormSubmissionId) {
         const response = await createSubmissionAction({
           projectId: projectWithPages.id,
         });
 
         if (response) {
-          newSessionId = response;
+          newFormSubmissionId = response;
         }
       }
-      setCurrentSession(newSessionId);
+      setCurrentFormSubmission(newFormSubmissionId);
     })();
-  }, [projectWithPages, sessionId, isUsingSessions]);
+  }, [projectWithPages, formSubmissionId, isUsingSessions]);
 
   /**
    * Fix the 'p' query param if no valid page
@@ -230,7 +232,7 @@ export function Map({
     }
   }, [p, map, router, pathname, currentPage, projectWithPages.pages]);
 
-  if ((isUsingSessions && !currentSession) || !currentPage) {
+  if ((isUsingSessions && !currentFormSubmission) || !currentPage) {
     return null;
   }
 
@@ -246,10 +248,10 @@ export function Map({
   const isLastPage = currentPageIndex === projectWithPages.pages.length - 1;
 
   const onStepSubmit = (data: Record<string, string>) => {
-    if (currentSession) {
+    if (currentFormSubmission) {
       execute({
         pageId: currentPage.id,
-        submissionId: currentSession,
+        submissionId: currentFormSubmission,
         payload: data,
       });
     }

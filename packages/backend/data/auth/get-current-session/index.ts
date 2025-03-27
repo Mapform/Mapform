@@ -2,7 +2,7 @@
 
 import { db } from "@mapform/db";
 import { verifyToken } from "@mapform/auth/helpers/sessions";
-import { PublicClient, UnwrapReturn } from "../../../lib/types";
+import type { PublicClient, UnwrapReturn } from "../../../lib/types";
 import { getCurrentSessionSchema } from "./schema";
 import { users } from "@mapform/db/schema";
 import { eq } from "@mapform/db/utils";

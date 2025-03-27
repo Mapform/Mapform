@@ -8,13 +8,16 @@ export const createSubmissionAction = async (
 ) => {
   const result = await publicClient.createSubmission(params);
 
-  console.log("result", result);
-
   if (!result?.data) {
     throw new Error("Submission not created");
   }
 
-  (await cookies()).set("mapform-submission", result.data.id);
+  (await cookies()).set("mapform-submission", result.data.id, {
+    path: `/share/${params.projectId}`,
+    httpOnly: true,
+    secure: true,
+    maxAge: 60 * 60 * 24 * 14, // 14 days
+  });
 
   return result.data.id;
 };

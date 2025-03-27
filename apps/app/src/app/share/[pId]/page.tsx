@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import { Mapform } from "~/components/mapform";
 import { publicClient } from "~/lib/safe-action";
 import { Map } from "./map";
-import type { Responses } from "@mapform/backend/data/rows/get-responses";
+import type { GetSubmission } from "@mapform/backend/data/form-submissions/get-submission";
 import { BoxIcon } from "lucide-react";
 
 const fetchProjectWithPages = cache(async (id: string) => {
@@ -75,9 +75,11 @@ export default async function Page(props: {
 
   const cookieStore = await cookies();
   const submissionCookie = cookieStore.get("mapform-submission");
-  const formValues: NonNullable<NonNullable<Responses>["data"]>["cells"] = [];
+  const formValues: NonNullable<
+    NonNullable<GetSubmission>["data"]
+  >["row"]["cells"] = [];
 
-  let sessionId: string | null = null;
+  let formSubmissionId: string | null = null;
 
   if (!projectWithPages) {
     return <div>Project not found</div>;
@@ -91,15 +93,15 @@ export default async function Page(props: {
 
   if (isUsingSessions && submissionCookie) {
     const response = (
-      await publicClient.getSession({
-        rowId: submissionCookie.value,
+      await publicClient.getSubmission({
+        submissionId: submissionCookie.value,
         projectId: projectWithPages.id,
       })
     )?.data;
 
     if (response) {
-      sessionId = response.id;
-      formValues.push(...response.cells);
+      formSubmissionId = response.id;
+      formValues.push(...response.row.cells);
     }
   }
 
@@ -128,7 +130,7 @@ export default async function Page(props: {
           pageData={pageData}
           projectWithPages={projectWithPages}
           selectedFeature={selectedFeature}
-          sessionId={sessionId}
+          formSubmissionId={formSubmissionId}
         />
       </Mapform>
     </div>
