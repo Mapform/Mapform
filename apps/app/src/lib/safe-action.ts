@@ -41,7 +41,6 @@ import { createRow } from "@mapform/backend/data/rows/create-row";
 import { deleteRows } from "@mapform/backend/data/rows/delete-rows";
 import { duplicateRows } from "@mapform/backend/data/rows/duplicate-rows";
 import { createSubmission } from "@mapform/backend/data/rows/create-submission";
-import { getResponses } from "@mapform/backend/data/rows/get-responses";
 import { submitPage } from "@mapform/backend/data/cells/submit-page";
 import { getSession } from "@mapform/backend/data/rows/get-session";
 import { getCurrentSession } from "@mapform/backend/data/auth/get-current-session";
@@ -213,7 +212,6 @@ const createPublicClient = () => {
 
     // Rows
     getSession: getSession(extendedClient),
-    getResponses: getResponses(extendedClient),
     createSubmission: createSubmission(extendedClient),
 
     // Projects

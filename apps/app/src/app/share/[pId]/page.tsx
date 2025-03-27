@@ -1,7 +1,6 @@
 import React, { cache } from "react";
 import { cookies } from "next/headers";
 import { Mapform } from "~/components/mapform";
-import { type Row } from "@mapform/db/schema";
 import { publicClient } from "~/lib/safe-action";
 import { Map } from "./map";
 import type { Responses } from "@mapform/backend/data/rows/get-responses";
@@ -78,7 +77,7 @@ export default async function Page(props: {
   const submissionCookie = cookieStore.get("mapform-submission");
   const formValues: NonNullable<NonNullable<Responses>["data"]>["cells"] = [];
 
-  let session: Row | undefined;
+  let sessionId: string | null = null;
 
   if (!projectWithPages) {
     return <div>Project not found</div>;
@@ -91,16 +90,16 @@ export default async function Page(props: {
   const isUsingSessions = Boolean(projectWithPages.submissionsDataset);
 
   if (isUsingSessions && submissionCookie) {
-    session = (await publicClient.getSession({ rowId: submissionCookie.value }))
-      ?.data;
+    const response = (
+      await publicClient.getSession({
+        rowId: submissionCookie.value,
+        projectId: projectWithPages.id,
+      })
+    )?.data;
 
-    if (session) {
-      const responsesResponse = await publicClient.getResponses({
-        id: session.id,
-      });
-      const responses = responsesResponse?.data;
-
-      formValues.push(...(responses?.cells ?? []));
+    if (response) {
+      sessionId = response.id;
+      formValues.push(...response.cells);
     }
   }
 
@@ -129,7 +128,7 @@ export default async function Page(props: {
           pageData={pageData}
           projectWithPages={projectWithPages}
           selectedFeature={selectedFeature}
-          sessionId={session?.id ?? null}
+          sessionId={sessionId}
         />
       </Mapform>
     </div>
