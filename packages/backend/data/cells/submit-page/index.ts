@@ -21,6 +21,17 @@ export const submitPage = (authClient: PublicClient) =>
       const [page, row] = await Promise.all([
         db.query.pages.findFirst({
           where: eq(pages.id, pageId),
+          with: {
+            project: {
+              with: {
+                submissionsDataset: {
+                  columns: {
+                    id: true,
+                  },
+                },
+              },
+            },
+          },
         }),
         db.query.rows.findFirst({
           where: eq(pages.id, submissionId),
@@ -35,6 +46,10 @@ export const submitPage = (authClient: PublicClient) =>
         throw new Error("Submission not found");
       }
 
+      if (page.project.submissionsDataset?.id !== row.datasetId) {
+        throw new Error("Dataset mismatch");
+      }
+
       const documentContent = page.content?.content;
 
       if (!documentContent) {
@@ -47,8 +62,6 @@ export const submitPage = (authClient: PublicClient) =>
       if (error) {
         throw new Error("Invalid payload");
       }
-
-      console.log("payload", payload);
 
       await db.transaction(async (tx) => {
         await Promise.all(
