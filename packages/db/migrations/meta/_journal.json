@@ -232,6 +232,13 @@
       "when": 1743099839475,
       "tag": "0032_clear_songbird",
       "breakpoints": true
+    },
+    {
+      "idx": 33,
+      "version": "7",
+      "when": 1743102310774,
+      "tag": "0033_yummy_kate_bishop",
+      "breakpoints": true
     }
   ]
 }
