@@ -8,6 +8,8 @@ export const createSubmissionAction = async (
 ) => {
   const result = await publicClient.createSubmission(params);
 
+  console.log("result", result);
+
   if (!result?.data) {
     throw new Error("Submission not created");
   }
