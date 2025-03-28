@@ -280,7 +280,7 @@ export function Map({
           initial={{ opacity: 0, scale: 0.95 }}
         >
           <div className="flex justify-between gap-1.5 divide-x px-1.5">
-            <Link className="underline" href="https://alpha.mapform.co">
+            <Link className="underline" href="https://mapform.co">
               <Button className="px-2 py-0" type="button" variant="ghost">
                 <div className="flex flex-col items-center justify-center gap-0.5">
                   <Image alt="Mapform" className="size-3.5" src={mapform} />
