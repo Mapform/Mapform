@@ -41,10 +41,9 @@ export const createPage = (authClient: UserAuthClient) =>
           rowCount + pageCount >=
           projectWithPagesResponse.data.teamspace.workspace.plan!.rowLimit
         ) {
-          throw new ServerError({
-            message:
-              "Row limit exceeded. Delete some rows, or upgrade your plan.",
-          });
+          throw new ServerError(
+            "Row limit exceeded. Delete some rows, or upgrade your plan.",
+          );
         }
 
         const nextPagePosition = projectWithPagesResponse.data.pages.length + 1;

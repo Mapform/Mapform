@@ -239,6 +239,13 @@
       "when": 1743102310774,
       "tag": "0033_yummy_kate_bishop",
       "breakpoints": true
+    },
+    {
+      "idx": 34,
+      "version": "7",
+      "when": 1743172378521,
+      "tag": "0034_sparkling_chimera",
+      "breakpoints": true
     }
   ]
 }

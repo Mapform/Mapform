@@ -171,9 +171,7 @@ export const updatePage = (authClient: UserAuthClient) =>
             (block) => block.type === "pin" || block.type === "textInput",
           )
         ) {
-          throw new ServerError({
-            message: "End screens cannot have input blocks.",
-          });
+          throw new ServerError("End screens cannot have input blocks.");
         }
 
         const datasetColumns = await db

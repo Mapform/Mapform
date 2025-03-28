@@ -7,15 +7,14 @@ import { Map } from "./map";
 import type { GetSubmission } from "@mapform/backend/data/form-submissions/get-submission";
 import mapform from "public/static/images/mapform.svg";
 import Link from "next/link";
+import { ERROR_CODES_USER } from "@mapform/backend/lib/server-error";
 
 const fetchProjectWithPages = cache(async (id: string) => {
   const projectWithPagesResponse = await publicClient.getProjectWithPages({
     id,
   });
 
-  const projectWithPages = projectWithPagesResponse?.data;
-
-  return projectWithPages;
+  return projectWithPagesResponse;
 });
 
 const fetchPageData = cache(async (id?: string) => {
@@ -74,13 +73,36 @@ export default async function Page(props: {
   >["row"]["cells"] = [];
 
   const params = await props.params;
-  const [projectWithPages, pageData, selectedFeature] = await Promise.all([
-    fetchProjectWithPages(params.pId),
-    fetchPageData(searchParams?.p),
-    fetchSelectedFeature(searchParams?.feature),
-  ]);
+  const [projectWithPagesResponse, pageData, selectedFeature] =
+    await Promise.all([
+      fetchProjectWithPages(params.pId),
+      fetchPageData(searchParams?.p),
+      fetchSelectedFeature(searchParams?.feature),
+    ]);
 
   let formSubmissionId: string | null = null;
+  const projectWithPages = projectWithPagesResponse?.data;
+
+  if (projectWithPagesResponse?.serverError) {
+    if (
+      projectWithPagesResponse.serverError ===
+      ERROR_CODES_USER.ROW_LIMIT_EXCEEDED
+    ) {
+      return (
+        <WarningScreen
+          title="Submission limit reached"
+          description="This project has reached its submission limit. Please contact the project owner to increase the limit."
+        />
+      );
+    }
+
+    return (
+      <WarningScreen
+        title="Project error"
+        description="There was an error loading this project. Please try again later."
+      />
+    );
+  }
 
   if (!projectWithPages) {
     return (

@@ -101,10 +101,9 @@ export const duplicateRows = (authClient: UserAuthClient) =>
       }
 
       if (rowCount + pageCount + dataToDuplicate.length > plan.rowLimit) {
-        throw new ServerError({
-          message:
-            "Row limit exceeded. Delete some rows, or upgrade your plan.",
-        });
+        throw new ServerError(
+          "Row limit exceeded. Delete some rows, or upgrade your plan.",
+        );
       }
 
       await db.transaction(async (tx) => {

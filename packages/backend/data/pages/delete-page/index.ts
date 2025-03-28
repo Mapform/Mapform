@@ -28,7 +28,7 @@ export const deletePage = (authClient: UserAuthClient) =>
       }
 
       if (pageCount <= 1) {
-        throw new ServerError({ message: "Cannot delete the last page" });
+        throw new ServerError("Cannot delete the last page");
       }
 
       if (
@@ -37,9 +37,7 @@ export const deletePage = (authClient: UserAuthClient) =>
           .filter((page) => page.id !== pageId)
           .some((page) => page.pageType === "page_ending")
       ) {
-        throw new ServerError({
-          message: "Project must have at least one End Screen.",
-        });
+        throw new ServerError("Project must have at least one End Screen.");
       }
 
       await db.transaction(async (tx) => {

@@ -36,10 +36,9 @@ export const deleteDataset = (authClient: UserAuthClient) =>
       }
 
       if (dataset.project) {
-        throw new ServerError({
-          message:
-            "Cannot delete a project's submissions dataset. To delete this dataset the project must be deleted first.",
-        });
+        throw new ServerError(
+          "Cannot delete a project's submissions dataset. To delete this dataset the project must be deleted first.",
+        );
       }
 
       await db.delete(datasets).where(eq(datasets.id, datasetId));

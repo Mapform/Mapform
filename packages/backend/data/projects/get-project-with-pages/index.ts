@@ -9,6 +9,8 @@ import type {
   PublicClient,
   UnwrapReturn,
 } from "../../../lib/types";
+import { getRowAndPageCount } from "../../usage/get-row-and-page-count";
+import { ServerError, ERROR_CODES_USER } from "../../../lib/server-error";
 
 export const getProjectWithPages = (
   authClient: UserAuthClient | PublicClient,
@@ -97,6 +99,26 @@ export const getProjectWithPages = (
 
       if (!_projects) {
         throw new Error("Project not found");
+      }
+
+      if (_projects.submissionsDataset) {
+        const response = await getRowAndPageCount(authClient)({
+          workspaceSlug: _projects.teamspace.workspace.slug,
+        });
+
+        const rowCount = response?.data?.rowCount;
+        const pageCount = response?.data?.pageCount;
+
+        if (rowCount === undefined || pageCount === undefined) {
+          throw new Error("Row count or page count is undefined.");
+        }
+
+        if (
+          rowCount + pageCount >=
+          _projects.teamspace.workspace.plan!.rowLimit
+        ) {
+          throw new ServerError(ERROR_CODES_USER.ROW_LIMIT_EXCEEDED);
+        }
       }
 
       return {

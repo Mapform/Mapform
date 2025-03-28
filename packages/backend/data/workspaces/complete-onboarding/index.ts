@@ -95,9 +95,7 @@ export const completeOnboarding = (authClient: UserAuthClient) =>
           .catch((error) => {
             if (error) {
               if ((error as unknown as { code: string }).code === "23505") {
-                throw new ServerError({
-                  message: "Workspace slug already exists",
-                });
+                throw new ServerError("Workspace slug already exists");
               }
               throw new Error("Failed to complete onboarding: " + error);
             }
