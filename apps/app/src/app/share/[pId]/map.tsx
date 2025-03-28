@@ -232,6 +232,15 @@ export function Map({
     }
   }, [p, map, router, pathname, currentPage, projectWithPages.pages]);
 
+  /**
+   * Reset the form values when the page changes. This is to fix issue where
+   * existing form values would not be set on page load.
+   */
+  useEffect(() => {
+    form.reset(pageValues);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [p]);
+
   if ((isUsingSessions && !currentFormSubmission) || !currentPage) {
     return null;
   }
