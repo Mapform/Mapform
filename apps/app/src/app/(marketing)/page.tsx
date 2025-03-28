@@ -5,6 +5,7 @@ import { ShowcaseTabs } from "./showcase-tabs";
 import { Pricing } from "./pricing";
 import { Storytelling } from "./storytelling";
 import { Forms } from "./forms";
+import { Demos } from "./demos";
 
 export default function Page() {
   return (
@@ -16,6 +17,7 @@ export default function Page() {
         <Forms />
         {/* <Bento />
         <UseCases /> */}
+        <Demos />
         <Pricing />
       </div>
     </>
