@@ -22,44 +22,57 @@ import shareImage from "public/static/images/share.png";
 import { motion } from "motion/react";
 import { useState, useEffect } from "react";
 import { cn } from "@mapform/lib/classnames";
+import { Badge } from "@mapform/ui/components/badge";
+
+const tagColors = {
+  Travel: "bg-blue-500",
+  Storytelling: "bg-green-500",
+  Community: "bg-indigo-500",
+  Tours: "bg-yellow-500",
+};
 
 const TABS = [
   {
-    id: "map",
-    title: "Maps",
+    id: "travel-map",
+    text: "Track and share every place you've ever been.",
+    tag: "Travel",
     image: mapImage,
     alt: "Map view interface",
     icon: EarthIcon,
   },
   {
-    id: "dataset",
-    title: "Datasets",
+    id: "forms",
+    text: "Crowd source suggestions for the perfect trip.",
+    tag: "Travel",
     image: datasetImage,
     alt: "Dataset interface",
     icon: TableIcon,
   },
   {
     id: "guide",
-    title: "Guides",
+    text: "Take your friends on a guided tour.",
+    tag: "Tours",
     image: guideImage,
     alt: "Guide interface",
     icon: BookMarkedIcon,
   },
   {
     id: "forms",
-    title: "Forms",
+    text: "Make your stories come alive with maps.",
+    tag: "Storytelling",
     image: formsImage,
     alt: "Forms interface",
     icon: TextCursorInputIcon,
   },
   {
     id: "publish",
-    title: "Publish",
+    text: "Engage with others in your community.",
+    tag: "Community",
     image: shareImage,
     alt: "Publish interface",
     icon: SquareArrowOutUpRightIcon,
   },
-];
+] as const;
 
 export function Demos() {
   const [api, setApi] = useState<CarouselApi>();
@@ -124,8 +137,26 @@ export function Demos() {
                 }}
                 key={tab.id}
               >
-                <div className="relative h-full w-full overflow-hidden rounded-lg bg-gray-300">
-                  <Image
+                <div className="relative h-full w-full overflow-hidden rounded-lg bg-gray-100">
+                  <div
+                    className={cn(
+                      "p-4 transition-all delay-200 duration-500 ease-in-out md:p-10",
+                      i === current
+                        ? "translate-x-0 opacity-100"
+                        : "-translate-x-[50px] opacity-0",
+                    )}
+                  >
+                    <Badge
+                      className={cn("mb-1", tagColors[tab.tag])}
+                      // variant="outline"
+                    >
+                      {tab.tag}
+                    </Badge>
+                    <div className="text-lg font-medium text-gray-800 md:text-2xl">
+                      {tab.text}
+                    </div>
+                  </div>
+                  {/* <Image
                     src={tab.image}
                     alt={tab.alt}
                     className="h-full w-full"
@@ -134,7 +165,7 @@ export function Demos() {
                       objectFit: "cover",
                     }}
                     placeholder="blur"
-                  />
+                  /> */}
                 </div>
               </CarouselItem>
             ))}
