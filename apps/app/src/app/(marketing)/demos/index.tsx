@@ -1,3 +1,6 @@
+"use client";
+
+import type { CarouselApi } from "@mapform/ui/components/carousel";
 import {
   Carousel,
   CarouselContent,
@@ -17,6 +20,7 @@ import guideImage from "public/static/images/guide.png";
 import mapImage from "public/static/images/map.jpeg";
 import shareImage from "public/static/images/share.png";
 import { motion } from "motion/react";
+import { useState, useEffect } from "react";
 
 const TABS = [
   {
@@ -57,6 +61,36 @@ const TABS = [
 ];
 
 export function Demos() {
+  const [api, setApi] = useState<CarouselApi>();
+  const [current, setCurrent] = useState(0);
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    if (!api) return;
+
+    const interval = setInterval(() => {
+      setProgress((prev) => {
+        if (prev >= 100) {
+          const nextIndex = (current + 1) % TABS.length;
+          api.scrollTo(nextIndex);
+          return 0;
+        }
+        return prev + 1;
+      });
+    }, 50); // Adjust timing as needed
+
+    return () => clearInterval(interval);
+  }, [api, current]);
+
+  useEffect(() => {
+    if (!api) return;
+
+    api.on("select", () => {
+      setCurrent(api.selectedScrollSnap());
+      setProgress(0);
+    });
+  }, [api]);
+
   return (
     <section>
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
@@ -74,12 +108,14 @@ export function Demos() {
           <Carousel
             opts={{
               loop: true,
+              align: "center",
             }}
+            setApi={setApi}
           >
             <CarouselContent>
               {TABS.map((tab) => (
                 <CarouselItem
-                  className="relative h-[500px] w-full overflow-hidden"
+                  className="relative h-[500px] w-full basis-4/5 overflow-hidden"
                   key={tab.id}
                 >
                   <Image
@@ -96,6 +132,38 @@ export function Demos() {
               ))}
             </CarouselContent>
           </Carousel>
+          <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 justify-center gap-4 rounded-full bg-white/80 p-3 shadow-lg backdrop-blur-md">
+            {TABS.map((tab, i) => (
+              <motion.button
+                key={tab.id}
+                onClick={() => {
+                  api?.scrollTo(i);
+                  setProgress(0);
+                }}
+                className="relative flex h-2 items-center justify-center rounded-full bg-gray-400 shadow-lg transition-all hover:bg-gray-500"
+                animate={{
+                  width: current === i ? 48 : 8,
+                }}
+                transition={{
+                  duration: 0.3,
+                  ease: "easeInOut",
+                }}
+              >
+                {current === i && (
+                  <>
+                    <div className="absolute inset-0 rounded-full bg-gray-400" />
+                    <div
+                      className="absolute inset-0 rounded-full bg-gray-900"
+                      style={{
+                        clipPath: `inset(0 ${100 - progress}% 0 0)`,
+                        transition: "clip-path 0.05s linear",
+                      }}
+                    />
+                  </>
+                )}
+              </motion.button>
+            ))}
+          </div>
         </div>
       </div>
     </section>
