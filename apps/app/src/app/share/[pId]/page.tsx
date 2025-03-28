@@ -177,7 +177,7 @@ function WarningScreen({
   return (
     <div className="flex h-screen flex-1 flex-col justify-center px-2 pb-8">
       <div className="text-center">
-        <Link href="https://alpha.mapform.co">
+        <Link href="https://mapform.co">
           <Image
             alt="Logo"
             className="mx-auto size-8 text-gray-400"
