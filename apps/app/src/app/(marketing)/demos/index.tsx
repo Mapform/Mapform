@@ -95,84 +95,82 @@ export function Demos() {
   return (
     <section>
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-2xl text-center">
-            <h3 className="mt-2 text-pretty text-4xl font-semibold tracking-tight text-gray-900 sm:text-5xl lg:text-balance">
-              Showcase
-            </h3>
-            {/* <p className="text-muted-foreground mt-4 text-lg leading-8 sm:text-xl">
+        <div className="mx-auto max-w-2xl text-center">
+          <h3 className="mt-2 text-pretty text-4xl font-semibold tracking-tight text-gray-900 sm:text-5xl lg:text-balance">
+            Showcase
+          </h3>
+          {/* <p className="text-muted-foreground mt-4 text-lg leading-8 sm:text-xl">
               See Mapform in action.
             </p> */}
-          </div>
         </div>
-        <div className="relative mt-8 lg:mt-16">
-          <Carousel
-            opts={{
-              loop: true,
-              align: "center",
-            }}
-            setApi={setApi}
-          >
-            <CarouselContent>
-              {TABS.map((tab, i) => (
-                <CarouselItem
-                  className={cn("h-[500px] w-full basis-4/5 rounded-lg pl-4", {
-                    "cursor-pointer": i !== current,
-                  })}
-                  onClick={() => {
-                    api?.scrollTo(i);
-                    setProgress(0);
-                  }}
-                  key={tab.id}
-                >
-                  <div className="relative h-full w-full overflow-hidden rounded-lg bg-gray-300">
-                    <Image
-                      src={tab.image}
-                      alt={tab.alt}
-                      className="h-full w-full"
-                      fill
-                      style={{
-                        objectFit: "cover",
-                      }}
-                      placeholder="blur"
-                    />
-                  </div>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-          </Carousel>
-          <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 justify-center gap-4 rounded-full bg-white/80 p-3 shadow-lg backdrop-blur-md">
+      </div>
+      <div className="relative mt-8 lg:mt-16">
+        <Carousel
+          opts={{
+            loop: true,
+            align: "center",
+          }}
+          setApi={setApi}
+        >
+          <CarouselContent>
             {TABS.map((tab, i) => (
-              <motion.button
-                key={tab.id}
+              <CarouselItem
+                className={cn("h-[500px] w-full basis-4/5 rounded-lg pl-4", {
+                  "cursor-pointer": i !== current,
+                })}
                 onClick={() => {
                   api?.scrollTo(i);
                   setProgress(0);
                 }}
-                className="relative flex h-2 items-center justify-center rounded-full bg-gray-400 shadow-lg transition-all hover:bg-gray-500"
-                animate={{
-                  width: current === i ? 48 : 8,
-                }}
-                transition={{
-                  duration: 0.3,
-                  ease: "easeInOut",
-                }}
+                key={tab.id}
               >
-                {current === i && (
-                  <>
-                    <div className="absolute inset-0 rounded-full bg-gray-400" />
-                    <div
-                      className="absolute inset-0 rounded-full bg-gray-900"
-                      style={{
-                        clipPath: `inset(0 ${100 - progress}% 0 0)`,
-                        transition: "clip-path 0.05s linear",
-                      }}
-                    />
-                  </>
-                )}
-              </motion.button>
+                <div className="relative h-full w-full overflow-hidden rounded-lg bg-gray-300">
+                  <Image
+                    src={tab.image}
+                    alt={tab.alt}
+                    className="h-full w-full"
+                    fill
+                    style={{
+                      objectFit: "cover",
+                    }}
+                    placeholder="blur"
+                  />
+                </div>
+              </CarouselItem>
             ))}
-          </div>
+          </CarouselContent>
+        </Carousel>
+        <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 justify-center gap-4 rounded-full bg-white/80 p-3 shadow-lg backdrop-blur-md">
+          {TABS.map((tab, i) => (
+            <motion.button
+              key={tab.id}
+              onClick={() => {
+                api?.scrollTo(i);
+                setProgress(0);
+              }}
+              className="relative flex h-2 items-center justify-center rounded-full bg-gray-400 shadow-lg transition-all hover:bg-gray-500"
+              animate={{
+                width: current === i ? 48 : 8,
+              }}
+              transition={{
+                duration: 0.3,
+                ease: "easeInOut",
+              }}
+            >
+              {current === i && (
+                <>
+                  <div className="absolute inset-0 rounded-full bg-gray-400" />
+                  <div
+                    className="absolute inset-0 rounded-full bg-gray-900"
+                    style={{
+                      clipPath: `inset(0 ${100 - progress}% 0 0)`,
+                      transition: "clip-path 0.05s linear",
+                    }}
+                  />
+                </>
+              )}
+            </motion.button>
+          ))}
         </div>
       </div>
     </section>
