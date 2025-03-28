@@ -2,13 +2,7 @@
 
 import { db } from "@mapform/db";
 import { count, eq, inArray, type SQL, sql } from "@mapform/db/utils";
-import {
-  cells,
-  columns,
-  pages,
-  projects,
-  type Column,
-} from "@mapform/db/schema";
+import { cells, columns, pages, type Column } from "@mapform/db/schema";
 import {
   type CustomBlock,
   type DocumentContent,
@@ -270,11 +264,6 @@ export const updatePage = (authClient: UserAuthClient) =>
                 content: insertContent,
               })
               .where(eq(pages.id, id)),
-
-            tx
-              .update(projects)
-              .set({ isDirty: true })
-              .where(eq(projects.id, page.project.id)),
 
             inputBlocksToCreate.length &&
               tx.insert(columns).values(inputBlocksToCreate),

@@ -5,3 +5,12 @@ export class ServerError extends Error {
     this.name = "ServerError";
   }
 }
+
+export const ERROR_CODES_USER = {
+  ROW_LIMIT_EXCEEDED: "The project has reached its submission limit.",
+};
+
+export const ERROR_CODES_ADMIN = {
+  ROW_LIMIT_EXCEEDED:
+    "Row limit exceeded. Delete some rows, or upgrade your plan.",
+};

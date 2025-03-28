@@ -10,14 +10,6 @@ export const projectsRelations = relations(projects, ({ one, many }) => ({
     fields: [projects.teamspaceId],
     references: [teamspaces.id],
   }),
-  rootProject: one(projects, {
-    fields: [projects.rootProjectId],
-    references: [projects.id],
-    relationName: "child_to_root",
-  }),
-  childProjects: many(projects, {
-    relationName: "child_to_root",
-  }),
   submissionsDataset: one(datasets, {
     fields: [projects.datasetId],
     references: [datasets.id],

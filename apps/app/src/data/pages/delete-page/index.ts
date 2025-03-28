@@ -11,6 +11,10 @@ export const deletePageAction = async (
 
   revalidatePath("/app/[wsSlug]/[tsSlug]/projects/[pId]/project", "page");
 
+  if (result?.serverError) {
+    return result;
+  }
+
   if (params.redirect) {
     redirect(params.redirect);
   }

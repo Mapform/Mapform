@@ -1,7 +1,7 @@
 "server-only";
 
 import { db } from "@mapform/db";
-import { eq, and, isNull, desc } from "@mapform/db/utils";
+import { eq, desc } from "@mapform/db/utils";
 import { projects, teamspaces } from "@mapform/db/schema";
 import { getRecentProjectsSchema } from "./schema";
 import type { UserAuthClient } from "../../../lib/types";
@@ -18,12 +18,7 @@ export const getRecentProjects = (authClient: UserAuthClient) =>
         .select()
         .from(projects)
         .leftJoin(teamspaces, eq(teamspaces.id, projects.teamspaceId))
-        .where(
-          and(
-            eq(teamspaces.workspaceSlug, workspaceSlug),
-            isNull(projects.rootProjectId),
-          ),
-        )
+        .where(eq(teamspaces.workspaceSlug, workspaceSlug))
         .orderBy(desc(projects.updatedAt))
         .limit(5);
     });

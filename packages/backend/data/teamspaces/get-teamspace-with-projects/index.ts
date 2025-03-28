@@ -1,8 +1,8 @@
 "server-only";
 
 import { db } from "@mapform/db";
-import { eq, and, isNull } from "@mapform/db/utils";
-import { projects, teamspaces } from "@mapform/db/schema";
+import { eq, and } from "@mapform/db/utils";
+import { teamspaces } from "@mapform/db/schema";
 import { getTeamspaceWithProjectsSchema } from "./schema";
 import type { UserAuthClient, UnwrapReturn } from "../../../lib/types";
 
@@ -37,7 +37,6 @@ export const getTeamspaceWithProjects = (authClient: UserAuthClient) =>
                 name: true,
                 createdAt: true,
               },
-              where: isNull(projects.rootProjectId),
             },
           },
         });

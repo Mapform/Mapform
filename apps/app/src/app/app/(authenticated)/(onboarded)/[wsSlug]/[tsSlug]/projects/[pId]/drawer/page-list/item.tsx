@@ -22,6 +22,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@mapform/ui/components/dropdown-menu";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@mapform/ui/components/tooltip";
 import { useAction } from "next-safe-action/hooks";
 import { startTransition } from "react";
 import type { GetProjectWithPages } from "@mapform/backend/data/projects/get-project-with-pages";
@@ -42,7 +48,7 @@ import {
   EditPagePopoverContent,
   EditPagePopoverAnchor,
 } from "./edit-page-popover";
-
+import { toast } from "@mapform/ui/components/toaster";
 interface ItemProps {
   index: number;
   page: NonNullable<GetProjectWithPages["data"]>["pages"][number];
@@ -57,8 +63,18 @@ export function Item({ page, index }: ItemProps) {
   } = useProject();
   const pathname = usePathname();
   const params = useParams<{ wsSlug: string; tsSlug: string; pId: string }>();
-  const { executeAsync: executeDeletePage, isPending } =
-    useAction(deletePageAction);
+  const { executeAsync: executeDeletePage, isPending } = useAction(
+    deletePageAction,
+    {
+      onError: ({ error }) => {
+        toast({
+          title: "Uh oh! Something went wrong.",
+          description:
+            error.serverError ?? "There was an error updating the page.",
+        });
+      },
+    },
+  );
   const [editPagePopoverOpen, setEditPagePopoverOpen] = useState(false);
 
   const isLastPage = currentProject.pages.length <= 1;
@@ -66,8 +82,6 @@ export function Item({ page, index }: ItemProps) {
 
   const handleDelete = async () => {
     if (isLastPage) return;
-
-    const newPages = currentProject.pages.filter((p) => p.id !== page.id);
 
     const pageIndex = currentProject.pages.findIndex((p) => p.id === page.id);
 
@@ -81,6 +95,7 @@ export function Item({ page, index }: ItemProps) {
       redirect: nextPage ? `${pathname}?page=${nextPage.id}` : undefined,
     });
 
+    const newPages = currentProject.pages.filter((p) => p.id !== page.id);
     startTransition(() => {
       updateProjectOptimistic({
         ...currentProject,
@@ -166,14 +181,63 @@ export function Item({ page, index }: ItemProps) {
                       <Settings2Icon className="size-4 flex-shrink-0" />
                       Edit
                     </DropdownMenuItem>
-                    <DropdownMenuItem
-                      className="flex items-center gap-2"
-                      disabled={isPending || currentProject.pages.length <= 1}
-                      onClick={handleDelete}
-                    >
-                      <Trash2Icon className="size-4 flex-shrink-0" />
-                      Delete
-                    </DropdownMenuItem>
+                    <TooltipProvider delayDuration={0}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div>
+                            {(() => {
+                              const isDisabled =
+                                isPending ||
+                                currentProject.pages.length <= 1 ||
+                                (page.pageType === "page_ending" &&
+                                  currentProject.formsEnabled &&
+                                  currentProject.pages.filter(
+                                    (p) => p.pageType === "page_ending",
+                                  ).length <= 1);
+                              return (
+                                <DropdownMenuItem
+                                  className="flex items-center gap-2"
+                                  disabled={isDisabled}
+                                  onClick={handleDelete}
+                                >
+                                  <Trash2Icon className="size-4 flex-shrink-0" />
+                                  Delete
+                                </DropdownMenuItem>
+                              );
+                            })()}
+                          </div>
+                        </TooltipTrigger>
+                        {(() => {
+                          const isDisabled =
+                            isPending ||
+                            currentProject.pages.length <= 1 ||
+                            (page.pageType === "page_ending" &&
+                              currentProject.formsEnabled &&
+                              currentProject.pages.filter(
+                                (p) => p.pageType === "page_ending",
+                              ).length <= 1);
+
+                          if (!isDisabled) return null;
+
+                          return (
+                            <TooltipContent
+                              className="max-w-[200px]"
+                              side="left"
+                            >
+                              {currentProject.pages.length <= 1
+                                ? "Cannot delete the only page"
+                                : page.pageType === "page_ending" &&
+                                    currentProject.formsEnabled &&
+                                    currentProject.pages.filter(
+                                      (p) => p.pageType === "page_ending",
+                                    ).length <= 1
+                                  ? "Cannot delete the only ending page when forms are enabled"
+                                  : null}
+                            </TooltipContent>
+                          );
+                        })()}
+                      </Tooltip>
+                    </TooltipProvider>
                   </DropdownMenuGroup>
                 </DropdownMenuContent>
               </DropdownMenu>

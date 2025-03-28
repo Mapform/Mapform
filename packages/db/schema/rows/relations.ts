@@ -2,6 +2,7 @@ import { relations } from "drizzle-orm";
 import { cells } from "../cells/schema";
 import { datasets } from "../datasets/schema";
 import { rows } from "./schema";
+import { formSubmissions } from "../form-submissions/schema";
 
 export const rowsRelations = relations(rows, ({ one, many }) => ({
   dataset: one(datasets, {
@@ -9,4 +10,5 @@ export const rowsRelations = relations(rows, ({ one, many }) => ({
     references: [datasets.id],
   }),
   cells: many(cells),
+  formSubmission: one(formSubmissions),
 }));

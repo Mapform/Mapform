@@ -33,7 +33,6 @@ import { getPageWithLayers } from "@mapform/backend/data/pages/get-page-with-lay
 import { updatePage } from "@mapform/backend/data/pages/update-page";
 import { updatePageOrder } from "@mapform/backend/data/pages/update-page-order";
 import { getProjectWithPages } from "@mapform/backend/data/projects/get-project-with-pages";
-import { publishProject } from "@mapform/backend/data/projects/publish-project";
 import { getTeamspaceWithProjects } from "@mapform/backend/data/teamspaces/get-teamspace-with-projects";
 import { deleteColumn } from "@mapform/backend/data/columns/delete-column";
 import { editColumn } from "@mapform/backend/data/columns/edit-column";
@@ -41,10 +40,9 @@ import { getDataset } from "@mapform/backend/data/datasets/get-dataset";
 import { createRow } from "@mapform/backend/data/rows/create-row";
 import { deleteRows } from "@mapform/backend/data/rows/delete-rows";
 import { duplicateRows } from "@mapform/backend/data/rows/duplicate-rows";
-import { createSubmission } from "@mapform/backend/data/rows/create-submission";
-import { getResponses } from "@mapform/backend/data/rows/get-responses";
+import { createSubmission } from "@mapform/backend/data/form-submissions/create-submission";
 import { submitPage } from "@mapform/backend/data/cells/submit-page";
-import { getSession } from "@mapform/backend/data/rows/get-session";
+import { getSubmission } from "@mapform/backend/data/form-submissions/get-submission";
 import { getCurrentSession } from "@mapform/backend/data/auth/get-current-session";
 import { createDatasetFromGeojson } from "@mapform/backend/data/datasets/create-from-geojson";
 import { completeOnboarding } from "@mapform/backend/data/workspaces/complete-onboarding";
@@ -162,7 +160,6 @@ const createUserAuthClient = () => {
     createProject: createProject(extendedClient),
     deleteProject: deleteProject(extendedClient),
     updateProject: updateProject(extendedClient),
-    publishProject: publishProject(extendedClient),
     getRecentProjects: getRecentProjects(extendedClient),
     getProjectWithPages: getProjectWithPages(extendedClient),
 
@@ -213,9 +210,10 @@ const createPublicClient = () => {
     getLayerPoint: getLayerPoint(extendedClient),
     getLayerMarker: getLayerMarker(extendedClient),
 
+    // Form Submissions
+    getSubmission: getSubmission(extendedClient),
+
     // Rows
-    getSession: getSession(extendedClient),
-    getResponses: getResponses(extendedClient),
     createSubmission: createSubmission(extendedClient),
 
     // Projects

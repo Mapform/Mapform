@@ -6,6 +6,7 @@ import type { Cell } from "@mapform/db/schema";
 import {
   cells,
   columns,
+  formSubmissions,
   pages,
   pointCells,
   stringCells,
@@ -18,12 +19,26 @@ export const submitPage = (authClient: PublicClient) =>
   authClient
     .schema(submitPageSchema)
     .action(async ({ parsedInput: { pageId, submissionId, payload } }) => {
-      const [page, row] = await Promise.all([
+      const [page, formSubmission] = await Promise.all([
         db.query.pages.findFirst({
           where: eq(pages.id, pageId),
+          with: {
+            project: {
+              with: {
+                submissionsDataset: {
+                  columns: {
+                    id: true,
+                  },
+                },
+              },
+            },
+          },
         }),
-        db.query.rows.findFirst({
-          where: eq(pages.id, submissionId),
+        db.query.formSubmissions.findFirst({
+          where: eq(formSubmissions.id, submissionId),
+          with: {
+            row: true,
+          },
         }),
       ]);
 
@@ -31,8 +46,14 @@ export const submitPage = (authClient: PublicClient) =>
         throw new Error("Page not found");
       }
 
-      if (!row) {
+      if (!formSubmission) {
         throw new Error("Submission not found");
+      }
+
+      if (
+        page.project.submissionsDataset?.id !== formSubmission.row.datasetId
+      ) {
+        throw new Error("Dataset mismatch");
       }
 
       const documentContent = page.content?.content;
@@ -49,8 +70,14 @@ export const submitPage = (authClient: PublicClient) =>
       }
 
       await db.transaction(async (tx) => {
-        await Promise.all(
-          Object.entries(data).map(async ([key, value]) => {
+        await Promise.all([
+          tx
+            .update(formSubmissions)
+            .set({
+              submittedAt: new Date(),
+            })
+            .where(eq(formSubmissions.id, formSubmission.id)),
+          ...Object.entries(data).map(async ([key, value]) => {
             const block = documentContent.find((b) => b.id === key);
 
             if (!block) {
@@ -71,7 +98,10 @@ export const submitPage = (authClient: PublicClient) =>
               .select()
               .from(cells)
               .where(
-                and(eq(cells.columnId, column.id), eq(cells.rowId, row.id)),
+                and(
+                  eq(cells.columnId, column.id),
+                  eq(cells.rowId, formSubmission.row.id),
+                ),
               )
               .limit(1);
 
@@ -83,7 +113,7 @@ export const submitPage = (authClient: PublicClient) =>
                 .insert(cells)
                 .values({
                   columnId: column.id,
-                  rowId: row.id,
+                  rowId: formSubmission.row.id,
                 })
                 .returning();
 
@@ -126,6 +156,6 @@ export const submitPage = (authClient: PublicClient) =>
                 });
             }
           }),
-        );
+        ]);
       });
     });

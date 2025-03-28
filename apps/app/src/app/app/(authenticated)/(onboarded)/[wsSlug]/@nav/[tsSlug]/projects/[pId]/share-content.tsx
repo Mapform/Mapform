@@ -1,107 +1,152 @@
 "use client";
 
-import { useAction } from "next-safe-action/hooks";
-import { Button } from "@mapform/ui/components/button";
-import { Spinner } from "@mapform/ui/components/spinner";
 import { Clipboard } from "@mapform/ui/components/clipboard";
 import type { GetProjectWithPages } from "@mapform/backend/data/projects/get-project-with-pages";
-import { publishProjectAction } from "~/data/projects/publish-project";
 import { env } from "~/env.mjs";
 import {
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
-} from "@mapform/ui/components/tooltip";
-import { TriangleAlertIcon } from "lucide-react";
-import { toast } from "@mapform/ui/components/toaster";
+  Command,
+  CommandList,
+  CommandGroup,
+  CommandItem,
+} from "@mapform/ui/components/command";
+import {
+  Form,
+  zodResolver,
+  FormField,
+  FormItem,
+  FormControl,
+  FormLabel,
+} from "@mapform/ui/components/form";
+import { useForm } from "@mapform/ui/components/form";
+import {
+  type UpdateProjectSchema,
+  updateProjectSchema,
+} from "@mapform/backend/data/projects/update-project/schema";
+import { updateProjectAction } from "~/data/projects/update-project";
+import { useAction } from "next-safe-action/hooks";
+import { Button } from "@mapform/ui/components/button";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@mapform/ui/components/popover";
+import { CheckIcon, ChevronsUpDownIcon, GlobeIcon } from "lucide-react";
+import { cn } from "@mapform/lib/classnames";
+import { useState } from "react";
+
+const visibilityOptions = [
+  { value: "public", label: "Public" },
+  { value: "closed", label: "Closed" },
+];
 
 export function ShareContent({
   project,
-  isDirty,
-  numberOfVersions,
 }: {
   project: NonNullable<GetProjectWithPages["data"]>;
-  isDirty: boolean;
-  numberOfVersions: number;
 }) {
-  const { execute, isPending } = useAction(publishProjectAction, {
-    onSuccess: () => {
-      toast({
-        title: "Success!",
-        description: "Your project has been published.",
-      });
-    },
-    onError: ({ error }) => {
-      if (error.serverError) {
-        toast({
-          title: "Uh oh! Something went wrong.",
-          description: error.serverError,
-        });
-        return;
-      }
-
-      if (error.validationErrors) {
-        toast({
-          title: "Uh oh! Something went wrong.",
-          description:
-            "We we unable to publish your project. Please try again.",
-        });
-      }
+  const [open, setOpen] = useState(false);
+  const form = useForm<UpdateProjectSchema>({
+    resolver: zodResolver(updateProjectSchema),
+    defaultValues: {
+      visibility: project.visibility,
     },
   });
-  const hasBeenPublished = numberOfVersions > 0;
 
-  const isMissingEndPage =
-    project.formsEnabled &&
-    !project.pages.some((p) => p.pageType === "page_ending");
+  const { execute: updateProject, isPending } = useAction(updateProjectAction);
+
+  const onVisibilityChange = (value: "public" | "closed") => {
+    form.setValue("visibility", value);
+    updateProject({
+      id: project.id,
+      visibility: value,
+    });
+    setOpen(false);
+  };
 
   return (
-    <div className="flex flex-col space-y-2">
-      {hasBeenPublished ? (
-        <div className="space-y-1">
-          <Clipboard
-            className="w-full justify-start"
-            clipboardText={`${env.NEXT_PUBLIC_BASE_URL}/share/${project.id}`}
-            copiedText="Copied!"
-            copyText="Copy shareable link"
-            size="sm"
-            variant="ghost"
+    <div className="flex flex-col space-y-3">
+      <Form {...form}>
+        <form className="space-y-4">
+          <FormField
+            control={form.control}
+            name="visibility"
+            render={({ field }) => (
+              <FormItem className="flex items-center justify-center gap-x-6">
+                <FormLabel
+                  className="flex items-center gap-1.5 text-nowrap"
+                  htmlFor="visibility"
+                >
+                  <GlobeIcon className="size-4" /> Project visibility
+                </FormLabel>
+                <FormControl>
+                  <Popover modal onOpenChange={setOpen} open={open}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        className="ring-offset-background placeholder:text-muted-foreground focus:ring-ring !mt-0 flex h-7 w-full items-center justify-between rounded-md border-0 bg-stone-100 px-2 py-0.5 text-sm font-normal shadow-sm focus:outline-none focus:ring-1 disabled:cursor-not-allowed disabled:opacity-50"
+                        id="visibility"
+                        variant="ghost"
+                        disabled={isPending}
+                      >
+                        <span className="flex-1 truncate text-left capitalize">
+                          {field.value}
+                        </span>
+                        <ChevronsUpDownIcon className="size-4 flex-shrink-0 opacity-50" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent align="start" className="w-[200px] p-0">
+                      <Command>
+                        <CommandList>
+                          <CommandGroup>
+                            {visibilityOptions.map((option) => (
+                              <CommandItem
+                                key={option.value}
+                                onSelect={() =>
+                                  onVisibilityChange(
+                                    option.value as "public" | "closed",
+                                  )
+                                }
+                                value={option.value}
+                              >
+                                <span className="flex-1 truncate text-left capitalize">
+                                  {option.label}
+                                </span>
+                                <CheckIcon
+                                  className={cn(
+                                    "ml-auto size-4",
+                                    field.value === option.value
+                                      ? "opacity-100"
+                                      : "opacity-0",
+                                  )}
+                                />
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+                </FormControl>
+              </FormItem>
+            )}
           />
-        </div>
-      ) : (
-        <div className="rounded bg-stone-50 p-4 text-center text-sm text-stone-500">
-          Project has not yet been published.
-        </div>
-      )}
-      {isMissingEndPage ? (
-        <Tooltip>
-          <TooltipTrigger>
-            <div className="leading-0 flex h-8 flex-1 items-center rounded-lg bg-yellow-50 p-2 shadow-sm">
-              <TriangleAlertIcon className="mr-2 size-4 text-yellow-400" />
-              <p className="text-sm text-yellow-700">
-                An <strong className="font-semibold">End Screen</strong> is
-                required.
-              </p>
-            </div>
-          </TooltipTrigger>
-          <TooltipContent className="w-[200px]">
-            When using Projects with{" "}
-            <strong className="font-semibold">Forms Enabled</strong>, at least
-            one <strong className="font-semibold">End Screen</strong> must be
-            included before you can publish.
-          </TooltipContent>
-        </Tooltip>
-      ) : null}
-      <Button
-        className="mt-4 w-full"
-        disabled={!isDirty || isPending || isMissingEndPage}
-        onClick={() => {
-          execute({ projectId: project.id });
-        }}
-        variant="outline"
-      >
-        {isPending ? <Spinner variant="dark" /> : "Publish"}
-      </Button>
+        </form>
+      </Form>
+
+      <div className="flex overflow-hidden rounded-md border shadow">
+        <input
+          className="w-full appearance-none border-none bg-gray-100 pl-2 pr-0 text-sm text-gray-500"
+          value={`${env.NEXT_PUBLIC_BASE_URL}/share/${project.id}`}
+          readOnly
+        />
+        <Clipboard
+          className="h-[36px] rounded-l-none border-l bg-white hover:bg-gray-50"
+          clipboardText={`${env.NEXT_PUBLIC_BASE_URL}/share/${project.id}`}
+          copiedText="Copy"
+          copyText="Copy"
+          size="sm"
+          variant="secondary"
+        />
+      </div>
     </div>
   );
 }

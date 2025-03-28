@@ -1,8 +1,8 @@
 "server-only";
 
 import { db } from "@mapform/db";
-import { projects, workspaces } from "@mapform/db/schema";
-import { eq, isNull } from "@mapform/db/utils";
+import { workspaces } from "@mapform/db/schema";
+import { eq } from "@mapform/db/utils";
 import { getWorkspaceDirectorySchema } from "./schema";
 import type { UserAuthClient, UnwrapReturn } from "../../../lib/types";
 
@@ -49,8 +49,6 @@ export const getWorkspaceDirectory = (authClient: UserAuthClient) =>
                   name: true,
                   createdAt: true,
                 },
-                // Only include root projects
-                where: isNull(projects.rootProjectId),
                 orderBy: (projects, { asc }) => [asc(projects.createdAt)],
               },
             },

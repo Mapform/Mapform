@@ -23,7 +23,7 @@ export const plans = pgTable(
       length: 20,
     }),
 
-    rowLimit: integer("position").notNull(),
+    rowLimit: integer("row_limit").notNull(),
     storageLimit: integer("storage_limit")
       .notNull()
       .default(10 * 1000 * 1000),

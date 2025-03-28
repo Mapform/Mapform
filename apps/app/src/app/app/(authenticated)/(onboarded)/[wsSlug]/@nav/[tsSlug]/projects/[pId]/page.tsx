@@ -42,12 +42,8 @@ export default async function Nav(props: {
                 Share
               </Button>
             </PopoverTrigger>
-            <PopoverContent>
-              <ShareContent
-                isDirty={project.isDirty}
-                numberOfVersions={project.childProjects.length}
-                project={project}
-              />
+            <PopoverContent className="w-[400px]">
+              <ShareContent project={project} />
             </PopoverContent>
           </Popover>
           <TogglePages />

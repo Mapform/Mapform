@@ -4,10 +4,12 @@ import {
   varchar,
   uuid,
   boolean,
-  type AnyPgColumn,
+  pgEnum,
 } from "drizzle-orm/pg-core";
 import { teamspaces } from "../teamspaces/schema";
 import { datasets } from "../datasets/schema";
+
+export const visibilityEnum = pgEnum("visibility", ["public", "closed"]);
 
 export const projects = pgTable("project", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -15,20 +17,14 @@ export const projects = pgTable("project", {
   description: varchar("description", { length: 512 }),
   icon: varchar("icon", { length: 256 }),
 
+  visibility: visibilityEnum("visibility").default("public").notNull(),
+
   formsEnabled: boolean("forms_enabled").default(false).notNull(),
 
   teamspaceId: uuid("teamspace_id")
     .notNull()
     .references(() => teamspaces.id, { onDelete: "cascade" }),
-  isDirty: boolean("is_dirty").default(false).notNull(),
 
-  // This is NULL for the root project
-  rootProjectId: uuid("root_project_id").references(
-    (): AnyPgColumn => projects.id,
-    {
-      onDelete: "cascade",
-    },
-  ),
   datasetId: uuid("dataset_id").references(() => datasets.id, {
     onDelete: "set null",
   }),

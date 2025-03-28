@@ -15,14 +15,6 @@ export const users = pgTable("user", {
   hasOnboarded: boolean("hasOnboarded").notNull().default(false),
 });
 
-export const sessions = pgTable("session", {
-  sessionToken: text("sessionToken").primaryKey(),
-  userId: uuid("userId")
-    .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
-  expires: timestamp("expires", { mode: "date", withTimezone: true }).notNull(),
-});
-
 export const magicLinks = pgTable("magic_link", {
   token: text("token").notNull().primaryKey(),
   email: text("email").notNull(),

@@ -2,7 +2,7 @@
 
 import { db } from "@mapform/db";
 import { eq } from "@mapform/db/utils";
-import { projects, rows } from "@mapform/db/schema";
+import { formSubmissions, projects, rows } from "@mapform/db/schema";
 import { createSubmissionSchema } from "./schema";
 import type { PublicClient } from "../../../lib/types";
 import { ServerError } from "../../../lib/server-error";
@@ -59,5 +59,17 @@ export const createSubmission = (authClient: PublicClient) =>
         })
         .returning();
 
-      return row;
+      if (!row) {
+        throw new Error("There was an error creating the row.");
+      }
+
+      const [formSubmission] = await db
+        .insert(formSubmissions)
+        .values({
+          rowId: row.id,
+          projectId: project.id,
+        })
+        .returning();
+
+      return formSubmission;
     });

@@ -2,13 +2,15 @@
 
 import { db } from "@mapform/db";
 import { layers, layersToPages, pages, projects } from "@mapform/db/schema";
-import { and, eq, inArray, isNull } from "@mapform/db/utils";
+import { and, eq, inArray } from "@mapform/db/utils";
 import { getProjectWithPagesSchema } from "./schema";
 import type {
   UserAuthClient,
   PublicClient,
   UnwrapReturn,
 } from "../../../lib/types";
+import { getRowAndPageCount } from "../../usage/get-row-and-page-count";
+import { ServerError, ERROR_CODES_USER } from "../../../lib/server-error";
 
 export const getProjectWithPages = (
   authClient: UserAuthClient | PublicClient,
@@ -20,18 +22,12 @@ export const getProjectWithPages = (
         db.query.projects.findFirst({
           where: and(
             eq(projects.id, id),
-            isNull(projects.rootProjectId),
             // Check if the user has access to the project's teamspace
             ctx.authType === "user"
               ? inArray(projects.teamspaceId, ctx.userAccess.teamspace.ids)
               : undefined,
           ),
           with: {
-            childProjects: {
-              columns: {
-                id: true,
-              },
-            },
             teamspace: {
               columns: {
                 id: true,
@@ -103,6 +99,26 @@ export const getProjectWithPages = (
 
       if (!_projects) {
         throw new Error("Project not found");
+      }
+
+      if (_projects.submissionsDataset) {
+        const response = await getRowAndPageCount(authClient)({
+          workspaceSlug: _projects.teamspace.workspace.slug,
+        });
+
+        const rowCount = response?.data?.rowCount;
+        const pageCount = response?.data?.pageCount;
+
+        if (rowCount === undefined || pageCount === undefined) {
+          throw new Error("Row count or page count is undefined.");
+        }
+
+        if (
+          rowCount + pageCount >=
+          _projects.teamspace.workspace.plan!.rowLimit
+        ) {
+          throw new ServerError(ERROR_CODES_USER.ROW_LIMIT_EXCEEDED);
+        }
       }
 
       return {
