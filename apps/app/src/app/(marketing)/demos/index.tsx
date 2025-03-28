@@ -57,7 +57,7 @@ const TABS = [
     icon: BookMarkedIcon,
   },
   {
-    id: "forms",
+    id: "storytelling",
     text: "Make your stories come alive with maps.",
     tag: "Storytelling",
     image: formsImage,
