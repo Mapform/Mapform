@@ -19,11 +19,11 @@ export const validateMagicLink = (authClient: PublicClient) =>
       });
 
       if (!magicLink) {
-        throw new ServerError("not-found");
+        throw new ServerError({ message: "not-found" });
       }
 
       if (Date.now() >= magicLink.expires.getTime()) {
-        throw new ServerError("expired");
+        throw new ServerError({ message: "expired" });
       }
 
       let user = await db.query.users.findFirst({

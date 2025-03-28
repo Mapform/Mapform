@@ -42,9 +42,10 @@ export const uploadImage = (authClient: UserAuthClient) =>
 
         // Check if uploading this image would exceed the storage limit
         if (currentStorageBytes + image.size > workspace.plan.storageLimit) {
-          throw new ServerError(
-            "Storage limit exceeded. Delete some images or upgrade your plan.",
-          );
+          throw new ServerError({
+            message:
+              "Storage limit exceeded. Delete some images or upgrade your plan.",
+          });
         }
 
         const response = await db.transaction(async (tx) => {

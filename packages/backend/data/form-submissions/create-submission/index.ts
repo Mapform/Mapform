@@ -47,9 +47,10 @@ export const createSubmission = (authClient: PublicClient) =>
       }
 
       if (rowCount + pageCount >= project.teamspace.workspace.plan!.rowLimit) {
-        throw new ServerError(
-          "Row limit exceeded. Delete some rows, or upgrade your plan.",
-        );
+        throw new ServerError({
+          message:
+            "Row limit exceeded. Delete some rows, or upgrade your plan.",
+        });
       }
 
       const [row] = await db

@@ -44,7 +44,9 @@ export const createProject = (authClient: UserAuthClient) =>
         }
 
         if (formsEnabled && !teamspace.workspace.plan?.stripeSubscriptionId) {
-          throw new ServerError("Upgrade your plan to enable forms.");
+          throw new ServerError({
+            message: "Upgrade your plan to enable forms.",
+          });
         }
 
         const rowAndPageCountResponse = await getRowAndPageCount(authClient)({
@@ -62,9 +64,10 @@ export const createProject = (authClient: UserAuthClient) =>
         }
 
         if (rowCount + pageCount >= teamspace.workspace.plan!.rowLimit) {
-          throw new ServerError(
-            "Row limit exceeded. Delete some rows, or upgrade your plan.",
-          );
+          throw new ServerError({
+            message:
+              "Row limit exceeded. Delete some rows, or upgrade your plan.",
+          });
         }
 
         return db.transaction(async (tx) => {

@@ -26,7 +26,9 @@ export const updateWorkspace = (authClient: UserAuthClient) =>
 
       if (error) {
         if ((error as unknown as { code: string }).code === "23505") {
-          throw new ServerError("Workspace slug already exists");
+          throw new ServerError({
+            message: "Workspace slug already exists",
+          });
         }
         throw error;
       }
