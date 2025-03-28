@@ -21,6 +21,7 @@ import mapImage from "public/static/images/map.jpeg";
 import shareImage from "public/static/images/share.png";
 import { motion } from "motion/react";
 import { useState, useEffect } from "react";
+import { cn } from "@mapform/lib/classnames";
 
 const TABS = [
   {
@@ -113,21 +114,29 @@ export function Demos() {
             setApi={setApi}
           >
             <CarouselContent>
-              {TABS.map((tab) => (
+              {TABS.map((tab, i) => (
                 <CarouselItem
-                  className="relative h-[500px] w-full basis-4/5 overflow-hidden"
+                  className={cn("h-[500px] w-full basis-4/5 rounded-lg pl-4", {
+                    "cursor-pointer": i !== current,
+                  })}
+                  onClick={() => {
+                    api?.scrollTo(i);
+                    setProgress(0);
+                  }}
                   key={tab.id}
                 >
-                  <Image
-                    src={tab.image}
-                    alt={tab.alt}
-                    className="h-full w-full"
-                    fill
-                    style={{
-                      objectFit: "cover",
-                    }}
-                    placeholder="blur"
-                  />
+                  <div className="relative h-full w-full overflow-hidden rounded-lg bg-gray-300">
+                    <Image
+                      src={tab.image}
+                      alt={tab.alt}
+                      className="h-full w-full"
+                      fill
+                      style={{
+                        objectFit: "cover",
+                      }}
+                      placeholder="blur"
+                    />
+                  </div>
                 </CarouselItem>
               ))}
             </CarouselContent>
