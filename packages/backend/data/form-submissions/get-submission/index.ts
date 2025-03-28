@@ -1,36 +1,17 @@
 "server-only";
 
 import { db } from "@mapform/db";
-import { eq, and, sql } from "@mapform/db/utils";
-import { pointCells, projects, formSubmissions } from "@mapform/db/schema";
+import { eq, sql } from "@mapform/db/utils";
+import { pointCells, formSubmissions } from "@mapform/db/schema";
 import type { PublicClient, UnwrapReturn } from "../../../lib/types";
 import { getSubmissionSchema } from "./schema";
 
 export const getSubmission = (authClient: PublicClient) =>
   authClient
     .schema(getSubmissionSchema)
-    .action(async ({ parsedInput: { submissionId, projectId } }) => {
-      const project = await db.query.projects.findFirst({
-        where: eq(projects.id, projectId),
-      });
-
-      if (!project) {
-        throw new Error("Project not found.");
-      }
-
-      if (!project.datasetId) {
-        throw new Error("Project has no submissions dataset.");
-      }
-
-      if (project.visibility === "closed") {
-        throw new Error("Project is closed, the session cannot be accessed.");
-      }
-
+    .action(async ({ parsedInput: { submissionId } }) => {
       const submission = await db.query.formSubmissions.findFirst({
-        where: and(
-          eq(formSubmissions.id, submissionId),
-          eq(formSubmissions.projectId, projectId),
-        ),
+        where: eq(formSubmissions.id, submissionId),
         with: {
           row: {
             with: {
@@ -63,11 +44,6 @@ export const getSubmission = (authClient: PublicClient) =>
           },
         },
       });
-      console.log(33333, submission);
-
-      if (submission?.row.datasetId !== project.datasetId) {
-        throw new Error("The project and submission datasets do not match.");
-      }
 
       return submission;
     });

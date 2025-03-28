@@ -1,10 +1,12 @@
+import Image from "next/image";
 import React, { cache } from "react";
 import { cookies } from "next/headers";
 import { Mapform } from "~/components/mapform";
 import { publicClient } from "~/lib/safe-action";
 import { Map } from "./map";
 import type { GetSubmission } from "@mapform/backend/data/form-submissions/get-submission";
-import { BoxIcon } from "lucide-react";
+import mapform from "public/static/images/mapform.svg";
+import Link from "next/link";
 
 const fetchProjectWithPages = cache(async (id: string) => {
   const projectWithPagesResponse = await publicClient.getProjectWithPages({
@@ -65,6 +67,11 @@ export default async function Page(props: {
   }>;
 }) {
   const searchParams = await props.searchParams;
+  const cookieStore = await cookies();
+  const submissionCookie = cookieStore.get("mapform-submission");
+  const formValues: NonNullable<
+    NonNullable<GetSubmission>["data"]
+  >["row"]["cells"] = [];
 
   const params = await props.params;
   const [projectWithPages, pageData, selectedFeature] = await Promise.all([
@@ -73,20 +80,24 @@ export default async function Page(props: {
     fetchSelectedFeature(searchParams?.feature),
   ]);
 
-  const cookieStore = await cookies();
-  const submissionCookie = cookieStore.get("mapform-submission");
-  const formValues: NonNullable<
-    NonNullable<GetSubmission>["data"]
-  >["row"]["cells"] = [];
-
   let formSubmissionId: string | null = null;
 
   if (!projectWithPages) {
-    return <div>Project not found</div>;
+    return (
+      <WarningScreen
+        title="Project not found"
+        description="The project you are trying to view does not exist."
+      />
+    );
   }
 
   if (!projectWithPages.pages.length) {
-    return <div>Project has no pages</div>;
+    return (
+      <WarningScreen
+        title="Project has no pages"
+        description="The project you are trying to view does not have any pages."
+      />
+    );
   }
 
   const isUsingSessions = Boolean(projectWithPages.submissionsDataset);
@@ -95,11 +106,15 @@ export default async function Page(props: {
     const response = (
       await publicClient.getSubmission({
         submissionId: submissionCookie.value,
-        projectId: projectWithPages.id,
       })
     )?.data;
 
     if (response) {
+      if (response.row.datasetId !== projectWithPages.datasetId) {
+        // This should never happen unless the user has tampered with the cookie
+        throw new Error("The project and submission datasets do not match.");
+      }
+
       formSubmissionId = response.id;
       formValues.push(...response.row.cells);
     }
@@ -107,17 +122,10 @@ export default async function Page(props: {
 
   if (projectWithPages.visibility === "closed") {
     return (
-      <div className="flex h-screen flex-1 flex-col justify-center px-2 pb-8">
-        <div className="text-center">
-          <BoxIcon className="mx-auto size-8 text-gray-400" />
-          <h3 className="text-foreground mt-2 text-xl font-semibold">
-            This project is closed
-          </h3>
-          <p className="text-based mt-1 text-gray-500">
-            If you have access to this project, you can view it by signing in.
-          </p>
-        </div>
-      </div>
+      <WarningScreen
+        title="This project is closed"
+        description="If you have access to this project, you can view it by signing in."
+      />
     );
   }
 
@@ -133,6 +141,30 @@ export default async function Page(props: {
           formSubmissionId={formSubmissionId}
         />
       </Mapform>
+    </div>
+  );
+}
+
+function WarningScreen({
+  title,
+  description,
+}: {
+  title: string;
+  description: string;
+}) {
+  return (
+    <div className="flex h-screen flex-1 flex-col justify-center px-2 pb-8">
+      <div className="text-center">
+        <Link href="https://alpha.mapform.co">
+          <Image
+            alt="Logo"
+            className="mx-auto size-8 text-gray-400"
+            src={mapform}
+          />
+        </Link>
+        <h3 className="text-foreground mt-2 text-xl font-semibold">{title}</h3>
+        <p className="text-based mt-1 text-gray-500">{description}</p>
+      </div>
     </div>
   );
 }
