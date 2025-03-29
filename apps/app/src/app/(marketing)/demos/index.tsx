@@ -134,7 +134,7 @@ export function Demos() {
           <CarouselContent>
             {TABS.map((tab, i) => (
               <CarouselItem
-                className="h-[500px] w-full basis-4/5 rounded-lg pl-4"
+                className="h-[460px] w-full basis-4/5 rounded-lg pl-4 md:h-[500px]"
                 onClick={() => {
                   if (i === current) {
                     window.open(tab.url, "_blank");
@@ -166,7 +166,7 @@ export function Demos() {
                   </div>
                   <div
                     className={cn(
-                      "absolute bottom-0 left-1/2 h-[350px] w-[calc(100%-12rem)] -translate-x-1/2 translate-y-4 overflow-hidden rounded-t-xl shadow-xl transition-all delay-200 duration-500 ease-in-out",
+                      "absolute bottom-0 left-1/2 h-[340px] w-[calc(100%-1rem)] -translate-x-1/2 translate-y-4 overflow-hidden rounded-t-xl shadow-xl transition-all delay-200 duration-500 ease-in-out md:h-[360px] md:w-[calc(100%-12rem)]",
                       {
                         "translate-y-1/3 opacity-0": i !== current,
                         "delay-0 group-hover:translate-y-0": i === current,
