@@ -91,8 +91,6 @@ export function Pricing() {
           </h3>
           <p className="text-muted-foreground mt-4 text-xl leading-8">
             Choose the plan that works for you.{" "}
-            <br className="hidden sm:block" />
-            (More plans coming soon!)
           </p>
         </div>
 
