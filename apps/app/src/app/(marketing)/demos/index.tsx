@@ -8,6 +8,7 @@ import {
 } from "@mapform/ui/components/carousel";
 import Image from "next/image";
 import {
+  ArrowUpRightIcon,
   BookMarkedIcon,
   EarthIcon,
   SquareArrowOutUpRightIcon,
@@ -34,43 +35,48 @@ const tagColors = {
 const TABS = [
   {
     id: "travel-map",
-    text: "Track and share every place you've ever been.",
+    text: "Track and share every place you've ever been",
     tag: "Travel",
     image: mapImage,
     alt: "Map view interface",
     icon: EarthIcon,
+    url: "https://mapform.co/share/0c18a5f2-19cb-4d81-b6db-5bcc6330c3ff",
   },
   {
     id: "forms",
-    text: "Crowd source suggestions for the perfect trip.",
+    text: "Crowd source suggestions for the perfect trip",
     tag: "Travel",
     image: datasetImage,
     alt: "Dataset interface",
     icon: TableIcon,
+    url: "https://mapform.co/share/0c18a5f2-19cb-4d81-b6db-5bcc6330c3ff",
   },
   {
     id: "guide",
-    text: "Take your friends on a guided tour.",
+    text: "Take your friends on a guided tour",
     tag: "Tours",
     image: guideImage,
     alt: "Guide interface",
     icon: BookMarkedIcon,
+    url: "https://mapform.co/share/0c18a5f2-19cb-4d81-b6db-5bcc6330c3ff",
   },
   {
     id: "storytelling",
-    text: "Make your stories come alive with maps.",
+    text: "Make your stories come alive with maps",
     tag: "Storytelling",
     image: formsImage,
     alt: "Forms interface",
     icon: TextCursorInputIcon,
+    url: "https://mapform.co/share/0c18a5f2-19cb-4d81-b6db-5bcc6330c3ff",
   },
   {
     id: "publish",
-    text: "Engage with others in your community.",
+    text: "Engage with others in your community",
     tag: "Community",
     image: shareImage,
     alt: "Publish interface",
     icon: SquareArrowOutUpRightIcon,
+    url: "https://mapform.co/share/0c18a5f2-19cb-4d81-b6db-5bcc6330c3ff",
   },
 ] as const;
 
@@ -128,16 +134,18 @@ export function Demos() {
           <CarouselContent>
             {TABS.map((tab, i) => (
               <CarouselItem
-                className={cn("h-[500px] w-full basis-4/5 rounded-lg pl-4", {
-                  "cursor-pointer": i !== current,
-                })}
+                className="h-[500px] w-full basis-4/5 rounded-lg pl-4"
                 onClick={() => {
-                  api?.scrollTo(i);
-                  setProgress(0);
+                  if (i === current) {
+                    window.open(tab.url, "_blank");
+                  } else {
+                    api?.scrollTo(i);
+                    setProgress(0);
+                  }
                 }}
                 key={tab.id}
               >
-                <div className="relative h-full w-full overflow-hidden rounded-lg bg-gray-100">
+                <div className="group relative h-full w-full cursor-pointer overflow-hidden rounded-lg bg-gray-100 transition-colors duration-300 hover:bg-gray-200">
                   <div
                     className={cn(
                       "p-4 transition-all delay-200 duration-500 ease-in-out md:p-10",
@@ -146,26 +154,36 @@ export function Demos() {
                         : "-translate-x-[50px] opacity-0",
                     )}
                   >
-                    <Badge
-                      className={cn("mb-1", tagColors[tab.tag])}
-                      // variant="outline"
-                    >
+                    <Badge className={cn("mb-1", tagColors[tab.tag])}>
                       {tab.tag}
                     </Badge>
-                    <div className="text-lg font-medium text-gray-800 md:text-2xl">
-                      {tab.text}
+                    <div className="flex items-center gap-1">
+                      <div className="text-lg font-medium text-gray-800 md:text-2xl">
+                        {tab.text}
+                      </div>
+                      <ArrowUpRightIcon className="size-8" />
                     </div>
                   </div>
-                  {/* <Image
-                    src={tab.image}
-                    alt={tab.alt}
-                    className="h-full w-full"
-                    fill
-                    style={{
-                      objectFit: "cover",
-                    }}
-                    placeholder="blur"
-                  /> */}
+                  <div
+                    className={cn(
+                      "absolute bottom-0 left-1/2 h-[350px] w-[calc(100%-12rem)] -translate-x-1/2 translate-y-4 overflow-hidden rounded-t-xl shadow-xl transition-all delay-200 duration-500 ease-in-out",
+                      {
+                        "translate-y-1/3 opacity-0": i !== current,
+                        "delay-0 group-hover:translate-y-0": i === current,
+                      },
+                    )}
+                  >
+                    <Image
+                      src={tab.image}
+                      alt={tab.alt}
+                      className="relative"
+                      fill
+                      style={{
+                        objectFit: "cover",
+                      }}
+                      placeholder="blur"
+                    />
+                  </div>
                 </div>
               </CarouselItem>
             ))}
