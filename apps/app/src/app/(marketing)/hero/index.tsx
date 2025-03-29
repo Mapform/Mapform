@@ -22,7 +22,7 @@ export function Hero() {
                     className="bg-white max-lg:shadow-sm"
                     variant="outline"
                   >
-                    Now in <span className="ml-1 underline">Alpha</span>
+                    Now in <span className="ml-1 underline">Beta</span>
                   </Badge>
                 </TooltipTrigger>
                 <TooltipContent className="max-w-[200px]">

@@ -8,7 +8,7 @@ export function Storytelling() {
   return (
     <section>
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        <div className="mx-auto max-w-2xl sm:text-center">
+        <div className="mx-auto max-w-2xl text-center">
           <h3 className="mt-2 text-pretty text-4xl font-semibold tracking-tight text-gray-900 sm:text-5xl lg:text-balance">
             Tell a story.
           </h3>

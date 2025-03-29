@@ -5,7 +5,7 @@ import { AlignLeftIcon, CircleDotIcon } from "lucide-react";
 export function Forms() {
   return (
     <section className="mx-auto w-full max-w-7xl px-6 lg:px-8">
-      <div className="mx-auto max-w-2xl sm:text-center">
+      <div className="mx-auto max-w-2xl text-center">
         <h3 className="mt-2 text-pretty text-4xl font-semibold tracking-tight text-gray-900 sm:text-5xl lg:text-balance">
           {/* Show and <span className="line-through">tell</span> ask. */}
           Maps ↔️ Forms
