@@ -2,7 +2,13 @@ import { NextResponse } from "next/server";
 import { withCSRF } from "@mapform/auth/middleware";
 import { signToken, verifyToken } from "@mapform/auth/helpers/sessions";
 
-const publicAppPaths = ["/app/signin", "/app/signup", "/share"];
+const publicAppPaths = [
+  "/app/signin",
+  "/app/signup",
+  "/share",
+  "/terms-of-use",
+  "/privacy-policy",
+];
 
 export default withCSRF(async (request) => {
   const { pathname } = request.nextUrl;
