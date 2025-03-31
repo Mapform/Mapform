@@ -1,13 +1,6 @@
 import { usePreventPageUnload } from "@mapform/lib/hooks/use-prevent-page-unload";
 import { useOptimisticAction } from "next-safe-action/hooks";
-import {
-  useTransition,
-  useState,
-  useRef,
-  useCallback,
-  useMemo,
-  useEffect,
-} from "react";
+import { useState, useRef, useCallback, useMemo, useEffect } from "react";
 
 // This function takes in useAction arguments as the first and second arguments, and returns { execute, isPending, optimisticState }
 export function useDebouncedOptimisticAction<TState, TAction>(
@@ -20,7 +13,6 @@ export function useDebouncedOptimisticAction<TState, TAction>(
     optimisticState: actionOptimisticState,
     isPending: isExecutePending,
   } = useOptimisticAction(...args);
-  const [_, startTransition] = useTransition();
   const [isPendingDebounced, setIsPendingDebounced] = useState(false);
   const [optimisticState, setOptimisticState] = useState<TState>(
     actionOptimisticState as TState,
@@ -33,9 +25,7 @@ export function useDebouncedOptimisticAction<TState, TAction>(
       const newState = updateFn(optimisticState, args);
 
       setIsPendingDebounced(true);
-      startTransition(() => {
-        setOptimisticState(newState as TState);
-      });
+      setOptimisticState(newState as TState);
 
       if (timerRef.current) {
         clearTimeout(timerRef.current);
