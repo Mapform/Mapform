@@ -4,8 +4,8 @@ import {
   PropertyPopoverAnchor,
   PropertyPopoverContent,
 } from "~/components/property-popover";
+import type { FieldPath } from "@mapform/ui/components/form";
 import {
-  FieldPath,
   Form,
   FormField,
   useForm,
