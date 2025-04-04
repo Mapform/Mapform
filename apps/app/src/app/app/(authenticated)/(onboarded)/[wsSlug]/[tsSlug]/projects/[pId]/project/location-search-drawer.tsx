@@ -19,7 +19,7 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from "@mapform/ui/components/popover";
-import { PlusIcon, Layers2Icon } from "lucide-react";
+import { PlusIcon, Layers2Icon, PinIcon, BookmarkIcon } from "lucide-react";
 import {
   LayerPopoverRoot,
   LayerPopoverAnchor,
@@ -133,7 +133,19 @@ export function LocationSearchDrawerInner({
   };
 
   return (
-    <>
+    <div className="flex">
+      <LocationSearchButton
+        className="mr-1"
+        disabled={
+          updatePageServerAction.isPending || !selectedFeature?.properties
+        }
+        onClick={() => void handleSaveMapPosition()}
+        size="sm"
+        variant="outline"
+      >
+        <PinIcon className="mr-1 size-4" />
+        Pin page
+      </LocationSearchButton>
       <Popover
         modal
         open={isOpen}
@@ -146,12 +158,14 @@ export function LocationSearchDrawerInner({
       >
         <PopoverTrigger asChild>
           <LocationSearchButton
-            className="mb-2 w-full"
+            className="w-full"
             disabled={!selectedFeature?.properties}
             role="combobox"
+            size="sm"
             variant="outline"
           >
-            Add to Layer
+            <BookmarkIcon className="mr-1 size-4" />
+            Save to
           </LocationSearchButton>
         </PopoverTrigger>
         <PopoverContent align="end" className="w-[200px] p-0" side="right">
@@ -186,17 +200,17 @@ export function LocationSearchDrawerInner({
                   }}
                 >
                   <div className="flex items-center overflow-hidden">
-                    <p className="flex items-center font-semibold">
+                    <p className="flex items-center font-semibold whitespace-nowrap">
                       <PlusIcon className="mr-2 size-4" />
-                      Create
+                      New layer
                     </p>
-                    <p className="text-primary ml-1 block truncate">{query}</p>
+                    <p className="block ml-1 truncate text-primary">{query}</p>
                   </div>
                 </CommandItem>
               </CommandGroup>
               <CommandSeparator />
               {pageLayers.length > 0 ? (
-                <CommandGroup heading="Add to existing layer">
+                <CommandGroup heading="Save to existing layer">
                   {pageLayers.map((pageLayer) => (
                     <CommandItem
                       disabled={isPending}
@@ -264,15 +278,6 @@ export function LocationSearchDrawerInner({
           side="right"
         />
       </LayerPopoverRoot>
-
-      <LocationSearchButton
-        disabled={
-          updatePageServerAction.isPending || !selectedFeature?.properties
-        }
-        onClick={() => void handleSaveMapPosition()}
-      >
-        Save Map Position
-      </LocationSearchButton>
-    </>
+    </div>
   );
 }

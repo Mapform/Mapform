@@ -137,7 +137,7 @@ export function LocationSearchWithMap({
   const marker = useMemo(() => {
     const currentLocation = map.getCenter();
     const el = document.createElement("div");
-    el.style.zIndex = "9999";
+    el.style.zIndex = "20";
     const mk = new Marker(el).setLngLat(currentLocation);
 
     return mk;
@@ -152,10 +152,6 @@ export function LocationSearchWithMap({
     setTimeout(() => {
       inputRef.current?.focus();
     }, 100);
-
-    const handleClick = () => {
-      setShowPinPopover(false);
-    };
 
     const handleMove = () => {
       marker.setLngLat(map.getCenter());
@@ -183,7 +179,6 @@ export function LocationSearchWithMap({
       setIsMoving(false);
     };
 
-    map.on("click", handleClick);
     map.on("move", handleMove);
     map.on("movestart", handleMoveStart);
     map.on("moveend", handleMoveEnd);
@@ -191,7 +186,6 @@ export function LocationSearchWithMap({
     return () => {
       setShowPinPopover(true);
       marker.remove();
-      map.off("click", handleClick);
       map.off("move", handleMove);
       map.off("movestart", handleMoveStart);
       map.off("moveend", handleMoveEnd);
@@ -391,17 +385,6 @@ export function LocationSearchWithMap({
             {query.length ? searchResultsList : null}
           </div>
         </div>
-        <div className="p-2 mt-auto">
-          <LocationSearchContext.Provider
-            value={{
-              selectedFeature,
-              isFetching: isFetching || isFetchingRGResults,
-              isMoving,
-            }}
-          >
-            {children}
-          </LocationSearchContext.Provider>
-        </div>
       </Command>
       <Portal.Root container={marker.getElement()}>
         <Popover open={showPinPopover}>
@@ -434,6 +417,15 @@ export function LocationSearchWithMap({
               ) : (
                 <div className="text-center">Drag map or search</div>
               )}
+              <LocationSearchContext.Provider
+                value={{
+                  selectedFeature,
+                  isFetching: isFetching || isFetchingRGResults,
+                  isMoving,
+                }}
+              >
+                <div className="mt-2">{children}</div>
+              </LocationSearchContext.Provider>
             </div>
           </PopoverContent>
         </Popover>
