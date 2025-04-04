@@ -200,7 +200,7 @@ export const updatePage = (authClient: UserAuthClient) =>
             return block !== undefined;
           });
 
-        const inputBlocksToCreate = page.project.submissionsDataset
+        const formBlocksToCreate = page.project.submissionsDataset
           ? pageBlock
               .filter((block) => {
                 return !datasetColumns.find(
@@ -217,15 +217,15 @@ export const updatePage = (authClient: UserAuthClient) =>
           : [];
 
         // Delete blocks which are not present in the new content, and which have no cells (submissions)
-        const inputBlocksToDelete = datasetColumns.filter((col) => {
+        const formBlocksToDelete = datasetColumns.filter((col) => {
           return (
             !pageBlock.find((block) => block.id === col.blockNoteId) &&
             col.cellCount === 0
           );
         });
 
-        // Input blocks to update
-        const inputBlocksToUpdate = pageBlock
+        // Form blocks to update
+        const formBlocksToUpdate = pageBlock
           .filter((block) => {
             return datasetColumns.find((col) => {
               return (
@@ -241,7 +241,7 @@ export const updatePage = (authClient: UserAuthClient) =>
         // To update many columns at once, we need to use a case statement as per: https://orm.drizzle.team/docs/guides/update-many-with-different-value
         const sqlChunks: SQL[] = [];
         sqlChunks.push(sql`(case`);
-        for (const input of inputBlocksToUpdate) {
+        for (const input of formBlocksToUpdate) {
           sqlChunks.push(
             sql`when ${columns.blockNoteId} = ${input.blockNoteId} then ${input.name}`,
           );
@@ -265,17 +265,17 @@ export const updatePage = (authClient: UserAuthClient) =>
               })
               .where(eq(pages.id, id)),
 
-            inputBlocksToCreate.length &&
-              tx.insert(columns).values(inputBlocksToCreate),
+            formBlocksToCreate.length &&
+              tx.insert(columns).values(formBlocksToCreate),
 
             tx.delete(columns).where(
               inArray(
                 columns.id,
-                inputBlocksToDelete.map((col) => col.columnId),
+                formBlocksToDelete.map((col) => col.columnId),
               ),
             ),
 
-            inputBlocksToUpdate.length &&
+            formBlocksToUpdate.length &&
               tx
                 .update(columns)
                 .set({
@@ -284,7 +284,7 @@ export const updatePage = (authClient: UserAuthClient) =>
                 .where(
                   inArray(
                     columns.blockNoteId,
-                    inputBlocksToUpdate.map((col) => col.blockNoteId),
+                    formBlocksToUpdate.map((col) => col.blockNoteId),
                   ),
                 ),
           ]);
