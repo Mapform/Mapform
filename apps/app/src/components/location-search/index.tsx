@@ -137,6 +137,7 @@ export function LocationSearchWithMap({
   const marker = useMemo(() => {
     const currentLocation = map.getCenter();
     const el = document.createElement("div");
+    el.style.zIndex = "9999";
     const mk = new Marker(el).setLngLat(currentLocation);
 
     return mk;
