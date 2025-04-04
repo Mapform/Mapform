@@ -6,20 +6,15 @@ import {
   TooltipTrigger,
 } from "@mapform/ui/components/tooltip";
 import { SmilePlusIcon } from "lucide-react";
-import { PropertiesPopover } from "./properties-popover";
 import { FeatureSettingsPopover } from "./feature-settings-popover";
 interface BlocknoteControlsProps {
   onIconChange?: (icon: string | null) => void;
-  onDelete: () => void;
   allowAddEmoji?: boolean;
-  allowAddProperties?: boolean;
 }
 
 export function BlocknoteControls({
   onIconChange,
-  onDelete,
   allowAddEmoji,
-  allowAddProperties,
 }: BlocknoteControlsProps) {
   return (
     <>
@@ -35,8 +30,7 @@ export function BlocknoteControls({
           <TooltipContent>Add emoji</TooltipContent>
         </Tooltip>
       )}
-      {allowAddProperties && <PropertiesPopover />}
-      <FeatureSettingsPopover onDelete={onDelete} />
+      <FeatureSettingsPopover />
       {/* <Tooltip>
         <TooltipTrigger asChild>
           <Button size="icon-sm" type="button" variant="ghost">

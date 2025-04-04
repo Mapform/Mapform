@@ -8,13 +8,7 @@ import {
 import { EllipsisIcon, Trash2Icon } from "lucide-react";
 import { Button } from "@mapform/ui/components/button";
 
-interface FeatureSettingsPopoverProps {
-  onDelete: () => void;
-}
-
-export const FeatureSettingsPopover = ({
-  onDelete,
-}: FeatureSettingsPopoverProps) => {
+export const FeatureSettingsPopover = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -30,11 +24,11 @@ export const FeatureSettingsPopover = ({
         className="w-[200px] overflow-hidden"
       >
         <DropdownMenuItem
-          onSelect={onDelete}
+          // onSelect={onDelete}
           className="flex items-center gap-2"
         >
-          <Trash2Icon className="size-4 flex-shrink-0" />
-          Delete
+          <Trash2Icon className="flex-shrink-0 size-4" />
+          Delete feature
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

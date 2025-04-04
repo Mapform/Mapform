@@ -19,7 +19,7 @@ import type { Column } from "@mapform/db/schema";
 import { toast } from "@mapform/ui/components/toaster";
 import { useAction } from "next-safe-action/hooks";
 import { upsertLayerAction } from "~/data/cells/submit-page";
-import { useProject } from "../../project-context";
+import { useProject } from "../../../project-context";
 import { createColumnAction } from "~/data/columns/create-column";
 
 interface SubMenuProps {
