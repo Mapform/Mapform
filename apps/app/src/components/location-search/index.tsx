@@ -45,6 +45,7 @@ export function LocationSearch(props: { children?: React.ReactNode }) {
 export interface LocationSearchContextProps {
   selectedFeature: GeoapifyPlace["features"][number] | null;
   isFetching: boolean;
+  isMoving: boolean;
 }
 
 export const LocationSearchContext = createContext<LocationSearchContextProps>(
@@ -63,9 +64,14 @@ export function LocationSearchWithMap({
   const [query, setQuery] = useState("");
   const queryClient = useQueryClient();
   const [isFetchingRGResults, setIsFetchingRGResults] = useState(false);
-  const [selectedFeature, setSelectedFeature] = useState<
+  const [selectedFeatureFromSearch, setSelectedFeatureFromSearch] = useState<
     GeoapifyPlace["features"][number] | null
   >(null);
+  const [selectedFeatureFromDrag, setSelectedFeatureFromDrag] = useState<
+    GeoapifyPlace["features"][number] | null
+  >(null);
+  const [isMoving, setIsMoving] = useState(false);
+  const selectedFeature = selectedFeatureFromSearch || selectedFeatureFromDrag;
   const [showPinPopover, setShowPinPopover] = useState(true);
   const debouncedSearchQuery = useDebounce(query, 200);
 
@@ -86,7 +92,7 @@ export function LocationSearchWithMap({
     const firstFeature = result.features[0];
 
     if (firstFeature) {
-      setSelectedFeature({
+      setSelectedFeatureFromDrag({
         ...firstFeature,
         ...(firstFeature.properties && {
           properties: {
@@ -131,6 +137,7 @@ export function LocationSearchWithMap({
   const marker = useMemo(() => {
     const currentLocation = map.getCenter();
     const el = document.createElement("div");
+    el.style.zIndex = "20";
     const mk = new Marker(el).setLngLat(currentLocation);
 
     return mk;
@@ -146,16 +153,15 @@ export function LocationSearchWithMap({
       inputRef.current?.focus();
     }, 100);
 
-    const handleClick = () => {
-      setShowPinPopover(false);
-    };
-
     const handleMove = () => {
       marker.setLngLat(map.getCenter());
+      setIsMoving(true);
     };
 
     const handleMoveStart = () => {
       setShowPinPopover(false);
+      setSelectedFeatureFromSearch(null);
+      setIsMoving(true);
     };
 
     const handleMoveEnd = () => {
@@ -170,9 +176,9 @@ export function LocationSearchWithMap({
         void refetch();
       }
       setShowPinPopover(true);
+      setIsMoving(false);
     };
 
-    map.on("click", handleClick);
     map.on("move", handleMove);
     map.on("movestart", handleMoveStart);
     map.on("moveend", handleMoveEnd);
@@ -180,7 +186,6 @@ export function LocationSearchWithMap({
     return () => {
       setShowPinPopover(true);
       marker.remove();
-      map.off("click", handleClick);
       map.off("move", handleMove);
       map.off("movestart", handleMoveStart);
       map.off("moveend", handleMoveEnd);
@@ -214,7 +219,7 @@ export function LocationSearchWithMap({
           )
           .setCenter([feature.properties.lon, feature.properties.lat]);
 
-        setSelectedFeature(feature);
+        setSelectedFeatureFromSearch(feature);
 
         setTimeout(() => {
           inputRef.current?.blur();
@@ -270,12 +275,12 @@ export function LocationSearchWithMap({
         )}
       >
         {isFetching && features.length === 0 && (
-          <div className="text-muted-foreground m-2 rounded bg-gray-100 px-2 py-3 text-center text-sm">
+          <div className="px-2 py-3 m-2 text-sm text-center bg-gray-100 rounded text-muted-foreground">
             Searching...
           </div>
         )}
         {features.length === 0 && !isFetching && (
-          <div className="text-muted-foreground m-2 rounded bg-gray-100 px-2 py-3 text-center text-sm">
+          <div className="px-2 py-3 m-2 text-sm text-center bg-gray-100 rounded text-muted-foreground">
             No results found.
           </div>
         )}
@@ -311,7 +316,7 @@ export function LocationSearchWithMap({
                       feature.properties.lat,
                     ]);
 
-                  setSelectedFeature(feature);
+                  setSelectedFeatureFromSearch(feature);
 
                   setTimeout(() => {
                     inputRef.current?.blur();
@@ -340,11 +345,11 @@ export function LocationSearchWithMap({
 
   return (
     <>
-      <Command className="flex flex-1 flex-col" shouldFilter={false}>
+      <Command className="flex flex-col flex-1" shouldFilter={false}>
         <div className="group" onClick={() => inputRef.current?.focus()}>
           <div className="relative">
             <CommandInput
-              className="peer h-12 border-none focus:ring-0"
+              className="h-12 border-none peer focus:ring-0"
               onValueChange={(search) => {
                 setQuery(search);
               }}
@@ -361,7 +366,7 @@ export function LocationSearchWithMap({
               )}
             >
               <Button
-                className="hover:bg-accent bg-white"
+                className="bg-white hover:bg-accent"
                 onClick={() => {
                   queryClient.removeQueries({
                     queryKey: ["search", query],
@@ -380,16 +385,6 @@ export function LocationSearchWithMap({
             {query.length ? searchResultsList : null}
           </div>
         </div>
-        <div className="mt-auto p-2">
-          <LocationSearchContext.Provider
-            value={{
-              selectedFeature,
-              isFetching: isFetching || isFetchingRGResults,
-            }}
-          >
-            {children}
-          </LocationSearchContext.Provider>
-        </div>
       </Command>
       <Portal.Root container={marker.getElement()}>
         <Popover open={showPinPopover}>
@@ -406,7 +401,7 @@ export function LocationSearchWithMap({
             <div className="p-2">
               {isFetchingRGResults ? (
                 <>
-                  <Skeleton className="mb-2 h-8" />
+                  <Skeleton className="h-8 mb-2" />
                   <Skeleton className="h-4" />
                 </>
               ) : selectedFeature ? (
@@ -422,6 +417,15 @@ export function LocationSearchWithMap({
               ) : (
                 <div className="text-center">Drag map or search</div>
               )}
+              <LocationSearchContext.Provider
+                value={{
+                  selectedFeature,
+                  isFetching: isFetching || isFetchingRGResults,
+                  isMoving,
+                }}
+              >
+                <div className="mt-2">{children}</div>
+              </LocationSearchContext.Provider>
             </div>
           </PopoverContent>
         </Popover>
@@ -439,13 +443,13 @@ export function LocationSearchButton(
     ) => void;
   },
 ) {
-  const { selectedFeature, isFetching } = useLocationSearch();
+  const { selectedFeature, isFetching, isMoving } = useLocationSearch();
 
   return (
     <Button
       {...props}
       className={cn(props.className, "w-full")}
-      disabled={props.disabled || !selectedFeature || isFetching}
+      disabled={props.disabled || !selectedFeature || isFetching || isMoving}
       type="button"
       onClick={() => props.onClick?.(selectedFeature)}
     />

@@ -28,14 +28,14 @@ import { useCustomBlockContext } from "./context";
 import React from "react";
 
 const insertPin = (edtr: typeof schema.BlockNoteEditor) => ({
-  title: "Pin",
+  title: "Location Input",
   onItemClick: () => {
     insertOrUpdateBlock(edtr, {
       type: "pin",
     });
   },
   aliases: ["location", "pins"],
-  group: "Input blocks",
+  group: "Form blocks",
   icon: <MapPinIcon className="size-4" />,
   subtext: "Capture location from user",
 });
@@ -48,7 +48,7 @@ const insertTextInput = (edtr: typeof schema.BlockNoteEditor) => ({
     });
   },
   aliases: ["input", "short-text"],
-  group: "Input blocks",
+  group: "Form blocks",
   icon: <TextIcon className="size-4" />,
   subtext: "Capture text from user",
 });
@@ -169,12 +169,12 @@ function SuggestionMenu({
         onItemClick?.(item);
       }}
     >
-      <div className="flex size-10 flex-shrink-0 items-center justify-center rounded-lg bg-gray-50">
+      <div className="flex items-center justify-center flex-shrink-0 rounded-lg size-10 bg-gray-50">
         <span className="size-4">{item.icon}</span>
       </div>
       <div className="flex flex-col">
         <div>{item.title}</div>
-        <div className="text-muted-foreground text-xs">{item.subtext}</div>
+        <div className="text-xs text-muted-foreground">{item.subtext}</div>
       </div>
     </div>
   );
@@ -183,7 +183,7 @@ function SuggestionMenu({
     <div className="bg-popover text-popover-foreground z-50 w-[300px] space-y-1 overflow-hidden overflow-y-auto rounded-md border shadow-md">
       {Object.entries(groupedItems).map(([group, items]) => (
         <div key={group} className="border-b last:border-0">
-          <div className="space-y-1 p-1">
+          <div className="p-1 space-y-1">
             <div className="text-sidebar-foreground/70 ring-sidebar-ring ml-2 flex h-6 shrink-0 items-center rounded-md text-xs font-medium outline-none transition-[margin,opa] duration-200 ease-linear focus-visible:ring-2">
               {group}
             </div>

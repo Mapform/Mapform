@@ -70,11 +70,11 @@ export function PropertyPopoverContent<T extends string>({
                 onSelect={() => onCreate(query)}
               >
                 <div className="flex items-center overflow-hidden">
-                  <p className="flex items-center font-semibold">
+                  <p className="flex items-center font-semibold whitespace-nowrap">
                     <PlusIcon className="mr-2 size-4" />
                     Create
                   </p>
-                  <p className="text-primary ml-1 block truncate">{query}</p>
+                  <p className="block ml-1 truncate text-primary">{query}</p>
                 </div>
               </CommandItem>
             </CommandGroup>
@@ -94,7 +94,7 @@ export function PropertyPopoverContent<T extends string>({
                   }}
                   value={item.id}
                 >
-                  <span className="flex-1 truncate text-left">{item.name}</span>
+                  <span className="flex-1 text-left truncate">{item.name}</span>
                   <CheckIcon
                     className={cn(
                       "ml-auto size-4",

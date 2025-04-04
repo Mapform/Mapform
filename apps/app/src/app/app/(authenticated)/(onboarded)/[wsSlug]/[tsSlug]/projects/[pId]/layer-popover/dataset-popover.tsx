@@ -70,7 +70,7 @@ export function DatasetPopover({ form }: DatasetPopoverProps) {
       render={({ field }) => (
         <Popover modal onOpenChange={setOpen} open={open}>
           <FormLabel htmlFor="datasetSelect">Dataset</FormLabel>
-          <div className="flex w-full flex-shrink-0 justify-end">
+          <div className="flex justify-end flex-shrink-0 w-full">
             <PopoverTrigger asChild>
               <Button
                 className="ring-offset-background placeholder:text-muted-foreground focus:ring-ring flex h-7 w-full items-center justify-between whitespace-nowrap rounded-md border-0 bg-stone-100 px-2 py-0.5 text-sm font-normal shadow-sm focus:outline-none focus:ring-1 disabled:cursor-not-allowed disabled:opacity-50"
@@ -78,14 +78,14 @@ export function DatasetPopover({ form }: DatasetPopoverProps) {
                 size="icon-xs"
                 variant="ghost"
               >
-                <span className="flex-1 truncate text-left">
+                <span className="flex-1 text-left truncate">
                   {form.watch("datasetId")
                     ? availableDatasets.find(
                         (dataset) => dataset.id === field.value,
                       )?.name
                     : "Select dataset..."}
                 </span>
-                <ChevronsUpDownIcon className="size-4 flex-shrink-0 opacity-50" />
+                <ChevronsUpDownIcon className="flex-shrink-0 opacity-50 size-4" />
               </Button>
             </PopoverTrigger>
             <PopoverContent
@@ -135,11 +135,11 @@ export function DatasetPopover({ form }: DatasetPopoverProps) {
                       }}
                     >
                       <div className="flex items-center overflow-hidden">
-                        <p className="flex items-center font-semibold">
+                        <p className="flex items-center font-semibold whitespace-nowrap">
                           <PlusIcon className="mr-2 size-4" />
-                          Create
+                          New dataset
                         </p>
-                        <p className="text-primary ml-1 block truncate">
+                        <p className="block ml-1 truncate text-primary">
                           {query}
                         </p>
                       </div>
@@ -161,7 +161,7 @@ export function DatasetPopover({ form }: DatasetPopoverProps) {
                           }}
                           value={dataset.id}
                         >
-                          <span className="flex-1 truncate text-left">
+                          <span className="flex-1 text-left truncate">
                             {dataset.name}
                           </span>
                           <CheckIcon

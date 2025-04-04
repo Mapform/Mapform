@@ -15,7 +15,7 @@ import { CustomBlockProvider, type CustomBlock } from "@mapform/blocknote";
 import { Blocknote } from "~/components/mapform/block-note";
 import { LocationSearchDrawer } from "./location-search-drawer";
 import { Form as DummyForm, useForm } from "@mapform/ui/components/form";
-import { BlocknoteControls } from "./blocknote-controls";
+import { BlocknoteControls } from "./page-blocknote-controls";
 import { FeatureDrawer } from "./feature-drawer";
 import { useSetQueryString } from "@mapform/lib/hooks/use-set-query-string";
 

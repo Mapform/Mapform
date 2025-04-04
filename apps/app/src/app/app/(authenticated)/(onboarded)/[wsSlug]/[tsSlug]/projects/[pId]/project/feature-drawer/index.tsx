@@ -2,7 +2,7 @@ import { MapformDrawer } from "~/components/mapform";
 import { Blocknote } from "~/components/mapform/block-note";
 import { BlocknoteControls } from "./blocknote-controls";
 import { useSetQueryString } from "@mapform/lib/hooks/use-set-query-string";
-import { useProject } from "../project-context";
+import { useProject } from "../../project-context";
 import { toast } from "@mapform/ui/components/toaster";
 import type { InferSafeActionFnInput } from "next-safe-action";
 import { upsertCellAction } from "~/data/cells/upsert-cell";
@@ -157,7 +157,6 @@ function FeatureDrawerInner() {
             !!selectedFeatureIcon.icon?.columnId &&
             !selectedFeatureIcon.icon.iconCell?.value
           }
-          allowAddProperties
           onIconChange={(value) => {
             if (!selectedFeatureIcon.icon || !currentPageData) {
               return;

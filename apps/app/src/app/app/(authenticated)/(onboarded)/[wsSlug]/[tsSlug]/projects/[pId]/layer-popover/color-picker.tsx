@@ -112,7 +112,7 @@ export function ColorPicker({
       render={() => (
         <Popover modal onOpenChange={setOpen} open={open}>
           <FormLabel htmlFor="color">{label}</FormLabel>
-          <div className="flex w-full flex-shrink-0 justify-end">
+          <div className="flex justify-end flex-shrink-0 w-full">
             <Tooltip>
               <TooltipTrigger asChild>
                 <PopoverTrigger asChild>
@@ -150,12 +150,11 @@ export function ColorPicker({
                 ))}
               </div>
               <div className="flex items-center pt-4">
-                <MoonIcon className="mr-2 size-5" />
+                <SunMediumIcon className="mr-2 size-5" />
                 <Slider
                   max={hueToSliderStep[950]}
                   min={hueToSliderStep[50]}
                   onValueChange={(value) => {
-                     
                     const hue = Object.entries(hueToSliderStep).find(
                       ([_, step]) => step === value[0],
                     )![0] as Hue;
@@ -168,7 +167,7 @@ export function ColorPicker({
                   step={1}
                   value={[hueToSliderStep[activeHue]]}
                 />
-                <SunMediumIcon className="ml-2 size-5" />
+                <MoonIcon className="ml-2 size-5" />
               </div>
             </PopoverContent>
           </div>
