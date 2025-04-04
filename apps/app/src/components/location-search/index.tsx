@@ -63,9 +63,13 @@ export function LocationSearchWithMap({
   const [query, setQuery] = useState("");
   const queryClient = useQueryClient();
   const [isFetchingRGResults, setIsFetchingRGResults] = useState(false);
-  const [selectedFeature, setSelectedFeature] = useState<
+  const [selectedFeatureFromSearch, setSelectedFeatureFromSearch] = useState<
     GeoapifyPlace["features"][number] | null
   >(null);
+  const [selectedFeatureFromDrag, setSelectedFeatureFromDrag] = useState<
+    GeoapifyPlace["features"][number] | null
+  >(null);
+  const selectedFeature = selectedFeatureFromSearch || selectedFeatureFromDrag;
   const [showPinPopover, setShowPinPopover] = useState(true);
   const debouncedSearchQuery = useDebounce(query, 200);
 
@@ -86,7 +90,7 @@ export function LocationSearchWithMap({
     const firstFeature = result.features[0];
 
     if (firstFeature) {
-      setSelectedFeature({
+      setSelectedFeatureFromDrag({
         ...firstFeature,
         ...(firstFeature.properties && {
           properties: {
@@ -156,6 +160,7 @@ export function LocationSearchWithMap({
 
     const handleMoveStart = () => {
       setShowPinPopover(false);
+      setSelectedFeatureFromSearch(null);
     };
 
     const handleMoveEnd = () => {
@@ -214,7 +219,7 @@ export function LocationSearchWithMap({
           )
           .setCenter([feature.properties.lon, feature.properties.lat]);
 
-        setSelectedFeature(feature);
+        setSelectedFeatureFromSearch(feature);
 
         setTimeout(() => {
           inputRef.current?.blur();
@@ -311,7 +316,7 @@ export function LocationSearchWithMap({
                       feature.properties.lat,
                     ]);
 
-                  setSelectedFeature(feature);
+                  setSelectedFeatureFromSearch(feature);
 
                   setTimeout(() => {
                     inputRef.current?.blur();
