@@ -189,6 +189,10 @@ export function MapformDrawer({
             //   width: (isEditing ? 392 : 360) + reverseValueIndex * 10,
             //   paddingLeft: (isEditing ? 32 : 0) + reverseValueIndex * 10,
             // }),
+            ...(!isMobile && {
+              width: isEditing ? 392 : 360,
+              paddingLeft: isEditing ? 32 : 0,
+            }),
           }}
           transition={{
             duration: 0.25,
@@ -206,12 +210,12 @@ export function MapformDrawer({
             },
           }}
         >
-          <div className="absolute left-1/2 top-1 -translate-x-1/2 md:hidden">
+          <div className="absolute -translate-x-1/2 left-1/2 top-1 md:hidden">
             <div className="h-1.5 w-12 rounded-full bg-gray-300" />
           </div>
           {onClose ? (
             <Button
-              className="absolute right-2 top-2 z-50"
+              className="absolute z-50 right-2 top-2"
               onClick={onClose}
               size="icon-sm"
               type="button"
