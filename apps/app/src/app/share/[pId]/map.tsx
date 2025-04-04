@@ -39,6 +39,7 @@ import {
   ArrowRightIcon,
   CheckIcon,
   InfoIcon,
+  PinIcon,
 } from "lucide-react";
 import { LocationMarker } from "~/components/mapform/map";
 import { SelectionPin } from "~/components/selection-pin";
@@ -358,9 +359,9 @@ export function Map({
                       ? "Done"
                       : null}
                   {nextPage ? (
-                    <ArrowRightIcon className="-mr-1 ml-1 size-5" />
+                    <ArrowRightIcon className="ml-1 -mr-1 size-5" />
                   ) : (
-                    <CheckIcon className="-mr-1 ml-1 size-5" />
+                    <CheckIcon className="ml-1 -mr-1 size-5" />
                   )}
                 </Button>
               </div>
@@ -400,7 +401,7 @@ export function Map({
   return (
     <Form {...form}>
       <form
-        className="flex h-full w-full flex-col md:overflow-hidden"
+        className="flex flex-col w-full h-full md:overflow-hidden"
         onSubmit={form.handleSubmit(onStepSubmit)}
       >
         <MapformContent drawerValues={drawerValues} pageData={pageData}>
@@ -447,7 +448,7 @@ export function Map({
                   );
                 })
               : null}
-            <div className="pointer-events-auto absolute bottom-8 left-1/2 z-10 flex -translate-x-1/2 transform items-center max-md:hidden">
+            <div className="absolute z-10 flex items-center transform -translate-x-1/2 pointer-events-auto bottom-8 left-1/2 max-md:hidden">
               {controls}
             </div>
           </MapformMap>
@@ -505,6 +506,7 @@ export function Map({
           </CustomBlockProvider>
           <MapformDrawer
             className="bottom-0 max-sm:fixed"
+            hideDragBar
             value="location-search"
             onClose={() => {
               setIsSearching(false);
@@ -525,7 +527,9 @@ export function Map({
                   setIsSelectingPinBlockLocationFor(null);
                   setIsSearching(false);
                 }}
+                size="sm"
               >
+                <PinIcon className="mr-1 size-4" />
                 Select Location
               </LocationSearchButton>
             </LocationSearch>

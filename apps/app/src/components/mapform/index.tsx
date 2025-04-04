@@ -136,6 +136,7 @@ export function MapformDrawer({
   value,
   onClose,
   mobileBottomPadding,
+  hideDragBar = false,
 }: {
   children: React.ReactNode;
   value: string;
@@ -143,6 +144,7 @@ export function MapformDrawer({
   className?: string;
   onClose?: () => void;
   mobileBottomPadding?: boolean;
+  hideDragBar?: boolean;
 }) {
   const isMobile = useIsMobile();
   const { drawerValues, isEditing } = useMapformContent();
@@ -210,9 +212,11 @@ export function MapformDrawer({
             },
           }}
         >
-          <div className="absolute -translate-x-1/2 left-1/2 top-1 md:hidden">
-            <div className="h-1.5 w-12 rounded-full bg-gray-300" />
-          </div>
+          {!hideDragBar && (
+            <div className="absolute -translate-x-1/2 left-1/2 top-1 md:hidden">
+              <div className="h-1.5 w-12 rounded-full bg-gray-300" />
+            </div>
+          )}
           {onClose ? (
             <Button
               className="absolute z-50 right-2 top-2"

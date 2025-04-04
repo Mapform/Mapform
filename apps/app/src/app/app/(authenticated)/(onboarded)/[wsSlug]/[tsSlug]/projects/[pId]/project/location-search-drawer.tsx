@@ -45,6 +45,7 @@ export function LocationSearchDrawer({
         onClose();
       }}
       value="location-search"
+      hideDragBar
     >
       <LocationSearch>
         <LocationSearchDrawerInner
