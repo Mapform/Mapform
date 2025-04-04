@@ -25,7 +25,6 @@ import {
   LayerPopoverAnchor,
   LayerPopoverContent,
 } from "../layer-popover";
-import { toast } from "@mapform/ui/components/toaster";
 import { useAction } from "next-safe-action/hooks";
 import { createPointAction } from "~/data/datasets/create-point";
 import { useState } from "react";

@@ -45,6 +45,7 @@ export function LocationSearch(props: { children?: React.ReactNode }) {
 export interface LocationSearchContextProps {
   selectedFeature: GeoapifyPlace["features"][number] | null;
   isFetching: boolean;
+  isMoving: boolean;
 }
 
 export const LocationSearchContext = createContext<LocationSearchContextProps>(
@@ -69,6 +70,7 @@ export function LocationSearchWithMap({
   const [selectedFeatureFromDrag, setSelectedFeatureFromDrag] = useState<
     GeoapifyPlace["features"][number] | null
   >(null);
+  const [isMoving, setIsMoving] = useState(false);
   const selectedFeature = selectedFeatureFromSearch || selectedFeatureFromDrag;
   const [showPinPopover, setShowPinPopover] = useState(true);
   const debouncedSearchQuery = useDebounce(query, 200);
@@ -156,11 +158,13 @@ export function LocationSearchWithMap({
 
     const handleMove = () => {
       marker.setLngLat(map.getCenter());
+      setIsMoving(true);
     };
 
     const handleMoveStart = () => {
       setShowPinPopover(false);
       setSelectedFeatureFromSearch(null);
+      setIsMoving(true);
     };
 
     const handleMoveEnd = () => {
@@ -175,6 +179,7 @@ export function LocationSearchWithMap({
         void refetch();
       }
       setShowPinPopover(true);
+      setIsMoving(false);
     };
 
     map.on("click", handleClick);
@@ -390,6 +395,7 @@ export function LocationSearchWithMap({
             value={{
               selectedFeature,
               isFetching: isFetching || isFetchingRGResults,
+              isMoving,
             }}
           >
             {children}
@@ -444,13 +450,13 @@ export function LocationSearchButton(
     ) => void;
   },
 ) {
-  const { selectedFeature, isFetching } = useLocationSearch();
+  const { selectedFeature, isFetching, isMoving } = useLocationSearch();
 
   return (
     <Button
       {...props}
       className={cn(props.className, "w-full")}
-      disabled={props.disabled || !selectedFeature || isFetching}
+      disabled={props.disabled || !selectedFeature || isFetching || isMoving}
       type="button"
       onClick={() => props.onClick?.(selectedFeature)}
     />
