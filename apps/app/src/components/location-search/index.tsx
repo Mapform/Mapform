@@ -281,12 +281,12 @@ export function LocationSearchWithMap({
         )}
       >
         {isFetching && features.length === 0 && (
-          <div className="text-muted-foreground m-2 rounded bg-gray-100 px-2 py-3 text-center text-sm">
+          <div className="px-2 py-3 m-2 text-sm text-center bg-gray-100 rounded text-muted-foreground">
             Searching...
           </div>
         )}
         {features.length === 0 && !isFetching && (
-          <div className="text-muted-foreground m-2 rounded bg-gray-100 px-2 py-3 text-center text-sm">
+          <div className="px-2 py-3 m-2 text-sm text-center bg-gray-100 rounded text-muted-foreground">
             No results found.
           </div>
         )}
@@ -351,11 +351,11 @@ export function LocationSearchWithMap({
 
   return (
     <>
-      <Command className="flex flex-1 flex-col" shouldFilter={false}>
+      <Command className="flex flex-col flex-1" shouldFilter={false}>
         <div className="group" onClick={() => inputRef.current?.focus()}>
           <div className="relative">
             <CommandInput
-              className="peer h-12 border-none focus:ring-0"
+              className="h-12 border-none peer focus:ring-0"
               onValueChange={(search) => {
                 setQuery(search);
               }}
@@ -372,7 +372,7 @@ export function LocationSearchWithMap({
               )}
             >
               <Button
-                className="hover:bg-accent bg-white"
+                className="bg-white hover:bg-accent"
                 onClick={() => {
                   queryClient.removeQueries({
                     queryKey: ["search", query],
@@ -391,7 +391,7 @@ export function LocationSearchWithMap({
             {query.length ? searchResultsList : null}
           </div>
         </div>
-        <div className="mt-auto p-2">
+        <div className="p-2 mt-auto">
           <LocationSearchContext.Provider
             value={{
               selectedFeature,
@@ -418,7 +418,7 @@ export function LocationSearchWithMap({
             <div className="p-2">
               {isFetchingRGResults ? (
                 <>
-                  <Skeleton className="mb-2 h-8" />
+                  <Skeleton className="h-8 mb-2" />
                   <Skeleton className="h-4" />
                 </>
               ) : selectedFeature ? (

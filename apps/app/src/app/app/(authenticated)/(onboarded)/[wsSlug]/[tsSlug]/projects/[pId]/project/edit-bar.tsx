@@ -9,7 +9,7 @@ import {
 import { useMapform, useMapformContent } from "~/components/mapform";
 import { cn } from "@mapform/lib/classnames";
 import { useProject } from "../project-context";
-import { FocusIcon, HandIcon, PencilIcon } from "lucide-react";
+import { FocusIcon, HandIcon, SearchIcon } from "lucide-react";
 
 interface EditBarProps {
   onSearchOpenChange: (isOpen: boolean) => void;
@@ -64,10 +64,10 @@ export function EditBar({ onSearchOpenChange }: EditBarProps) {
                 size="icon"
                 variant={isSearchOpen ? "default" : "ghost"}
               >
-                <PencilIcon className="size-5" />
+                <SearchIcon className="size-5" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Edit map</TooltipContent>
+            <TooltipContent>Search tool</TooltipContent>
           </Tooltip>
         </div>
         <div className="flex gap-1 pl-1.5">
