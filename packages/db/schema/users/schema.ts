@@ -13,6 +13,14 @@ export const users = pgTable("user", {
   email: text("email").unique().notNull(),
   image: text("image"),
   hasOnboarded: boolean("hasOnboarded").notNull().default(false),
+
+  // guides
+  workspaceGuideCompleted: boolean("workspaceGuideCompleted")
+    .notNull()
+    .default(false),
+  projectGuideCompleted: boolean("projectGuideCompleted")
+    .notNull()
+    .default(false),
 });
 
 export const magicLinks = pgTable("magic_link", {
