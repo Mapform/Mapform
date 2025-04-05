@@ -34,18 +34,15 @@ import {
   LogOutIcon,
   PlusIcon,
   MapIcon,
-  ScrollIcon,
+  BookOpenIcon,
+  BookMarkedIcon,
 } from "lucide-react";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@mapform/ui/components/collapsible";
-import {
-  Avatar,
-  AvatarFallback,
-  // AvatarImage,
-} from "@mapform/ui/components/avatar";
+import { Avatar, AvatarFallback } from "@mapform/ui/components/avatar";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOutAction } from "~/data/auth/sign-out";
@@ -128,20 +125,6 @@ export function LeftSidebar() {
         })),
       },
     })),
-    footer: [
-      {
-        title: "Changelog",
-        url: "https://mapform.productlane.com/changelog",
-        icon: ScrollIcon,
-        isActive: false,
-      },
-      {
-        title: "Roadmap",
-        url: "https://mapform.productlane.com/roadmap",
-        icon: MapIcon,
-        isActive: false,
-      },
-    ],
   };
 
   return (
@@ -320,21 +303,31 @@ export function LeftSidebar() {
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>
-          {data.footer.map((item) => (
-            <SidebarMenuItem key={item.title}>
-              <SidebarLeftMenuButton asChild isActive={item.isActive}>
-                <Link
-                  href={item.url}
-                  target={
-                    item.url.startsWith("https://") ? "_blank" : undefined
-                  }
-                >
-                  <item.icon />
-                  <span>{item.title}</span>
-                </Link>
-              </SidebarLeftMenuButton>
-            </SidebarMenuItem>
-          ))}
+          <SidebarMenuItem>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <SidebarLeftMenuButton>
+                  <BookMarkedIcon />
+                  Guides
+                </SidebarLeftMenuButton>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align="center"
+                className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
+                side="right"
+                sideOffset={4}
+              >
+                <DropdownMenuItem className="gap-2">
+                  <BookOpenIcon className="size-4" />
+                  Getting Started Guide
+                </DropdownMenuItem>
+                <DropdownMenuItem className="gap-2">
+                  <MapIcon className="size-4" />
+                  Advanced Features Tour
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </SidebarMenuItem>
         </SidebarMenu>
         <SidebarMenu>
           <SidebarMenuItem>

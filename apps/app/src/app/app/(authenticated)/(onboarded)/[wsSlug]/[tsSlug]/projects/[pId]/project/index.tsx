@@ -19,6 +19,11 @@ import { BlocknoteControls } from "./page-blocknote-controls";
 import { FeatureDrawer } from "./feature-drawer";
 import { useSetQueryString } from "@mapform/lib/hooks/use-set-query-string";
 import { TourGuide } from "~/components/tour-guide";
+import { useAuth } from "~/app/root-providers";
+import { updateCurrentUserAction } from "~/data/users/update-current-user";
+import { useAction } from "next-safe-action/hooks";
+
+import guideImage from "public/static/images/guide.png";
 
 function Project() {
   const {
@@ -28,6 +33,8 @@ function Project() {
     updatePageServerAction,
     uploadImageServerAction,
   } = useProject();
+  const { user } = useAuth();
+  const [isTourOpen, setIsTourOpen] = useState(!user?.projectGuideCompleted);
 
   // This is just used to prevent the input blocks from throwing an error when
   // calling useFormContext
@@ -38,6 +45,8 @@ function Project() {
   // Controls the location search drawer
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const setQueryString = useSetQueryString();
+
+  const { execute: updateCurrentUser } = useAction(updateCurrentUserAction);
 
   // Controls the ChevronsRight button to open or close all drawers
   const [isDrawerStackOpen, setIsDrawerStackOpen] = useState(true);
@@ -207,19 +216,37 @@ function Project() {
         steps={[
           {
             id: "welcome",
-            title: "Welcome to Mapform",
-            description: "This is a description",
-            imageUrl: "/images/tour-guide/welcome.png",
+            title: "Welcome to your first project",
+            description:
+              "Projects are the main building blocks of Mapform. They combine maps, content, data and forms across multiple pages.",
+            imageUrl: guideImage,
           },
           {
-            id: "welcome",
-            title: "Welcome to Mapform",
+            id: "pages",
+            title: "Pages",
             description: "This is a description",
-            imageUrl: "/images/tour-guide/welcome.png",
+            imageUrl: guideImage,
+          },
+          {
+            id: "layers",
+            title: "Layers",
+            description: "This is a description",
+            imageUrl: guideImage,
+          },
+          {
+            id: "sharing",
+            title: "Sharing",
+            description: "This is a description",
+            imageUrl: guideImage,
           },
         ]}
-        isOpen={true}
-        onClose={() => {}}
+        isOpen={isTourOpen}
+        onClose={() => {
+          setIsTourOpen(false);
+          void updateCurrentUser({
+            projectGuideCompleted: true,
+          });
+        }}
         className="fixed bottom-0 right-0"
       />
     </>

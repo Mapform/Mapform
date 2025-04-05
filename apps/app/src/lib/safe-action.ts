@@ -56,7 +56,7 @@ import {
   userAuthMiddlewareValidator,
 } from "@mapform/backend";
 import { headers } from "next/headers";
-
+import { updateCurrentUser } from "@mapform/backend/data/users/update-current-user";
 const ignoredWorkspaceSlugs = ["onboarding"];
 const ignoredTeamspaceSlugs = ["settings"];
 
@@ -174,6 +174,9 @@ const createUserAuthClient = () => {
 
     // Teamspaces
     getTeamspaceWithProjects: getTeamspaceWithProjects(extendedClient),
+
+    // Users
+    updateCurrentUser: updateCurrentUser(extendedClient),
 
     // Workspaces
     updateWorkspace: updateWorkspace(extendedClient),
