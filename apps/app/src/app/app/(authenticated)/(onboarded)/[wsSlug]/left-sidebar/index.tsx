@@ -52,6 +52,12 @@ import { ProjectMenuSubItem } from "./project-menu-sub-item";
 import { DatasetMenuSubItem } from "./dataset-menu-sub-item";
 import { CreateProjectDialog } from "~/components/create-project-dialog";
 import { CreateDatasetDialog } from "~/components/create-dataset-dialog";
+import {
+  ProjectTour,
+  ProjectTourContent,
+  ProjectTourTrigger,
+} from "~/components/tours/project-tour";
+import { useState } from "react";
 
 export function LeftSidebar() {
   const { user } = useAuth();
@@ -62,6 +68,7 @@ export function LeftSidebar() {
     workspaceSlug,
     currentWorkspace,
   } = useWorkspace();
+  const [isProjectGuideOpen, setIsProjectGuideOpen] = useState(false);
 
   if (!user) {
     return null;
@@ -304,29 +311,37 @@ export function LeftSidebar() {
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <SidebarLeftMenuButton>
-                  <BookMarkedIcon />
-                  Guides
-                </SidebarLeftMenuButton>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                align="center"
-                className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
-                side="right"
-                sideOffset={4}
-              >
-                <DropdownMenuItem className="gap-2">
-                  <BookOpenIcon className="size-4" />
-                  Getting Started Guide
-                </DropdownMenuItem>
-                <DropdownMenuItem className="gap-2">
-                  <MapIcon className="size-4" />
-                  Advanced Features Tour
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <ProjectTour
+              open={isProjectGuideOpen}
+              onOpenChange={setIsProjectGuideOpen}
+            >
+              <DropdownMenu modal={false}>
+                <DropdownMenuTrigger asChild>
+                  <SidebarLeftMenuButton>
+                    <BookMarkedIcon />
+                    Guides
+                  </SidebarLeftMenuButton>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  align="center"
+                  className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
+                  side="right"
+                  sideOffset={4}
+                >
+                  <DropdownMenuItem className="gap-2">
+                    <BookOpenIcon className="size-4" />
+                    Getting Started Guide
+                  </DropdownMenuItem>
+                  <ProjectTourTrigger asChild>
+                    <DropdownMenuItem className="gap-2">
+                      <MapIcon className="size-4" />
+                      Project Guide
+                    </DropdownMenuItem>
+                  </ProjectTourTrigger>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              <ProjectTourContent />
+            </ProjectTour>
           </SidebarMenuItem>
         </SidebarMenu>
         <SidebarMenu>

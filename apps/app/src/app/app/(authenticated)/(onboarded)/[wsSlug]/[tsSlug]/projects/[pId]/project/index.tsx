@@ -18,12 +18,13 @@ import { Form as DummyForm, useForm } from "@mapform/ui/components/form";
 import { BlocknoteControls } from "./page-blocknote-controls";
 import { FeatureDrawer } from "./feature-drawer";
 import { useSetQueryString } from "@mapform/lib/hooks/use-set-query-string";
-import { TourGuide } from "~/components/tour-guide";
 import { useAuth } from "~/app/root-providers";
 import { updateCurrentUserAction } from "~/data/users/update-current-user";
 import { useAction } from "next-safe-action/hooks";
-
-import guideImage from "public/static/images/guide.png";
+import {
+  ProjectTour,
+  ProjectTourContent,
+} from "~/components/tours/project-tour";
 
 function Project() {
   const {
@@ -212,43 +213,19 @@ function Project() {
           </div>
         </div>
       </DummyForm>
-      <TourGuide
-        steps={[
-          {
-            id: "welcome",
-            title: "Welcome to your first project",
-            description:
-              "Projects are the main building blocks of Mapform. They combine maps, content, data and forms across multiple pages.",
-            imageUrl: guideImage,
-          },
-          {
-            id: "pages",
-            title: "Pages",
-            description: "This is a description",
-            imageUrl: guideImage,
-          },
-          {
-            id: "layers",
-            title: "Layers",
-            description: "This is a description",
-            imageUrl: guideImage,
-          },
-          {
-            id: "sharing",
-            title: "Sharing",
-            description: "This is a description",
-            imageUrl: guideImage,
-          },
-        ]}
-        isOpen={isTourOpen}
-        onClose={() => {
-          setIsTourOpen(false);
-          void updateCurrentUser({
-            projectGuideCompleted: true,
-          });
+      <ProjectTour
+        open={isTourOpen}
+        onOpenChange={(open) => {
+          setIsTourOpen(open);
+          if (!open) {
+            void updateCurrentUser({
+              projectGuideCompleted: true,
+            });
+          }
         }}
-        className="fixed bottom-0 right-0"
-      />
+      >
+        <ProjectTourContent className="fixed bottom-0 right-0" />
+      </ProjectTour>
     </>
   );
 }
