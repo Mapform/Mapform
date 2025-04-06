@@ -55,7 +55,6 @@ import { CreateDatasetDialog } from "~/components/create-dataset-dialog";
 import {
   ProjectTour,
   ProjectTourContent,
-  ProjectTourTrigger,
 } from "~/components/tours/project-tour";
 import {
   WelcomeTour as WT,
@@ -331,7 +330,7 @@ export function LeftSidebar() {
                   }}
                 >
                   <BookOpenIcon className="size-4" />
-                  Welcome Guide
+                  Welcome Note
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   className="gap-2"
@@ -340,7 +339,7 @@ export function LeftSidebar() {
                   }}
                 >
                   <BoxIcon className="size-4" />
-                  Project Guide
+                  Projects Overview
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

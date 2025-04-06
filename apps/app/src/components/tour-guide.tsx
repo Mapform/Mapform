@@ -23,7 +23,7 @@ import type { Asset } from "next-video/dist/assets.js";
 export interface TourStep {
   id: string;
   title: string;
-  description: string;
+  description: string | React.ReactNode;
   imageUrl?: string | StaticImageData;
   video?: Asset;
 }
@@ -76,7 +76,7 @@ export function TourContent({ steps }: TourGuideProps) {
   }
 
   return (
-    <AlertDialogContent className="w-full max-w-screen-sm overflow-hidden">
+    <AlertDialogContent className="max-h-[90vh] w-full max-w-screen-sm overflow-hidden overflow-y-auto">
       <div className="relative">
         <AnimatePresence mode="wait">
           <motion.div
@@ -91,7 +91,7 @@ export function TourContent({ steps }: TourGuideProps) {
               <div className="text-muted-foreground text-sm">
                 Step {currentStepIndex + 1} of {steps.length}
               </div>
-              <div className="relative mb-4 aspect-video overflow-hidden rounded-md">
+              <div className="relative aspect-video overflow-hidden rounded-md">
                 {currentStep.imageUrl && (
                   <Image
                     src={currentStep.imageUrl}
@@ -111,8 +111,10 @@ export function TourContent({ steps }: TourGuideProps) {
                   />
                 )}
               </div>
-              <AlertDialogTitle>{currentStep.title}</AlertDialogTitle>
-              <AlertDialogDescription>
+              <AlertDialogTitle className="pt-2">
+                {currentStep.title}
+              </AlertDialogTitle>
+              <AlertDialogDescription className="prose prose-sm whitespace-pre-wrap">
                 {currentStep.description}
               </AlertDialogDescription>
             </AlertDialogHeader>
@@ -121,7 +123,7 @@ export function TourContent({ steps }: TourGuideProps) {
       </div>
       <AlertDialogFooter>
         <AlertDialogCancel className="mr-auto" onClick={resetTour}>
-          Cancel
+          Close
         </AlertDialogCancel>
         <div className="flex gap-2">
           <Button
