@@ -21,9 +21,9 @@ export function WelcomeTourContent({ className }: WelcomeTourProps) {
               </p>
               <p>
                 But most mapping tools miss that. The story gets lost amongst
-                maps that are too simple or purely data-driven. I built Mapform
-                in an attempt to bridge that gap: to bring maps and data
-                together with rich content and user input.
+                maps that are too simple or purely data-driven. Mapform is my
+                attempt to bridge that gap: to bring maps and data together with
+                rich content and user input.
               </p>
               <p>
                 The project is still young, but I hope you find it useful. Happy
