@@ -28,12 +28,6 @@ export function WelcomeTourContent({ className }: WelcomeTourProps) {
           description: "This is a description",
           imageUrl: guideImage,
         },
-        {
-          id: "sharing",
-          title: "Sharing",
-          description: "This is a description",
-          imageUrl: guideImage,
-        },
       ]}
       className={className}
     />

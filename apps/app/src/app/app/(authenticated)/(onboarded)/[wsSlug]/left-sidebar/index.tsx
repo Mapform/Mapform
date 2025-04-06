@@ -35,6 +35,7 @@ import {
   PlusIcon,
   BookOpenIcon,
   BookMarkedIcon,
+  HelpCircleIcon,
 } from "lucide-react";
 import {
   Collapsible,
@@ -352,6 +353,14 @@ export function LeftSidebar() {
             >
               <ProjectTourContent />
             </ProjectTour>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <Link href="mailto:support@mapform.co">
+              <SidebarLeftMenuButton>
+                <HelpCircleIcon className="size-4" />
+                Support
+              </SidebarLeftMenuButton>
+            </Link>
           </SidebarMenuItem>
         </SidebarMenu>
         <SidebarMenu>
