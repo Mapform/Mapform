@@ -133,7 +133,7 @@ export function TourContent({ steps }: TourGuideProps) {
           </Button>
           {currentStepIndex === steps.length - 1 ? (
             <AlertDialogAction onClick={handleNext}>
-              Let&apos;s go!
+              Let&apos;s go
             </AlertDialogAction>
           ) : (
             <Button onClick={handleNext}>Next</Button>
