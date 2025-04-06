@@ -11,9 +11,9 @@ export function WelcomeTourContent({ className }: WelcomeTourProps) {
       steps={[
         {
           id: "welcome",
-          title: "Welcome to your first project",
+          title: "Welcome to Mapform!",
           description:
-            "Projects are the main building blocks of Mapform. They combine maps, content, data and forms across multiple pages.",
+            "Mapform is a platform for creating maps and data visualizations. It's designed to be easy to use and to help you create beautiful maps quickly.",
           imageUrl: guideImage,
         },
         {

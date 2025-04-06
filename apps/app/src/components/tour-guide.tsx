@@ -38,10 +38,20 @@ export function TourContent({ steps }: TourGuideProps) {
   const [direction, setDirection] = useState(1); // 1 for forward, -1 for backward
   const currentStep = steps[currentStepIndex];
 
+  const resetTour = () => {
+    setDirection(1);
+    setCurrentStepIndex(0);
+  };
+
   const handleNext = () => {
     if (currentStepIndex < steps.length - 1) {
       setDirection(1);
       setCurrentStepIndex(currentStepIndex + 1);
+    }
+
+    // Once the tour is complete, reset the tour
+    if (currentStepIndex === steps.length - 1) {
+      resetTour();
     }
   };
 
@@ -110,7 +120,9 @@ export function TourContent({ steps }: TourGuideProps) {
         </AnimatePresence>
       </div>
       <AlertDialogFooter>
-        <AlertDialogCancel className="mr-auto">Cancel</AlertDialogCancel>
+        <AlertDialogCancel className="mr-auto" onClick={resetTour}>
+          Cancel
+        </AlertDialogCancel>
         <div className="flex gap-2">
           <Button
             disabled={currentStepIndex === 0}
@@ -120,7 +132,9 @@ export function TourContent({ steps }: TourGuideProps) {
             Back
           </Button>
           {currentStepIndex === steps.length - 1 ? (
-            <AlertDialogAction onClick={handleNext}>Finish</AlertDialogAction>
+            <AlertDialogAction onClick={handleNext}>
+              Let&apos;s go!
+            </AlertDialogAction>
           ) : (
             <Button onClick={handleNext}>Next</Button>
           )}

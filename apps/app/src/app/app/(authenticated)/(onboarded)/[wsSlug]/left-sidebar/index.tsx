@@ -33,7 +33,6 @@ import {
   ChevronRightIcon,
   LogOutIcon,
   PlusIcon,
-  MapIcon,
   BookOpenIcon,
   BookMarkedIcon,
 } from "lucide-react";
@@ -57,6 +56,10 @@ import {
   ProjectTourContent,
   ProjectTourTrigger,
 } from "~/components/tours/project-tour";
+import {
+  WelcomeTour as WT,
+  WelcomeTourContent,
+} from "~/components/tours/welcome-tour";
 import { useState } from "react";
 
 export function LeftSidebar() {
@@ -69,6 +72,7 @@ export function LeftSidebar() {
     currentWorkspace,
   } = useWorkspace();
   const [isProjectGuideOpen, setIsProjectGuideOpen] = useState(false);
+  const [isWelcomeGuideOpen, setIsWelcomeGuideOpen] = useState(false);
 
   if (!user) {
     return null;
@@ -311,35 +315,41 @@ export function LeftSidebar() {
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
+            <DropdownMenu modal={false}>
+              <DropdownMenuTrigger asChild>
+                <SidebarLeftMenuButton>
+                  <BookMarkedIcon />
+                  Guides
+                </SidebarLeftMenuButton>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="center" side="right" sideOffset={4}>
+                <DropdownMenuItem
+                  className="gap-2"
+                  onClick={() => {
+                    setIsWelcomeGuideOpen(true);
+                  }}
+                >
+                  <BookOpenIcon className="size-4" />
+                  Welcome Guide
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  className="gap-2"
+                  onClick={() => {
+                    setIsProjectGuideOpen(true);
+                  }}
+                >
+                  <BoxIcon className="size-4" />
+                  Project Guide
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <WT open={isWelcomeGuideOpen} onOpenChange={setIsWelcomeGuideOpen}>
+              <WelcomeTourContent />
+            </WT>
             <ProjectTour
               open={isProjectGuideOpen}
               onOpenChange={setIsProjectGuideOpen}
             >
-              <DropdownMenu modal={false}>
-                <DropdownMenuTrigger asChild>
-                  <SidebarLeftMenuButton>
-                    <BookMarkedIcon />
-                    Guides
-                  </SidebarLeftMenuButton>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent
-                  align="center"
-                  className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
-                  side="right"
-                  sideOffset={4}
-                >
-                  <DropdownMenuItem className="gap-2">
-                    <BookOpenIcon className="size-4" />
-                    Getting Started Guide
-                  </DropdownMenuItem>
-                  <ProjectTourTrigger asChild>
-                    <DropdownMenuItem className="gap-2">
-                      <MapIcon className="size-4" />
-                      Project Guide
-                    </DropdownMenuItem>
-                  </ProjectTourTrigger>
-                </DropdownMenuContent>
-              </DropdownMenu>
               <ProjectTourContent />
             </ProjectTour>
           </SidebarMenuItem>
