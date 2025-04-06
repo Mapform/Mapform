@@ -33,19 +33,16 @@ import {
   ChevronRightIcon,
   LogOutIcon,
   PlusIcon,
-  MapIcon,
-  ScrollIcon,
+  BookOpenIcon,
+  BookMarkedIcon,
+  HelpCircleIcon,
 } from "lucide-react";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@mapform/ui/components/collapsible";
-import {
-  Avatar,
-  AvatarFallback,
-  // AvatarImage,
-} from "@mapform/ui/components/avatar";
+import { Avatar, AvatarFallback } from "@mapform/ui/components/avatar";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOutAction } from "~/data/auth/sign-out";
@@ -55,6 +52,16 @@ import { ProjectMenuSubItem } from "./project-menu-sub-item";
 import { DatasetMenuSubItem } from "./dataset-menu-sub-item";
 import { CreateProjectDialog } from "~/components/create-project-dialog";
 import { CreateDatasetDialog } from "~/components/create-dataset-dialog";
+import {
+  ProjectTour,
+  ProjectTourContent,
+  ProjectTourTrigger,
+} from "~/components/tours/project-tour";
+import {
+  WelcomeTour as WT,
+  WelcomeTourContent,
+} from "~/components/tours/welcome-tour";
+import { useState } from "react";
 
 export function LeftSidebar() {
   const { user } = useAuth();
@@ -65,6 +72,8 @@ export function LeftSidebar() {
     workspaceSlug,
     currentWorkspace,
   } = useWorkspace();
+  const [isProjectGuideOpen, setIsProjectGuideOpen] = useState(false);
+  const [isWelcomeGuideOpen, setIsWelcomeGuideOpen] = useState(false);
 
   if (!user) {
     return null;
@@ -128,20 +137,6 @@ export function LeftSidebar() {
         })),
       },
     })),
-    footer: [
-      {
-        title: "Changelog",
-        url: "https://mapform.productlane.com/changelog",
-        icon: ScrollIcon,
-        isActive: false,
-      },
-      {
-        title: "Roadmap",
-        url: "https://mapform.productlane.com/roadmap",
-        icon: MapIcon,
-        isActive: false,
-      },
-    ],
   };
 
   return (
@@ -320,21 +315,53 @@ export function LeftSidebar() {
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>
-          {data.footer.map((item) => (
-            <SidebarMenuItem key={item.title}>
-              <SidebarLeftMenuButton asChild isActive={item.isActive}>
-                <Link
-                  href={item.url}
-                  target={
-                    item.url.startsWith("https://") ? "_blank" : undefined
-                  }
+          <SidebarMenuItem>
+            <DropdownMenu modal={false}>
+              <DropdownMenuTrigger asChild>
+                <SidebarLeftMenuButton>
+                  <BookMarkedIcon />
+                  Guides
+                </SidebarLeftMenuButton>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="center" side="right" sideOffset={4}>
+                <DropdownMenuItem
+                  className="gap-2"
+                  onClick={() => {
+                    setIsWelcomeGuideOpen(true);
+                  }}
                 >
-                  <item.icon />
-                  <span>{item.title}</span>
-                </Link>
+                  <BookOpenIcon className="size-4" />
+                  Welcome Guide
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  className="gap-2"
+                  onClick={() => {
+                    setIsProjectGuideOpen(true);
+                  }}
+                >
+                  <BoxIcon className="size-4" />
+                  Project Guide
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <WT open={isWelcomeGuideOpen} onOpenChange={setIsWelcomeGuideOpen}>
+              <WelcomeTourContent />
+            </WT>
+            <ProjectTour
+              open={isProjectGuideOpen}
+              onOpenChange={setIsProjectGuideOpen}
+            >
+              <ProjectTourContent />
+            </ProjectTour>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <Link href="mailto:support@mapform.co">
+              <SidebarLeftMenuButton>
+                <HelpCircleIcon className="size-4" />
+                Support
               </SidebarLeftMenuButton>
-            </SidebarMenuItem>
-          ))}
+            </Link>
+          </SidebarMenuItem>
         </SidebarMenu>
         <SidebarMenu>
           <SidebarMenuItem>

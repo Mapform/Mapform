@@ -246,6 +246,13 @@
       "when": 1743172378521,
       "tag": "0034_sparkling_chimera",
       "breakpoints": true
+    },
+    {
+      "idx": 35,
+      "version": "7",
+      "when": 1743812259749,
+      "tag": "0035_legal_machine_man",
+      "breakpoints": true
     }
   ]
 }

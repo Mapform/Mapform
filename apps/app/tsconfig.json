@@ -20,7 +20,8 @@
     "**/*.mjs",
     ".next/types/**/*.ts",
     "../../packages/mapform/global.d.ts",
-    "global.d.ts"
+    "global.d.ts",
+    "video.d.ts"
   ],
   "exclude": [
     "dist",

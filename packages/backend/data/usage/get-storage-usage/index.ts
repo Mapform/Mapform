@@ -23,7 +23,7 @@ export const getStorageUsage = (authClient: UserAuthClient | PublicClient) =>
         .leftJoin(workspaces, eq(workspaces.slug, workspaceSlug))
         .where(
           and(
-            eq(workspaces.slug, workspaceSlug),
+            eq(workspaces.id, blobs.workspaceId),
             isNull(blobs.queuedForDeletionDate),
           ),
         );

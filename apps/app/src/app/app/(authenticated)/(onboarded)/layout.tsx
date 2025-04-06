@@ -13,7 +13,7 @@ export default async function AuthLayout({
   }
 
   const firstWorkspace =
-    currentSession.data?.user?.workspaceMemberships[0]?.workspace;
+    currentSession.data.user.workspaceMemberships[0]?.workspace;
 
   /**
    * If the user doesn't have any workspaces, redirect them to the onboarding
