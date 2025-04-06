@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { getCurrentSession } from "~/data/auth/get-current-session";
-import { WelcomeTour } from "./welcome-tour";
+
 export default async function AuthLayout({
   children,
 }: {
@@ -22,10 +22,5 @@ export default async function AuthLayout({
     return redirect("/app/onboarding");
   }
 
-  return (
-    <>
-      {children}
-      <WelcomeTour />
-    </>
-  );
+  return <>{children}</>;
 }
