@@ -13,27 +13,30 @@ export function ProjectTourContent({ className }: ProjectTourProps) {
       steps={[
         {
           id: "welcome",
-          title: "Welcome to your first project",
+          title: "Your First Project",
           description:
-            "Projects are the main building blocks of Mapform. They combine maps, content, data and forms across multiple pages.",
+            "Projects are the bread and butter of Mapform. Fundamentally, they combine maps, content, and data across one or more pages.",
           video: projectPagesVideo as Asset,
         },
         {
           id: "pages",
           title: "Pages",
-          description: "Project pages are  ",
-          imageUrl: guideImage,
+          description:
+            "Like a book, Mapform pages flow sequentially. Content, map position, and data layers are all unique to each page.",
+          video: projectPagesVideo as Asset,
         },
         {
           id: "layers",
           title: "Layers",
-          description: "This is a description",
+          description:
+            "Layers are how you visual data on your map. At the moment, they can be used to show Markers or Points (with more types to come).",
           imageUrl: guideImage,
         },
         {
           id: "sharing",
           title: "Sharing",
-          description: "This is a description",
+          description:
+            "Use the share Share button in the top right to change your project's visibility, or copy the public URL to share with others.",
           imageUrl: guideImage,
         },
       ]}
