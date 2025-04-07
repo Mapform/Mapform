@@ -10,11 +10,9 @@ export async function GET(request: Request) {
   try {
     const searchParams = new URLSearchParams({
       apiKey: env.GEOAPIFY_API_KEY,
-      lat,
-      lon,
+      lat: Number(lat).toFixed(10),
+      lon: Number(lon).toFixed(10),
     }).toString();
-
-    console.log(123, searchParams);
 
     const response = await fetch(
       `https://api.geoapify.com/v1/geocode/reverse?${searchParams}`,
