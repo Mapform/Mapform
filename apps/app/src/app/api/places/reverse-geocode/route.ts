@@ -14,6 +14,8 @@ export async function GET(request: Request) {
       lon,
     }).toString();
 
+    console.log(123, searchParams);
+
     const response = await fetch(
       `https://api.geoapify.com/v1/geocode/reverse?${searchParams}`,
       {
@@ -25,10 +27,13 @@ export async function GET(request: Request) {
     );
 
     if (!response.ok) {
+      console.log(789, response);
       throw new Error(`Response status: ${response.status}`);
     }
 
     const data: GeoapifyPlace = await response.json();
+
+    console.log(456, data);
 
     return NextResponse.json({ data });
   } catch (e: unknown) {
