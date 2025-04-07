@@ -31,8 +31,6 @@ export async function GET(request: Request) {
 
     const data: GeoapifyPlace = await response.json();
 
-    console.log(456, data);
-
     return NextResponse.json({ data });
   } catch (e: unknown) {
     return NextResponse.json({ msg: "Failure" });
