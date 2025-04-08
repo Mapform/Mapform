@@ -100,7 +100,12 @@ export const LayerPopoverContent = forwardRef<
         </form>
         {form.watch("datasetId") && form.watch("type") && (
           <PropertiesForm
-            key={`${form.watch("datasetId")}-${form.watch("type")}-${availableDatasets.length}`}
+            // Re-render when selected or available datasets change. We don't
+            // want to re-render for type because point and marker share the
+            // same properties (This makes it easier to quickly update from one
+            // to the other with the same properties set). This may change in
+            // the future though as more types are added.
+            key={`${form.watch("datasetId")}-${availableDatasets.length}`}
             parentForm={form}
             layerToEdit={layerToEdit}
             onSuccess={onSuccess}
