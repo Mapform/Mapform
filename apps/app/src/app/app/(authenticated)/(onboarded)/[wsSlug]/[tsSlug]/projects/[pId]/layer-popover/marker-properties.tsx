@@ -192,48 +192,58 @@ function DataColField({
     <FormField
       control={form.control}
       name={name}
-      render={({ field }) => (
-        <PropertyPopover modal onOpenChange={setOpen} open={open}>
-          <FormLabel htmlFor={name}>{label}</FormLabel>
-          <div className="flex w-full justify-end">
-            <PropertyPopoverTrigger asChild>
-              <Button
-                className="ring-offset-background placeholder:text-muted-foreground focus:ring-ring flex h-7 w-full items-center justify-between whitespace-nowrap rounded-md border-0 bg-stone-100 px-2 py-0.5 text-sm font-normal shadow-sm focus:outline-none focus:ring-1 disabled:cursor-not-allowed disabled:opacity-50"
-                id={name}
-                size="icon-xs"
-                variant="ghost"
-              >
-                <span className="flex-1 truncate text-left">
-                  {availableColumns.find((col) => col.id === field.value)
-                    ?.name ?? "Select..."}
-                </span>
-                <ChevronsUpDownIcon className="size-4 flex-shrink-0 opacity-50" />
-              </Button>
-            </PropertyPopoverTrigger>
-            <PropertyPopoverContent
-              align="start"
-              side="right"
-              value={field.value as string | null}
-              query={query}
-              setQuery={setQuery}
-              availableItems={availableColumns}
-              onSelect={(value) => {
-                form.setValue(name, value as string | null);
-                setOpen(false);
-              }}
-              onCreate={async (name) => {
-                await executeAsync({
-                  name,
-                  datasetId: form.watch("datasetId"),
-                  type,
-                });
-                setQuery("");
-                setOpen(false);
-              }}
-            />
-          </div>
-        </PropertyPopover>
-      )}
+      render={({ field }) => {
+        const currentColumn = availableColumns.find(
+          (col) => col.id === field.value,
+        );
+        const buttonText = currentColumn
+          ? currentColumn.name
+          : field.value
+            ? "⚠️ Not found"
+            : "Select...";
+
+        return (
+          <PropertyPopover modal onOpenChange={setOpen} open={open}>
+            <FormLabel htmlFor={name}>{label}</FormLabel>
+            <div className="flex w-full justify-end">
+              <PropertyPopoverTrigger asChild>
+                <Button
+                  className="ring-offset-background placeholder:text-muted-foreground focus:ring-ring flex h-7 w-full items-center justify-between whitespace-nowrap rounded-md border-0 bg-stone-100 px-2 py-0.5 text-sm font-normal shadow-sm focus:outline-none focus:ring-1 disabled:cursor-not-allowed disabled:opacity-50"
+                  id={name}
+                  size="icon-xs"
+                  variant="ghost"
+                >
+                  <span className="flex-1 truncate text-left">
+                    {buttonText}
+                  </span>
+                  <ChevronsUpDownIcon className="size-4 flex-shrink-0 opacity-50" />
+                </Button>
+              </PropertyPopoverTrigger>
+              <PropertyPopoverContent
+                align="start"
+                side="right"
+                value={field.value as string | null}
+                query={query}
+                setQuery={setQuery}
+                availableItems={availableColumns}
+                onSelect={(value) => {
+                  form.setValue(name, value as string | null);
+                  setOpen(false);
+                }}
+                onCreate={async (name) => {
+                  await executeAsync({
+                    name,
+                    datasetId: form.watch("datasetId"),
+                    type,
+                  });
+                  setQuery("");
+                  setOpen(false);
+                }}
+              />
+            </div>
+          </PropertyPopover>
+        );
+      }}
     />
   );
 }

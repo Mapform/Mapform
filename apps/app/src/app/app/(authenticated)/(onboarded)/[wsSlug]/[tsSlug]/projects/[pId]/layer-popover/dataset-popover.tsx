@@ -42,9 +42,18 @@ export function DatasetPopover({ form }: DatasetPopoverProps) {
         title: "Success!",
         description: "Your dataset has been created.",
       });
+      // Reset the form before setting the datasetId so that any selected form
+      // fields are cleared. Other, columns for the wrong dataset might will be
+      // set.
+      // Howver, name and type should not be reset.
+      form.reset((values) => ({
+        ...values,
+        type: values.type,
+        name: values.name,
+      }));
       form.setValue("datasetId", data.dataset.id);
 
-      if (input.layerType === "point" || input.layerType === "marker") {
+      if (input.layerType === "point") {
         form.setValue(
           "pointProperties.pointColumnId",
           data.columns?.find((c) => c.type === "point")?.id ?? "",
@@ -59,6 +68,33 @@ export function DatasetPopover({ form }: DatasetPopoverProps) {
           "pointProperties.descriptionColumnId",
           data.columns?.find((c) => c.type === "richtext")?.id ?? "",
         );
+
+        form.setValue(
+          "pointProperties.iconColumnId",
+          data.columns?.find((c) => c.type === "icon")?.id ?? "",
+        );
+      }
+
+      if (input.layerType === "marker") {
+        form.setValue(
+          "markerProperties.pointColumnId",
+          data.columns?.find((c) => c.type === "point")?.id ?? "",
+        );
+
+        form.setValue(
+          "markerProperties.titleColumnId",
+          data.columns?.find((c) => c.type === "string")?.id ?? "",
+        );
+
+        form.setValue(
+          "markerProperties.descriptionColumnId",
+          data.columns?.find((c) => c.type === "richtext")?.id ?? "",
+        );
+
+        form.setValue(
+          "markerProperties.iconColumnId",
+          data.columns?.find((c) => c.type === "icon")?.id ?? "",
+        );
       }
     },
   });
@@ -70,7 +106,7 @@ export function DatasetPopover({ form }: DatasetPopoverProps) {
       render={({ field }) => (
         <Popover modal onOpenChange={setOpen} open={open}>
           <FormLabel htmlFor="datasetSelect">Dataset</FormLabel>
-          <div className="flex justify-end flex-shrink-0 w-full">
+          <div className="flex w-full flex-shrink-0 justify-end">
             <PopoverTrigger asChild>
               <Button
                 className="ring-offset-background placeholder:text-muted-foreground focus:ring-ring flex h-7 w-full items-center justify-between whitespace-nowrap rounded-md border-0 bg-stone-100 px-2 py-0.5 text-sm font-normal shadow-sm focus:outline-none focus:ring-1 disabled:cursor-not-allowed disabled:opacity-50"
@@ -78,14 +114,14 @@ export function DatasetPopover({ form }: DatasetPopoverProps) {
                 size="icon-xs"
                 variant="ghost"
               >
-                <span className="flex-1 text-left truncate">
+                <span className="flex-1 truncate text-left">
                   {form.watch("datasetId")
                     ? availableDatasets.find(
                         (dataset) => dataset.id === field.value,
                       )?.name
                     : "Select dataset..."}
                 </span>
-                <ChevronsUpDownIcon className="flex-shrink-0 opacity-50 size-4" />
+                <ChevronsUpDownIcon className="size-4 flex-shrink-0 opacity-50" />
               </Button>
             </PopoverTrigger>
             <PopoverContent
@@ -135,11 +171,11 @@ export function DatasetPopover({ form }: DatasetPopoverProps) {
                       }}
                     >
                       <div className="flex items-center overflow-hidden">
-                        <p className="flex items-center font-semibold whitespace-nowrap">
+                        <p className="flex items-center whitespace-nowrap font-semibold">
                           <PlusIcon className="mr-2 size-4" />
                           New dataset
                         </p>
-                        <p className="block ml-1 truncate text-primary">
+                        <p className="text-primary ml-1 block truncate">
                           {query}
                         </p>
                       </div>
@@ -153,6 +189,10 @@ export function DatasetPopover({ form }: DatasetPopoverProps) {
                           key={dataset.id}
                           keywords={[dataset.name]}
                           onSelect={(currentValue) => {
+                            // Reset the form before setting the datasetId so that any selected form
+                            // fields are cleared. Other, columns for the wrong dataset might will be
+                            // set.
+                            form.reset();
                             form.setValue(
                               "datasetId",
                               currentValue === field.value ? "" : currentValue,
@@ -161,7 +201,7 @@ export function DatasetPopover({ form }: DatasetPopoverProps) {
                           }}
                           value={dataset.id}
                         >
-                          <span className="flex-1 text-left truncate">
+                          <span className="flex-1 truncate text-left">
                             {dataset.name}
                           </span>
                           <CheckIcon
