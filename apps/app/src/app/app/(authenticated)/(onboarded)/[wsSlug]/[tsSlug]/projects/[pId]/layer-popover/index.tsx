@@ -1,6 +1,6 @@
 "use client";
 
-import { forwardRef, useEffect } from "react";
+import { forwardRef, useEffect, useCallback } from "react";
 import {
   Popover,
   PopoverContent,
@@ -14,6 +14,7 @@ import {
   FormLabel,
   FormMessage,
   useForm,
+  UseFormReturn,
   zodResolver,
 } from "@mapform/ui/components/form";
 import { toast } from "@mapform/ui/components/toaster";
@@ -29,6 +30,7 @@ import { PointProperties } from "./point-properties";
 import { DatasetPopover } from "./dataset-popover";
 import { TypePopover } from "./type-popover";
 import { MarkerProperties } from "./marker-properties";
+import { Column } from "@mapform/db/schema";
 
 interface LayerPopoverProps {
   initialName?: string;
@@ -43,131 +45,23 @@ export const LayerPopoverContent = forwardRef<
   React.ElementRef<typeof PopoverContent>,
   React.ComponentPropsWithoutRef<typeof PopoverContent> & LayerPopoverProps
 >(({ layerToEdit, initialName, onSuccess, onClose, ...props }, ref) => {
-  const { availableDatasets, ...rest } = useProject();
-
-  const currentPage = rest.updatePageServerAction.optimisticState!;
-
-  const form = useForm<UpsertLayerSchema>({
+  const form = useForm<Pick<UpsertLayerSchema, "name" | "type" | "datasetId">>({
     defaultValues: {
-      name: initialName ?? "",
-      pageId: currentPage.id,
-      ...layerToEdit,
-      pointProperties:
-        layerToEdit?.type === "point" && layerToEdit.pointLayer
-          ? {
-              ...layerToEdit.pointLayer,
-            }
-          : undefined,
-      markerProperties:
-        layerToEdit?.type === "marker" && layerToEdit.markerLayer
-          ? {
-              ...layerToEdit.markerLayer,
-            }
-          : undefined,
+      name: initialName ?? layerToEdit?.name ?? "",
+      type: layerToEdit?.type,
+      datasetId: layerToEdit?.datasetId,
     },
-    resolver: zodResolver(upsertLayerSchema),
+    resolver: zodResolver(
+      upsertLayerSchema.pick({ name: true, type: true, datasetId: true }),
+    ),
   });
-
-  // useEffect(() => {
-  //   const datasetId = form.watch("datasetId");
-  //   const type = form.watch("type");
-  //   const dataset = availableDatasets.find((ds) => ds.id === datasetId);
-
-  //   if (!datasetId || !type || !dataset) return;
-
-  //   if (type === "point") {
-  //     const pointColumn = dataset.columns.find((col) => col.type === "point");
-  //     const stringColumn = dataset.columns.find((col) => col.type === "string");
-  //     const richtextColumn = dataset.columns.find(
-  //       (col) => col.type === "richtext",
-  //     );
-  //     const iconColumn = dataset.columns.find((col) => col.type === "icon");
-
-  //     form.setValue("pointProperties", {
-  //       pointColumnId: pointColumn?.id ?? null,
-  //       titleColumnId: stringColumn?.id ?? null,
-  //       descriptionColumnId: richtextColumn?.id ?? null,
-  //       iconColumnId: iconColumn?.id ?? null,
-  //       color: layerToEdit?.pointLayer?.color ?? "#000000",
-  //     });
-  //   } else if (type === "marker") {
-  //     const pointColumn = dataset.columns.find((col) => col.type === "point");
-  //     const stringColumn = dataset.columns.find((col) => col.type === "string");
-  //     const richtextColumn = dataset.columns.find(
-  //       (col) => col.type === "richtext",
-  //     );
-  //     const iconColumn = dataset.columns.find((col) => col.type === "icon");
-
-  //     form.setValue("markerProperties", {
-  //       pointColumnId: pointColumn?.id ?? null,
-  //       titleColumnId: stringColumn?.id ?? null,
-  //       descriptionColumnId: richtextColumn?.id ?? null,
-  //       iconColumnId: iconColumn?.id ?? null,
-  //       color: layerToEdit?.markerLayer?.color ?? "#000000",
-  //     });
-  //   }
-  // }, [
-  //   form.watch("datasetId"),
-  //   form.watch("type"),
-  //   availableDatasets,
-  //   layerToEdit,
-  // ]);
-
-  const { execute, isPending } = useAction(upsertLayerAction, {
-    onSuccess: ({ data }) => {
-      if (onSuccess && data?.id) {
-        onSuccess(data.id);
-        onClose?.();
-        return;
-      }
-
-      toast({
-        title: "Success!",
-        description: layerToEdit
-          ? "Your layer has been updated."
-          : "Your layer has been created.",
-      });
-      onClose?.();
-    },
-    onError: ({ error }) => {
-      if (error.serverError) {
-        toast({
-          title: "Uh oh! Something went wrong.",
-          description: error.serverError,
-        });
-        return;
-      }
-
-      toast({
-        title: "Uh oh! Something went wrong.",
-        description: "There was an error creating the layer.",
-      });
-    },
-  });
-
-  const onSubmit = (values: UpsertLayerSchema) => {
-    execute(values);
-  };
-
-  const renderProperties = () => {
-    const datasetId = form.watch("datasetId");
-    const type = form.watch("type");
-
-    if (!datasetId) {
-      return null;
-    }
-
-    if (type === "point") return <PointProperties form={form} />;
-
-    return <MarkerProperties form={form} />;
-  };
 
   return (
     <PopoverContent ref={ref} {...props}>
       <Form {...form}>
         <form
           className="flex flex-1 flex-col"
-          onSubmit={form.handleSubmit(onSubmit)}
+          // onSubmit={form.handleSubmit(onSubmit)}
         >
           <div className="grid grid-cols-[77px_minmax(0,1fr)] items-center gap-x-6 gap-y-3">
             <FormField
@@ -201,27 +95,179 @@ export const LayerPopoverContent = forwardRef<
             <TypePopover form={form} />
 
             {form.watch("type") && <DatasetPopover form={form} />}
-
-            {form.watch("datasetId") &&
-              form.watch("type") &&
-              renderProperties()}
-
-            <Button
-              className="col-span-2"
-              disabled={isPending || !form.formState.isValid}
-              size="sm"
-              type="submit"
-            >
-              {layerToEdit ? "Update Layer" : "Create Layer"}
-            </Button>
           </div>
         </form>
+        {form.watch("datasetId") && form.watch("type") && (
+          <PropertiesForm
+            key={`${form.watch("datasetId")}-${form.watch("type")}`}
+            parentForm={form}
+            layerToEdit={layerToEdit}
+            onSuccess={onSuccess}
+            onClose={onClose}
+          />
+        )}
       </Form>
     </PopoverContent>
   );
 });
 
 LayerPopoverContent.displayName = "LayerPopoverContent";
+
+interface PropertiesFormProps {
+  layerToEdit?: NonNullable<
+    GetPageWithLayers["data"]
+  >["layersToPages"][number]["layer"];
+  onSuccess?: (layerId: string) => void;
+  onClose?: () => void;
+  parentForm: UseFormReturn<
+    Pick<UpsertLayerSchema, "name" | "type" | "datasetId">
+  >;
+}
+const PropertiesForm = ({
+  layerToEdit,
+  onSuccess,
+  onClose,
+  parentForm,
+}: PropertiesFormProps) => {
+  const { availableDatasets, ...rest } = useProject();
+  const currentPage = rest.updatePageServerAction.optimisticState!;
+  const currentDatasetId = parentForm.watch("datasetId");
+  const currentType = parentForm.watch("type");
+  const currentDataset = availableDatasets.find(
+    (ds) => ds.id === currentDatasetId,
+  );
+
+  const getAvailableColumns = useCallback(
+    (t: Column["type"]) => {
+      if (!currentDataset || !currentType) {
+        return null;
+      }
+
+      return currentDataset.columns.filter((column) => {
+        return column.type === t;
+      });
+    },
+    [currentDataset, currentType],
+  );
+
+  const getLastAvailableColumnId = (type: Column["type"]) => {
+    const columns = getAvailableColumns(type);
+    return columns?.[columns.length - 1]?.id;
+  };
+
+  const form = useForm<Omit<UpsertLayerSchema, "name" | "type" | "datasetId">>({
+    defaultValues: {
+      id: layerToEdit?.id,
+      pageId: currentPage.id,
+      pointProperties:
+        currentType === "point"
+          ? layerToEdit?.datasetId === currentDatasetId &&
+            layerToEdit.pointLayer
+            ? {
+                ...layerToEdit.pointLayer,
+              }
+            : {
+                pointColumnId: getLastAvailableColumnId("point"),
+                color: null,
+              }
+          : undefined,
+      markerProperties:
+        currentType === "marker"
+          ? layerToEdit?.datasetId === currentDatasetId &&
+            layerToEdit.markerLayer
+            ? {
+                ...layerToEdit.markerLayer,
+              }
+            : {
+                pointColumnId: getLastAvailableColumnId("point"),
+                titleColumnId: getLastAvailableColumnId("string"),
+                descriptionColumnId: getLastAvailableColumnId("richtext"),
+                iconColumnId: getLastAvailableColumnId("icon"),
+                color: null,
+              }
+          : undefined,
+    },
+    resolver: zodResolver(
+      upsertLayerSchema.omit({ name: true, type: true, datasetId: true }),
+    ),
+  });
+
+  const { execute, isPending } = useAction(upsertLayerAction, {
+    onSuccess: ({ data }) => {
+      if (onSuccess && data?.id) {
+        onSuccess(data.id);
+        onClose?.();
+        return;
+      }
+
+      toast({
+        title: "Success!",
+        description: layerToEdit
+          ? "Your layer has been updated."
+          : "Your layer has been created.",
+      });
+      onClose?.();
+    },
+    onError: ({ error }) => {
+      if (error.serverError) {
+        toast({
+          title: "Uh oh! Something went wrong.",
+          description: error.serverError,
+        });
+        return;
+      }
+
+      toast({
+        title: "Uh oh! Something went wrong.",
+        description: "There was an error creating the layer.",
+      });
+    },
+  });
+
+  const onSubmit = (
+    values: Omit<UpsertLayerSchema, "name" | "type" | "datasetId">,
+  ) => {
+    execute({
+      ...values,
+      ...parentForm.getValues(),
+    });
+  };
+
+  return (
+    <form
+      className="flex w-full flex-1 flex-col"
+      onSubmit={form.handleSubmit(onSubmit)}
+    >
+      <div className="grid grid-cols-[77px_minmax(0,1fr)] items-center gap-x-6 gap-y-3">
+        {parentForm.watch("type") === "point" ? (
+          <PointProperties
+            form={form}
+            datasetId={parentForm.watch("datasetId")}
+            type={parentForm.watch("type")}
+          />
+        ) : null}
+        {parentForm.watch("type") === "marker" ? (
+          <MarkerProperties
+            form={form}
+            datasetId={parentForm.watch("datasetId")}
+            type={parentForm.watch("type")}
+          />
+        ) : null}
+
+        <Button
+          className="col-span-2"
+          disabled={isPending || !form.formState.isValid}
+          size="sm"
+          type="submit"
+        >
+          {layerToEdit ? "Update Layer" : "Create Layer"}
+        </Button>
+      </div>
+    </form>
+  );
+};
+
+PropertiesForm.displayName = "PropertiesForm";
 
 export {
   Popover as LayerPopoverRoot,

@@ -27,7 +27,7 @@ import { createEmptyDatasetAction } from "./actions";
 import { useProject } from "../project-context";
 
 interface DatasetPopoverProps {
-  form: UseFormReturn<UpsertLayerSchema>;
+  form: UseFormReturn<Pick<UpsertLayerSchema, "type" | "datasetId" | "name">>;
 }
 
 export function DatasetPopover({ form }: DatasetPopoverProps) {

@@ -1,7 +1,7 @@
 import type { UseFormReturn, FieldPath } from "@mapform/ui/components/form";
 import { FormField, FormLabel } from "@mapform/ui/components/form";
 import { useCallback, useState } from "react";
-import type { Column } from "@mapform/db/schema";
+import type { Column, Layer } from "@mapform/db/schema";
 import { Button } from "@mapform/ui/components/button";
 import type { ListTeamspaceDatasets } from "@mapform/backend/data/datasets/list-teamspace-datasets";
 import { ChevronsUpDownIcon } from "lucide-react";
@@ -19,12 +19,16 @@ import {
 
 interface PointPropertiesProps {
   form: UseFormReturn<UpsertLayerSchema>;
+  datasetId: Layer["datasetId"];
+  type: Layer["type"];
 }
 
-export function PointProperties({ form }: PointPropertiesProps) {
+export function PointProperties({
+  form,
+  datasetId,
+  type,
+}: PointPropertiesProps) {
   const { availableDatasets } = useProject();
-  const datasetId = form.watch("datasetId");
-  const type = form.watch("type");
   const dataset = availableDatasets.find((ds) => ds.id === datasetId);
 
   const getAvailableColumns = useCallback(
@@ -54,6 +58,7 @@ export function PointProperties({ form }: PointPropertiesProps) {
       </div>
       <DataColField
         availableColumns={availablePointColumns ?? []}
+        datasetId={datasetId}
         form={form}
         label="Location"
         name="pointProperties.pointColumnId"
@@ -61,6 +66,7 @@ export function PointProperties({ form }: PointPropertiesProps) {
       />
       <DataColField
         availableColumns={availableStringColumns ?? []}
+        datasetId={datasetId}
         form={form}
         label="Title"
         name="pointProperties.titleColumnId"
@@ -68,6 +74,7 @@ export function PointProperties({ form }: PointPropertiesProps) {
       />
       <DataColField
         availableColumns={availableRichtextColumns ?? []}
+        datasetId={datasetId}
         form={form}
         label="Description"
         name="pointProperties.descriptionColumnId"
@@ -75,6 +82,7 @@ export function PointProperties({ form }: PointPropertiesProps) {
       />
       <DataColField
         availableColumns={availableIconColumns ?? []}
+        datasetId={datasetId}
         form={form}
         label="Icon"
         name="pointProperties.iconColumnId"
@@ -96,6 +104,7 @@ function DataColField({
   label,
   type,
   availableColumns,
+  datasetId,
 }: {
   name: FieldPath<UpsertLayerSchema>;
   form: UseFormReturn<UpsertLayerSchema>;
@@ -104,6 +113,7 @@ function DataColField({
   availableColumns: NonNullable<
     ListTeamspaceDatasets["data"]
   >[number]["columns"];
+  datasetId: string;
 }) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -172,7 +182,7 @@ function DataColField({
               onCreate={(name) => {
                 void executeAsync({
                   name,
-                  datasetId: form.watch("datasetId"),
+                  datasetId,
                   type,
                 });
                 setQuery("");

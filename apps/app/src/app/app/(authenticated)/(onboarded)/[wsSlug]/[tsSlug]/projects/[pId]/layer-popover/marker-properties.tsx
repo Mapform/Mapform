@@ -1,7 +1,7 @@
 import type { UseFormReturn, FieldPath } from "@mapform/ui/components/form";
 import { FormField, FormLabel } from "@mapform/ui/components/form";
 import { useCallback, useState } from "react";
-import type { Column } from "@mapform/db/schema";
+import type { Column, Layer } from "@mapform/db/schema";
 import { Button } from "@mapform/ui/components/button";
 import type { ListTeamspaceDatasets } from "@mapform/backend/data/datasets/list-teamspace-datasets";
 import { ChevronsUpDownIcon } from "lucide-react";
@@ -19,12 +19,16 @@ import {
 
 interface MarkerPropertiesProps {
   form: UseFormReturn<UpsertLayerSchema>;
+  datasetId: Layer["datasetId"];
+  type: Layer["type"];
 }
 
-export function MarkerProperties({ form }: MarkerPropertiesProps) {
+export function MarkerProperties({
+  form,
+  datasetId,
+  type,
+}: MarkerPropertiesProps) {
   const { availableDatasets } = useProject();
-  const datasetId = form.watch("datasetId");
-  const type = form.watch("type");
   const dataset = availableDatasets.find((ds) => ds.id === datasetId);
 
   const getAvailableColumns = useCallback(
@@ -54,6 +58,7 @@ export function MarkerProperties({ form }: MarkerPropertiesProps) {
       </div>
       <DataColField
         availableColumns={availablePointColumns ?? []}
+        datasetId={datasetId}
         form={form}
         label="Location"
         name="markerProperties.pointColumnId"
@@ -65,6 +70,7 @@ export function MarkerProperties({ form }: MarkerPropertiesProps) {
         label="Title"
         name="markerProperties.titleColumnId"
         type="string"
+        datasetId={datasetId}
       />
       <DataColField
         availableColumns={availableRichtextColumns ?? []}
@@ -72,6 +78,7 @@ export function MarkerProperties({ form }: MarkerPropertiesProps) {
         label="Description"
         name="markerProperties.descriptionColumnId"
         type="richtext"
+        datasetId={datasetId}
       />
       <DataColField
         availableColumns={availableIconColumns ?? []}
@@ -79,6 +86,7 @@ export function MarkerProperties({ form }: MarkerPropertiesProps) {
         label="Icon"
         name="markerProperties.iconColumnId"
         type="icon"
+        datasetId={datasetId}
       />
       <div className="col-span-2 mt-1 w-full border-t pt-3">
         <h3 className="-mb-2 text-xs font-semibold leading-6 text-stone-400">
@@ -96,6 +104,7 @@ function DataColField({
   label,
   type,
   availableColumns,
+  datasetId,
 }: {
   name: FieldPath<UpsertLayerSchema>;
   form: UseFormReturn<UpsertLayerSchema>;
@@ -104,6 +113,7 @@ function DataColField({
   availableColumns: NonNullable<
     ListTeamspaceDatasets["data"]
   >[number]["columns"];
+  datasetId: string;
 }) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -184,7 +194,7 @@ function DataColField({
                 onCreate={async (name) => {
                   await executeAsync({
                     name,
-                    datasetId: form.watch("datasetId"),
+                    datasetId,
                     type,
                   });
                   setQuery("");

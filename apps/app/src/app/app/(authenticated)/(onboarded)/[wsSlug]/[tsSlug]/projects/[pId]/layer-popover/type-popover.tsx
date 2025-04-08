@@ -34,7 +34,7 @@ import {
 } from "lucide-react";
 
 interface TypePopoverProps {
-  form: UseFormReturn<UpsertLayerSchema>;
+  form: UseFormReturn<Pick<UpsertLayerSchema, "type" | "datasetId" | "name">>;
 }
 
 const types = [
