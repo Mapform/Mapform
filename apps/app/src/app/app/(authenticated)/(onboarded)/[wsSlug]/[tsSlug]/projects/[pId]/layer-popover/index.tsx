@@ -1,12 +1,13 @@
 "use client";
 
-import { forwardRef, useEffect, useCallback } from "react";
+import { forwardRef, useCallback } from "react";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
   PopoverAnchor,
 } from "@mapform/ui/components/popover";
+import type { UseFormReturn } from "@mapform/ui/components/form";
 import {
   Form,
   FormControl,
@@ -14,7 +15,6 @@ import {
   FormLabel,
   FormMessage,
   useForm,
-  UseFormReturn,
   zodResolver,
 } from "@mapform/ui/components/form";
 import { toast } from "@mapform/ui/components/toaster";
@@ -30,7 +30,7 @@ import { PointProperties } from "./point-properties";
 import { DatasetPopover } from "./dataset-popover";
 import { TypePopover } from "./type-popover";
 import { MarkerProperties } from "./marker-properties";
-import { Column } from "@mapform/db/schema";
+import type { Column } from "@mapform/db/schema";
 
 interface LayerPopoverProps {
   initialName?: string;
@@ -45,6 +45,7 @@ export const LayerPopoverContent = forwardRef<
   React.ElementRef<typeof PopoverContent>,
   React.ComponentPropsWithoutRef<typeof PopoverContent> & LayerPopoverProps
 >(({ layerToEdit, initialName, onSuccess, onClose, ...props }, ref) => {
+  const { availableDatasets } = useProject();
   const form = useForm<Pick<UpsertLayerSchema, "name" | "type" | "datasetId">>({
     defaultValues: {
       name: initialName ?? layerToEdit?.name ?? "",
@@ -99,7 +100,7 @@ export const LayerPopoverContent = forwardRef<
         </form>
         {form.watch("datasetId") && form.watch("type") && (
           <PropertiesForm
-            key={`${form.watch("datasetId")}-${form.watch("type")}`}
+            key={`${form.watch("datasetId")}-${form.watch("type")}-${availableDatasets.length}`}
             parentForm={form}
             layerToEdit={layerToEdit}
             onSuccess={onSuccess}

@@ -18,7 +18,7 @@ import {
 } from "~/components/property-popover";
 
 interface PointPropertiesProps {
-  form: UseFormReturn<UpsertLayerSchema>;
+  form: UseFormReturn<Omit<UpsertLayerSchema, "name" | "type" | "datasetId">>;
   datasetId: Layer["datasetId"];
   type: Layer["type"];
 }
@@ -106,8 +106,8 @@ function DataColField({
   availableColumns,
   datasetId,
 }: {
-  name: FieldPath<UpsertLayerSchema>;
-  form: UseFormReturn<UpsertLayerSchema>;
+  name: FieldPath<Omit<UpsertLayerSchema, "name" | "type" | "datasetId">>;
+  form: UseFormReturn<Omit<UpsertLayerSchema, "name" | "type" | "datasetId">>;
   label: string;
   type: Column["type"];
   availableColumns: NonNullable<
