@@ -49,7 +49,7 @@ export const LayerPopoverContent = forwardRef<
   const form = useForm<Pick<UpsertLayerSchema, "name" | "type" | "datasetId">>({
     defaultValues: {
       name: initialName ?? layerToEdit?.name ?? "",
-      type: layerToEdit?.type,
+      type: layerToEdit?.type ?? "marker",
       datasetId: layerToEdit?.datasetId,
     },
     resolver: zodResolver(
@@ -257,7 +257,11 @@ const PropertiesForm = ({
 
         <Button
           className="col-span-2"
-          disabled={isPending || !form.formState.isValid}
+          disabled={
+            isPending ||
+            !form.formState.isValid ||
+            !parentForm.formState.isValid
+          }
           size="sm"
           type="submit"
         >

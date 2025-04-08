@@ -18,7 +18,7 @@ import {
 } from "~/components/property-popover";
 
 interface MarkerPropertiesProps {
-  form: UseFormReturn<UpsertLayerSchema>;
+  form: UseFormReturn<Omit<UpsertLayerSchema, "name" | "type" | "datasetId">>;
   datasetId: Layer["datasetId"];
   type: Layer["type"];
 }
@@ -51,7 +51,7 @@ export function MarkerProperties({
 
   return (
     <>
-      <div className="col-span-2 mt-1 w-full border-t pt-3">
+      <div className="col-span-2 mt-2 w-full border-t pt-3">
         <h3 className="-mb-2 text-xs font-semibold leading-6 text-stone-400">
           Properties
         </h3>
@@ -106,8 +106,8 @@ function DataColField({
   availableColumns,
   datasetId,
 }: {
-  name: FieldPath<UpsertLayerSchema>;
-  form: UseFormReturn<UpsertLayerSchema>;
+  name: FieldPath<Omit<UpsertLayerSchema, "name" | "type" | "datasetId">>;
+  form: UseFormReturn<Omit<UpsertLayerSchema, "name" | "type" | "datasetId">>;
   label: string;
   type: Column["type"];
   availableColumns: NonNullable<
