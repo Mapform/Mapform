@@ -159,7 +159,7 @@ function DataColField({
 }) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
-  const { executeAsync } = useAction(createColumnAction, {
+  const { executeAsync, isPending } = useAction(createColumnAction, {
     onSuccess: ({ data, input }) => {
       if (!data?.id) return;
 
@@ -196,11 +196,13 @@ function DataColField({
         const currentColumn = availableColumns.find(
           (col) => col.id === field.value,
         );
-        const buttonText = currentColumn
-          ? currentColumn.name
-          : field.value
-            ? "⚠️ Not found"
-            : "Select...";
+
+        const getButtonText = () => {
+          if (isPending) return "Creating...";
+          if (currentColumn) return currentColumn.name;
+          if (field.value) return "⚠️ Not found";
+          return "Select...";
+        };
 
         return (
           <PropertyPopover modal onOpenChange={setOpen} open={open}>
@@ -212,9 +214,10 @@ function DataColField({
                   id={name}
                   size="icon-xs"
                   variant="ghost"
+                  disabled={isPending}
                 >
                   <span className="flex-1 truncate text-left">
-                    {buttonText}
+                    {getButtonText()}
                   </span>
                   <ChevronsUpDownIcon className="size-4 flex-shrink-0 opacity-50" />
                 </Button>
