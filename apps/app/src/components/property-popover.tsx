@@ -43,7 +43,7 @@ export function PropertyPopoverContent<T extends string>({
     <PopoverContent className="w-[200px] p-0" {...props}>
       <Command
         filter={(value, search, keywords) => {
-          if (value.includes("Create")) return 1;
+          if (value === "create-property") return 1;
           if (value.toLocaleLowerCase().includes(search.toLocaleLowerCase()))
             return 1;
           if (
@@ -68,13 +68,14 @@ export function PropertyPopoverContent<T extends string>({
               <CommandItem
                 disabled={query.length === 0 || disabled}
                 onSelect={() => onCreate(query)}
+                value="create-property"
               >
                 <div className="flex items-center overflow-hidden">
-                  <p className="flex items-center font-semibold whitespace-nowrap">
+                  <p className="flex items-center whitespace-nowrap font-semibold">
                     <PlusIcon className="mr-2 size-4" />
                     Create
                   </p>
-                  <p className="block ml-1 truncate text-primary">{query}</p>
+                  <p className="text-primary ml-1 block truncate">{query}</p>
                 </div>
               </CommandItem>
             </CommandGroup>
@@ -94,7 +95,7 @@ export function PropertyPopoverContent<T extends string>({
                   }}
                   value={item.id}
                 >
-                  <span className="flex-1 text-left truncate">{item.name}</span>
+                  <span className="flex-1 truncate text-left">{item.name}</span>
                   <CheckIcon
                     className={cn(
                       "ml-auto size-4",

@@ -87,7 +87,7 @@ export function DatasetPopover({ form }: DatasetPopoverProps) {
               >
                 <Command
                   filter={(value, search, keywords) => {
-                    if (value.includes("Create")) return 1;
+                    if (value === "new-dataset") return 1;
                     if (
                       value
                         .toLocaleLowerCase()
@@ -125,6 +125,7 @@ export function DatasetPopover({ form }: DatasetPopoverProps) {
                           setQuery("");
                           setOpen(false);
                         }}
+                        value="new-dataset"
                       >
                         <div className="flex items-center overflow-hidden">
                           <p className="flex items-center whitespace-nowrap font-semibold">

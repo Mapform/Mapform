@@ -151,7 +151,7 @@ export function LayerList() {
           <PopoverContent align="start" className="w-[200px] p-0" side="right">
             <Command
               filter={(value, search, keywords) => {
-                if (value.includes("Create")) return 1;
+                if (value === "new-layer") return 1;
                 if (
                   value.toLocaleLowerCase().includes(search.toLocaleLowerCase())
                 )
@@ -179,13 +179,14 @@ export function LayerList() {
                       setLayerPopoverOpen(true);
                       setOpen(false);
                     }}
+                    value="new-layer"
                   >
                     <div className="flex items-center overflow-hidden">
-                      <p className="flex items-center font-semibold whitespace-nowrap">
+                      <p className="flex items-center whitespace-nowrap font-semibold">
                         <PlusIcon className="mr-2 size-4" />
                         New layer
                       </p>
-                      <p className="block ml-1 truncate text-primary">
+                      <p className="text-primary ml-1 block truncate">
                         {query}
                       </p>
                     </div>
@@ -204,7 +205,7 @@ export function LayerList() {
                         value={layer.layerId}
                       >
                         <div className="flex items-center overflow-hidden">
-                          <Layers2Icon className="flex-shrink-0 mr-2 size-4" />
+                          <Layers2Icon className="mr-2 size-4 flex-shrink-0" />
                           <span className="truncate">
                             {layer.name ?? "Untitled"}
                           </span>
@@ -250,8 +251,8 @@ export function LayerList() {
               </DndContext>
             ) : (
               <SidebarMenuItem>
-                <div className="flex flex-col items-center py-4 rounded-md bg-sidebar-accent text-muted-foreground">
-                  <p className="text-sm text-center">No layers added</p>
+                <div className="bg-sidebar-accent text-muted-foreground flex flex-col items-center rounded-md py-4">
+                  <p className="text-center text-sm">No layers added</p>
                 </div>
               </SidebarMenuItem>
             )}
