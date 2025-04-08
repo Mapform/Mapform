@@ -1,6 +1,6 @@
 "use client";
 
-import { forwardRef } from "react";
+import { forwardRef, useEffect } from "react";
 import {
   Popover,
   PopoverContent,
@@ -43,7 +43,7 @@ export const LayerPopoverContent = forwardRef<
   React.ElementRef<typeof PopoverContent>,
   React.ComponentPropsWithoutRef<typeof PopoverContent> & LayerPopoverProps
 >(({ layerToEdit, initialName, onSuccess, onClose, ...props }, ref) => {
-  const { ...rest } = useProject();
+  const { availableDatasets, ...rest } = useProject();
 
   const currentPage = rest.updatePageServerAction.optimisticState!;
 
@@ -67,6 +67,51 @@ export const LayerPopoverContent = forwardRef<
     },
     resolver: zodResolver(upsertLayerSchema),
   });
+
+  // useEffect(() => {
+  //   const datasetId = form.watch("datasetId");
+  //   const type = form.watch("type");
+  //   const dataset = availableDatasets.find((ds) => ds.id === datasetId);
+
+  //   if (!datasetId || !type || !dataset) return;
+
+  //   if (type === "point") {
+  //     const pointColumn = dataset.columns.find((col) => col.type === "point");
+  //     const stringColumn = dataset.columns.find((col) => col.type === "string");
+  //     const richtextColumn = dataset.columns.find(
+  //       (col) => col.type === "richtext",
+  //     );
+  //     const iconColumn = dataset.columns.find((col) => col.type === "icon");
+
+  //     form.setValue("pointProperties", {
+  //       pointColumnId: pointColumn?.id ?? null,
+  //       titleColumnId: stringColumn?.id ?? null,
+  //       descriptionColumnId: richtextColumn?.id ?? null,
+  //       iconColumnId: iconColumn?.id ?? null,
+  //       color: layerToEdit?.pointLayer?.color ?? "#000000",
+  //     });
+  //   } else if (type === "marker") {
+  //     const pointColumn = dataset.columns.find((col) => col.type === "point");
+  //     const stringColumn = dataset.columns.find((col) => col.type === "string");
+  //     const richtextColumn = dataset.columns.find(
+  //       (col) => col.type === "richtext",
+  //     );
+  //     const iconColumn = dataset.columns.find((col) => col.type === "icon");
+
+  //     form.setValue("markerProperties", {
+  //       pointColumnId: pointColumn?.id ?? null,
+  //       titleColumnId: stringColumn?.id ?? null,
+  //       descriptionColumnId: richtextColumn?.id ?? null,
+  //       iconColumnId: iconColumn?.id ?? null,
+  //       color: layerToEdit?.markerLayer?.color ?? "#000000",
+  //     });
+  //   }
+  // }, [
+  //   form.watch("datasetId"),
+  //   form.watch("type"),
+  //   availableDatasets,
+  //   layerToEdit,
+  // ]);
 
   const { execute, isPending } = useAction(upsertLayerAction, {
     onSuccess: ({ data }) => {

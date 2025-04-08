@@ -1,6 +1,6 @@
 import type { UseFormReturn, FieldPath } from "@mapform/ui/components/form";
 import { FormField, FormLabel } from "@mapform/ui/components/form";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import type { Column } from "@mapform/db/schema";
 import { Button } from "@mapform/ui/components/button";
 import type { ListTeamspaceDatasets } from "@mapform/backend/data/datasets/list-teamspace-datasets";
@@ -39,58 +39,6 @@ export function MarkerProperties({ form }: MarkerPropertiesProps) {
     },
     [dataset, type],
   );
-
-  useEffect(() => {
-    if (type === "marker") {
-      const currentPointColumnId = form.getValues(
-        "markerProperties.pointColumnId",
-      );
-      const currentTitleColumnId = form.getValues(
-        "markerProperties.titleColumnId",
-      );
-      const currentDescriptionColumnId = form.getValues(
-        "markerProperties.descriptionColumnId",
-      );
-      const currentIconColumnId = form.getValues(
-        "markerProperties.iconColumnId",
-      );
-
-      if (currentPointColumnId === undefined || currentPointColumnId === "") {
-        form.setValue(
-          "markerProperties.pointColumnId",
-          getAvailableColumns("point")?.find((c) => c.type === "point")?.id ??
-            "",
-        );
-      }
-
-      if (currentTitleColumnId === undefined || currentTitleColumnId === "") {
-        form.setValue(
-          "markerProperties.titleColumnId",
-          getAvailableColumns("string")?.find((c) => c.type === "string")?.id ??
-            null,
-        );
-      }
-
-      if (
-        currentDescriptionColumnId === undefined ||
-        currentDescriptionColumnId === ""
-      ) {
-        form.setValue(
-          "markerProperties.descriptionColumnId",
-          getAvailableColumns("richtext")?.find((c) => c.type === "richtext")
-            ?.id ?? null,
-        );
-      }
-
-      if (currentIconColumnId === undefined || currentIconColumnId === "") {
-        form.setValue(
-          "markerProperties.iconColumnId",
-          getAvailableColumns("icon")?.find((c) => c.type === "icon")?.id ??
-            null,
-        );
-      }
-    }
-  }, [dataset, form, type, getAvailableColumns, datasetId]);
 
   const availablePointColumns = getAvailableColumns("point");
   const availableStringColumns = getAvailableColumns("string");
