@@ -136,6 +136,8 @@ function DataColField({
       if (input.type === "icon") {
         form.setValue("pointProperties.iconColumnId", data.id);
       }
+
+      void form.trigger();
     },
 
     onError: () => {
@@ -177,6 +179,7 @@ function DataColField({
               availableItems={availableColumns}
               onSelect={(value) => {
                 form.setValue(name, value as string | null);
+                void form.trigger();
                 setOpen(false);
               }}
               onCreate={(name) => {

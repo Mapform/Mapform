@@ -1,6 +1,6 @@
 "use client";
 
-import { forwardRef, useCallback } from "react";
+import { forwardRef, useCallback, useEffect } from "react";
 import {
   Popover,
   PopoverContent,
@@ -13,7 +13,6 @@ import {
   FormControl,
   FormField,
   FormLabel,
-  FormMessage,
   useForm,
   zodResolver,
 } from "@mapform/ui/components/form";
@@ -48,7 +47,7 @@ export const LayerPopoverContent = forwardRef<
   const { availableDatasets } = useProject();
   const form = useForm<Pick<UpsertLayerSchema, "name" | "type" | "datasetId">>({
     defaultValues: {
-      name: initialName ?? layerToEdit?.name ?? "",
+      name: layerToEdit?.name ?? initialName ?? "",
       type: layerToEdit?.type ?? "marker",
       datasetId: layerToEdit?.datasetId,
     },
@@ -60,10 +59,7 @@ export const LayerPopoverContent = forwardRef<
   return (
     <PopoverContent ref={ref} {...props}>
       <Form {...form}>
-        <form
-          className="flex flex-1 flex-col"
-          // onSubmit={form.handleSubmit(onSubmit)}
-        >
+        <form className="flex flex-1 flex-col">
           <div className="grid grid-cols-[77px_minmax(0,1fr)] items-center gap-x-6 gap-y-3">
             <FormField
               control={form.control}
@@ -87,7 +83,6 @@ export const LayerPopoverContent = forwardRef<
                         variant="filled"
                       />
                     </FormControl>
-                    <FormMessage />
                   </div>
                 </>
               )}
@@ -100,12 +95,7 @@ export const LayerPopoverContent = forwardRef<
         </form>
         {form.watch("datasetId") && form.watch("type") && (
           <PropertiesForm
-            // Re-render when selected or available datasets change. We don't
-            // want to re-render for type because point and marker share the
-            // same properties (This makes it easier to quickly update from one
-            // to the other with the same properties set). This may change in
-            // the future though as more types are added.
-            key={`${form.watch("datasetId")}-${availableDatasets.length}`}
+            key={`${form.watch("datasetId")}-${form.watch("type")}-${availableDatasets.length}`}
             parentForm={form}
             layerToEdit={layerToEdit}
             onSuccess={onSuccess}
@@ -143,6 +133,12 @@ const PropertiesForm = ({
     (ds) => ds.id === currentDatasetId,
   );
 
+  // Trigger parent form validation on mount
+  // Without the, the user will have to click the submit button twice.
+  useEffect(() => {
+    parentForm.trigger();
+  }, [parentForm]);
+
   const getAvailableColumns = useCallback(
     (t: Column["type"]) => {
       if (!currentDataset || !currentType) {
@@ -158,7 +154,7 @@ const PropertiesForm = ({
 
   const getLastAvailableColumnId = (type: Column["type"]) => {
     const columns = getAvailableColumns(type);
-    return columns?.[columns.length - 1]?.id;
+    return columns?.[columns.length - 1]?.id ?? null;
   };
 
   const form = useForm<Omit<UpsertLayerSchema, "name" | "type" | "datasetId">>({
@@ -174,6 +170,9 @@ const PropertiesForm = ({
               }
             : {
                 pointColumnId: getLastAvailableColumnId("point"),
+                titleColumnId: getLastAvailableColumnId("string"),
+                descriptionColumnId: getLastAvailableColumnId("richtext"),
+                iconColumnId: getLastAvailableColumnId("icon"),
                 color: null,
               }
           : undefined,
@@ -233,6 +232,12 @@ const PropertiesForm = ({
   const onSubmit = (
     values: Omit<UpsertLayerSchema, "name" | "type" | "datasetId">,
   ) => {
+    parentForm.trigger();
+
+    if (!parentForm.formState.isValid) {
+      return;
+    }
+
     execute({
       ...values,
       ...parentForm.getValues(),
@@ -262,11 +267,7 @@ const PropertiesForm = ({
 
         <Button
           className="col-span-2"
-          disabled={
-            isPending ||
-            !form.formState.isValid ||
-            !parentForm.formState.isValid
-          }
+          disabled={isPending}
           size="sm"
           type="submit"
         >
