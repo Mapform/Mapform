@@ -152,13 +152,18 @@ function DataColField({
     <FormField
       control={form.control}
       name={name}
-      render={({ field }) => (
+      render={({ field, fieldState }) => (
         <PropertyPopover modal onOpenChange={setOpen} open={open}>
-          <FormLabel htmlFor={name}>{label}</FormLabel>
+          <FormLabel
+            htmlFor={name}
+            className={fieldState.error ? "text-destructive" : ""}
+          >
+            {label}
+          </FormLabel>
           <div className="flex w-full flex-shrink-0 justify-end">
             <PropertyPopoverTrigger asChild>
               <Button
-                className="ring-offset-background placeholder:text-muted-foreground focus:ring-ring flex h-7 w-full items-center justify-between whitespace-nowrap rounded-md border-0 bg-stone-100 px-2 py-0.5 text-sm font-normal shadow-sm focus:outline-none focus:ring-1 disabled:cursor-not-allowed disabled:opacity-50"
+                className={`ring-offset-background placeholder:text-muted-foreground focus:ring-ring flex h-7 w-full items-center justify-between whitespace-nowrap rounded-md border-0 bg-stone-100 px-2 py-0.5 text-sm font-normal shadow-sm focus:outline-none focus:ring-1 disabled:cursor-not-allowed disabled:opacity-50 ${fieldState.error ? "!ring-destructive !ring-1" : ""}`}
                 id={name}
                 size="icon-xs"
                 variant="ghost"
