@@ -164,6 +164,7 @@ const PropertiesForm = ({
       pointProperties:
         currentType === "point"
           ? layerToEdit?.datasetId === currentDatasetId &&
+            layerToEdit.type === "point" &&
             layerToEdit.pointLayer
             ? {
                 ...layerToEdit.pointLayer,
@@ -179,6 +180,7 @@ const PropertiesForm = ({
       markerProperties:
         currentType === "marker"
           ? layerToEdit?.datasetId === currentDatasetId &&
+            layerToEdit.type === "marker" &&
             layerToEdit.markerLayer
             ? {
                 ...layerToEdit.markerLayer,
