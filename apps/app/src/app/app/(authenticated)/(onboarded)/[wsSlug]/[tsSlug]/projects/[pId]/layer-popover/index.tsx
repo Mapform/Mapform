@@ -167,10 +167,15 @@ const PropertiesForm = ({
             layerToEdit.type === "point" &&
             layerToEdit.pointLayer
             ? {
-                ...layerToEdit.pointLayer,
+                pointColumnId:
+                  layerToEdit.pointLayer.pointColumnId ?? undefined,
+                titleColumnId: layerToEdit.pointLayer.titleColumnId,
+                descriptionColumnId: layerToEdit.pointLayer.descriptionColumnId,
+                iconColumnId: layerToEdit.pointLayer.iconColumnId,
+                color: layerToEdit.pointLayer.color,
               }
             : {
-                pointColumnId: getLastAvailableColumnId("point"),
+                pointColumnId: getLastAvailableColumnId("point") ?? undefined,
                 titleColumnId: getLastAvailableColumnId("string"),
                 descriptionColumnId: getLastAvailableColumnId("richtext"),
                 iconColumnId: getLastAvailableColumnId("icon"),
@@ -183,10 +188,16 @@ const PropertiesForm = ({
             layerToEdit.type === "marker" &&
             layerToEdit.markerLayer
             ? {
-                ...layerToEdit.markerLayer,
+                pointColumnId:
+                  layerToEdit.markerLayer.pointColumnId ?? undefined,
+                titleColumnId: layerToEdit.markerLayer.titleColumnId,
+                descriptionColumnId:
+                  layerToEdit.markerLayer.descriptionColumnId,
+                iconColumnId: layerToEdit.markerLayer.iconColumnId,
+                color: layerToEdit.markerLayer.color,
               }
             : {
-                pointColumnId: getLastAvailableColumnId("point"),
+                pointColumnId: getLastAvailableColumnId("point") ?? undefined,
                 titleColumnId: getLastAvailableColumnId("string"),
                 descriptionColumnId: getLastAvailableColumnId("richtext"),
                 iconColumnId: getLastAvailableColumnId("icon"),
