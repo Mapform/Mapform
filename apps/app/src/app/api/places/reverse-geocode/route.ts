@@ -10,8 +10,8 @@ export async function GET(request: Request) {
   try {
     const searchParams = new URLSearchParams({
       apiKey: env.GEOAPIFY_API_KEY,
-      lat,
-      lon,
+      lat: Number(lat).toFixed(10),
+      lon: Number(lon).toFixed(10),
     }).toString();
 
     const response = await fetch(
@@ -25,6 +25,7 @@ export async function GET(request: Request) {
     );
 
     if (!response.ok) {
+      console.log(789, response);
       throw new Error(`Response status: ${response.status}`);
     }
 

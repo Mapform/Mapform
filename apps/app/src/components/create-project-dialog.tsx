@@ -35,6 +35,11 @@ import { useWorkspace } from "~/app/app/(authenticated)/(onboarded)/[wsSlug]/wor
 import { useRouter } from "next/navigation";
 import { Switch } from "@mapform/ui/components/switch";
 import { Badge } from "@mapform/ui/components/badge";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@mapform/ui/components/tooltip";
 
 interface CreateProjectDialogProps {
   tsSlug: string;
@@ -164,10 +169,22 @@ export function CreateProjectDialog({
                       </FormDescription>
                     </div>
                     <FormControl>
-                      <Switch
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <Switch
+                            checked={field.value}
+                            disabled={
+                              !workspaceDirectory.plan?.stripeSubscriptionId
+                            }
+                            onCheckedChange={field.onChange}
+                          />
+                        </TooltipTrigger>
+                        {!workspaceDirectory.plan?.stripeSubscriptionId && (
+                          <TooltipContent>
+                            Forms are not available on Basic plan.
+                          </TooltipContent>
+                        )}
+                      </Tooltip>
                     </FormControl>
                   </FormItem>
                 )}

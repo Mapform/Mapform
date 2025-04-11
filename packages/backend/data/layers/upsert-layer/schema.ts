@@ -15,19 +15,19 @@ export const upsertLayerSchema = z.object({
   pointProperties: z
     .object({
       color: insertPointLayerSchema.shape.color,
-      pointColumnId: insertPointLayerSchema.shape.pointColumnId,
-      titleColumnId: insertPointLayerSchema.shape.titleColumnId,
-      descriptionColumnId: insertPointLayerSchema.shape.descriptionColumnId,
-      iconColumnId: insertMarkerLayerSchema.shape.iconColumnId,
+      pointColumnId: z.string(),
+      titleColumnId: z.string().nullable(),
+      descriptionColumnId: z.string().nullable(),
+      iconColumnId: z.string().nullable(),
     })
     .optional(),
   markerProperties: z
     .object({
       color: insertMarkerLayerSchema.shape.color,
-      pointColumnId: insertMarkerLayerSchema.shape.pointColumnId,
-      titleColumnId: insertMarkerLayerSchema.shape.titleColumnId,
-      descriptionColumnId: insertMarkerLayerSchema.shape.descriptionColumnId,
-      iconColumnId: insertMarkerLayerSchema.shape.iconColumnId,
+      pointColumnId: z.string(),
+      titleColumnId: z.string().nullable(),
+      descriptionColumnId: z.string().nullable(),
+      iconColumnId: z.string().nullable(),
     })
     .optional(),
 });

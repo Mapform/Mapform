@@ -93,7 +93,7 @@ export function ColorPicker({
   label,
 }: {
   name: "markerProperties.color" | "pointProperties.color";
-  form: UseFormReturn<UpsertLayerSchema>;
+  form: UseFormReturn<Omit<UpsertLayerSchema, "name" | "type" | "datasetId">>;
   label: string;
 }) {
   const [open, setOpen] = useState(false);
@@ -112,7 +112,7 @@ export function ColorPicker({
       render={() => (
         <Popover modal onOpenChange={setOpen} open={open}>
           <FormLabel htmlFor="color">{label}</FormLabel>
-          <div className="flex justify-end flex-shrink-0 w-full">
+          <div className="flex w-full flex-shrink-0 justify-end">
             <Tooltip>
               <TooltipTrigger asChild>
                 <PopoverTrigger asChild>

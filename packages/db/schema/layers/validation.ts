@@ -5,9 +5,7 @@ import { layers, markerLayers, pointLayers } from "./schema";
 /**
  * LAYERS
  */
-export const insertLayerSchema = createInsertSchema(layers, {
-  name: (schema) => schema.name.min(1),
-});
+export const insertLayerSchema = createInsertSchema(layers);
 
 export const selectLayerSchema = createSelectSchema(layers);
 

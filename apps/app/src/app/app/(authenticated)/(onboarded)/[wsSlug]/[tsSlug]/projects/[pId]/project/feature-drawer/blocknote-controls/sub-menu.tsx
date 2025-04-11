@@ -74,13 +74,21 @@ export function SubMenu({
       pointProperties:
         layer?.layer.type === "point" && layer.layer.pointLayer
           ? {
-              ...layer.layer.pointLayer,
+              pointColumnId: layer.layer.pointLayer.pointColumnId ?? undefined,
+              titleColumnId: layer.layer.pointLayer.titleColumnId,
+              descriptionColumnId: layer.layer.pointLayer.descriptionColumnId,
+              iconColumnId: layer.layer.pointLayer.iconColumnId,
+              color: layer.layer.pointLayer.color,
             }
           : undefined,
       markerProperties:
         layer?.layer.type === "marker" && layer.layer.markerLayer
           ? {
-              ...layer.layer.markerLayer,
+              pointColumnId: layer.layer.markerLayer.pointColumnId ?? undefined,
+              titleColumnId: layer.layer.markerLayer.titleColumnId,
+              descriptionColumnId: layer.layer.markerLayer.descriptionColumnId,
+              iconColumnId: layer.layer.markerLayer.iconColumnId,
+              color: layer.layer.markerLayer.color,
             }
           : undefined,
     },

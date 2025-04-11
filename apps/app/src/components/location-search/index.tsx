@@ -132,6 +132,7 @@ export function LocationSearchWithMap({
       }),
     placeholderData: (prev) => prev,
     staleTime: Infinity,
+    retry: false,
   });
 
   const marker = useMemo(() => {
@@ -275,12 +276,12 @@ export function LocationSearchWithMap({
         )}
       >
         {isFetching && features.length === 0 && (
-          <div className="px-2 py-3 m-2 text-sm text-center bg-gray-100 rounded text-muted-foreground">
+          <div className="text-muted-foreground m-2 rounded bg-gray-100 px-2 py-3 text-center text-sm">
             Searching...
           </div>
         )}
         {features.length === 0 && !isFetching && (
-          <div className="px-2 py-3 m-2 text-sm text-center bg-gray-100 rounded text-muted-foreground">
+          <div className="text-muted-foreground m-2 rounded bg-gray-100 px-2 py-3 text-center text-sm">
             No results found.
           </div>
         )}
@@ -345,11 +346,11 @@ export function LocationSearchWithMap({
 
   return (
     <>
-      <Command className="flex flex-col flex-1" shouldFilter={false}>
+      <Command className="flex flex-1 flex-col" shouldFilter={false}>
         <div className="group" onClick={() => inputRef.current?.focus()}>
           <div className="relative">
             <CommandInput
-              className="h-12 border-none peer focus:ring-0"
+              className="peer h-12 border-none focus:ring-0"
               onValueChange={(search) => {
                 setQuery(search);
               }}
@@ -366,7 +367,7 @@ export function LocationSearchWithMap({
               )}
             >
               <Button
-                className="bg-white hover:bg-accent"
+                className="hover:bg-accent bg-white"
                 onClick={() => {
                   queryClient.removeQueries({
                     queryKey: ["search", query],
@@ -401,11 +402,11 @@ export function LocationSearchWithMap({
             <div className="p-2">
               {isFetchingRGResults ? (
                 <>
-                  <Skeleton className="h-8 mb-2" />
+                  <Skeleton className="mb-2 h-8" />
                   <Skeleton className="h-4" />
                 </>
               ) : selectedFeature ? (
-                <div className="">
+                <>
                   <div className="text-lg font-semibold">
                     {selectedFeature.properties?.name ??
                       selectedFeature.properties?.address_line1}
@@ -413,19 +414,19 @@ export function LocationSearchWithMap({
                   <div className="text-muted-foreground">
                     {selectedFeature.properties?.address_line2}
                   </div>
-                </div>
+                  <LocationSearchContext.Provider
+                    value={{
+                      selectedFeature,
+                      isFetching: isFetching || isFetchingRGResults,
+                      isMoving,
+                    }}
+                  >
+                    <div className="mt-2">{children}</div>
+                  </LocationSearchContext.Provider>
+                </>
               ) : (
                 <div className="text-center">Drag map or search</div>
               )}
-              <LocationSearchContext.Provider
-                value={{
-                  selectedFeature,
-                  isFetching: isFetching || isFetchingRGResults,
-                  isMoving,
-                }}
-              >
-                <div className="mt-2">{children}</div>
-              </LocationSearchContext.Provider>
             </div>
           </PopoverContent>
         </Popover>

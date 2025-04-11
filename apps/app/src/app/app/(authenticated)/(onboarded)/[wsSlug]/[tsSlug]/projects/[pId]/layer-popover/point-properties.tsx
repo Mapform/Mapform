@@ -1,7 +1,7 @@
 import type { UseFormReturn, FieldPath } from "@mapform/ui/components/form";
 import { FormField, FormLabel } from "@mapform/ui/components/form";
-import { useCallback, useEffect, useState } from "react";
-import type { Column } from "@mapform/db/schema";
+import { useCallback, useState } from "react";
+import type { Column, Layer } from "@mapform/db/schema";
 import { Button } from "@mapform/ui/components/button";
 import type { ListTeamspaceDatasets } from "@mapform/backend/data/datasets/list-teamspace-datasets";
 import { ChevronsUpDownIcon } from "lucide-react";
@@ -18,13 +18,17 @@ import {
 } from "~/components/property-popover";
 
 interface PointPropertiesProps {
-  form: UseFormReturn<UpsertLayerSchema>;
+  form: UseFormReturn<Omit<UpsertLayerSchema, "name" | "type" | "datasetId">>;
+  datasetId: Layer["datasetId"];
+  type: Layer["type"];
 }
 
-export function PointProperties({ form }: PointPropertiesProps) {
+export function PointProperties({
+  form,
+  datasetId,
+  type,
+}: PointPropertiesProps) {
   const { availableDatasets } = useProject();
-  const datasetId = form.watch("datasetId");
-  const type = form.watch("type");
   const dataset = availableDatasets.find((ds) => ds.id === datasetId);
 
   const getAvailableColumns = useCallback(
@@ -40,57 +44,6 @@ export function PointProperties({ form }: PointPropertiesProps) {
     [dataset, type],
   );
 
-  useEffect(() => {
-    if (type === "point") {
-      const currentPointColumnId = form.getValues(
-        "pointProperties.pointColumnId",
-      );
-      const currentTitleColumnId = form.getValues(
-        "pointProperties.titleColumnId",
-      );
-      const currentDescriptionColumnId = form.getValues(
-        "pointProperties.descriptionColumnId",
-      );
-      const currentIconColumnId = form.getValues(
-        "pointProperties.iconColumnId",
-      );
-
-      if (currentPointColumnId === undefined || currentPointColumnId === "") {
-        form.setValue(
-          "pointProperties.pointColumnId",
-          getAvailableColumns("point")?.find((c) => c.type === "point")?.id ??
-            "",
-        );
-      }
-
-      if (currentTitleColumnId === undefined || currentTitleColumnId === "") {
-        form.setValue(
-          "pointProperties.titleColumnId",
-          getAvailableColumns("string")?.find((c) => c.type === "string")?.id ??
-            "",
-        );
-      }
-
-      if (
-        currentDescriptionColumnId === undefined ||
-        currentDescriptionColumnId === ""
-      ) {
-        form.setValue(
-          "pointProperties.descriptionColumnId",
-          getAvailableColumns("richtext")?.find((c) => c.type === "richtext")
-            ?.id ?? "",
-        );
-      }
-
-      if (currentIconColumnId === undefined || currentIconColumnId === "") {
-        form.setValue(
-          "pointProperties.iconColumnId",
-          getAvailableColumns("icon")?.find((c) => c.type === "icon")?.id ?? "",
-        );
-      }
-    }
-  }, [dataset, form, type, getAvailableColumns]);
-
   const availablePointColumns = getAvailableColumns("point");
   const availableStringColumns = getAvailableColumns("string");
   const availableRichtextColumns = getAvailableColumns("richtext");
@@ -98,13 +51,14 @@ export function PointProperties({ form }: PointPropertiesProps) {
 
   return (
     <>
-      <div className="col-span-2 mt-1 w-full border-t pt-3">
+      <div className="col-span-2 mt-2 w-full border-t pt-3">
         <h3 className="-mb-2 text-xs font-semibold leading-6 text-stone-400">
           Properties
         </h3>
       </div>
       <DataColField
         availableColumns={availablePointColumns ?? []}
+        datasetId={datasetId}
         form={form}
         label="Location"
         name="pointProperties.pointColumnId"
@@ -112,6 +66,7 @@ export function PointProperties({ form }: PointPropertiesProps) {
       />
       <DataColField
         availableColumns={availableStringColumns ?? []}
+        datasetId={datasetId}
         form={form}
         label="Title"
         name="pointProperties.titleColumnId"
@@ -119,6 +74,7 @@ export function PointProperties({ form }: PointPropertiesProps) {
       />
       <DataColField
         availableColumns={availableRichtextColumns ?? []}
+        datasetId={datasetId}
         form={form}
         label="Description"
         name="pointProperties.descriptionColumnId"
@@ -126,6 +82,7 @@ export function PointProperties({ form }: PointPropertiesProps) {
       />
       <DataColField
         availableColumns={availableIconColumns ?? []}
+        datasetId={datasetId}
         form={form}
         label="Icon"
         name="pointProperties.iconColumnId"
@@ -147,14 +104,16 @@ function DataColField({
   label,
   type,
   availableColumns,
+  datasetId,
 }: {
-  name: FieldPath<UpsertLayerSchema>;
-  form: UseFormReturn<UpsertLayerSchema>;
+  name: FieldPath<Omit<UpsertLayerSchema, "name" | "type" | "datasetId">>;
+  form: UseFormReturn<Omit<UpsertLayerSchema, "name" | "type" | "datasetId">>;
   label: string;
   type: Column["type"];
   availableColumns: NonNullable<
     ListTeamspaceDatasets["data"]
   >[number]["columns"];
+  datasetId: string;
 }) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -177,6 +136,8 @@ function DataColField({
       if (input.type === "icon") {
         form.setValue("pointProperties.iconColumnId", data.id);
       }
+
+      void form.trigger();
     },
 
     onError: () => {
@@ -191,13 +152,18 @@ function DataColField({
     <FormField
       control={form.control}
       name={name}
-      render={({ field }) => (
+      render={({ field, fieldState }) => (
         <PropertyPopover modal onOpenChange={setOpen} open={open}>
-          <FormLabel htmlFor={name}>{label}</FormLabel>
+          <FormLabel
+            htmlFor={name}
+            className={fieldState.error ? "text-destructive" : ""}
+          >
+            {label}
+          </FormLabel>
           <div className="flex w-full flex-shrink-0 justify-end">
             <PropertyPopoverTrigger asChild>
               <Button
-                className="ring-offset-background placeholder:text-muted-foreground focus:ring-ring flex h-7 w-full items-center justify-between whitespace-nowrap rounded-md border-0 bg-stone-100 px-2 py-0.5 text-sm font-normal shadow-sm focus:outline-none focus:ring-1 disabled:cursor-not-allowed disabled:opacity-50"
+                className={`ring-offset-background placeholder:text-muted-foreground focus:ring-ring flex h-7 w-full items-center justify-between whitespace-nowrap rounded-md border-0 bg-stone-100 px-2 py-0.5 text-sm font-normal shadow-sm focus:outline-none focus:ring-1 disabled:cursor-not-allowed disabled:opacity-50 ${fieldState.error ? "!ring-destructive !ring-1" : ""}`}
                 id={name}
                 size="icon-xs"
                 variant="ghost"
@@ -218,12 +184,13 @@ function DataColField({
               availableItems={availableColumns}
               onSelect={(value) => {
                 form.setValue(name, value as string | null);
+                void form.trigger();
                 setOpen(false);
               }}
               onCreate={(name) => {
                 void executeAsync({
                   name,
-                  datasetId: form.watch("datasetId"),
+                  datasetId,
                   type,
                 });
                 setQuery("");

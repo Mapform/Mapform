@@ -172,7 +172,7 @@ export function LocationSearchDrawerInner({
         <PopoverContent align="end" className="w-[200px] p-0" side="right">
           <Command
             filter={(value, search, keywords) => {
-              if (value.includes("Create")) return 1;
+              if (value === "new-layer") return 1;
               if (
                 value.toLocaleLowerCase().includes(search.toLocaleLowerCase())
               )
@@ -199,13 +199,14 @@ export function LocationSearchDrawerInner({
                   onSelect={() => {
                     setLayerPopoverOpen(true);
                   }}
+                  value="new-layer"
                 >
                   <div className="flex items-center overflow-hidden">
-                    <p className="flex items-center font-semibold whitespace-nowrap">
+                    <p className="flex items-center whitespace-nowrap font-semibold">
                       <PlusIcon className="mr-2 size-4" />
                       New layer
                     </p>
-                    <p className="block ml-1 truncate text-primary">{query}</p>
+                    <p className="text-primary ml-1 block truncate">{query}</p>
                   </div>
                 </CommandItem>
               </CommandGroup>
