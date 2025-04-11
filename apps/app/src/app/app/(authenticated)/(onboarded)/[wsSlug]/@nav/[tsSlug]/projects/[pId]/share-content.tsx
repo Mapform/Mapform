@@ -33,6 +33,7 @@ import {
 import { CheckIcon, ChevronsUpDownIcon, GlobeIcon } from "lucide-react";
 import { cn } from "@mapform/lib/classnames";
 import { useState } from "react";
+import { useParams } from "next/navigation";
 
 const visibilityOptions = [
   { value: "public", label: "Public" },
@@ -53,6 +54,7 @@ export function ShareContent({
   });
 
   const { execute: updateProject, isPending } = useAction(updateProjectAction);
+  const { wsSlug } = useParams();
 
   const onVisibilityChange = (value: "public" | "closed") => {
     form.setValue("visibility", value);
@@ -61,6 +63,20 @@ export function ShareContent({
       visibility: value,
     });
     setOpen(false);
+  };
+
+  const getShareUrl = () => {
+    // Remove protocol (http, https) and www from base url
+    const baseUrl = env.NEXT_PUBLIC_BASE_URL.replace(
+      /^https?:\/\/(www\.)?/,
+      "",
+    );
+
+    // Remove subdomains (if any)
+    const baseUrlWithoutSubdomains = baseUrl.replace(/\.[^.]+$/, "");
+
+    // Add wsSlug subdomain to base url
+    return `${wsSlug as string}.${baseUrlWithoutSubdomains}/share/${project.id}`;
   };
 
   return (
@@ -135,12 +151,12 @@ export function ShareContent({
       <div className="flex overflow-hidden rounded-md border shadow">
         <input
           className="w-full appearance-none border-none bg-gray-100 pl-2 pr-0 text-sm text-gray-500"
-          value={`${env.NEXT_PUBLIC_BASE_URL}/share/${project.id}`}
+          value={getShareUrl()}
           readOnly
         />
         <Clipboard
           className="h-[36px] rounded-l-none border-l bg-white hover:bg-gray-50"
-          clipboardText={`${env.NEXT_PUBLIC_BASE_URL}/share/${project.id}`}
+          clipboardText={getShareUrl()}
           copiedText="Copy"
           copyText="Copy"
           size="sm"

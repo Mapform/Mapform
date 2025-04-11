@@ -10,6 +10,20 @@ const publicAppPaths = [
   "/privacy-policy",
 ];
 
+const getValidSubdomain = (host?: string | null) => {
+  let subdomain: string | null = null;
+  if (!host && typeof window !== "undefined") {
+    host = window.location.host;
+  }
+  if (host?.includes(".")) {
+    const candidate = host.split(".")[0];
+    if (candidate && !candidate.includes("www")) {
+      subdomain = candidate;
+    }
+  }
+  return subdomain;
+};
+
 export default withCSRF(async (request) => {
   const { pathname } = request.nextUrl;
   const sessionCookie = request.cookies.get("session")?.value ?? null;
@@ -17,6 +31,23 @@ export default withCSRF(async (request) => {
     publicAppPaths.some((path) => pathname.startsWith(path)) ||
     pathname === "/";
   const isProtectedRoute = !isPublicAppPath;
+
+  // Handle subdomain routing for share functionality
+  const host = request.headers.get("host");
+  const subdomain = getValidSubdomain(host);
+
+  console.log("subdomain", subdomain);
+
+  if (subdomain && pathname.startsWith("/share")) {
+    const url = request.nextUrl.clone();
+    const pathSegments = pathname.split("/").filter(Boolean);
+    const pId = pathSegments[1];
+
+    if (pId) {
+      url.pathname = `/share/${subdomain}/${pId}`;
+      return NextResponse.rewrite(url);
+    }
+  }
 
   if (isProtectedRoute && !sessionCookie) {
     return NextResponse.redirect(new URL("/app/signin", request.url));
