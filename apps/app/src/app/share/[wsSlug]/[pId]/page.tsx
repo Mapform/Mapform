@@ -59,7 +59,7 @@ const fetchSelectedFeature = cache(async (param?: string) => {
 
 // The root Project Id
 export default async function Page(props: {
-  params: Promise<{ pId: string }>;
+  params: Promise<{ pId: string; wsSlug: string }>;
   searchParams?: Promise<{
     p?: string;
     feature?: string;
@@ -104,7 +104,10 @@ export default async function Page(props: {
     );
   }
 
-  if (!projectWithPages) {
+  if (
+    !projectWithPages ||
+    projectWithPages.teamspace.workspace.slug !== params.wsSlug
+  ) {
     return (
       <WarningScreen
         title="Project not found"
