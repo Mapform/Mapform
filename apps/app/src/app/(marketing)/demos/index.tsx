@@ -6,7 +6,7 @@ import {
   CarouselContent,
   CarouselItem,
 } from "@mapform/ui/components/carousel";
-import Image from "next/image";
+import Image, { type StaticImageData } from "next/image";
 import {
   ArrowUpRightIcon,
   BookMarkedIcon,
@@ -17,13 +17,15 @@ import {
 } from "lucide-react";
 import datasetImage from "public/static/images/dataset.png";
 import formsImage from "public/static/images/forms.jpeg";
-import guideImage from "public/static/images/guide.png";
 import mapImage from "public/static/images/map.jpeg";
 import shareImage from "public/static/images/share.png";
+import projectLayersVideo from "videos/project-layers.mp4.json";
 import { motion } from "motion/react";
 import { useState, useEffect } from "react";
 import { cn } from "@mapform/lib/classnames";
 import { Badge } from "@mapform/ui/components/badge";
+import Video from "next-video";
+import type { Asset } from "next-video/dist/assets.js";
 
 const tagColors = {
   Travel: "bg-blue-500",
@@ -37,8 +39,11 @@ const TABS = [
     id: "travel-map",
     text: "Track and share every place you've ever been",
     tag: "Travel",
-    image: mapImage,
-    alt: "Map view interface",
+    media: {
+      type: "image",
+      src: mapImage,
+      alt: "Map view interface",
+    },
     icon: EarthIcon,
     url: "https://mapform.co/share/0c18a5f2-19cb-4d81-b6db-5bcc6330c3ff",
   },
@@ -46,8 +51,11 @@ const TABS = [
     id: "forms",
     text: "Crowd source suggestions for the perfect trip",
     tag: "Travel",
-    image: datasetImage,
-    alt: "Dataset interface",
+    media: {
+      type: "image",
+      src: datasetImage,
+      alt: "Dataset interface",
+    },
     icon: TableIcon,
     url: "https://mapform.co/share/0c18a5f2-19cb-4d81-b6db-5bcc6330c3ff",
   },
@@ -55,8 +63,11 @@ const TABS = [
     id: "guide",
     text: "Take your friends on a guided tour",
     tag: "Tours",
-    image: guideImage,
-    alt: "Guide interface",
+    media: {
+      type: "video",
+      src: projectLayersVideo,
+      alt: "Guide interface",
+    },
     icon: BookMarkedIcon,
     url: "https://mapform.co/share/0c18a5f2-19cb-4d81-b6db-5bcc6330c3ff",
   },
@@ -64,8 +75,11 @@ const TABS = [
     id: "storytelling",
     text: "Make your stories come alive with maps",
     tag: "Storytelling",
-    image: formsImage,
-    alt: "Forms interface",
+    media: {
+      type: "image",
+      src: formsImage,
+      alt: "Forms interface",
+    },
     icon: TextCursorInputIcon,
     url: "https://mapform.co/share/0c18a5f2-19cb-4d81-b6db-5bcc6330c3ff",
   },
@@ -73,8 +87,11 @@ const TABS = [
     id: "publish",
     text: "Engage with others in your community",
     tag: "Community",
-    image: shareImage,
-    alt: "Publish interface",
+    media: {
+      type: "image",
+      src: shareImage,
+      alt: "Publish interface",
+    },
     icon: SquareArrowOutUpRightIcon,
     url: "https://mapform.co/share/0c18a5f2-19cb-4d81-b6db-5bcc6330c3ff",
   },
@@ -173,16 +190,27 @@ export function Demos() {
                       },
                     )}
                   >
-                    <Image
-                      src={tab.image}
-                      alt={tab.alt}
-                      className="relative"
-                      fill
-                      style={{
-                        objectFit: "cover",
-                      }}
-                      placeholder="blur"
-                    />
+                    {tab.media.type === "image" ? (
+                      <Image
+                        src={tab.media.src as StaticImageData}
+                        alt={tab.media.alt}
+                        className="relative"
+                        fill
+                        style={{
+                          objectFit: "cover",
+                        }}
+                        placeholder="blur"
+                      />
+                    ) : (
+                      <Video
+                        className="size-full"
+                        src={tab.media.src as Asset}
+                        autoPlay
+                        muted
+                        loop
+                        controls={false}
+                      />
+                    )}
                   </div>
                 </div>
               </CarouselItem>
