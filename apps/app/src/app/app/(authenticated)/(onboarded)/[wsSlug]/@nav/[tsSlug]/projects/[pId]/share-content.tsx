@@ -66,6 +66,11 @@ export function ShareContent({
   };
 
   const getShareUrl = () => {
+    // Don't bother using subdomains in preview since its not supported
+    if (env.NEXT_PUBLIC_VERCEL_ENV === "preview") {
+      return `${env.NEXT_PUBLIC_BASE_URL}/share/${wsSlug as string}/${project.id}`;
+    }
+
     // Remove protocol (http, https) and www from base url
     const baseUrl = env.NEXT_PUBLIC_BASE_URL.replace(
       /^https?:\/\/(www\.)?/,
