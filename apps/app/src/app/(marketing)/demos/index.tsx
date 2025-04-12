@@ -8,11 +8,9 @@ import {
 } from "@mapform/ui/components/carousel";
 import Image, { type StaticImageData } from "next/image";
 import { ArrowUpRightIcon } from "lucide-react";
-import datasetImage from "public/static/images/dataset.png";
-import formsImage from "public/static/images/forms.jpeg";
-import mapImage from "public/static/images/map.jpeg";
-import shareImage from "public/static/images/share.png";
-import projectLayersVideo from "videos/project-layers.mp4.json";
+import travelMapImage from "public/static/images/travel-map.jpeg";
+import tripSuggestionsImage from "public/static/images/trip-suggestions.jpeg";
+import walkingTourImage from "public/static/images/walking-tour.jpeg";
 import { motion } from "motion/react";
 import { useState, useEffect } from "react";
 import { cn } from "@mapform/lib/classnames";
@@ -20,21 +18,39 @@ import { Badge } from "@mapform/ui/components/badge";
 import Video from "next-video";
 import type { Asset } from "next-video/dist/assets.js";
 
-const tagColors = {
+type Tag = "Travel" | "Storytelling" | "Community" | "Tours" | "Tracking";
+
+const tagColors: Record<Tag, string> = {
   Travel: "bg-blue-500",
   Storytelling: "bg-green-500",
   Community: "bg-indigo-500",
   Tours: "bg-yellow-500",
+  Tracking: "bg-teal-500",
 };
 
-const TABS = [
+const TABS: (
+  | {
+      id: string;
+      text: string;
+      tag: Tag;
+      media: { type: "image"; src: StaticImageData; alt: string };
+      url: string;
+    }
+  | {
+      id: string;
+      text: string;
+      tag: Tag;
+      media: { type: "video"; src: Asset; alt: string };
+      url: string;
+    }
+)[] = [
   {
     id: "travel-map",
     text: "Track and share the places you've been",
-    tag: "Travel",
+    tag: "Tracking",
     media: {
       type: "image",
-      src: mapImage,
+      src: travelMapImage,
       alt: "Map view interface",
     },
     url: "https://mapform.mapform.co/share/0c18a5f2-19cb-4d81-b6db-5bcc6330c3ff",
@@ -45,7 +61,7 @@ const TABS = [
     tag: "Travel",
     media: {
       type: "image",
-      src: datasetImage,
+      src: tripSuggestionsImage,
       alt: "Dataset interface",
     },
     url: "https://mapform.mapform.co/share/4a9d0bd5-a765-4d06-9efd-1ec92d273174",
@@ -55,34 +71,34 @@ const TABS = [
     text: "Take your friends on a guided tour",
     tag: "Tours",
     media: {
-      type: "video",
-      src: projectLayersVideo,
+      type: "image",
+      src: walkingTourImage,
       alt: "Guide interface",
     },
-    url: "https://mapform.mapform.co/share/0811463d-fd4d-4e08-ab4d-2bbd69ae1b0a",
+    url: "https://nics-mapform.mapform.co/share/90d7e75e-adf4-457a-82eb-c03e703b62f6",
   },
-  {
-    id: "storytelling",
-    text: "Turn your trip into an interactive story",
-    tag: "Storytelling",
-    media: {
-      type: "image",
-      src: formsImage,
-      alt: "Forms interface",
-    },
-    url: "https://mapform.co/share/0c18a5f2-19cb-4d81-b6db-5bcc6330c3ff",
-  },
-  {
-    id: "publish",
-    text: "Engage with others in your community",
-    tag: "Community",
-    media: {
-      type: "image",
-      src: shareImage,
-      alt: "Publish interface",
-    },
-    url: "https://mapform.co/share/0c18a5f2-19cb-4d81-b6db-5bcc6330c3ff",
-  },
+  // {
+  //   id: "storytelling",
+  //   text: "Turn your trip into an interactive story",
+  //   tag: "Storytelling",
+  //   media: {
+  //     type: "image",
+  //     src: formsImage,
+  //     alt: "Forms interface",
+  //   },
+  //   url: "https://mapform.co/share/0c18a5f2-19cb-4d81-b6db-5bcc6330c3ff",
+  // },
+  // {
+  //   id: "publish",
+  //   text: "Engage with others in your community",
+  //   tag: "Community",
+  //   media: {
+  //     type: "image",
+  //     src: shareImage,
+  //     alt: "Publish interface",
+  //   },
+  //   url: "https://mapform.co/share/0c18a5f2-19cb-4d81-b6db-5bcc6330c3ff",
+  // },
 ] as const;
 
 export function Demos() {
@@ -186,6 +202,7 @@ export function Demos() {
                         fill
                         style={{
                           objectFit: "cover",
+                          objectPosition: "top center",
                         }}
                         placeholder="blur"
                       />
