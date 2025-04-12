@@ -66,25 +66,16 @@ export function ShareContent({
   };
 
   const getShareUrl = () => {
-    const protocol =
-      env.NEXT_PUBLIC_VERCEL_ENV === "development" ? "http" : "https";
+    if (env.NEXT_PUBLIC_VERCEL_ENV === "production") {
+      return `https://${wsSlug as string}.mapform.co/share/${project.id}`;
+    }
 
     // Don't bother using subdomains in preview since its not supported
     if (env.NEXT_PUBLIC_VERCEL_ENV === "preview") {
       return `${env.NEXT_PUBLIC_BASE_URL}/share/${wsSlug as string}/${project.id}`;
     }
 
-    // Remove protocol (http, https) and www from base url
-    const baseUrl = env.NEXT_PUBLIC_BASE_URL.replace(
-      /^https?:\/\/(www\.)?/,
-      "",
-    );
-
-    // Remove subdomains (if any)
-    const baseUrlWithoutSubdomains = baseUrl.replace(/\.[^.]+$/, "");
-
-    // Add wsSlug subdomain to base url
-    return `${protocol}://${wsSlug as string}.${baseUrlWithoutSubdomains}/share/${project.id}`;
+    return `http://${wsSlug as string}.localhost:3000/share/${project.id}`;
   };
 
   return (
