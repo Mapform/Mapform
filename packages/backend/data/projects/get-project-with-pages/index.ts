@@ -18,8 +18,6 @@ export const getProjectWithPages = (
   authClient
     .schema(getProjectWithPagesSchema)
     .action(async ({ parsedInput: { id }, ctx }) => {
-      console.log("id", id);
-
       const [_projects, _pages, _pageLayers] = await Promise.all([
         db.query.projects.findFirst({
           where: and(

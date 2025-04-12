@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { withCSRF } from "@mapform/auth/middleware";
 import { signToken, verifyToken } from "@mapform/auth/helpers/sessions";
+import { env } from "~/env.mjs";
 
 const publicAppPaths = [
   "/app/signin",
@@ -36,9 +37,11 @@ export default withCSRF(async (request) => {
   const host = request.headers.get("host");
   const subdomain = getValidSubdomain(host);
 
-  console.log("subdomain", subdomain);
-
-  if (subdomain && pathname.startsWith("/share")) {
+  if (
+    subdomain &&
+    pathname.startsWith("/share") &&
+    env.NEXT_PUBLIC_VERCEL_ENV !== "preview"
+  ) {
     const url = request.nextUrl.clone();
     const pathSegments = pathname.split("/").filter(Boolean);
     const pId = pathSegments[1];

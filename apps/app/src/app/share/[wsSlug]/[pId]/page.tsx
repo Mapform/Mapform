@@ -74,8 +74,6 @@ export default async function Page(props: {
 
   const params = await props.params;
 
-  console.log("params", params);
-
   const [projectWithPagesResponse, pageData, selectedFeature] =
     await Promise.all([
       fetchProjectWithPages(params.pId),
