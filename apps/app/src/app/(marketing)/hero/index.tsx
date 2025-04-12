@@ -31,7 +31,7 @@ export function Hero() {
                 </TooltipContent>
               </Tooltip>
             </span>
-            <div className="lg:max-w-[500px]">
+            <div className="lg:max-w-[512px]">
               <h1 className="text-foreground mt-4 text-5xl font-medium lg:text-7xl">
                 The Workspace For Place.
               </h1>
@@ -39,7 +39,7 @@ export function Hero() {
                 {/* Mapform helps you track, manage, and share the places that
                 matter to you. */}
                 Mapform combines data, content, forms, and more to create maps
-                for anything.
+                for almost anything.
               </p>
             </div>
             <div className="flex flex-col justify-center gap-2 sm:flex-row sm:justify-start">

@@ -139,9 +139,9 @@ export function Demos() {
           <h3 className="mt-2 text-pretty text-4xl font-semibold tracking-tight text-gray-900 sm:text-5xl lg:text-balance">
             Showcase
           </h3>
-          {/* <p className="text-muted-foreground mt-4 text-lg leading-8 sm:text-xl">
-              See Mapform in action.
-            </p> */}
+          <p className="text-muted-foreground mt-4 text-lg leading-8 sm:text-xl">
+            A few examples of what you can do with Mapform.
+          </p>
         </div>
       </div>
       <div className="relative mt-8 lg:mt-16">
