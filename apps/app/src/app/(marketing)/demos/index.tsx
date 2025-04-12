@@ -7,14 +7,7 @@ import {
   CarouselItem,
 } from "@mapform/ui/components/carousel";
 import Image, { type StaticImageData } from "next/image";
-import {
-  ArrowUpRightIcon,
-  BookMarkedIcon,
-  EarthIcon,
-  SquareArrowOutUpRightIcon,
-  TableIcon,
-  TextCursorInputIcon,
-} from "lucide-react";
+import { ArrowUpRightIcon } from "lucide-react";
 import datasetImage from "public/static/images/dataset.png";
 import formsImage from "public/static/images/forms.jpeg";
 import mapImage from "public/static/images/map.jpeg";
@@ -44,8 +37,7 @@ const TABS = [
       src: mapImage,
       alt: "Map view interface",
     },
-    icon: EarthIcon,
-    url: "https://mapform.mapform/share/0c18a5f2-19cb-4d81-b6db-5bcc6330c3ff",
+    url: "https://mapform.mapform.co/share/0c18a5f2-19cb-4d81-b6db-5bcc6330c3ff",
   },
   {
     id: "forms",
@@ -56,8 +48,7 @@ const TABS = [
       src: datasetImage,
       alt: "Dataset interface",
     },
-    icon: TableIcon,
-    url: "https://mapform.mapform/share/4a9d0bd5-a765-4d06-9efd-1ec92d273174",
+    url: "https://mapform.mapform.co/share/4a9d0bd5-a765-4d06-9efd-1ec92d273174",
   },
   {
     id: "guide",
@@ -68,19 +59,17 @@ const TABS = [
       src: projectLayersVideo,
       alt: "Guide interface",
     },
-    icon: BookMarkedIcon,
-    url: "https://mapform.co/share/0c18a5f2-19cb-4d81-b6db-5bcc6330c3ff",
+    url: "https://mapform.mapform.co/share/0811463d-fd4d-4e08-ab4d-2bbd69ae1b0a",
   },
   {
     id: "storytelling",
-    text: "Make your stories come alive with maps",
+    text: "Turn your trip into an interactive story",
     tag: "Storytelling",
     media: {
       type: "image",
       src: formsImage,
       alt: "Forms interface",
     },
-    icon: TextCursorInputIcon,
     url: "https://mapform.co/share/0c18a5f2-19cb-4d81-b6db-5bcc6330c3ff",
   },
   {
@@ -92,7 +81,6 @@ const TABS = [
       src: shareImage,
       alt: "Publish interface",
     },
-    icon: SquareArrowOutUpRightIcon,
     url: "https://mapform.co/share/0c18a5f2-19cb-4d81-b6db-5bcc6330c3ff",
   },
 ] as const;
