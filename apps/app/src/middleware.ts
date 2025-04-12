@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { withCSRF } from "@mapform/auth/middleware";
 import { signToken, verifyToken } from "@mapform/auth/helpers/sessions";
+import { env } from "~/env.mjs";
 
 const publicAppPaths = [
   "/app/signin",
@@ -10,6 +11,20 @@ const publicAppPaths = [
   "/privacy-policy",
 ];
 
+const getValidSubdomain = (host?: string | null) => {
+  let subdomain: string | null = null;
+  if (!host && typeof window !== "undefined") {
+    host = window.location.host;
+  }
+  if (host?.includes(".")) {
+    const candidate = host.split(".")[0];
+    if (candidate && !candidate.includes("www")) {
+      subdomain = candidate;
+    }
+  }
+  return subdomain;
+};
+
 export default withCSRF(async (request) => {
   const { pathname } = request.nextUrl;
   const sessionCookie = request.cookies.get("session")?.value ?? null;
@@ -17,6 +32,25 @@ export default withCSRF(async (request) => {
     publicAppPaths.some((path) => pathname.startsWith(path)) ||
     pathname === "/";
   const isProtectedRoute = !isPublicAppPath;
+
+  // Handle subdomain routing for share functionality
+  const host = request.headers.get("host");
+  const subdomain = getValidSubdomain(host);
+
+  if (
+    subdomain &&
+    pathname.startsWith("/share") &&
+    env.NEXT_PUBLIC_VERCEL_ENV !== "preview"
+  ) {
+    const url = request.nextUrl.clone();
+    const pathSegments = pathname.split("/").filter(Boolean);
+    const pId = pathSegments[1];
+
+    if (pId) {
+      url.pathname = `/share/${subdomain}/${pId}`;
+      return NextResponse.rewrite(url);
+    }
+  }
 
   if (isProtectedRoute && !sessionCookie) {
     return NextResponse.redirect(new URL("/app/signin", request.url));
