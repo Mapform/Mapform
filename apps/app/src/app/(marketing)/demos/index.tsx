@@ -37,7 +37,7 @@ const tagColors = {
 const TABS = [
   {
     id: "travel-map",
-    text: "Track and share every place you've ever been",
+    text: "Track and share the places you've been",
     tag: "Travel",
     media: {
       type: "image",
@@ -45,7 +45,7 @@ const TABS = [
       alt: "Map view interface",
     },
     icon: EarthIcon,
-    url: "https://mapform.co/share/0c18a5f2-19cb-4d81-b6db-5bcc6330c3ff",
+    url: "https://mapform.mapform/share/0c18a5f2-19cb-4d81-b6db-5bcc6330c3ff",
   },
   {
     id: "forms",
@@ -57,7 +57,7 @@ const TABS = [
       alt: "Dataset interface",
     },
     icon: TableIcon,
-    url: "https://mapform.co/share/0c18a5f2-19cb-4d81-b6db-5bcc6330c3ff",
+    url: "https://mapform.mapform/share/4a9d0bd5-a765-4d06-9efd-1ec92d273174",
   },
   {
     id: "guide",

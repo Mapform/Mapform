@@ -66,6 +66,9 @@ export function ShareContent({
   };
 
   const getShareUrl = () => {
+    const protocol =
+      env.NEXT_PUBLIC_VERCEL_ENV === "development" ? "http" : "https";
+
     // Don't bother using subdomains in preview since its not supported
     if (env.NEXT_PUBLIC_VERCEL_ENV === "preview") {
       return `${env.NEXT_PUBLIC_BASE_URL}/share/${wsSlug as string}/${project.id}`;
@@ -81,7 +84,7 @@ export function ShareContent({
     const baseUrlWithoutSubdomains = baseUrl.replace(/\.[^.]+$/, "");
 
     // Add wsSlug subdomain to base url
-    return `${wsSlug as string}.${baseUrlWithoutSubdomains}/share/${project.id}`;
+    return `${protocol}://${wsSlug as string}.${baseUrlWithoutSubdomains}/share/${project.id}`;
   };
 
   return (
