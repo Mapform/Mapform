@@ -102,6 +102,29 @@ export function Map({
     [pageData?.markerData],
   );
 
+  // const lineGeojson: FeatureCollection = useMemo(
+  //   () => ({
+  //     type: "FeatureCollection",
+  //     features: (pageData?.lineData ?? []).map((feature) => ({
+  //       type: "Feature",
+  //       geometry: {
+  //         type: "LineString",
+  //         coordinates: feature.value!.coordinates.map((coord) => [
+  //           coord.x,
+  //           coord.y,
+  //         ]),
+  //       },
+  //       properties: {
+  //         id: feature.id,
+  //         color: feature.color ?? "#3b82f6",
+  //         rowId: feature.rowId,
+  //         pointLayerId: feature.pointLayerId,
+  //       },
+  //     })),
+  //   }),
+  //   [pageData?.lineData],
+  // );
+
   const mapClusterItems = useCallback(
     (item: MarkerPointFeature) => ({
       icon: item.icon,

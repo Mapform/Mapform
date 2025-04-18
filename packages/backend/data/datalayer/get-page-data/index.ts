@@ -84,8 +84,7 @@ export const getPageData = (authClient: PublicClient | UserAuthClient) =>
             .select()
             .from(cells)
             .leftJoin(pointCells, eq(cells.id, pointCells.cellId))
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- We are filtering for this above, it's a TS shortcoming
-            .where(eq(cells.columnId, pl.layer.pointLayer!.pointColumnId));
+            .where(eq(cells.columnId, pl.layer.pointLayer.pointColumnId));
 
           return cellsResponse.map((c) => ({
             ...c,
@@ -159,7 +158,7 @@ export const getPageData = (authClient: PublicClient | UserAuthClient) =>
             .select()
             .from(cells)
             .leftJoin(lineCells, eq(cells.id, lineCells.cellId))
-            .where(eq(cells.columnId, ll.layer.lineLayer!.lineColumnId));
+            .where(eq(cells.columnId, ll.layer.lineLayer.lineColumnId));
 
           return cellsResponse.map((c) => ({
             ...c,
@@ -183,7 +182,7 @@ export const getPageData = (authClient: PublicClient | UserAuthClient) =>
             .select()
             .from(cells)
             .leftJoin(polygonCells, eq(cells.id, polygonCells.cellId))
-            .where(eq(cells.columnId, pl.layer.polygonLayer!.polygonColumnId));
+            .where(eq(cells.columnId, pl.layer.polygonLayer.polygonColumnId));
 
           return cellsResponse.map((c) => ({
             ...c,

@@ -10,6 +10,7 @@ import {
   insertPointCellSchema,
   insertIconCellSchema,
   insertPolygonCellSchema,
+  insertLineCellSchema,
 } from "@mapform/db/schema";
 
 const commonCellSchema = insertCellSchema.pick({
@@ -52,6 +53,11 @@ export const upsertCellSchema = z.discriminatedUnion("type", [
   commonCellSchema.extend({
     type: z.literal(columnTypeEnum.enumValues[6]),
     value: insertIconCellSchema.shape.value,
+  }),
+  // line
+  commonCellSchema.extend({
+    type: z.literal(columnTypeEnum.enumValues[7]),
+    value: insertLineCellSchema.shape.value,
   }),
   // polygon
   commonCellSchema.extend({
