@@ -39,9 +39,14 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@mapform/ui/components/tooltip";
+import { Cell as CellType, ColumnType } from "./types";
 
 interface TableProps {
   dataset: NonNullable<GetDataset["data"]>;
+}
+
+interface Column {
+  type: ColumnType;
 }
 
 const MemoizedColumnEditor = memo(ColumnEditor);
@@ -357,3 +362,31 @@ export const DataTable = function DataTable({ dataset }: TableProps) {
     </div>
   );
 };
+
+function Cell({ cell, column }: { cell: CellType; column: Column }) {
+  if (column.type === "point") {
+    const point = cell.point_cell;
+    if (!point?.value) return null;
+    return (
+      <div className="flex items-center gap-2">
+        <div className="font-mono text-xs">
+          {point.value.x.toFixed(4)}, {point.value.y.toFixed(4)}
+        </div>
+      </div>
+    );
+  }
+
+  if (column.type === "line") {
+    const line = cell.line_cell;
+    if (!line?.value) return null;
+    return (
+      <div className="flex items-center gap-2">
+        <div className="font-mono text-xs">
+          {line.value.coordinates.length} points
+        </div>
+      </div>
+    );
+  }
+
+  // ... existing code ...
+}

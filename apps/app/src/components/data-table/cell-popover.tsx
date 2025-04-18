@@ -41,6 +41,7 @@ import { upsertCellAction } from "~/data/cells/upsert-cell";
 import { compressImage } from "~/lib/compress-image";
 import { uploadImageAction } from "~/data/images";
 import { toast } from "@mapform/ui/components/toaster";
+import MapboxDraw from "@mapbox/mapbox-gl-draw";
 
 const accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN!;
 
@@ -210,6 +211,16 @@ export function CellPopover({
         <EmojiInput
           form={
             form as UseFormReturn<Extract<UpsertCellSchema, { type: "icon" }>>
+          }
+        />
+      );
+    }
+
+    if (type === "line") {
+      return (
+        <LineInput
+          form={
+            form as UseFormReturn<Extract<UpsertCellSchema, { type: "line" }>>
           }
         />
       );
@@ -533,6 +544,111 @@ function PointInput({
         <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75" />
         <span className="relative inline-flex size-3 rounded-full bg-red-500" />
       </span>
+      <div className="h-full w-full" ref={mapContainerRef} />
+    </div>
+  );
+}
+
+function LineInput({
+  form,
+}: {
+  form: UseFormReturn<Extract<UpsertCellSchema, { type: "line" }>>;
+}) {
+  const mapContainerRef = useRef<HTMLDivElement | null>(null);
+  const [coordinates, setCoordinates] = useState<
+    Array<{ x: number; y: number }>
+  >(form.getValues().value?.coordinates || []);
+  const [isDrawing, setIsDrawing] = useState(false);
+
+  useEffect(() => {
+    mapboxgl.accessToken = accessToken;
+    const map = new mapboxgl.Map({
+      center: {
+        lng: coordinates[0]?.x || 0,
+        lat: coordinates[0]?.y || 0,
+      },
+      zoom: coordinates.length > 0 ? 9 : 0,
+      container: mapContainerRef.current ?? "",
+      pitchWithRotate: false,
+      dragRotate: false,
+      doubleClickZoom: false,
+      scrollZoom: {
+        around: "center",
+      },
+    });
+
+    const draw = new MapboxDraw({
+      displayControlsDefault: false,
+      controls: {
+        line_string: true,
+        trash: true,
+      },
+    });
+
+    map.addControl(draw);
+
+    // Initialize with existing line if any
+    if (coordinates.length > 0) {
+      const line = {
+        type: "Feature",
+        properties: {},
+        geometry: {
+          type: "LineString",
+          coordinates: coordinates.map((coord) => [coord.x, coord.y]),
+        },
+      };
+      draw.add(line);
+    }
+
+    map.on("draw.create", (e) => {
+      const features = draw.getAll();
+      const line = features.features[0];
+      if (line?.geometry.type === "LineString") {
+        const coords = line.geometry.coordinates.map(([x, y]) => ({ x, y }));
+        setCoordinates(coords);
+        form.setValue("value", { coordinates: coords });
+      }
+    });
+
+    map.on("draw.update", (e) => {
+      const features = draw.getAll();
+      const line = features.features[0];
+      if (line?.geometry.type === "LineString") {
+        const coords = line.geometry.coordinates.map(([x, y]) => ({ x, y }));
+        setCoordinates(coords);
+        form.setValue("value", { coordinates: coords });
+      }
+    });
+
+    map.on("draw.delete", () => {
+      setCoordinates([]);
+      form.setValue("value", { coordinates: [] });
+    });
+
+    return () => {
+      map.remove();
+    };
+  }, [form]);
+
+  return (
+    <div className="relative h-[280px] w-full">
+      <div className="absolute left-2 right-2 top-2 z-10 rounded bg-white/70 px-4 py-2 font-mono text-xs backdrop-blur-md">
+        {coordinates.length > 0 ? (
+          <div>
+            <div>Line Points: {coordinates.length}</div>
+            <div>
+              Start: {coordinates[0].x.toFixed(4)},{" "}
+              {coordinates[0].y.toFixed(4)}
+            </div>
+            <div>
+              End: {coordinates[coordinates.length - 1].x.toFixed(4)},{" "}
+              {coordinates[coordinates.length - 1].y.toFixed(4)}
+            </div>
+          </div>
+        ) : (
+          "Click to start drawing a line"
+        )}
+      </div>
       <div className="h-full w-full" ref={mapContainerRef} />
     </div>
   );
