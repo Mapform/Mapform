@@ -253,6 +253,13 @@
       "when": 1743812259749,
       "tag": "0035_legal_machine_man",
       "breakpoints": true
+    },
+    {
+      "idx": 36,
+      "version": "7",
+      "when": 1744984210496,
+      "tag": "0036_lucky_jetstream",
+      "breakpoints": true
     }
   ]
 }
