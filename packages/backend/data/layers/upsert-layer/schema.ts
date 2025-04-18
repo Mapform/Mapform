@@ -30,6 +30,25 @@ export const upsertLayerSchema = z.object({
       iconColumnId: z.string().nullable(),
     })
     .optional(),
+  lineProperties: z
+    .object({
+      // TODO: Move color, titleColumnId, descriptionColumnId, iconColumnId to root
+      color: insertLayerSchema.shape.color,
+      titleColumnId: z.string().nullable(),
+      descriptionColumnId: z.string().nullable(),
+      iconColumnId: z.string().nullable(),
+      lineColumnId: z.string(),
+    })
+    .optional(),
+  polygonProperties: z
+    .object({
+      color: insertLayerSchema.shape.color,
+      polygonColumnId: z.string(),
+      titleColumnId: z.string().nullable(),
+      descriptionColumnId: z.string().nullable(),
+      iconColumnId: z.string().nullable(),
+    })
+    .optional(),
 });
 
 export type UpsertLayerSchema = z.infer<typeof upsertLayerSchema>;

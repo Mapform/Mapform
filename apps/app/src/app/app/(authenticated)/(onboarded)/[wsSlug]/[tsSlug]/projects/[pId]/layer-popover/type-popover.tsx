@@ -31,6 +31,8 @@ import {
   ChevronsUpDownIcon,
   CircleDotIcon,
   MapPinIcon,
+  PentagonIcon,
+  WaypointsIcon,
 } from "lucide-react";
 
 interface TypePopoverProps {
@@ -51,6 +53,18 @@ const types = [
     icon: CircleDotIcon,
     description:
       "Basic location representation. Points are never clustered. Ideal for larger datasets.",
+  },
+  {
+    label: "Line",
+    value: "line",
+    icon: WaypointsIcon,
+    description: "Display a line between points. Ideal for routing and paths.",
+  },
+  {
+    label: "Polygon",
+    value: "polygon",
+    icon: PentagonIcon,
+    description: "Display a polygon. Ideal for areas and boundaries.",
   },
 ] as const;
 

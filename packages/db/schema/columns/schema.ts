@@ -10,6 +10,8 @@ export const columnTypeEnum = pgEnum("column_type", [
   "point",
   "richtext",
   "icon",
+  "line",
+  "polygon",
 ]);
 
 export const columns = pgTable("column", {

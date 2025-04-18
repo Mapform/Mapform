@@ -204,6 +204,48 @@ const PropertiesForm = ({
                 color: null,
               }
           : undefined,
+      lineProperties:
+        currentType === "line"
+          ? layerToEdit?.datasetId === currentDatasetId &&
+            layerToEdit.type === "line" &&
+            layerToEdit.lineLayer
+            ? {
+                lineColumnId: layerToEdit.lineLayer.lineColumnId ?? undefined,
+                titleColumnId: layerToEdit.titleColumnId,
+                descriptionColumnId: layerToEdit.descriptionColumnId,
+                iconColumnId: layerToEdit.iconColumnId,
+                color: layerToEdit.color,
+              }
+            : {
+                lineColumnId: getLastAvailableColumnId("line") ?? undefined,
+                titleColumnId: getLastAvailableColumnId("string"),
+                descriptionColumnId: getLastAvailableColumnId("richtext"),
+                iconColumnId: getLastAvailableColumnId("icon"),
+                color: null,
+              }
+          : undefined,
+      polygonProperties:
+        currentType === "polygon"
+          ? layerToEdit?.datasetId === currentDatasetId &&
+            layerToEdit.type === "polygon" &&
+            layerToEdit.polygonLayer
+            ? {
+                polygonColumnId:
+                  layerToEdit.polygonLayer.polygonColumnId ?? undefined,
+                titleColumnId: layerToEdit.titleColumnId,
+                descriptionColumnId: layerToEdit.descriptionColumnId,
+                iconColumnId: layerToEdit.iconColumnId,
+                color: layerToEdit.color,
+              }
+            : {
+                polygonColumnId:
+                  getLastAvailableColumnId("polygon") ?? undefined,
+                titleColumnId: getLastAvailableColumnId("string"),
+                descriptionColumnId: getLastAvailableColumnId("richtext"),
+                iconColumnId: getLastAvailableColumnId("icon"),
+                color: null,
+              }
+          : undefined,
     },
     resolver: zodResolver(
       upsertLayerSchema.omit({ name: true, type: true, datasetId: true }),
