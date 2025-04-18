@@ -10,6 +10,7 @@ import {
   geometry,
   index,
   varchar,
+  customType,
 } from "drizzle-orm/pg-core";
 import type { DocumentContent } from "@mapform/blocknote";
 import { rows } from "../rows/schema";
@@ -105,6 +106,58 @@ export const pointCells = pgTable(
   (t) => [
     index("point_spatial_index").using("gist", t.value),
     unique("point_cell_unq").on(t.cellId),
+  ],
+);
+
+// Custom type for line geometry
+const lineGeometry = customType<{ data: string }>({
+  dataType() {
+    return "geometry(LineString, 4326)";
+  },
+});
+
+/**
+ * LINE CELL
+ */
+export const lineCells = pgTable(
+  "line_cell",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    value: lineGeometry("value"),
+
+    cellId: uuid("cell_id")
+      .notNull()
+      .references(() => cells.id, { onDelete: "cascade" }),
+  },
+  (t) => [
+    index("line_spatial_index").using("gist", t.value),
+    unique("line_cell_unq").on(t.cellId),
+  ],
+);
+
+// Custom type for polygon geometry
+const polygonGeometry = customType<{ data: string }>({
+  dataType() {
+    return "geometry(Polygon, 4326)";
+  },
+});
+
+/**
+ * POLYGON CELL
+ */
+export const polygonCells = pgTable(
+  "polygon_cell",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    value: polygonGeometry("value"),
+
+    cellId: uuid("cell_id")
+      .notNull()
+      .references(() => cells.id, { onDelete: "cascade" }),
+  },
+  (t) => [
+    index("polygon_spatial_index").using("gist", t.value),
+    unique("polygon_cell_unq").on(t.cellId),
   ],
 );
 
