@@ -34,12 +34,6 @@ async function runDataMigration() {
 
     await tx.insert(lineCells).values({
       cellId: cell.id,
-      // value: {
-      //   coordinates: [
-      //     { x: -85.3368669, y: 53.3933335 },
-      //     { x: -84.0185075, y: 53.9853397 },
-      //   ],
-      // },
       value: sql.raw(`ST_GeomFromGeoJSON('{
         "type": "LineString",
         "coordinates": [

@@ -185,7 +185,15 @@ export const getPageData = (authClient: PublicClient | UserAuthClient) =>
           }
 
           const cellsResponse = await db
-            .select()
+            .select({
+              cell: cells,
+              polygon_cell: {
+                ...polygonCells,
+                value: sql`ST_AsGeoJSON(${polygonCells.value})::jsonb`.as(
+                  "value",
+                ),
+              },
+            })
             .from(cells)
             .leftJoin(polygonCells, eq(cells.id, polygonCells.cellId))
             .where(eq(cells.columnId, pl.layer.polygonLayer.polygonColumnId));

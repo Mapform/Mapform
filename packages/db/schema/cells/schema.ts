@@ -111,7 +111,7 @@ export const pointCells = pgTable(
 
 // Custom type for line geometry
 const lineGeometry = customType<{
-  data: { coordinates: { x: number; y: number }[] };
+  data: { coordinates: [number, number][] };
 }>({
   dataType() {
     return "geometry(LineString, 4326)";
@@ -139,7 +139,7 @@ export const lineCells = pgTable(
 
 // Custom type for polygon geometry
 const polygonGeometry = customType<{
-  data: { coordinates: { x: number; y: number }[] };
+  data: { coordinates: [number, number][] };
 }>({
   dataType() {
     return "geometry(Polygon, 4326)";

@@ -47,22 +47,12 @@ export type PointCell = typeof pointCells.$inferSelect;
  */
 export const insertLineCellSchema = createInsertSchema(lineCells, {
   value: z.object({
-    coordinates: z.array(
-      z.object({
-        x: z.number(),
-        y: z.number(),
-      }),
-    ),
+    coordinates: z.array(z.tuple([z.number(), z.number()])),
   }),
 });
 export const selectLineCellSchema = createSelectSchema(lineCells, {
   value: z.object({
-    coordinates: z.array(
-      z.object({
-        x: z.number(),
-        y: z.number(),
-      }),
-    ),
+    coordinates: z.array(z.tuple([z.number(), z.number()])),
   }),
 });
 export type InsertLineCell = z.infer<typeof insertLineCellSchema>;
@@ -73,22 +63,12 @@ export type LineCell = typeof lineCells.$inferSelect;
  */
 export const insertPolygonCellSchema = createInsertSchema(polygonCells, {
   value: z.object({
-    coordinates: z.array(
-      z.object({
-        x: z.number(),
-        y: z.number(),
-      }),
-    ),
+    coordinates: z.array(z.tuple([z.number(), z.number()])),
   }),
 });
 export const selectPolygonCellSchema = createSelectSchema(polygonCells, {
   value: z.object({
-    coordinates: z.array(
-      z.object({
-        x: z.number(),
-        y: z.number(),
-      }),
-    ),
+    coordinates: z.array(z.tuple([z.number(), z.number()])),
   }),
 });
 export type InsertPolygonCell = z.infer<typeof insertPolygonCellSchema>;

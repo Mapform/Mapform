@@ -102,30 +102,30 @@ export function Map({
     [pageData?.markerData],
   );
 
-  console.log(1111, pageData);
+  console.log(2222, pageData?.lineData);
 
-  // const lineGeojson: FeatureCollection = useMemo(
-  //   () => ({
-  //     type: "FeatureCollection",
-  //     features: (pageData?.lineData ?? []).map((feature) => ({
-  //       type: "Feature",
-  //       geometry: {
-  //         type: "LineString",
-  //         coordinates: feature.value!.coordinates.map((coord) => [
-  //           coord.x,
-  //           coord.y,
-  //         ]),
-  //       },
-  //       properties: {
-  //         id: feature.id,
-  //         color: feature.color ?? "#3b82f6",
-  //         rowId: feature.rowId,
-  //         pointLayerId: feature.pointLayerId,
-  //       },
-  //     })),
-  //   }),
-  //   [pageData?.lineData],
-  // );
+  const lineGeojson: FeatureCollection = useMemo(
+    () => ({
+      type: "FeatureCollection",
+      features: (pageData?.lineData ?? []).map((feature) => ({
+        type: "Feature",
+        geometry: {
+          type: "LineString",
+          coordinates: feature.value!.coordinates.map((coord) => [
+            coord[0],
+            coord[1],
+          ]),
+        },
+        properties: {
+          id: feature.id,
+          color: feature.color ?? "#3b82f6",
+          rowId: feature.rowId,
+          lineLayerId: feature.lineLayerId,
+        },
+      })),
+    }),
+    [pageData?.lineData],
+  );
 
   const mapClusterItems = useCallback(
     (item: MarkerPointFeature) => ({
@@ -208,7 +208,7 @@ export function Map({
       if (isMobile) {
         m.addControl(
           new mapboxgl.AttributionControl({
-            compact: true, // Makes the attribution more compact if there’s not enough space
+            compact: true, // Makes the attribution more compact if there's not enough space
           }),
           "top-right",
         );
@@ -328,13 +328,14 @@ export function Map({
       return;
     }
 
-    const currentSource = map.getSource("points") as
+    // Handle points layer
+    const currentPointSource = map.getSource("points") as
       | mapboxgl.AnySourceImpl
       | undefined;
 
-    if (currentSource) {
+    if (currentPointSource) {
       // Update the source data
-      (currentSource as mapboxgl.GeoJSONSource).setData(pointGeojson);
+      (currentPointSource as mapboxgl.GeoJSONSource).setData(pointGeojson);
     } else {
       // Add a new source and layer
       map.addSource("points", {
@@ -354,7 +355,36 @@ export function Map({
         },
       });
     }
-  }, [map, pointGeojson]);
+
+    // Handle lines layer
+    const currentLineSource = map.getSource("lines") as
+      | mapboxgl.AnySourceImpl
+      | undefined;
+
+    if (currentLineSource) {
+      // Update the source data
+      (currentLineSource as mapboxgl.GeoJSONSource).setData(lineGeojson);
+    } else {
+      // Add a new source and layer
+      map.addSource("lines", {
+        type: "geojson",
+        data: lineGeojson,
+      });
+
+      console.log(1111, lineGeojson);
+
+      map.addLayer({
+        id: "lines",
+        type: "line",
+        source: "lines",
+        paint: {
+          "line-color": ["get", "color"],
+          "line-width": 5,
+          "line-opacity": 0.8,
+        },
+      });
+    }
+  }, [map, pointGeojson, lineGeojson]);
 
   return (
     <div
