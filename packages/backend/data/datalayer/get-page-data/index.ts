@@ -21,10 +21,6 @@ export const getPageData = (authClient: PublicClient | UserAuthClient) =>
   authClient
     .schema(getPageDataSchema)
     .action(async ({ parsedInput: { pageId }, ctx }) => {
-      if (ctx.authType === "public") {
-        // TODO
-      }
-
       if (ctx.authType === "user") {
         const result = await db
           .select()
