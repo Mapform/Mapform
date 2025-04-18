@@ -388,5 +388,17 @@ function Cell({ cell, column }: { cell: CellType; column: Column }) {
     );
   }
 
+  if (column.type === "polygon") {
+    const polygon = cell.polygon_cell;
+    if (!polygon?.value) return null;
+    return (
+      <div className="flex items-center gap-2">
+        <div className="font-mono text-xs">
+          {polygon.value.coordinates.length} vertices
+        </div>
+      </div>
+    );
+  }
+
   // ... existing code ...
 }

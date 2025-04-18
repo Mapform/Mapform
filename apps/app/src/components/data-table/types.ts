@@ -26,12 +26,28 @@ export interface LineCell {
   } | null;
 }
 
+export interface PolygonCell {
+  value: {
+    coordinates: Array<{
+      x: number;
+      y: number;
+    }>;
+  } | null;
+}
+
 export interface Cell {
   text_cell?: TextCell;
   number_cell?: NumberCell;
   date_cell?: DateCell;
   point_cell?: PointCell;
   line_cell?: LineCell;
+  polygon_cell?: PolygonCell;
 }
 
-export type ColumnType = "text" | "number" | "date" | "point" | "line";
+export type ColumnType =
+  | "text"
+  | "number"
+  | "date"
+  | "point"
+  | "line"
+  | "polygon";
