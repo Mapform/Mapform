@@ -4,6 +4,7 @@ import { Pool, neonConfig } from "@neondatabase/serverless";
 import { env } from "../env.mjs";
 import * as schema from "../schema";
 import { cells, lineCells } from "../schema";
+import { sql } from "drizzle-orm";
 
 neonConfig.webSocketConstructor = ws;
 
@@ -33,12 +34,19 @@ async function runDataMigration() {
 
     await tx.insert(lineCells).values({
       cellId: cell.id,
-      value: {
-        coordinates: [
-          { x: -85.3368669, y: 53.3933335 },
-          { x: -84.0185075, y: 53.9853397 },
-        ],
-      },
+      // value: {
+      //   coordinates: [
+      //     { x: -85.3368669, y: 53.3933335 },
+      //     { x: -84.0185075, y: 53.9853397 },
+      //   ],
+      // },
+      value: sql.raw(`ST_GeomFromGeoJSON('{
+        "type": "LineString",
+        "coordinates": [
+          [-85.3368669, 53.3933335],
+          [-84.0185075, 53.9853397]
+        ]
+      }')`),
     });
   });
 }

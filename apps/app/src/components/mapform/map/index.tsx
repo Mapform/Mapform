@@ -102,6 +102,8 @@ export function Map({
     [pageData?.markerData],
   );
 
+  console.log(1111, pageData);
+
   // const lineGeojson: FeatureCollection = useMemo(
   //   () => ({
   //     type: "FeatureCollection",
