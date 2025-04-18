@@ -7,6 +7,8 @@ import {
   markerLayers,
   datasets,
   teamspaces,
+  polygonCells,
+  lineCells,
 } from "@mapform/db/schema";
 import { and, eq, inArray, sql } from "@mapform/db/utils";
 import { getLayerMarkerSchema } from "./schema";
@@ -84,6 +86,28 @@ export const getLayerMarker = (authClient: UserAuthClient | PublicClient) =>
                   extras: {
                     x: sql<number>`ST_X(${pointCells.value})`.as("x"),
                     y: sql<number>`ST_Y(${pointCells.value})`.as("y"),
+                  },
+                },
+                lineCell: {
+                  columns: {
+                    id: true,
+                  },
+                  // TODO: Can remove this workaround once this is fixed: https://github.com/drizzle-team/drizzle-orm/pull/2778#issuecomment-2408519850
+                  extras: {
+                    coordinates: sql<
+                      number[]
+                    >`ST_AsText(${lineCells.value})`.as("coordinates"),
+                  },
+                },
+                polygonCell: {
+                  columns: {
+                    id: true,
+                  },
+                  // TODO: Can remove this workaround once this is fixed: https://github.com/drizzle-team/drizzle-orm/pull/2778#issuecomment-2408519850
+                  extras: {
+                    coordinates: sql<
+                      number[]
+                    >`ST_AsText(${polygonCells.value})`.as("coordinates"),
                   },
                 },
               },
