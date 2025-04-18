@@ -8,6 +8,8 @@ import {
   layersToPages,
   pages,
   projects,
+  lineCells,
+  polygonCells,
 } from "@mapform/db/schema";
 import { and, eq, or, inArray } from "@mapform/db/utils";
 import { getPageDataSchema } from "./schema";
@@ -45,6 +47,8 @@ export const getPageData = (authClient: PublicClient | UserAuthClient) =>
             with: {
               pointLayer: true,
               markerLayer: true,
+              lineLayer: true,
+              polygonLayer: true,
             },
           },
         },
@@ -58,6 +62,16 @@ export const getPageData = (authClient: PublicClient | UserAuthClient) =>
       const markerLayers = layersToPagesResponse.filter(
         (ltp) =>
           ltp.layer.type === "marker" && ltp.layer.markerLayer?.pointColumnId,
+      );
+
+      const lineLayers = layersToPagesResponse.filter(
+        (ltp) => ltp.layer.type === "line" && ltp.layer.lineLayer?.lineColumnId,
+      );
+
+      const polygonLayers = layersToPagesResponse.filter(
+        (ltp) =>
+          ltp.layer.type === "polygon" &&
+          ltp.layer.polygonLayer?.polygonColumnId,
       );
 
       const pointCellsResponse = await Promise.all(
@@ -135,6 +149,51 @@ export const getPageData = (authClient: PublicClient | UserAuthClient) =>
         }),
       );
 
+      const lineCellsResponse = await Promise.all(
+        lineLayers.map(async (ll) => {
+          if (!ll.layer.lineLayer?.lineColumnId || !ll.layer.lineLayer.id) {
+            return [];
+          }
+
+          const cellsResponse = await db
+            .select()
+            .from(cells)
+            .leftJoin(lineCells, eq(cells.id, lineCells.cellId))
+            .where(eq(cells.columnId, ll.layer.lineLayer!.lineColumnId));
+
+          return cellsResponse.map((c) => ({
+            ...c,
+            color: ll.layer.color,
+            rowId: c.cell.rowId,
+            lineLayerId: ll.layer.lineLayer?.id,
+          }));
+        }),
+      );
+
+      const polygonCellsResponse = await Promise.all(
+        polygonLayers.map(async (pl) => {
+          if (
+            !pl.layer.polygonLayer?.polygonColumnId ||
+            !pl.layer.polygonLayer.id
+          ) {
+            return [];
+          }
+
+          const cellsResponse = await db
+            .select()
+            .from(cells)
+            .leftJoin(polygonCells, eq(cells.id, polygonCells.cellId))
+            .where(eq(cells.columnId, pl.layer.polygonLayer!.polygonColumnId));
+
+          return cellsResponse.map((c) => ({
+            ...c,
+            color: pl.layer.color,
+            rowId: c.cell.rowId,
+            polygonLayerId: pl.layer.polygonLayer?.id,
+          }));
+        }),
+      );
+
       return {
         pointData: pointCellsResponse
           .flat()
@@ -159,6 +218,30 @@ export const getPageData = (authClient: PublicClient | UserAuthClient) =>
             cellId: pc.cell.id,
             columnId: pc.cell.columnId,
             pointLayerId: pc.pointLayerId,
+          })),
+
+        lineData: lineCellsResponse
+          .flat()
+          .filter((lc) => lc.line_cell?.value)
+          .map((lc) => ({
+            ...lc.line_cell,
+            color: lc.color,
+            rowId: lc.rowId,
+            cellId: lc.cell.id,
+            columnId: lc.cell.columnId,
+            lineLayerId: lc.lineLayerId,
+          })),
+
+        polygonData: polygonCellsResponse
+          .flat()
+          .filter((pc) => pc.polygon_cell?.value)
+          .map((pc) => ({
+            ...pc.polygon_cell,
+            color: pc.color,
+            rowId: pc.rowId,
+            cellId: pc.cell.id,
+            columnId: pc.cell.columnId,
+            polygonLayerId: pc.polygonLayerId,
           })),
       };
     });
