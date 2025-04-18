@@ -92,7 +92,6 @@ export const getLayerMarker = (authClient: UserAuthClient | PublicClient) =>
                   columns: {
                     id: true,
                   },
-                  // TODO: Can remove this workaround once this is fixed: https://github.com/drizzle-team/drizzle-orm/pull/2778#issuecomment-2408519850
                   extras: {
                     coordinates: sql<
                       number[]
@@ -103,7 +102,6 @@ export const getLayerMarker = (authClient: UserAuthClient | PublicClient) =>
                   columns: {
                     id: true,
                   },
-                  // TODO: Can remove this workaround once this is fixed: https://github.com/drizzle-team/drizzle-orm/pull/2778#issuecomment-2408519850
                   extras: {
                     coordinates: sql<
                       number[]

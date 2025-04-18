@@ -7,6 +7,8 @@ import {
   markerLayers,
   pointLayers,
   datasets,
+  lineLayers,
+  polygonLayers,
 } from "@mapform/db/schema";
 import { eq } from "@mapform/db/utils";
 import { upsertLayerSchema } from "./schema";
@@ -25,6 +27,8 @@ export const upsertLayer = (authClient: UserAuthClient) =>
           type,
           pointProperties,
           markerProperties,
+          lineProperties,
+          polygonProperties,
         },
       }) => {
         // Get dataset columns to validate against
@@ -46,8 +50,10 @@ export const upsertLayer = (authClient: UserAuthClient) =>
             titleColumnId?: string | null;
             descriptionColumnId?: string | null;
             iconColumnId?: string | null;
+            lineColumnId?: string | null;
+            polygonColumnId?: string | null;
           },
-          type: "point" | "marker",
+          type: "point" | "marker" | "line" | "polygon",
         ) => {
           // If no point column is provided, skip validation
           if (!properties.pointColumnId) {
@@ -133,6 +139,14 @@ export const upsertLayer = (authClient: UserAuthClient) =>
           validateColumnIds(markerProperties, "marker");
         }
 
+        if (type === "line" && lineProperties) {
+          validateColumnIds(lineProperties, "line");
+        }
+
+        if (type === "polygon" && polygonProperties) {
+          validateColumnIds(polygonProperties, "polygon");
+        }
+
         const newLayer = await db.transaction(async (tx) => {
           const shouldUpdate = !!id;
 
@@ -198,9 +212,34 @@ export const upsertLayer = (authClient: UserAuthClient) =>
               });
           }
 
+          if (type === "line" && lineProperties) {
+            await tx
+              .insert(lineLayers)
+              .values({
+                layerId: layer.id,
+                ...lineProperties,
+              })
+              .onConflictDoUpdate({
+                target: lineLayers.layerId,
+                set: lineProperties,
+              });
+          }
+
+          if (type === "polygon" && polygonProperties) {
+            await tx
+              .insert(polygonLayers)
+              .values({
+                layerId: layer.id,
+                ...polygonProperties,
+              })
+              .onConflictDoUpdate({
+                target: polygonLayers.layerId,
+                set: polygonProperties,
+              });
+          }
+
           return layer;
         });
-
         return newLayer;
       },
     );

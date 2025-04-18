@@ -11,7 +11,7 @@ import {
   lineCells,
   polygonCells,
 } from "@mapform/db/schema";
-import { and, eq, or, inArray } from "@mapform/db/utils";
+import { and, eq, or, inArray, sql } from "@mapform/db/utils";
 import { getPageDataSchema } from "./schema";
 import type {
   UserAuthClient,
@@ -155,7 +155,13 @@ export const getPageData = (authClient: PublicClient | UserAuthClient) =>
           }
 
           const cellsResponse = await db
-            .select()
+            .select({
+              cell: cells,
+              line_cell: {
+                ...lineCells,
+                value: sql`ST_AsGeoJSON(${lineCells.value})::jsonb`.as("value"),
+              },
+            })
             .from(cells)
             .leftJoin(lineCells, eq(cells.id, lineCells.cellId))
             .where(eq(cells.columnId, ll.layer.lineLayer.lineColumnId));
