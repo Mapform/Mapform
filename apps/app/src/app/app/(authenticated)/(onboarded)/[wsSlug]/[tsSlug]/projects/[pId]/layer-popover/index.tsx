@@ -29,6 +29,8 @@ import { PointProperties } from "./point-properties";
 import { DatasetPopover } from "./dataset-popover";
 import { TypePopover } from "./type-popover";
 import { MarkerProperties } from "./marker-properties";
+import { LineProperties } from "./line-properties";
+import { PolygonProperties } from "./polygon-properties";
 import type { Column } from "@mapform/db/schema";
 
 interface LayerPopoverProps {
@@ -314,6 +316,20 @@ const PropertiesForm = ({
         ) : null}
         {parentForm.watch("type") === "marker" ? (
           <MarkerProperties
+            form={form}
+            datasetId={parentForm.watch("datasetId")}
+            type={parentForm.watch("type")}
+          />
+        ) : null}
+        {parentForm.watch("type") === "line" ? (
+          <LineProperties
+            form={form}
+            datasetId={parentForm.watch("datasetId")}
+            type={parentForm.watch("type")}
+          />
+        ) : null}
+        {parentForm.watch("type") === "polygon" ? (
+          <PolygonProperties
             form={form}
             datasetId={parentForm.watch("datasetId")}
             type={parentForm.watch("type")}

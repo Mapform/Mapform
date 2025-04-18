@@ -92,7 +92,11 @@ export function ColorPicker({
   form,
   label,
 }: {
-  name: "markerProperties.color" | "pointProperties.color";
+  name:
+    | "markerProperties.color"
+    | "pointProperties.color"
+    | "lineProperties.color"
+    | "polygonProperties.color";
   form: UseFormReturn<Omit<UpsertLayerSchema, "name" | "type" | "datasetId">>;
   label: string;
 }) {
