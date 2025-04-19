@@ -1,5 +1,10 @@
 import { Button } from "@mapform/ui/components/button";
-
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@mapform/ui/components/dropdown-menu";
 import {
   Tooltip,
   TooltipContent,
@@ -14,6 +19,7 @@ import {
   FocusIcon,
   HandIcon,
   MapPinPlusIcon,
+  ScanIcon,
   SearchIcon,
   SplinePointerIcon,
 } from "lucide-react";
@@ -105,35 +111,37 @@ export function EditBar({ onSearchOpenChange }: EditBarProps) {
           </Tooltip>
         </div>
         <div className="flex gap-1 pl-1.5">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button onClick={() => {}} size="icon" variant="ghost">
-                <EllipsisIcon className="size-5" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Map options</p>
-            </TooltipContent>
-          </Tooltip>
-          {/* <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
+          <DropdownMenu>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <DropdownMenuTrigger asChild>
+                  <Button size="icon" variant="ghost">
+                    <EllipsisIcon className="size-5" />
+                  </Button>
+                </DropdownMenuTrigger>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Map options</p>
+              </TooltipContent>
+            </Tooltip>
+            <DropdownMenuContent side="top">
+              <DropdownMenuItem>
+                <ScanIcon className="mr-2 size-4" />
+                Set default view
+              </DropdownMenuItem>
+              <DropdownMenuItem
                 onClick={() => {
                   map?.setCenter([currentPage.center.x, currentPage.center.y]);
                   map?.setZoom(currentPage.zoom);
                   map?.setPitch(currentPage.pitch);
                   map?.setBearing(currentPage.bearing);
                 }}
-                size="icon"
-                variant="ghost"
               >
-                <FocusIcon className="size-5" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Re-center map</p>
-            </TooltipContent>
-          </Tooltip> */}
+                <FocusIcon className="mr-2 size-4" />
+                Re-center view
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
     </TooltipProvider>
