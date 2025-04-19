@@ -9,7 +9,14 @@ import {
 import { useMapform, useMapformContent } from "~/components/mapform";
 import { cn } from "@mapform/lib/classnames";
 import { useProject } from "../project-context";
-import { FocusIcon, HandIcon, SearchIcon } from "lucide-react";
+import {
+  EllipsisIcon,
+  FocusIcon,
+  HandIcon,
+  MapPinPlusIcon,
+  SearchIcon,
+  SplinePointerIcon,
+} from "lucide-react";
 
 interface EditBarProps {
   onSearchOpenChange: (isOpen: boolean) => void;
@@ -41,22 +48,6 @@ export function EditBar({ onSearchOpenChange }: EditBarProps) {
             <TooltipTrigger asChild>
               <Button
                 onClick={() => {
-                  onSearchOpenChange(false);
-                }}
-                size="icon"
-                variant={isSearchOpen || isMarkerEditOpen ? "ghost" : "default"}
-              >
-                <HandIcon className="size-5" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Hand tool</p>
-            </TooltipContent>
-          </Tooltip>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                onClick={() => {
                   if (!isSearchOpen) {
                     onSearchOpenChange(true);
                   }
@@ -70,8 +61,61 @@ export function EditBar({ onSearchOpenChange }: EditBarProps) {
             <TooltipContent>Search tool</TooltipContent>
           </Tooltip>
         </div>
+        <div className="flex gap-1 px-1.5">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                onClick={() => {
+                  onSearchOpenChange(false);
+                }}
+                size="icon"
+                variant={isSearchOpen || isMarkerEditOpen ? "ghost" : "default"}
+              >
+                <HandIcon className="size-5" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Hand tool</p>
+            </TooltipContent>
+          </Tooltip>
+
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                onClick={() => {}}
+                size="icon"
+                variant={isSearchOpen ? "default" : "ghost"}
+              >
+                <MapPinPlusIcon className="size-5" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Point tool</TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                onClick={() => {}}
+                size="icon"
+                variant={isSearchOpen ? "default" : "ghost"}
+              >
+                <SplinePointerIcon className="size-5" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Line tool</TooltipContent>
+          </Tooltip>
+        </div>
         <div className="flex gap-1 pl-1.5">
           <Tooltip>
+            <TooltipTrigger asChild>
+              <Button onClick={() => {}} size="icon" variant="ghost">
+                <EllipsisIcon className="size-5" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Map options</p>
+            </TooltipContent>
+          </Tooltip>
+          {/* <Tooltip>
             <TooltipTrigger asChild>
               <Button
                 onClick={() => {
@@ -89,7 +133,7 @@ export function EditBar({ onSearchOpenChange }: EditBarProps) {
             <TooltipContent>
               <p>Re-center map</p>
             </TooltipContent>
-          </Tooltip>
+          </Tooltip> */}
         </div>
       </div>
     </TooltipProvider>

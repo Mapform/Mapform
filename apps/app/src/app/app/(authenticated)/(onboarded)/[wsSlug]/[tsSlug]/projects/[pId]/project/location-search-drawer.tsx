@@ -217,7 +217,7 @@ export function LocationSearchDrawerInner({
                     <CommandItem
                       disabled={isPending}
                       key={pageLayer.layerId}
-                      keywords={[pageLayer.name ?? "Untitled"]}
+                      keywords={[pageLayer.name || "Untitled"]}
                       onSelect={() => {
                         if (
                           location.x === undefined ||
@@ -239,7 +239,7 @@ export function LocationSearchDrawerInner({
                     >
                       <div className="flex items-center overflow-hidden truncate">
                         <Layers2Icon className="mr-2 size-4" />
-                        {pageLayer.name ?? "Untitled"}
+                        {pageLayer.name || "Untitled"}
                       </div>
                     </CommandItem>
                   ))}
