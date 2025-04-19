@@ -19,7 +19,7 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from "@mapform/ui/components/popover";
-import { PlusIcon, Layers2Icon, PinIcon, BookmarkIcon } from "lucide-react";
+import { PlusIcon, Layers2Icon, BookmarkIcon, ScanIcon } from "lucide-react";
 import {
   LayerPopoverRoot,
   LayerPopoverAnchor,
@@ -144,8 +144,8 @@ export function LocationSearchDrawerInner({
         size="sm"
         variant="outline"
       >
-        <PinIcon className="mr-1 size-4" />
-        Pin page
+        <ScanIcon className="mr-1 size-4" />
+        Set View
       </LocationSearchButton>
       <Popover
         modal

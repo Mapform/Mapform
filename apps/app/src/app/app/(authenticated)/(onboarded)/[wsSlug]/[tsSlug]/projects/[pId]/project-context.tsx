@@ -24,6 +24,7 @@ import type { ListTeamspaceDatasets } from "@mapform/backend/data/datasets/list-
 import { uploadImageAction } from "~/data/images";
 import { updatePageAction } from "~/data/pages/update-page";
 import { useDebouncedOptimisticAction } from "~/lib/use-debounced-optimistic-action";
+import { usePreventPageUnload } from "@mapform/lib/hooks/use-prevent-page-unload";
 
 type LayerPoint = NonNullable<GetLayerPoint["data"]>;
 type LayerMarker = NonNullable<GetLayerMarker["data"]>;
@@ -201,6 +202,8 @@ export function ProjectProvider({
 
     router.push(`${pathname}${query}`);
   };
+
+  usePreventPageUnload(updatePageServerAction.isPending);
 
   return (
     <ProjectContext.Provider

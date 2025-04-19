@@ -42,6 +42,36 @@ export function EditBar({ onSearchOpenChange }: EditBarProps) {
     return null;
   }
 
+  const handleSaveMapPosition = () => {
+    const center = map?.getCenter();
+    const zoom = map?.getZoom();
+    const pitch = map?.getPitch();
+    const bearing = map?.getBearing();
+
+    if (
+      center !== undefined &&
+      zoom !== undefined &&
+      pitch !== undefined &&
+      bearing !== undefined
+    ) {
+      const payload = {
+        id: currentPage.id,
+        center: {
+          x: center.lng,
+          y: center.lat,
+        },
+        zoom,
+        pitch,
+        bearing,
+      };
+
+      updatePageServerAction.execute({
+        ...currentPage,
+        ...payload,
+      });
+    }
+  };
+
   return (
     <TooltipProvider delayDuration={200}>
       <div
@@ -125,7 +155,10 @@ export function EditBar({ onSearchOpenChange }: EditBarProps) {
               </TooltipContent>
             </Tooltip>
             <DropdownMenuContent side="top">
-              <DropdownMenuItem>
+              <DropdownMenuItem
+                disabled={updatePageServerAction.isPending}
+                onClick={handleSaveMapPosition}
+              >
                 <ScanIcon className="mr-2 size-4" />
                 Set default view
               </DropdownMenuItem>
