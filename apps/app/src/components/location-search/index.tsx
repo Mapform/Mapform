@@ -75,7 +75,11 @@ export function LocationSearchWithMap({
     isFetching: isFetchingRGResults,
     selectedFeature: selectedFeatureFromDrag,
     refetch,
-  } = useReverseGeocode(map);
+  } = useReverseGeocode({
+    lat: map.getCenter().lat,
+    lng: map.getCenter().lng,
+    refetchMode: true,
+  });
 
   const selectedFeature = selectedFeatureFromSearch || selectedFeatureFromDrag;
 

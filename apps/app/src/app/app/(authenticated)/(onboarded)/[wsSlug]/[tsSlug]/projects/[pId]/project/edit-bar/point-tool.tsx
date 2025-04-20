@@ -11,7 +11,6 @@ import { useMapform } from "~/components/mapform";
 import { SearchPopover } from "./search-popover";
 import mapboxgl from "mapbox-gl";
 import { useReverseGeocode } from "~/hooks/use-reverse-geocode";
-import { se } from "date-fns/locale";
 
 interface PointToolProps {
   isActive: boolean;
@@ -28,7 +27,11 @@ function PointToolInner({
   const drawRef = useRef<MapboxDraw | null>(null);
   const [location, setLocation] = useState<mapboxgl.LngLat | null>(null);
 
-  const { isFetching, selectedFeature, refetch } = useReverseGeocode(map);
+  const { isFetching, selectedFeature } = useReverseGeocode({
+    lat: location?.lat ?? null,
+    lng: location?.lng ?? null,
+    refetchMode: false,
+  });
 
   const onDrawCreate = useCallback(
     (
@@ -41,10 +44,8 @@ function PointToolInner({
       const coordinates = feature?.geometry.coordinates as [number, number];
 
       setLocation(new mapboxgl.LngLat(coordinates[0], coordinates[1]));
-
-      void refetch();
     },
-    [refetch],
+    [],
   );
 
   const onDrawSelectionChange = useCallback(
