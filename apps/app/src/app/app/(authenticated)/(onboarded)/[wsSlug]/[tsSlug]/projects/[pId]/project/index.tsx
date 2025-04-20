@@ -4,7 +4,6 @@ import dynamic from "next/dynamic";
 import { useEffect, useMemo, useState } from "react";
 import { compressImage } from "~/lib/compress-image";
 import { useProject } from "../project-context";
-import { EditBar } from "./edit-bar";
 import {
   MapformContent,
   MapformDrawer,
@@ -25,6 +24,7 @@ import {
   ProjectTour,
   ProjectTourContent,
 } from "~/components/tours/project-tour";
+import { EditBar } from "./edit-bar";
 
 function Project() {
   const {
