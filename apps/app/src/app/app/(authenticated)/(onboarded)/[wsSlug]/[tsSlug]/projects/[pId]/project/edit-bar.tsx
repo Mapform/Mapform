@@ -23,6 +23,7 @@ import {
   SearchIcon,
   SplinePointerIcon,
 } from "lucide-react";
+import { useState } from "react";
 
 interface EditBarProps {
   onSearchOpenChange: (isOpen: boolean) => void;
@@ -34,7 +35,9 @@ export function EditBar({ onSearchOpenChange }: EditBarProps) {
   const { drawerValues } = useMapformContent();
 
   const isSearchOpen = drawerValues.includes("location-search");
-  const isMarkerEditOpen = drawerValues.includes("marker-edit");
+  const [activeTool, setActiveTool] = useState<"hand" | "point" | "line">(
+    "hand",
+  );
 
   const currentPage = updatePageServerAction.optimisticState;
 
@@ -102,10 +105,13 @@ export function EditBar({ onSearchOpenChange }: EditBarProps) {
             <TooltipTrigger asChild>
               <Button
                 onClick={() => {
+                  setActiveTool("hand");
                   onSearchOpenChange(false);
                 }}
                 size="icon"
-                variant={isSearchOpen || isMarkerEditOpen ? "ghost" : "default"}
+                variant={
+                  activeTool === "hand" && !isSearchOpen ? "default" : "ghost"
+                }
               >
                 <HandIcon className="size-5" />
               </Button>
@@ -118,9 +124,14 @@ export function EditBar({ onSearchOpenChange }: EditBarProps) {
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
-                onClick={() => {}}
+                onClick={() => {
+                  setActiveTool("point");
+                  onSearchOpenChange(false);
+                }}
                 size="icon"
-                variant={isSearchOpen ? "default" : "ghost"}
+                variant={
+                  activeTool === "point" && !isSearchOpen ? "default" : "ghost"
+                }
               >
                 <MapPinPlusIcon className="size-5" />
               </Button>
@@ -130,9 +141,14 @@ export function EditBar({ onSearchOpenChange }: EditBarProps) {
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
-                onClick={() => {}}
+                onClick={() => {
+                  setActiveTool("line");
+                  onSearchOpenChange(false);
+                }}
                 size="icon"
-                variant={isSearchOpen ? "default" : "ghost"}
+                variant={
+                  activeTool === "line" && !isSearchOpen ? "default" : "ghost"
+                }
               >
                 <SplinePointerIcon className="size-5" />
               </Button>
