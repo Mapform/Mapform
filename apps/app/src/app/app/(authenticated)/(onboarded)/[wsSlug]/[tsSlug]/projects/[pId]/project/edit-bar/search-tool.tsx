@@ -2,7 +2,6 @@ import { Button } from "@mapform/ui/components/button";
 import {
   Tooltip,
   TooltipContent,
-  TooltipProvider,
   TooltipTrigger,
 } from "@mapform/ui/components/tooltip";
 import { SearchIcon } from "lucide-react";

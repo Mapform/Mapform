@@ -2,10 +2,9 @@ import { Button } from "@mapform/ui/components/button";
 import {
   Tooltip,
   TooltipContent,
-  TooltipProvider,
   TooltipTrigger,
 } from "@mapform/ui/components/tooltip";
-import { PentagonIcon, SplinePointerIcon } from "lucide-react";
+import { PentagonIcon } from "lucide-react";
 import { useEffect } from "react";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import { useMapform } from "~/components/mapform";
@@ -31,10 +30,7 @@ export function ShapeTool({ isActive, isSearchOpen, onClick }: ShapeToolProps) {
     if (isActive) {
       draw = new MapboxDraw({
         displayControlsDefault: false,
-        // controls: {
-        //   polygon: true,
-        //   trash: true,
-        // },
+
         defaultMode: "draw_polygon",
       });
       map?.addControl(draw);

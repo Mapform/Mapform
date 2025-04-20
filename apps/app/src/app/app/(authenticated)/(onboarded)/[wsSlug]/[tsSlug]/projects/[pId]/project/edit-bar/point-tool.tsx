@@ -5,10 +5,12 @@ import {
   TooltipTrigger,
 } from "@mapform/ui/components/tooltip";
 import { MapPinPlusIcon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import { useMapform } from "~/components/mapform";
-import { LayerSavePopover } from "../layer-save-popover";
+import { SearchPopover } from "./search-popover";
+import mapboxgl from "mapbox-gl";
+import { useReverseGeocode } from "~/hooks/use-reverse-geocode";
 
 interface PointToolProps {
   isActive: boolean;
@@ -16,37 +18,57 @@ interface PointToolProps {
   onClick: () => void;
 }
 
-export function PointTool({ isActive, isSearchOpen, onClick }: PointToolProps) {
-  const { map } = useMapform();
-  const [layerId, setLayerId] = useState<string | null>(null);
+function PointToolInner({
+  isActive,
+  isSearchOpen,
+  onClick,
+  map,
+}: PointToolProps & { map: mapboxgl.Map }) {
+  const [location, setLocation] = useState<mapboxgl.LngLat | null>(null);
+
+  const { isFetching, selectedFeature, refetch } = useReverseGeocode(map);
+
+  const onDrawCreate = useCallback(
+    (
+      e: mapboxgl.MapMouseEvent & { features: mapboxgl.MapboxGeoJSONFeature[] },
+    ) => {
+      const feature = e.features[0];
+
+      // @ts-expect-error -- The types are wrong
+      const coordinates = feature?.geometry.coordinates as [number, number];
+
+      setLocation(new mapboxgl.LngLat(coordinates[0], coordinates[1]));
+
+      void refetch();
+    },
+    [refetch],
+  );
 
   useEffect(() => {
     let draw: MapboxDraw | undefined;
 
-    if (isActive && layerId) {
+    if (isActive) {
       draw = new MapboxDraw({
         displayControlsDefault: false,
         defaultMode: "draw_point",
       });
-      map?.addControl(draw);
+      map.addControl(draw);
+      map.on("draw.create", onDrawCreate);
+      map.on("draw.update", onDrawCreate);
     }
 
     return () => {
       if (draw) {
-        map?.removeControl(draw);
+        map.removeControl(draw);
+        map.off("draw.create", onDrawCreate);
       }
     };
-  }, [isActive, map, layerId]);
+  }, [isActive, map, onDrawCreate]);
 
   return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <LayerSavePopover
-          onSelect={setLayerId}
-          side="top"
-          align="center"
-          open={!layerId && isActive}
-        >
+    <>
+      <Tooltip>
+        <TooltipTrigger asChild>
           <Button
             onClick={onClick}
             size="icon"
@@ -54,9 +76,26 @@ export function PointTool({ isActive, isSearchOpen, onClick }: PointToolProps) {
           >
             <MapPinPlusIcon className="size-5" />
           </Button>
-        </LayerSavePopover>
-      </TooltipTrigger>
-      <TooltipContent>Point tool</TooltipContent>
-    </Tooltip>
+        </TooltipTrigger>
+        <TooltipContent>Point tool</TooltipContent>
+      </Tooltip>
+      {location && (
+        <SearchPopover
+          location={location}
+          selectedFeature={selectedFeature}
+          isPending={isFetching}
+        ></SearchPopover>
+      )}
+    </>
   );
+}
+
+export function PointTool(props: PointToolProps) {
+  const { map } = useMapform();
+
+  if (!map) {
+    return null;
+  }
+
+  return <PointToolInner {...props} map={map} />;
 }

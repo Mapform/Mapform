@@ -31,6 +31,7 @@ import { useMapform } from "~/components/mapform";
 import { Button, type ButtonProps } from "@mapform/ui/components/button";
 import { Skeleton } from "@mapform/ui/components/skeleton";
 import { SelectionPin } from "../selection-pin";
+import { useReverseGeocode } from "~/hooks/use-reverse-geocode";
 
 export function LocationSearch(props: { children?: React.ReactNode }) {
   const { map } = useMapform();
@@ -63,49 +64,20 @@ export function LocationSearchWithMap({
   const inputRef = useRef<HTMLInputElement>(null);
   const [query, setQuery] = useState("");
   const queryClient = useQueryClient();
-  const [isFetchingRGResults, setIsFetchingRGResults] = useState(false);
   const [selectedFeatureFromSearch, setSelectedFeatureFromSearch] = useState<
     GeoapifyPlace["features"][number] | null
   >(null);
-  const [selectedFeatureFromDrag, setSelectedFeatureFromDrag] = useState<
-    GeoapifyPlace["features"][number] | null
-  >(null);
   const [isMoving, setIsMoving] = useState(false);
-  const selectedFeature = selectedFeatureFromSearch || selectedFeatureFromDrag;
   const [showPinPopover, setShowPinPopover] = useState(true);
   const debouncedSearchQuery = useDebounce(query, 200);
 
-  const reverseGeocode = async ({ lat, lng }: { lat: number; lng: number }) => {
-    setIsFetchingRGResults(true);
-    const response = await fetch(
-      `/api/places/reverse-geocode?lat=${lat}&lng=${lng}`,
-    );
+  const {
+    isFetching: isFetchingRGResults,
+    selectedFeature: selectedFeatureFromDrag,
+    refetch,
+  } = useReverseGeocode(map);
 
-    setIsFetchingRGResults(false);
-
-    if (!response.ok) {
-      throw new Error(`Response status: ${response.status}`);
-    }
-
-    const json = await response.json();
-    const result = json.data as GeoapifyPlace;
-    const firstFeature = result.features[0];
-
-    if (firstFeature) {
-      setSelectedFeatureFromDrag({
-        ...firstFeature,
-        ...(firstFeature.properties && {
-          properties: {
-            ...firstFeature.properties,
-            lat,
-            lon: lng,
-          },
-        }),
-      });
-    }
-
-    return result;
-  };
+  const selectedFeature = selectedFeatureFromSearch || selectedFeatureFromDrag;
 
   const { data: searchResults, isFetching } = useQuery({
     enabled: !!debouncedSearchQuery,
@@ -120,19 +92,6 @@ export function LocationSearchWithMap({
         ],
       }),
     placeholderData: (prev) => prev,
-  });
-
-  const { refetch } = useQuery({
-    enabled: false,
-    queryKey: ["reverse-geocode", map.getCenter().lat, map.getCenter().lng],
-    queryFn: () =>
-      reverseGeocode({
-        lat: map.getCenter().lat,
-        lng: map.getCenter().lng,
-      }),
-    placeholderData: (prev) => prev,
-    staleTime: Infinity,
-    retry: false,
   });
 
   const marker = useMemo(() => {

@@ -359,9 +359,9 @@ export function Map({
                       ? "Done"
                       : null}
                   {nextPage ? (
-                    <ArrowRightIcon className="ml-1 -mr-1 size-5" />
+                    <ArrowRightIcon className="-mr-1 ml-1 size-5" />
                   ) : (
-                    <CheckIcon className="ml-1 -mr-1 size-5" />
+                    <CheckIcon className="-mr-1 ml-1 size-5" />
                   )}
                 </Button>
               </div>
@@ -401,7 +401,7 @@ export function Map({
   return (
     <Form {...form}>
       <form
-        className="flex flex-col w-full h-full md:overflow-hidden"
+        className="flex h-full w-full flex-col md:overflow-hidden"
         onSubmit={form.handleSubmit(onStepSubmit)}
       >
         <MapformContent drawerValues={drawerValues} pageData={pageData}>
@@ -427,7 +427,7 @@ export function Map({
           >
             {!drawerValues.includes("location-search")
               ? selectedLocations.map((location) => {
-                  if (!location) {
+                  if (!location || !map) {
                     return null;
                   }
 
@@ -439,6 +439,7 @@ export function Map({
                       }}
                     >
                       <LocationMarker
+                        map={map}
                         latitude={location.y}
                         longitude={location.x}
                       >
@@ -448,7 +449,7 @@ export function Map({
                   );
                 })
               : null}
-            <div className="absolute z-10 flex items-center transform -translate-x-1/2 pointer-events-auto bottom-8 left-1/2 max-md:hidden">
+            <div className="pointer-events-auto absolute bottom-8 left-1/2 z-10 flex -translate-x-1/2 transform items-center max-md:hidden">
               {controls}
             </div>
           </MapformMap>

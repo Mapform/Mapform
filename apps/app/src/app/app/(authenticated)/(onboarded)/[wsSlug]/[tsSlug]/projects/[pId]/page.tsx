@@ -114,8 +114,6 @@ export default async function ProjectPage(props: {
     fetchSelectedFeature(searchParams?.feature),
   ]);
 
-  console.log(1111, pageData);
-
   if (!projectWithPages) {
     return redirect(`/app/${params.wsSlug}/${params.tsSlug}`);
   }

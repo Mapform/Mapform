@@ -13,7 +13,7 @@ import type Supercluster from "supercluster";
 import useSupercluster from "use-supercluster";
 import { AnimatePresence, motion } from "motion/react";
 import { useMapform } from "../index";
-import { LocationMarker } from "./location-marker";
+import { LocationMarker } from "../../location-marker";
 import { Cluster } from "./cluster";
 
 const accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
@@ -370,8 +370,6 @@ export function Map({
         data: lineGeojson,
       });
 
-      console.log(1111, lineGeojson);
-
       map.addLayer({
         id: "lines",
         type: "line",
@@ -425,15 +423,20 @@ export function Map({
                 17,
               );
 
+            if (!map) {
+              return null;
+            }
+
             return (
               <LocationMarker
                 key={cluster.id}
                 latitude={latitude}
                 longitude={longitude}
+                map={map}
               >
                 <Cluster
                   onClick={() => {
-                    if (!expansionZoom || !map) {
+                    if (!expansionZoom) {
                       return;
                     }
 
@@ -450,11 +453,16 @@ export function Map({
             );
           }
 
+          if (!map) {
+            return null;
+          }
+
           return (
             <LocationMarker
               key={cluster.properties.id}
               latitude={latitude}
               longitude={longitude}
+              map={map}
             >
               <motion.button
                 animate={{ opacity: 1, y: 0 }}

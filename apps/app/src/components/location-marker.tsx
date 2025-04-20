@@ -2,26 +2,16 @@ import type mapboxgl from "mapbox-gl";
 import { Marker } from "mapbox-gl";
 import { useEffect, useMemo } from "react";
 import * as Portal from "@radix-ui/react-portal";
-import { useMapform } from "../index";
 
 interface LocationMarkerProps {
+  map: mapboxgl.Map;
   longitude: number;
   latitude: number;
   markerOptions?: mapboxgl.MarkerOptions;
   children: React.ReactNode;
 }
 
-export function LocationMarker(props: LocationMarkerProps) {
-  const { map } = useMapform();
-
-  if (!map) {
-    return null;
-  }
-
-  return <LocationMarkerWithMap {...props} map={map} />;
-}
-
-export function LocationMarkerWithMap({
+export function LocationMarker({
   longitude,
   latitude,
   markerOptions,
@@ -30,6 +20,8 @@ export function LocationMarkerWithMap({
 }: LocationMarkerProps & { map: mapboxgl.Map }) {
   const marker = useMemo(() => {
     const el = document.createElement("div");
+    el.style.zIndex = "20";
+
     const mk = new Marker(el, markerOptions).setLngLat([longitude, latitude]);
 
     return mk;
@@ -41,7 +33,7 @@ export function LocationMarkerWithMap({
     return () => {
       marker.remove();
     };
-  }, []);
+  }, [map, marker]);
 
   return <Portal.Root container={marker.getElement()}>{children}</Portal.Root>;
 }
