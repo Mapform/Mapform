@@ -20,26 +20,23 @@ import {
   LayerPopoverAnchor,
   LayerPopoverContent,
 } from "../layer-popover";
+import { useProject } from "../project-context";
 
 interface LayerSavePopoverProps {
-  trigger: React.ReactNode;
+  children: React.ReactNode;
   location: { x?: number; y?: number };
   title?: string;
-  pageLayers: Array<{
-    layerId: string;
-    name: string | null;
-  }>;
 }
 
 export function LayerSavePopover({
-  trigger,
+  children,
   location,
   title,
-  pageLayers,
 }: LayerSavePopoverProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState<string>("");
   const [layerPopoverOpen, setLayerPopoverOpen] = useState(false);
+  const { currentProject, updatePageServerAction } = useProject();
   const { execute: executeCreatePoint, isPending } = useAction(
     createPointAction,
     {
@@ -48,6 +45,13 @@ export function LayerSavePopover({
         setIsOpen(false);
       },
     },
+  );
+
+  const currentPage = updatePageServerAction.optimisticState;
+  const pageLayers = currentProject.pageLayers.filter(
+    (layer) =>
+      layer.pageId === currentPage?.id &&
+      (layer.type === "point" || layer.type === "marker"),
   );
 
   return (
@@ -62,7 +66,7 @@ export function LayerSavePopover({
           setIsOpen(val);
         }}
       >
-        <PopoverTrigger asChild>{trigger}</PopoverTrigger>
+        <PopoverTrigger asChild>{children}</PopoverTrigger>
         <PopoverContent align="end" className="w-[200px] p-0" side="right">
           <Command
             filter={(value, search, keywords) => {

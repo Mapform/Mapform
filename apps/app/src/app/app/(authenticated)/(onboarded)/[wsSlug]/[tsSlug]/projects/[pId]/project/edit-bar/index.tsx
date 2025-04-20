@@ -6,6 +6,7 @@ import { LineTool } from "./line-tool";
 import { MapOptions } from "./map-options";
 import { PointTool } from "./point-tool";
 import { SearchTool } from "./search-tool";
+import { ShapeTool } from "./shape-tool";
 
 interface EditBarProps {
   onSearchOpenChange: (isOpen: boolean) => void;
@@ -14,9 +15,9 @@ interface EditBarProps {
 export function EditBar({ onSearchOpenChange }: EditBarProps) {
   const { drawerValues } = useMapformContent();
   const isSearchOpen = drawerValues.includes("location-search");
-  const [activeTool, setActiveTool] = useState<"hand" | "point" | "line">(
-    "hand",
-  );
+  const [activeTool, setActiveTool] = useState<
+    "hand" | "point" | "line" | "shape"
+  >("hand");
 
   return (
     <div
@@ -56,6 +57,14 @@ export function EditBar({ onSearchOpenChange }: EditBarProps) {
           isSearchOpen={isSearchOpen}
           onClick={() => {
             setActiveTool("line");
+            onSearchOpenChange(false);
+          }}
+        />
+        <ShapeTool
+          isActive={activeTool === "shape"}
+          isSearchOpen={isSearchOpen}
+          onClick={() => {
+            setActiveTool("shape");
             onSearchOpenChange(false);
           }}
         />

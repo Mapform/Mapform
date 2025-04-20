@@ -6,29 +6,7 @@ import {
 import { MapformDrawer, useMapform } from "~/components/mapform";
 import { useProject } from "../project-context";
 import type { GetPageWithLayers } from "@mapform/backend/data/pages/get-page-with-layers";
-import {
-  Command,
-  CommandInput,
-  CommandList,
-  CommandGroup,
-  CommandItem,
-  CommandSeparator,
-} from "@mapform/ui/components/command";
-import {
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-} from "@mapform/ui/components/popover";
-import { PlusIcon, Layers2Icon, BookmarkIcon, ScanIcon } from "lucide-react";
-import {
-  LayerPopoverRoot,
-  LayerPopoverAnchor,
-  LayerPopoverContent,
-} from "../layer-popover";
-import { useAction } from "next-safe-action/hooks";
-import { createPointAction } from "~/data/datasets/create-point";
-import { useState } from "react";
-import { useSetQueryString } from "@mapform/lib/hooks/use-set-query-string";
+import { BookmarkIcon, ScanIcon } from "lucide-react";
 import { LayerSavePopover } from "./layer-save-popover";
 
 interface LocationSearchDrawerProps {
@@ -64,14 +42,7 @@ export function LocationSearchDrawerInner({
 }: LocationSearchDrawerProps) {
   const { map } = useMapform();
   const { selectedFeature } = useLocationSearch();
-  const setQueryString = useSetQueryString();
-  const { currentProject, updatePageServerAction } = useProject();
-
-  const pageLayers = currentProject.pageLayers.filter(
-    (layer) =>
-      layer.pageId === currentPage.id &&
-      (layer.type === "point" || layer.type === "marker"),
-  );
+  const { updatePageServerAction } = useProject();
 
   const location = {
     x: selectedFeature?.properties?.lon,
@@ -128,23 +99,18 @@ export function LocationSearchDrawerInner({
         <ScanIcon className="mr-1 size-4" />
         Set View
       </LocationSearchButton>
-      <LayerSavePopover
-        trigger={
-          <LocationSearchButton
-            className="w-full"
-            disabled={!selectedFeature?.properties}
-            role="combobox"
-            size="sm"
-            variant="outline"
-          >
-            <BookmarkIcon className="mr-1 size-4" />
-            Save to
-          </LocationSearchButton>
-        }
-        location={location}
-        title={title}
-        pageLayers={pageLayers}
-      />
+      <LayerSavePopover location={location} title={title}>
+        <LocationSearchButton
+          className="w-full"
+          disabled={!selectedFeature?.properties}
+          role="combobox"
+          size="sm"
+          variant="outline"
+        >
+          <BookmarkIcon className="mr-1 size-4" />
+          Save to
+        </LocationSearchButton>
+      </LayerSavePopover>
     </div>
   );
 }

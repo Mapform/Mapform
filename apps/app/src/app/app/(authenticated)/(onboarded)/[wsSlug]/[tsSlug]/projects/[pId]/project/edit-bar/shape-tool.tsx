@@ -2,20 +2,21 @@ import { Button } from "@mapform/ui/components/button";
 import {
   Tooltip,
   TooltipContent,
+  TooltipProvider,
   TooltipTrigger,
 } from "@mapform/ui/components/tooltip";
-import { WaypointsIcon } from "lucide-react";
+import { PentagonIcon, SplinePointerIcon } from "lucide-react";
 import { useEffect } from "react";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import { useMapform } from "~/components/mapform";
 
-interface LineToolProps {
+interface ShapeToolProps {
   isActive: boolean;
   isSearchOpen: boolean;
   onClick: () => void;
 }
 
-export function LineTool({ isActive, isSearchOpen, onClick }: LineToolProps) {
+export function ShapeTool({ isActive, isSearchOpen, onClick }: ShapeToolProps) {
   const { map } = useMapform();
 
   const onDrawCreate = (
@@ -34,7 +35,7 @@ export function LineTool({ isActive, isSearchOpen, onClick }: LineToolProps) {
         //   polygon: true,
         //   trash: true,
         // },
-        defaultMode: "draw_line_string",
+        defaultMode: "draw_polygon",
       });
       map?.addControl(draw);
       map?.on("draw.create", onDrawCreate);
@@ -56,10 +57,10 @@ export function LineTool({ isActive, isSearchOpen, onClick }: LineToolProps) {
           size="icon"
           variant={isActive && !isSearchOpen ? "default" : "ghost"}
         >
-          <WaypointsIcon className="size-5" />
+          <PentagonIcon className="size-5" />
         </Button>
       </TooltipTrigger>
-      <TooltipContent>Line tool</TooltipContent>
+      <TooltipContent>Shape tool</TooltipContent>
     </Tooltip>
   );
 }
