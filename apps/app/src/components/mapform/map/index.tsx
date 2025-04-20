@@ -1,4 +1,5 @@
 import "mapbox-gl/dist/mapbox-gl.css";
+import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import mapboxgl from "mapbox-gl";

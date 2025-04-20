@@ -23,7 +23,8 @@ import {
   SearchIcon,
   SplinePointerIcon,
 } from "lucide-react";
-import { useState } from "react";
+import MapboxDraw from "@mapbox/mapbox-gl-draw";
+import { useEffect, useState } from "react";
 
 interface EditBarProps {
   onSearchOpenChange: (isOpen: boolean) => void;
@@ -74,6 +75,50 @@ export function EditBar({ onSearchOpenChange }: EditBarProps) {
       });
     }
   };
+
+  useEffect(() => {
+    let draw: MapboxDraw | undefined;
+
+    if (activeTool === "point") {
+      draw = new MapboxDraw({
+        displayControlsDefault: false,
+        controls: {
+          point: true,
+          trash: true,
+        },
+        defaultMode: "draw_point",
+      });
+      map?.addControl(draw);
+    }
+
+    return () => {
+      if (draw) {
+        map?.removeControl(draw);
+      }
+    };
+  }, [activeTool, map]);
+
+  useEffect(() => {
+    let draw: MapboxDraw | undefined;
+
+    if (activeTool === "line") {
+      draw = new MapboxDraw({
+        displayControlsDefault: false,
+        controls: {
+          polygon: true,
+          trash: true,
+        },
+        defaultMode: "draw_polygon",
+      });
+      map?.addControl(draw);
+    }
+
+    return () => {
+      if (draw) {
+        map?.removeControl(draw);
+      }
+    };
+  }, [activeTool, map]);
 
   return (
     <TooltipProvider delayDuration={200}>
