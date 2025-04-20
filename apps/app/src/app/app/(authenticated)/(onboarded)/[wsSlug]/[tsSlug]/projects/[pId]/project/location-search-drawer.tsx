@@ -8,6 +8,9 @@ import { useProject } from "../project-context";
 import type { GetPageWithLayers } from "@mapform/backend/data/pages/get-page-with-layers";
 import { BookmarkIcon, ScanIcon } from "lucide-react";
 import { LayerSavePopover } from "./layer-save-popover";
+import { useAction } from "next-safe-action/hooks";
+import { createPointAction } from "~/data/datasets/create-point";
+import { useState } from "react";
 
 interface LocationSearchDrawerProps {
   currentPage: NonNullable<GetPageWithLayers["data"]>;
@@ -43,6 +46,15 @@ export function LocationSearchDrawerInner({
   const { map } = useMapform();
   const { selectedFeature } = useLocationSearch();
   const { updatePageServerAction } = useProject();
+  const { execute: executeCreatePoint, isPending } = useAction(
+    createPointAction,
+    {
+      onSuccess: () => {
+        onClose();
+      },
+    },
+  );
+  const [isLayerSaveOpen, setIsLayerSaveOpen] = useState(false);
 
   const location = {
     x: selectedFeature?.properties?.lon,
@@ -85,6 +97,20 @@ export function LocationSearchDrawerInner({
     }
   };
 
+  const handleLayerSelect = (layerId: string) => {
+    if (!location.x || !location.y) return;
+
+    executeCreatePoint({
+      layerId,
+      title,
+      description: null,
+      location: {
+        x: location.x,
+        y: location.y,
+      },
+    });
+  };
+
   return (
     <div className="flex">
       <LocationSearchButton
@@ -99,7 +125,12 @@ export function LocationSearchDrawerInner({
         <ScanIcon className="mr-1 size-4" />
         Set View
       </LocationSearchButton>
-      <LayerSavePopover location={location} title={title}>
+      <LayerSavePopover
+        onSelect={handleLayerSelect}
+        isPending={isPending}
+        open={isLayerSaveOpen}
+        onOpenChange={setIsLayerSaveOpen}
+      >
         <LocationSearchButton
           className="w-full"
           disabled={!selectedFeature?.properties}

@@ -13,8 +13,6 @@ import {
 } from "@mapform/ui/components/popover";
 import { PlusIcon, Layers2Icon } from "lucide-react";
 import { useState } from "react";
-import { useAction } from "next-safe-action/hooks";
-import { createPointAction } from "~/data/datasets/create-point";
 import {
   LayerPopoverRoot,
   LayerPopoverAnchor,
@@ -24,28 +22,26 @@ import { useProject } from "../project-context";
 
 interface LayerSavePopoverProps {
   children: React.ReactNode;
-  location: { x?: number; y?: number };
-  title?: string;
+  onSelect: (layerId: string) => void;
+  isPending?: boolean;
+  align?: "start" | "center" | "end";
+  side?: "top" | "right" | "bottom" | "left";
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 export function LayerSavePopover({
   children,
-  location,
-  title,
+  onSelect,
+  isPending = false,
+  align = "end",
+  side = "right",
+  open,
+  onOpenChange,
 }: LayerSavePopoverProps) {
-  const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState<string>("");
   const [layerPopoverOpen, setLayerPopoverOpen] = useState(false);
   const { currentProject, updatePageServerAction } = useProject();
-  const { execute: executeCreatePoint, isPending } = useAction(
-    createPointAction,
-    {
-      onSuccess: ({ data }) => {
-        setLayerPopoverOpen(false);
-        setIsOpen(false);
-      },
-    },
-  );
 
   const currentPage = updatePageServerAction.optimisticState;
   const pageLayers = currentProject.pageLayers.filter(
@@ -58,16 +54,16 @@ export function LayerSavePopover({
     <>
       <Popover
         modal
-        open={isOpen}
+        open={open}
         onOpenChange={(val) => {
           if (val) {
             setQuery("");
           }
-          setIsOpen(val);
+          onOpenChange?.(val);
         }}
       >
         <PopoverTrigger asChild>{children}</PopoverTrigger>
-        <PopoverContent align="end" className="w-[200px] p-0" side="right">
+        <PopoverContent align={align} className="w-[200px] p-0" side={side}>
           <Command
             filter={(value, search, keywords) => {
               if (value === "new-layer") return 1;
@@ -116,23 +112,7 @@ export function LayerSavePopover({
                       disabled={isPending}
                       key={pageLayer.layerId}
                       keywords={[pageLayer.name || "Untitled"]}
-                      onSelect={() => {
-                        if (
-                          location.x === undefined ||
-                          location.y === undefined
-                        )
-                          return;
-
-                        executeCreatePoint({
-                          layerId: pageLayer.layerId,
-                          title,
-                          description: null,
-                          location: {
-                            x: location.x,
-                            y: location.y,
-                          },
-                        });
-                      }}
+                      onSelect={() => onSelect(pageLayer.layerId)}
                       value={pageLayer.layerId}
                     >
                       <div className="flex items-center overflow-hidden truncate">
@@ -155,26 +135,14 @@ export function LayerSavePopover({
       >
         <LayerPopoverAnchor />
         <LayerPopoverContent
-          align="start"
+          align={align}
           initialName={query}
           key={query}
           onClose={() => {
             setLayerPopoverOpen(false);
           }}
-          onSuccess={(layerId) => {
-            if (location.x === undefined || location.y === undefined) return;
-
-            executeCreatePoint({
-              layerId,
-              title,
-              description: null,
-              location: {
-                x: location.x,
-                y: location.y,
-              },
-            });
-          }}
-          side="right"
+          onSuccess={(layerId) => onSelect(layerId)}
+          side={side}
         />
       </LayerPopoverRoot>
     </>
