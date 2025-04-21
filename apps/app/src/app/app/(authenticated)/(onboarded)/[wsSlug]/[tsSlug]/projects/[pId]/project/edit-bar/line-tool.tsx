@@ -114,13 +114,9 @@ export function LineTool({
       </Tooltip>
       <Popover modal onOpenChange={setOpen} open={open}>
         <PopoverTrigger asChild>
-          <Button
-            className="hover:bg-accent hover:text-accent-foreground ml-[1px] h-full rounded-md p-0.5"
-            size="icon"
-            variant="ghost"
-          >
+          <button className="hover:bg-accent hover:text-accent-foreground ml-[1px] h-full rounded-md p-0.5">
             <ChevronDown size={10} strokeWidth={3} />
-          </Button>
+          </button>
         </PopoverTrigger>
         <PopoverContent align="center" className="w-[200px] p-0" side="top">
           <Command>
