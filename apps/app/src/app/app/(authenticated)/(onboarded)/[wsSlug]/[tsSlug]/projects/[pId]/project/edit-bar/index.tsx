@@ -2,6 +2,7 @@ import { cn } from "@mapform/lib/classnames";
 import { useMapformContent } from "~/components/mapform";
 import { useState } from "react";
 import { HandTool } from "./hand-tool";
+import type { lineTypes } from "./line-tool";
 import { LineTool } from "./line-tool";
 import { MapOptions } from "./map-options";
 import { PointTool } from "./point-tool";
@@ -18,6 +19,8 @@ export function EditBar({ onSearchOpenChange }: EditBarProps) {
   const [activeTool, setActiveTool] = useState<
     "hand" | "point" | "line" | "shape"
   >("hand");
+  const [selectedLineType, setSelectedLineType] =
+    useState<keyof typeof lineTypes>("line");
 
   return (
     <div
@@ -56,6 +59,8 @@ export function EditBar({ onSearchOpenChange }: EditBarProps) {
         />
         <LineTool
           key={`line-${activeTool}`}
+          selectedLineType={selectedLineType}
+          setSelectedLineType={setSelectedLineType}
           isActive={activeTool === "line" && !isSearchOpen}
           isSearchOpen={isSearchOpen}
           onClick={() => {
