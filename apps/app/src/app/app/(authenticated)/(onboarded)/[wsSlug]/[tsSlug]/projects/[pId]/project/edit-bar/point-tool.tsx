@@ -4,7 +4,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@mapform/ui/components/tooltip";
-import { MapPinPlusIcon } from "lucide-react";
+import { BookmarkIcon, MapPinPlusIcon, PlusIcon } from "lucide-react";
 import { useEffect, useState, useCallback, useRef } from "react";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import { useMapform } from "~/components/mapform";
@@ -25,6 +25,7 @@ function PointToolInner({
   map,
 }: PointToolProps & { map: mapboxgl.Map }) {
   const drawRef = useRef<MapboxDraw | null>(null);
+  const searchPopoverRef = useRef<HTMLDivElement>(null);
   const [location, setLocation] = useState<mapboxgl.LngLat | null>(null);
 
   const { isFetching, selectedFeature } = useReverseGeocode({
@@ -48,13 +49,26 @@ function PointToolInner({
     [],
   );
 
+  const handleMapClick = useCallback((e: mapboxgl.MapMouseEvent) => {
+    console.log("handleMapClick", e.target);
+  }, []);
+
   const onDrawSelectionChange = useCallback(
     (e: mapboxgl.MapLayerMouseEvent) => {
+      // console.log("onDrawSelectionChange", e.target);
+
+      // Check if the click target is within the SearchPopover
+      // if (searchPopoverRef.current?.contains(e.target)) {
+      //   return;
+      // }
+
+      // console.log(2222);
+
       if (!e.features?.length && drawRef.current) {
         map.removeControl(drawRef.current);
         map.off("draw.create", onDrawCreate);
         map.off("draw.update", onDrawCreate);
-        map.off("draw.selectionchange", onDrawSelectionChange);
+        // map.off("draw.selectionchange", onDrawSelectionChange);
         drawRef.current = null;
         setLocation(null);
 
@@ -66,11 +80,12 @@ function PointToolInner({
         drawRef.current = draw;
         map.on("draw.create", onDrawCreate);
         map.on("draw.update", onDrawCreate);
-        map.on("draw.selectionchange", onDrawSelectionChange);
+        // map.on("draw.selectionchange", onDrawSelectionChange);
+        map.on("click", handleMapClick);
         map.addControl(draw);
       }
     },
-    [map, onDrawCreate],
+    [map, onDrawCreate, handleMapClick],
   );
 
   useEffect(() => {
@@ -83,7 +98,8 @@ function PointToolInner({
       map.addControl(draw);
       map.on("draw.create", onDrawCreate);
       map.on("draw.update", onDrawCreate);
-      map.on("draw.selectionchange", onDrawSelectionChange);
+      map.on("click", handleMapClick);
+      // map.on("draw.selectionchange", onDrawSelectionChange);
     }
 
     return () => {
@@ -91,8 +107,10 @@ function PointToolInner({
         map.removeControl(drawRef.current);
         map.off("draw.create", onDrawCreate);
         map.off("draw.update", onDrawCreate);
-        map.off("draw.selectionchange", onDrawSelectionChange);
+        map.off("click", handleMapClick);
+        // map.off("draw.selectionchange", onDrawSelectionChange);
         drawRef.current = null;
+        setLocation(null);
       }
     };
   }, [isActive, map, onDrawCreate, onDrawSelectionChange]);
@@ -113,9 +131,17 @@ function PointToolInner({
       </Tooltip>
       {location && (
         <SearchPopover
+          ref={searchPopoverRef}
           location={location}
           selectedFeature={selectedFeature}
           isPending={isFetching}
+          actions={[
+            {
+              label: "Save to",
+              onClick: () => {},
+              icon: BookmarkIcon,
+            },
+          ]}
         ></SearchPopover>
       )}
     </>

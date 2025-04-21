@@ -38,7 +38,7 @@ export function EditBar({ onSearchOpenChange }: EditBarProps) {
       <div className="flex gap-1 px-1.5">
         <HandTool
           key={`hand-${activeTool}`}
-          isActive={activeTool === "hand"}
+          isActive={activeTool === "hand" && !isSearchOpen}
           isSearchOpen={isSearchOpen}
           onClick={() => {
             setActiveTool("hand");
@@ -47,7 +47,7 @@ export function EditBar({ onSearchOpenChange }: EditBarProps) {
         />
         <PointTool
           key={`point-${activeTool}`}
-          isActive={activeTool === "point"}
+          isActive={activeTool === "point" && !isSearchOpen}
           isSearchOpen={isSearchOpen}
           onClick={() => {
             setActiveTool("point");
@@ -56,7 +56,7 @@ export function EditBar({ onSearchOpenChange }: EditBarProps) {
         />
         <LineTool
           key={`line-${activeTool}`}
-          isActive={activeTool === "line"}
+          isActive={activeTool === "line" && !isSearchOpen}
           isSearchOpen={isSearchOpen}
           onClick={() => {
             setActiveTool("line");
@@ -65,7 +65,7 @@ export function EditBar({ onSearchOpenChange }: EditBarProps) {
         />
         <ShapeTool
           key={`shape-${activeTool}`}
-          isActive={activeTool === "shape"}
+          isActive={activeTool === "shape" && !isSearchOpen}
           isSearchOpen={isSearchOpen}
           onClick={() => {
             setActiveTool("shape");
