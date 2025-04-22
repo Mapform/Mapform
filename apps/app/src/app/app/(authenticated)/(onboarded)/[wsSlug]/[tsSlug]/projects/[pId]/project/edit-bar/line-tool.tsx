@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useMapform } from "~/components/mapform";
+import { useQuery } from "@tanstack/react-query";
 import {
   Command,
   CommandList,
@@ -57,6 +58,14 @@ export const lineTypes: Record<string, { icon: LucideIcon; label: string }> = {
   },
 };
 
+const fetchDirections = async (waypoints: Position[]) => {
+  const response = await fetch(
+    `/api/places/routing?waypoints=${waypoints.map((w) => w.reverse().join(",")).join("|")}`,
+  );
+  const json = await response.json();
+  return json.data;
+};
+
 export function LineTool({
   isActive,
   isSearchOpen,
@@ -67,6 +76,15 @@ export function LineTool({
   const { map } = useMapform();
   const [open, setOpen] = useState(false);
   const [linePoints, setLinePoints] = useState<Position[]>([]);
+
+  const { data: searchResults, isFetching } = useQuery({
+    enabled: linePoints.length > 1,
+    queryKey: ["directions", linePoints],
+    queryFn: () => fetchDirections(linePoints),
+    retry: false,
+  });
+
+  console.log(1111, searchResults);
 
   // const onDrawCreate = (
   //   e: mapboxgl.MapMouseEvent & { features: mapboxgl.MapboxGeoJSONFeature[] },

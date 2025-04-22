@@ -7,6 +7,7 @@ type Mode = "drive" | "bicycle" | "walk";
 
 export async function GET(request: Request) {
   try {
+    console.log(11111, request);
     const session = await getCurrentSession();
 
     if (!session?.data?.user) {
@@ -17,6 +18,7 @@ export async function GET(request: Request) {
       (new URL(request.url).searchParams.get("mode") as Mode | undefined) ??
       "drive";
     const waypoints = new URL(request.url).searchParams.get("waypoints") ?? "";
+    console.log(22222, waypoints);
 
     const requestParams = new URLSearchParams({
       apiKey: env.GEOAPIFY_API_KEY,
