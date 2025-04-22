@@ -14,11 +14,9 @@ import {
   CheckIcon,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import { useMapform } from "~/components/mapform";
 import {
   Command,
-  CommandInput,
   CommandList,
   CommandGroup,
   CommandItem,
@@ -30,6 +28,7 @@ import {
   PopoverTrigger,
 } from "@mapform/ui/components/popover";
 import { cn } from "@mapform/lib/classnames";
+import type { Position } from "geojson";
 
 interface LineToolProps {
   isActive: boolean;
@@ -67,33 +66,155 @@ export function LineTool({
 }: LineToolProps) {
   const { map } = useMapform();
   const [open, setOpen] = useState(false);
-  const [query, setQuery] = useState("");
+  const [linePoints, setLinePoints] = useState<Position[]>([]);
 
-  const onDrawCreate = (
-    e: mapboxgl.MapMouseEvent & { features: mapboxgl.MapboxGeoJSONFeature[] },
-  ) => {
-    console.log(1111, e);
-  };
+  // const onDrawCreate = (
+  //   e: mapboxgl.MapMouseEvent & { features: mapboxgl.MapboxGeoJSONFeature[] },
+  // ) => {
+  //   console.log(1111, e);
+  // };
+
+  // useEffect(() => {
+  //   let draw: MapboxDraw | undefined;
+
+  //   if (isActive) {
+  //     draw = new MapboxDraw({
+  //       displayControlsDefault: false,
+  //       defaultMode: "draw_line_string",
+  //     });
+  //     map?.addControl(draw);
+  //     map?.on("draw.create", onDrawCreate);
+  //   }
+
+  //   return () => {
+  //     if (draw) {
+  //       map?.removeControl(draw);
+  //       map?.off("draw.create", onDrawCreate);
+  //     }
+  //   };
+  // }, [isActive, map]);
 
   useEffect(() => {
-    let draw: MapboxDraw | undefined;
+    if (!map) return;
 
     if (isActive) {
-      draw = new MapboxDraw({
-        displayControlsDefault: false,
-        defaultMode: "draw_line_string",
-      });
-      map?.addControl(draw);
-      map?.on("draw.create", onDrawCreate);
+      map.getCanvas().style.cursor = "crosshair";
+    } else {
+      map.getCanvas().style.cursor = "";
     }
 
     return () => {
-      if (draw) {
-        map?.removeControl(draw);
-        map?.off("draw.create", onDrawCreate);
-      }
+      map.getCanvas().style.cursor = "";
     };
   }, [isActive, map]);
+
+  useEffect(() => {
+    if (!map || !isActive) return;
+
+    const handleClick = (e: mapboxgl.MapMouseEvent) => {
+      const { lng, lat } = e.lngLat;
+      setLinePoints((prev) => [...prev, [lng, lat]]);
+    };
+
+    map.on("click", handleClick);
+
+    return () => {
+      map.off("click", handleClick);
+    };
+  }, [map, isActive]);
+
+  useEffect(() => {
+    if (!map) return;
+
+    // Remove existing points source and layer if they exist
+    if (map.getSource("line-points")) {
+      map.removeLayer("line-points");
+      map.removeSource("line-points");
+    }
+
+    // Add new source and layer
+    map.addSource("line-points", {
+      type: "geojson",
+      data: {
+        type: "FeatureCollection",
+        features: linePoints.map((point, index) => ({
+          type: "Feature",
+          geometry: {
+            type: "Point",
+            coordinates: point,
+          },
+          properties: {
+            index,
+          },
+        })),
+      },
+    });
+
+    map.addLayer({
+      id: "line-points",
+      type: "circle",
+      source: "line-points",
+      paint: {
+        "circle-radius": 8,
+        "circle-color": "#3b82f6",
+        "circle-stroke-color": "#fff",
+        "circle-stroke-width": 2,
+      },
+    });
+
+    return () => {
+      if (map.getSource("line-points")) {
+        map.removeLayer("line-points");
+        map.removeSource("line-points");
+      }
+    };
+  }, [map, linePoints]);
+
+  // Commented out line rendering code for future use
+  /*
+  useEffect(() => {
+    if (!map) return;
+
+    // Remove existing line source and layer if they exist
+    if (map.getSource('line-points')) {
+      map.removeLayer('line-points');
+      map.removeSource('line-points');
+    }
+
+    // Add new source and layer
+    map.addSource('line-points', {
+      type: 'geojson',
+      data: {
+        type: 'FeatureCollection',
+        features: [{
+          type: 'Feature',
+          geometry: {
+            type: 'LineString',
+            coordinates: linePoints
+          },
+          properties: {}
+        }]
+      }
+    });
+
+    map.addLayer({
+      id: 'line-points',
+      type: 'line',
+      source: 'line-points',
+      paint: {
+        'line-color': '#3b82f6',
+        'line-width': 3
+      }
+    });
+
+    return () => {
+      if (map.getSource('line-points')) {
+        map.removeLayer('line-points');
+        map.removeSource('line-points');
+      }
+    };
+  }, [map, linePoints]);
+  */
 
   return (
     <div className="flex items-center">
@@ -120,12 +241,6 @@ export function LineTool({
         </PopoverTrigger>
         <PopoverContent align="center" className="w-[200px] p-0" side="top">
           <Command>
-            {/* <CommandInput
-              className="h-9"
-              onValueChange={setQuery}
-              placeholder="Search line types..."
-              value={query}
-            /> */}
             <CommandList>
               <CommandEmpty>No line type found.</CommandEmpty>
               <CommandGroup>
@@ -136,7 +251,6 @@ export function LineTool({
                       value={label}
                       onSelect={() => {
                         setSelectedLineType(key as keyof typeof lineTypes);
-                        setQuery("");
                         setOpen(false);
                       }}
                       className="flex items-center gap-2"
