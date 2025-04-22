@@ -30,6 +30,7 @@ import {
 } from "@mapform/ui/components/popover";
 import { cn } from "@mapform/lib/classnames";
 import type { Position } from "geojson";
+import type { GeoapifyRoute } from "@mapform/map-utils/types";
 
 interface LineToolProps {
   isActive: boolean;
@@ -63,7 +64,7 @@ const fetchDirections = async (waypoints: Position[]) => {
     `/api/places/routing?waypoints=${waypoints.map((w) => w.reverse().join(",")).join("|")}`,
   );
   const json = await response.json();
-  return json.data;
+  return json.data as GeoapifyRoute;
 };
 
 export function LineTool({
@@ -85,32 +86,6 @@ export function LineTool({
   });
 
   console.log(1111, searchResults);
-
-  // const onDrawCreate = (
-  //   e: mapboxgl.MapMouseEvent & { features: mapboxgl.MapboxGeoJSONFeature[] },
-  // ) => {
-  //   console.log(1111, e);
-  // };
-
-  // useEffect(() => {
-  //   let draw: MapboxDraw | undefined;
-
-  //   if (isActive) {
-  //     draw = new MapboxDraw({
-  //       displayControlsDefault: false,
-  //       defaultMode: "draw_line_string",
-  //     });
-  //     map?.addControl(draw);
-  //     map?.on("draw.create", onDrawCreate);
-  //   }
-
-  //   return () => {
-  //     if (draw) {
-  //       map?.removeControl(draw);
-  //       map?.off("draw.create", onDrawCreate);
-  //     }
-  //   };
-  // }, [isActive, map]);
 
   useEffect(() => {
     if (!map) return;
@@ -141,98 +116,118 @@ export function LineTool({
     };
   }, [map, isActive]);
 
-  useEffect(() => {
-    if (!map) return;
+  // useEffect(() => {
+  //   if (!map) return;
 
-    // Remove existing points source and layer if they exist
-    if (map.getSource("line-points")) {
-      map.removeLayer("line-points");
-      map.removeSource("line-points");
-    }
+  //   // Remove existing points source and layer if they exist
+  //   if (map.getSource("line-vertices")) {
+  //     map.removeLayer("line-vertices");
+  //     map.removeSource("line-vertices");
+  //   }
 
-    // Add new source and layer
-    map.addSource("line-points", {
-      type: "geojson",
-      data: {
-        type: "FeatureCollection",
-        features: linePoints.map((point, index) => ({
-          type: "Feature",
-          geometry: {
-            type: "Point",
-            coordinates: point,
-          },
-          properties: {
-            index,
-          },
-        })),
-      },
-    });
+  //   // Add new source and layer
+  //   map.addSource("line-vertices", {
+  //     type: "geojson",
+  //     data: {
+  //       type: "FeatureCollection",
+  //       features: linePoints.map((point, index) => ({
+  //         type: "Feature",
+  //         geometry: {
+  //           type: "Point",
+  //           coordinates: point,
+  //         },
+  //         properties: {
+  //           index,
+  //         },
+  //       })),
+  //     },
+  //   });
 
-    map.addLayer({
-      id: "line-points",
-      type: "circle",
-      source: "line-points",
-      paint: {
-        "circle-radius": 8,
-        "circle-color": "#3b82f6",
-        "circle-stroke-color": "#fff",
-        "circle-stroke-width": 2,
-      },
-    });
+  //   map.addLayer({
+  //     id: "line-vertices",
+  //     type: "circle",
+  //     source: "line-vertices",
+  //     paint: {
+  //       "circle-radius": 8,
+  //       "circle-color": "#3b82f6",
+  //       "circle-stroke-color": "#fff",
+  //       "circle-stroke-width": 2,
+  //     },
+  //   });
 
-    return () => {
-      if (map.getSource("line-points")) {
-        map.removeLayer("line-points");
-        map.removeSource("line-points");
-      }
-    };
-  }, [map, linePoints]);
+  //   return () => {
+  //     if (map.getSource("line-vertices")) {
+  //       map.removeLayer("line-vertices");
+  //       map.removeSource("line-vertices");
+  //     }
+  //   };
+  // }, [map, linePoints]);
 
-  // Commented out line rendering code for future use
-  /*
-  useEffect(() => {
-    if (!map) return;
+  // useEffect(() => {
+  //   if (!map) {
+  //     console.log("Map is not initialized");
+  //     return;
+  //   }
 
-    // Remove existing line source and layer if they exist
-    if (map.getSource('line-points')) {
-      map.removeLayer('line-points');
-      map.removeSource('line-points');
-    }
+  //   console.log("Search results:", searchResults);
+  //   console.log("Map instance:", map);
 
-    // Add new source and layer
-    map.addSource('line-points', {
-      type: 'geojson',
-      data: {
-        type: 'FeatureCollection',
-        features: [{
-          type: 'Feature',
-          geometry: {
-            type: 'LineString',
-            coordinates: linePoints
-          },
-          properties: {}
-        }]
-      }
-    });
+  //   // Remove existing line source and layer if they exist
+  //   if (map.getSource("line-path")) {
+  //     console.log("Removing existing line source");
+  //     map.removeLayer("line-path");
+  //     map.removeSource("line-path");
+  //   }
 
-    map.addLayer({
-      id: 'line-points',
-      type: 'line',
-      source: 'line-points',
-      paint: {
-        'line-color': '#3b82f6',
-        'line-width': 3
-      }
-    });
+  //   if (searchResults?.results?.[0]?.geometry) {
+  //     console.log("Geometry data:", searchResults.results[0].geometry);
+  //     // Add new source and layer
+  //     map.addSource("line-path", {
+  //       type: "geojson",
+  //       data: {
+  //         type: "FeatureCollection",
+  //         features: [
+  //           {
+  //             type: "Feature",
+  //             geometry: {
+  //               type: "LineString",
+  //               coordinates: searchResults.results[0].geometry.map((point) => {
+  //                 if (!point?.[0]) {
+  //                   console.log("Invalid point data:", point);
+  //                   return [0, 0];
+  //                 }
+  //                 return [point[0].lon, point[0].lat];
+  //               }),
+  //             },
+  //             properties: {},
+  //           },
+  //         ],
+  //       },
+  //     });
 
-    return () => {
-      if (map.getSource('line-points')) {
-        map.removeLayer('line-points');
-        map.removeSource('line-points');
-      }
-    };
-  }, [map, linePoints]);
-  */
+  //     console.log("Added source, adding layer");
+  //     map.addLayer({
+  //       id: "line-path",
+  //       type: "line",
+  //       source: "line-path",
+  //       paint: {
+  //         "line-color": "#3b82f6",
+  //         "line-width": 3,
+  //       },
+  //     });
+  //     console.log("Layer added successfully");
+  //   } else {
+  //     console.log("No valid geometry data found in search results");
+  //   }
+
+  //   return () => {
+  //     console.log("Cleanup - removing line source and layer");
+  //     if (map.getSource("line-path")) {
+  //       map.removeLayer("line-path");
+  //       map.removeSource("line-path");
+  //     }
+  //   };
+  // }, [map, searchResults]);
 
   return (
     <div className="flex items-center">

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import type { GeoapifyPlace } from "@mapform/map-utils/types";
+import type { GeoapifyRoute } from "@mapform/map-utils/types";
 import { env } from "~/env.mjs";
 import { getCurrentSession } from "~/data/auth/get-current-session";
 
@@ -18,7 +18,6 @@ export async function GET(request: Request) {
       (new URL(request.url).searchParams.get("mode") as Mode | undefined) ??
       "drive";
     const waypoints = new URL(request.url).searchParams.get("waypoints") ?? "";
-    console.log(22222, waypoints);
 
     const requestParams = new URLSearchParams({
       apiKey: env.GEOAPIFY_API_KEY,
@@ -41,7 +40,7 @@ export async function GET(request: Request) {
       throw new Error(`Response status: ${response.status}`);
     }
 
-    const data: GeoapifyPlace = await response.json();
+    const data: GeoapifyRoute = await response.json();
 
     return NextResponse.json({ data });
   } catch (e: unknown) {
