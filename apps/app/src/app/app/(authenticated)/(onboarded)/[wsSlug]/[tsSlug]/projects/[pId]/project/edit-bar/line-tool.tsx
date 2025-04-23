@@ -80,6 +80,9 @@ export function LineTool({
   const [isSelecting, setIsSelecting] = useState(true);
   const [linePoints, setLinePoints] = useState<Position[]>([]);
   const [cursorPosition, setCursorPosition] = useState<Position | null>(null);
+  const [draggedPointIndex, setDraggedPointIndex] = useState<number | null>(
+    null,
+  );
 
   // const { data: searchResults, isFetching } = useQuery({
   //   enabled: linePoints.length > 1,
@@ -108,6 +111,7 @@ export function LineTool({
     if (!map || !isActive) return;
 
     const handleClick = (e: mapboxgl.MapMouseEvent) => {
+      if (!isSelecting) return; // Only allow clicking to add points when in selecting mode
       const { lng, lat } = e.lngLat;
       setLinePoints((prev) => [...prev, [lng, lat]]);
     };
@@ -116,28 +120,48 @@ export function LineTool({
       if (isSelecting && linePoints.length > 0) {
         const { lng, lat } = e.lngLat;
         setCursorPosition([lng, lat]);
+      } else if (draggedPointIndex !== null) {
+        e.preventDefault();
+        const { lng, lat } = e.lngLat;
+        setLinePoints((prev) => {
+          const newPoints = [...prev];
+          newPoints[draggedPointIndex] = [lng, lat];
+          return newPoints;
+        });
+      }
+    };
+
+    const handleMouseUp = (e: mapboxgl.MapMouseEvent) => {
+      if (draggedPointIndex !== null) {
+        e.preventDefault();
+        setDraggedPointIndex(null);
+        map.getCanvas().style.cursor = "move";
       }
     };
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Enter") {
         setIsSelecting(false);
+        setCursorPosition(null);
       } else if (e.key === "Escape") {
         setLinePoints([]);
         setCursorPosition(null);
+        setIsSelecting(true);
       }
     };
 
     map.on("click", handleClick);
     map.on("mousemove", handleMouseMove);
+    map.on("mouseup", handleMouseUp);
     window.addEventListener("keydown", handleKeyDown);
 
     return () => {
       map.off("click", handleClick);
       map.off("mousemove", handleMouseMove);
+      map.off("mouseup", handleMouseUp);
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [map, isActive, isSelecting, linePoints]);
+  }, [map, isActive, isSelecting, linePoints, draggedPointIndex]);
 
   const verticesGeoJson = useMemo(
     () =>
@@ -186,9 +210,72 @@ export function LineTool({
           "circle-stroke-color": "#fff",
           "circle-stroke-width": 2,
         },
+        interactive: true,
       });
     }
   }, [map, verticesGeoJson]);
+
+  // Update vertices layer to be interactive when not selecting
+  useEffect(() => {
+    if (!map) return;
+
+    const currentLayer = map.getLayer("line-vertices");
+    if (currentLayer) {
+      map.setPaintProperty(
+        "line-vertices",
+        "circle-radius",
+        isSelecting ? 5 : 8,
+      );
+      map.setPaintProperty(
+        "line-vertices",
+        "circle-color",
+        isSelecting ? "#3b82f6" : "#2563eb",
+      );
+    }
+  }, [map, isSelecting]);
+
+  // Add vertex click handler and cursor styles
+  useEffect(() => {
+    if (!map) return;
+
+    const handleVertexMouseEnter = (e: mapboxgl.MapMouseEvent) => {
+      if (!isSelecting) {
+        e.preventDefault();
+        map.getCanvas().style.cursor = "move";
+      }
+    };
+
+    const handleVertexMouseLeave = (e: mapboxgl.MapMouseEvent) => {
+      if (!isSelecting) {
+        e.preventDefault();
+        map.getCanvas().style.cursor = "";
+      }
+    };
+
+    const handleVertexClick = (
+      e: mapboxgl.MapMouseEvent & {
+        features?: mapboxgl.MapboxGeoJSONFeature[];
+      },
+    ) => {
+      if (!e.features?.[0]?.properties?.index || isSelecting) return;
+      e.preventDefault();
+      const index = e.features[0].properties.index as number;
+      setDraggedPointIndex(index);
+      map.getCanvas().style.cursor = "grabbing";
+    };
+
+    if (!isSelecting) {
+      map.on("mouseenter", "line-vertices", handleVertexMouseEnter);
+      map.on("mouseleave", "line-vertices", handleVertexMouseLeave);
+      map.on("mousedown", "line-vertices", handleVertexClick);
+    }
+
+    return () => {
+      map.off("mouseenter", "line-vertices", handleVertexMouseEnter);
+      map.off("mouseleave", "line-vertices", handleVertexMouseLeave);
+      map.off("mousedown", "line-vertices", handleVertexClick);
+    };
+  }, [map, isSelecting]);
 
   const lineGeoJson = useMemo(() => {
     return {
