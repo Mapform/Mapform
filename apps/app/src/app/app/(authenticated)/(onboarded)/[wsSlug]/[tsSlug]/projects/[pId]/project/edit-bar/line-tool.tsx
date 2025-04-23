@@ -119,12 +119,23 @@ export function LineTool({
       }
     };
 
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Enter") {
+        setIsSelecting(false);
+      } else if (e.key === "Escape") {
+        setLinePoints([]);
+        setCursorPosition(null);
+      }
+    };
+
     map.on("click", handleClick);
     map.on("mousemove", handleMouseMove);
+    window.addEventListener("keydown", handleKeyDown);
 
     return () => {
       map.off("click", handleClick);
       map.off("mousemove", handleMouseMove);
+      window.removeEventListener("keydown", handleKeyDown);
     };
   }, [map, isActive, isSelecting, linePoints]);
 
