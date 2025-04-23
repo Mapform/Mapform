@@ -118,21 +118,22 @@ export function LineTool({
   }, [map, isActive]);
 
   const verticesGeoJson = useMemo(
-    () => ({
-      type: "FeatureCollection",
-      features: linePoints.map((point, index) => ({
-        type: "Feature",
-        geometry: {
-          type: "Point",
-          coordinates: point,
-        },
-        properties: {
-          index,
-        },
-      })),
-    }),
+    () =>
+      ({
+        type: "FeatureCollection",
+        features: linePoints.map((point, index) => ({
+          type: "Feature",
+          geometry: {
+            type: "Point",
+            coordinates: point,
+          },
+          properties: {
+            index,
+          },
+        })),
+      }) satisfies FeatureCollection,
     [linePoints],
-  ) satisfies FeatureCollection;
+  );
 
   // Line Vertices
   useEffect(() => {
@@ -158,7 +159,7 @@ export function LineTool({
         type: "circle",
         source: "line-vertices",
         paint: {
-          "circle-radius": 8,
+          "circle-radius": 5,
           "circle-color": "#3b82f6",
           "circle-stroke-color": "#fff",
           "circle-stroke-width": 2,
@@ -167,52 +168,49 @@ export function LineTool({
     }
   }, [map, verticesGeoJson]);
 
-  // useEffect(() => {
-  //   if (!map) return;
+  const lineGeoJson = useMemo(() => {
+    return {
+      type: "FeatureCollection",
+      features: [
+        {
+          type: "Feature",
+          geometry: {
+            type: "LineString",
+            coordinates: linePoints,
+          },
+          properties: {},
+        },
+      ],
+    } satisfies FeatureCollection;
+  }, [linePoints]);
 
-  //   // Remove existing points source and layer if they exist
-  // if (map.getSource("line-vertices")) {
-  //   map.removeLayer("line-vertices");
-  //   map.removeSource("line-vertices");
-  // }
+  // Draw basic line
+  useEffect(() => {
+    if (!map) return;
 
-  //   // Add new source and layer
-  // map.addSource("line-vertices", {
-  //   type: "geojson",
-  //   data: {
-  //     type: "FeatureCollection",
-  //     features: linePoints.map((point, index) => ({
-  //       type: "Feature",
-  //       geometry: {
-  //         type: "Point",
-  //         coordinates: point,
-  //       },
-  //       properties: {
-  //         index,
-  //       },
-  //     })),
-  //   },
-  // });
+    const currentLineSource = map.getSource("line-path") as
+      | mapboxgl.AnySourceImpl
+      | undefined;
 
-  // map.addLayer({
-  //   id: "line-vertices",
-  //   type: "circle",
-  //   source: "line-vertices",
-  //   paint: {
-  //     "circle-radius": 8,
-  //     "circle-color": "#3b82f6",
-  //     "circle-stroke-color": "#fff",
-  //     "circle-stroke-width": 2,
-  //   },
-  // });
+    if (currentLineSource) {
+      (currentLineSource as mapboxgl.GeoJSONSource).setData(lineGeoJson);
+    } else {
+      map.addSource("line-path", {
+        type: "geojson",
+        data: lineGeoJson,
+      });
 
-  //   return () => {
-  //     if (map.getSource("line-vertices")) {
-  //       map.removeLayer("line-vertices");
-  //       map.removeSource("line-vertices");
-  //     }
-  //   };
-  // }, [map, linePoints]);
+      map.addLayer({
+        id: "line-path",
+        type: "line",
+        source: "line-path",
+        paint: {
+          "line-color": "#3b82f6",
+          "line-width": 3,
+        },
+      });
+    }
+  }, [map, lineGeoJson]);
 
   // useEffect(() => {
   //   if (!map) {
