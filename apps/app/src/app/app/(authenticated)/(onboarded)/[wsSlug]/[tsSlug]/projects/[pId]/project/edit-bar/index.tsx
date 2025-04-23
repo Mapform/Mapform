@@ -1,6 +1,6 @@
 import { cn } from "@mapform/lib/classnames";
 import { useMapformContent } from "~/components/mapform";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { HandTool } from "./hand-tool";
 import type { lineTypes } from "./line-tool";
 import { LineTool } from "./line-tool";

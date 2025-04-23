@@ -13,9 +13,10 @@ import {
   SplineIcon,
   CheckIcon,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useMapform } from "~/components/mapform";
 import { useQuery } from "@tanstack/react-query";
+import type { FeatureCollection } from "geojson";
 import {
   Command,
   CommandList,
@@ -78,14 +79,14 @@ export function LineTool({
   const [open, setOpen] = useState(false);
   const [linePoints, setLinePoints] = useState<Position[]>([]);
 
-  const { data: searchResults, isFetching } = useQuery({
-    enabled: linePoints.length > 1,
-    queryKey: ["directions", linePoints],
-    queryFn: () => fetchDirections(linePoints),
-    retry: false,
-  });
+  // const { data: searchResults, isFetching } = useQuery({
+  //   enabled: linePoints.length > 1,
+  //   queryKey: ["directions", linePoints],
+  //   queryFn: () => fetchDirections(linePoints),
+  //   retry: false,
+  // });
 
-  console.log(1111, searchResults);
+  // console.log(1111, searchResults);
 
   useEffect(() => {
     if (!map) return;
@@ -116,44 +117,94 @@ export function LineTool({
     };
   }, [map, isActive]);
 
+  const verticesGeoJson = useMemo(
+    () => ({
+      type: "FeatureCollection",
+      features: linePoints.map((point, index) => ({
+        type: "Feature",
+        geometry: {
+          type: "Point",
+          coordinates: point,
+        },
+        properties: {
+          index,
+        },
+      })),
+    }),
+    [linePoints],
+  ) satisfies FeatureCollection;
+
+  // Line Vertices
+  useEffect(() => {
+    if (!map) return;
+
+    // Handle points layer
+    const currentPointSource = map.getSource("line-vertices") as
+      | mapboxgl.AnySourceImpl
+      | undefined;
+
+    if (currentPointSource) {
+      // Update the source data
+      (currentPointSource as mapboxgl.GeoJSONSource).setData(verticesGeoJson);
+    } else {
+      // Only add the source and layer if they don't exist
+      map.addSource("line-vertices", {
+        type: "geojson",
+        data: verticesGeoJson,
+      });
+
+      map.addLayer({
+        id: "line-vertices",
+        type: "circle",
+        source: "line-vertices",
+        paint: {
+          "circle-radius": 8,
+          "circle-color": "#3b82f6",
+          "circle-stroke-color": "#fff",
+          "circle-stroke-width": 2,
+        },
+      });
+    }
+  }, [map, verticesGeoJson]);
+
   // useEffect(() => {
   //   if (!map) return;
 
   //   // Remove existing points source and layer if they exist
-  //   if (map.getSource("line-vertices")) {
-  //     map.removeLayer("line-vertices");
-  //     map.removeSource("line-vertices");
-  //   }
+  // if (map.getSource("line-vertices")) {
+  //   map.removeLayer("line-vertices");
+  //   map.removeSource("line-vertices");
+  // }
 
   //   // Add new source and layer
-  //   map.addSource("line-vertices", {
-  //     type: "geojson",
-  //     data: {
-  //       type: "FeatureCollection",
-  //       features: linePoints.map((point, index) => ({
-  //         type: "Feature",
-  //         geometry: {
-  //           type: "Point",
-  //           coordinates: point,
-  //         },
-  //         properties: {
-  //           index,
-  //         },
-  //       })),
-  //     },
-  //   });
+  // map.addSource("line-vertices", {
+  //   type: "geojson",
+  //   data: {
+  //     type: "FeatureCollection",
+  //     features: linePoints.map((point, index) => ({
+  //       type: "Feature",
+  //       geometry: {
+  //         type: "Point",
+  //         coordinates: point,
+  //       },
+  //       properties: {
+  //         index,
+  //       },
+  //     })),
+  //   },
+  // });
 
-  //   map.addLayer({
-  //     id: "line-vertices",
-  //     type: "circle",
-  //     source: "line-vertices",
-  //     paint: {
-  //       "circle-radius": 8,
-  //       "circle-color": "#3b82f6",
-  //       "circle-stroke-color": "#fff",
-  //       "circle-stroke-width": 2,
-  //     },
-  //   });
+  // map.addLayer({
+  //   id: "line-vertices",
+  //   type: "circle",
+  //   source: "line-vertices",
+  //   paint: {
+  //     "circle-radius": 8,
+  //     "circle-color": "#3b82f6",
+  //     "circle-stroke-color": "#fff",
+  //     "circle-stroke-width": 2,
+  //   },
+  // });
 
   //   return () => {
   //     if (map.getSource("line-vertices")) {
