@@ -77,7 +77,9 @@ export function LineTool({
 }: LineToolProps) {
   const { map } = useMapform();
   const [open, setOpen] = useState(false);
+  const [isSelecting, setIsSelecting] = useState(true);
   const [linePoints, setLinePoints] = useState<Position[]>([]);
+  const [cursorPosition, setCursorPosition] = useState<Position | null>(null);
 
   // const { data: searchResults, isFetching } = useQuery({
   //   enabled: linePoints.length > 1,
@@ -110,12 +112,21 @@ export function LineTool({
       setLinePoints((prev) => [...prev, [lng, lat]]);
     };
 
+    const handleMouseMove = (e: mapboxgl.MapMouseEvent) => {
+      if (isSelecting && linePoints.length > 0) {
+        const { lng, lat } = e.lngLat;
+        setCursorPosition([lng, lat]);
+      }
+    };
+
     map.on("click", handleClick);
+    map.on("mousemove", handleMouseMove);
 
     return () => {
       map.off("click", handleClick);
+      map.off("mousemove", handleMouseMove);
     };
-  }, [map, isActive]);
+  }, [map, isActive, isSelecting, linePoints]);
 
   const verticesGeoJson = useMemo(
     () =>
@@ -206,77 +217,69 @@ export function LineTool({
         source: "line-path",
         paint: {
           "line-color": "#3b82f6",
-          "line-width": 3,
+          "line-width": 2,
+          "line-dasharray": [1, 1],
         },
       });
     }
   }, [map, lineGeoJson]);
 
-  // useEffect(() => {
-  //   if (!map) {
-  //     console.log("Map is not initialized");
-  //     return;
-  //   }
+  // Draw temporary line to cursor
+  useEffect(() => {
+    if (!map) return;
 
-  //   console.log("Search results:", searchResults);
-  //   console.log("Map instance:", map);
+    // Add the source and layer once when the component mounts
+    if (!map.getSource("temp-line-path")) {
+      map.addSource("temp-line-path", {
+        type: "geojson",
+        data: {
+          type: "FeatureCollection",
+          features: [],
+        },
+      });
 
-  //   // Remove existing line source and layer if they exist
-  //   if (map.getSource("line-path")) {
-  //     console.log("Removing existing line source");
-  //     map.removeLayer("line-path");
-  //     map.removeSource("line-path");
-  //   }
+      map.addLayer({
+        id: "temp-line-path",
+        type: "line",
+        source: "temp-line-path",
+        paint: {
+          "line-color": "#3b82f6",
+          "line-width": 2,
+          "line-dasharray": [1, 1],
+        },
+      });
+    }
 
-  //   if (searchResults?.results?.[0]?.geometry) {
-  //     console.log("Geometry data:", searchResults.results[0].geometry);
-  //     // Add new source and layer
-  //     map.addSource("line-path", {
-  //       type: "geojson",
-  //       data: {
-  //         type: "FeatureCollection",
-  //         features: [
-  //           {
-  //             type: "Feature",
-  //             geometry: {
-  //               type: "LineString",
-  //               coordinates: searchResults.results[0].geometry.map((point) => {
-  //                 if (!point?.[0]) {
-  //                   console.log("Invalid point data:", point);
-  //                   return [0, 0];
-  //                 }
-  //                 return [point[0].lon, point[0].lat];
-  //               }),
-  //             },
-  //             properties: {},
-  //           },
-  //         ],
-  //       },
-  //     });
+    // Update the source data when cursor position or line points change
+    if (cursorPosition && linePoints.length > 0) {
+      const lastPoint = linePoints[linePoints.length - 1];
+      if (!lastPoint) return;
 
-  //     console.log("Added source, adding layer");
-  //     map.addLayer({
-  //       id: "line-path",
-  //       type: "line",
-  //       source: "line-path",
-  //       paint: {
-  //         "line-color": "#3b82f6",
-  //         "line-width": 3,
-  //       },
-  //     });
-  //     console.log("Layer added successfully");
-  //   } else {
-  //     console.log("No valid geometry data found in search results");
-  //   }
+      const tempLineGeoJson = {
+        type: "FeatureCollection",
+        features: [
+          {
+            type: "Feature",
+            geometry: {
+              type: "LineString",
+              coordinates: [lastPoint, cursorPosition] as Position[],
+            },
+            properties: {},
+          },
+        ],
+      } satisfies FeatureCollection;
 
-  //   return () => {
-  //     console.log("Cleanup - removing line source and layer");
-  //     if (map.getSource("line-path")) {
-  //       map.removeLayer("line-path");
-  //       map.removeSource("line-path");
-  //     }
-  //   };
-  // }, [map, searchResults]);
+      (map.getSource("temp-line-path") as mapboxgl.GeoJSONSource).setData(
+        tempLineGeoJson,
+      );
+    } else {
+      // Clear the line when there's no cursor position or no points
+      (map.getSource("temp-line-path") as mapboxgl.GeoJSONSource).setData({
+        type: "FeatureCollection",
+        features: [],
+      });
+    }
+  }, [map, cursorPosition, linePoints]);
 
   return (
     <div className="flex items-center">
