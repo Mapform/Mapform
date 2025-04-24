@@ -62,7 +62,7 @@ export const lineTypes: Record<string, { icon: LucideIcon; label: string }> = {
 
 const fetchDirections = async (waypoints: Position[]) => {
   const response = await fetch(
-    `/api/places/routing?waypoints=${waypoints.map((w) => w.reverse().join(",")).join("|")}`,
+    `/api/places/routing?waypoints=${waypoints.map((w) => `lonlat:${w.join(",")}`).join("|")}`,
   );
   const json = await response.json();
   return json.data as GeoapifyRoute;
@@ -83,15 +83,14 @@ export function LineTool({
   const [draggedPointIndex, setDraggedPointIndex] = useState<number | null>(
     null,
   );
+  const { data: searchResults, isFetching } = useQuery({
+    enabled: linePoints.length > 1,
+    queryKey: ["directions", ...linePoints],
+    queryFn: () => fetchDirections(linePoints),
+    retry: false,
+  });
 
-  // const { data: searchResults, isFetching } = useQuery({
-  //   enabled: linePoints.length > 1,
-  //   queryKey: ["directions", linePoints],
-  //   queryFn: () => fetchDirections(linePoints),
-  //   retry: false,
-  // });
-
-  // console.log(1111, searchResults);
+  console.log(1111, searchResults);
 
   useEffect(() => {
     if (!map) return;
@@ -116,50 +115,50 @@ export function LineTool({
       setLinePoints((prev) => [...prev, [lng, lat]]);
     };
 
-    const handleMouseMove = (e: mapboxgl.MapMouseEvent) => {
-      if (isSelecting && linePoints.length > 0) {
-        const { lng, lat } = e.lngLat;
-        setCursorPosition([lng, lat]);
-      } else if (draggedPointIndex !== null) {
-        e.preventDefault();
-        const { lng, lat } = e.lngLat;
-        setLinePoints((prev) => {
-          const newPoints = [...prev];
-          newPoints[draggedPointIndex] = [lng, lat];
-          return newPoints;
-        });
-      }
-    };
+    // const handleMouseMove = (e: mapboxgl.MapMouseEvent) => {
+    //   if (isSelecting && linePoints.length > 0) {
+    //     const { lng, lat } = e.lngLat;
+    //     setCursorPosition([lng, lat]);
+    //   } else if (draggedPointIndex !== null) {
+    //     e.preventDefault();
+    //     const { lng, lat } = e.lngLat;
+    //     setLinePoints((prev) => {
+    //       const newPoints = [...prev];
+    //       newPoints[draggedPointIndex] = [lng, lat];
+    //       return newPoints;
+    //     });
+    //   }
+    // };
 
-    const handleMouseUp = (e: mapboxgl.MapMouseEvent) => {
-      if (draggedPointIndex !== null) {
-        e.preventDefault();
-        setDraggedPointIndex(null);
-        map.getCanvas().style.cursor = "move";
-      }
-    };
+    // const handleMouseUp = (e: mapboxgl.MapMouseEvent) => {
+    //   if (draggedPointIndex !== null) {
+    //     e.preventDefault();
+    //     setDraggedPointIndex(null);
+    //     map.getCanvas().style.cursor = "move";
+    //   }
+    // };
 
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Enter") {
-        setIsSelecting(false);
-        setCursorPosition(null);
-      } else if (e.key === "Escape") {
-        setLinePoints([]);
-        setCursorPosition(null);
-        setIsSelecting(true);
-      }
-    };
+    // const handleKeyDown = (e: KeyboardEvent) => {
+    //   if (e.key === "Enter") {
+    //     setIsSelecting(false);
+    //     setCursorPosition(null);
+    //   } else if (e.key === "Escape") {
+    //     setLinePoints([]);
+    //     setCursorPosition(null);
+    //     setIsSelecting(true);
+    //   }
+    // };
 
     map.on("click", handleClick);
-    map.on("mousemove", handleMouseMove);
-    map.on("mouseup", handleMouseUp);
-    window.addEventListener("keydown", handleKeyDown);
+    // map.on("mousemove", handleMouseMove);
+    // map.on("mouseup", handleMouseUp);
+    // window.addEventListener("keydown", handleKeyDown);
 
     return () => {
       map.off("click", handleClick);
-      map.off("mousemove", handleMouseMove);
-      map.off("mouseup", handleMouseUp);
-      window.removeEventListener("keydown", handleKeyDown);
+      // map.off("mousemove", handleMouseMove);
+      // map.off("mouseup", handleMouseUp);
+      // window.removeEventListener("keydown", handleKeyDown);
     };
   }, [map, isActive, isSelecting, linePoints, draggedPointIndex]);
 
@@ -210,74 +209,17 @@ export function LineTool({
           "circle-stroke-color": "#fff",
           "circle-stroke-width": 2,
         },
-        interactive: true,
+        // interactive: true,
       });
     }
   }, [map, verticesGeoJson]);
 
-  // Update vertices layer to be interactive when not selecting
-  useEffect(() => {
-    if (!map) return;
+  const directionsGeoJson = useMemo(() => {
+    if (!searchResults) return null;
+    const coordinates = (
+      searchResults.results[0]?.geometry.flatMap((r) => r) ?? []
+    ).map((c) => [c.lon, c.lat]);
 
-    const currentLayer = map.getLayer("line-vertices");
-    if (currentLayer) {
-      map.setPaintProperty(
-        "line-vertices",
-        "circle-radius",
-        isSelecting ? 5 : 8,
-      );
-      map.setPaintProperty(
-        "line-vertices",
-        "circle-color",
-        isSelecting ? "#3b82f6" : "#2563eb",
-      );
-    }
-  }, [map, isSelecting]);
-
-  // Add vertex click handler and cursor styles
-  useEffect(() => {
-    if (!map) return;
-
-    const handleVertexMouseEnter = (e: mapboxgl.MapMouseEvent) => {
-      if (!isSelecting) {
-        e.preventDefault();
-        map.getCanvas().style.cursor = "move";
-      }
-    };
-
-    const handleVertexMouseLeave = (e: mapboxgl.MapMouseEvent) => {
-      if (!isSelecting) {
-        e.preventDefault();
-        map.getCanvas().style.cursor = "";
-      }
-    };
-
-    const handleVertexClick = (
-      e: mapboxgl.MapMouseEvent & {
-        features?: mapboxgl.MapboxGeoJSONFeature[];
-      },
-    ) => {
-      if (!e.features?.[0]?.properties?.index || isSelecting) return;
-      e.preventDefault();
-      const index = e.features[0].properties.index as number;
-      setDraggedPointIndex(index);
-      map.getCanvas().style.cursor = "grabbing";
-    };
-
-    if (!isSelecting) {
-      map.on("mouseenter", "line-vertices", handleVertexMouseEnter);
-      map.on("mouseleave", "line-vertices", handleVertexMouseLeave);
-      map.on("mousedown", "line-vertices", handleVertexClick);
-    }
-
-    return () => {
-      map.off("mouseenter", "line-vertices", handleVertexMouseEnter);
-      map.off("mouseleave", "line-vertices", handleVertexMouseLeave);
-      map.off("mousedown", "line-vertices", handleVertexClick);
-    };
-  }, [map, isSelecting]);
-
-  const lineGeoJson = useMemo(() => {
     return {
       type: "FeatureCollection",
       features: [
@@ -285,28 +227,27 @@ export function LineTool({
           type: "Feature",
           geometry: {
             type: "LineString",
-            coordinates: linePoints,
+            coordinates,
           },
           properties: {},
         },
       ],
     } satisfies FeatureCollection;
-  }, [linePoints]);
+  }, [searchResults]);
 
-  // Draw basic line
   useEffect(() => {
-    if (!map) return;
+    if (!map || !directionsGeoJson) return;
 
     const currentLineSource = map.getSource("line-path") as
       | mapboxgl.AnySourceImpl
       | undefined;
 
     if (currentLineSource) {
-      (currentLineSource as mapboxgl.GeoJSONSource).setData(lineGeoJson);
+      (currentLineSource as mapboxgl.GeoJSONSource).setData(directionsGeoJson);
     } else {
       map.addSource("line-path", {
         type: "geojson",
-        data: lineGeoJson,
+        data: directionsGeoJson,
       });
 
       map.addLayer({
@@ -320,64 +261,173 @@ export function LineTool({
         },
       });
     }
-  }, [map, lineGeoJson]);
+  }, [map, directionsGeoJson]);
+
+  // Update vertices layer to be interactive when not selecting
+  // useEffect(() => {
+  //   if (!map) return;
+
+  //   const currentLayer = map.getLayer("line-vertices");
+  //   if (currentLayer) {
+  //     map.setPaintProperty(
+  //       "line-vertices",
+  //       "circle-radius",
+  //       isSelecting ? 5 : 8,
+  //     );
+  //     map.setPaintProperty(
+  //       "line-vertices",
+  //       "circle-color",
+  //       isSelecting ? "#3b82f6" : "#2563eb",
+  //     );
+  //   }
+  // }, [map, isSelecting]);
+
+  //
+
+  // Add vertex click handler and cursor styles
+  // useEffect(() => {
+  //   if (!map) return;
+
+  //   const handleVertexMouseEnter = (e: mapboxgl.MapMouseEvent) => {
+  //     if (!isSelecting) {
+  //       e.preventDefault();
+  //       map.getCanvas().style.cursor = "move";
+  //     }
+  //   };
+
+  //   const handleVertexMouseLeave = (e: mapboxgl.MapMouseEvent) => {
+  //     if (!isSelecting) {
+  //       e.preventDefault();
+  //       map.getCanvas().style.cursor = "";
+  //     }
+  //   };
+
+  //   const handleVertexClick = (
+  //     e: mapboxgl.MapMouseEvent & {
+  //       features?: mapboxgl.MapboxGeoJSONFeature[];
+  //     },
+  //   ) => {
+  //     if (!e.features?.[0]?.properties?.index || isSelecting) return;
+  //     e.preventDefault();
+  //     const index = e.features[0].properties.index as number;
+  //     setDraggedPointIndex(index);
+  //     map.getCanvas().style.cursor = "grabbing";
+  //   };
+
+  //   if (!isSelecting) {
+  //     map.on("mouseenter", "line-vertices", handleVertexMouseEnter);
+  //     map.on("mouseleave", "line-vertices", handleVertexMouseLeave);
+  //     map.on("mousedown", "line-vertices", handleVertexClick);
+  //   }
+
+  //   return () => {
+  //     map.off("mouseenter", "line-vertices", handleVertexMouseEnter);
+  //     map.off("mouseleave", "line-vertices", handleVertexMouseLeave);
+  //     map.off("mousedown", "line-vertices", handleVertexClick);
+  //   };
+  // }, [map, isSelecting]);
+
+  // const lineGeoJson = useMemo(() => {
+  //   return {
+  //     type: "FeatureCollection",
+  //     features: [
+  //       {
+  //         type: "Feature",
+  //         geometry: {
+  //           type: "LineString",
+  //           coordinates: linePoints,
+  //         },
+  //         properties: {},
+  //       },
+  //     ],
+  //   } satisfies FeatureCollection;
+  // }, [linePoints]);
+
+  // Draw basic line
+  // useEffect(() => {
+  //   if (!map) return;
+
+  //   const currentLineSource = map.getSource("line-path") as
+  //     | mapboxgl.AnySourceImpl
+  //     | undefined;
+
+  //   if (currentLineSource) {
+  //     (currentLineSource as mapboxgl.GeoJSONSource).setData(lineGeoJson);
+  //   } else {
+  //     map.addSource("line-path", {
+  //       type: "geojson",
+  //       data: lineGeoJson,
+  //     });
+
+  //     map.addLayer({
+  //       id: "line-path",
+  //       type: "line",
+  //       source: "line-path",
+  //       paint: {
+  //         "line-color": "#3b82f6",
+  //         "line-width": 2,
+  //         "line-dasharray": [1, 1],
+  //       },
+  //     });
+  //   }
+  // }, [map, lineGeoJson]);
 
   // Draw temporary line to cursor
-  useEffect(() => {
-    if (!map) return;
+  // useEffect(() => {
+  //   if (!map) return;
 
-    // Add the source and layer once when the component mounts
-    if (!map.getSource("temp-line-path")) {
-      map.addSource("temp-line-path", {
-        type: "geojson",
-        data: {
-          type: "FeatureCollection",
-          features: [],
-        },
-      });
+  //   // Add the source and layer once when the component mounts
+  //   if (!map.getSource("temp-line-path")) {
+  //     map.addSource("temp-line-path", {
+  //       type: "geojson",
+  //       data: {
+  //         type: "FeatureCollection",
+  //         features: [],
+  //       },
+  //     });
 
-      map.addLayer({
-        id: "temp-line-path",
-        type: "line",
-        source: "temp-line-path",
-        paint: {
-          "line-color": "#3b82f6",
-          "line-width": 2,
-          "line-dasharray": [1, 1],
-        },
-      });
-    }
+  //     map.addLayer({
+  //       id: "temp-line-path",
+  //       type: "line",
+  //       source: "temp-line-path",
+  //       paint: {
+  //         "line-color": "#3b82f6",
+  //         "line-width": 2,
+  //         "line-dasharray": [1, 1],
+  //       },
+  //     });
+  //   }
 
-    // Update the source data when cursor position or line points change
-    if (cursorPosition && linePoints.length > 0) {
-      const lastPoint = linePoints[linePoints.length - 1];
-      if (!lastPoint) return;
+  //   // Update the source data when cursor position or line points change
+  //   if (cursorPosition && linePoints.length > 0) {
+  //     const lastPoint = linePoints[linePoints.length - 1];
+  //     if (!lastPoint) return;
 
-      const tempLineGeoJson = {
-        type: "FeatureCollection",
-        features: [
-          {
-            type: "Feature",
-            geometry: {
-              type: "LineString",
-              coordinates: [lastPoint, cursorPosition] as Position[],
-            },
-            properties: {},
-          },
-        ],
-      } satisfies FeatureCollection;
+  //     const tempLineGeoJson = {
+  //       type: "FeatureCollection",
+  // features: [
+  //   {
+  //     type: "Feature",
+  //     geometry: {
+  //       type: "LineString",
+  //       coordinates: [lastPoint, cursorPosition] as Position[],
+  //     },
+  //     properties: {},
+  //   },
+  // ],
+  //     } satisfies FeatureCollection;
 
-      (map.getSource("temp-line-path") as mapboxgl.GeoJSONSource).setData(
-        tempLineGeoJson,
-      );
-    } else {
-      // Clear the line when there's no cursor position or no points
-      (map.getSource("temp-line-path") as mapboxgl.GeoJSONSource).setData({
-        type: "FeatureCollection",
-        features: [],
-      });
-    }
-  }, [map, cursorPosition, linePoints]);
+  //     (map.getSource("temp-line-path") as mapboxgl.GeoJSONSource).setData(
+  //       tempLineGeoJson,
+  //     );
+  //   } else {
+  //     // Clear the line when there's no cursor position or no points
+  //     (map.getSource("temp-line-path") as mapboxgl.GeoJSONSource).setData({
+  //       type: "FeatureCollection",
+  //       features: [],
+  //     });
+  //   }
+  // }, [map, cursorPosition, linePoints]);
 
   return (
     <div className="flex items-center">
