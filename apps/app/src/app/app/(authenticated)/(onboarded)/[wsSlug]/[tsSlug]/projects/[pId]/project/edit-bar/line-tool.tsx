@@ -508,7 +508,7 @@ export function LineTool({
           </PopoverContent>
         </Popover>
       </div>
-      {map && location && (
+      {map && location && !isSelecting && (
         <LocationMarker
           map={map}
           longitude={location[0]!}
