@@ -12,6 +12,7 @@ import {
   FootprintsIcon,
   SplineIcon,
   CheckIcon,
+  BookmarkIcon,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useMapform } from "~/components/mapform";
@@ -33,6 +34,10 @@ import {
 import { cn } from "@mapform/lib/classnames";
 import type { Position } from "geojson";
 import type { GeoapifyRoute } from "@mapform/map-utils/types";
+import { useReverseGeocode } from "~/hooks/use-reverse-geocode";
+import { SearchPopover } from "./search-popover";
+import mapboxgl from "mapbox-gl";
+import { useDebounce } from "@mapform/lib/hooks/use-debounce";
 
 interface LineToolProps {
   isActive: boolean;
@@ -108,6 +113,13 @@ export function LineTool({
   };
 
   const location = getCenterOfPoints(linePoints);
+  const debouncedLocation = useDebounce(location, 200);
+
+  const { selectedFeature } = useReverseGeocode({
+    lat: debouncedLocation?.[1] ?? null,
+    lng: debouncedLocation?.[0] ?? null,
+    enabled: !!debouncedLocation,
+  });
 
   const { data: searchResults, isFetching } = useQuery({
     enabled: linePoints.length > 1 && selectedLineType !== "line",
@@ -186,6 +198,7 @@ export function LineTool({
         setLinePoints([]);
         setCursorPosition(null);
         setIsSelecting(true);
+        map.getCanvas().style.cursor = "crosshair";
       }
     };
 
@@ -508,14 +521,21 @@ export function LineTool({
           </PopoverContent>
         </Popover>
       </div>
-      {map && location && !isSelecting && (
-        <LocationMarker
-          map={map}
-          longitude={location[0]!}
-          latitude={location[1]!}
-        >
-          <div className="size-8 rounded-full bg-blue-500"></div>
-        </LocationMarker>
+      {map && debouncedLocation && !isSelecting && (
+        <SearchPopover
+          location={
+            new mapboxgl.LngLat(debouncedLocation[0]!, debouncedLocation[1]!)
+          }
+          selectedFeature={selectedFeature}
+          isPending={isFetching}
+          actions={[
+            {
+              label: "Save to",
+              onClick: () => {},
+              icon: BookmarkIcon,
+            },
+          ]}
+        ></SearchPopover>
       )}
     </>
   );

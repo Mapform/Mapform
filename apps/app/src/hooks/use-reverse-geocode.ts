@@ -1,15 +1,17 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, type QueryOptions } from "@tanstack/react-query";
 import type { GeoapifyPlace } from "@mapform/map-utils/types";
 import { useState } from "react";
 
 export function useReverseGeocode({
   lat,
   lng,
-  refetchMode = false,
+  retry,
+  enabled,
 }: {
   lat: number | null;
   lng: number | null;
-  refetchMode?: boolean;
+  retry?: QueryOptions["retry"];
+  enabled?: boolean;
 }) {
   const [isFetching, setIsFetching] = useState(false);
   const [selectedFeature, setSelectedFeature] = useState<
@@ -49,7 +51,7 @@ export function useReverseGeocode({
   };
 
   const { refetch } = useQuery({
-    enabled: !refetchMode, // Only fetch if not in refetch mode
+    enabled,
     queryKey: ["reverse-geocode", lat, lng],
     queryFn: () =>
       lat !== null && lng !== null
@@ -57,7 +59,7 @@ export function useReverseGeocode({
         : Promise.reject(new Error("Coordinates not available")),
     placeholderData: (prev) => prev,
     staleTime: Infinity,
-    retry: refetchMode ? false : 1,
+    retry,
   });
 
   return {

@@ -31,7 +31,6 @@ function PointToolInner({
   const { isFetching, selectedFeature } = useReverseGeocode({
     lat: location?.lat ?? null,
     lng: location?.lng ?? null,
-    refetchMode: false,
   });
 
   const onDrawCreate = useCallback(

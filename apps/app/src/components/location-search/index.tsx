@@ -78,7 +78,8 @@ export function LocationSearchWithMap({
   } = useReverseGeocode({
     lat: map.getCenter().lat,
     lng: map.getCenter().lng,
-    refetchMode: true,
+    retry: 0,
+    enabled: false,
   });
 
   const selectedFeature = selectedFeatureFromSearch || selectedFeatureFromDrag;
