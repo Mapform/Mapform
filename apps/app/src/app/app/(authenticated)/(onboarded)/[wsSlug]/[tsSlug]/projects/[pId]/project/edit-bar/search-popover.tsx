@@ -109,3 +109,5 @@ export const SearchPopoverInner = forwardRef<
     );
   },
 );
+
+SearchPopoverInner.displayName = "SearchPopoverInner";

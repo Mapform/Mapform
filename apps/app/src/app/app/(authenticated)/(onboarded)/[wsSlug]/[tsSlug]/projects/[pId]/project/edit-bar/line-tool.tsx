@@ -17,6 +17,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useMapform } from "~/components/mapform";
 import { useQuery } from "@tanstack/react-query";
 import type { FeatureCollection } from "geojson";
+import { LocationMarker } from "~/components/location-marker";
 import {
   Command,
   CommandList,
@@ -89,6 +90,25 @@ export function LineTool({
   const [draggedPointIndex, setDraggedPointIndex] = useState<number | null>(
     null,
   );
+
+  const getCenterOfPoints = (points: Position[]): Position | null => {
+    if (points.length === 0) return null;
+
+    const sum = points.reduce<{ lng: number; lat: number }>(
+      (acc, point) => {
+        const [lng, lat] = point as [number, number];
+        acc.lng += lng;
+        acc.lat += lat;
+        return acc;
+      },
+      { lng: 0, lat: 0 },
+    );
+
+    return [sum.lng / points.length, sum.lat / points.length];
+  };
+
+  const location = getCenterOfPoints(linePoints);
+
   const { data: searchResults, isFetching } = useQuery({
     enabled: linePoints.length > 1 && selectedLineType !== "line",
     queryKey: ["directions", selectedLineType, ...linePoints],
@@ -368,35 +388,6 @@ export function LineTool({
     };
   }, [map, isSelecting]);
 
-  // Draw basic line
-  // useEffect(() => {
-  //   if (!map) return;
-
-  //   const currentLineSource = map.getSource("line-path") as
-  //     | mapboxgl.AnySourceImpl
-  //     | undefined;
-
-  //   if (currentLineSource) {
-  //     (currentLineSource as mapboxgl.GeoJSONSource).setData(lineGeoJson);
-  //   } else {
-  //     map.addSource("line-path", {
-  //       type: "geojson",
-  //       data: lineGeoJson,
-  //     });
-
-  //     map.addLayer({
-  //       id: "line-path",
-  //       type: "line",
-  //       source: "line-path",
-  //       paint: {
-  //         "line-color": "#3b82f6",
-  //         "line-width": 2,
-  //         "line-dasharray": [1, 1],
-  //       },
-  //     });
-  //   }
-  // }, [map, lineGeoJson]);
-
   // Draw temporary line to cursor
   // useEffect(() => {
   //   if (!map) return;
@@ -455,62 +446,77 @@ export function LineTool({
   // }, [map, cursorPosition, linePoints]);
 
   return (
-    <div className="flex items-center">
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            onClick={onClick}
-            size="icon"
-            variant={isActive && !isSearchOpen ? "default" : "ghost"}
-          >
-            {(() => {
-              const LineTypeIcon = lineTypes[selectedLineType]?.icon;
-              return LineTypeIcon ? <LineTypeIcon className="size-5" /> : null;
-            })()}
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>Line tool</TooltipContent>
-      </Tooltip>
-      <Popover modal onOpenChange={setOpen} open={open}>
-        <PopoverTrigger asChild>
-          <button className="hover:bg-accent hover:text-accent-foreground ml-[1px] h-full rounded-md p-0.5">
-            <ChevronDown size={10} strokeWidth={3} />
-          </button>
-        </PopoverTrigger>
-        <PopoverContent align="center" className="w-[200px] p-0" side="top">
-          <Command>
-            <CommandList>
-              <CommandEmpty>No line type found.</CommandEmpty>
-              <CommandGroup>
-                {Object.entries(lineTypes).map(
-                  ([key, { icon: Icon, label }]) => (
-                    <CommandItem
-                      key={key}
-                      value={label}
-                      onSelect={() => {
-                        setSelectedLineType(key as keyof typeof lineTypes);
-                        setOpen(false);
-                      }}
-                      className="flex items-center gap-2"
-                    >
-                      <Icon className="size-4 flex-shrink-0" />
-                      <span className="flex-1 truncate text-left">{label}</span>
-                      <CheckIcon
-                        className={cn(
-                          "ml-auto size-4",
-                          selectedLineType === key
-                            ? "opacity-100"
-                            : "opacity-0",
-                        )}
-                      />
-                    </CommandItem>
-                  ),
-                )}
-              </CommandGroup>
-            </CommandList>
-          </Command>
-        </PopoverContent>
-      </Popover>
-    </div>
+    <>
+      <div className="flex items-center">
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              onClick={onClick}
+              size="icon"
+              variant={isActive && !isSearchOpen ? "default" : "ghost"}
+            >
+              {(() => {
+                const LineTypeIcon = lineTypes[selectedLineType]?.icon;
+                return LineTypeIcon ? (
+                  <LineTypeIcon className="size-5" />
+                ) : null;
+              })()}
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Line tool</TooltipContent>
+        </Tooltip>
+        <Popover modal onOpenChange={setOpen} open={open}>
+          <PopoverTrigger asChild>
+            <button className="hover:bg-accent hover:text-accent-foreground ml-[1px] h-full rounded-md p-0.5">
+              <ChevronDown size={10} strokeWidth={3} />
+            </button>
+          </PopoverTrigger>
+          <PopoverContent align="center" className="w-[200px] p-0" side="top">
+            <Command>
+              <CommandList>
+                <CommandEmpty>No line type found.</CommandEmpty>
+                <CommandGroup>
+                  {Object.entries(lineTypes).map(
+                    ([key, { icon: Icon, label }]) => (
+                      <CommandItem
+                        key={key}
+                        value={label}
+                        onSelect={() => {
+                          setSelectedLineType(key as keyof typeof lineTypes);
+                          setOpen(false);
+                        }}
+                        className="flex items-center gap-2"
+                      >
+                        <Icon className="size-4 flex-shrink-0" />
+                        <span className="flex-1 truncate text-left">
+                          {label}
+                        </span>
+                        <CheckIcon
+                          className={cn(
+                            "ml-auto size-4",
+                            selectedLineType === key
+                              ? "opacity-100"
+                              : "opacity-0",
+                          )}
+                        />
+                      </CommandItem>
+                    ),
+                  )}
+                </CommandGroup>
+              </CommandList>
+            </Command>
+          </PopoverContent>
+        </Popover>
+      </div>
+      {map && location && (
+        <LocationMarker
+          map={map}
+          longitude={location[0]!}
+          latitude={location[1]!}
+        >
+          <div className="size-8 rounded-full bg-blue-500"></div>
+        </LocationMarker>
+      )}
+    </>
   );
 }
