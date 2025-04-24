@@ -15,6 +15,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { useMapform } from "../index";
 import { LocationMarker } from "../../location-marker";
 import { Cluster } from "./cluster";
+import "./style.css";
 
 const accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
 
