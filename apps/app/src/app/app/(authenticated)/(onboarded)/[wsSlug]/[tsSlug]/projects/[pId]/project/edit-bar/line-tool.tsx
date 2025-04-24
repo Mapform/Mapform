@@ -114,7 +114,7 @@ export function LineTool({
     return [sum.lng / points.length, sum.lat / points.length];
   };
 
-  const location = getCenterOfPoints(linePoints);
+  const location = useMemo(() => getCenterOfPoints(linePoints), [linePoints]);
   const debouncedLocation = useDebounce(location, 200);
 
   const { selectedFeature } = useReverseGeocode({
@@ -478,6 +478,8 @@ export function LineTool({
   //   }
   // }, [map, cursorPosition, linePoints]);
 
+  console.log(11111);
+
   return (
     <>
       <div className="flex items-center">
@@ -541,7 +543,7 @@ export function LineTool({
           </PopoverContent>
         </Popover>
       </div>
-      {map && debouncedLocation && !isSelecting && (
+      {/* {map && debouncedLocation && !isSelecting && (
         <SearchPopover
           location={
             new mapboxgl.LngLat(debouncedLocation[0]!, debouncedLocation[1]!)
@@ -567,7 +569,7 @@ export function LineTool({
             </LocationSearchButton>
           </LayerSavePopover>
         </SearchPopover>
-      )}
+      )} */}
     </>
   );
 }
