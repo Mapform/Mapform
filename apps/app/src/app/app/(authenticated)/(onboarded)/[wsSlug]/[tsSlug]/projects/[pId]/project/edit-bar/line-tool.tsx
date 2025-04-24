@@ -182,6 +182,7 @@ export function LineTool({
     };
   }, [map, isActive, isSelecting, linePoints, draggedPointIndex]);
 
+  // Used for creating points on the map
   const verticesGeoJson = useMemo(
     () =>
       ({
@@ -199,6 +200,44 @@ export function LineTool({
       }) satisfies FeatureCollection,
     [linePoints],
   );
+
+  // Used for creating directions between points using Routing API
+  const directionsGeoJson = useMemo(() => {
+    const coordinates = (
+      searchResults?.results[0]?.geometry.flatMap((r) => r) ?? []
+    ).map((c) => [c.lon, c.lat]);
+
+    return {
+      type: "FeatureCollection",
+      features: [
+        {
+          type: "Feature",
+          geometry: {
+            type: "LineString",
+            coordinates,
+          },
+          properties: {},
+        },
+      ],
+    } satisfies FeatureCollection;
+  }, [searchResults]);
+
+  // Used for creating straight lines between points
+  const lineGeoJson = useMemo(() => {
+    return {
+      type: "FeatureCollection",
+      features: [
+        {
+          type: "Feature",
+          geometry: {
+            type: "LineString",
+            coordinates: linePoints,
+          },
+          properties: {},
+        },
+      ],
+    } satisfies FeatureCollection;
+  }, [linePoints]);
 
   // Line Vertices
   useEffect(() => {
@@ -234,40 +273,25 @@ export function LineTool({
     }
   }, [map, verticesGeoJson]);
 
-  const directionsGeoJson = useMemo(() => {
-    if (!searchResults) return null;
-    const coordinates = (
-      searchResults.results[0]?.geometry.flatMap((r) => r) ?? []
-    ).map((c) => [c.lon, c.lat]);
-
-    return {
-      type: "FeatureCollection",
-      features: [
-        {
-          type: "Feature",
-          geometry: {
-            type: "LineString",
-            coordinates,
-          },
-          properties: {},
-        },
-      ],
-    } satisfies FeatureCollection;
-  }, [searchResults]);
-
+  // Draw lines
   useEffect(() => {
-    if (!map || !directionsGeoJson) return;
+    if (!map) return;
+
+    const geoJson =
+      selectedLineType === "line" ? lineGeoJson : directionsGeoJson;
+
+    console.log(selectedLineType, geoJson);
 
     const currentLineSource = map.getSource("line-path") as
       | mapboxgl.AnySourceImpl
       | undefined;
 
     if (currentLineSource) {
-      (currentLineSource as mapboxgl.GeoJSONSource).setData(directionsGeoJson);
+      (currentLineSource as mapboxgl.GeoJSONSource).setData(geoJson);
     } else {
       map.addSource("line-path", {
         type: "geojson",
-        data: directionsGeoJson,
+        data: geoJson,
       });
 
       map.addLayer({
@@ -280,7 +304,7 @@ export function LineTool({
         },
       });
     }
-  }, [map, directionsGeoJson, isSelecting]);
+  }, [map, directionsGeoJson, lineGeoJson, isSelecting, selectedLineType]);
 
   // Update vertices layer to be interactive when not selecting
   useEffect(() => {
@@ -291,7 +315,7 @@ export function LineTool({
       map.setPaintProperty(
         "line-vertices",
         "circle-radius",
-        isSelecting ? 5 : 8,
+        isSelecting ? 5 : 6,
       );
       map.setPaintProperty(
         "line-vertices",
@@ -343,22 +367,6 @@ export function LineTool({
       map.off("mousedown", "line-vertices", handleVertexClick);
     };
   }, [map, isSelecting]);
-
-  // const lineGeoJson = useMemo(() => {
-  //   return {
-  //     type: "FeatureCollection",
-  //     features: [
-  //       {
-  //         type: "Feature",
-  //         geometry: {
-  //           type: "LineString",
-  //           coordinates: linePoints,
-  //         },
-  //         properties: {},
-  //       },
-  //     ],
-  //   } satisfies FeatureCollection;
-  // }, [linePoints]);
 
   // Draw basic line
   // useEffect(() => {
