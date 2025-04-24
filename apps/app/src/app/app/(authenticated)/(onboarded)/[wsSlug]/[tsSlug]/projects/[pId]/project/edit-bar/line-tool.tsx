@@ -280,8 +280,6 @@ export function LineTool({
     const geoJson =
       selectedLineType === "line" ? lineGeoJson : directionsGeoJson;
 
-    console.log(selectedLineType, geoJson);
-
     const currentLineSource = map.getSource("line-path") as
       | mapboxgl.AnySourceImpl
       | undefined;
@@ -348,9 +346,11 @@ export function LineTool({
         features?: mapboxgl.MapboxGeoJSONFeature[];
       },
     ) => {
-      if (!e.features?.[0]?.properties?.index || isSelecting) return;
+      const index = e.features?.[0]?.properties?.index as number | undefined;
+
+      if (index === undefined || index < 0 || isSelecting) return;
+
       e.preventDefault();
-      const index = e.features[0].properties.index as number;
       setDraggedPointIndex(index);
       map.getCanvas().style.cursor = "grabbing";
     };
