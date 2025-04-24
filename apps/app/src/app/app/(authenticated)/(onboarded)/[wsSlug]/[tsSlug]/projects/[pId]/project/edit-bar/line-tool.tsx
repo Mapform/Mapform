@@ -37,6 +37,8 @@ import { useReverseGeocode } from "~/hooks/use-reverse-geocode";
 import { SearchPopover } from "./search-popover";
 import mapboxgl from "mapbox-gl";
 import { useDebounce } from "@mapform/lib/hooks/use-debounce";
+import { LocationSearchButton } from "~/components/location-search";
+import { LayerSavePopover } from "../layer-save-popover";
 
 interface LineToolProps {
   isActive: boolean;
@@ -88,6 +90,7 @@ export function LineTool({
 }: LineToolProps) {
   const { map } = useMapform();
   const [open, setOpen] = useState(false);
+  const [isLayerSaveOpen, setIsLayerSaveOpen] = useState(false);
   const [isSelecting, setIsSelecting] = useState(true);
   const [linePoints, setLinePoints] = useState<Position[]>([]);
   const [cursorPosition, setCursorPosition] = useState<Position | null>(null);
@@ -129,6 +132,21 @@ export function LineTool({
     retry: false,
     placeholderData: (prev) => prev,
   });
+
+  const handleLayerSelect = (layerId: string) => {
+    console.log("layerId", layerId);
+    // if (!location.x || !location.y) return;
+
+    // executeCreatePoint({
+    //   layerId,
+    //   title,
+    //   description: null,
+    //   location: {
+    //     x: location.x,
+    //     y: location.y,
+    //   },
+    // });
+  };
 
   useEffect(() => {
     if (!map) return;
@@ -530,14 +548,25 @@ export function LineTool({
           }
           selectedFeature={selectedFeature}
           isPending={isFetching}
-          actions={[
-            {
-              label: "Save to",
-              onClick: () => {},
-              icon: BookmarkIcon,
-            },
-          ]}
-        ></SearchPopover>
+        >
+          <LayerSavePopover
+            onSelect={handleLayerSelect}
+            // isPending={isPending}
+            open={isLayerSaveOpen}
+            onOpenChange={setIsLayerSaveOpen}
+          >
+            <LocationSearchButton
+              className="w-full"
+              disabled={!selectedFeature?.properties}
+              role="combobox"
+              size="sm"
+              variant="outline"
+            >
+              <BookmarkIcon className="mr-1 size-4" />
+              Save to
+            </LocationSearchButton>
+          </LayerSavePopover>
+        </SearchPopover>
       )}
     </>
   );

@@ -134,14 +134,19 @@ function PointToolInner({
           location={location}
           selectedFeature={selectedFeature}
           isPending={isFetching}
-          actions={[
-            {
-              label: "Save to",
-              onClick: () => {},
-              icon: BookmarkIcon,
-            },
-          ]}
-        ></SearchPopover>
+        >
+          <Button
+            onClick={(e) => {
+              e.stopPropagation();
+              // action.onClick();
+            }}
+            variant="outline"
+            size="sm"
+          >
+            <BookmarkIcon className="mr-1 size-4" />
+            Save to
+          </Button>
+        </SearchPopover>
       )}
     </>
   );
