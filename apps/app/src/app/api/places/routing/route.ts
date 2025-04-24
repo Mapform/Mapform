@@ -7,7 +7,6 @@ type Mode = "drive" | "bicycle" | "walk";
 
 export async function GET(request: Request) {
   try {
-    console.log(11111, request);
     const session = await getCurrentSession();
 
     if (!session?.data?.user) {
