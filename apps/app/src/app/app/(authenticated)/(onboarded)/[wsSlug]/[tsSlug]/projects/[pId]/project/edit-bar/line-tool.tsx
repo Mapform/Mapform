@@ -18,7 +18,6 @@ import { useEffect, useMemo, useState } from "react";
 import { useMapform } from "~/components/mapform";
 import { useQuery } from "@tanstack/react-query";
 import type { FeatureCollection } from "geojson";
-import { LocationMarker } from "~/components/location-marker";
 import {
   Command,
   CommandList,
@@ -121,11 +120,14 @@ export function LineTool({
     enabled: !!debouncedLocation,
   });
 
-  const { data: searchResults, isFetching } = useQuery({
-    enabled: linePoints.length > 1 && selectedLineType !== "line",
-    queryKey: ["directions", selectedLineType, ...linePoints],
-    queryFn: () => fetchDirections(linePoints, selectedLineType),
+  const debouncedLinePoints = useDebounce(linePoints, 200);
+
+  const { data: directions, isFetching } = useQuery({
+    enabled: debouncedLinePoints.length > 1 && selectedLineType !== "line",
+    queryKey: ["directions", selectedLineType, ...debouncedLinePoints],
+    queryFn: () => fetchDirections(debouncedLinePoints, selectedLineType),
     retry: false,
+    placeholderData: (prev) => prev,
   });
 
   useEffect(() => {
@@ -237,7 +239,7 @@ export function LineTool({
   // Used for creating directions between points using Routing API
   const directionsGeoJson = useMemo(() => {
     const coordinates = (
-      searchResults?.results[0]?.geometry.flatMap((r) => r) ?? []
+      directions?.results[0]?.geometry.flatMap((r) => r) ?? []
     ).map((c) => [c.lon, c.lat]);
 
     return {
@@ -253,7 +255,7 @@ export function LineTool({
         },
       ],
     } satisfies FeatureCollection;
-  }, [searchResults]);
+  }, [directions]);
 
   // Used for creating straight lines between points
   const lineGeoJson = useMemo(() => {
