@@ -13,6 +13,14 @@ import { LineToolPopover } from "./popover";
 import { useDrawPoints } from "../map-tools/points";
 import { useDrawLines } from "../map-tools/lines";
 import { useDrawShapes } from "../map-tools/polygons";
+
+const POINT_LAYER_ID = "line-tool-points";
+const POINT_SOURCE_ID = "line-tool-points";
+const LINE_LAYER_ID = "shape-tool-lines";
+const LINE_SOURCE_ID = "shape-tool-lines";
+const POLYGON_LAYER_ID = "shape-tool-polygons";
+const POLYGON_SOURCE_ID = "shape-tool-polygons";
+
 interface LineToolProps {
   isActive: boolean;
   isSearchOpen: boolean;
@@ -35,7 +43,6 @@ function ShapeToolInner({
 }: LineToolProps & { map: mapboxgl.Map }) {
   const [isSelecting, setIsSelecting] = useState(true);
   const [linePoints, setLinePoints] = useState<Position[]>([]);
-  const [cursorPosition, setCursorPosition] = useState<Position | null>(null);
   const [draggedPointIndex, setDraggedPointIndex] = useState<number | null>(
     null,
   );
@@ -60,7 +67,6 @@ function ShapeToolInner({
 
   const resetLineTool = useCallback(() => {
     setLinePoints([]);
-    setCursorPosition(null);
     setIsSelecting(true);
     map.getCanvas().style.cursor = "crosshair";
   }, [map]);
@@ -76,22 +82,31 @@ function ShapeToolInner({
       // Prevent cleanup if map is destroyed
       if ((map as unknown as { _removed: boolean })._removed) return;
 
-      const currentLineVerticesSource = map.getSource("points") as
+      const currentLineVerticesSource = map.getSource(POINT_SOURCE_ID) as
         | mapboxgl.AnySourceImpl
         | undefined;
 
-      const currentLineSource = map.getSource("lines") as
+      const currentLineSource = map.getSource(LINE_SOURCE_ID) as
+        | mapboxgl.AnySourceImpl
+        | undefined;
+
+      const currentPolygonSource = map.getSource(POLYGON_SOURCE_ID) as
         | mapboxgl.AnySourceImpl
         | undefined;
 
       if (currentLineVerticesSource) {
-        map.removeLayer("points");
-        map.removeSource("points");
+        map.removeLayer(POINT_LAYER_ID);
+        map.removeSource(POINT_SOURCE_ID);
       }
 
       if (currentLineSource) {
-        map.removeLayer("lines");
-        map.removeSource("lines");
+        map.removeLayer(LINE_LAYER_ID);
+        map.removeSource(LINE_SOURCE_ID);
+      }
+
+      if (currentPolygonSource) {
+        map.removeLayer(POLYGON_LAYER_ID);
+        map.removeSource(POLYGON_SOURCE_ID);
       }
     };
   }, [isActive, map]);
@@ -116,7 +131,6 @@ function ShapeToolInner({
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Enter") {
         setIsSelecting(false);
-        setCursorPosition(null);
         map.getCanvas().style.cursor = "";
       } else if (e.key === "Escape") {
         if (isSelecting) {
@@ -156,23 +170,23 @@ function ShapeToolInner({
     map,
     points: linePoints,
     isVisible: isSelecting,
-    sourceId: "points",
-    layerId: "points",
+    sourceId: POINT_SOURCE_ID,
+    layerId: POINT_LAYER_ID,
   });
 
   useDrawLines({
     map,
     coordinates: [linePoints],
-    sourceId: "lines",
-    layerId: "lines",
+    sourceId: LINE_SOURCE_ID,
+    layerId: LINE_LAYER_ID,
     connectStartAndEnd: true,
   });
 
   useDrawShapes({
     map,
     coordinates: [[linePoints]],
-    sourceId: "polygons",
-    layerId: "polygons",
+    sourceId: POLYGON_SOURCE_ID,
+    layerId: POLYGON_LAYER_ID,
   });
 
   // Add vertex click handler and cursor styles
@@ -219,76 +233,19 @@ function ShapeToolInner({
     };
 
     if (isSelecting) {
-      map.on("mouseenter", "points", handleVertexMouseEnter);
-      map.on("mouseleave", "points", handleVertexMouseLeave);
-      map.on("mousedown", "points", handleVertexClick);
+      map.on("mouseenter", POINT_LAYER_ID, handleVertexMouseEnter);
+      map.on("mouseleave", POINT_LAYER_ID, handleVertexMouseLeave);
+      map.on("mousedown", POINT_LAYER_ID, handleVertexClick);
       map.on("mousemove", handleMouseMove);
     }
 
     return () => {
-      map.off("mouseenter", "points", handleVertexMouseEnter);
-      map.off("mouseleave", "points", handleVertexMouseLeave);
-      map.off("mousedown", "points", handleVertexClick);
+      map.off("mouseenter", POINT_LAYER_ID, handleVertexMouseEnter);
+      map.off("mouseleave", POINT_LAYER_ID, handleVertexMouseLeave);
+      map.off("mousedown", POINT_LAYER_ID, handleVertexClick);
       map.off("mousemove", handleMouseMove);
     };
   }, [map, isSelecting, draggedPointIndex]);
-
-  // Draw temporary line to cursor
-  // useEffect(() => {
-  //   if (!map) return;
-
-  //   // Add the source and layer once when the component mounts
-  //   if (!map.getSource("temp-line-path")) {
-  //     map.addSource("temp-line-path", {
-  //       type: "geojson",
-  //       data: {
-  //         type: "FeatureCollection",
-  //         features: [],
-  //       },
-  //     });
-
-  //     map.addLayer({
-  //       id: "temp-line-path",
-  //       type: "line",
-  //       source: "temp-line-path",
-  //       paint: {
-  //         "line-color": "#3b82f6",
-  //         "line-width": 2,
-  //         "line-dasharray": [1, 1],
-  //       },
-  //     });
-  //   }
-
-  //   // Update the source data when cursor position or line points change
-  //   if (cursorPosition && linePoints.length > 0) {
-  //     const lastPoint = linePoints[linePoints.length - 1];
-  //     if (!lastPoint) return;
-
-  //     const tempLineGeoJson = {
-  //       type: "FeatureCollection",
-  // features: [
-  //   {
-  //     type: "Feature",
-  //     geometry: {
-  //       type: "LineString",
-  //       coordinates: [lastPoint, cursorPosition] as Position[],
-  //     },
-  //     properties: {},
-  //   },
-  // ],
-  //     } satisfies FeatureCollection;
-
-  //     (map.getSource("temp-line-path") as mapboxgl.GeoJSONSource).setData(
-  //       tempLineGeoJson,
-  //     );
-  //   } else {
-  //     // Clear the line when there's no cursor position or no points
-  //     (map.getSource("temp-line-path") as mapboxgl.GeoJSONSource).setData({
-  //       type: "FeatureCollection",
-  //       features: [],
-  //     });
-  //   }
-  // }, [map, cursorPosition, linePoints]);
 
   return (
     <>

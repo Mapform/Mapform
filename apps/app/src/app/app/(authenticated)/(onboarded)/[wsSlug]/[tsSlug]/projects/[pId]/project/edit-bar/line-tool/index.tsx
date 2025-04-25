@@ -85,6 +85,11 @@ export function LineTool(props: LineToolProps) {
   return <LineToolInner {...props} map={map} />;
 }
 
+const POINT_LAYER_ID = "line-tool-points";
+const POINT_SOURCE_ID = "line-tool-points";
+const LINE_LAYER_ID = "line-tool-lines";
+const LINE_SOURCE_ID = "line-tool-lines";
+
 function LineToolInner({
   map,
   isActive,
@@ -96,7 +101,6 @@ function LineToolInner({
   const [open, setOpen] = useState(false);
   const [isSelecting, setIsSelecting] = useState(true);
   const [linePoints, setLinePoints] = useState<Position[]>([]);
-  const [cursorPosition, setCursorPosition] = useState<Position | null>(null);
   const [draggedPointIndex, setDraggedPointIndex] = useState<number | null>(
     null,
   );
@@ -131,7 +135,6 @@ function LineToolInner({
 
   const resetLineTool = useCallback(() => {
     setLinePoints([]);
-    setCursorPosition(null);
     setIsSelecting(true);
     map.getCanvas().style.cursor = "crosshair";
   }, [map]);
@@ -147,22 +150,22 @@ function LineToolInner({
       // Prevent cleanup if map is destroyed
       if ((map as unknown as { _removed: boolean })._removed) return;
 
-      const currentLineVerticesSource = map.getSource("points") as
+      const currentLineVerticesSource = map.getSource(POINT_SOURCE_ID) as
         | mapboxgl.AnySourceImpl
         | undefined;
 
-      const currentLineSource = map.getSource("lines") as
+      const currentLineSource = map.getSource(LINE_SOURCE_ID) as
         | mapboxgl.AnySourceImpl
         | undefined;
 
       if (currentLineVerticesSource) {
-        map.removeLayer("points");
-        map.removeSource("points");
+        map.removeLayer(POINT_LAYER_ID);
+        map.removeSource(POINT_SOURCE_ID);
       }
 
       if (currentLineSource) {
-        map.removeLayer("lines");
-        map.removeSource("lines");
+        map.removeLayer(LINE_LAYER_ID);
+        map.removeSource(LINE_SOURCE_ID);
       }
     };
   }, [isActive, map]);
@@ -187,7 +190,6 @@ function LineToolInner({
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Enter") {
         setIsSelecting(false);
-        setCursorPosition(null);
         map.getCanvas().style.cursor = "";
       } else if (e.key === "Escape") {
         if (isSelecting) {
@@ -227,8 +229,8 @@ function LineToolInner({
     map,
     points: linePoints,
     isVisible: isSelecting,
-    sourceId: "points",
-    layerId: "points",
+    sourceId: POINT_SOURCE_ID,
+    layerId: POINT_LAYER_ID,
   });
 
   useDrawLines({
@@ -241,8 +243,8 @@ function LineToolInner({
               (c) => [c.lon, c.lat],
             ),
           ],
-    sourceId: "lines",
-    layerId: "lines",
+    sourceId: LINE_SOURCE_ID,
+    layerId: LINE_LAYER_ID,
   });
 
   // Add vertex click handler and cursor styles
@@ -289,16 +291,16 @@ function LineToolInner({
     };
 
     if (isSelecting) {
-      map.on("mouseenter", "points", handleVertexMouseEnter);
-      map.on("mouseleave", "points", handleVertexMouseLeave);
-      map.on("mousedown", "points", handleVertexClick);
+      map.on("mouseenter", POINT_LAYER_ID, handleVertexMouseEnter);
+      map.on("mouseleave", POINT_LAYER_ID, handleVertexMouseLeave);
+      map.on("mousedown", POINT_LAYER_ID, handleVertexClick);
       map.on("mousemove", handleMouseMove);
     }
 
     return () => {
-      map.off("mouseenter", "points", handleVertexMouseEnter);
-      map.off("mouseleave", "points", handleVertexMouseLeave);
-      map.off("mousedown", "points", handleVertexClick);
+      map.off("mouseenter", POINT_LAYER_ID, handleVertexMouseEnter);
+      map.off("mouseleave", POINT_LAYER_ID, handleVertexMouseLeave);
+      map.off("mousedown", POINT_LAYER_ID, handleVertexClick);
       map.off("mousemove", handleMouseMove);
     };
   }, [map, isSelecting, draggedPointIndex]);

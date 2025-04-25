@@ -82,6 +82,8 @@ export function Map({
     [pageData?.pointData],
   ) satisfies FeatureCollection;
 
+  console.log(1111, pageData);
+
   const markerGeojson: FeatureCollection = useMemo(
     () => ({
       type: "FeatureCollection",
