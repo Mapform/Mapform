@@ -157,13 +157,13 @@ export function LineTool({
         | undefined;
 
       if (currentLineVerticesSource) {
-        map.removeSource("line-vertices");
         map.removeLayer("line-vertices");
+        map.removeSource("line-vertices");
       }
 
       if (currentLineSource) {
-        map.removeSource("line-path");
         map.removeLayer("line-path");
+        map.removeSource("line-path");
       }
     };
   }, [isActive, map]);
@@ -418,7 +418,6 @@ export function LineTool({
     }
 
     return () => {
-      console.log("unmounting");
       map.off("mouseenter", "line-vertices", handleVertexMouseEnter);
       map.off("mouseleave", "line-vertices", handleVertexMouseLeave);
       map.off("mousedown", "line-vertices", handleVertexClick);
