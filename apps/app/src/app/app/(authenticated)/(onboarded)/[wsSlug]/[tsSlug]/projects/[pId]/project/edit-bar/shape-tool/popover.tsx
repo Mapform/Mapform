@@ -2,14 +2,14 @@ import { LayerSavePopover } from "../../layer-save-popover";
 import { SearchPopover } from "../search-popover";
 import { Button } from "@mapform/ui/components/button";
 import { BookmarkIcon } from "lucide-react";
-import { createLineAction } from "~/data/datasets/create-line";
+import { createPolygonAction } from "~/data/datasets/create-polygon";
 import { useAction } from "next-safe-action/hooks";
 import { useState } from "react";
 
 interface LineToolPopoverProps {
   location: mapboxgl.LngLat;
   isFetching: boolean;
-  coordinates: [number, number][];
+  coordinates: [number, number][][];
   onSave: () => void;
 }
 
@@ -19,7 +19,7 @@ export function LineToolPopover({
   isFetching,
   onSave,
 }: LineToolPopoverProps) {
-  const { execute, isPending } = useAction(createLineAction, {
+  const { execute, isPending } = useAction(createPolygonAction, {
     onSuccess: () => {
       onSave();
       setIsLayerSaveOpen(false);
@@ -39,7 +39,7 @@ export function LineToolPopover({
   return (
     <SearchPopover location={location} title="New Line" isPending={isFetching}>
       <LayerSavePopover
-        types={["line"]}
+        types={["polygon"]}
         onSelect={handleLayerSelect}
         isPending={isPending}
         open={isLayerSaveOpen}

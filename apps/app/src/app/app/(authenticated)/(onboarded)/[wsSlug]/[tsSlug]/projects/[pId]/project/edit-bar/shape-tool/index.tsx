@@ -219,16 +219,16 @@ function ShapeToolInner({
     };
 
     if (isSelecting) {
-      map.on("mouseenter", "", handleVertexMouseEnter);
-      map.on("mouseleave", "", handleVertexMouseLeave);
-      map.on("mousedown", "", handleVertexClick);
+      map.on("mouseenter", "points", handleVertexMouseEnter);
+      map.on("mouseleave", "points", handleVertexMouseLeave);
+      map.on("mousedown", "points", handleVertexClick);
       map.on("mousemove", handleMouseMove);
     }
 
     return () => {
-      map.off("mouseenter", "", handleVertexMouseEnter);
-      map.off("mouseleave", "", handleVertexMouseLeave);
-      map.off("mousedown", "", handleVertexClick);
+      map.off("mouseenter", "points", handleVertexMouseEnter);
+      map.off("mouseleave", "points", handleVertexMouseLeave);
+      map.off("mousedown", "points", handleVertexClick);
       map.off("mousemove", handleMouseMove);
     };
   }, [map, isSelecting, draggedPointIndex]);
@@ -311,7 +311,9 @@ function ShapeToolInner({
           location={new mapboxgl.LngLat(location[0]!, location[1]!)}
           onSave={resetLineTool}
           isFetching={false}
-          coordinates={linePoints.map((p) => [p[0]!, p[1]!])}
+          coordinates={[
+            linePoints.map((p) => [p[0]!, p[1]!] as [number, number]),
+          ]}
         />
       )}
     </>

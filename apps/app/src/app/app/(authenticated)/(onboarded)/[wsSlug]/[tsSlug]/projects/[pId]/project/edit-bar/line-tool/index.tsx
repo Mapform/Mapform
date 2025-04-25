@@ -289,76 +289,19 @@ function LineToolInner({
     };
 
     if (isSelecting) {
-      map.on("mouseenter", "", handleVertexMouseEnter);
-      map.on("mouseleave", "", handleVertexMouseLeave);
-      map.on("mousedown", "", handleVertexClick);
+      map.on("mouseenter", "points", handleVertexMouseEnter);
+      map.on("mouseleave", "points", handleVertexMouseLeave);
+      map.on("mousedown", "points", handleVertexClick);
       map.on("mousemove", handleMouseMove);
     }
 
     return () => {
-      map.off("mouseenter", "", handleVertexMouseEnter);
-      map.off("mouseleave", "", handleVertexMouseLeave);
-      map.off("mousedown", "", handleVertexClick);
+      map.off("mouseenter", "points", handleVertexMouseEnter);
+      map.off("mouseleave", "points", handleVertexMouseLeave);
+      map.off("mousedown", "points", handleVertexClick);
       map.off("mousemove", handleMouseMove);
     };
   }, [map, isSelecting, draggedPointIndex]);
-
-  // Draw temporary line to cursor
-  // useEffect(() => {
-  //   if (!map) return;
-
-  //   // Add the source and layer once when the component mounts
-  //   if (!map.getSource("temp-line-path")) {
-  //     map.addSource("temp-line-path", {
-  //       type: "geojson",
-  //       data: {
-  //         type: "FeatureCollection",
-  //         features: [],
-  //       },
-  //     });
-
-  //     map.addLayer({
-  //       id: "temp-line-path",
-  //       type: "line",
-  //       source: "temp-line-path",
-  //       paint: {
-  //         "line-color": "#3b82f6",
-  //         "line-width": 2,
-  //         "line-dasharray": [1, 1],
-  //       },
-  //     });
-  //   }
-
-  //   // Update the source data when cursor position or line points change
-  //   if (cursorPosition && linePoints.length > 0) {
-  //     const lastPoint = linePoints[linePoints.length - 1];
-  //     if (!lastPoint) return;
-
-  //     const tempLineGeoJson = {
-  //       type: "FeatureCollection",
-  // features: [
-  //   {
-  //     type: "Feature",
-  //     geometry: {
-  //       type: "LineString",
-  //       coordinates: [lastPoint, cursorPosition] as Position[],
-  //     },
-  //     properties: {},
-  //   },
-  // ],
-  //     } satisfies FeatureCollection;
-
-  //     (map.getSource("temp-line-path") as mapboxgl.GeoJSONSource).setData(
-  //       tempLineGeoJson,
-  //     );
-  //   } else {
-  //     // Clear the line when there's no cursor position or no points
-  //     (map.getSource("temp-line-path") as mapboxgl.GeoJSONSource).setData({
-  //       type: "FeatureCollection",
-  //       features: [],
-  //     });
-  //   }
-  // }, [map, cursorPosition, linePoints]);
 
   return (
     <>
