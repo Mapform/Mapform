@@ -54,15 +54,6 @@ function PointToolInner({
 
   const onDrawSelectionChange = useCallback(
     (e: mapboxgl.MapLayerMouseEvent) => {
-      // console.log("onDrawSelectionChange", e.target);
-
-      // Check if the click target is within the SearchPopover
-      // if (searchPopoverRef.current?.contains(e.target)) {
-      //   return;
-      // }
-
-      // console.log(2222);
-
       if (!e.features?.length && drawRef.current) {
         map.removeControl(drawRef.current);
         map.off("draw.create", onDrawCreate);

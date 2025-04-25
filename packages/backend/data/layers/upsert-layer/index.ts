@@ -32,8 +32,6 @@ export const upsertLayer = (authClient: UserAuthClient) =>
           polygonProperties,
         },
       }) => {
-        console.log("color", color);
-
         // Get dataset columns to validate against
         const dataset = await db.query.datasets.findFirst({
           where: eq(datasets.id, datasetId),
