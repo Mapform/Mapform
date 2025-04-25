@@ -11,7 +11,6 @@ import type { Position } from "geojson";
 import mapboxgl from "mapbox-gl";
 import { LineToolPopover } from "./popover";
 import { useDrawPoints } from "~/lib/map-tools/points";
-import { useDrawLines } from "~/lib/map-tools/lines";
 import { useDrawShapes } from "~/lib/map-tools/polygons";
 
 const POINT_LAYER_ID = "line-tool-points";
@@ -20,6 +19,7 @@ const LINE_LAYER_ID = "shape-tool-lines";
 const LINE_SOURCE_ID = "shape-tool-lines";
 const POLYGON_LAYER_ID = "shape-tool-polygons";
 const POLYGON_SOURCE_ID = "shape-tool-polygons";
+const POLYGON_OUTLINE_LAYER_ID = "shape-tool-polygons-outline";
 
 interface LineToolProps {
   isActive: boolean;
@@ -104,10 +104,11 @@ function ShapeToolInner({
         map.removeSource(LINE_SOURCE_ID);
       }
 
-      if (currentPolygonSource) {
-        map.removeLayer(POLYGON_LAYER_ID);
-        map.removeSource(POLYGON_SOURCE_ID);
-      }
+      // if (currentPolygonSource) {
+      //   map.removeLayer(POLYGON_LAYER_ID);
+      //   map.removeSource(POLYGON_SOURCE_ID);
+      //   map.removeLayer(POLYGON_OUTLINE_LAYER_ID);
+      // }
     };
   }, [isActive, map]);
 
@@ -174,19 +175,12 @@ function ShapeToolInner({
     layerId: POINT_LAYER_ID,
   });
 
-  useDrawLines({
-    map,
-    coordinates: [linePoints],
-    sourceId: LINE_SOURCE_ID,
-    layerId: LINE_LAYER_ID,
-    connectStartAndEnd: true,
-  });
-
   useDrawShapes({
     map,
     coordinates: [[linePoints]],
     sourceId: POLYGON_SOURCE_ID,
     layerId: POLYGON_LAYER_ID,
+    outlineLayerId: POLYGON_OUTLINE_LAYER_ID,
   });
 
   // Add vertex click handler and cursor styles

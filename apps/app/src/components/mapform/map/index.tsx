@@ -4,7 +4,7 @@ import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import mapboxgl from "mapbox-gl";
 import { cn } from "@mapform/lib/classnames";
-import type { FeatureCollection } from "geojson";
+import type { FeatureCollection, Position } from "geojson";
 import type { ViewState } from "@mapform/map-utils/types";
 import type { GetPageData } from "@mapform/backend/data/datalayer/get-page-data";
 import { usePrevious } from "@mapform/lib/hooks/use-previous";
@@ -397,7 +397,9 @@ export function Map({
   useDrawShapes({
     map,
     coordinates: pageData?.polygonData.map(
-      (feature) => feature.value?.coordinates ?? [],
+      (feature) =>
+        (feature.value?.coordinates as unknown as Position[][] | undefined) ??
+        [],
     ) ?? [[[]]],
     sourceId: POLYGON_SOURCE_ID,
     layerId: POLYGON_LAYER_ID,

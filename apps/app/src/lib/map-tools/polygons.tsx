@@ -9,12 +9,14 @@ export function useDrawShapes({
   isVisible = true,
   sourceId = "polygons",
   layerId = "polygons",
+  outlineLayerId = "polygons-outline",
 }: {
-  map: mapboxgl.Map | null;
+  map?: mapboxgl.Map | null;
   coordinates: Position[][][]; // Array of Polygon coordinates
   isVisible?: boolean;
   sourceId?: string;
   layerId?: string;
+  outlineLayerId?: string;
 }) {
   // Used for creating polygons on the map
   const polygonsGeoJson = useMemo(
@@ -70,9 +72,21 @@ export function useDrawShapes({
         paint: {
           "fill-color": "#f59e42",
           "fill-opacity": 0.4,
-          "fill-outline-color": "#f59e42",
+          // "fill-outline-color": "#000000",
+        },
+      });
+
+      // Add line layer for the outline
+      map.addLayer({
+        id: outlineLayerId,
+        type: "line",
+        source: sourceId,
+        layout: {},
+        paint: {
+          "line-color": "#000000",
+          "line-width": 3,
         },
       });
     }
-  }, [map, polygonsGeoJson, isVisible, sourceId, layerId]);
+  }, [map, polygonsGeoJson, isVisible, sourceId, outlineLayerId, layerId]);
 }
