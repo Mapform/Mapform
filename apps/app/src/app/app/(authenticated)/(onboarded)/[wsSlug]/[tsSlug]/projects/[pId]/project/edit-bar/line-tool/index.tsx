@@ -14,7 +14,7 @@ import {
   CheckIcon,
   BookmarkIcon,
 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useMapform } from "~/components/mapform";
 import { useQuery } from "@tanstack/react-query";
 import type { FeatureCollection } from "geojson";
@@ -90,7 +90,6 @@ export function LineTool({
 }: LineToolProps) {
   const { map } = useMapform();
   const [open, setOpen] = useState(false);
-  const [isLayerSaveOpen, setIsLayerSaveOpen] = useState(false);
   const [isSelecting, setIsSelecting] = useState(true);
   const [linePoints, setLinePoints] = useState<Position[]>([]);
   const [cursorPosition, setCursorPosition] = useState<Position | null>(null);
@@ -133,20 +132,14 @@ export function LineTool({
     placeholderData: (prev) => prev,
   });
 
-  const handleLayerSelect = (layerId: string) => {
-    console.log("layerId", layerId);
-    // if (!location.x || !location.y) return;
+  const resetLineTool = useCallback(() => {
+    if (!map) return;
 
-    // executeCreatePoint({
-    //   layerId,
-    //   title,
-    //   description: null,
-    //   location: {
-    //     x: location.x,
-    //     y: location.y,
-    //   },
-    // });
-  };
+    setLinePoints([]);
+    setCursorPosition(null);
+    setIsSelecting(true);
+    map.getCanvas().style.cursor = "crosshair";
+  }, [map]);
 
   useEffect(() => {
     if (!map) return;
@@ -215,10 +208,7 @@ export function LineTool({
         setIsSelecting(false);
         setCursorPosition(null);
       } else if (e.key === "Escape") {
-        setLinePoints([]);
-        setCursorPosition(null);
-        setIsSelecting(true);
-        map.getCanvas().style.cursor = "crosshair";
+        resetLineTool();
       }
     };
 
@@ -233,7 +223,14 @@ export function LineTool({
       map.off("mouseup", handleMouseUp);
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [map, isActive, isSelecting, linePoints, draggedPointIndex]);
+  }, [
+    map,
+    isActive,
+    isSelecting,
+    linePoints,
+    draggedPointIndex,
+    resetLineTool,
+  ]);
 
   // Used for creating points on the map
   const verticesGeoJson = useMemo(
@@ -478,8 +475,6 @@ export function LineTool({
   //   }
   // }, [map, cursorPosition, linePoints]);
 
-  console.log(1111, selectedFeature);
-
   return (
     <>
       <div className="flex items-center">
@@ -548,6 +543,7 @@ export function LineTool({
           location={
             new mapboxgl.LngLat(debouncedLocation[0]!, debouncedLocation[1]!)
           }
+          onSave={resetLineTool}
           selectedFeature={selectedFeature}
           isFetching={isFetching}
           coordinates={

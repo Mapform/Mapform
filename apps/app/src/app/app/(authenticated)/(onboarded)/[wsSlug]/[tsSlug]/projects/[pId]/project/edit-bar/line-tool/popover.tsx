@@ -12,6 +12,7 @@ interface LineToolPopoverProps {
   selectedFeature: GeoapifyPlace["features"][number] | null;
   isFetching: boolean;
   coordinates: [number, number][];
+  onSave: () => void;
 }
 
 export function LineToolPopover({
@@ -19,9 +20,14 @@ export function LineToolPopover({
   coordinates,
   selectedFeature,
   isFetching,
-  // handleLayerSelect,
+  onSave,
 }: LineToolPopoverProps) {
-  const { execute, isPending } = useAction(createLineAction);
+  const { execute, isPending } = useAction(createLineAction, {
+    onSuccess: () => {
+      onSave();
+      setIsLayerSaveOpen(false);
+    },
+  });
   const [isLayerSaveOpen, setIsLayerSaveOpen] = useState(false);
 
   const handleLayerSelect = (layerId: string) => {
