@@ -4,7 +4,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@mapform/ui/components/tooltip";
-import { BookmarkIcon, MapPinPlusIcon, PlusIcon } from "lucide-react";
+import { BookmarkIcon, MapPinPlusIcon } from "lucide-react";
 import { useEffect, useState, useCallback, useRef } from "react";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import { useMapform } from "~/components/mapform";
@@ -98,7 +98,6 @@ function PointToolInner({
       map.on("draw.create", onDrawCreate);
       map.on("draw.update", onDrawCreate);
       map.on("click", handleMapClick);
-      // map.on("draw.selectionchange", onDrawSelectionChange);
     }
 
     return () => {
@@ -107,12 +106,11 @@ function PointToolInner({
         map.off("draw.create", onDrawCreate);
         map.off("draw.update", onDrawCreate);
         map.off("click", handleMapClick);
-        // map.off("draw.selectionchange", onDrawSelectionChange);
         drawRef.current = null;
         setLocation(null);
       }
     };
-  }, [isActive, map, onDrawCreate, onDrawSelectionChange]);
+  }, [isActive, map, onDrawCreate, onDrawSelectionChange, handleMapClick]);
 
   return (
     <>
@@ -132,7 +130,11 @@ function PointToolInner({
         <SearchPopover
           ref={searchPopoverRef}
           location={location}
-          selectedFeature={selectedFeature}
+          title={
+            selectedFeature?.properties?.name ??
+            selectedFeature?.properties?.address_line1
+          }
+          subtitle={selectedFeature?.properties?.address_line2}
           isPending={isFetching}
         >
           <Button

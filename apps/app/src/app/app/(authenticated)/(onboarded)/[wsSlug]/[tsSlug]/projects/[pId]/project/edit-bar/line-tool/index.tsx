@@ -32,7 +32,6 @@ import {
 import { cn } from "@mapform/lib/classnames";
 import type { Position } from "geojson";
 import type { GeoapifyRoute } from "@mapform/map-utils/types";
-import { useReverseGeocode } from "~/hooks/use-reverse-geocode";
 import mapboxgl from "mapbox-gl";
 import { useDebounce } from "@mapform/lib/hooks/use-debounce";
 import { LineToolPopover } from "./popover";
@@ -111,13 +110,6 @@ export function LineTool({
   };
 
   const location = useMemo(() => getCenterOfPoints(linePoints), [linePoints]);
-  const debouncedLocation = useDebounce(location, 200);
-
-  const { selectedFeature } = useReverseGeocode({
-    lat: debouncedLocation?.[1] ?? null,
-    lng: debouncedLocation?.[0] ?? null,
-    enabled: !!debouncedLocation,
-  });
 
   const debouncedLinePoints = useDebounce(linePoints, 200);
 
@@ -550,13 +542,10 @@ export function LineTool({
           </PopoverContent>
         </Popover>
       </div>
-      {debouncedLocation && map && !isSelecting && (
+      {location && map && !isSelecting && (
         <LineToolPopover
-          location={
-            new mapboxgl.LngLat(debouncedLocation[0]!, debouncedLocation[1]!)
-          }
+          location={new mapboxgl.LngLat(location[0]!, location[1]!)}
           onSave={resetLineTool}
-          selectedFeature={selectedFeature}
           isFetching={isFetching}
           coordinates={
             selectedLineType === "line"

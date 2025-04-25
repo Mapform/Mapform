@@ -1,23 +1,16 @@
 "use client";
 
-import type { GeoapifyPlace } from "@mapform/map-utils/types";
 import { forwardRef } from "react";
 
 import { useMapform } from "~/components/mapform";
 import { Skeleton } from "@mapform/ui/components/skeleton";
 import { LocationMarker } from "~/components/location-marker";
-import { Button } from "@mapform/ui/components/button";
 
 interface SearchPopoverProps {
   isPending?: boolean;
   location: mapboxgl.LngLat;
-  selectedFeature: GeoapifyPlace["features"][number] | null;
-  // actions?: {
-  //   onClick: () => void;
-  //   label: string;
-  //   icon: LucideIcon;
-  //   variant?: React.ComponentProps<typeof Button>["variant"];
-  // }[];
+  title?: string;
+  subtitle?: string;
   children?: React.ReactNode;
 }
 
@@ -42,7 +35,7 @@ interface SearchPopoverInnerProps extends SearchPopoverProps {
 export const SearchPopoverInner = forwardRef<
   HTMLDivElement,
   SearchPopoverInnerProps
->(({ map, location, selectedFeature, isPending = false, children }, ref) => {
+>(({ map, location, title, subtitle, isPending = false, children }, ref) => {
   return (
     <LocationMarker map={map} longitude={location.lng} latitude={location.lat}>
       <div className="relative">
@@ -55,19 +48,14 @@ export const SearchPopoverInner = forwardRef<
                     <Skeleton className="mb-2 h-8" />
                     <Skeleton className="h-4" />
                   </>
-                ) : selectedFeature ? (
+                ) : (
                   <>
-                    <div className="text-lg font-semibold">
-                      {selectedFeature.properties?.name ??
-                        selectedFeature.properties?.address_line1}
-                    </div>
+                    <div className="text-lg font-semibold">{title}</div>
                     <div className="text-muted-foreground text-base">
-                      {selectedFeature.properties?.address_line2}
+                      {subtitle}
                     </div>
                     <div className="mt-2 flex gap-2">{children}</div>
                   </>
-                ) : (
-                  <div className="text-center">{/* placeholder text */}</div>
                 )}
               </div>
               <div className="bg-popover absolute -bottom-1 left-1/2 h-2 w-2 -translate-x-1/2 rotate-45" />
