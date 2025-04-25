@@ -189,11 +189,13 @@ export function LineTool({
       if (e.key === "Enter") {
         setIsSelecting(false);
         setCursorPosition(null);
+        map.getCanvas().style.cursor = "";
       } else if (e.key === "Escape") {
         if (isSelecting) {
           resetLineTool();
         } else {
           setIsSelecting(true);
+          map.getCanvas().style.cursor = "crosshair";
         }
       } else if (e.key === "Backspace") {
         if (isSelecting) {
