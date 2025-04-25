@@ -34,11 +34,11 @@ import { cn } from "@mapform/lib/classnames";
 import type { Position } from "geojson";
 import type { GeoapifyRoute } from "@mapform/map-utils/types";
 import { useReverseGeocode } from "~/hooks/use-reverse-geocode";
-import { SearchPopover } from "./search-popover";
+import { SearchPopover } from "../search-popover";
 import mapboxgl from "mapbox-gl";
 import { useDebounce } from "@mapform/lib/hooks/use-debounce";
-import { LocationSearchButton } from "~/components/location-search";
-import { LayerSavePopover } from "../layer-save-popover";
+import { LayerSavePopover } from "../../layer-save-popover";
+import { LineToolPopover } from "./popover";
 
 interface LineToolProps {
   isActive: boolean;
@@ -478,7 +478,7 @@ export function LineTool({
   //   }
   // }, [map, cursorPosition, linePoints]);
 
-  console.log(11111);
+  console.log(1111, selectedFeature);
 
   return (
     <>
@@ -543,33 +543,22 @@ export function LineTool({
           </PopoverContent>
         </Popover>
       </div>
-      {/* {map && debouncedLocation && !isSelecting && (
-        <SearchPopover
+      {debouncedLocation && map && !isSelecting && (
+        <LineToolPopover
           location={
             new mapboxgl.LngLat(debouncedLocation[0]!, debouncedLocation[1]!)
           }
           selectedFeature={selectedFeature}
-          isPending={isFetching}
-        >
-          <LayerSavePopover
-            onSelect={handleLayerSelect}
-            // isPending={isPending}
-            open={isLayerSaveOpen}
-            onOpenChange={setIsLayerSaveOpen}
-          >
-            <LocationSearchButton
-              className="w-full"
-              disabled={!selectedFeature?.properties}
-              role="combobox"
-              size="sm"
-              variant="outline"
-            >
-              <BookmarkIcon className="mr-1 size-4" />
-              Save to
-            </LocationSearchButton>
-          </LayerSavePopover>
-        </SearchPopover>
-      )} */}
+          isFetching={isFetching}
+          coordinates={
+            selectedLineType === "line"
+              ? linePoints.map((p) => [p[0]!, p[1]!])
+              : (directions?.results[0]?.geometry.flatMap((r) => r) ?? []).map(
+                  (c) => [c.lon, c.lat],
+                )
+          }
+        />
+      )}
     </>
   );
 }

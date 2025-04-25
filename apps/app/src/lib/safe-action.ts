@@ -20,6 +20,7 @@ import { getLayerMarker } from "@mapform/backend/data/datalayer/get-layer-marker
 import { getLayerPoint } from "@mapform/backend/data/datalayer/get-layer-point";
 import { getPageData } from "@mapform/backend/data/datalayer/get-page-data";
 import { createPoint } from "@mapform/backend/data/datasets/create-point";
+import { createLine } from "@mapform/backend/data/datasets/create-line";
 import { listTeamspaceDatasets } from "@mapform/backend/data/datasets/list-teamspace-datasets";
 import { uploadImage } from "@mapform/backend/data/images/upload-image";
 import { createPageLayer } from "@mapform/backend/data/layers-to-pages/create-page-layer";
@@ -131,6 +132,7 @@ const createUserAuthClient = () => {
     // Datasets
     getDataset: getDataset(extendedClient),
     createPoint: createPoint(extendedClient), // Note: for createUserAuthClient this is causing 'The inferred type of this node exceeds the maximum length the compiler will serialize'
+    createLine: createLine(extendedClient),
     deleteDataset: deleteDataset(extendedClient),
     updateDataset: updateDataset(extendedClient),
     createEmptyDataset: createEmptyDataset(extendedClient),

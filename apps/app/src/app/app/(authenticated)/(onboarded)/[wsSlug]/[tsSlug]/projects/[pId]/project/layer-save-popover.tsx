@@ -19,6 +19,7 @@ import {
   LayerPopoverContent,
 } from "../layer-popover";
 import { useProject } from "../project-context";
+import type { Layer } from "@mapform/db/schema";
 
 interface LayerSavePopoverProps {
   children: React.ReactNode;
@@ -27,6 +28,7 @@ interface LayerSavePopoverProps {
   align?: "start" | "center" | "end";
   side?: "top" | "right" | "bottom" | "left";
   open?: boolean;
+  types: Layer["type"][];
   onOpenChange?: (open: boolean) => void;
 }
 
@@ -38,6 +40,7 @@ export function LayerSavePopover({
   side = "right",
   open,
   onOpenChange,
+  types,
 }: LayerSavePopoverProps) {
   const [query, setQuery] = useState<string>("");
   const [layerPopoverOpen, setLayerPopoverOpen] = useState(false);
@@ -45,9 +48,7 @@ export function LayerSavePopover({
 
   const currentPage = updatePageServerAction.optimisticState;
   const pageLayers = currentProject.pageLayers.filter(
-    (layer) =>
-      layer.pageId === currentPage?.id &&
-      (layer.type === "point" || layer.type === "marker"),
+    (layer) => layer.pageId === currentPage?.id && types.includes(layer.type),
   );
 
   return (
