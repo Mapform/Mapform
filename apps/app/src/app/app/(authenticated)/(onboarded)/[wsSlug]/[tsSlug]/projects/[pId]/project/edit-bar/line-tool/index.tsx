@@ -33,10 +33,8 @@ import { cn } from "@mapform/lib/classnames";
 import type { Position } from "geojson";
 import type { GeoapifyRoute } from "@mapform/map-utils/types";
 import { useReverseGeocode } from "~/hooks/use-reverse-geocode";
-import { SearchPopover } from "../search-popover";
 import mapboxgl from "mapbox-gl";
 import { useDebounce } from "@mapform/lib/hooks/use-debounce";
-import { LayerSavePopover } from "../../layer-save-popover";
 import { LineToolPopover } from "./popover";
 
 interface LineToolProps {
@@ -179,21 +177,6 @@ export function LineTool({
       setLinePoints((prev) => [...prev, [lng, lat]]);
     };
 
-    // const handleMouseMove = (e: mapboxgl.MapMouseEvent) => {
-    //   if (isSelecting && linePoints.length > 0) {
-    //     const { lng, lat } = e.lngLat;
-    //     setCursorPosition([lng, lat]);
-    //   } else if (draggedPointIndex !== null) {
-    // e.preventDefault();
-    // const { lng, lat } = e.lngLat;
-    // setLinePoints((prev) => {
-    //   const newPoints = [...prev];
-    //   newPoints[draggedPointIndex] = [lng, lat];
-    //   return newPoints;
-    // });
-    //   }
-    // };
-
     const handleMouseUp = (e: mapboxgl.MapMouseEvent) => {
       if (draggedPointIndex !== null) {
         e.preventDefault();
@@ -207,18 +190,26 @@ export function LineTool({
         setIsSelecting(false);
         setCursorPosition(null);
       } else if (e.key === "Escape") {
-        resetLineTool();
+        if (isSelecting) {
+          resetLineTool();
+        } else {
+          setIsSelecting(true);
+        }
+      } else if (e.key === "Backspace") {
+        if (isSelecting) {
+          setLinePoints((prev) => prev.slice(0, -1));
+        } else {
+          resetLineTool();
+        }
       }
     };
 
     map.on("click", handleClick);
-    // map.on("mousemove", handleMouseMove);
     map.on("mouseup", handleMouseUp);
     window.addEventListener("keydown", handleKeyDown);
 
     return () => {
       map.off("click", handleClick);
-      // map.off("mousemove", handleMouseMove);
       map.off("mouseup", handleMouseUp);
       window.removeEventListener("keydown", handleKeyDown);
     };
@@ -244,6 +235,7 @@ export function LineTool({
           },
           properties: {
             index,
+            isLast: index === linePoints.length - 1,
           },
         })),
       }) satisfies FeatureCollection,
@@ -300,6 +292,12 @@ export function LineTool({
     if (currentPointSource) {
       // Update the source data
       (currentPointSource as mapboxgl.GeoJSONSource).setData(verticesGeoJson);
+      // Update layer visibility
+      map.setLayoutProperty(
+        "line-vertices",
+        "visibility",
+        isSelecting ? "visible" : "none",
+      );
     } else {
       // Only add the source and layer if they don't exist
       map.addSource("line-vertices", {
@@ -311,16 +309,28 @@ export function LineTool({
         id: "line-vertices",
         type: "circle",
         source: "line-vertices",
+        layout: {
+          visibility: isSelecting ? "visible" : "none",
+        },
         paint: {
           "circle-radius": 5,
-          "circle-color": "#3b82f6",
-          "circle-stroke-color": "#fff",
+          "circle-color": [
+            "case",
+            ["==", ["get", "isLast"], true],
+            "#3b82f6",
+            "#ffffff",
+          ],
+          "circle-stroke-color": [
+            "case",
+            ["==", ["get", "isLast"], true],
+            "#ffffff",
+            "#3b82f6",
+          ],
           "circle-stroke-width": 2,
         },
-        // interactive: true,
       });
     }
-  }, [map, verticesGeoJson]);
+  }, [map, verticesGeoJson, isSelecting]);
 
   // Draw lines
   useEffect(() => {
@@ -352,25 +362,6 @@ export function LineTool({
       });
     }
   }, [map, directionsGeoJson, lineGeoJson, isSelecting, selectedLineType]);
-
-  // Update vertices layer to be interactive when not selecting
-  useEffect(() => {
-    if (!map) return;
-
-    const currentLayer = map.getLayer("line-vertices");
-    if (currentLayer) {
-      map.setPaintProperty(
-        "line-vertices",
-        "circle-radius",
-        isSelecting ? 5 : 6,
-      );
-      map.setPaintProperty(
-        "line-vertices",
-        "circle-color",
-        isSelecting ? "#3b82f6" : "#2563eb",
-      );
-    }
-  }, [map, isSelecting]);
 
   // Add vertex click handler and cursor styles
   useEffect(() => {
