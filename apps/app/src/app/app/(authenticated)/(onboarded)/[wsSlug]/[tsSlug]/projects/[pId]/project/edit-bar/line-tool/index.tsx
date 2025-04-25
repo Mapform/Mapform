@@ -148,6 +148,9 @@ export function LineTool({
     }
 
     return () => {
+      // Prevent cleanup if map is destroyed
+      if (!map || (map as unknown as { _removed: boolean })._removed) return;
+
       const currentLineVerticesSource = map.getSource("line-vertices") as
         | mapboxgl.AnySourceImpl
         | undefined;
