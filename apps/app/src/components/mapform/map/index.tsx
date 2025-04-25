@@ -12,6 +12,9 @@ import { useSetQueryString } from "@mapform/lib/hooks/use-set-query-string";
 import type Supercluster from "supercluster";
 import useSupercluster from "use-supercluster";
 import { AnimatePresence, motion } from "motion/react";
+import { useDrawPoints } from "~/lib/map-tools/points";
+import { useDrawLines } from "~/lib/map-tools/lines";
+import { useDrawShapes } from "~/lib/map-tools/polygons";
 import { useMapform } from "../index";
 import { LocationMarker } from "../../location-marker";
 import { Cluster } from "./cluster";
@@ -38,6 +41,13 @@ interface MarkerPointFeature {
   point_count: number;
   features: { icon: string; color: string }[] | undefined;
 }
+
+const POINT_LAYER_ID = "points";
+const POINT_SOURCE_ID = "points";
+const LINE_LAYER_ID = "lines";
+const LINE_SOURCE_ID = "lines";
+const POLYGON_LAYER_ID = "polygons";
+const POLYGON_SOURCE_ID = "polygons";
 
 /**
  * TODO:
@@ -81,8 +91,6 @@ export function Map({
     }),
     [pageData?.pointData],
   ) satisfies FeatureCollection;
-
-  console.log(1111, pageData);
 
   const markerGeojson: FeatureCollection = useMemo(
     () => ({
@@ -385,6 +393,15 @@ export function Map({
       });
     }
   }, [map, pointGeojson, lineGeojson]);
+
+  useDrawShapes({
+    map,
+    coordinates: pageData?.polygonData.map(
+      (feature) => feature.value?.coordinates ?? [],
+    ) ?? [[[]]],
+    sourceId: POLYGON_SOURCE_ID,
+    layerId: POLYGON_LAYER_ID,
+  });
 
   return (
     <div

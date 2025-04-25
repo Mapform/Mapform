@@ -10,9 +10,9 @@ import { useMapform } from "~/components/mapform";
 import type { Position } from "geojson";
 import mapboxgl from "mapbox-gl";
 import { LineToolPopover } from "./popover";
-import { useDrawPoints } from "../map-tools/points";
-import { useDrawLines } from "../map-tools/lines";
-import { useDrawShapes } from "../map-tools/polygons";
+import { useDrawPoints } from "~/lib/map-tools/points";
+import { useDrawLines } from "~/lib/map-tools/lines";
+import { useDrawShapes } from "~/lib/map-tools/polygons";
 
 const POINT_LAYER_ID = "line-tool-points";
 const POINT_SOURCE_ID = "line-tool-points";

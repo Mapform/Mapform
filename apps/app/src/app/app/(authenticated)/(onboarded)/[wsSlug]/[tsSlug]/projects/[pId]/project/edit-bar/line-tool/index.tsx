@@ -34,8 +34,8 @@ import type { GeoapifyRoute } from "@mapform/map-utils/types";
 import mapboxgl from "mapbox-gl";
 import { useDebounce } from "@mapform/lib/hooks/use-debounce";
 import { LineToolPopover } from "./popover";
-import { useDrawPoints } from "../map-tools/points";
-import { useDrawLines } from "../map-tools/lines";
+import { useDrawPoints } from "~/lib/map-tools/points";
+import { useDrawLines } from "~/lib/map-tools/lines";
 interface LineToolProps {
   isActive: boolean;
   isSearchOpen: boolean;
