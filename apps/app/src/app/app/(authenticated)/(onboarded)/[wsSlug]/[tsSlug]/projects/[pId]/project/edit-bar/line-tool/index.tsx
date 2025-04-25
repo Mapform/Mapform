@@ -35,7 +35,8 @@ import type { GeoapifyRoute } from "@mapform/map-utils/types";
 import mapboxgl from "mapbox-gl";
 import { useDebounce } from "@mapform/lib/hooks/use-debounce";
 import { LineToolPopover } from "./popover";
-
+import { useDrawPoints } from "../map-tools/points";
+import { useDrawLines } from "../map-tools/lines";
 interface LineToolProps {
   isActive: boolean;
   isSearchOpen: boolean;
@@ -77,14 +78,22 @@ const fetchDirections = async (
   return json.data as GeoapifyRoute;
 };
 
-export function LineTool({
+export function LineTool(props: LineToolProps) {
+  const { map } = useMapform();
+
+  if (!map) return null;
+
+  return <LineToolInner {...props} map={map} />;
+}
+
+function LineToolInner({
+  map,
   isActive,
   isSearchOpen,
   selectedLineType,
   setSelectedLineType,
   onClick,
-}: LineToolProps) {
-  const { map } = useMapform();
+}: LineToolProps & { map: mapboxgl.Map }) {
   const [open, setOpen] = useState(false);
   const [isSelecting, setIsSelecting] = useState(true);
   const [linePoints, setLinePoints] = useState<Position[]>([]);
@@ -219,146 +228,27 @@ export function LineTool({
     resetLineTool,
   ]);
 
-  // Used for creating points on the map
-  const verticesGeoJson = useMemo(
-    () =>
-      ({
-        type: "FeatureCollection",
-        features: linePoints.map((point, index) => ({
-          type: "Feature",
-          geometry: {
-            type: "Point",
-            coordinates: point,
-          },
-          properties: {
-            index,
-            isLast: index === linePoints.length - 1,
-          },
-        })),
-      }) satisfies FeatureCollection,
-    [linePoints],
-  );
+  useDrawPoints({
+    map,
+    points: linePoints,
+    isVisible: isSelecting,
+    sourceId: "points",
+    layerId: "points",
+  });
 
-  // Used for creating directions between points using Routing API
-  const directionsGeoJson = useMemo(() => {
-    const coordinates = (
-      directions?.results[0]?.geometry.flatMap((r) => r) ?? []
-    ).map((c) => [c.lon, c.lat]);
-
-    return {
-      type: "FeatureCollection",
-      features: [
-        {
-          type: "Feature",
-          geometry: {
-            type: "LineString",
-            coordinates,
-          },
-          properties: {},
-        },
-      ],
-    } satisfies FeatureCollection;
-  }, [directions]);
-
-  // Used for creating straight lines between points
-  const lineGeoJson = useMemo(() => {
-    return {
-      type: "FeatureCollection",
-      features: [
-        {
-          type: "Feature",
-          geometry: {
-            type: "LineString",
-            coordinates: linePoints,
-          },
-          properties: {},
-        },
-      ],
-    } satisfies FeatureCollection;
-  }, [linePoints]);
-
-  // Line Vertices
-  useEffect(() => {
-    if (!map) return;
-
-    // Handle points layer
-    const currentPointSource = map.getSource("line-vertices") as
-      | mapboxgl.AnySourceImpl
-      | undefined;
-
-    if (currentPointSource) {
-      // Update the source data
-      (currentPointSource as mapboxgl.GeoJSONSource).setData(verticesGeoJson);
-      // Update layer visibility
-      map.setLayoutProperty(
-        "line-vertices",
-        "visibility",
-        isSelecting ? "visible" : "none",
-      );
-    } else {
-      // Only add the source and layer if they don't exist
-      map.addSource("line-vertices", {
-        type: "geojson",
-        data: verticesGeoJson,
-      });
-
-      map.addLayer({
-        id: "line-vertices",
-        type: "circle",
-        source: "line-vertices",
-        layout: {
-          visibility: isSelecting ? "visible" : "none",
-        },
-        paint: {
-          "circle-radius": 5,
-          "circle-color": [
-            "case",
-            ["==", ["get", "isLast"], true],
-            "#3b82f6",
-            "#ffffff",
+  useDrawLines({
+    map,
+    coordinates:
+      selectedLineType === "line"
+        ? [linePoints]
+        : [
+            (directions?.results[0]?.geometry.flatMap((r) => r) ?? []).map(
+              (c) => [c.lon, c.lat],
+            ),
           ],
-          "circle-stroke-color": [
-            "case",
-            ["==", ["get", "isLast"], true],
-            "#ffffff",
-            "#3b82f6",
-          ],
-          "circle-stroke-width": 2,
-        },
-      });
-    }
-  }, [map, verticesGeoJson, isSelecting]);
-
-  // Draw lines
-  useEffect(() => {
-    if (!map) return;
-
-    const geoJson =
-      selectedLineType === "line" ? lineGeoJson : directionsGeoJson;
-
-    const currentLineSource = map.getSource("line-path") as
-      | mapboxgl.AnySourceImpl
-      | undefined;
-
-    if (currentLineSource) {
-      (currentLineSource as mapboxgl.GeoJSONSource).setData(geoJson);
-    } else {
-      map.addSource("line-path", {
-        type: "geojson",
-        data: geoJson,
-      });
-
-      map.addLayer({
-        id: "line-path",
-        type: "line",
-        source: "line-path",
-        paint: {
-          "line-color": "#3b82f6",
-          "line-width": 4,
-        },
-      });
-    }
-  }, [map, directionsGeoJson, lineGeoJson, isSelecting, selectedLineType]);
+    sourceId: "lines",
+    layerId: "lines",
+  });
 
   // Add vertex click handler and cursor styles
   useEffect(() => {
