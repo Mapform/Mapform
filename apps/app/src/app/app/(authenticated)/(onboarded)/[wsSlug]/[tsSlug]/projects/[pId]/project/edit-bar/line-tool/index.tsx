@@ -12,7 +12,6 @@ import {
   FootprintsIcon,
   SplineIcon,
   CheckIcon,
-  BookmarkIcon,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useMapform } from "~/components/mapform";
@@ -180,20 +179,20 @@ export function LineTool({
       setLinePoints((prev) => [...prev, [lng, lat]]);
     };
 
-    const handleMouseMove = (e: mapboxgl.MapMouseEvent) => {
-      if (isSelecting && linePoints.length > 0) {
-        const { lng, lat } = e.lngLat;
-        setCursorPosition([lng, lat]);
-      } else if (draggedPointIndex !== null) {
-        e.preventDefault();
-        const { lng, lat } = e.lngLat;
-        setLinePoints((prev) => {
-          const newPoints = [...prev];
-          newPoints[draggedPointIndex] = [lng, lat];
-          return newPoints;
-        });
-      }
-    };
+    // const handleMouseMove = (e: mapboxgl.MapMouseEvent) => {
+    //   if (isSelecting && linePoints.length > 0) {
+    //     const { lng, lat } = e.lngLat;
+    //     setCursorPosition([lng, lat]);
+    //   } else if (draggedPointIndex !== null) {
+    // e.preventDefault();
+    // const { lng, lat } = e.lngLat;
+    // setLinePoints((prev) => {
+    //   const newPoints = [...prev];
+    //   newPoints[draggedPointIndex] = [lng, lat];
+    //   return newPoints;
+    // });
+    //   }
+    // };
 
     const handleMouseUp = (e: mapboxgl.MapMouseEvent) => {
       if (draggedPointIndex !== null) {
@@ -213,13 +212,13 @@ export function LineTool({
     };
 
     map.on("click", handleClick);
-    map.on("mousemove", handleMouseMove);
+    // map.on("mousemove", handleMouseMove);
     map.on("mouseup", handleMouseUp);
     window.addEventListener("keydown", handleKeyDown);
 
     return () => {
       map.off("click", handleClick);
-      map.off("mousemove", handleMouseMove);
+      // map.off("mousemove", handleMouseMove);
       map.off("mouseup", handleMouseUp);
       window.removeEventListener("keydown", handleKeyDown);
     };
@@ -378,16 +377,17 @@ export function LineTool({
     if (!map) return;
 
     const handleVertexMouseEnter = (e: mapboxgl.MapMouseEvent) => {
-      if (!isSelecting) {
+      if (isSelecting) {
         e.preventDefault();
         map.getCanvas().style.cursor = "move";
       }
     };
 
     const handleVertexMouseLeave = (e: mapboxgl.MapMouseEvent) => {
-      if (!isSelecting) {
+      console.log("handleVertexMouseLeave");
+      if (isSelecting) {
         e.preventDefault();
-        map.getCanvas().style.cursor = "";
+        map.getCanvas().style.cursor = "crosshair";
       }
     };
 
@@ -398,25 +398,42 @@ export function LineTool({
     ) => {
       const index = e.features?.[0]?.properties?.index as number | undefined;
 
-      if (index === undefined || index < 0 || isSelecting) return;
+      if (index === undefined || index < 0 || !isSelecting) return;
+
+      console.log("handleVertexClick", index);
 
       e.preventDefault();
       setDraggedPointIndex(index);
       map.getCanvas().style.cursor = "grabbing";
     };
 
-    if (!isSelecting) {
+    const handleMouseMove = (e: mapboxgl.MapMouseEvent) => {
+      if (isSelecting && draggedPointIndex !== null) {
+        e.preventDefault();
+        const { lng, lat } = e.lngLat;
+        setLinePoints((prev) => {
+          const newPoints = [...prev];
+          newPoints[draggedPointIndex] = [lng, lat];
+          return newPoints;
+        });
+      }
+    };
+
+    if (isSelecting) {
       map.on("mouseenter", "line-vertices", handleVertexMouseEnter);
       map.on("mouseleave", "line-vertices", handleVertexMouseLeave);
       map.on("mousedown", "line-vertices", handleVertexClick);
+      map.on("mousemove", handleMouseMove);
     }
 
     return () => {
+      console.log("unmounting");
       map.off("mouseenter", "line-vertices", handleVertexMouseEnter);
       map.off("mouseleave", "line-vertices", handleVertexMouseLeave);
       map.off("mousedown", "line-vertices", handleVertexClick);
+      map.off("mousemove", handleMouseMove);
     };
-  }, [map, isSelecting]);
+  }, [map, isSelecting, draggedPointIndex]);
 
   // Draw temporary line to cursor
   // useEffect(() => {
