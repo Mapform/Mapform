@@ -4,96 +4,35 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@mapform/ui/components/tooltip";
-import type { LucideIcon } from "lucide-react";
-import {
-  BikeIcon,
-  CarIcon,
-  ChevronDown,
-  FootprintsIcon,
-  SplineIcon,
-  CheckIcon,
-} from "lucide-react";
+import { PentagonIcon } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useMapform } from "~/components/mapform";
-import { useQuery } from "@tanstack/react-query";
-import {
-  Command,
-  CommandList,
-  CommandGroup,
-  CommandItem,
-  CommandEmpty,
-} from "@mapform/ui/components/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@mapform/ui/components/popover";
-import { cn } from "@mapform/lib/classnames";
 import type { Position } from "geojson";
-import type { GeoapifyRoute } from "@mapform/map-utils/types";
 import mapboxgl from "mapbox-gl";
-import { useDebounce } from "@mapform/lib/hooks/use-debounce";
 import { LineToolPopover } from "./popover";
 import { useDrawPoints } from "../map-tools/points";
 import { useDrawLines } from "../map-tools/lines";
+import { useDrawShapes } from "../map-tools/polygons";
 interface LineToolProps {
   isActive: boolean;
   isSearchOpen: boolean;
-  selectedLineType: keyof typeof lineTypes;
-  setSelectedLineType: (lineType: keyof typeof lineTypes) => void;
   onClick: () => void;
 }
 
-export const lineTypes: Record<
-  "line" | "walk" | "bicycle" | "drive",
-  { icon: LucideIcon; label: string }
-> = {
-  line: {
-    icon: SplineIcon,
-    label: "Line",
-  },
-  walk: {
-    icon: FootprintsIcon,
-    label: "Walking route",
-  },
-  bicycle: {
-    icon: BikeIcon,
-    label: "Cycling route",
-  },
-  drive: {
-    icon: CarIcon,
-    label: "Driving route",
-  },
-} as const;
-
-const fetchDirections = async (
-  waypoints: Position[],
-  selectedLineType: keyof typeof lineTypes,
-) => {
-  const response = await fetch(
-    `/api/places/routing?waypoints=${waypoints.map((w) => `lonlat:${w.join(",")}`).join("|")}&mode=${selectedLineType}`,
-  );
-  const json = await response.json();
-  return json.data as GeoapifyRoute;
-};
-
-export function LineTool(props: LineToolProps) {
+export function ShapeTool(props: LineToolProps) {
   const { map } = useMapform();
 
   if (!map) return null;
 
-  return <LineToolInner {...props} map={map} />;
+  return <ShapeToolInner {...props} map={map} />;
 }
 
-function LineToolInner({
+function ShapeToolInner({
   map,
   isActive,
   isSearchOpen,
-  selectedLineType,
-  setSelectedLineType,
   onClick,
 }: LineToolProps & { map: mapboxgl.Map }) {
-  const [open, setOpen] = useState(false);
   const [isSelecting, setIsSelecting] = useState(true);
   const [linePoints, setLinePoints] = useState<Position[]>([]);
   const [cursorPosition, setCursorPosition] = useState<Position | null>(null);
@@ -118,16 +57,6 @@ function LineToolInner({
   };
 
   const location = useMemo(() => getCenterOfPoints(linePoints), [linePoints]);
-
-  const debouncedLinePoints = useDebounce(linePoints, 200);
-
-  const { data: directions, isFetching } = useQuery({
-    enabled: debouncedLinePoints.length > 1 && selectedLineType !== "line",
-    queryKey: ["directions", selectedLineType, ...debouncedLinePoints],
-    queryFn: () => fetchDirections(debouncedLinePoints, selectedLineType),
-    retry: false,
-    placeholderData: (prev) => prev,
-  });
 
   const resetLineTool = useCallback(() => {
     setLinePoints([]);
@@ -233,16 +162,17 @@ function LineToolInner({
 
   useDrawLines({
     map,
-    coordinates:
-      selectedLineType === "line"
-        ? [linePoints]
-        : [
-            (directions?.results[0]?.geometry.flatMap((r) => r) ?? []).map(
-              (c) => [c.lon, c.lat],
-            ),
-          ],
+    coordinates: [linePoints],
     sourceId: "lines",
     layerId: "lines",
+    connectStartAndEnd: true,
+  });
+
+  useDrawShapes({
+    map,
+    coordinates: [[linePoints]],
+    sourceId: "polygons",
+    layerId: "polygons",
   });
 
   // Add vertex click handler and cursor styles
@@ -370,71 +300,18 @@ function LineToolInner({
               size="icon"
               variant={isActive && !isSearchOpen ? "default" : "ghost"}
             >
-              {(() => {
-                const LineTypeIcon = lineTypes[selectedLineType]?.icon;
-                return LineTypeIcon ? (
-                  <LineTypeIcon className="size-5" />
-                ) : null;
-              })()}
+              <PentagonIcon className="size-5" />
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Line tool</TooltipContent>
+          <TooltipContent>Shape tool</TooltipContent>
         </Tooltip>
-        <Popover modal onOpenChange={setOpen} open={open}>
-          <PopoverTrigger asChild>
-            <button className="hover:bg-accent hover:text-accent-foreground ml-[1px] h-full rounded-md p-0.5">
-              <ChevronDown size={10} strokeWidth={3} />
-            </button>
-          </PopoverTrigger>
-          <PopoverContent align="center" className="w-[200px] p-0" side="top">
-            <Command>
-              <CommandList>
-                <CommandEmpty>No line type found.</CommandEmpty>
-                <CommandGroup>
-                  {Object.entries(lineTypes).map(
-                    ([key, { icon: Icon, label }]) => (
-                      <CommandItem
-                        key={key}
-                        value={label}
-                        onSelect={() => {
-                          setSelectedLineType(key as keyof typeof lineTypes);
-                          setOpen(false);
-                        }}
-                        className="flex items-center gap-2"
-                      >
-                        <Icon className="size-4 flex-shrink-0" />
-                        <span className="flex-1 truncate text-left">
-                          {label}
-                        </span>
-                        <CheckIcon
-                          className={cn(
-                            "ml-auto size-4",
-                            selectedLineType === key
-                              ? "opacity-100"
-                              : "opacity-0",
-                          )}
-                        />
-                      </CommandItem>
-                    ),
-                  )}
-                </CommandGroup>
-              </CommandList>
-            </Command>
-          </PopoverContent>
-        </Popover>
       </div>
       {location && !isSelecting && (
         <LineToolPopover
           location={new mapboxgl.LngLat(location[0]!, location[1]!)}
           onSave={resetLineTool}
-          isFetching={isFetching}
-          coordinates={
-            selectedLineType === "line"
-              ? linePoints.map((p) => [p[0]!, p[1]!])
-              : (directions?.results[0]?.geometry.flatMap((r) => r) ?? []).map(
-                  (c) => [c.lon, c.lat],
-                )
-          }
+          isFetching={false}
+          coordinates={linePoints.map((p) => [p[0]!, p[1]!])}
         />
       )}
     </>

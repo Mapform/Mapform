@@ -1,4 +1,4 @@
-import type { FeatureCollection, Position } from "geojson";
+import type { FeatureCollection, Position, Feature, LineString } from "geojson";
 import { useEffect, useMemo } from "react";
 import type mapboxgl from "mapbox-gl";
 
@@ -9,32 +9,63 @@ export function useDrawLines({
   isVisible = true,
   sourceId = "lines",
   layerId = "lines",
+  connectStartAndEnd = false,
 }: {
   map: mapboxgl.Map | null;
   coordinates: Position[][]; // Array of LineString coordinates
   isVisible?: boolean;
   sourceId?: string;
   layerId?: string;
+  connectStartAndEnd?: boolean;
 }) {
   // Used for creating lines on the map
-  const linesGeoJson = useMemo(
-    () =>
-      ({
-        type: "FeatureCollection",
-        features: coordinates.map((line, index) => ({
-          type: "Feature",
-          geometry: {
-            type: "LineString",
-            coordinates: line,
-          },
-          properties: {
-            index,
-            isLast: index === coordinates.length - 1,
-          },
-        })),
-      }) satisfies FeatureCollection,
-    [coordinates],
-  );
+  const linesGeoJson = useMemo(() => {
+    const features: Feature<LineString, any>[] = coordinates.map(
+      (line, index) => ({
+        type: "Feature",
+        geometry: {
+          type: "LineString",
+          coordinates: line,
+        },
+        properties: {
+          index,
+          isLast: index === coordinates.length - 1,
+        },
+      }),
+    );
+
+    // If connectStartAndEnd is true, add a line connecting the first and last point of the first line
+    if (
+      connectStartAndEnd &&
+      coordinates.length > 0 &&
+      Array.isArray(coordinates[0]) &&
+      coordinates[0].length > 1 &&
+      coordinates[0][0] !== undefined &&
+      coordinates[0][coordinates[0].length - 1] !== undefined
+    ) {
+      const firstLine = coordinates[0];
+      features.push({
+        type: "Feature",
+        geometry: {
+          type: "LineString",
+          coordinates: [
+            firstLine[0] as Position,
+            firstLine[firstLine.length - 1] as Position,
+          ],
+        },
+        properties: {
+          index: -1,
+          isLast: false,
+          isConnection: true,
+        },
+      });
+    }
+
+    return {
+      type: "FeatureCollection",
+      features,
+    } satisfies FeatureCollection;
+  }, [coordinates, connectStartAndEnd]);
 
   useEffect(() => {
     if (!map) return;
