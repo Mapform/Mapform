@@ -163,6 +163,7 @@ const PropertiesForm = ({
     defaultValues: {
       id: layerToEdit?.id,
       pageId: currentPage.id,
+      color: layerToEdit?.color,
       pointProperties:
         currentType === "point"
           ? layerToEdit?.datasetId === currentDatasetId &&
@@ -216,14 +217,12 @@ const PropertiesForm = ({
                 titleColumnId: layerToEdit.titleColumnId,
                 descriptionColumnId: layerToEdit.descriptionColumnId,
                 iconColumnId: layerToEdit.iconColumnId,
-                color: layerToEdit.color,
               }
             : {
                 lineColumnId: getLastAvailableColumnId("line") ?? undefined,
                 titleColumnId: getLastAvailableColumnId("string"),
                 descriptionColumnId: getLastAvailableColumnId("richtext"),
                 iconColumnId: getLastAvailableColumnId("icon"),
-                color: null,
               }
           : undefined,
       polygonProperties:
@@ -237,7 +236,6 @@ const PropertiesForm = ({
                 titleColumnId: layerToEdit.titleColumnId,
                 descriptionColumnId: layerToEdit.descriptionColumnId,
                 iconColumnId: layerToEdit.iconColumnId,
-                color: layerToEdit.color,
               }
             : {
                 polygonColumnId:
@@ -245,7 +243,6 @@ const PropertiesForm = ({
                 titleColumnId: getLastAvailableColumnId("string"),
                 descriptionColumnId: getLastAvailableColumnId("richtext"),
                 iconColumnId: getLastAvailableColumnId("icon"),
-                color: null,
               }
           : undefined,
     },

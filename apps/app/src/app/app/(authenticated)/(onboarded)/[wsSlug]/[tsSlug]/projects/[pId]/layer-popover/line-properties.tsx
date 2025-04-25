@@ -89,7 +89,7 @@ export function LineProperties({ form, datasetId, type }: LinePropertiesProps) {
           Styles
         </h3>
       </div>
-      <ColorPicker form={form} label="Color" name="lineProperties.color" />
+      <ColorPicker form={form} label="Color" name="color" />
     </>
   );
 }

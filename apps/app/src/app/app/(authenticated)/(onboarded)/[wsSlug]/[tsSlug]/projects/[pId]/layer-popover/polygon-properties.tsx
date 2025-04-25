@@ -93,7 +93,7 @@ export function PolygonProperties({
           Styles
         </h3>
       </div>
-      <ColorPicker form={form} label="Color" name="polygonProperties.color" />
+      <ColorPicker form={form} label="Color" name="color" />
     </>
   );
 }

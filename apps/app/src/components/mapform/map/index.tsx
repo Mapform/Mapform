@@ -218,8 +218,6 @@ export function Map({
       // Add your custom markers and lines here
       m.on("load", () => {
         setMap(m);
-        // Set crosshair cursor for the map canvas
-        m.getCanvas().style.cursor = "crosshair";
       });
 
       // Clean up on unmount

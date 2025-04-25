@@ -21,7 +21,7 @@ export function LineToolPopover({
   isFetching,
   // handleLayerSelect,
 }: LineToolPopoverProps) {
-  const { execute } = useAction(createLineAction);
+  const { execute, isPending } = useAction(createLineAction);
   const [isLayerSaveOpen, setIsLayerSaveOpen] = useState(false);
 
   const handleLayerSelect = (layerId: string) => {
@@ -42,7 +42,7 @@ export function LineToolPopover({
       <LayerSavePopover
         types={["line"]}
         onSelect={handleLayerSelect}
-        // isPending={isPending}
+        isPending={isPending}
         open={isLayerSaveOpen}
         onOpenChange={setIsLayerSaveOpen}
       >

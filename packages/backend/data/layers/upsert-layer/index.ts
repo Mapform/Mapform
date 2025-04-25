@@ -25,12 +25,15 @@ export const upsertLayer = (authClient: UserAuthClient) =>
           pageId,
           name,
           type,
+          color,
           pointProperties,
           markerProperties,
           lineProperties,
           polygonProperties,
         },
       }) => {
+        console.log("color", color);
+
         // Get dataset columns to validate against
         const dataset = await db.query.datasets.findFirst({
           where: eq(datasets.id, datasetId),
@@ -157,10 +160,11 @@ export const upsertLayer = (authClient: UserAuthClient) =>
               datasetId,
               name,
               type,
+              color,
             })
             .onConflictDoUpdate({
               target: layers.id,
-              set: { datasetId, name, type },
+              set: { datasetId, name, type, color },
             })
             .returning();
 

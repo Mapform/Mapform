@@ -9,6 +9,7 @@ import {
 export const upsertLayerSchema = z.object({
   id: z.string().optional(),
   datasetId: insertLayerSchema.shape.datasetId,
+  color: insertLayerSchema.shape.color,
   pageId: insertLayersToPagesSchema.shape.pageId,
   name: insertLayerSchema.shape.name,
   type: insertLayerSchema.shape.type,
@@ -32,8 +33,6 @@ export const upsertLayerSchema = z.object({
     .optional(),
   lineProperties: z
     .object({
-      // TODO: Move color, titleColumnId, descriptionColumnId, iconColumnId to root
-      color: insertLayerSchema.shape.color,
       titleColumnId: z.string().nullable(),
       descriptionColumnId: z.string().nullable(),
       iconColumnId: z.string().nullable(),
@@ -42,7 +41,6 @@ export const upsertLayerSchema = z.object({
     .optional(),
   polygonProperties: z
     .object({
-      color: insertLayerSchema.shape.color,
       polygonColumnId: z.string(),
       titleColumnId: z.string().nullable(),
       descriptionColumnId: z.string().nullable(),
