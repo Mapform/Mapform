@@ -1,6 +1,6 @@
 "server-only";
 
-import { db } from "@mapform/db";
+import { db, sql } from "@mapform/db";
 import {
   cells,
   datasets,
@@ -141,7 +141,10 @@ export const createLine = (authClient: UserAuthClient) =>
             [
               tx.insert(lineCells).values({
                 cellId: lineCell.id,
-                value,
+                value: sql.raw(`ST_GeomFromGeoJSON('{
+                  "type": "LineString",
+                  "coordinates": ${JSON.stringify(value?.coordinates ?? [])}
+                }')`),
               }),
               titleCell &&
                 tx.insert(stringCells).values({
