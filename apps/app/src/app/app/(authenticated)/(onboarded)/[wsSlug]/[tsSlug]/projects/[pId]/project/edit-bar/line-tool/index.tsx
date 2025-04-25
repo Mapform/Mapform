@@ -147,26 +147,7 @@ function LineToolInner({
     }
 
     return () => {
-      // Prevent cleanup if map is destroyed
-      if ((map as unknown as { _removed: boolean })._removed) return;
-
-      const currentLineVerticesSource = map.getSource(POINT_SOURCE_ID) as
-        | mapboxgl.AnySourceImpl
-        | undefined;
-
-      const currentLineSource = map.getSource(LINE_SOURCE_ID) as
-        | mapboxgl.AnySourceImpl
-        | undefined;
-
-      if (currentLineVerticesSource) {
-        map.removeLayer(POINT_LAYER_ID);
-        map.removeSource(POINT_SOURCE_ID);
-      }
-
-      if (currentLineSource) {
-        map.removeLayer(LINE_LAYER_ID);
-        map.removeSource(LINE_SOURCE_ID);
-      }
+      map.getCanvas().style.cursor = "";
     };
   }, [isActive, map]);
 

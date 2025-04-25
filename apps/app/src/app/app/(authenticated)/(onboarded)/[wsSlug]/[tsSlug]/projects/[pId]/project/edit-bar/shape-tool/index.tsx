@@ -79,36 +79,7 @@ function ShapeToolInner({
     }
 
     return () => {
-      // Prevent cleanup if map is destroyed
-      if ((map as unknown as { _removed: boolean })._removed) return;
-
-      const currentLineVerticesSource = map.getSource(POINT_SOURCE_ID) as
-        | mapboxgl.AnySourceImpl
-        | undefined;
-
-      const currentLineSource = map.getSource(LINE_SOURCE_ID) as
-        | mapboxgl.AnySourceImpl
-        | undefined;
-
-      const currentPolygonSource = map.getSource(POLYGON_SOURCE_ID) as
-        | mapboxgl.AnySourceImpl
-        | undefined;
-
-      if (currentLineVerticesSource) {
-        map.removeLayer(POINT_LAYER_ID);
-        map.removeSource(POINT_SOURCE_ID);
-      }
-
-      if (currentLineSource) {
-        map.removeLayer(LINE_LAYER_ID);
-        map.removeSource(LINE_SOURCE_ID);
-      }
-
-      // if (currentPolygonSource) {
-      //   map.removeLayer(POLYGON_LAYER_ID);
-      //   map.removeSource(POLYGON_SOURCE_ID);
-      //   map.removeLayer(POLYGON_OUTLINE_LAYER_ID);
-      // }
+      map.getCanvas().style.cursor = "";
     };
   }, [isActive, map]);
 

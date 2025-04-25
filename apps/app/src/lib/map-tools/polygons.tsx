@@ -88,5 +88,17 @@ export function useDrawShapes({
         },
       });
     }
+
+    return () => {
+      if (map.getLayer(layerId) as mapboxgl.Layer | undefined) {
+        map.removeLayer(layerId);
+      }
+      if (map.getLayer(outlineLayerId) as mapboxgl.Layer | undefined) {
+        map.removeLayer(outlineLayerId);
+      }
+      if (map.getSource(sourceId) as mapboxgl.GeoJSONSource | undefined) {
+        map.removeSource(sourceId);
+      }
+    };
   }, [map, polygonsGeoJson, isVisible, sourceId, outlineLayerId, layerId]);
 }

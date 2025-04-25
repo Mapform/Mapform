@@ -104,5 +104,14 @@ export function useDrawLines({
         },
       });
     }
+
+    return () => {
+      if (map.getLayer(layerId) as mapboxgl.Layer | undefined) {
+        map.removeLayer(layerId);
+      }
+      if (map.getSource(sourceId) as mapboxgl.GeoJSONSource | undefined) {
+        map.removeSource(sourceId);
+      }
+    };
   }, [map, linesGeoJson, isVisible, sourceId, layerId]);
 }
