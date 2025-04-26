@@ -68,7 +68,7 @@ export function useDrawLines({
   }, [coordinates, connectStartAndEnd]);
 
   useEffect(() => {
-    if (!map || !map.isStyleLoaded()) return;
+    if (!map) return;
 
     // Handle lines layer
     const currentLineSource = map.getSource(sourceId) as

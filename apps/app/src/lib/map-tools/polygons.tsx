@@ -39,7 +39,7 @@ export function useDrawShapes({
   );
 
   useEffect(() => {
-    if (!map || !map.isStyleLoaded()) return;
+    if (!map) return;
 
     // Handle polygons layer
     const currentPolygonSource = map.getSource(sourceId) as

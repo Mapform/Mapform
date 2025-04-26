@@ -37,7 +37,7 @@ export function useDrawPoints({
 
   // Line Vertices
   useEffect(() => {
-    if (!map || !map.isStyleLoaded()) return;
+    if (!map) return;
 
     // Handle points layer
     const currentPointSource = map.getSource(sourceId) as
