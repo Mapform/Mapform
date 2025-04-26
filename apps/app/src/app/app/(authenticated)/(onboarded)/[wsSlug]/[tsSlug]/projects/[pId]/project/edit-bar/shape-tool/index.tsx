@@ -79,6 +79,7 @@ function ShapeToolInner({
     }
 
     return () => {
+      if (!map.isStyleLoaded()) return;
       map.getCanvas().style.cursor = "";
     };
   }, [isActive, map]);

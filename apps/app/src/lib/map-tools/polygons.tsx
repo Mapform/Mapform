@@ -39,7 +39,7 @@ export function useDrawShapes({
   );
 
   useEffect(() => {
-    if (!map) return;
+    if (!map || !map.isStyleLoaded()) return;
 
     // Handle polygons layer
     const currentPolygonSource = map.getSource(sourceId) as
@@ -93,7 +93,7 @@ export function useDrawShapes({
   // Cleanup on unmount
   useEffect(() => {
     return () => {
-      if (!map) return;
+      if (!map || !map.isStyleLoaded()) return;
 
       if (map.getLayer(layerId) as mapboxgl.Layer | undefined) {
         map.removeLayer(layerId);

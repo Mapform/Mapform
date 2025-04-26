@@ -37,7 +37,7 @@ export function useDrawPoints({
 
   // Line Vertices
   useEffect(() => {
-    if (!map) return;
+    if (!map || !map.isStyleLoaded()) return;
 
     // Handle points layer
     const currentPointSource = map.getSource(sourceId) as
@@ -90,7 +90,7 @@ export function useDrawPoints({
   // Cleanup on unmount
   useEffect(() => {
     return () => {
-      if (!map) return;
+      if (!map || !map.isStyleLoaded()) return;
 
       if (map.getLayer(layerId) as mapboxgl.Layer | undefined) {
         map.removeLayer(layerId);
