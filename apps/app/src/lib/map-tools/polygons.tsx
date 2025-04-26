@@ -41,69 +41,75 @@ export function useDrawShapes({
   useEffect(() => {
     if (!map) return;
 
-    // Handle polygons layer
-    const currentPolygonSource = map.getSource(sourceId) as
-      | mapboxgl.AnySourceImpl
-      | undefined;
+    try {
+      // Handle polygons layer
+      const currentPolygonSource = map.getSource(sourceId) as
+        | mapboxgl.AnySourceImpl
+        | undefined;
 
-    if (currentPolygonSource) {
-      // Update the source data
-      (currentPolygonSource as mapboxgl.GeoJSONSource).setData(polygonsGeoJson);
-      // Update layer visibility
-      map.setLayoutProperty(
-        layerId,
-        "visibility",
-        isVisible ? "visible" : "none",
-      );
-    } else {
-      // Only add the source and layer if they don't exist
-      map.addSource(sourceId, {
-        type: "geojson",
-        data: polygonsGeoJson,
-      });
+      if (currentPolygonSource) {
+        // Update the source data
+        (currentPolygonSource as mapboxgl.GeoJSONSource).setData(
+          polygonsGeoJson,
+        );
+        // Update layer visibility
+        map.setLayoutProperty(
+          layerId,
+          "visibility",
+          isVisible ? "visible" : "none",
+        );
+      } else {
+        // Only add the source and layer if they don't exist
+        map.addSource(sourceId, {
+          type: "geojson",
+          data: polygonsGeoJson,
+        });
 
-      map.addLayer({
-        id: layerId,
-        type: "fill",
-        source: sourceId,
-        layout: {
-          visibility: isVisible ? "visible" : "none",
-        },
-        paint: {
-          "fill-color": "#f59e42",
-          "fill-opacity": 0.4,
-          // "fill-outline-color": "#000000",
-        },
-      });
+        map.addLayer({
+          id: layerId,
+          type: "fill",
+          source: sourceId,
+          layout: {
+            visibility: isVisible ? "visible" : "none",
+          },
+          paint: {
+            "fill-color": "#f59e42",
+            "fill-opacity": 0.4,
+            // "fill-outline-color": "#000000",
+          },
+        });
 
-      // Add line layer for the outline
-      map.addLayer({
-        id: outlineLayerId,
-        type: "line",
-        source: sourceId,
-        layout: {},
-        paint: {
-          "line-color": "#000000",
-          "line-width": 3,
-        },
-      });
+        // Add line layer for the outline
+        map.addLayer({
+          id: outlineLayerId,
+          type: "line",
+          source: sourceId,
+          layout: {},
+          paint: {
+            "line-color": "#000000",
+            "line-width": 3,
+          },
+        });
+      }
+    } catch (e) {
+      console.error(e);
     }
   }, [map, polygonsGeoJson, isVisible, sourceId, outlineLayerId, layerId]);
 
   // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      if (!map || !map.isStyleLoaded()) return;
+  // useEffect(() => {
+  //   return () => {
+  //     if (!map || !map.isStyleLoaded()) return;
 
-      if (map.getLayer(layerId) as mapboxgl.Layer | undefined) {
-        map.removeLayer(layerId);
-      }
-      if (map.getLayer(outlineLayerId) as mapboxgl.Layer | undefined) {
-        map.removeLayer(outlineLayerId);
-      }
-      if (map.getSource(sourceId) as mapboxgl.GeoJSONSource | undefined) {
-        map.removeSource(sourceId);
-      }
-    };
-  }, [map, sourceId, layerId, outlineLayerId]);
+  // if (map.getLayer(layerId) as mapboxgl.Layer | undefined) {
+  //   map.removeLayer(layerId);
+  // }
+  // if (map.getLayer(outlineLayerId) as mapboxgl.Layer | undefined) {
+  //   map.removeLayer(outlineLayerId);
+  // }
+  // if (map.getSource(sourceId) as mapboxgl.GeoJSONSource | undefined) {
+  //   map.removeSource(sourceId);
+  // }
+  //   };
+  // }, [map, sourceId, layerId, outlineLayerId]);
 }

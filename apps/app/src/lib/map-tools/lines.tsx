@@ -70,53 +70,43 @@ export function useDrawLines({
   useEffect(() => {
     if (!map) return;
 
-    // Handle lines layer
-    const currentLineSource = map.getSource(sourceId) as
-      | mapboxgl.AnySourceImpl
-      | undefined;
+    try {
+      // Handle lines layer
+      const currentLineSource = map.getSource(sourceId) as
+        | mapboxgl.AnySourceImpl
+        | undefined;
 
-    if (currentLineSource) {
-      // Update the source data
-      (currentLineSource as mapboxgl.GeoJSONSource).setData(linesGeoJson);
-      // Update layer visibility
-      map.setLayoutProperty(
-        layerId,
-        "visibility",
-        isVisible ? "visible" : "none",
-      );
-    } else {
-      // Only add the source and layer if they don't exist
-      map.addSource(sourceId, {
-        type: "geojson",
-        data: linesGeoJson,
-      });
+      if (currentLineSource) {
+        // Update the source data
+        (currentLineSource as mapboxgl.GeoJSONSource).setData(linesGeoJson);
+        // Update layer visibility
+        map.setLayoutProperty(
+          layerId,
+          "visibility",
+          isVisible ? "visible" : "none",
+        );
+      } else {
+        // Only add the source and layer if they don't exist
+        map.addSource(sourceId, {
+          type: "geojson",
+          data: linesGeoJson,
+        });
 
-      map.addLayer({
-        id: layerId,
-        type: "line",
-        source: sourceId,
-        layout: {
-          visibility: isVisible ? "visible" : "none",
-        },
-        paint: {
-          "line-color": "#3b82f6",
-          "line-width": 4,
-        },
-      });
+        map.addLayer({
+          id: layerId,
+          type: "line",
+          source: sourceId,
+          layout: {
+            visibility: isVisible ? "visible" : "none",
+          },
+          paint: {
+            "line-color": "#3b82f6",
+            "line-width": 4,
+          },
+        });
+      }
+    } catch (e) {
+      console.error(e);
     }
   }, [map, linesGeoJson, isVisible, sourceId, layerId]);
-
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      if (!map || !map.isStyleLoaded()) return;
-
-      if (map.getLayer(layerId) as mapboxgl.Layer | undefined) {
-        map.removeLayer(layerId);
-      }
-      if (map.getSource(sourceId) as mapboxgl.GeoJSONSource | undefined) {
-        map.removeSource(sourceId);
-      }
-    };
-  }, [map, sourceId, layerId]);
 }

@@ -165,7 +165,6 @@ function ShapeToolInner({
     };
 
     const handleVertexMouseLeave = (e: mapboxgl.MapMouseEvent) => {
-      console.log("handleVertexMouseLeave");
       if (isSelecting) {
         e.preventDefault();
         map.getCanvas().style.cursor = "crosshair";

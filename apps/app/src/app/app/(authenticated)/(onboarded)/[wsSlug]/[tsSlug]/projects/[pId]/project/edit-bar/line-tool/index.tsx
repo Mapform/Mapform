@@ -220,11 +220,13 @@ function LineToolInner({
     coordinates:
       selectedLineType === "line"
         ? [linePoints]
-        : [
-            (directions?.results[0]?.geometry.flatMap((r) => r) ?? []).map(
-              (c) => [c.lon, c.lat],
-            ),
-          ],
+        : linePoints.length > 1
+          ? [
+              (directions?.results[0]?.geometry.flatMap((r) => r) ?? []).map(
+                (c) => [c.lon, c.lat],
+              ),
+            ]
+          : [],
     sourceId: LINE_SOURCE_ID,
     layerId: LINE_LAYER_ID,
   });
@@ -239,7 +241,6 @@ function LineToolInner({
     };
 
     const handleVertexMouseLeave = (e: mapboxgl.MapMouseEvent) => {
-      console.log("handleVertexMouseLeave");
       if (isSelecting) {
         e.preventDefault();
         map.getCanvas().style.cursor = "crosshair";
