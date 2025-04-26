@@ -88,8 +88,13 @@ export function useDrawShapes({
         },
       });
     }
+  }, [map, polygonsGeoJson, isVisible, sourceId, outlineLayerId, layerId]);
 
+  // Cleanup on unmount
+  useEffect(() => {
     return () => {
+      if (!map) return;
+
       if (map.getLayer(layerId) as mapboxgl.Layer | undefined) {
         map.removeLayer(layerId);
       }
@@ -100,5 +105,5 @@ export function useDrawShapes({
         map.removeSource(sourceId);
       }
     };
-  }, [map, polygonsGeoJson, isVisible, sourceId, outlineLayerId, layerId]);
+  }, [map, sourceId, layerId, outlineLayerId]);
 }

@@ -37,7 +37,6 @@ function PointToolInner({
     (
       e: mapboxgl.MapMouseEvent & { features: mapboxgl.MapboxGeoJSONFeature[] },
     ) => {
-      console.log("onDrawCreate", e);
       const feature = e.features[0];
 
       // @ts-expect-error -- The types are wrong

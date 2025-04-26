@@ -85,8 +85,13 @@ export function useDrawPoints({
         },
       });
     }
+  }, [map, pointsGeoJson, isVisible, sourceId, layerId]);
 
+  // Cleanup on unmount
+  useEffect(() => {
     return () => {
+      if (!map) return;
+
       if (map.getLayer(layerId) as mapboxgl.Layer | undefined) {
         map.removeLayer(layerId);
       }
@@ -94,5 +99,5 @@ export function useDrawPoints({
         map.removeSource(sourceId);
       }
     };
-  }, [map, pointsGeoJson, isVisible, sourceId, layerId]);
+  }, [map, sourceId, layerId]);
 }

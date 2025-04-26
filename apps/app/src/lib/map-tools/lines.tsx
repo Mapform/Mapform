@@ -104,8 +104,13 @@ export function useDrawLines({
         },
       });
     }
+  }, [map, linesGeoJson, isVisible, sourceId, layerId]);
 
+  // Cleanup on unmount
+  useEffect(() => {
     return () => {
+      if (!map) return;
+
       if (map.getLayer(layerId) as mapboxgl.Layer | undefined) {
         map.removeLayer(layerId);
       }
@@ -113,5 +118,5 @@ export function useDrawLines({
         map.removeSource(sourceId);
       }
     };
-  }, [map, linesGeoJson, isVisible, sourceId, layerId]);
+  }, [map, sourceId, layerId]);
 }
