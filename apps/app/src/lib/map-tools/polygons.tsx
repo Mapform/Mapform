@@ -95,21 +95,4 @@ export function useDrawShapes({
       console.error(e);
     }
   }, [map, polygonsGeoJson, isVisible, sourceId, outlineLayerId, layerId]);
-
-  // Cleanup on unmount
-  // useEffect(() => {
-  //   return () => {
-  //     if (!map || !map.isStyleLoaded()) return;
-
-  // if (map.getLayer(layerId) as mapboxgl.Layer | undefined) {
-  //   map.removeLayer(layerId);
-  // }
-  // if (map.getLayer(outlineLayerId) as mapboxgl.Layer | undefined) {
-  //   map.removeLayer(outlineLayerId);
-  // }
-  // if (map.getSource(sourceId) as mapboxgl.GeoJSONSource | undefined) {
-  //   map.removeSource(sourceId);
-  // }
-  //   };
-  // }, [map, sourceId, layerId, outlineLayerId]);
 }

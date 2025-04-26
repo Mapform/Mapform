@@ -15,8 +15,6 @@ import { useDrawShapes } from "~/lib/map-tools/polygons";
 
 const POINT_LAYER_ID = "line-tool-points";
 const POINT_SOURCE_ID = "line-tool-points";
-const LINE_LAYER_ID = "shape-tool-lines";
-const LINE_SOURCE_ID = "shape-tool-lines";
 const POLYGON_LAYER_ID = "shape-tool-polygons";
 const POLYGON_SOURCE_ID = "shape-tool-polygons";
 const POLYGON_OUTLINE_LAYER_ID = "shape-tool-polygons-outline";

@@ -19,6 +19,7 @@ import { useMapform } from "../index";
 import { LocationMarker } from "../../location-marker";
 import { Cluster } from "./cluster";
 import "./style.css";
+import { usePolygons } from "~/lib/map-tools/polygons-draw";
 
 const accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
 
@@ -394,15 +395,24 @@ export function Map({
     }
   }, [map, pointGeojson, lineGeojson]);
 
-  useDrawShapes({
+  // useDrawShapes({
+  //   map,
+  //   coordinates: pageData?.polygonData.map(
+  //     (feature) =>
+  //       (feature.value?.coordinates as unknown as Position[][] | undefined) ??
+  //       [],
+  //   ) ?? [[[]]],
+  //   sourceId: POLYGON_SOURCE_ID,
+  //   layerId: POLYGON_LAYER_ID,
+  // });
+
+  usePolygons({
     map,
-    coordinates: pageData?.polygonData.map(
+    coordinates: pageData?.polygonData.flatMap(
       (feature) =>
         (feature.value?.coordinates as unknown as Position[][] | undefined) ??
         [],
     ) ?? [[[]]],
-    sourceId: POLYGON_SOURCE_ID,
-    layerId: POLYGON_LAYER_ID,
   });
 
   return (
