@@ -238,11 +238,12 @@ export function Map({
           displayControlsDefault: false,
           // @ts-expect-error -- This is the recommended way to set the new mode
           modes,
-          controls: {
-            polygon: false,
-            trash: false,
-          },
+          // controls: {
+          //   polygon: true,
+          //   trash: true,
+          // },
           defaultMode: "static",
+          // keybindings: false,
         });
         m.addControl(draw);
         setDraw(draw);

@@ -27,45 +27,6 @@ export function ShapeTool(props: ShapeToolProps) {
     [feature],
   );
 
-  console.log("feature", feature);
-
-  const handleModeChange = useCallback(
-    (e: { mode: string }) => {
-      if (!draw) return;
-
-      if (e.mode === "simple_select") {
-        if (feature) {
-          try {
-            draw.changeMode("direct_select", {
-              featureId: feature.id as string,
-            });
-          } catch (_) {
-            draw.changeMode("draw_polygon");
-          }
-        } else {
-          draw.changeMode("draw_polygon");
-        }
-      }
-
-      // if (e.mode === "static") {
-      //   draw.changeMode("static");
-      // } else {
-      //   if (feature) {
-      //     try {
-      //       draw.changeMode("direct_select", {
-      //         featureId: feature.id as string,
-      //       });
-      //     } catch (_) {
-      //       draw.changeMode("draw_polygon");
-      //     }
-      //   } else {
-      //     draw.changeMode("draw_polygon");
-      //   }
-      // }
-    },
-    [draw, feature],
-  );
-
   const handleKeyDown = useCallback(
     (id: string, e: KeyboardEvent) => {
       if (!draw) return;
@@ -101,19 +62,78 @@ export function ShapeTool(props: ShapeToolProps) {
     [draw, handleKeyDown],
   );
 
+  const handleDrawUpdate = useCallback(
+    (
+      e: mapboxgl.MapMouseEvent & { features: mapboxgl.MapboxGeoJSONFeature[] },
+    ) => {
+      if (!draw) return;
+
+      const feature = e.features[0];
+
+      if (feature?.geometry.type === "Polygon") {
+        setFeature(feature as Feature<Polygon>);
+        setTimeout(() => {
+          draw.changeMode("direct_select", { featureId: feature.id as string });
+        }, 0);
+      }
+    },
+    [draw],
+  );
+
+  // Used to keep the direct select mode active when the feature is selected
+  const handleDrawSelectionChange = useCallback(() => {
+    if (!draw) return;
+
+    if (feature) {
+      setTimeout(() => {
+        draw.changeMode("direct_select", { featureId: feature.id as string });
+      }, 0);
+    }
+  }, [draw, feature]);
+
+  const cleanup = useCallback(() => {
+    if (!map || !draw) return;
+
+    setFeature(null);
+    draw.changeMode("static");
+    map.off("draw.create", handleDrawCreate);
+    map.off("draw.update", handleDrawUpdate);
+    map.off("draw.selectionchange", handleDrawSelectionChange);
+    if (feature) {
+      try {
+        draw.delete(feature.id as string);
+      } catch (_) {
+        // Do nothing
+      }
+    }
+  }, [
+    draw,
+    handleDrawCreate,
+    handleDrawUpdate,
+    handleDrawSelectionChange,
+    map,
+    feature,
+  ]);
+
   useEffect(() => {
     if (!map || !draw) return;
 
     if (isActive) {
-      draw.changeMode("draw_polygon");
-      map.on("draw.modechange", handleModeChange);
       map.on("draw.create", handleDrawCreate);
+      map.on("draw.update", handleDrawUpdate);
+      map.on("draw.selectionchange", handleDrawSelectionChange);
     } else {
-      draw.changeMode("static");
-      map.off("draw.modechange", handleModeChange);
-      map.off("draw.create", handleDrawCreate);
+      cleanup();
     }
-  }, [map, draw, isActive, feature, handleModeChange, handleDrawCreate]);
+  }, [
+    map,
+    draw,
+    isActive,
+    cleanup,
+    handleDrawUpdate,
+    handleDrawSelectionChange,
+    handleDrawCreate,
+  ]);
 
   return (
     <>
@@ -121,7 +141,10 @@ export function ShapeTool(props: ShapeToolProps) {
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
-              onClick={onClick}
+              onClick={() => {
+                onClick();
+                draw?.changeMode("draw_polygon");
+              }}
               size="icon"
               variant={isActive && !isSearchOpen ? "default" : "ghost"}
             >
