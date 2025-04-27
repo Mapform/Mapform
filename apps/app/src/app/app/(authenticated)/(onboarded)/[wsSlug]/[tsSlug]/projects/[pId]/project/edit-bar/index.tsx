@@ -2,12 +2,8 @@ import { cn } from "@mapform/lib/classnames";
 import { useMapform, useMapformContent } from "~/components/mapform";
 import { useMemo, useEffect, useState } from "react";
 import { HandTool } from "./hand-tool";
-import type { lineTypes } from "./line-tool";
-import { LineTool } from "./line-tool";
 import { MapOptions } from "./map-options";
-import { PointTool } from "./point-tool";
 import { SearchTool } from "./search-tool";
-import { ShapeTool } from "./shape-tool/new";
 import {
   Tooltip,
   TooltipContent,
@@ -15,7 +11,7 @@ import {
 } from "@mapform/ui/components/tooltip";
 import { Button } from "@mapform/ui/components/button";
 import { PentagonIcon } from "lucide-react";
-import { Position } from "geojson";
+import type { Position } from "geojson";
 import { FeaturePopover } from "./popover";
 import mapboxgl from "mapbox-gl";
 

@@ -350,46 +350,35 @@ export function Map({
     };
   }, [map, setQueryString, isMobile]);
 
-  const handleDrawCreate = useCallback(
-    (
+  useEffect(() => {
+    if (!map || !draw) return;
+
+    const handleDrawCreate = (
       e: mapboxgl.MapMouseEvent & { features: mapboxgl.MapboxGeoJSONFeature[] },
     ) => {
-      if (!draw) return;
-
       const feature = e.features[0];
 
       if (feature?.geometry.type === "Polygon") {
         setActiveFeature(feature);
       }
-    },
-    [draw, setActiveFeature],
-  );
+    };
 
-  const handleDrawUpdate = useCallback(
-    (
+    const handleDrawUpdate = (
       e: mapboxgl.MapMouseEvent & { features: mapboxgl.MapboxGeoJSONFeature[] },
     ) => {
-      if (!draw) return;
-
       const feature = e.features[0];
 
       if (feature?.geometry.type === "Polygon") {
         setActiveFeature(feature);
       }
-    },
-    [draw, setActiveFeature],
-  );
+    };
 
-  // Used to keep the direct select mode active when the feature is selected
-  const handleDrawSelectionChange = useCallback(
-    (
+    const handleDrawSelectionChange = (
       e: mapboxgl.MapMouseEvent & { features: mapboxgl.MapboxGeoJSONFeature[] },
     ) => {
-      if (!draw) return;
-
       const eventFeature = e.features[0];
 
-      if (activeFeature && eventFeature?.id !== activeFeature.id) {
+      if (activeFeature !== null && eventFeature?.id !== activeFeature.id) {
         setActiveFeature(null);
         try {
           draw.delete(activeFeature.id as string);
@@ -397,53 +386,18 @@ export function Map({
           // Do nothing
         }
       }
-    },
-    [draw, activeFeature, setActiveFeature],
-  );
-
-  const cleanup = useCallback(() => {
-    if (!map || !draw) return;
-
-    setActiveFeature(null);
-    draw.changeMode("static");
-    map.off("draw.create", handleDrawCreate);
-    map.off("draw.update", handleDrawUpdate);
-    map.off("draw.selectionchange", handleDrawSelectionChange);
-    if (activeFeature) {
-      try {
-        draw.delete(activeFeature.id as string);
-      } catch (_) {
-        // Do nothing
-      }
-    }
-  }, [
-    map,
-    draw,
-    setActiveFeature,
-    handleDrawCreate,
-    handleDrawUpdate,
-    handleDrawSelectionChange,
-    activeFeature,
-  ]);
-
-  useEffect(() => {
-    if (!map || !draw) return;
+    };
 
     map.on("draw.create", handleDrawCreate);
     map.on("draw.update", handleDrawUpdate);
     map.on("draw.selectionchange", handleDrawSelectionChange);
 
     return () => {
-      // cleanup();
+      map.off("draw.create", handleDrawCreate);
+      map.off("draw.update", handleDrawUpdate);
+      map.off("draw.selectionchange", handleDrawSelectionChange);
     };
-  }, [
-    cleanup,
-    draw,
-    handleDrawCreate,
-    handleDrawSelectionChange,
-    handleDrawUpdate,
-    map,
-  ]);
+  }, [map, draw, setActiveFeature, activeFeature]);
 
   /**
    * ADD LAYERS
