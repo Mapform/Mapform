@@ -7,7 +7,7 @@ import { LineTool } from "./line-tool";
 import { MapOptions } from "./map-options";
 import { PointTool } from "./point-tool";
 import { SearchTool } from "./search-tool";
-import { ShapeTool } from "./shape-tool";
+import { ShapeTool } from "./shape-tool/new";
 
 interface EditBarProps {
   onSearchOpenChange: (isOpen: boolean) => void;

@@ -33,7 +33,9 @@ interface MapformProps {
 
 interface MapformContextProps {
   map?: MBMap;
+  draw?: MapboxDraw;
   setMap: Dispatch<SetStateAction<MBMap | undefined>>;
+  setDraw: Dispatch<SetStateAction<MapboxDraw | undefined>>;
   mapContainer: React.RefObject<HTMLDivElement | null>;
   mapContainerBounds: DOMRectReadOnly | undefined;
 }
@@ -45,6 +47,7 @@ export const useMapform = () => useContext(MapformContext);
 
 export function Mapform({ children }: MapformProps) {
   const [map, setMap] = useState<MBMap>();
+  const [draw, setDraw] = useState<MapboxDraw>();
   const { ref: mapContainer, bounds } = useMeasure<HTMLDivElement>();
 
   const mapContainerBounds = bounds;
@@ -53,7 +56,9 @@ export function Mapform({ children }: MapformProps) {
     <MapformContext.Provider
       value={{
         map,
+        draw,
         setMap,
+        setDraw,
         mapContainer,
         mapContainerBounds,
       }}
@@ -213,13 +218,13 @@ export function MapformDrawer({
           }}
         >
           {!hideDragBar && (
-            <div className="absolute -translate-x-1/2 left-1/2 top-1 md:hidden">
+            <div className="absolute left-1/2 top-1 -translate-x-1/2 md:hidden">
               <div className="h-1.5 w-12 rounded-full bg-gray-300" />
             </div>
           )}
           {onClose ? (
             <Button
-              className="absolute z-50 right-2 top-2"
+              className="absolute right-2 top-2 z-50"
               onClick={onClose}
               size="icon-sm"
               type="button"

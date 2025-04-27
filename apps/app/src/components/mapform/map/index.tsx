@@ -12,14 +12,13 @@ import { useSetQueryString } from "@mapform/lib/hooks/use-set-query-string";
 import type Supercluster from "supercluster";
 import useSupercluster from "use-supercluster";
 import { AnimatePresence, motion } from "motion/react";
-import { useDrawPoints } from "~/lib/map-tools/points";
-import { useDrawLines } from "~/lib/map-tools/lines";
-import { useDrawShapes } from "~/lib/map-tools/polygons";
+import MapboxDraw from "@mapbox/mapbox-gl-draw";
+import StaticMode from "@mapbox/mapbox-gl-draw-static-mode";
 import { useMapform } from "../index";
 import { LocationMarker } from "../../location-marker";
 import { Cluster } from "./cluster";
 import "./style.css";
-import { usePolygons } from "~/lib/map-tools/polygons-draw";
+import { useDrawFeatures } from "~/lib/map-tools/draw-features";
 
 const accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
 
@@ -69,7 +68,8 @@ export function Map({
     [number, number, number, number] | undefined
   >(undefined);
   const [zoom, setZoom] = useState<number>(initialViewState.zoom);
-  const { map, setMap, mapContainer, mapContainerBounds } = useMapform();
+  const { map, setMap, setDraw, mapContainer, mapContainerBounds } =
+    useMapform();
   // Condition in usePrevious resolves issue where map padding is not updated on first render
   const prevMapPadding = usePrevious(map ? mapPadding : undefined);
 
@@ -229,6 +229,23 @@ export function Map({
       // Add your custom markers and lines here
       m.on("load", () => {
         setMap(m);
+
+        const modes = MapboxDraw.modes;
+        // @ts-expect-error -- This is the recommended way to set the new mode
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        modes.static = StaticMode;
+        const draw = new MapboxDraw({
+          displayControlsDefault: false,
+          // @ts-expect-error -- This is the recommended way to set the new mode
+          modes,
+          controls: {
+            polygon: false,
+            trash: false,
+          },
+          defaultMode: "static",
+        });
+        m.addControl(draw);
+        setDraw(draw);
       });
 
       // Clean up on unmount
@@ -395,20 +412,7 @@ export function Map({
     }
   }, [map, pointGeojson, lineGeojson]);
 
-  console.log(111, pageData?.polygonData);
-
-  // useDrawShapes({
-  //   map,
-  //   coordinates: pageData?.polygonData.map(
-  //     (feature) =>
-  //       (feature.value?.coordinates as unknown as Position[][] | undefined) ??
-  //       [],
-  //   ) ?? [[[]]],
-  //   sourceId: POLYGON_SOURCE_ID,
-  //   layerId: POLYGON_LAYER_ID,
-  // });
-
-  usePolygons({
+  useDrawFeatures({
     map,
     featureCollection: {
       type: "FeatureCollection",
