@@ -410,6 +410,9 @@ importers:
       '@mapbox/mapbox-gl-draw':
         specifier: ^1.5.0
         version: 1.5.0
+      '@mapbox/mapbox-gl-draw-static-mode':
+        specifier: ^1.0.1
+        version: 1.0.1
       '@mapform/auth':
         specifier: workspace:*
         version: link:../../packages/auth
@@ -2368,6 +2371,9 @@ packages:
   '@mapbox/jsonlint-lines-primitives@2.0.2':
     resolution: {integrity: sha512-rY0o9A5ECsTQRVhv7tL/OyDpGAoUB4tTvLiW1DSzQGq4bvTPhNw1VpSNjDJc5GFZ2XuyOtSWSVN05qOtcD71qQ==}
     engines: {node: '>= 0.6'}
+
+  '@mapbox/mapbox-gl-draw-static-mode@1.0.1':
+    resolution: {integrity: sha512-r/y50dlRJ8ctK5YdhAzimiKIu/R2b0GkGoExw7zWn17CDTn2ftGqsljJOlfLXf5rH15Wv75t1EN9KsM6OkdhWQ==}
 
   '@mapbox/mapbox-gl-draw@1.5.0':
     resolution: {integrity: sha512-uchQbTa8wiv6GWWTbxW1g5b8H6VySz4t91SmduNH6jjWinPze7cjcmsPUEzhySXsYpYr2/50gRJLZz3bx7O88A==}
@@ -9218,6 +9224,8 @@ snapshots:
       minimist: 1.2.8
 
   '@mapbox/jsonlint-lines-primitives@2.0.2': {}
+
+  '@mapbox/mapbox-gl-draw-static-mode@1.0.1': {}
 
   '@mapbox/mapbox-gl-draw@1.5.0':
     dependencies:

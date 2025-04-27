@@ -3,7 +3,8 @@
 import { Feature, FeatureCollection, Position } from "geojson";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import type mapboxgl from "mapbox-gl";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
+import StaticMode from "@mapbox/mapbox-gl-draw-static-mode";
 
 export function usePolygons({
   map,
@@ -12,7 +13,31 @@ export function usePolygons({
   map?: mapboxgl.Map;
   coordinates: Position[][];
 }) {
-  console.log("coordinates", coordinates);
+  const drawRef = useRef<MapboxDraw | null>(null);
+
+  useEffect(() => {
+    if (!map) return;
+
+    const modes = MapboxDraw.modes;
+    modes.static = StaticMode;
+    drawRef.current = new MapboxDraw({
+      displayControlsDefault: false,
+      modes,
+      controls: {
+        polygon: false,
+        trash: false,
+      },
+      defaultMode: "static",
+    });
+    map.addControl(drawRef.current);
+
+    return () => {
+      if (drawRef.current) {
+        map.removeControl(drawRef.current);
+        drawRef.current = null;
+      }
+    };
+  }, [map]);
 
   const preloadedFeatures: FeatureCollection = useMemo(
     () => ({
@@ -32,22 +57,12 @@ export function usePolygons({
   );
 
   useEffect(() => {
-    if (!map) return;
-    const draw = new MapboxDraw({
-      displayControlsDefault: false,
-      controls: {
-        polygon: true,
-        trash: true,
-      },
-      defaultMode: "draw_polygon",
-    });
+    if (!map || !drawRef.current) return;
 
-    map.addControl(draw);
+    const ids = drawRef.current.add(preloadedFeatures);
 
-    console.log("on map load", preloadedFeatures);
-    if (draw && preloadedFeatures) {
-      draw.add(preloadedFeatures);
-      //console.log("all features", draw.getAll());
-    }
+    return () => {
+      drawRef.current?.delete(ids);
+    };
   }, [map, preloadedFeatures]);
 }
