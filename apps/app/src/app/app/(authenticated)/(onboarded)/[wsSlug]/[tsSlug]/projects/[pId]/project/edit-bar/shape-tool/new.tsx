@@ -33,6 +33,7 @@ export function ShapeTool(props: ShapeToolProps) {
       if (e.key === "Escape") {
         setFeature(null);
         draw.changeMode("draw_polygon");
+
         draw.delete(id);
         window.removeEventListener("keydown", handleKeyDown.bind(null, id));
       }
@@ -73,7 +74,13 @@ export function ShapeTool(props: ShapeToolProps) {
       if (feature?.geometry.type === "Polygon") {
         setFeature(feature as Feature<Polygon>);
         setTimeout(() => {
-          draw.changeMode("direct_select", { featureId: feature.id as string });
+          try {
+            draw.changeMode("direct_select", {
+              featureId: feature.id as string,
+            });
+          } catch (_) {
+            // Do nothing
+          }
         }, 0);
       }
     },
@@ -86,7 +93,11 @@ export function ShapeTool(props: ShapeToolProps) {
 
     if (feature) {
       setTimeout(() => {
-        draw.changeMode("direct_select", { featureId: feature.id as string });
+        try {
+          draw.changeMode("direct_select", { featureId: feature.id as string });
+        } catch (_) {
+          // Do nothing
+        }
       }, 0);
     }
   }, [draw, feature]);
