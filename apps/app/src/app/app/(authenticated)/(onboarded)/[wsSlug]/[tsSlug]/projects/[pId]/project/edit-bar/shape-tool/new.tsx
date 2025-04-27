@@ -8,7 +8,7 @@ import { PentagonIcon } from "lucide-react";
 import { LineToolPopover } from "./popover";
 import mapboxgl from "mapbox-gl";
 import { useMapform } from "~/components/mapform";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import type { Feature, Position, Polygon } from "geojson";
 
 interface ShapeToolProps {
@@ -27,47 +27,13 @@ export function ShapeTool(props: ShapeToolProps) {
     [feature],
   );
 
-  useEffect(() => {
-    if (!map || !draw) return;
+  console.log("feature", feature);
 
-    const handleKeyDown = (id: string, e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        setFeature(null);
-        draw.changeMode("draw_polygon");
-        draw.delete(id);
-        window.removeEventListener("keydown", handleKeyDown.bind(null, id));
-      }
-    };
+  const handleModeChange = useCallback(
+    (e: { mode: string }) => {
+      if (!draw) return;
 
-    const handleDrawCreate = (
-      e: mapboxgl.MapMouseEvent & { features: mapboxgl.MapboxGeoJSONFeature[] },
-    ) => {
-      const feature = e.features[0];
-
-      if (feature?.geometry.type === "Polygon") {
-        const polygonFeature: Feature<Polygon> = {
-          type: "Feature",
-          geometry: {
-            type: "Polygon",
-            coordinates: feature.geometry.coordinates as Position[][],
-          },
-          properties: feature.properties || {},
-        };
-        setFeature(polygonFeature);
-        setTimeout(() => {
-          draw.changeMode("direct_select", { featureId: feature.id as string });
-        }, 0);
-        window.addEventListener(
-          "keydown",
-          handleKeyDown.bind(null, feature.id as string),
-        );
-      }
-    };
-
-    const handleModeChange = (e: { mode: string }) => {
-      if (e.mode === "static") {
-        draw.changeMode("static");
-      } else {
+      if (e.mode === "simple_select") {
         if (feature) {
           try {
             draw.changeMode("direct_select", {
@@ -80,7 +46,63 @@ export function ShapeTool(props: ShapeToolProps) {
           draw.changeMode("draw_polygon");
         }
       }
-    };
+
+      // if (e.mode === "static") {
+      //   draw.changeMode("static");
+      // } else {
+      //   if (feature) {
+      //     try {
+      //       draw.changeMode("direct_select", {
+      //         featureId: feature.id as string,
+      //       });
+      //     } catch (_) {
+      //       draw.changeMode("draw_polygon");
+      //     }
+      //   } else {
+      //     draw.changeMode("draw_polygon");
+      //   }
+      // }
+    },
+    [draw, feature],
+  );
+
+  const handleKeyDown = useCallback(
+    (id: string, e: KeyboardEvent) => {
+      if (!draw) return;
+      if (e.key === "Escape") {
+        setFeature(null);
+        draw.changeMode("draw_polygon");
+        draw.delete(id);
+        window.removeEventListener("keydown", handleKeyDown.bind(null, id));
+      }
+    },
+    [draw],
+  );
+
+  const handleDrawCreate = useCallback(
+    (
+      e: mapboxgl.MapMouseEvent & { features: mapboxgl.MapboxGeoJSONFeature[] },
+    ) => {
+      if (!draw) return;
+
+      const feature = e.features[0];
+
+      if (feature?.geometry.type === "Polygon") {
+        setFeature(feature as Feature<Polygon>);
+        setTimeout(() => {
+          draw.changeMode("direct_select", { featureId: feature.id as string });
+        }, 0);
+        window.addEventListener(
+          "keydown",
+          handleKeyDown.bind(null, feature.id as string),
+        );
+      }
+    },
+    [draw, handleKeyDown],
+  );
+
+  useEffect(() => {
+    if (!map || !draw) return;
 
     if (isActive) {
       draw.changeMode("draw_polygon");
@@ -91,7 +113,7 @@ export function ShapeTool(props: ShapeToolProps) {
       map.off("draw.modechange", handleModeChange);
       map.off("draw.create", handleDrawCreate);
     }
-  }, [map, draw, isActive, feature]);
+  }, [map, draw, isActive, feature, handleModeChange, handleDrawCreate]);
 
   return (
     <>
