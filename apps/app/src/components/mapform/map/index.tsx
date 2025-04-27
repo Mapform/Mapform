@@ -395,6 +395,8 @@ export function Map({
     }
   }, [map, pointGeojson, lineGeojson]);
 
+  console.log(111, pageData?.polygonData);
+
   // useDrawShapes({
   //   map,
   //   coordinates: pageData?.polygonData.map(
@@ -408,11 +410,19 @@ export function Map({
 
   usePolygons({
     map,
-    coordinates: pageData?.polygonData.flatMap(
-      (feature) =>
-        (feature.value?.coordinates as unknown as Position[][] | undefined) ??
-        [],
-    ) ?? [[[]]],
+    featureCollection: {
+      type: "FeatureCollection",
+      features:
+        pageData?.polygonData.map((feature) => ({
+          type: "Feature",
+          properties: {},
+          geometry: {
+            coordinates: (feature.value
+              ?.coordinates as unknown as Position[][]) ?? [[[]]],
+            type: "Polygon",
+          },
+        })) ?? [],
+    },
   });
 
   return (
