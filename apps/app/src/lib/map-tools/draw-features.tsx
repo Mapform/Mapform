@@ -17,10 +17,25 @@ export function useDrawFeatures({
   useEffect(() => {
     if (!map || !draw) return;
 
-    const ids = draw.add(featureCollection);
+    let ids: string[] = [];
+
+    catchMapErrors(() => {
+      ids = draw.add(featureCollection);
+    });
 
     return () => {
-      draw.delete(ids);
+      catchMapErrors(() => {
+        draw.delete(ids);
+      });
     };
   }, [map, featureCollection, draw]);
 }
+
+// When changing pages and map unmounts calling function on map or draw can cause errors. Easier to just catch it.
+const catchMapErrors = (fn: () => void) => {
+  try {
+    fn();
+  } catch (error) {
+    // Do nothing
+  }
+};
