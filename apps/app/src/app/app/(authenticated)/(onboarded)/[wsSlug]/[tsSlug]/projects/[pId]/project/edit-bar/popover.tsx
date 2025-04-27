@@ -1,5 +1,5 @@
-import { LayerSavePopover } from "../../layer-save-popover";
-import { SearchPopover } from "../search-popover";
+import { LayerSavePopover } from "../layer-save-popover";
+import { SearchPopover } from "./search-popover";
 import { Button } from "@mapform/ui/components/button";
 import { BookmarkIcon } from "lucide-react";
 import { createPolygonAction } from "~/data/datasets/create-polygon";
@@ -10,11 +10,11 @@ import type { Position } from "geojson";
 interface LineToolPopoverProps {
   location: mapboxgl.LngLat;
   isFetching: boolean;
-  coordinates: Position[][];
+  coordinates: Position[][] | Position[] | Position;
   onSave: () => void;
 }
 
-export function LineToolPopover({
+export function FeaturePopover({
   location,
   coordinates,
   isFetching,

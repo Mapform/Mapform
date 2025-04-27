@@ -2,9 +2,9 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import mapboxgl from "mapbox-gl";
+import mapboxgl, { MapboxGeoJSONFeature } from "mapbox-gl";
 import { cn } from "@mapform/lib/classnames";
-import type { FeatureCollection, Position } from "geojson";
+import type { Feature, FeatureCollection, Position } from "geojson";
 import type { ViewState } from "@mapform/map-utils/types";
 import type { GetPageData } from "@mapform/backend/data/datalayer/get-page-data";
 import { usePrevious } from "@mapform/lib/hooks/use-previous";
@@ -42,13 +42,6 @@ interface MarkerPointFeature {
   features: { icon: string; color: string }[] | undefined;
 }
 
-const POINT_LAYER_ID = "points";
-const POINT_SOURCE_ID = "points";
-const LINE_LAYER_ID = "lines";
-const LINE_SOURCE_ID = "lines";
-const POLYGON_LAYER_ID = "polygons";
-const POLYGON_SOURCE_ID = "polygons";
-
 /**
  * TODO:
  * 1. Add ability to add markers
@@ -68,8 +61,16 @@ export function Map({
     [number, number, number, number] | undefined
   >(undefined);
   const [zoom, setZoom] = useState<number>(initialViewState.zoom);
-  const { map, setMap, setDraw, mapContainer, mapContainerBounds } =
-    useMapform();
+  const {
+    draw,
+    map,
+    setMap,
+    setDraw,
+    mapContainer,
+    mapContainerBounds,
+    activeFeature,
+    setActiveFeature,
+  } = useMapform();
   // Condition in usePrevious resolves issue where map padding is not updated on first render
   const prevMapPadding = usePrevious(map ? mapPadding : undefined);
 
@@ -348,6 +349,101 @@ export function Map({
       }
     };
   }, [map, setQueryString, isMobile]);
+
+  const handleDrawCreate = useCallback(
+    (
+      e: mapboxgl.MapMouseEvent & { features: mapboxgl.MapboxGeoJSONFeature[] },
+    ) => {
+      if (!draw) return;
+
+      const feature = e.features[0];
+
+      if (feature?.geometry.type === "Polygon") {
+        setActiveFeature(feature);
+      }
+    },
+    [draw, setActiveFeature],
+  );
+
+  const handleDrawUpdate = useCallback(
+    (
+      e: mapboxgl.MapMouseEvent & { features: mapboxgl.MapboxGeoJSONFeature[] },
+    ) => {
+      if (!draw) return;
+
+      const feature = e.features[0];
+
+      if (feature?.geometry.type === "Polygon") {
+        setActiveFeature(feature);
+      }
+    },
+    [draw, setActiveFeature],
+  );
+
+  // Used to keep the direct select mode active when the feature is selected
+  const handleDrawSelectionChange = useCallback(
+    (
+      e: mapboxgl.MapMouseEvent & { features: mapboxgl.MapboxGeoJSONFeature[] },
+    ) => {
+      if (!draw) return;
+
+      const eventFeature = e.features[0];
+
+      if (activeFeature && eventFeature?.id !== activeFeature.id) {
+        setActiveFeature(null);
+        try {
+          draw.delete(activeFeature.id as string);
+        } catch (_) {
+          // Do nothing
+        }
+      }
+    },
+    [draw, activeFeature, setActiveFeature],
+  );
+
+  const cleanup = useCallback(() => {
+    if (!map || !draw) return;
+
+    setActiveFeature(null);
+    draw.changeMode("static");
+    map.off("draw.create", handleDrawCreate);
+    map.off("draw.update", handleDrawUpdate);
+    map.off("draw.selectionchange", handleDrawSelectionChange);
+    if (activeFeature) {
+      try {
+        draw.delete(activeFeature.id as string);
+      } catch (_) {
+        // Do nothing
+      }
+    }
+  }, [
+    map,
+    draw,
+    setActiveFeature,
+    handleDrawCreate,
+    handleDrawUpdate,
+    handleDrawSelectionChange,
+    activeFeature,
+  ]);
+
+  useEffect(() => {
+    if (!map || !draw) return;
+
+    map.on("draw.create", handleDrawCreate);
+    map.on("draw.update", handleDrawUpdate);
+    map.on("draw.selectionchange", handleDrawSelectionChange);
+
+    return () => {
+      // cleanup();
+    };
+  }, [
+    cleanup,
+    draw,
+    handleDrawCreate,
+    handleDrawSelectionChange,
+    handleDrawUpdate,
+    map,
+  ]);
 
   /**
    * ADD LAYERS

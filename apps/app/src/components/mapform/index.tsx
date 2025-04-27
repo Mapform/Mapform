@@ -18,6 +18,7 @@ import { Map } from "./map";
 import { useIsMobile } from "@mapform/lib/hooks/use-is-mobile";
 import { AnimatePresence, motion } from "motion/react";
 import type { GetPageData } from "@mapform/backend/data/datalayer/get-page-data";
+import type { MapboxGeoJSONFeature } from "mapbox-gl";
 
 export type MBMap = mapboxgl.Map;
 export interface ActivePoint {
@@ -38,6 +39,8 @@ interface MapformContextProps {
   setDraw: Dispatch<SetStateAction<MapboxDraw | undefined>>;
   mapContainer: React.RefObject<HTMLDivElement | null>;
   mapContainerBounds: DOMRectReadOnly | undefined;
+  activeFeature: MapboxGeoJSONFeature | null;
+  setActiveFeature: Dispatch<SetStateAction<MapboxGeoJSONFeature | null>>;
 }
 
 export const MapformContext = createContext<MapformContextProps>(
@@ -47,6 +50,8 @@ export const useMapform = () => useContext(MapformContext);
 
 export function Mapform({ children }: MapformProps) {
   const [map, setMap] = useState<MBMap>();
+  const [activeFeature, setActiveFeature] =
+    useState<MapboxGeoJSONFeature | null>(null);
   const [draw, setDraw] = useState<MapboxDraw>();
   const { ref: mapContainer, bounds } = useMeasure<HTMLDivElement>();
 
@@ -61,6 +66,8 @@ export function Mapform({ children }: MapformProps) {
         setDraw,
         mapContainer,
         mapContainerBounds,
+        activeFeature,
+        setActiveFeature,
       }}
     >
       {children}

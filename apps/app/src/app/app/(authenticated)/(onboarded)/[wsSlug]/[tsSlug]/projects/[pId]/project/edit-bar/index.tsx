@@ -1,6 +1,6 @@
 import { cn } from "@mapform/lib/classnames";
-import { useMapformContent } from "~/components/mapform";
-import { useState } from "react";
+import { useMapform, useMapformContent } from "~/components/mapform";
+import { useMemo, useEffect, useState } from "react";
 import { HandTool } from "./hand-tool";
 import type { lineTypes } from "./line-tool";
 import { LineTool } from "./line-tool";
@@ -8,19 +8,57 @@ import { MapOptions } from "./map-options";
 import { PointTool } from "./point-tool";
 import { SearchTool } from "./search-tool";
 import { ShapeTool } from "./shape-tool/new";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@mapform/ui/components/tooltip";
+import { Button } from "@mapform/ui/components/button";
+import { PentagonIcon } from "lucide-react";
+import { Position } from "geojson";
+import { FeaturePopover } from "./popover";
+import mapboxgl from "mapbox-gl";
 
 interface EditBarProps {
   onSearchOpenChange: (isOpen: boolean) => void;
 }
 
 export function EditBar({ onSearchOpenChange }: EditBarProps) {
+  const { map, draw, activeFeature, setActiveFeature } = useMapform();
   const { drawerValues } = useMapformContent();
   const isSearchOpen = drawerValues.includes("location-search");
-  const [activeTool, setActiveTool] = useState<
-    "hand" | "point" | "line" | "shape"
-  >("hand");
-  const [selectedLineType, setSelectedLineType] =
-    useState<keyof typeof lineTypes>("line");
+  const [activeMode, setActiveMode] = useState<"hand" | "shape">("hand");
+
+  useEffect(() => {
+    const handleDrawModeChange = (e: { mode: string }) => {
+      console.log(e.mode);
+      if (e.mode === "draw_polygon") {
+        setActiveMode("shape");
+      } else {
+        setActiveMode("hand");
+      }
+    };
+
+    map?.on("draw.modechange", handleDrawModeChange);
+
+    return () => {
+      map?.off("draw.modechange", handleDrawModeChange);
+    };
+  }, [map]);
+
+  const location = useMemo(() => {
+    if (!activeFeature) return null;
+
+    if (activeFeature.geometry.type === "Point") {
+      return activeFeature.geometry.coordinates;
+    }
+
+    if (activeFeature.geometry.type === "Polygon") {
+      return getCenterOfPoints(activeFeature.geometry.coordinates[0]!);
+    }
+
+    return null;
+  }, [activeFeature]);
 
   return (
     <div
@@ -40,43 +78,85 @@ export function EditBar({ onSearchOpenChange }: EditBarProps) {
       </div>
       <div className="flex gap-1 px-1.5">
         <HandTool
-          isActive={activeTool === "hand" && !isSearchOpen}
+          isActive={activeMode === "hand" && !isSearchOpen}
           isSearchOpen={isSearchOpen}
           onClick={() => {
-            setActiveTool("hand");
+            // setActiveTool("hand");
+            draw?.changeMode("static");
             onSearchOpenChange(false);
           }}
         />
-        <PointTool
-          isActive={activeTool === "point" && !isSearchOpen}
+        {/* <PointTool
+          isActive={activeMode === "point" && !isSearchOpen}
           isSearchOpen={isSearchOpen}
           onClick={() => {
-            setActiveTool("point");
+            // setActiveTool("point");
             onSearchOpenChange(false);
           }}
-        />
-        <LineTool
+        /> */}
+        {/* <LineTool
           selectedLineType={selectedLineType}
           setSelectedLineType={setSelectedLineType}
           isActive={activeTool === "line" && !isSearchOpen}
           isSearchOpen={isSearchOpen}
           onClick={() => {
-            setActiveTool("line");
+            // setActiveTool("line");
             onSearchOpenChange(false);
           }}
-        />
-        <ShapeTool
-          isActive={activeTool === "shape" && !isSearchOpen}
-          isSearchOpen={isSearchOpen}
-          onClick={() => {
-            setActiveTool("shape");
-            onSearchOpenChange(false);
-          }}
-        />
+        /> */}
+        <div className="flex items-center">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                onClick={() => {
+                  draw?.changeMode("draw_polygon");
+                  setActiveMode("shape");
+                }}
+                size="icon"
+                variant={
+                  activeMode === "shape" && !isSearchOpen ? "default" : "ghost"
+                }
+              >
+                <PentagonIcon className="size-5" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Shape tool</TooltipContent>
+          </Tooltip>
+        </div>
       </div>
       <div className="flex gap-1 pl-1.5">
         <MapOptions />
       </div>
+      {location && (
+        <FeaturePopover
+          location={new mapboxgl.LngLat(location[0]!, location[1]!)}
+          onSave={() => {
+            if (activeFeature) {
+              draw?.delete(activeFeature.id as string);
+              setActiveFeature(null);
+              draw?.changeMode("draw_polygon");
+            }
+          }}
+          isFetching={false}
+          coordinates={activeFeature?.geometry.coordinates as Position[][]}
+        />
+      )}
     </div>
   );
 }
+
+const getCenterOfPoints = (points: Position[]): Position | null => {
+  if (points.length === 0) return null;
+
+  const sum = points.reduce<{ lng: number; lat: number }>(
+    (acc, point) => {
+      const [lng, lat] = point as [number, number];
+      acc.lng += lng;
+      acc.lat += lat;
+      return acc;
+    },
+    { lng: 0, lat: 0 },
+  );
+
+  return [sum.lng / points.length, sum.lat / points.length];
+};
