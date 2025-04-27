@@ -17,17 +17,38 @@ export function useDrawFeatures({
   useEffect(() => {
     if (!map || !draw) return;
 
-    let ids: string[] = [];
-
     catchMapErrors(() => {
-      ids = draw.add(featureCollection);
-    });
+      // Get all existing feature IDs from the map
+      const existingFeatureIds = new Set(
+        draw.getAll().features.map((f) => f.id?.toString()),
+      );
 
-    return () => {
-      catchMapErrors(() => {
-        draw.delete(ids);
+      // Get all feature IDs from the incoming collection
+      const newFeatureIds = new Set(
+        featureCollection.features.map((f) => f.id?.toString()),
+      );
+
+      // Delete features that exist in the map but not in the new collection
+      existingFeatureIds.forEach((id) => {
+        if (id && !newFeatureIds.has(id)) {
+          draw.delete(id);
+        }
       });
-    };
+
+      // Filter out features that already exist
+      const newFeatures = featureCollection.features.filter((feature) => {
+        if (!feature.id) return true; // If no ID, we'll add it
+        return !draw.get(feature.id.toString()); // Check if feature exists
+      });
+
+      // Only add new features
+      if (newFeatures.length > 0) {
+        draw.add({
+          type: "FeatureCollection",
+          features: newFeatures,
+        });
+      }
+    });
   }, [map, featureCollection, draw]);
 }
 

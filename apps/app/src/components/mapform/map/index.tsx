@@ -356,6 +356,7 @@ export function Map({
     const handleDrawCreate = (
       e: mapboxgl.MapMouseEvent & { features: mapboxgl.MapboxGeoJSONFeature[] },
     ) => {
+      console.log("handleDrawCreate", e);
       const feature = e.features[0];
 
       if (feature?.geometry.type === "Polygon") {
@@ -366,6 +367,7 @@ export function Map({
     const handleDrawUpdate = (
       e: mapboxgl.MapMouseEvent & { features: mapboxgl.MapboxGeoJSONFeature[] },
     ) => {
+      console.log("handleDrawUpdate", e);
       const feature = e.features[0];
 
       if (feature?.geometry.type === "Polygon") {
@@ -476,6 +478,7 @@ export function Map({
               ?.coordinates as unknown as Position[][]) ?? [[[]]],
             type: "Polygon",
           },
+          id: feature.id,
         })) ?? [],
     },
   });
