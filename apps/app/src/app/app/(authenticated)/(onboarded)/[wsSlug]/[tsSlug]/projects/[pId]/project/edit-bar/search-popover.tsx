@@ -49,7 +49,7 @@ export const SearchPopoverInner = forwardRef<
         latitude={location.lat}
       >
         <PopoverAnchor>
-          <div />
+          <div className="invisible size-0.5" />
         </PopoverAnchor>
       </LocationMarker>
       <PopoverContent side="top" align="center">

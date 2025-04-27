@@ -77,8 +77,8 @@ export function EditBar({ onSearchOpenChange }: EditBarProps) {
           isActive={activeMode === "hand" && !isSearchOpen}
           isSearchOpen={isSearchOpen}
           onClick={() => {
-            // setActiveTool("hand");
-            draw?.changeMode("static");
+            setActiveMode("hand");
+            draw?.changeMode("simple_select");
             onSearchOpenChange(false);
           }}
         />

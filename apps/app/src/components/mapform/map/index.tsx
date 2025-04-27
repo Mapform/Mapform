@@ -243,7 +243,7 @@ export function Map({
           //   polygon: true,
           //   trash: true,
           // },
-          defaultMode: "static",
+          defaultMode: "simple_select",
           // keybindings: false,
         });
         m.addControl(draw);
