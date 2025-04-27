@@ -9,7 +9,7 @@ import { LineToolPopover } from "./popover";
 import mapboxgl from "mapbox-gl";
 import { useMapform } from "~/components/mapform";
 import { useEffect, useMemo, useState } from "react";
-import type { Feature, Position } from "geojson";
+import type { Feature, Position, Polygon } from "geojson";
 
 interface ShapeToolProps {
   isActive: boolean;
@@ -20,9 +20,7 @@ interface ShapeToolProps {
 export function ShapeTool(props: ShapeToolProps) {
   const { isActive, isSearchOpen, onClick } = props;
   const { map, draw } = useMapform();
-  const [feature, setFeature] = useState<Feature | null>(null);
-
-  console.log(2222, feature?.geometry.coordinates);
+  const [feature, setFeature] = useState<Feature<Polygon> | null>(null);
 
   const location = useMemo(
     () => getCenterOfPoints(feature?.geometry.coordinates[0] ?? []),
@@ -47,9 +45,16 @@ export function ShapeTool(props: ShapeToolProps) {
       const feature = e.features[0];
 
       if (feature?.geometry.type === "Polygon") {
-        setFeature(feature);
+        const polygonFeature: Feature<Polygon> = {
+          type: "Feature",
+          geometry: {
+            type: "Polygon",
+            coordinates: feature.geometry.coordinates as Position[][],
+          },
+          properties: feature.properties || {},
+        };
+        setFeature(polygonFeature);
         setTimeout(() => {
-          // draw.changeMode("static");
           draw.changeMode("direct_select", { featureId: feature.id as string });
         }, 0);
         window.addEventListener(
@@ -57,11 +62,6 @@ export function ShapeTool(props: ShapeToolProps) {
           handleKeyDown.bind(null, feature.id as string),
         );
       }
-
-      // // @ts-expect-error -- The types are wrong
-      // const coordinates = feature?.geometry.coordinates as [number, number];
-
-      // setLocation(new mapboxgl.LngLat(coordinates[0], coordinates[1]));
     };
 
     const handleModeChange = (e: { mode: string }) => {
@@ -82,19 +82,13 @@ export function ShapeTool(props: ShapeToolProps) {
       }
     };
 
-    const handleSelectionChange = (e: unknown) => {
-      console.log(2222, e);
-    };
-
     if (isActive) {
       draw.changeMode("draw_polygon");
       map.on("draw.modechange", handleModeChange);
-      map.on("draw.selectionchange", handleSelectionChange);
       map.on("draw.create", handleDrawCreate);
     } else {
       draw.changeMode("static");
       map.off("draw.modechange", handleModeChange);
-      map.off("draw.selectionchange", handleSelectionChange);
       map.off("draw.create", handleDrawCreate);
     }
   }, [map, draw, isActive, feature]);

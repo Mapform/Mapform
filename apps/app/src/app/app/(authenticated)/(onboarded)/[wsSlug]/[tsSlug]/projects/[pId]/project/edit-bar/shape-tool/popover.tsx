@@ -5,11 +5,12 @@ import { BookmarkIcon } from "lucide-react";
 import { createPolygonAction } from "~/data/datasets/create-polygon";
 import { useAction } from "next-safe-action/hooks";
 import { useState } from "react";
+import type { Position } from "geojson";
 
 interface LineToolPopoverProps {
   location: mapboxgl.LngLat;
   isFetching: boolean;
-  coordinates: [number, number][][];
+  coordinates: Position[][];
   onSave: () => void;
 }
 
@@ -31,7 +32,7 @@ export function LineToolPopover({
     execute({
       layerId,
       value: {
-        coordinates,
+        coordinates: coordinates as [number, number][][],
       },
     });
   };
