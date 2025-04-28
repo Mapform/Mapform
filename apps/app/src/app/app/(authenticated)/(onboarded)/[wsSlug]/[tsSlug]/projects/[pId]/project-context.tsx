@@ -25,6 +25,7 @@ import { uploadImageAction } from "~/data/images";
 import { updatePageAction } from "~/data/pages/update-page";
 import { useDebouncedOptimisticAction } from "~/lib/use-debounced-optimistic-action";
 import { usePreventPageUnload } from "@mapform/lib/hooks/use-prevent-page-unload";
+import { upsertCellAction } from "~/data/cells/upsert-cell";
 
 type LayerPoint = NonNullable<GetLayerPoint["data"]>;
 type LayerMarker = NonNullable<GetLayerMarker["data"]>;
@@ -36,7 +37,6 @@ type ProjectWithPages = NonNullable<GetProjectWithPages["data"]>;
 export interface ProjectContextProps {
   currentProject: ProjectWithPages;
   isEditingPage: boolean;
-  currentPageData: PageData | undefined;
   availableDatasets: TeamspaceDatasets;
   projectWithPages: ProjectWithPages;
   selectedFeature?: LayerPoint | LayerMarker;
@@ -48,7 +48,6 @@ export interface ProjectContextProps {
   updateProjectOptimistic: (
     action: NonNullable<GetProjectWithPages["data"]>,
   ) => void;
-  updatePageDataOptimistic: (action: PageData) => void;
 
   updatePageServerAction: {
     execute: (args: Parameters<typeof updatePageAction>[0]) => void;
@@ -56,6 +55,14 @@ export interface ProjectContextProps {
     isPending: boolean;
     setOptimisticState: (state: PageWithLayers) => void;
   };
+
+  updatePageDataServerAction: {
+    execute: (args: Parameters<typeof upsertCellAction>[0]) => void;
+    optimisticState: PageData | undefined;
+    isPending: boolean;
+    setOptimisticState: (state: PageData) => void;
+  };
+
   uploadImageServerAction: InferUseActionHookReturn<typeof uploadImageAction>;
 }
 
@@ -99,13 +106,13 @@ export function ProjectProvider({
     ...newProject,
   }));
 
-  const [optimisticPageData, updatePageDataOptimistic] = useOptimistic<
-    PageData | undefined,
-    PageData
-  >(pageData, (state, newData) => ({
-    ...state,
-    ...newData,
-  }));
+  // const [optimisticPageData, updatePageDataOptimistic] = useOptimistic<
+  //   PageData | undefined,
+  //   PageData
+  // >(pageData, (state, newData) => ({
+  //   ...state,
+  //   ...newData,
+  // }));
 
   /**
    * Actions
@@ -118,6 +125,25 @@ export function ProjectProvider({
     updateFn: (state, newPage) => ({
       ...(state as PageWithLayers),
       ...(newPage as PageWithLayers),
+    }),
+    onError: ({ error }) => {
+      toast({
+        title: "Uh oh! Something went wrong.",
+        description:
+          (error.serverError as string | undefined) ??
+          "We we unable to update your content. Please try again.",
+      });
+    },
+  });
+
+  const updatePageDataServerAction = useDebouncedOptimisticAction<
+    PageData,
+    Parameters<typeof upsertCellAction>[0]
+  >(upsertCellAction, {
+    currentState: pageData,
+    updateFn: (state, newPage) => ({
+      ...(state as PageData),
+      // ...(newPage as PageData),
     }),
     onError: ({ error }) => {
       toast({
@@ -216,21 +242,16 @@ export function ProjectProvider({
 
         // Optimistic state
         currentProject: optimisticProject,
-        currentPageData: optimisticPageData,
         // For optimistic state updates
         updateProjectOptimistic: (...args) => {
           startTransition(() => {
             updateProjectOptimistic(...args);
           });
         },
-        updatePageDataOptimistic: (...args) => {
-          startTransition(() => {
-            updatePageDataOptimistic(...args);
-          });
-        },
 
         // Actions
         updatePageServerAction,
+        updatePageDataServerAction,
         uploadImageServerAction,
       }}
     >

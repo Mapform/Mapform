@@ -31,6 +31,10 @@ export function useDrawFeatures({
           features: newFeatures,
         });
       }
+
+      // TODO: Delete features that exist in the map but not in the new
+      // collection. NOTE: Exception is when the feature is currently being
+      // drawn.
     });
   }, [map, featureCollection, draw]);
 }

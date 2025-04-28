@@ -139,7 +139,7 @@ export const lineCells = pgTable(
 
 // Custom type for polygon geometry
 const polygonGeometry = customType<{
-  data: { coordinates: [number, number][] };
+  data: { coordinates: [number, number][][] };
 }>({
   dataType() {
     return "geometry(Polygon, 4326)";

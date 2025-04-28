@@ -35,8 +35,11 @@ export function FeatureDrawer() {
 }
 
 function FeatureDrawerInner() {
-  const { selectedFeature, currentPageData, updatePageServerAction } =
-    useProject();
+  const {
+    selectedFeature,
+    updatePageServerAction,
+    updatePageDataServerAction,
+  } = useProject();
   const currentPage = updatePageServerAction.optimisticState;
 
   const upsertIconCellServerAction = useDebouncedOptimisticAction<
@@ -158,7 +161,10 @@ function FeatureDrawerInner() {
             !selectedFeatureIcon.icon.iconCell?.value
           }
           onIconChange={(value) => {
-            if (!selectedFeatureIcon.icon || !currentPageData) {
+            if (
+              !selectedFeatureIcon.icon ||
+              !updatePageDataServerAction.optimisticState
+            ) {
               return;
             }
 
@@ -203,7 +209,10 @@ function FeatureDrawerInner() {
         });
       }}
       onIconChange={(value) => {
-        if (!selectedFeatureIcon.icon || !currentPageData) {
+        if (
+          !selectedFeatureIcon.icon ||
+          !updatePageDataServerAction.optimisticState
+        ) {
           return;
         }
 

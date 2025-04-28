@@ -29,10 +29,10 @@ import { EditBar } from "./edit-bar";
 function Project() {
   const {
     selectedFeature,
-    currentPageData,
     projectWithPages,
     updatePageServerAction,
     uploadImageServerAction,
+    updatePageDataServerAction,
   } = useProject();
   const { user } = useAuth();
   const [isTourOpen, setIsTourOpen] = useState(!user?.projectGuideCompleted);
@@ -86,7 +86,7 @@ function Project() {
             <MapformContent
               isEditing
               drawerValues={drawerValues}
-              pageData={currentPageData}
+              pageData={updatePageDataServerAction.optimisticState}
             >
               <CustomBlockProvider
                 isEditing

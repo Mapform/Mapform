@@ -2,9 +2,9 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import mapboxgl, { MapboxGeoJSONFeature } from "mapbox-gl";
+import mapboxgl from "mapbox-gl";
 import { cn } from "@mapform/lib/classnames";
-import type { Feature, FeatureCollection, Position } from "geojson";
+import type { FeatureCollection, Position } from "geojson";
 import type { ViewState } from "@mapform/map-utils/types";
 import type { GetPageData } from "@mapform/backend/data/datalayer/get-page-data";
 import { usePrevious } from "@mapform/lib/hooks/use-previous";
