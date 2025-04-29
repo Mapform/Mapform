@@ -4,7 +4,7 @@ import { Button } from "@mapform/ui/components/button";
 import { BookmarkIcon } from "lucide-react";
 import { createPolygonAction } from "~/data/datasets/create-polygon";
 import { useAction } from "next-safe-action/hooks";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { createLineAction } from "~/data/datasets/create-line";
 
 interface LineToolPopoverProps {
@@ -62,12 +62,20 @@ export function FeaturePopover({
     }
   };
 
+  const types = useMemo<("line" | "marker" | "polygon" | "point")[]>(() => {
+    if (feature.geometry.type === "Polygon") {
+      return ["polygon"];
+    }
+
+    return ["line"];
+  }, [feature.geometry.type]);
+
   return (
     <SearchPopover location={location} title="New Line" isPending={isFetching}>
       <LayerSavePopover
-        types={["polygon"]}
+        types={types}
         onSelect={handleLayerSelect}
-        isPending={isCreatingPolygon}
+        isPending={isCreatingPolygon || isCreatingLine}
         open={isLayerSaveOpen}
         onOpenChange={setIsLayerSaveOpen}
       >

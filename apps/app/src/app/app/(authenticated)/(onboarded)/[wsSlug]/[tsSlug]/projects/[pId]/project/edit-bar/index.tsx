@@ -100,6 +100,10 @@ export function EditBar({ onSearchOpenChange }: EditBarProps) {
       return getCenterOfPoints(activeFeature.geometry.coordinates[0]!);
     }
 
+    if (activeFeature.geometry.type === "LineString") {
+      return getCenterOfPoints(activeFeature.geometry.coordinates);
+    }
+
     return null;
   }, [activeFeature]);
 
