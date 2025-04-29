@@ -20,6 +20,7 @@ import { Cluster } from "./cluster";
 import "./style.css";
 import { useDrawFeatures } from "~/lib/map-tools/draw-features";
 import { useProject } from "~/app/app/(authenticated)/(onboarded)/[wsSlug]/[tsSlug]/projects/[pId]/project-context";
+import { mapStyles } from "./map-styles";
 
 const accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
 
@@ -241,12 +242,9 @@ export function Map({
           displayControlsDefault: false,
           // @ts-expect-error -- This is the recommended way to set the new mode
           modes,
-          // controls: {
-          //   polygon: true,
-          //   trash: true,
-          // },
           defaultMode: "simple_select",
-          // keybindings: false,
+          styles: mapStyles,
+          userProperties: true,
         });
         m.addControl(draw);
         setDraw(draw);
@@ -485,6 +483,8 @@ export function Map({
             rowId: feature.rowId,
             columnId: feature.columnId,
             persisted: true,
+            user_color: "#3b82f6",
+            active: "false",
           },
           geometry: {
             coordinates: (feature.value
