@@ -106,14 +106,6 @@ export function ProjectProvider({
     ...newProject,
   }));
 
-  // const [optimisticPageData, updatePageDataOptimistic] = useOptimistic<
-  //   PageData | undefined,
-  //   PageData
-  // >(pageData, (state, newData) => ({
-  //   ...state,
-  //   ...newData,
-  // }));
-
   /**
    * Actions
    */
@@ -141,11 +133,27 @@ export function ProjectProvider({
     Parameters<typeof upsertCellAction>[0]
   >(upsertCellAction, {
     currentState: pageData,
-    updateFn: (state, newPage) => ({
-      ...(state as PageData),
-      // ...(newPage as PageData),
-    }),
+    updateFn: (state, newPage) => {
+      // TODO: handle the rest of the page types
+
+      if (newPage.type === "polygon") {
+        return {
+          ...(state as PageData),
+          polygonData: (state as PageData).polygonData.map((polygon) =>
+            polygon.rowId === newPage.rowId &&
+            polygon.columnId === newPage.columnId
+              ? {
+                  ...polygon,
+                  value: newPage.value,
+                }
+              : polygon,
+          ),
+        };
+      }
+    },
     onError: ({ error }) => {
+      console.log("updatePageDataServerAction error", error);
+
       toast({
         title: "Uh oh! Something went wrong.",
         description:

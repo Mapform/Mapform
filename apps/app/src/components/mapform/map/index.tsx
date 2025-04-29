@@ -19,6 +19,7 @@ import { LocationMarker } from "../../location-marker";
 import { Cluster } from "./cluster";
 import "./style.css";
 import { useDrawFeatures } from "~/lib/map-tools/draw-features";
+import { useProject } from "~/app/app/(authenticated)/(onboarded)/[wsSlug]/[tsSlug]/projects/[pId]/project-context";
 
 const accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
 
@@ -56,6 +57,7 @@ export function Map({
   children,
   isMobile,
 }: MapProps) {
+  const { updatePageDataServerAction } = useProject();
   const setQueryString = useSetQueryString();
   const [bounds, setBounds] = useState<
     [number, number, number, number] | undefined
@@ -371,6 +373,13 @@ export function Map({
       const feature = e.features[0];
 
       if (feature?.geometry.type === "Polygon") {
+        updatePageDataServerAction.execute({
+          type: "polygon",
+          value: { coordinates: feature.geometry.coordinates },
+          rowId: feature.properties?.rowId,
+          columnId: feature.properties?.columnId,
+        });
+
         setActiveFeature(feature);
       }
     };
@@ -399,7 +408,7 @@ export function Map({
       map.off("draw.update", handleDrawUpdate);
       map.off("draw.selectionchange", handleDrawSelectionChange);
     };
-  }, [map, draw, setActiveFeature, activeFeature]);
+  }, [map, draw, setActiveFeature, activeFeature, updatePageDataServerAction]);
 
   /**
    * ADD LAYERS
@@ -472,7 +481,11 @@ export function Map({
       features:
         pageData?.polygonData.map((feature) => ({
           type: "Feature",
-          properties: {},
+          properties: {
+            rowId: feature.rowId,
+            columnId: feature.columnId,
+            persisted: true,
+          },
           geometry: {
             coordinates: (feature.value
               ?.coordinates as unknown as Position[][]) ?? [[[]]],

@@ -1,6 +1,6 @@
 "server-only";
 
-import { db } from "@mapform/db";
+import { db, sql } from "@mapform/db";
 import {
   cells,
   numberCells,
@@ -30,6 +30,8 @@ export const upsertCell = (authClient: UserAuthClient) =>
         parsedInput: { rowId, columnId, type, value },
         ctx: { user },
       }) => {
+        console.log("upsertCell", value);
+
         const teamspaceIds = user.workspaceMemberships
           .map((m) => m.workspace.teamspaces.map((t) => t.id))
           .flat();
@@ -176,11 +178,19 @@ export const upsertCell = (authClient: UserAuthClient) =>
               .insert(lineCells)
               .values({
                 cellId: cell.id,
-                value,
+                value: sql.raw(`ST_GeomFromGeoJSON('{
+                  "type": "LineString",
+                  "coordinates": ${JSON.stringify(value?.coordinates ?? [])}
+                }')`),
               })
               .onConflictDoUpdate({
                 target: lineCells.cellId,
-                set: { value },
+                set: {
+                  value: sql.raw(`ST_GeomFromGeoJSON('{
+                  "type": "LineString",
+                  "coordinates": ${JSON.stringify(value?.coordinates ?? [])}
+                }')`),
+                },
               });
           }
 
@@ -189,11 +199,23 @@ export const upsertCell = (authClient: UserAuthClient) =>
               .insert(polygonCells)
               .values({
                 cellId: cell.id,
-                value,
+                value: sql.raw(
+                  `ST_GeomFromGeoJSON('{
+                    "type": "Polygon",
+                    "coordinates": ${JSON.stringify(value?.coordinates ?? [])}
+                  }')`,
+                ),
               })
               .onConflictDoUpdate({
                 target: polygonCells.cellId,
-                set: { value },
+                set: {
+                  value: sql.raw(
+                    `ST_GeomFromGeoJSON('{
+                    "type": "Polygon",
+                    "coordinates": ${JSON.stringify(value?.coordinates ?? [])}
+                  }')`,
+                  ),
+                },
               });
           }
         });
