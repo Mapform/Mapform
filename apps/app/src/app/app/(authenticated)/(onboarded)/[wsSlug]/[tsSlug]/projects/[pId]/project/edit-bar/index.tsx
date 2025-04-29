@@ -10,20 +10,69 @@ import {
   TooltipTrigger,
 } from "@mapform/ui/components/tooltip";
 import { Button } from "@mapform/ui/components/button";
-import { PentagonIcon } from "lucide-react";
+import {
+  BikeIcon,
+  CarIcon,
+  CheckIcon,
+  CheFootprintsIcon,
+  vronDown,
+  Command,
+  PentagonIcon,
+  ChevronDown,
+  FootprintsIcon,
+  LucideIcon,
+  SplineIcon,
+} from "lucide-react";
 import type { Position } from "geojson";
 import { FeaturePopover } from "./popover";
 import mapboxgl from "mapbox-gl";
+import {
+  CommandList,
+  CommandEmpty,
+  CommandGroup,
+  CommandItem,
+} from "@mapform/ui/components/command";
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@mapform/ui/components/popover";
 
 interface EditBarProps {
   onSearchOpenChange: (isOpen: boolean) => void;
 }
 
+export const lineTypes: Record<
+  "line" | "walk" | "bicycle" | "drive",
+  { icon: LucideIcon; label: string }
+> = {
+  line: {
+    icon: SplineIcon,
+    label: "Line",
+  },
+  walk: {
+    icon: FootprintsIcon,
+    label: "Walking route",
+  },
+  bicycle: {
+    icon: BikeIcon,
+    label: "Cycling route",
+  },
+  drive: {
+    icon: CarIcon,
+    label: "Driving route",
+  },
+} as const;
+
 export function EditBar({ onSearchOpenChange }: EditBarProps) {
   const { map, draw, activeFeature, setActiveFeature } = useMapform();
   const { drawerValues } = useMapformContent();
   const isSearchOpen = drawerValues.includes("location-search");
-  const [activeMode, setActiveMode] = useState<"hand" | "shape">("hand");
+  const [activeMode, setActiveMode] = useState<"hand" | "shape" | "line">(
+    "hand",
+  );
+  const [selectedLineType, setSelectedLineType] =
+    useState<keyof typeof lineTypes>("line");
 
   useEffect(() => {
     const handleDrawModeChange = (e: { mode: string }) => {
@@ -101,6 +150,77 @@ export function EditBar({ onSearchOpenChange }: EditBarProps) {
           }}
         /> */}
         <div className="flex items-center">
+          {/* LINE TOOL */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                onClick={() => {
+                  draw?.changeMode("draw_line_string");
+                  setActiveMode("line");
+                }}
+                size="icon"
+                variant={
+                  activeMode === "line" && !isSearchOpen ? "default" : "ghost"
+                }
+              >
+                {(() => {
+                  const LineTypeIcon = lineTypes[selectedLineType]?.icon;
+                  return LineTypeIcon ? (
+                    <LineTypeIcon className="size-5" />
+                  ) : null;
+                })()}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Line tool</TooltipContent>
+          </Tooltip>
+          <Popover
+            modal
+            // onOpenChange={setOpen}
+            // open={open}
+          >
+            <PopoverTrigger asChild>
+              <button className="hover:bg-accent hover:text-accent-foreground ml-[1px] h-full rounded-md p-0.5">
+                <ChevronDown size={10} strokeWidth={3} />
+              </button>
+            </PopoverTrigger>
+            <PopoverContent align="center" className="w-[200px] p-0" side="top">
+              <Command>
+                <CommandList>
+                  <CommandEmpty>No line type found.</CommandEmpty>
+                  <CommandGroup>
+                    {Object.entries(lineTypes).map(
+                      ([key, { icon: Icon, label }]) => (
+                        <CommandItem
+                          key={key}
+                          value={label}
+                          onSelect={() => {
+                            // setSelectedLineType(key as keyof typeof lineTypes);
+                            // setOpen(false);
+                          }}
+                          className="flex items-center gap-2"
+                        >
+                          <Icon className="size-4 flex-shrink-0" />
+                          <span className="flex-1 truncate text-left">
+                            {label}
+                          </span>
+                          <CheckIcon
+                            className={cn(
+                              "ml-auto size-4",
+                              selectedLineType === key
+                                ? "opacity-100"
+                                : "opacity-0",
+                            )}
+                          />
+                        </CommandItem>
+                      ),
+                    )}
+                  </CommandGroup>
+                </CommandList>
+              </Command>
+            </PopoverContent>
+          </Popover>
+
+          {/* POLYGON TOOL */}
           <Tooltip>
             <TooltipTrigger asChild>
               <Button

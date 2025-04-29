@@ -14,8 +14,6 @@ export function useDrawFeatures({
 }) {
   const { draw } = useMapform();
 
-  console.log(9999, featureCollection);
-
   useEffect(() => {
     if (!map || !draw) return;
 
