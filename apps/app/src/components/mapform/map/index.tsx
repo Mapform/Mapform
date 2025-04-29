@@ -483,8 +483,7 @@ export function Map({
             rowId: feature.rowId,
             columnId: feature.columnId,
             persisted: true,
-            user_color: "#3b82f6",
-            active: "false",
+            color: feature.color,
           },
           geometry: {
             coordinates: (feature.value
