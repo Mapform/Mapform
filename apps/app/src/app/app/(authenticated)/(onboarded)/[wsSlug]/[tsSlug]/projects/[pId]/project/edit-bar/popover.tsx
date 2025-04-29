@@ -6,6 +6,7 @@ import { createPolygonAction } from "~/data/datasets/create-polygon";
 import { useAction } from "next-safe-action/hooks";
 import { useMemo, useState } from "react";
 import { createLineAction } from "~/data/datasets/create-line";
+import type { Layer } from "@mapform/db/schema";
 
 interface LineToolPopoverProps {
   location: mapboxgl.LngLat;
@@ -62,16 +63,24 @@ export function FeaturePopover({
     }
   };
 
-  const types = useMemo<("line" | "marker" | "polygon" | "point")[]>(() => {
+  const types = useMemo<Layer["type"][]>(() => {
     if (feature.geometry.type === "Polygon") {
       return ["polygon"];
     }
 
-    return ["line"];
+    if (feature.geometry.type === "LineString") {
+      return ["line"];
+    }
+
+    return ["point", "marker"];
   }, [feature.geometry.type]);
 
   return (
-    <SearchPopover location={location} title="New Line" isPending={isFetching}>
+    <SearchPopover
+      location={location}
+      title="New Feature"
+      isPending={isFetching}
+    >
       <LayerSavePopover
         types={types}
         onSelect={handleLayerSelect}

@@ -20,6 +20,7 @@ import {
   ChevronDown,
   FootprintsIcon,
   SplineIcon,
+  MapPinPlusIcon,
 } from "lucide-react";
 import type { Position } from "geojson";
 import { FeaturePopover } from "./popover";
@@ -66,9 +67,9 @@ export function EditBar({ onSearchOpenChange }: EditBarProps) {
   const { map, draw, activeFeature, setActiveFeature } = useMapform();
   const { drawerValues } = useMapformContent();
   const isSearchOpen = drawerValues.includes("location-search");
-  const [activeMode, setActiveMode] = useState<"hand" | "shape" | "line">(
-    "hand",
-  );
+  const [activeMode, setActiveMode] = useState<
+    "hand" | "shape" | "line" | "point"
+  >("hand");
   const [selectedLineType, setSelectedLineType] =
     useState<keyof typeof lineTypes>("line");
 
@@ -133,25 +134,26 @@ export function EditBar({ onSearchOpenChange }: EditBarProps) {
             onSearchOpenChange(false);
           }}
         />
-        {/* <PointTool
-          isActive={activeMode === "point" && !isSearchOpen}
-          isSearchOpen={isSearchOpen}
-          onClick={() => {
-            // setActiveTool("point");
-            onSearchOpenChange(false);
-          }}
-        /> */}
-        {/* <LineTool
-          selectedLineType={selectedLineType}
-          setSelectedLineType={setSelectedLineType}
-          isActive={activeTool === "line" && !isSearchOpen}
-          isSearchOpen={isSearchOpen}
-          onClick={() => {
-            // setActiveTool("line");
-            onSearchOpenChange(false);
-          }}
-        /> */}
         <div className="flex items-center">
+          {/* POINT TOOL */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                onClick={() => {
+                  draw?.changeMode("draw_point");
+                  setActiveMode("point");
+                }}
+                size="icon"
+                variant={
+                  activeMode === "point" && !isSearchOpen ? "default" : "ghost"
+                }
+              >
+                <MapPinPlusIcon className="size-5" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Point tool</TooltipContent>
+          </Tooltip>
+
           {/* LINE TOOL */}
           <Tooltip>
             <TooltipTrigger asChild>

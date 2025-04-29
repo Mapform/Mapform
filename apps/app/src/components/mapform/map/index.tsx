@@ -120,29 +120,6 @@ export function Map({
     [pageData?.markerData],
   );
 
-  const lineGeojson: FeatureCollection = useMemo(
-    () => ({
-      type: "FeatureCollection",
-      features: (pageData?.lineData ?? []).map((feature) => ({
-        type: "Feature",
-        geometry: {
-          type: "LineString",
-          coordinates: feature.value!.coordinates.map((coord) => [
-            coord[0],
-            coord[1],
-          ]),
-        },
-        properties: {
-          id: feature.id,
-          color: feature.color ?? "#3b82f6",
-          rowId: feature.rowId,
-          lineLayerId: feature.lineLayerId,
-        },
-      })),
-    }),
-    [pageData?.lineData],
-  );
-
   const mapClusterItems = useCallback(
     (item: MarkerPointFeature) => ({
       icon: item.icon,
@@ -446,42 +423,33 @@ export function Map({
         },
       });
     }
-
-    // Handle lines layer
-    const currentLineSource = map.getSource("lines") as
-      | mapboxgl.AnySourceImpl
-      | undefined;
-
-    if (currentLineSource) {
-      // Update the source data
-      (currentLineSource as mapboxgl.GeoJSONSource).setData(lineGeojson);
-    } else {
-      // Add a new source and layer
-      map.addSource("lines", {
-        type: "geojson",
-        data: lineGeojson,
-      });
-
-      map.addLayer({
-        id: "lines",
-        type: "line",
-        source: "lines",
-        paint: {
-          "line-color": ["get", "color"],
-          "line-width": 5,
-          "line-opacity": 0.8,
-        },
-      });
-    }
-  }, [map, pointGeojson, lineGeojson]);
+  }, [map, pointGeojson]);
 
   useDrawFeatures({
     map,
     featureCollection: {
       type: "FeatureCollection",
-      features:
-        pageData?.polygonData.map((feature) => ({
-          type: "Feature",
+      features: [
+        // LINES
+        ...(pageData?.lineData.map((feature) => ({
+          type: "Feature" as const,
+          properties: {
+            rowId: feature.rowId,
+            columnId: feature.columnId,
+            persisted: true,
+            color: feature.color,
+          },
+          geometry: {
+            coordinates:
+              (feature.value?.coordinates as unknown as Position[]) ?? [],
+            type: "LineString" as const,
+          },
+          id: feature.id,
+        })) ?? []),
+
+        // POLYGONS
+        ...(pageData?.polygonData.map((feature) => ({
+          type: "Feature" as const,
           properties: {
             rowId: feature.rowId,
             columnId: feature.columnId,
@@ -491,10 +459,11 @@ export function Map({
           geometry: {
             coordinates: (feature.value
               ?.coordinates as unknown as Position[][]) ?? [[[]]],
-            type: "Polygon",
+            type: "Polygon" as const,
           },
           id: feature.id,
-        })) ?? [],
+        })) ?? []),
+      ],
     },
   });
 
