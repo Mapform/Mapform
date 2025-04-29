@@ -21,6 +21,7 @@ import "./style.css";
 import { useDrawFeatures } from "~/lib/map-tools/draw-features";
 import { useProject } from "~/app/app/(authenticated)/(onboarded)/[wsSlug]/[tsSlug]/projects/[pId]/project-context";
 import { mapStyles } from "./map-styles";
+import { features } from "process";
 
 const accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
 
@@ -359,9 +360,9 @@ export function Map({
       console.log("handleDrawCreate", e);
       const feature = e.features[0];
 
-      if (feature?.geometry.type === "Polygon") {
-        setActiveFeature(feature);
-      }
+      if (!feature) return;
+
+      setActiveFeature(feature);
     };
 
     const handleDrawUpdate = (
@@ -370,16 +371,18 @@ export function Map({
       console.log("handleDrawUpdate", e);
       const feature = e.features[0];
 
-      if (feature?.geometry.type === "Polygon") {
+      if (!feature) return;
+
+      if (feature.geometry.type === "Polygon") {
         updatePageDataServerAction.execute({
           type: "polygon",
           value: { coordinates: feature.geometry.coordinates },
           rowId: feature.properties?.rowId,
           columnId: feature.properties?.columnId,
         });
-
-        setActiveFeature(feature);
       }
+
+      setActiveFeature(feature);
     };
 
     const handleDrawSelectionChange = (

@@ -5,36 +5,61 @@ import { BookmarkIcon } from "lucide-react";
 import { createPolygonAction } from "~/data/datasets/create-polygon";
 import { useAction } from "next-safe-action/hooks";
 import { useState } from "react";
-import type { Position } from "geojson";
+import { createLineAction } from "~/data/datasets/create-line";
 
 interface LineToolPopoverProps {
   location: mapboxgl.LngLat;
   isFetching: boolean;
-  coordinates: Position[][] | Position[] | Position;
+  feature: mapboxgl.MapboxGeoJSONFeature;
   onSave: () => void;
 }
 
 export function FeaturePopover({
   location,
-  coordinates,
+  feature,
   isFetching,
   onSave,
 }: LineToolPopoverProps) {
-  const { execute, isPending } = useAction(createPolygonAction, {
-    onSuccess: () => {
-      onSave();
-      setIsLayerSaveOpen(false);
-    },
-  });
   const [isLayerSaveOpen, setIsLayerSaveOpen] = useState(false);
 
-  const handleLayerSelect = (layerId: string) => {
-    execute({
-      layerId,
-      value: {
-        coordinates: coordinates as [number, number][][],
+  const { execute: createPolygon, isPending: isCreatingPolygon } = useAction(
+    createPolygonAction,
+    {
+      onSuccess: () => {
+        onSave();
+        setIsLayerSaveOpen(false);
       },
-    });
+    },
+  );
+
+  const { execute: createLine, isPending: isCreatingLine } = useAction(
+    createLineAction,
+    {
+      onSuccess: () => {
+        onSave();
+        setIsLayerSaveOpen(false);
+      },
+    },
+  );
+
+  const handleLayerSelect = (layerId: string) => {
+    if (feature.geometry.type === "Polygon") {
+      createPolygon({
+        layerId,
+        value: {
+          coordinates: feature.geometry.coordinates as [number, number][][],
+        },
+      });
+    }
+
+    if (feature.geometry.type === "LineString") {
+      createLine({
+        layerId,
+        value: {
+          coordinates: feature.geometry.coordinates as [number, number][],
+        },
+      });
+    }
   };
 
   return (
@@ -42,7 +67,7 @@ export function FeaturePopover({
       <LayerSavePopover
         types={["polygon"]}
         onSelect={handleLayerSelect}
-        isPending={isPending}
+        isPending={isCreatingPolygon}
         open={isLayerSaveOpen}
         onOpenChange={setIsLayerSaveOpen}
       >

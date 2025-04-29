@@ -10,17 +10,15 @@ import {
   TooltipTrigger,
 } from "@mapform/ui/components/tooltip";
 import { Button } from "@mapform/ui/components/button";
+import type { LucideIcon } from "lucide-react";
 import {
   BikeIcon,
   CarIcon,
   CheckIcon,
-  CheFootprintsIcon,
-  vronDown,
   Command,
   PentagonIcon,
   ChevronDown,
   FootprintsIcon,
-  LucideIcon,
   SplineIcon,
 } from "lucide-react";
 import type { Position } from "geojson";
@@ -164,7 +162,7 @@ export function EditBar({ onSearchOpenChange }: EditBarProps) {
                 }
               >
                 {(() => {
-                  const LineTypeIcon = lineTypes[selectedLineType]?.icon;
+                  const LineTypeIcon = lineTypes[selectedLineType].icon;
                   return LineTypeIcon ? (
                     <LineTypeIcon className="size-5" />
                   ) : null;
@@ -243,18 +241,16 @@ export function EditBar({ onSearchOpenChange }: EditBarProps) {
       <div className="flex gap-1 pl-1.5">
         <MapOptions />
       </div>
-      {location && (
+      {location && activeFeature && (
         <FeaturePopover
           location={new mapboxgl.LngLat(location[0]!, location[1]!)}
           onSave={() => {
-            if (activeFeature) {
-              draw?.delete(activeFeature.id as string);
-              setActiveFeature(null);
-              draw?.changeMode("draw_polygon");
-            }
+            draw?.delete(activeFeature.id as string);
+            setActiveFeature(null);
+            draw?.changeMode("draw_polygon");
           }}
           isFetching={false}
-          coordinates={activeFeature?.geometry.coordinates as Position[][]}
+          feature={activeFeature}
         />
       )}
     </div>
