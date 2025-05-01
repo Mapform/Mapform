@@ -359,6 +359,24 @@ export function Map({
         });
       }
 
+      if (feature.geometry.type === "LineString") {
+        updatePageDataServerAction.execute({
+          type: "line",
+          value: { coordinates: feature.geometry.coordinates },
+          rowId: feature.properties?.rowId,
+          columnId: feature.properties?.columnId,
+        });
+      }
+
+      if (feature.geometry.type === "Point") {
+        updatePageDataServerAction.execute({
+          type: "point",
+          value: { coordinates: feature.geometry.coordinates },
+          rowId: feature.properties?.rowId,
+          columnId: feature.properties?.columnId,
+        });
+      }
+
       setActiveFeature(feature);
     };
 

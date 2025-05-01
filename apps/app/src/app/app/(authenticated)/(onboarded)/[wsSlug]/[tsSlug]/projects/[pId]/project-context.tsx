@@ -128,40 +128,67 @@ export function ProjectProvider({
     },
   });
 
-  const updatePageDataServerAction = useDebouncedOptimisticAction<
-    PageData,
-    Parameters<typeof upsertCellAction>[0]
-  >(upsertCellAction, {
-    currentState: pageData,
-    updateFn: (state, newPage) => {
-      // TODO: handle the rest of the page types
+  const updatePageDataServerAction = useDebouncedOptimisticAction(
+    upsertCellAction,
+    {
+      currentState: pageData,
+      updateFn: (state, newPage) => {
+        if (newPage.type === "point") {
+          return {
+            ...(state as PageData),
+            pointData: (state as PageData).pointData.map((point) =>
+              point.rowId === newPage.rowId &&
+              point.columnId === newPage.columnId
+                ? {
+                    ...point,
+                    value: newPage.value,
+                  }
+                : point,
+            ),
+          };
+        }
 
-      if (newPage.type === "polygon") {
-        return {
-          ...(state as PageData),
-          polygonData: (state as PageData).polygonData.map((polygon) =>
-            polygon.rowId === newPage.rowId &&
-            polygon.columnId === newPage.columnId
-              ? {
-                  ...polygon,
-                  value: newPage.value,
-                }
-              : polygon,
-          ),
-        };
-      }
-    },
-    onError: ({ error }) => {
-      console.log("updatePageDataServerAction error", error);
+        if (newPage.type === "line") {
+          return {
+            ...(state as PageData),
+            lineData: (state as PageData).lineData.map((line) =>
+              line.rowId === newPage.rowId && line.columnId === newPage.columnId
+                ? {
+                    ...line,
+                    value: newPage.value,
+                  }
+                : line,
+            ),
+          };
+        }
 
-      toast({
-        title: "Uh oh! Something went wrong.",
-        description:
-          (error.serverError as string | undefined) ??
-          "We we unable to update your content. Please try again.",
-      });
+        if (newPage.type === "polygon") {
+          return {
+            ...(state as PageData),
+            polygonData: (state as PageData).polygonData.map((polygon) =>
+              polygon.rowId === newPage.rowId &&
+              polygon.columnId === newPage.columnId
+                ? {
+                    ...polygon,
+                    value: newPage.value,
+                  }
+                : polygon,
+            ),
+          };
+        }
+      },
+      onError: ({ error }) => {
+        console.log("updatePageDataServerAction error", error);
+
+        toast({
+          title: "Uh oh! Something went wrong.",
+          description:
+            (error.serverError as string | undefined) ??
+            "We we unable to update your content. Please try again.",
+        });
+      },
     },
-  });
+  );
 
   const uploadImageServerAction = useAction(uploadImageAction, {
     onError: (response) => {
