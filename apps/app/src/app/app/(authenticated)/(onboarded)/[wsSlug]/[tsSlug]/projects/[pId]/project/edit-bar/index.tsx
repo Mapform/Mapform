@@ -253,7 +253,7 @@ export function EditBar({ onSearchOpenChange }: EditBarProps) {
           onSave={() => {
             draw?.delete(activeFeature.id as string);
             setActiveFeature(null);
-            draw?.changeMode("draw_polygon");
+            draw?.changeMode("simple_select");
           }}
           isFetching={false}
           feature={activeFeature}

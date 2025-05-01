@@ -7,6 +7,7 @@ import { useAction } from "next-safe-action/hooks";
 import { useMemo, useState } from "react";
 import { createLineAction } from "~/data/datasets/create-line";
 import type { Layer } from "@mapform/db/schema";
+import { createPointAction } from "~/data/datasets/create-point";
 
 interface LineToolPopoverProps {
   location: mapboxgl.LngLat;
@@ -43,6 +44,16 @@ export function FeaturePopover({
     },
   );
 
+  const { execute: createPoint, isPending: isCreatingPoint } = useAction(
+    createPointAction,
+    {
+      onSuccess: () => {
+        onSave();
+        setIsLayerSaveOpen(false);
+      },
+    },
+  );
+
   const handleLayerSelect = (layerId: string) => {
     if (feature.geometry.type === "Polygon") {
       createPolygon({
@@ -58,6 +69,20 @@ export function FeaturePopover({
         layerId,
         value: {
           coordinates: feature.geometry.coordinates as [number, number][],
+        },
+      });
+    }
+
+    if (
+      feature.geometry.type === "Point" &&
+      feature.geometry.coordinates[0] &&
+      feature.geometry.coordinates[1]
+    ) {
+      createPoint({
+        layerId,
+        location: {
+          x: feature.geometry.coordinates[0],
+          y: feature.geometry.coordinates[1],
         },
       });
     }
@@ -84,7 +109,7 @@ export function FeaturePopover({
       <LayerSavePopover
         types={types}
         onSelect={handleLayerSelect}
-        isPending={isCreatingPolygon || isCreatingLine}
+        isPending={isCreatingPolygon || isCreatingLine || isCreatingPoint}
         open={isLayerSaveOpen}
         onOpenChange={setIsLayerSaveOpen}
       >
