@@ -181,6 +181,7 @@ function Project() {
                 />
               ) : null}
               <MapformMap
+                isStatic={false}
                 initialViewState={{
                   longitude: currentPage.center.x,
                   latitude: currentPage.center.y,

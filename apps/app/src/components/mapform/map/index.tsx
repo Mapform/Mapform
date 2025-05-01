@@ -31,6 +31,7 @@ interface MapProps {
   initialViewState: ViewState;
   children?: React.ReactNode;
   isMobile?: boolean;
+  isStatic?: boolean;
 }
 
 interface MarkerPointFeature {
@@ -57,6 +58,7 @@ export function Map({
   pageData,
   children,
   isMobile,
+  isStatic = true,
 }: MapProps) {
   const { updatePageDataServerAction } = useProject();
   const setQueryString = useSetQueryString();
@@ -199,7 +201,7 @@ export function Map({
           displayControlsDefault: false,
           // @ts-expect-error -- This is the recommended way to set the new mode
           modes,
-          defaultMode: "simple_select",
+          defaultMode: isStatic ? "static" : "simple_select",
           styles: mapStyles,
           userProperties: true,
         });

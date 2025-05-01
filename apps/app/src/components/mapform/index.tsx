@@ -113,9 +113,11 @@ export function MapformContent({
 export function MapformMap({
   children,
   initialViewState,
+  isStatic = true,
 }: {
   children?: React.ReactNode;
   initialViewState: ViewState;
+  isStatic?: boolean;
 }) {
   const isMobile = useIsMobile();
   const { drawerValues, isEditing, pageData } = useMapformContent();
@@ -130,6 +132,7 @@ export function MapformMap({
   return (
     <div className="top-0 flex flex-1 max-md:sticky max-md:mb-[-200px] max-md:h-dvh">
       <Map
+        isStatic={isStatic}
         isEditing={isEditing}
         initialViewState={initialViewState}
         isMobile={isMobile}
