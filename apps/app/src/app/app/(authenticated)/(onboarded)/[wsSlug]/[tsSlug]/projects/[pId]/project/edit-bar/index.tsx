@@ -177,7 +177,8 @@ export function EditBar({ onSearchOpenChange }: EditBarProps) {
             </TooltipTrigger>
             <TooltipContent>Line tool</TooltipContent>
           </Tooltip>
-          <Popover
+          {/* TODO: Add suport for directional lines */}
+          {/* <Popover
             modal
             // onOpenChange={setOpen}
             // open={open}
@@ -222,7 +223,7 @@ export function EditBar({ onSearchOpenChange }: EditBarProps) {
                 </CommandList>
               </Command>
             </PopoverContent>
-          </Popover>
+          </Popover> */}
 
           {/* POLYGON TOOL */}
           <Tooltip>

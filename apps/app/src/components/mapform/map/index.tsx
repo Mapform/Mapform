@@ -21,7 +21,6 @@ import "./style.css";
 import { useDrawFeatures } from "~/lib/map-tools/draw-features";
 import { useProject } from "~/app/app/(authenticated)/(onboarded)/[wsSlug]/[tsSlug]/projects/[pId]/project-context";
 import { mapStyles } from "./map-styles";
-import { features } from "process";
 
 const accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
 
@@ -77,26 +76,6 @@ export function Map({
   } = useMapform();
   // Condition in usePrevious resolves issue where map padding is not updated on first render
   const prevMapPadding = usePrevious(map ? mapPadding : undefined);
-
-  const pointGeojson = useMemo(
-    () => ({
-      type: "FeatureCollection",
-      features: (pageData?.pointData ?? []).map((feature) => ({
-        type: "Feature",
-        geometry: {
-          type: "Point",
-          coordinates: [feature.value!.x, feature.value!.y],
-        },
-        properties: {
-          id: feature.id,
-          color: feature.color ?? "#3b82f6",
-          rowId: feature.rowId,
-          pointLayerId: feature.pointLayerId,
-        },
-      })),
-    }),
-    [pageData?.pointData],
-  ) satisfies FeatureCollection;
 
   const markerGeojson: FeatureCollection = useMemo(
     () => ({
@@ -406,43 +385,6 @@ export function Map({
     };
   }, [map, draw, setActiveFeature, activeFeature, updatePageDataServerAction]);
 
-  /**
-   * ADD LAYERS
-   */
-  useEffect(() => {
-    if (!map) {
-      return;
-    }
-
-    // Handle points layer
-    const currentPointSource = map.getSource("points") as
-      | mapboxgl.AnySourceImpl
-      | undefined;
-
-    if (currentPointSource) {
-      // Update the source data
-      (currentPointSource as mapboxgl.GeoJSONSource).setData(pointGeojson);
-    } else {
-      // Add a new source and layer
-      map.addSource("points", {
-        type: "geojson",
-        data: pointGeojson,
-      });
-
-      map.addLayer({
-        id: "points",
-        type: "circle",
-        source: "points",
-        paint: {
-          "circle-radius": 8,
-          "circle-color": ["get", "color"],
-          "circle-stroke-color": "#fff",
-          "circle-stroke-width": 2,
-        },
-      });
-    }
-  }, [map, pointGeojson]);
-
   useDrawFeatures({
     map,
     featureCollection: {
@@ -455,7 +397,7 @@ export function Map({
             rowId: feature.rowId,
             columnId: feature.columnId,
             persisted: true,
-            color: feature.color,
+            color: feature.color ?? "#3b82f6",
           },
           geometry: {
             coordinates:
@@ -472,12 +414,28 @@ export function Map({
             rowId: feature.rowId,
             columnId: feature.columnId,
             persisted: true,
-            color: feature.color,
+            color: feature.color ?? "#3b82f6",
           },
           geometry: {
             coordinates: (feature.value
               ?.coordinates as unknown as Position[][]) ?? [[[]]],
             type: "Polygon" as const,
+          },
+          id: feature.id,
+        })) ?? []),
+
+        // POINTS
+        ...(pageData?.pointData.map((feature) => ({
+          type: "Feature" as const,
+          properties: {
+            rowId: feature.rowId,
+            columnId: feature.columnId,
+            persisted: true,
+            color: feature.color ?? "#3b82f6",
+          },
+          geometry: {
+            coordinates: [feature.value!.x, feature.value!.y],
+            type: "Point" as const,
           },
           id: feature.id,
         })) ?? []),
