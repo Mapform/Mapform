@@ -204,6 +204,8 @@ export function Map({
           defaultMode: isStatic ? "static" : "simple_select",
           styles: mapStyles,
           userProperties: true,
+          // Disable multiselect with shift + click, and instead zooms to area
+          boxSelect: false,
         });
         m.addControl(draw);
         setDraw(draw);
@@ -370,12 +372,24 @@ export function Map({
     const handleDrawSelectionChange = (
       e: mapboxgl.MapMouseEvent & { features: mapboxgl.MapboxGeoJSONFeature[] },
     ) => {
-      const eventFeature = e.features[0];
+      const eventFeature = e.features[e.features.length - 1];
 
       if (activeFeature !== null && eventFeature?.id !== activeFeature.id) {
         setActiveFeature(null);
         try {
           draw.delete(activeFeature.id as string);
+        } catch (_) {
+          // Do nothing
+        }
+      }
+
+      // This is used to prevent multi select (default of MapboxDraw). We
+      // essentially always want to force only one feature to be selected
+      if (eventFeature && e.features.length > 1) {
+        try {
+          draw.changeMode("simple_select", {
+            featureIds: [eventFeature.id as string],
+          });
         } catch (_) {
           // Do nothing
         }
