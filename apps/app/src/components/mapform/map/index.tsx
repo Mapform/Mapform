@@ -17,10 +17,10 @@ import StaticMode from "@mapbox/mapbox-gl-draw-static-mode";
 import { useMapform } from "../index";
 import { LocationMarker } from "../../location-marker";
 import { Cluster } from "./cluster";
-import "./style.css";
 import { useDrawFeatures } from "~/lib/map-tools/draw-features";
 import { useProject } from "~/app/app/(authenticated)/(onboarded)/[wsSlug]/[tsSlug]/projects/[pId]/project-context";
 import { mapStyles } from "./map-styles";
+import "./style.css";
 
 const accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
 
@@ -329,6 +329,11 @@ export function Map({
 
       if (!feature) return;
 
+      if (!feature.properties?.persisted) {
+        setActiveFeature(feature);
+        return;
+      }
+
       if (feature.geometry.type === "Polygon") {
         updatePageDataServerAction.execute({
           type: "polygon",
@@ -350,13 +355,14 @@ export function Map({
       if (feature.geometry.type === "Point") {
         updatePageDataServerAction.execute({
           type: "point",
-          value: { coordinates: feature.geometry.coordinates },
+          value: {
+            x: feature.geometry.coordinates[0],
+            y: feature.geometry.coordinates[1],
+          },
           rowId: feature.properties?.rowId,
           columnId: feature.properties?.columnId,
         });
       }
-
-      setActiveFeature(feature);
     };
 
     const handleDrawSelectionChange = (
