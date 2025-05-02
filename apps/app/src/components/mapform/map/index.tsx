@@ -19,6 +19,7 @@ import { LocationMarker } from "../../location-marker";
 import { Cluster } from "./cluster";
 import { useDrawFeatures } from "~/lib/map-tools/draw-features";
 import { useProject } from "~/app/app/(authenticated)/(onboarded)/[wsSlug]/[tsSlug]/projects/[pId]/project-context";
+import type { GetLayerFeature } from "@mapform/backend/data/datalayer/get-layer-feature";
 import { mapStyles } from "./map-styles";
 import "./style.css";
 
@@ -32,6 +33,7 @@ interface MapProps {
   children?: React.ReactNode;
   isMobile?: boolean;
   isStatic?: boolean;
+  selectedFeature?: GetLayerFeature["data"];
 }
 
 interface MarkerPointFeature {
@@ -60,6 +62,7 @@ export function Map({
   children,
   isMobile,
   isStatic = true,
+  selectedFeature,
 }: MapProps) {
   const { updatePageDataServerAction } = useProject();
   const setQueryString = useSetQueryString();
@@ -397,6 +400,18 @@ export function Map({
           // Do nothing
         }
       }
+
+      if (eventFeature?.properties?.persisted) {
+        setQueryString({
+          key: "feature",
+          value: `${eventFeature.properties.rowId}_${eventFeature.properties.layerId}`,
+        });
+      } else if (e.features.length === 0) {
+        setQueryString({
+          key: "feature",
+          value: null,
+        });
+      }
     };
 
     map.on("draw.create", handleDrawCreate);
@@ -408,7 +423,27 @@ export function Map({
       map.off("draw.update", handleDrawUpdate);
       map.off("draw.selectionchange", handleDrawSelectionChange);
     };
-  }, [map, draw, setActiveFeature, activeFeature, updatePageDataServerAction]);
+  }, [
+    map,
+    draw,
+    setActiveFeature,
+    activeFeature,
+    updatePageDataServerAction,
+    setQueryString,
+  ]);
+
+  // Used to select the feature on the map
+  useEffect(() => {
+    if (selectedFeature) {
+      draw?.changeMode("simple_select", {
+        featureIds: [selectedFeature.feature?.id as string],
+      });
+    } else {
+      draw?.changeMode("simple_select", {
+        featureIds: [],
+      });
+    }
+  }, [selectedFeature, draw]);
 
   useDrawFeatures({
     map,
@@ -421,6 +456,7 @@ export function Map({
           properties: {
             rowId: feature.rowId,
             columnId: feature.columnId,
+            layerId: feature.layerId,
             persisted: true,
             color: feature.color ?? "#3b82f6",
           },
@@ -438,6 +474,7 @@ export function Map({
           properties: {
             rowId: feature.rowId,
             columnId: feature.columnId,
+            layerId: feature.layerId,
             persisted: true,
             color: feature.color ?? "#3b82f6",
           },
@@ -455,6 +492,7 @@ export function Map({
           properties: {
             rowId: feature.rowId,
             columnId: feature.columnId,
+            layerId: feature.layerId,
             persisted: true,
             color: feature.color ?? "#3b82f6",
           },

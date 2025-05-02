@@ -139,7 +139,7 @@ export const getLayerFeature = (authClient: UserAuthClient | PublicClient) =>
           }
           return {
             ...baseFeature,
-            coordinates: row.cells.find(
+            feature: row.cells.find(
               (c) => c.columnId === layer.pointLayer?.pointColumnId,
             )?.pointCell,
             cells: row.cells.filter(
@@ -157,7 +157,7 @@ export const getLayerFeature = (authClient: UserAuthClient | PublicClient) =>
           }
           return {
             ...baseFeature,
-            coordinates: row.cells.find(
+            feature: row.cells.find(
               (c) => c.columnId === layer.markerLayer?.pointColumnId,
             )?.pointCell,
             cells: row.cells.filter(
@@ -175,9 +175,9 @@ export const getLayerFeature = (authClient: UserAuthClient | PublicClient) =>
           }
           return {
             ...baseFeature,
-            coordinates: row.cells.find(
+            feature: row.cells.find(
               (c) => c.columnId === layer.lineLayer?.lineColumnId,
-            )?.lineCell?.coordinates,
+            )?.lineCell,
             cells: row.cells.filter(
               (c) =>
                 c.columnId !== layer.lineLayer?.lineColumnId &&
@@ -193,9 +193,9 @@ export const getLayerFeature = (authClient: UserAuthClient | PublicClient) =>
           }
           return {
             ...baseFeature,
-            coordinates: row.cells.find(
+            feature: row.cells.find(
               (c) => c.columnId === layer.polygonLayer?.polygonColumnId,
-            )?.polygonCell?.coordinates,
+            )?.polygonCell,
             cells: row.cells.filter(
               (c) =>
                 c.columnId !== layer.polygonLayer?.polygonColumnId &&

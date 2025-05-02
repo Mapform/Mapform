@@ -19,6 +19,7 @@ import { useIsMobile } from "@mapform/lib/hooks/use-is-mobile";
 import { AnimatePresence, motion } from "motion/react";
 import type { GetPageData } from "@mapform/backend/data/datalayer/get-page-data";
 import type { MapboxGeoJSONFeature } from "mapbox-gl";
+import { GetLayerFeature } from "@mapform/backend/data/datalayer/get-layer-feature";
 
 export type MBMap = mapboxgl.Map;
 export interface ActivePoint {
@@ -114,10 +115,12 @@ export function MapformMap({
   children,
   initialViewState,
   isStatic = true,
+  selectedFeature,
 }: {
   children?: React.ReactNode;
   initialViewState: ViewState;
   isStatic?: boolean;
+  selectedFeature?: GetLayerFeature["data"];
 }) {
   const isMobile = useIsMobile();
   const { drawerValues, isEditing, pageData } = useMapformContent();
@@ -138,6 +141,7 @@ export function MapformMap({
         isMobile={isMobile}
         mapPadding={mapPadding}
         pageData={pageData}
+        selectedFeature={selectedFeature}
       >
         {children}
       </Map>

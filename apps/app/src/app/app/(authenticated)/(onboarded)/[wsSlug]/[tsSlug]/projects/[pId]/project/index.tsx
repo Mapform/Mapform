@@ -182,6 +182,7 @@ function Project() {
               ) : null}
               <MapformMap
                 isStatic={false}
+                selectedFeature={selectedFeature}
                 initialViewState={{
                   longitude: currentPage.center.x,
                   latitude: currentPage.center.y,
