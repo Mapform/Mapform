@@ -40,6 +40,7 @@ interface MarkerPointFeature {
   icon: string;
   color: string;
   rowId: string;
+  layerId: string;
   pointLayerId: string;
   point_count: number;
   features: { icon: string; color: string }[] | undefined;
@@ -93,6 +94,7 @@ export function Map({
           color: feature.color ?? "#3b82f6",
           rowId: feature.rowId,
           icon: feature.icon,
+          layerId: feature.layerId,
           pointLayerId: feature.pointLayerId,
           cluster: false,
         },
@@ -106,6 +108,7 @@ export function Map({
       icon: item.icon,
       color: item.color,
       rowId: item.rowId,
+      layerId: item.layerId,
       pointLayerId: item.pointLayerId,
       cluster: item.cluster,
       point_count: item.point_count,
@@ -258,7 +261,7 @@ export function Map({
         }
         setQueryString({
           key: "feature",
-          value: `point_${feature.properties.rowId}_${feature.properties.pointLayerId}`,
+          value: `${feature.properties.rowId}_${feature.properties.layerId}`,
         });
       }
     };
@@ -558,7 +561,7 @@ export function Map({
                   if (isMobile) window.scrollTo({ top: 0, behavior: "smooth" });
                   setQueryString({
                     key: "feature",
-                    value: `marker_${cluster.properties.rowId}_${cluster.properties.pointLayerId}`,
+                    value: `${cluster.properties.rowId}_${cluster.properties.layerId}`,
                   });
                 }}
                 style={{ backgroundColor: cluster.properties.color }}

@@ -18,6 +18,7 @@ import { upsertCell } from "@mapform/backend/data/cells/upsert-cell";
 import { createColumn } from "@mapform/backend/data/columns/create-column";
 import { getLayerMarker } from "@mapform/backend/data/datalayer/get-layer-marker";
 import { getLayerPoint } from "@mapform/backend/data/datalayer/get-layer-point";
+import { getLayerFeature } from "@mapform/backend/data/datalayer/get-layer-feature";
 import { getPageData } from "@mapform/backend/data/datalayer/get-page-data";
 import { createPoint } from "@mapform/backend/data/datasets/create-point";
 import { createLine } from "@mapform/backend/data/datasets/create-line";
@@ -129,6 +130,7 @@ const createUserAuthClient = () => {
     getPageData: getPageData(extendedClient),
     getLayerPoint: getLayerPoint(extendedClient),
     getLayerMarker: getLayerMarker(extendedClient),
+    getLayerFeature: getLayerFeature(extendedClient),
 
     // Datasets
     getDataset: getDataset(extendedClient),
@@ -216,6 +218,7 @@ const createPublicClient = () => {
     getPageData: getPageData(extendedClient),
     getLayerPoint: getLayerPoint(extendedClient),
     getLayerMarker: getLayerMarker(extendedClient),
+    getLayerFeature: getLayerFeature(extendedClient),
 
     // Form Submissions
     getSubmission: getSubmission(extendedClient),

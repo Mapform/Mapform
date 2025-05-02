@@ -91,6 +91,7 @@ export const getPageData = (authClient: PublicClient | UserAuthClient) =>
             color: pl.layer.pointLayer?.color,
             rowId: c.cell.rowId,
             pointLayerId: pl.layer.pointLayer?.id,
+            layerId: pl.layer.id,
           }));
         }),
       );
@@ -144,6 +145,7 @@ export const getPageData = (authClient: PublicClient | UserAuthClient) =>
             color: pl.layer.markerLayer?.color,
             rowId: c.cell.rowId,
             pointLayerId: pl.layer.markerLayer?.id,
+            layerId: pl.layer.id,
           }));
         }),
       );
@@ -171,6 +173,7 @@ export const getPageData = (authClient: PublicClient | UserAuthClient) =>
             color: ll.layer.color,
             rowId: c.cell.rowId,
             lineLayerId: ll.layer.lineLayer?.id,
+            layerId: ll.layer.id,
           }));
         }),
       );
@@ -203,6 +206,7 @@ export const getPageData = (authClient: PublicClient | UserAuthClient) =>
             color: pl.layer.color,
             rowId: c.cell.rowId,
             polygonLayerId: pl.layer.polygonLayer?.id,
+            layerId: pl.layer.id,
           }));
         }),
       );
@@ -218,6 +222,7 @@ export const getPageData = (authClient: PublicClient | UserAuthClient) =>
             cellId: pc.cell.id,
             columnId: pc.cell.columnId,
             pointLayerId: pc.pointLayerId,
+            layerId: pc.layerId,
           })),
 
         markerData: markerCellsResponse
@@ -231,6 +236,7 @@ export const getPageData = (authClient: PublicClient | UserAuthClient) =>
             cellId: pc.cell.id,
             columnId: pc.cell.columnId,
             pointLayerId: pc.pointLayerId,
+            layerId: pc.layerId,
           })),
 
         lineData: lineCellsResponse
@@ -243,6 +249,7 @@ export const getPageData = (authClient: PublicClient | UserAuthClient) =>
             cellId: lc.cell.id,
             columnId: lc.cell.columnId,
             lineLayerId: lc.lineLayerId,
+            layerId: lc.layerId,
           })),
 
         polygonData: polygonCellsResponse
@@ -255,6 +262,7 @@ export const getPageData = (authClient: PublicClient | UserAuthClient) =>
             cellId: pc.cell.id,
             columnId: pc.cell.columnId,
             polygonLayerId: pc.polygonLayerId,
+            layerId: pc.layerId,
           })),
       };
     });

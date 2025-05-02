@@ -8,8 +8,7 @@ import {
   useOptimistic,
   useTransition,
 } from "react";
-import type { GetLayerPoint } from "@mapform/backend/data/datalayer/get-layer-point";
-import type { GetLayerMarker } from "@mapform/backend/data/datalayer/get-layer-marker";
+import type { GetLayerFeature } from "@mapform/backend/data/datalayer/get-layer-feature";
 import { useCreateQueryString } from "@mapform/lib/hooks/use-create-query-string";
 import type { GetProjectWithPages } from "@mapform/backend/data/projects/get-project-with-pages";
 import { useMapform } from "~/components/mapform";
@@ -27,8 +26,7 @@ import { useDebouncedOptimisticAction } from "~/lib/use-debounced-optimistic-act
 import { usePreventPageUnload } from "@mapform/lib/hooks/use-prevent-page-unload";
 import { upsertCellAction } from "~/data/cells/upsert-cell";
 
-type LayerPoint = NonNullable<GetLayerPoint["data"]>;
-type LayerMarker = NonNullable<GetLayerMarker["data"]>;
+type LayerFeature = NonNullable<GetLayerFeature["data"]>;
 type PageWithLayers = NonNullable<GetPageWithLayers["data"]>;
 type PageData = NonNullable<GetPageData["data"]>;
 type TeamspaceDatasets = NonNullable<ListTeamspaceDatasets["data"]>;
@@ -39,7 +37,7 @@ export interface ProjectContextProps {
   isEditingPage: boolean;
   availableDatasets: TeamspaceDatasets;
   projectWithPages: ProjectWithPages;
-  selectedFeature?: LayerPoint | LayerMarker;
+  selectedFeature?: LayerFeature;
 
   setActivePage: (
     page?: Pick<PageWithLayers, "id" | "center" | "zoom" | "pitch" | "bearing">,
@@ -84,7 +82,7 @@ export function ProjectProvider({
   children,
 }: {
   projectWithPages: ProjectWithPages;
-  selectedFeature?: LayerPoint | LayerMarker;
+  selectedFeature?: LayerFeature;
   pageData?: GetPageData["data"];
   pageWithLayers?: PageWithLayers;
   availableDatasets: TeamspaceDatasets;

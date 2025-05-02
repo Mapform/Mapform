@@ -7,11 +7,9 @@ import { toast } from "@mapform/ui/components/toaster";
 import type { InferSafeActionFnInput } from "next-safe-action";
 import { upsertCellAction } from "~/data/cells/upsert-cell";
 import { useDebouncedOptimisticAction } from "~/lib/use-debounced-optimistic-action";
-import type { GetLayerMarker } from "@mapform/backend/data/datalayer/get-layer-marker";
-import type { GetLayerPoint } from "@mapform/backend/data/datalayer/get-layer-point";
+import type { GetLayerFeature } from "@mapform/backend/data/datalayer/get-layer-feature";
 
-type LayerPoint = NonNullable<GetLayerPoint["data"]>;
-type LayerMarker = NonNullable<GetLayerMarker["data"]>;
+type LayerFeature = NonNullable<GetLayerFeature["data"]>;
 
 export function FeatureDrawer() {
   const setQueryString = useSetQueryString();
@@ -43,7 +41,7 @@ function FeatureDrawerInner() {
   const currentPage = updatePageServerAction.optimisticState;
 
   const upsertIconCellServerAction = useDebouncedOptimisticAction<
-    LayerPoint | LayerMarker,
+    LayerFeature,
     InferSafeActionFnInput<typeof upsertCellAction>["clientInput"]
   >(upsertCellAction, {
     currentState: selectedFeature,
@@ -51,7 +49,7 @@ function FeatureDrawerInner() {
       state: unknown,
       payload: InferSafeActionFnInput<typeof upsertCellAction>["clientInput"],
     ) => {
-      const typedState = state as LayerPoint | LayerMarker | undefined;
+      const typedState = state as LayerFeature | undefined;
       if (!typedState || !typedState.icon || payload.type !== "icon")
         return state;
 
@@ -75,7 +73,7 @@ function FeatureDrawerInner() {
   });
 
   const upsertStringCellServerAction = useDebouncedOptimisticAction<
-    LayerPoint | LayerMarker,
+    LayerFeature,
     InferSafeActionFnInput<typeof upsertCellAction>["clientInput"]
   >(upsertCellAction, {
     currentState: selectedFeature,
@@ -83,7 +81,7 @@ function FeatureDrawerInner() {
       state: unknown,
       payload: InferSafeActionFnInput<typeof upsertCellAction>["clientInput"],
     ) => {
-      const typedState = state as LayerPoint | LayerMarker | undefined;
+      const typedState = state as LayerFeature | undefined;
       if (!typedState || !typedState.title || payload.type !== "string")
         return state;
 
@@ -107,7 +105,7 @@ function FeatureDrawerInner() {
   });
 
   const upsertRichtextCellServerAction = useDebouncedOptimisticAction<
-    LayerPoint | LayerMarker,
+    LayerFeature,
     InferSafeActionFnInput<typeof upsertCellAction>["clientInput"]
   >(upsertCellAction, {
     currentState: selectedFeature,
@@ -115,7 +113,7 @@ function FeatureDrawerInner() {
       state: unknown,
       payload: InferSafeActionFnInput<typeof upsertCellAction>["clientInput"],
     ) => {
-      const typedState = state as LayerPoint | LayerMarker | undefined;
+      const typedState = state as LayerFeature | undefined;
       if (!typedState || !typedState.description || payload.type !== "richtext")
         return state;
 

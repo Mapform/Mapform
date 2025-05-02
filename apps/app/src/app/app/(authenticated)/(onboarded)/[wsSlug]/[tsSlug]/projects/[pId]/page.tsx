@@ -67,24 +67,20 @@ const fetchSelectedFeature = cache(async (param?: string) => {
     return undefined;
   }
 
-  const [type, rowId, subLayerId] = param.split("_");
+  const [rowId, layerId] = param.split("_");
 
-  if (!type || !rowId || !subLayerId) {
+  if (!rowId || !layerId) {
     return undefined;
   }
 
-  const featureResponse =
-    type === "point"
-      ? await authClient.getLayerPoint({
-          rowId,
-          pointLayerId: subLayerId,
-        })
-      : await authClient.getLayerMarker({
-          rowId,
-          markerLayerId: subLayerId,
-        });
+  const featureResponse = await authClient.getLayerFeature({
+    rowId,
+    layerId,
+  });
 
   const feature = featureResponse?.data;
+
+  console.log(123123, feature);
 
   return feature;
 });
@@ -113,6 +109,8 @@ export default async function ProjectPage(props: {
     fetchPageData(searchParams?.page),
     fetchSelectedFeature(searchParams?.feature),
   ]);
+
+  console.log(999999, selectedFeature);
 
   if (!projectWithPages) {
     return redirect(`/app/${params.wsSlug}/${params.tsSlug}`);
