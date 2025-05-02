@@ -10,5 +10,7 @@ export const deleteRows = (authClient: UserAuthClient) =>
   authClient
     .schema(deleteRowsSchema)
     .action(async ({ parsedInput: { rowIds } }) => {
-      return db.delete(rows).where(inArray(rows.id, rowIds));
+      return db.delete(rows).where(inArray(rows.id, rowIds)).returning({
+        id: rows.id,
+      });
     });
