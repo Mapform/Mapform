@@ -80,8 +80,6 @@ const fetchSelectedFeature = cache(async (param?: string) => {
 
   const feature = featureResponse?.data;
 
-  console.log(123123, feature);
-
   return feature;
 });
 

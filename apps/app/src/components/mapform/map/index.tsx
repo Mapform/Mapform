@@ -383,6 +383,20 @@ export function Map({
     ) => {
       const eventFeature = e.features[e.features.length - 1];
 
+      // When a feature is selected, set the query string to the feature. If not,
+      // set the query string to null
+      if (eventFeature?.properties?.persisted) {
+        setQueryString({
+          key: "feature",
+          value: `${eventFeature.properties.rowId}_${eventFeature.properties.layerId}`,
+        });
+      } else if (e.features.length === 0) {
+        setQueryString({
+          key: "feature",
+          value: null,
+        });
+      }
+
       if (activeFeature !== null && eventFeature?.id !== activeFeature.id) {
         setActiveFeature(null);
         try {
@@ -402,18 +416,6 @@ export function Map({
         } catch (_) {
           // Do nothing
         }
-      }
-
-      if (eventFeature?.properties?.persisted) {
-        setQueryString({
-          key: "feature",
-          value: `${eventFeature.properties.rowId}_${eventFeature.properties.layerId}`,
-        });
-      } else if (e.features.length === 0) {
-        setQueryString({
-          key: "feature",
-          value: null,
-        });
       }
     };
 
@@ -583,13 +585,19 @@ export function Map({
             return null;
           }
 
+          const markerIsActive =
+            cluster.properties.rowId === selectedFeature?.rowId &&
+            cluster.properties.layerId === selectedFeature.layerId;
+
+          const markerIsDraggable = markerIsActive && !isStatic;
+
           return (
             <LocationMarker
               key={cluster.properties.id}
               latitude={latitude}
               longitude={longitude}
               markerOptions={{
-                draggable: !isStatic,
+                draggable: markerIsDraggable,
               }}
               onDragEnd={(lngLat) => {
                 updatePageDataServerAction.execute({
@@ -602,8 +610,20 @@ export function Map({
               map={map}
             >
               <motion.button
-                animate={{ opacity: 1, y: 0 }}
-                className="flex size-10 cursor-pointer items-center justify-center rounded-full border-2 border-white text-lg shadow-md"
+                animate={{
+                  opacity: 1,
+                  y: 0,
+                }}
+                transition={{
+                  duration: 0.2,
+                }}
+                className={cn(
+                  "box-content flex size-10 cursor-pointer items-center justify-center rounded-full border-2 border-white text-lg shadow-md",
+                  {
+                    "border-8": markerIsActive,
+                    "border-2": !markerIsActive,
+                  },
+                )}
                 exit={{ opacity: 0, y: 20 }}
                 initial={{ opacity: 0, y: -20 }}
                 onClick={() => {

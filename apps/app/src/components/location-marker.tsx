@@ -27,7 +27,11 @@ export function LocationMarker({
     const mk = new Marker(el, markerOptions).setLngLat([longitude, latitude]);
 
     return mk;
-  }, [markerOptions, latitude, longitude]);
+  }, [latitude, longitude]); // Do not pass markerOptions here because it will cause the marker to be recreated on every render
+
+  useEffect(() => {
+    marker.setDraggable(markerOptions?.draggable ?? false);
+  }, [marker, markerOptions]);
 
   useEffect(() => {
     marker.addTo(map);
@@ -40,10 +44,9 @@ export function LocationMarker({
     marker.on("dragend", handleDragEnd);
 
     return () => {
-      console.log("removing marker");
       marker.remove();
     };
-  }, [map, marker, onDragEnd]);
+  }, [map, marker, onDragEnd, markerOptions]);
 
   return <Portal.Root container={marker.getElement()}>{children}</Portal.Root>;
 }
