@@ -65,8 +65,7 @@ export function Map({
   isStatic = true,
   selectedFeature,
 }: MapProps) {
-  const { updatePageDataServerAction } = useProject();
-  const setQueryString = useSetQueryString();
+  const { updatePageDataServerAction, setSelectedFeature } = useProject();
   const [bounds, setBounds] = useState<
     [number, number, number, number] | undefined
   >(undefined);
@@ -265,9 +264,9 @@ export function Map({
         if (isMobile) {
           window.scrollTo({ top: 0, behavior: "smooth" });
         }
-        setQueryString({
-          key: "feature",
-          value: `${feature.properties.rowId}_${feature.properties.layerId}`,
+        setSelectedFeature({
+          rowId: feature.properties.rowId,
+          layerId: feature.properties.layerId,
         });
       }
     };
@@ -318,7 +317,7 @@ export function Map({
         map.off("zoomend", handleZoomChange);
       }
     };
-  }, [map, setQueryString, isMobile]);
+  }, [map, setSelectedFeature, isMobile]);
 
   useEffect(() => {
     if (!map || !draw) return;
@@ -386,15 +385,12 @@ export function Map({
       // When a feature is selected, set the query string to the feature. If not,
       // set the query string to null
       if (eventFeature?.properties?.persisted) {
-        setQueryString({
-          key: "feature",
-          value: `${eventFeature.properties.rowId}_${eventFeature.properties.layerId}`,
+        setSelectedFeature({
+          rowId: eventFeature.properties.rowId,
+          layerId: eventFeature.properties.layerId,
         });
       } else if (e.features.length === 0) {
-        setQueryString({
-          key: "feature",
-          value: null,
-        });
+        setSelectedFeature(undefined);
       }
 
       if (activeFeature !== null && eventFeature?.id !== activeFeature.id) {
@@ -434,7 +430,7 @@ export function Map({
     setActiveFeature,
     activeFeature,
     updatePageDataServerAction,
-    setQueryString,
+    setSelectedFeature,
   ]);
 
   // Used to select the feature on the map
@@ -631,9 +627,9 @@ export function Map({
                   // and isntead pass an onClick callback. The parent can do
                   // this.
                   if (isMobile) window.scrollTo({ top: 0, behavior: "smooth" });
-                  setQueryString({
-                    key: "feature",
-                    value: `${cluster.properties.rowId}_${cluster.properties.layerId}`,
+                  setSelectedFeature({
+                    rowId: cluster.properties.rowId,
+                    layerId: cluster.properties.layerId,
                   });
                 }}
                 style={{ backgroundColor: cluster.properties.color }}

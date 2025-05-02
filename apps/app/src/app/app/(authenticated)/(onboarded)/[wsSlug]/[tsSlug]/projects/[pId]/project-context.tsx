@@ -25,6 +25,7 @@ import { updatePageAction } from "~/data/pages/update-page";
 import { useDebouncedOptimisticAction } from "~/lib/use-debounced-optimistic-action";
 import { usePreventPageUnload } from "@mapform/lib/hooks/use-prevent-page-unload";
 import { upsertCellAction } from "~/data/cells/upsert-cell";
+import { useSetQueryString } from "@mapform/lib/hooks/use-set-query-string";
 
 type LayerFeature = NonNullable<GetLayerFeature["data"]>;
 type PageWithLayers = NonNullable<GetPageWithLayers["data"]>;
@@ -38,7 +39,14 @@ export interface ProjectContextProps {
   availableDatasets: TeamspaceDatasets;
   projectWithPages: ProjectWithPages;
   selectedFeature?: LayerFeature;
-
+  setSelectedFeature: (
+    feature:
+      | {
+          rowId: LayerFeature["rowId"];
+          layerId: LayerFeature["layerId"];
+        }
+      | undefined,
+  ) => void;
   setActivePage: (
     page?: Pick<PageWithLayers, "id" | "center" | "zoom" | "pitch" | "bearing">,
   ) => void;
@@ -95,6 +103,7 @@ export function ProjectProvider({
   const createQueryString = useCreateQueryString();
   const [_, startTransition] = useTransition();
   const page = searchParams.get("page");
+  const setQueryString = useSetQueryString();
 
   const [optimisticProject, updateProjectOptimistic] = useOptimistic<
     ProjectWithPages,
@@ -214,6 +223,33 @@ export function ProjectProvider({
     },
   });
 
+  const [optimisticSelectedFeature, setOptimisticSelectedFeature] =
+    useOptimistic<LayerFeature | undefined, Partial<LayerFeature> | undefined>(
+      selectedFeature,
+      (state, newFeature) => {
+        if (!state && !newFeature) return undefined;
+        return {
+          ...state,
+          ...newFeature,
+        } as LayerFeature;
+      },
+    );
+
+  const setSelectedFeature = (
+    feature:
+      | {
+          rowId: LayerFeature["rowId"];
+          layerId: LayerFeature["layerId"];
+        }
+      | undefined,
+  ) => {
+    setOptimisticSelectedFeature(feature);
+    setQueryString({
+      key: "feature",
+      value: feature ? `${feature.rowId}_${feature.layerId}` : null,
+    });
+  };
+
   useEffect(() => {
     if (projectWithPages.pages[0] && !page) {
       router.push(
@@ -276,8 +312,8 @@ export function ProjectProvider({
         setActivePage,
         projectWithPages,
         availableDatasets,
-        selectedFeature,
-
+        selectedFeature: optimisticSelectedFeature,
+        setSelectedFeature,
         // Optimistic state
         currentProject: optimisticProject,
         // For optimistic state updates
