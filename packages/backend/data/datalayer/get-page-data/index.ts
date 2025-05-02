@@ -144,6 +144,7 @@ export const getPageData = (authClient: PublicClient | UserAuthClient) =>
             ...c,
             color: pl.layer.markerLayer?.color,
             rowId: c.cell.rowId,
+            columnId: c.cell.columnId,
             pointLayerId: pl.layer.markerLayer?.id,
             layerId: pl.layer.id,
           }));
@@ -172,6 +173,7 @@ export const getPageData = (authClient: PublicClient | UserAuthClient) =>
             ...c,
             color: ll.layer.color,
             rowId: c.cell.rowId,
+            columnId: c.cell.columnId,
             lineLayerId: ll.layer.lineLayer?.id,
             layerId: ll.layer.id,
           }));
@@ -205,6 +207,7 @@ export const getPageData = (authClient: PublicClient | UserAuthClient) =>
             ...c,
             color: pl.layer.color,
             rowId: c.cell.rowId,
+            columnId: c.cell.columnId,
             polygonLayerId: pl.layer.polygonLayer?.id,
             layerId: pl.layer.id,
           }));

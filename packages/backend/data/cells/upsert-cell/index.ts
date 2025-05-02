@@ -30,8 +30,6 @@ export const upsertCell = (authClient: UserAuthClient) =>
         parsedInput: { rowId, columnId, type, value },
         ctx: { user },
       }) => {
-        console.log("upsertCell", value);
-
         const teamspaceIds = user.workspaceMemberships
           .map((m) => m.workspace.teamspaces.map((t) => t.id))
           .flat();

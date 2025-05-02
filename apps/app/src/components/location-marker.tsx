@@ -9,6 +9,7 @@ interface LocationMarkerProps {
   latitude: number;
   markerOptions?: mapboxgl.MarkerOptions;
   children: React.ReactNode;
+  onDragEnd?: (lngLat: mapboxgl.LngLat) => void;
 }
 
 export function LocationMarker({
@@ -17,6 +18,7 @@ export function LocationMarker({
   markerOptions,
   children,
   map,
+  onDragEnd,
 }: LocationMarkerProps & { map: mapboxgl.Map }) {
   const marker = useMemo(() => {
     const el = document.createElement("div");
@@ -30,10 +32,18 @@ export function LocationMarker({
   useEffect(() => {
     marker.addTo(map);
 
+    function handleDragEnd() {
+      const lngLat = marker.getLngLat();
+      onDragEnd?.(lngLat);
+    }
+
+    marker.on("dragend", handleDragEnd);
+
     return () => {
+      console.log("removing marker");
       marker.remove();
     };
-  }, [map, marker]);
+  }, [map, marker, onDragEnd]);
 
   return <Portal.Root container={marker.getElement()}>{children}</Portal.Root>;
 }

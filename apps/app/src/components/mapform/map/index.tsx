@@ -42,6 +42,7 @@ interface MarkerPointFeature {
   icon: string;
   color: string;
   rowId: string;
+  columnId: string;
   layerId: string;
   pointLayerId: string;
   point_count: number;
@@ -96,6 +97,7 @@ export function Map({
           id: feature.id,
           color: feature.color ?? "#3b82f6",
           rowId: feature.rowId,
+          columnId: feature.columnId,
           icon: feature.icon,
           layerId: feature.layerId,
           pointLayerId: feature.pointLayerId,
@@ -112,6 +114,7 @@ export function Map({
       color: item.color,
       rowId: item.rowId,
       layerId: item.layerId,
+      columnId: item.columnId,
       pointLayerId: item.pointLayerId,
       cluster: item.cluster,
       point_count: item.point_count,
@@ -495,7 +498,6 @@ export function Map({
             layerId: feature.layerId,
             persisted: true,
             color: feature.color ?? "#3b82f6",
-            emoji: "🔥",
           },
           geometry: {
             coordinates: [feature.value!.x, feature.value!.y],
@@ -586,6 +588,17 @@ export function Map({
               key={cluster.properties.id}
               latitude={latitude}
               longitude={longitude}
+              markerOptions={{
+                draggable: !isStatic,
+              }}
+              onDragEnd={(lngLat) => {
+                updatePageDataServerAction.execute({
+                  type: "point",
+                  value: { x: lngLat.lng, y: lngLat.lat },
+                  rowId: cluster.properties.rowId,
+                  columnId: cluster.properties.columnId,
+                });
+              }}
               map={map}
             >
               <motion.button

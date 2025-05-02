@@ -143,6 +143,12 @@ export function ProjectProvider({
                 }
               : point,
           ),
+          markerData: (state as PageData).markerData.map((marker) =>
+            marker.rowId === newPage.rowId &&
+            marker.columnId === newPage.columnId
+              ? { ...marker, value: newPage.value }
+              : marker,
+          ),
         };
       }
 
