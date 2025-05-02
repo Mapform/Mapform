@@ -10,13 +10,11 @@ import { Button } from "@mapform/ui/components/button";
 import { useAction } from "next-safe-action/hooks";
 import { deleteRowsAction } from "~/data/rows/delete-rows";
 import { useProject } from "../../../project-context";
-import { useSetQueryString } from "@mapform/lib/hooks/use-set-query-string";
 import { toast } from "@mapform/ui/components/toaster";
 
 export const FeatureSettingsPopover = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { selectedFeature } = useProject();
-  const setQueryString = useSetQueryString();
+  const { selectedFeature, setSelectedFeature } = useProject();
 
   const { execute: executeDeleteRows, isPending } = useAction(
     deleteRowsAction,
@@ -38,11 +36,7 @@ export const FeatureSettingsPopover = () => {
       rowIds: [selectedFeature.rowId],
     });
 
-    // Clear the feature from the URL
-    setQueryString({
-      key: "feature",
-      value: null,
-    });
+    setSelectedFeature(undefined);
   };
 
   return (
@@ -62,7 +56,7 @@ export const FeatureSettingsPopover = () => {
           className="flex items-center gap-2"
           disabled={isPending}
         >
-          <Trash2Icon className="flex-shrink-0 size-4" />
+          <Trash2Icon className="size-4 flex-shrink-0" />
           Delete feature
         </DropdownMenuItem>
       </DropdownMenuContent>

@@ -1,7 +1,6 @@
 import { MapformDrawer } from "~/components/mapform";
 import { Blocknote } from "~/components/mapform/block-note";
 import { BlocknoteControls } from "./blocknote-controls";
-import { useSetQueryString } from "@mapform/lib/hooks/use-set-query-string";
 import { useProject } from "../../project-context";
 import { toast } from "@mapform/ui/components/toaster";
 import type { InferSafeActionFnInput } from "next-safe-action";
@@ -12,16 +11,12 @@ import type { GetLayerFeature } from "@mapform/backend/data/datalayer/get-layer-
 type LayerFeature = NonNullable<GetLayerFeature["data"]>;
 
 export function FeatureDrawer() {
-  const setQueryString = useSetQueryString();
-  const { selectedFeature } = useProject();
+  const { selectedFeature, setSelectedFeature } = useProject();
 
   return (
     <MapformDrawer
       onClose={() => {
-        setQueryString({
-          key: "feature",
-          value: null,
-        });
+        setSelectedFeature(undefined);
       }}
       value="feature"
     >

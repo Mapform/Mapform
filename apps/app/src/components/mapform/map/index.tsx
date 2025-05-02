@@ -8,7 +8,6 @@ import type { FeatureCollection, Position } from "geojson";
 import type { ViewState } from "@mapform/map-utils/types";
 import type { GetPageData } from "@mapform/backend/data/datalayer/get-page-data";
 import { usePrevious } from "@mapform/lib/hooks/use-previous";
-import { useSetQueryString } from "@mapform/lib/hooks/use-set-query-string";
 import type Supercluster from "supercluster";
 import useSupercluster from "use-supercluster";
 import { AnimatePresence, motion } from "motion/react";

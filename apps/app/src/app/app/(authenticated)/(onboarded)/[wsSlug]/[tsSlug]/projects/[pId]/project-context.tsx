@@ -227,7 +227,7 @@ export function ProjectProvider({
     useOptimistic<LayerFeature | undefined, Partial<LayerFeature> | undefined>(
       selectedFeature,
       (state, newFeature) => {
-        if (!state && !newFeature) return undefined;
+        if (!newFeature) return undefined;
         return {
           ...state,
           ...newFeature,
@@ -236,14 +236,11 @@ export function ProjectProvider({
     );
 
   const setSelectedFeature = (
-    feature:
-      | {
-          rowId: LayerFeature["rowId"];
-          layerId: LayerFeature["layerId"];
-        }
-      | undefined,
+    feature: Pick<LayerFeature, "rowId" | "layerId"> | undefined,
   ) => {
-    setOptimisticSelectedFeature(feature);
+    startTransition(() => {
+      setOptimisticSelectedFeature(feature);
+    });
     setQueryString({
       key: "feature",
       value: feature ? `${feature.rowId}_${feature.layerId}` : null,

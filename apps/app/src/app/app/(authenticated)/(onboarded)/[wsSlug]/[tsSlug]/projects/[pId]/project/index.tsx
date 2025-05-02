@@ -16,7 +16,6 @@ import { LocationSearchDrawer } from "./location-search-drawer";
 import { Form as DummyForm, useForm } from "@mapform/ui/components/form";
 import { BlocknoteControls } from "./page-blocknote-controls";
 import { FeatureDrawer } from "./feature-drawer";
-import { useSetQueryString } from "@mapform/lib/hooks/use-set-query-string";
 import { useAuth } from "~/app/root-providers";
 import { updateCurrentUserAction } from "~/data/users/update-current-user";
 import { useAction } from "next-safe-action/hooks";
@@ -30,6 +29,7 @@ function Project() {
   const {
     selectedFeature,
     projectWithPages,
+    setSelectedFeature,
     updatePageServerAction,
     uploadImageServerAction,
     updatePageDataServerAction,
@@ -45,7 +45,6 @@ function Project() {
 
   // Controls the location search drawer
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const setQueryString = useSetQueryString();
 
   const { execute: updateCurrentUser } = useAction(updateCurrentUserAction);
 
@@ -202,10 +201,7 @@ function Project() {
                   onSearchOpenChange={(open) => {
                     if (open) {
                       // Clear the feature when search is opened
-                      setQueryString({
-                        key: "feature",
-                        value: null,
-                      });
+                      setSelectedFeature(undefined);
                     }
                     setIsSearchOpen(open);
                   }}
