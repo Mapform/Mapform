@@ -495,6 +495,7 @@ export function Map({
             layerId: feature.layerId,
             persisted: true,
             color: feature.color ?? "#3b82f6",
+            emoji: "🔥",
           },
           geometry: {
             coordinates: [feature.value!.x, feature.value!.y],

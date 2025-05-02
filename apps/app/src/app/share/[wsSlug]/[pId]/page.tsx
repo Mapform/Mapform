@@ -35,22 +35,16 @@ const fetchSelectedFeature = cache(async (param?: string) => {
     return undefined;
   }
 
-  const [type, rowId, subLayerId] = param.split("_");
+  const [rowId, layerId] = param.split("_");
 
-  if (!type || !rowId || !subLayerId) {
+  if (!rowId || !layerId) {
     return undefined;
   }
 
-  const featureResponse =
-    type === "point"
-      ? await publicClient.getLayerPoint({
-          rowId,
-          pointLayerId: subLayerId,
-        })
-      : await publicClient.getLayerMarker({
-          rowId,
-          markerLayerId: subLayerId,
-        });
+  const featureResponse = await publicClient.getLayerFeature({
+    rowId,
+    layerId,
+  });
 
   const feature = featureResponse?.data;
 
