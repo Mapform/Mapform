@@ -5,6 +5,12 @@ import type mapboxgl from "mapbox-gl";
 import { useEffect } from "react";
 import { useMapform } from "~/components/mapform";
 
+// Calculate a checksum for a feature by stringifying its properties and geometry
+const calculateFeatureChecksum = (feature: GeoJSON.Feature): string => {
+  const { properties, geometry } = feature;
+  return JSON.stringify({ properties, geometry });
+};
+
 export function useDrawFeatures({
   map,
   featureCollection,
@@ -18,13 +24,20 @@ export function useDrawFeatures({
     if (!map || !draw) return;
 
     catchMapErrors(() => {
-      // Filter out features that already exist
+      // Filter out features that haven't changed
       const newFeatures = featureCollection.features.filter((feature) => {
         if (!feature.id) return true; // If no ID, we'll add it
-        return !draw.get(feature.id.toString()); // Check if feature exists
+
+        const existingFeature = draw.get(feature.id.toString());
+        if (!existingFeature) return true; // Feature doesn't exist, add it
+
+        // Compare checksums to see if feature has changed
+        const existingChecksum = calculateFeatureChecksum(existingFeature);
+        const newChecksum = calculateFeatureChecksum(feature);
+        return existingChecksum !== newChecksum;
       });
 
-      // Only add new features
+      // Only add new or modified features
       if (newFeatures.length > 0) {
         draw.add({
           type: "FeatureCollection",
