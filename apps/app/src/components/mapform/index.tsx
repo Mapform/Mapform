@@ -6,6 +6,7 @@ import {
   createContext,
   type Dispatch,
   type SetStateAction,
+  useRef,
 } from "react";
 import type { ViewState } from "@mapform/map-utils/types";
 import type mapboxgl from "mapbox-gl";
@@ -19,7 +20,7 @@ import { useIsMobile } from "@mapform/lib/hooks/use-is-mobile";
 import { AnimatePresence, motion } from "motion/react";
 import type { GetPageData } from "@mapform/backend/data/datalayer/get-page-data";
 import type { MapboxGeoJSONFeature } from "mapbox-gl";
-import { GetLayerFeature } from "@mapform/backend/data/datalayer/get-layer-feature";
+import type { GetLayerFeature } from "@mapform/backend/data/datalayer/get-layer-feature";
 
 export type MBMap = mapboxgl.Map;
 export interface ActivePoint {
@@ -39,6 +40,7 @@ interface MapformContextProps {
   setMap: Dispatch<SetStateAction<MBMap | undefined>>;
   setDraw: Dispatch<SetStateAction<MapboxDraw | undefined>>;
   mapContainer: React.RefObject<HTMLDivElement | null>;
+  visibleMapContainer: React.RefObject<HTMLDivElement | null>;
   mapContainerBounds: DOMRectReadOnly | undefined;
   activeFeature: MapboxGeoJSONFeature | null;
   setActiveFeature: Dispatch<SetStateAction<MapboxGeoJSONFeature | null>>;
@@ -55,6 +57,9 @@ export function Mapform({ children }: MapformProps) {
     useState<MapboxGeoJSONFeature | null>(null);
   const [draw, setDraw] = useState<MapboxDraw>();
   const { ref: mapContainer, bounds } = useMeasure<HTMLDivElement>();
+  // This is the part of the map container that is visible to the user (ie. is
+  // not behind the drawers)
+  const visibleMapContainer = useRef<HTMLDivElement>(null);
 
   const mapContainerBounds = bounds;
 
@@ -66,6 +71,7 @@ export function Mapform({ children }: MapformProps) {
         setMap,
         setDraw,
         mapContainer,
+        visibleMapContainer,
         mapContainerBounds,
         activeFeature,
         setActiveFeature,

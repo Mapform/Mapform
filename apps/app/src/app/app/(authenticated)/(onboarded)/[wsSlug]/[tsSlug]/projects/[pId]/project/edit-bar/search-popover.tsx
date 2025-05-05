@@ -1,6 +1,6 @@
 "use client";
 
-import { forwardRef } from "react";
+import { forwardRef, useEffect, useState } from "react";
 
 import { useMapform } from "~/components/mapform";
 import { Skeleton } from "@mapform/ui/components/skeleton";
@@ -41,8 +41,30 @@ export const SearchPopoverInner = forwardRef<
   HTMLDivElement,
   SearchPopoverInnerProps
 >(({ map, location, title, subtitle, isPending = false, children }, ref) => {
+  const { visibleMapContainer } = useMapform();
+  const [isInBounds, setIsInBounds] = useState(true);
+  const [isDragging, setIsDragging] = useState(false);
+
+  useEffect(() => {
+    const handleMoveStart = () => {
+      setIsDragging(true);
+    };
+
+    const handleMoveEnd = () => {
+      setIsDragging(false);
+      setIsInBounds(map.getBounds().contains(location));
+    };
+
+    map.on("move", handleMoveStart);
+    map.on("moveend", handleMoveEnd);
+    return () => {
+      map.off("move", handleMoveStart);
+      map.off("moveend", handleMoveEnd);
+    };
+  }, [location, map]);
+
   return (
-    <Popover open>
+    <Popover open={isInBounds && !isDragging}>
       <LocationMarker
         map={map}
         longitude={location.lng}
@@ -52,7 +74,11 @@ export const SearchPopoverInner = forwardRef<
           <div className="invisible size-0.5" />
         </PopoverAnchor>
       </LocationMarker>
-      <PopoverContent side="top" align="center">
+      <PopoverContent
+        collisionBoundary={visibleMapContainer.current}
+        side="top"
+        align="center"
+      >
         <div ref={ref}>
           {isPending ? (
             <>

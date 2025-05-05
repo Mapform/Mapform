@@ -76,6 +76,7 @@ export function Map({
     setDraw,
     mapContainer,
     mapContainerBounds,
+    visibleMapContainer,
     activeFeature,
     setActiveFeature,
   } = useMapform();
@@ -642,8 +643,9 @@ export function Map({
       </AnimatePresence>
       <div
         className={cn(
-          "absolute bottom-0 left-0 right-0 top-0 transition-all duration-[250]",
+          "absolute bottom-0 left-0 right-0 top-0 overflow-hidden transition-all duration-[250]",
         )}
+        ref={visibleMapContainer}
         style={mapPadding}
       >
         {children}
