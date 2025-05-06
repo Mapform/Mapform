@@ -18,7 +18,11 @@ import type {
 } from "../../../lib/types";
 import { getFeatureSchema } from "./schama";
 import * as wellknown from "wellknown";
-import type { FullGeoJsonPoint } from "../types";
+import type {
+  FullGeoJsonLineString,
+  FullGeoJsonPoint,
+  FullGeoJsonPolygon,
+} from "../types";
 
 export const getFeature = (authClient: UserAuthClient | PublicClient) =>
   authClient
@@ -238,7 +242,7 @@ export const getFeature = (authClient: UserAuthClient | PublicClient) =>
                   return { ...acc, [cell.columnId]: value };
                 }, {}),
             },
-          };
+          } satisfies FullGeoJsonPoint;
         }
         case "line": {
           if (!layer.lineLayer) {
@@ -290,7 +294,7 @@ export const getFeature = (authClient: UserAuthClient | PublicClient) =>
                   return { ...acc, [cell.columnId]: value };
                 }, {}),
             },
-          };
+          } satisfies FullGeoJsonLineString;
         }
         case "polygon": {
           if (!layer.polygonLayer) {
@@ -342,7 +346,7 @@ export const getFeature = (authClient: UserAuthClient | PublicClient) =>
                   return { ...acc, [cell.columnId]: value };
                 }, {}),
             },
-          };
+          } satisfies FullGeoJsonPolygon;
         }
         default:
           throw new Error(`Unsupported layer type: ${layer.type}`);

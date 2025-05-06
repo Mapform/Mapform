@@ -1,4 +1,10 @@
-import type { Feature, Point, LineString, Polygon } from "geojson";
+import type {
+  Feature,
+  Point,
+  LineString,
+  Polygon,
+  FeatureCollection,
+} from "geojson";
 import type { Layer } from "@mapform/db/schema";
 
 /**
@@ -65,3 +71,8 @@ export type FullFeature =
   | FullGeoJsonPoint
   | FullGeoJsonLineString
   | FullGeoJsonPolygon;
+
+export type FullFeatureCollection = FeatureCollection<
+  Point | LineString | Polygon,
+  FullProperties
+>;

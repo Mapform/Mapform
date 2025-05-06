@@ -18,6 +18,8 @@ import type {
   UnwrapReturn,
   PublicClient,
 } from "../../../lib/types";
+import * as wellknown from "wellknown";
+import type { BaseProperties, FullFeatureCollection } from "../types";
 
 /**
  * Returns feature summaries, organized by layer type, for a given page.
@@ -165,7 +167,7 @@ export const getFeatures = (authClient: PublicClient | UserAuthClient) =>
               cell: cells,
               line_cell: {
                 ...lineCells,
-                value: sql`ST_AsGeoJSON(${lineCells.value})::jsonb`.as("value"),
+                value: sql`ST_AsText(${lineCells.value})`.as("value"),
               },
             })
             .from(cells)
@@ -197,9 +199,7 @@ export const getFeatures = (authClient: PublicClient | UserAuthClient) =>
               cell: cells,
               polygon_cell: {
                 ...polygonCells,
-                value: sql`ST_AsGeoJSON(${polygonCells.value})::jsonb`.as(
-                  "value",
-                ),
+                value: sql`ST_AsText(${polygonCells.value})`.as("value"),
               },
             })
             .from(cells)
@@ -217,60 +217,104 @@ export const getFeatures = (authClient: PublicClient | UserAuthClient) =>
         }),
       );
 
-      return {
-        pointData: pointCellsResponse
+      const features = [
+        ...pointCellsResponse
           .flat()
           .filter((pc) => pc.point_cell?.value)
           .map((pc) => ({
-            ...pc.point_cell,
-            color: pc.color,
-            rowId: pc.rowId,
-            cellId: pc.cell.id,
-            columnId: pc.cell.columnId,
-            pointLayerId: pc.pointLayerId,
-            layerId: pc.layerId,
+            type: "Feature",
+            geometry: {
+              type: "Point",
+              coordinates: [pc.point_cell.x, pc.point_cell.y],
+            },
+            properties: {
+              id: `${pc.rowId}_${pc.layerId}`,
+              rowId: pc.rowId,
+              cellId: pc.cell.id,
+              columnId: pc.cell.columnId,
+              layerId: pc.layerId,
+              childLayerId: pc.pointLayerId,
+              layerType: "point",
+              icon: null,
+              color: pc.color ?? null,
+              title: null,
+            } satisfies BaseProperties,
           })),
 
-        markerData: markerCellsResponse
+        ...markerCellsResponse
           .flat()
           .filter((pc) => pc.point_cell?.value)
           .map((pc) => ({
-            ...pc.point_cell,
-            icon: pc.icon_cell?.value,
-            color: pc.color,
-            rowId: pc.rowId,
-            cellId: pc.cell.id,
-            columnId: pc.cell.columnId,
-            pointLayerId: pc.pointLayerId,
-            layerId: pc.layerId,
+            type: "Feature",
+            geometry: {
+              type: "Point",
+              coordinates: [pc.point_cell.x, pc.point_cell.y],
+            },
+            properties: {
+              id: `${pc.rowId}_${pc.layerId}`,
+              rowId: pc.rowId,
+              cellId: pc.cell.id,
+              columnId: pc.cell.columnId,
+              layerId: pc.layerId,
+              childLayerId: pc.pointLayerId,
+              layerType: "marker",
+              icon: pc.icon_cell?.value ?? null,
+              color: pc.color ?? null,
+              title: null,
+            } satisfies BaseProperties,
           })),
 
-        lineData: lineCellsResponse
+        ...lineCellsResponse
           .flat()
           .filter((lc) => lc.line_cell?.value)
-          .map((lc) => ({
-            ...lc.line_cell,
-            color: lc.color,
-            rowId: lc.rowId,
-            cellId: lc.cell.id,
-            columnId: lc.cell.columnId,
-            lineLayerId: lc.lineLayerId,
-            layerId: lc.layerId,
-          })),
+          .map((lc) => {
+            const geometry = wellknown.parse(lc.line_cell.value);
+            return {
+              type: "Feature",
+              geometry,
+              properties: {
+                id: `${lc.rowId}_${lc.layerId}`,
+                rowId: lc.rowId,
+                cellId: lc.cell.id,
+                columnId: lc.cell.columnId,
+                layerId: lc.layerId,
+                childLayerId: lc.lineLayerId,
+                layerType: "line",
+                icon: null,
+                color: lc.color ?? null,
+                title: null,
+              } satisfies BaseProperties,
+            };
+          }),
 
-        polygonData: polygonCellsResponse
+        ...polygonCellsResponse
           .flat()
           .filter((pc) => pc.polygon_cell?.value)
-          .map((pc) => ({
-            ...pc.polygon_cell,
-            color: pc.color,
-            rowId: pc.rowId,
-            cellId: pc.cell.id,
-            columnId: pc.cell.columnId,
-            polygonLayerId: pc.polygonLayerId,
-            layerId: pc.layerId,
-          })),
-      };
+          .map((pc) => {
+            const geometry = wellknown.parse(pc.polygon_cell.value);
+            return {
+              type: "Feature",
+              geometry,
+              properties: {
+                id: `${pc.rowId}_${pc.layerId}`,
+                rowId: pc.rowId,
+                cellId: pc.cell.id,
+                columnId: pc.cell.columnId,
+                layerId: pc.layerId,
+                childLayerId: pc.polygonLayerId,
+                layerType: "polygon",
+                icon: null,
+                color: pc.color,
+                title: null,
+              } satisfies BaseProperties,
+            };
+          }),
+      ];
+
+      return {
+        type: "FeatureCollection",
+        features,
+      } satisfies FullFeatureCollection;
     });
 
 export type GetPageData = UnwrapReturn<typeof getFeatures>;
