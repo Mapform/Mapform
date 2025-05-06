@@ -12,16 +12,19 @@ import {
   polygonCells,
 } from "@mapform/db/schema";
 import { and, eq, or, inArray, sql } from "@mapform/db/utils";
-import { getPageDataSchema } from "./schema";
+import { getFeaturesSchema } from "./schema";
 import type {
   UserAuthClient,
   UnwrapReturn,
   PublicClient,
 } from "../../../lib/types";
 
-export const getPageData = (authClient: PublicClient | UserAuthClient) =>
+/**
+ * Returns feature summaries, organized by layer type, for a given page.
+ */
+export const getFeatures = (authClient: PublicClient | UserAuthClient) =>
   authClient
-    .schema(getPageDataSchema)
+    .schema(getFeaturesSchema)
     .action(async ({ parsedInput: { pageId }, ctx }) => {
       if (ctx.authType === "user") {
         const result = await db
@@ -270,4 +273,4 @@ export const getPageData = (authClient: PublicClient | UserAuthClient) =>
       };
     });
 
-export type GetPageData = UnwrapReturn<typeof getPageData>;
+export type GetPageData = UnwrapReturn<typeof getFeatures>;

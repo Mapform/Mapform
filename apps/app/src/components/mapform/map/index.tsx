@@ -6,7 +6,7 @@ import mapboxgl from "mapbox-gl";
 import { cn } from "@mapform/lib/classnames";
 import type { FeatureCollection, Position } from "geojson";
 import type { ViewState } from "@mapform/map-utils/types";
-import type { GetPageData } from "@mapform/backend/data/datalayer/get-page-data";
+import type { GetPageData } from "@mapform/backend/data/features/get-features";
 import { usePrevious } from "@mapform/lib/hooks/use-previous";
 import type Supercluster from "supercluster";
 import useSupercluster from "use-supercluster";
@@ -18,7 +18,7 @@ import { LocationMarker } from "../../location-marker";
 import { Cluster } from "./cluster";
 import { useDrawFeatures } from "~/lib/map-tools/draw-features";
 import { useProject } from "~/app/app/(authenticated)/(onboarded)/[wsSlug]/[tsSlug]/projects/[pId]/project-context";
-import type { GetLayerFeature } from "@mapform/backend/data/datalayer/get-layer-feature";
+import type { GetLayerFeature } from "@mapform/backend/data/features/get-full-feature";
 import { mapStyles } from "./map-styles";
 import "./style.css";
 

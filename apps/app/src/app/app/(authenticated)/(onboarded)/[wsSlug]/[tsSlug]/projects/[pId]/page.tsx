@@ -54,7 +54,7 @@ const fetchPageData = cache(async (id?: string) => {
     return undefined;
   }
 
-  const pageDataResponse = await authClient.getPageData({
+  const pageDataResponse = await authClient.getFeatures({
     pageId: id,
   });
   const pageData = pageDataResponse?.data;
@@ -73,7 +73,7 @@ const fetchSelectedFeature = cache(async (param?: string) => {
     return undefined;
   }
 
-  const featureResponse = await authClient.getLayerFeature({
+  const featureResponse = await authClient.getFeature({
     rowId,
     layerId,
   });
@@ -108,6 +108,8 @@ export default async function ProjectPage(props: {
     fetchSelectedFeature(searchParams?.feature),
   ]);
 
+  console.log("selectedFeature", selectedFeature);
+
   if (!projectWithPages) {
     return redirect(`/app/${params.wsSlug}/${params.tsSlug}`);
   }
@@ -132,7 +134,7 @@ export default async function ProjectPage(props: {
           pageData={pageData}
           pageWithLayers={pageWithLayers}
           projectWithPages={projectWithPages}
-          selectedFeature={selectedFeature}
+          selectedFeature={null}
         >
           <div className="bg-background -m-4 flex flex-1 flex-col overflow-hidden">
             <Project />

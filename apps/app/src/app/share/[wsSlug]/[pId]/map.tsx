@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useMapform } from "~/components/mapform";
 import { useAction } from "next-safe-action/hooks";
 import React, { useEffect, useMemo, useState } from "react";
-import type { GetPageData } from "@mapform/backend/data/datalayer/get-page-data";
+import type { GetPageData } from "@mapform/backend/data/features/get-features";
 import type { GetProjectWithPages } from "@mapform/backend/data/projects/get-project-with-pages";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import type { GetSubmission } from "@mapform/backend/data/form-submissions/get-submission";
@@ -53,7 +53,7 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from "@mapform/ui/components/popover";
-import type { GetLayerFeature } from "@mapform/backend/data/datalayer/get-layer-feature";
+import type { GetLayerFeature } from "@mapform/backend/data/features/get-full-feature";
 
 interface MapProps {
   pageData: GetPageData["data"];

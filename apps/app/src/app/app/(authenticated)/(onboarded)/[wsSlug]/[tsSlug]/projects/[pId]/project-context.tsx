@@ -8,7 +8,7 @@ import {
   useOptimistic,
   useTransition,
 } from "react";
-import type { GetLayerFeature } from "@mapform/backend/data/datalayer/get-layer-feature";
+import type { GetLayerFeature } from "@mapform/backend/data/features/get-full-feature";
 import { useCreateQueryString } from "@mapform/lib/hooks/use-create-query-string";
 import type { GetProjectWithPages } from "@mapform/backend/data/projects/get-project-with-pages";
 import { useMapform } from "~/components/mapform";
@@ -18,7 +18,7 @@ import {
   type InferUseActionHookReturn,
   useAction,
 } from "next-safe-action/hooks";
-import type { GetPageData } from "@mapform/backend/data/datalayer/get-page-data";
+import type { GetPageData } from "@mapform/backend/data/features/get-features";
 import type { ListTeamspaceDatasets } from "@mapform/backend/data/datasets/list-teamspace-datasets";
 import { uploadImageAction } from "~/data/images";
 import { updatePageAction } from "~/data/pages/update-page";

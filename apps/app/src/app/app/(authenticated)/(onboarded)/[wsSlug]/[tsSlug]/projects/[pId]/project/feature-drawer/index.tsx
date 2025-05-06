@@ -6,7 +6,7 @@ import { toast } from "@mapform/ui/components/toaster";
 import type { InferSafeActionFnInput } from "next-safe-action";
 import { upsertCellAction } from "~/data/cells/upsert-cell";
 import { useDebouncedOptimisticAction } from "~/lib/use-debounced-optimistic-action";
-import type { GetLayerFeature } from "@mapform/backend/data/datalayer/get-layer-feature";
+import type { GetLayerFeature } from "@mapform/backend/data/features/get-full-feature";
 
 type LayerFeature = NonNullable<GetLayerFeature["data"]>;
 

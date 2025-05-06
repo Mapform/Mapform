@@ -18,9 +18,9 @@ import { ChevronsRightIcon, XIcon } from "lucide-react";
 import { Map } from "./map";
 import { useIsMobile } from "@mapform/lib/hooks/use-is-mobile";
 import { AnimatePresence, motion } from "motion/react";
-import type { GetPageData } from "@mapform/backend/data/datalayer/get-page-data";
+import type { GetPageData } from "@mapform/backend/data/features/get-features";
 import type { MapboxGeoJSONFeature } from "mapbox-gl";
-import type { GetLayerFeature } from "@mapform/backend/data/datalayer/get-layer-feature";
+import type { GetLayerFeature } from "@mapform/backend/data/features/get-full-feature";
 
 export type MBMap = mapboxgl.Map;
 export interface ActivePoint {

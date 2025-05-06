@@ -22,7 +22,7 @@ const fetchPageData = cache(async (id?: string) => {
     return undefined;
   }
 
-  const pageDataResponse = await publicClient.getPageData({
+  const pageDataResponse = await publicClient.getFeatures({
     pageId: id,
   });
   const pageData = pageDataResponse?.data;
@@ -41,7 +41,7 @@ const fetchSelectedFeature = cache(async (param?: string) => {
     return undefined;
   }
 
-  const featureResponse = await publicClient.getLayerFeature({
+  const featureResponse = await publicClient.getFeature({
     rowId,
     layerId,
   });
