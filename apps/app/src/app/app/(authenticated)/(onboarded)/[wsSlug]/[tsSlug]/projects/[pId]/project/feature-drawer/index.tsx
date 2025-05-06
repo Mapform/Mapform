@@ -51,7 +51,10 @@ function FeatureDrawerInner() {
         ...typedState,
         properties: {
           ...typedState.properties,
-          icon: payload.value,
+          icon: {
+            columnId: payload.columnId,
+            value: payload.value,
+          },
         },
       };
     },
@@ -84,7 +87,10 @@ function FeatureDrawerInner() {
         ...typedState,
         properties: {
           ...typedState.properties,
-          title: payload.value,
+          title: {
+            columnId: payload.columnId,
+            value: payload.value,
+          },
         },
       };
     },
@@ -117,7 +123,10 @@ function FeatureDrawerInner() {
         ...typedState,
         properties: {
           ...typedState.properties,
-          description: payload.value,
+          description: {
+            columnId: payload.columnId,
+            value: payload.value,
+          },
         },
       };
     },
@@ -149,94 +158,97 @@ function FeatureDrawerInner() {
         <BlocknoteControls
           allowAddEmoji={
             !!selectedFeature.properties.icon?.columnId &&
-            !!selectedFeature.properties.icon.iconCell?.value
+            !!selectedFeature.properties.icon.value
           }
           onIconChange={(value) => {
             if (
-              !selectedFeatureIcon.icon ||
+              !selectedFeatureIcon.properties.icon ||
               !updateFeaturesServerAction.optimisticState
             ) {
               return;
             }
 
-            if (!selectedFeatureIcon.icon.columnId) {
+            if (!selectedFeatureIcon.properties.icon.columnId) {
               return;
             }
 
             void upsertIconCellServerAction.execute({
               type: "icon",
               value,
-              rowId: selectedFeatureIcon.rowId,
-              columnId: selectedFeatureIcon.icon.columnId,
+              rowId: selectedFeatureIcon.properties.rowId,
+              columnId: selectedFeatureIcon.properties.icon.columnId,
             });
           }}
         />
       }
       description={
-        selectedFeatureDescription.description?.columnId
-          ? selectedFeatureDescription.description.richtextCell?.value ?? null
+        selectedFeatureDescription.properties.description?.columnId
+          ? selectedFeatureDescription.properties.description.value ?? null
           : undefined
       }
       icon={
-        selectedFeatureIcon.icon?.columnId
-          ? selectedFeatureIcon.icon.iconCell?.value ?? null
+        selectedFeatureIcon.properties.icon?.columnId
+          ? selectedFeatureIcon.properties.icon.value ?? null
           : undefined
       }
-      key={`${currentPage.id}-${selectedFeatureIcon.rowId}-${selectedFeatureDescription.description?.columnId}`}
+      key={`${currentPage.id}-${selectedFeatureIcon.properties.rowId}-${selectedFeatureDescription.properties.description?.columnId}`}
       onDescriptionChange={(value) => {
-        if (selectedFeatureDescription.description === undefined) {
+        if (
+          !selectedFeatureDescription.properties.description ||
+          !selectedFeatureDescription.properties.description.columnId
+        ) {
           return;
         }
 
-        if (!selectedFeatureDescription.description.columnId) {
+        if (!selectedFeatureDescription.properties.description.columnId) {
           return;
         }
 
         void upsertRichtextCellServerAction.execute({
           type: "richtext",
           value,
-          rowId: selectedFeatureDescription.rowId,
-          columnId: selectedFeatureDescription.description.columnId,
+          rowId: selectedFeatureDescription.properties.rowId,
+          columnId: selectedFeatureDescription.properties.description.columnId,
         });
       }}
       onIconChange={(value) => {
         if (
-          !selectedFeatureIcon.icon ||
+          !selectedFeatureIcon.properties.icon ||
           !updateFeaturesServerAction.optimisticState
         ) {
           return;
         }
 
-        if (!selectedFeatureIcon.icon.columnId) {
+        if (!selectedFeatureIcon.properties.icon.columnId) {
           return;
         }
 
         void upsertIconCellServerAction.execute({
           type: "icon",
           value,
-          rowId: selectedFeatureIcon.rowId,
-          columnId: selectedFeatureIcon.icon.columnId,
+          rowId: selectedFeatureIcon.properties.rowId,
+          columnId: selectedFeatureIcon.properties.icon.columnId,
         });
       }}
       onTitleChange={(value) => {
-        if (!selectedFeatureTitle.title) {
+        if (!selectedFeatureTitle.properties.title) {
           return;
         }
 
-        if (!selectedFeatureTitle.title.columnId) {
+        if (!selectedFeatureTitle.properties.title.columnId) {
           return;
         }
 
         void upsertStringCellServerAction.execute({
           type: "string",
           value,
-          rowId: selectedFeatureTitle.rowId,
-          columnId: selectedFeatureTitle.title.columnId,
+          rowId: selectedFeatureTitle.properties.rowId,
+          columnId: selectedFeatureTitle.properties.title.columnId,
         });
       }}
       title={
-        selectedFeatureTitle.title?.columnId
-          ? selectedFeatureTitle.title.stringCell?.value ?? null
+        selectedFeatureTitle.properties.title?.columnId
+          ? selectedFeatureTitle.properties.title.value ?? null
           : undefined
       }
     />

@@ -5,7 +5,12 @@ import type {
   Polygon,
   FeatureCollection,
 } from "geojson";
-import type { Layer } from "@mapform/db/schema";
+import type {
+  IconCell,
+  Layer,
+  RichtextCell,
+  StringCell,
+} from "@mapform/db/schema";
 
 /**
  * BASE FEATURES
@@ -30,11 +35,11 @@ export type BaseProperties = {
 
   // Cell values
   icon: {
-    value: string | null;
+    value: IconCell["value"];
     columnId: string;
   } | null;
   title: {
-    value: string | null;
+    value: StringCell["value"];
     columnId: string;
   } | null;
 };
@@ -68,7 +73,7 @@ export type BaseFeatureCollection = FeatureCollection<
  */
 export interface FullProperties extends BaseProperties {
   description: {
-    value: string | null;
+    value: RichtextCell["value"];
     columnId: string;
   } | null;
   properties: Record<string, unknown>; // TODO: We can add more specific types here

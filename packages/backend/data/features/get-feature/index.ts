@@ -128,15 +128,36 @@ export const getFeature = (authClient: UserAuthClient | PublicClient) =>
         throw new Error("Layer not found");
       }
 
+      const title = row.cells.find((c) => c.columnId === layer.titleColumnId);
+      const description = row.cells.find(
+        (c) => c.columnId === layer.descriptionColumnId,
+      );
+      const icon = row.cells.find((c) => c.columnId === layer.iconColumnId);
+
       const baseFeature = {
+        id: `${rowId}_${layerId}`,
         rowId,
         layerId,
-        type: layer.type,
-        title: row.cells.find((c) => c.columnId === layer.titleColumnId),
-        description: row.cells.find(
-          (c) => c.columnId === layer.descriptionColumnId,
-        ),
-        icon: row.cells.find((c) => c.columnId === layer.iconColumnId),
+        layerType: layer.type,
+        title: title
+          ? {
+              columnId: title.columnId,
+              value: title.stringCell?.value ?? null,
+            }
+          : null,
+        description: description
+          ? {
+              columnId: description.columnId,
+              value: description.richtextCell?.value ?? null,
+            }
+          : null,
+        icon: icon
+          ? {
+              columnId: icon.columnId,
+              value: icon.iconCell?.value ?? null,
+            }
+          : null,
+        color: layer.color ?? null,
       };
 
       switch (layer.type) {
@@ -159,17 +180,10 @@ export const getFeature = (authClient: UserAuthClient | PublicClient) =>
               coordinates: [pointCell.x, pointCell.y],
             },
             properties: {
-              id: `${rowId}_${layerId}`,
-              rowId,
+              ...baseFeature,
               cellId: pointCell.id,
               columnId: layer.pointLayer.pointColumnId,
-              layerId,
               childLayerId: layer.pointLayer.id,
-              layerType: layer.type,
-              icon: baseFeature.icon?.iconCell?.value ?? null,
-              color: layer.pointLayer.color ?? null,
-              title: baseFeature.title?.stringCell?.value ?? null,
-              description: baseFeature.description?.stringCell?.value ?? null,
               properties: row.cells
                 .filter(
                   (c) =>
@@ -211,17 +225,10 @@ export const getFeature = (authClient: UserAuthClient | PublicClient) =>
               coordinates: [pointCell.x, pointCell.y],
             },
             properties: {
-              id: `${rowId}_${layerId}`,
-              rowId,
+              ...baseFeature,
               cellId: pointCell.id,
               columnId: layer.markerLayer.pointColumnId,
-              layerId,
               childLayerId: layer.markerLayer.id,
-              layerType: layer.type,
-              icon: baseFeature.icon?.iconCell?.value ?? null,
-              color: layer.markerLayer.color ?? null,
-              title: baseFeature.title?.stringCell?.value ?? null,
-              description: baseFeature.description?.stringCell?.value ?? null,
               properties: row.cells
                 .filter(
                   (c) =>
@@ -266,17 +273,10 @@ export const getFeature = (authClient: UserAuthClient | PublicClient) =>
             type: "Feature",
             geometry,
             properties: {
-              id: `${rowId}_${layerId}`,
-              rowId,
+              ...baseFeature,
               cellId: lineCell.id,
               columnId: layer.lineLayer.lineColumnId,
-              layerId,
               childLayerId: layer.lineLayer.id,
-              layerType: layer.type,
-              icon: baseFeature.icon?.iconCell?.value ?? null,
-              color: layer.color ?? null,
-              title: baseFeature.title?.stringCell?.value ?? null,
-              description: baseFeature.description?.stringCell?.value ?? null,
               properties: row.cells
                 .filter(
                   (c) =>
@@ -321,17 +321,10 @@ export const getFeature = (authClient: UserAuthClient | PublicClient) =>
             type: "Feature",
             geometry,
             properties: {
-              id: `${rowId}_${layerId}`,
-              rowId,
+              ...baseFeature,
               cellId: polygonCell.id,
               columnId: layer.polygonLayer.polygonColumnId,
-              layerId,
               childLayerId: layer.polygonLayer.id,
-              layerType: layer.type,
-              icon: baseFeature.icon?.iconCell?.value ?? null,
-              color: layer.color ?? null,
-              title: baseFeature.title?.stringCell?.value ?? null,
-              description: baseFeature.description?.stringCell?.value ?? null,
               properties: row.cells
                 .filter(
                   (c) =>
