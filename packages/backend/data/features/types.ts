@@ -19,8 +19,6 @@ import type {
  * properties to render the feature on the map.
  */
 export type BaseProperties = {
-  // ID is always follows format: <rowId>_<layerId>
-  id: string;
   rowId: string;
   // This column corresponds to the GeoJson feaure (point, line, polygon) cell
   cellId: string;

@@ -26,6 +26,7 @@ import { usePreventPageUnload } from "@mapform/lib/hooks/use-prevent-page-unload
 import { upsertCellAction } from "~/data/cells/upsert-cell";
 import { useSetQueryString } from "@mapform/lib/hooks/use-set-query-string";
 import type { GetFeature } from "@mapform/backend/data/features/get-feature";
+import type { BaseFeature } from "@mapform/backend/data/features/types";
 
 type Feature = NonNullable<GetFeature["data"]>;
 type PageWithLayers = NonNullable<GetPageWithLayers["data"]>;
@@ -39,7 +40,7 @@ export interface ProjectContextProps {
   availableDatasets: TeamspaceDatasets;
   projectWithPages: ProjectWithPages;
   selectedFeature?: Feature;
-  setSelectedFeature: (feature: Feature | undefined) => void;
+  setSelectedFeature: (feature: BaseFeature | undefined) => void;
   setActivePage: (
     page?: Pick<PageWithLayers, "id" | "center" | "zoom" | "pitch" | "bearing">,
   ) => void;
@@ -195,10 +196,9 @@ export function ProjectProvider({
   });
 
   const [optimisticSelectedFeature, setOptimisticSelectedFeature] =
-    useOptimistic<Feature | undefined, Partial<Feature> | undefined>(
+    useOptimistic<Feature | undefined, BaseFeature | undefined>(
       selectedFeature,
       (state, newFeature) => {
-        if (!newFeature) return undefined;
         return {
           ...state,
           ...newFeature,
@@ -206,13 +206,13 @@ export function ProjectProvider({
       },
     );
 
-  const setSelectedFeature = (feature: Feature | undefined) => {
+  const setSelectedFeature = (feature: BaseFeature | undefined) => {
     startTransition(() => {
       setOptimisticSelectedFeature(feature);
     });
     setQueryString({
       key: "feature",
-      value: feature ? feature.properties.id : null,
+      value: feature ? feature.id : null,
     });
   };
 

@@ -30,9 +30,9 @@ export function useDrawFeatures({
     catchMapErrors(() => {
       // Filter out features that haven't changed
       const newFeatures = features.features.filter((feature) => {
-        if (!feature?.properties.id) return true; // If no ID, we'll add it
+        if (!feature?.id) return true;
 
-        const existingFeature = draw.get(feature.properties.id);
+        const existingFeature = draw.get(feature.id);
         if (!existingFeature) return true; // Feature doesn't exist, add it
 
         // Compare checksums to see if feature has changed
@@ -41,8 +41,6 @@ export function useDrawFeatures({
 
         return existingChecksum !== newChecksum;
       }) as Feature[];
-
-      console.log(3333, newFeatures);
 
       // Only add new or modified features
       if (newFeatures.length > 0) {

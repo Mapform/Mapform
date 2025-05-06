@@ -135,7 +135,6 @@ export const getFeature = (authClient: UserAuthClient | PublicClient) =>
       const icon = row.cells.find((c) => c.columnId === layer.iconColumnId);
 
       const baseFeature = {
-        id: `${rowId}_${layerId}`,
         rowId,
         layerId,
         layerType: layer.type,
@@ -179,6 +178,7 @@ export const getFeature = (authClient: UserAuthClient | PublicClient) =>
               type: "Point",
               coordinates: [pointCell.x, pointCell.y],
             },
+            id: `${rowId}_${layerId}`,
             properties: {
               ...baseFeature,
               cellId: pointCell.id,
@@ -224,6 +224,7 @@ export const getFeature = (authClient: UserAuthClient | PublicClient) =>
               type: "Point",
               coordinates: [pointCell.x, pointCell.y],
             },
+            id: `${rowId}_${layerId}`,
             properties: {
               ...baseFeature,
               cellId: pointCell.id,
@@ -272,6 +273,7 @@ export const getFeature = (authClient: UserAuthClient | PublicClient) =>
           return {
             type: "Feature",
             geometry,
+            id: `${rowId}_${layerId}`,
             properties: {
               ...baseFeature,
               cellId: lineCell.id,
@@ -320,6 +322,7 @@ export const getFeature = (authClient: UserAuthClient | PublicClient) =>
           return {
             type: "Feature",
             geometry,
+            id: `${rowId}_${layerId}`,
             properties: {
               ...baseFeature,
               cellId: polygonCell.id,

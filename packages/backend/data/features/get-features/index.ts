@@ -332,8 +332,8 @@ export const getFeatures = (authClient: PublicClient | UserAuthClient) =>
               type: "Point",
               coordinates: [pc.point_cell?.value?.x, pc.point_cell?.value?.y],
             },
+            id: `${pc.rowId}_${pc.layerId}`,
             properties: {
-              id: `${pc.rowId}_${pc.layerId}`,
               rowId: pc.rowId,
               cellId: pc.cell.id,
               columnId: pc.cell.columnId,
@@ -364,8 +364,8 @@ export const getFeatures = (authClient: PublicClient | UserAuthClient) =>
                     pc.point_cell?.value?.y,
                   ],
                 },
+                id: `${pc.rowId}_${pc.layerId}`,
                 properties: {
-                  id: `${pc.rowId}_${pc.layerId}`,
                   rowId: pc.rowId,
                   cellId: pc.cell.id,
                   columnId: pc.cell.columnId,
@@ -391,8 +391,8 @@ export const getFeatures = (authClient: PublicClient | UserAuthClient) =>
             return {
               type: "Feature",
               geometry,
+              id: `${lc.rowId}_${lc.layerId}`,
               properties: {
-                id: `${lc.rowId}_${lc.layerId}`,
                 rowId: lc.rowId,
                 cellId: lc.cell.id,
                 columnId: lc.cell.columnId,
@@ -418,8 +418,8 @@ export const getFeatures = (authClient: PublicClient | UserAuthClient) =>
             return {
               type: "Feature",
               geometry,
+              id: `${pc.rowId}_${pc.layerId}`,
               properties: {
-                id: `${pc.rowId}_${pc.layerId}`,
                 rowId: pc.rowId,
                 cellId: pc.cell.id,
                 columnId: pc.cell.columnId,

@@ -12,15 +12,16 @@ import useSupercluster from "use-supercluster";
 import { AnimatePresence, motion } from "motion/react";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import StaticMode from "@mapbox/mapbox-gl-draw-static-mode";
-import { useMapform } from "../index";
-import { LocationMarker } from "../../location-marker";
-import { Cluster } from "./cluster";
 import { useDrawFeatures } from "~/lib/map-tools/draw-features";
 import { useProject } from "~/app/app/(authenticated)/(onboarded)/[wsSlug]/[tsSlug]/projects/[pId]/project-context";
 import type { GetFeature } from "@mapform/backend/data/features/get-feature";
-import { mapStyles } from "./map-styles";
-import "./style.css";
 import type { FeatureCollection } from "geojson";
+import type { BaseFeature } from "@mapform/backend/data/features/types";
+import { LocationMarker } from "../../location-marker";
+import { mapStyles } from "./map-styles";
+import { useMapform } from "../index";
+import { Cluster } from "./cluster";
+import "./style.css";
 
 const accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
 
@@ -250,7 +251,7 @@ export function Map({
         if (isMobile) {
           window.scrollTo({ top: 0, behavior: "smooth" });
         }
-        setSelectedFeature(feature);
+        setSelectedFeature(feature as unknown as BaseFeature);
       }
     };
     const handleMouseEnterPoints = () => {
@@ -365,7 +366,7 @@ export function Map({
     ) => {
       const eventFeature = e.features[e.features.length - 1];
 
-      if (eventFeature?.properties.id) {
+      if (eventFeature?.properties?.id) {
         setSelectedFeature(eventFeature);
       } else if (e.features.length === 0) {
         setSelectedFeature(undefined);
@@ -415,7 +416,7 @@ export function Map({
   useEffect(() => {
     if (selectedFeature) {
       draw?.changeMode("simple_select", {
-        featureIds: [selectedFeature.properties.id],
+        featureIds: [selectedFeature.id],
       });
     } else {
       draw?.changeMode("simple_select", {
@@ -511,7 +512,7 @@ export function Map({
 
           return (
             <LocationMarker
-              key={cluster.properties.id}
+              key={cluster.id}
               latitude={latitude}
               longitude={longitude}
               markerOptions={{
