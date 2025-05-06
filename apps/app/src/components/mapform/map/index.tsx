@@ -366,7 +366,9 @@ export function Map({
     const handleDrawSelectionChange = (
       e: mapboxgl.MapMouseEvent & { features: mapboxgl.MapboxGeoJSONFeature[] },
     ) => {
-      const eventFeature = e.features[e.features.length - 1];
+      const eventFeature = e.features[
+        e.features.length - 1
+      ] as GetFeature["data"];
 
       // When a feature is selected, set the query string to the feature. If not,
       // set the query string to null
@@ -423,7 +425,7 @@ export function Map({
   useEffect(() => {
     if (selectedFeature) {
       draw?.changeMode("simple_select", {
-        featureIds: [selectedFeature.feature?.id as string],
+        featureIds: [selectedFeature.properties.id],
       });
     } else {
       draw?.changeMode("simple_select", {
@@ -512,8 +514,8 @@ export function Map({
           }
 
           const markerIsActive =
-            cluster.properties.rowId === selectedFeature?.rowId &&
-            cluster.properties.layerId === selectedFeature.layerId;
+            cluster.properties.rowId === selectedFeature?.properties.rowId &&
+            cluster.properties.layerId === selectedFeature.properties.layerId;
 
           const markerIsDraggable = markerIsActive && !isStatic;
 

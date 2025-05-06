@@ -38,8 +38,11 @@ export function useDrawFeatures({
         // Compare checksums to see if feature has changed
         const existingChecksum = calculateFeatureChecksum(existingFeature);
         const newChecksum = calculateFeatureChecksum(feature as Feature);
+
         return existingChecksum !== newChecksum;
       }) as Feature[];
+
+      console.log(3333, newFeatures);
 
       // Only add new or modified features
       if (newFeatures.length > 0) {
