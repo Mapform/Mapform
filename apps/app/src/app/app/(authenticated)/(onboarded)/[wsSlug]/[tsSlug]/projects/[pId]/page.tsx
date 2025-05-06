@@ -126,12 +126,14 @@ export default async function ProjectPage(props: {
     );
   }
 
+  console.log("pageData", pageData);
+
   return (
     <div className="flex flex-1 flex-col overflow-hidden p-4">
       <Mapform>
         <ProjectProvider
           availableDatasets={availableDatasets ?? []}
-          pageData={pageData}
+          pageData={undefined}
           pageWithLayers={pageWithLayers}
           projectWithPages={projectWithPages}
           selectedFeature={null}

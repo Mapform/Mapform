@@ -200,7 +200,7 @@ export const getFeature = (authClient: UserAuthClient | PublicClient) =>
             (c) => c.columnId === layer.markerLayer?.pointColumnId,
           )?.pointCell;
 
-          if (!pointCell) {
+          if (!pointCell || !layer.markerLayer.pointColumnId) {
             throw new Error("Point cell not found");
           }
 
@@ -252,12 +252,15 @@ export const getFeature = (authClient: UserAuthClient | PublicClient) =>
             (c) => c.columnId === layer.lineLayer?.lineColumnId,
           )?.lineCell;
 
-          if (!lineCell) {
+          if (!lineCell || !layer.lineLayer.lineColumnId) {
             throw new Error("Line cell not found");
           }
 
           // Parse the WKT coordinates into GeoJSON format
           const geometry = wellknown.parse(lineCell.coordinates);
+          if (!geometry || geometry.type !== "LineString") {
+            throw new Error("Invalid line geometry");
+          }
 
           return {
             type: "Feature",
@@ -304,12 +307,15 @@ export const getFeature = (authClient: UserAuthClient | PublicClient) =>
             (c) => c.columnId === layer.polygonLayer?.polygonColumnId,
           )?.polygonCell;
 
-          if (!polygonCell) {
+          if (!polygonCell || !layer.polygonLayer.polygonColumnId) {
             throw new Error("Polygon cell not found");
           }
 
           // Parse the WKT coordinates into GeoJSON format
           const geometry = wellknown.parse(polygonCell.coordinates);
+          if (!geometry || geometry.type !== "Polygon") {
+            throw new Error("Invalid polygon geometry");
+          }
 
           return {
             type: "Feature",

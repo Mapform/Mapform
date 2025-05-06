@@ -45,6 +45,11 @@ export type BaseFeature =
   | BaseGeoJsonLineString
   | BaseGeoJsonPolygon;
 
+export type BaseFeatureCollection = FeatureCollection<
+  Point | LineString | Polygon,
+  BaseProperties
+>;
+
 /**
  * FULL FEATURES
  *
