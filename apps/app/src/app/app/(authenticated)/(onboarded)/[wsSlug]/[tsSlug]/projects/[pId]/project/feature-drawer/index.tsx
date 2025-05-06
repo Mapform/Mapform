@@ -6,9 +6,9 @@ import { toast } from "@mapform/ui/components/toaster";
 import type { InferSafeActionFnInput } from "next-safe-action";
 import { upsertCellAction } from "~/data/cells/upsert-cell";
 import { useDebouncedOptimisticAction } from "~/lib/use-debounced-optimistic-action";
-import type { GetLayerFeature } from "@mapform/backend/data/features/get-full-feature";
+import type { GetFeature } from "@mapform/backend/data/features/get-feature";
 
-type LayerFeature = NonNullable<GetLayerFeature["data"]>;
+type LayerFeature = NonNullable<GetFeature["data"]>;
 
 export function FeatureDrawer() {
   const { selectedFeature, setSelectedFeature } = useProject();
@@ -21,7 +21,7 @@ export function FeatureDrawer() {
       value="feature"
     >
       {selectedFeature ? (
-        <FeatureDrawerInner key={selectedFeature.rowId} />
+        <FeatureDrawerInner key={selectedFeature.properties.rowId} />
       ) : null}
     </MapformDrawer>
   );
@@ -45,17 +45,13 @@ function FeatureDrawerInner() {
       payload: InferSafeActionFnInput<typeof upsertCellAction>["clientInput"],
     ) => {
       const typedState = state as LayerFeature | undefined;
-      if (!typedState || !typedState.icon || payload.type !== "icon")
-        return state;
+      if (!typedState) return state;
 
       return {
         ...typedState,
-        icon: {
-          ...typedState.icon,
-          iconCell: {
-            ...typedState.icon.iconCell,
-            value: payload.value,
-          },
+        properties: {
+          ...typedState.properties,
+          icon: payload.value,
         },
       };
     },
@@ -77,17 +73,18 @@ function FeatureDrawerInner() {
       payload: InferSafeActionFnInput<typeof upsertCellAction>["clientInput"],
     ) => {
       const typedState = state as LayerFeature | undefined;
-      if (!typedState || !typedState.title || payload.type !== "string")
+      if (
+        !typedState ||
+        !typedState.properties.title ||
+        payload.type !== "string"
+      )
         return state;
 
       return {
         ...typedState,
-        title: {
-          ...typedState.title,
-          stringCell: {
-            ...typedState.title.stringCell,
-            value: payload.value,
-          },
+        properties: {
+          ...typedState.properties,
+          title: payload.value,
         },
       };
     },
@@ -109,17 +106,18 @@ function FeatureDrawerInner() {
       payload: InferSafeActionFnInput<typeof upsertCellAction>["clientInput"],
     ) => {
       const typedState = state as LayerFeature | undefined;
-      if (!typedState || !typedState.description || payload.type !== "richtext")
+      if (
+        !typedState ||
+        !typedState.properties.description ||
+        payload.type !== "richtext"
+      )
         return state;
 
       return {
         ...typedState,
-        description: {
-          ...typedState.description,
-          richtextCell: {
-            ...typedState.description.richtextCell,
-            value: payload.value,
-          },
+        properties: {
+          ...typedState.properties,
+          description: payload.value,
         },
       };
     },
@@ -150,8 +148,8 @@ function FeatureDrawerInner() {
       controls={
         <BlocknoteControls
           allowAddEmoji={
-            !!selectedFeatureIcon.icon?.columnId &&
-            !selectedFeatureIcon.icon.iconCell?.value
+            !!selectedFeature.properties.icon?.columnId &&
+            !!selectedFeature.properties.icon.iconCell?.value
           }
           onIconChange={(value) => {
             if (

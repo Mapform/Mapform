@@ -10,6 +10,7 @@ import {
   projects,
   lineCells,
   polygonCells,
+  stringCells,
 } from "@mapform/db/schema";
 import { and, eq, or, inArray, sql } from "@mapform/db/utils";
 import { getFeaturesSchema } from "./schema";
@@ -95,7 +96,19 @@ export const getFeatures = (authClient: PublicClient | UserAuthClient) =>
             .select()
             .from(cells)
             .leftJoin(pointCells, eq(cells.id, pointCells.cellId))
-            .where(eq(cells.columnId, pl.layer.pointLayer.pointColumnId));
+            .leftJoin(iconsCells, eq(cells.id, iconsCells.cellId))
+            .leftJoin(stringCells, eq(cells.id, stringCells.cellId))
+            .where(
+              or(
+                eq(cells.columnId, pl.layer.pointLayer.pointColumnId),
+                pl.layer.iconColumnId
+                  ? eq(cells.columnId, pl.layer.iconColumnId)
+                  : undefined,
+                pl.layer.titleColumnId
+                  ? eq(cells.columnId, pl.layer.titleColumnId)
+                  : undefined,
+              ),
+            );
 
           return cellsResponse.map((c) => ({
             ...c,
@@ -103,6 +116,18 @@ export const getFeatures = (authClient: PublicClient | UserAuthClient) =>
             rowId: c.cell.rowId,
             pointLayerId: pl.layer.pointLayer?.id,
             layerId: pl.layer.id,
+            icon: pl.layer.iconColumnId
+              ? {
+                  value: c.icon_cell?.value ?? null,
+                  columnId: pl.layer.iconColumnId,
+                }
+              : null,
+            title: pl.layer.titleColumnId
+              ? {
+                  value: c.string_cell?.value ?? null,
+                  columnId: pl.layer.titleColumnId,
+                }
+              : null,
           }));
         }),
       );
@@ -121,11 +146,15 @@ export const getFeatures = (authClient: PublicClient | UserAuthClient) =>
             .from(cells)
             .leftJoin(pointCells, eq(cells.id, pointCells.cellId))
             .leftJoin(iconsCells, eq(cells.id, iconsCells.cellId))
+            .leftJoin(stringCells, eq(cells.id, stringCells.cellId))
             .where(
               or(
                 eq(cells.columnId, pl.layer.markerLayer.pointColumnId),
-                pl.layer.markerLayer.iconColumnId
-                  ? eq(cells.columnId, pl.layer.markerLayer.iconColumnId)
+                pl.layer.iconColumnId
+                  ? eq(cells.columnId, pl.layer.iconColumnId)
+                  : undefined,
+                pl.layer.titleColumnId
+                  ? eq(cells.columnId, pl.layer.titleColumnId)
                   : undefined,
               ),
             );
@@ -136,6 +165,7 @@ export const getFeatures = (authClient: PublicClient | UserAuthClient) =>
                 ...acc[c.cell.rowId],
                 ...(c.point_cell ? { point_cell: c.point_cell } : {}),
                 ...(c.icon_cell ? { icon_cell: c.icon_cell } : {}),
+                ...(c.string_cell ? { string_cell: c.string_cell } : {}),
                 cell: c.cell,
               };
 
@@ -146,6 +176,7 @@ export const getFeatures = (authClient: PublicClient | UserAuthClient) =>
               {
                 point_cell?: (typeof cellsResponse)[number]["point_cell"];
                 icon_cell?: (typeof cellsResponse)[number]["icon_cell"];
+                string_cell?: (typeof cellsResponse)[number]["string_cell"];
                 cell: (typeof cellsResponse)[number]["cell"];
               }
             >,
@@ -153,11 +184,23 @@ export const getFeatures = (authClient: PublicClient | UserAuthClient) =>
 
           return Object.values(groupedCells).map((c) => ({
             ...c,
-            color: pl.layer.markerLayer?.color,
+            color: pl.layer.markerLayer?.color ?? null,
             rowId: c.cell.rowId,
             columnId: c.cell.columnId,
             pointLayerId: pl.layer.markerLayer?.id,
             layerId: pl.layer.id,
+            icon: pl.layer.iconColumnId
+              ? {
+                  value: c.icon_cell?.value ?? null,
+                  columnId: pl.layer.iconColumnId,
+                }
+              : null,
+            title: pl.layer.titleColumnId
+              ? {
+                  value: c.string_cell?.value ?? null,
+                  columnId: pl.layer.titleColumnId,
+                }
+              : null,
           }));
         }),
       );
@@ -175,10 +218,24 @@ export const getFeatures = (authClient: PublicClient | UserAuthClient) =>
                 ...lineCells,
                 value: sql`ST_AsText(${lineCells.value})`.as("value"),
               },
+              icon_cell: iconsCells,
+              string_cell: stringCells,
             })
             .from(cells)
             .leftJoin(lineCells, eq(cells.id, lineCells.cellId))
-            .where(eq(cells.columnId, ll.layer.lineLayer.lineColumnId));
+            .leftJoin(stringCells, eq(cells.id, stringCells.cellId))
+            .leftJoin(iconsCells, eq(cells.id, iconsCells.cellId))
+            .where(
+              or(
+                eq(cells.columnId, ll.layer.lineLayer.lineColumnId),
+                ll.layer.iconColumnId
+                  ? eq(cells.columnId, ll.layer.iconColumnId)
+                  : undefined,
+                ll.layer.titleColumnId
+                  ? eq(cells.columnId, ll.layer.titleColumnId)
+                  : undefined,
+              ),
+            );
 
           return cellsResponse.map((c) => ({
             ...c,
@@ -187,6 +244,18 @@ export const getFeatures = (authClient: PublicClient | UserAuthClient) =>
             columnId: c.cell.columnId,
             lineLayerId: ll.layer.lineLayer?.id,
             layerId: ll.layer.id,
+            icon: ll.layer.iconColumnId
+              ? {
+                  value: c.icon_cell?.value ?? null,
+                  columnId: ll.layer.iconColumnId,
+                }
+              : null,
+            title: ll.layer.titleColumnId
+              ? {
+                  value: c.string_cell?.value ?? null,
+                  columnId: ll.layer.titleColumnId,
+                }
+              : null,
           }));
         }),
       );
@@ -207,10 +276,24 @@ export const getFeatures = (authClient: PublicClient | UserAuthClient) =>
                 ...polygonCells,
                 value: sql`ST_AsText(${polygonCells.value})`.as("value"),
               },
+              icon_cell: iconsCells,
+              string_cell: stringCells,
             })
             .from(cells)
             .leftJoin(polygonCells, eq(cells.id, polygonCells.cellId))
-            .where(eq(cells.columnId, pl.layer.polygonLayer.polygonColumnId));
+            .leftJoin(stringCells, eq(cells.id, stringCells.cellId))
+            .leftJoin(iconsCells, eq(cells.id, iconsCells.cellId))
+            .where(
+              or(
+                eq(cells.columnId, pl.layer.polygonLayer.polygonColumnId),
+                pl.layer.iconColumnId
+                  ? eq(cells.columnId, pl.layer.iconColumnId)
+                  : undefined,
+                pl.layer.titleColumnId
+                  ? eq(cells.columnId, pl.layer.titleColumnId)
+                  : undefined,
+              ),
+            );
 
           return cellsResponse.map((c) => ({
             ...c,
@@ -219,6 +302,18 @@ export const getFeatures = (authClient: PublicClient | UserAuthClient) =>
             columnId: c.cell.columnId,
             polygonLayerId: pl.layer.polygonLayer?.id,
             layerId: pl.layer.id,
+            icon: pl.layer.iconColumnId
+              ? {
+                  value: c.icon_cell?.value ?? null,
+                  columnId: pl.layer.iconColumnId,
+                }
+              : null,
+            title: pl.layer.titleColumnId
+              ? {
+                  value: c.string_cell?.value ?? null,
+                  columnId: pl.layer.titleColumnId,
+                }
+              : null,
           }));
         }),
       );
@@ -245,9 +340,9 @@ export const getFeatures = (authClient: PublicClient | UserAuthClient) =>
               layerId: pc.layerId,
               childLayerId: pc.pointLayerId,
               layerType: "point",
-              icon: null,
               color: pc.color ?? null,
-              title: null,
+              icon: pc.icon,
+              title: pc.title,
             } satisfies BaseProperties,
           })),
 
@@ -277,9 +372,9 @@ export const getFeatures = (authClient: PublicClient | UserAuthClient) =>
                   layerId: pc.layerId,
                   childLayerId: pc.pointLayerId,
                   layerType: "marker",
-                  icon: pc.icon_cell?.value ?? null,
                   color: pc.color ?? null,
-                  title: null,
+                  icon: pc.icon,
+                  title: pc.title,
                 },
               }) satisfies BaseGeoJsonPoint,
           ),
@@ -304,9 +399,9 @@ export const getFeatures = (authClient: PublicClient | UserAuthClient) =>
                 layerId: lc.layerId,
                 childLayerId: lc.lineLayerId,
                 layerType: "line",
-                icon: null,
                 color: lc.color ?? null,
-                title: null,
+                icon: lc.icon,
+                title: lc.title,
               },
             } satisfies BaseGeoJsonLineString;
           }),
@@ -331,9 +426,9 @@ export const getFeatures = (authClient: PublicClient | UserAuthClient) =>
                 layerId: pc.layerId,
                 childLayerId: pc.polygonLayerId,
                 layerType: "polygon",
-                icon: null,
                 color: pc.color,
-                title: null,
+                icon: pc.icon,
+                title: pc.title,
               },
             } satisfies BaseGeoJsonPolygon;
           }),

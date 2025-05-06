@@ -324,7 +324,7 @@ export function Map({
 
       if (!feature) return;
 
-      if (!feature.properties?.persisted) {
+      if (!feature.properties?.id) {
         setActiveFeature(feature);
         return;
       }

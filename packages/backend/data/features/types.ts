@@ -17,15 +17,26 @@ export type BaseProperties = {
   // ID is always follows format: <rowId>_<layerId>
   id: string;
   rowId: string;
+  // This column corresponds to the GeoJson feaure (point, line, polygon) cell
   cellId: string;
+  // This column corresponds to the GeoJson feature (point, line, polygon) column
   columnId: string;
   layerId: string;
   childLayerId: string;
   layerType: Layer["type"];
-  // Data
-  icon: string | null;
+
+  // Layer values
   color: string | null;
-  title: string | null;
+
+  // Cell values
+  icon: {
+    value: string | null;
+    columnId: string;
+  } | null;
+  title: {
+    value: string | null;
+    columnId: string;
+  } | null;
 };
 
 export interface BaseGeoJsonPoint extends Feature<Point> {
@@ -56,7 +67,10 @@ export type BaseFeatureCollection = FeatureCollection<
  * Full properties represent the entire feature
  */
 export interface FullProperties extends BaseProperties {
-  description: string | null;
+  description: {
+    value: string | null;
+    columnId: string;
+  } | null;
   properties: Record<string, unknown>; // TODO: We can add more specific types here
 }
 
