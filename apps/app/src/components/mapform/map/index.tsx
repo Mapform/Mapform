@@ -325,7 +325,7 @@ export function Map({
 
       if (!feature) return;
 
-      if (!feature.properties?.id) {
+      if (!feature.id) {
         setActiveFeature(feature);
         return;
       }
@@ -366,8 +366,8 @@ export function Map({
     ) => {
       const eventFeature = e.features[e.features.length - 1];
 
-      if (eventFeature?.properties?.id) {
-        setSelectedFeature(eventFeature);
+      if (eventFeature?.id) {
+        setSelectedFeature(eventFeature as unknown as BaseFeature);
       } else if (e.features.length === 0) {
         setSelectedFeature(undefined);
       }
