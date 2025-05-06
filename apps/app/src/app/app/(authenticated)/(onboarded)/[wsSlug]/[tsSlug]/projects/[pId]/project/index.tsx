@@ -85,7 +85,7 @@ function Project() {
             <MapformContent
               isEditing
               drawerValues={drawerValues}
-              pageData={updatePageDataServerAction.optimisticState}
+              features={updatePageDataServerAction.optimisticState}
             >
               <CustomBlockProvider
                 isEditing

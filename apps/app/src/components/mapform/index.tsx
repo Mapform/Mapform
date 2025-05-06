@@ -18,7 +18,7 @@ import { ChevronsRightIcon, XIcon } from "lucide-react";
 import { Map } from "./map";
 import { useIsMobile } from "@mapform/lib/hooks/use-is-mobile";
 import { AnimatePresence, motion } from "motion/react";
-import type { GetPageData } from "@mapform/backend/data/features/get-features";
+import type { GetFeatures } from "@mapform/backend/data/features/get-features";
 import type { MapboxGeoJSONFeature } from "mapbox-gl";
 import type { GetLayerFeature } from "@mapform/backend/data/features/get-full-feature";
 
@@ -86,13 +86,13 @@ interface MapformContentProps {
   children: React.ReactNode;
   drawerValues: string[];
   isEditing?: boolean;
-  pageData?: GetPageData["data"];
+  features?: GetFeatures["data"];
 }
 
 interface MapformContentContextProps {
   drawerValues: string[];
   isEditing?: boolean;
-  pageData?: GetPageData["data"];
+  features?: GetFeatures["data"];
 }
 
 export const MapformContentContext = createContext<MapformContentContextProps>(
@@ -102,13 +102,13 @@ export const useMapformContent = () => useContext(MapformContentContext);
 
 export function MapformContent({
   children,
-  pageData,
+  features,
   isEditing,
   drawerValues,
 }: MapformContentProps) {
   return (
     <MapformContentContext.Provider
-      value={{ isEditing, drawerValues, pageData }}
+      value={{ isEditing, drawerValues, features }}
     >
       <div className="relative flex-1 md:flex md:overflow-hidden">
         {children}
@@ -129,7 +129,7 @@ export function MapformMap({
   selectedFeature?: GetLayerFeature["data"];
 }) {
   const isMobile = useIsMobile();
-  const { drawerValues, isEditing, pageData } = useMapformContent();
+  const { drawerValues, isEditing, features } = useMapformContent();
 
   const mapPadding = {
     top: 0,
@@ -146,7 +146,7 @@ export function MapformMap({
         initialViewState={initialViewState}
         isMobile={isMobile}
         mapPadding={mapPadding}
-        pageData={pageData}
+        features={features}
         selectedFeature={selectedFeature}
       >
         {children}

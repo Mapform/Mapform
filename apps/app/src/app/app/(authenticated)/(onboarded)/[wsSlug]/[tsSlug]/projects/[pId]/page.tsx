@@ -54,12 +54,12 @@ const fetchPageData = cache(async (id?: string) => {
     return undefined;
   }
 
-  const pageDataResponse = await authClient.getFeatures({
+  const featuresResponse = await authClient.getFeatures({
     pageId: id,
   });
-  const pageData = pageDataResponse?.data;
+  const features = featuresResponse?.data;
 
-  return pageData;
+  return features;
 });
 
 const fetchSelectedFeature = cache(async (param?: string) => {
@@ -98,7 +98,7 @@ export default async function ProjectPage(props: {
     projectWithPages,
     pageWithLayers,
     availableDatasets,
-    pageData,
+    features,
     selectedFeature,
   ] = await Promise.all([
     fetchProjectWithPages(pId),
@@ -107,8 +107,6 @@ export default async function ProjectPage(props: {
     fetchPageData(searchParams?.page),
     fetchSelectedFeature(searchParams?.feature),
   ]);
-
-  console.log("selectedFeature", selectedFeature);
 
   if (!projectWithPages) {
     return redirect(`/app/${params.wsSlug}/${params.tsSlug}`);
@@ -126,17 +124,15 @@ export default async function ProjectPage(props: {
     );
   }
 
-  console.log("pageData", pageData);
-
   return (
     <div className="flex flex-1 flex-col overflow-hidden p-4">
       <Mapform>
         <ProjectProvider
           availableDatasets={availableDatasets ?? []}
-          pageData={undefined}
+          features={features}
           pageWithLayers={pageWithLayers}
           projectWithPages={projectWithPages}
-          selectedFeature={null}
+          selectedFeature={selectedFeature}
         >
           <div className="bg-background -m-4 flex flex-1 flex-col overflow-hidden">
             <Project />

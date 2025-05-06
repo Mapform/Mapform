@@ -18,7 +18,7 @@ import {
   type InferUseActionHookReturn,
   useAction,
 } from "next-safe-action/hooks";
-import type { GetPageData } from "@mapform/backend/data/features/get-features";
+import type { GetFeatures } from "@mapform/backend/data/features/get-features";
 import type { ListTeamspaceDatasets } from "@mapform/backend/data/datasets/list-teamspace-datasets";
 import { uploadImageAction } from "~/data/images";
 import { updatePageAction } from "~/data/pages/update-page";
@@ -29,7 +29,7 @@ import { useSetQueryString } from "@mapform/lib/hooks/use-set-query-string";
 
 type LayerFeature = NonNullable<GetLayerFeature["data"]>;
 type PageWithLayers = NonNullable<GetPageWithLayers["data"]>;
-type PageData = NonNullable<GetPageData["data"]>;
+type PageData = NonNullable<GetFeatures["data"]>;
 type TeamspaceDatasets = NonNullable<ListTeamspaceDatasets["data"]>;
 type ProjectWithPages = NonNullable<GetProjectWithPages["data"]>;
 
@@ -84,14 +84,14 @@ export const useProject = () => useContext(ProjectContext);
 export function ProjectProvider({
   projectWithPages,
   selectedFeature,
-  pageData,
+  features,
   pageWithLayers,
   availableDatasets,
   children,
 }: {
   projectWithPages: ProjectWithPages;
   selectedFeature?: LayerFeature;
-  pageData?: GetPageData["data"];
+  features?: GetFeatures["data"];
   pageWithLayers?: PageWithLayers;
   availableDatasets: TeamspaceDatasets;
   children: React.ReactNode;
@@ -139,7 +139,7 @@ export function ProjectProvider({
     PageData,
     Parameters<typeof upsertCellAction>[0]
   >(upsertCellAction, {
-    currentState: pageData,
+    currentState: features,
     updateFn: (state, newPage) => {
       if (newPage.type === "point") {
         return {

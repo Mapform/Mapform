@@ -4,9 +4,8 @@ import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import mapboxgl from "mapbox-gl";
 import { cn } from "@mapform/lib/classnames";
-import type { FeatureCollection, Position } from "geojson";
 import type { ViewState } from "@mapform/map-utils/types";
-import type { GetPageData } from "@mapform/backend/data/features/get-features";
+import type { GetFeatures } from "@mapform/backend/data/features/get-features";
 import { usePrevious } from "@mapform/lib/hooks/use-previous";
 import type Supercluster from "supercluster";
 import useSupercluster from "use-supercluster";
@@ -18,21 +17,22 @@ import { LocationMarker } from "../../location-marker";
 import { Cluster } from "./cluster";
 import { useDrawFeatures } from "~/lib/map-tools/draw-features";
 import { useProject } from "~/app/app/(authenticated)/(onboarded)/[wsSlug]/[tsSlug]/projects/[pId]/project-context";
-import type { GetLayerFeature } from "@mapform/backend/data/features/get-full-feature";
+import type { GetFeature } from "@mapform/backend/data/features/get-feature";
 import { mapStyles } from "./map-styles";
 import "./style.css";
+import type { FeatureCollection } from "geojson";
 
 const accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
 
 interface MapProps {
-  pageData?: GetPageData["data"];
+  features?: GetFeatures["data"];
   isEditing?: boolean;
   mapPadding: ViewState["padding"];
   initialViewState: ViewState;
   children?: React.ReactNode;
   isMobile?: boolean;
   isStatic?: boolean;
-  selectedFeature?: GetLayerFeature["data"];
+  selectedFeature?: GetFeature["data"];
 }
 
 interface MarkerPointFeature {
@@ -58,7 +58,7 @@ export function Map({
   initialViewState,
   isEditing = false,
   mapPadding,
-  pageData,
+  features,
   children,
   isMobile,
   isStatic = true,
@@ -83,29 +83,15 @@ export function Map({
   // Condition in usePrevious resolves issue where map padding is not updated on first render
   const prevMapPadding = usePrevious(map ? mapPadding : undefined);
 
-  const markerGeojson: FeatureCollection = useMemo(
+  const markerGeojson = useMemo(
     () => ({
-      type: "FeatureCollection",
-      features: (pageData?.markerData ?? []).map((feature) => ({
-        type: "Feature",
-        geometry: {
-          type: "Point",
-          coordinates: [feature.value!.x, feature.value!.y],
-        },
-        properties: {
-          id: feature.id,
-          color: feature.color ?? "#3b82f6",
-          rowId: feature.rowId,
-          columnId: feature.columnId,
-          icon: feature.icon,
-          layerId: feature.layerId,
-          pointLayerId: feature.pointLayerId,
-          cluster: false,
-        },
-      })),
+      ...features,
+      features: features?.features.filter(
+        (feature) => feature?.properties.layerType === "marker",
+      ),
     }),
-    [pageData?.markerData],
-  );
+    [features],
+  ) as FeatureCollection;
 
   const mapClusterItems = useCallback(
     (item: MarkerPointFeature) => ({
@@ -448,63 +434,7 @@ export function Map({
 
   useDrawFeatures({
     map,
-    featureCollection: {
-      type: "FeatureCollection",
-      features: [
-        // LINES
-        ...(pageData?.lineData.map((feature) => ({
-          type: "Feature" as const,
-          properties: {
-            rowId: feature.rowId,
-            columnId: feature.columnId,
-            layerId: feature.layerId,
-            persisted: true,
-            color: feature.color ?? "#3b82f6",
-          },
-          geometry: {
-            coordinates:
-              (feature.value?.coordinates as unknown as Position[]) ?? [],
-            type: "LineString" as const,
-          },
-          id: feature.id,
-        })) ?? []),
-
-        // POLYGONS
-        ...(pageData?.polygonData.map((feature) => ({
-          type: "Feature" as const,
-          properties: {
-            rowId: feature.rowId,
-            columnId: feature.columnId,
-            layerId: feature.layerId,
-            persisted: true,
-            color: feature.color ?? "#3b82f6",
-          },
-          geometry: {
-            coordinates: (feature.value
-              ?.coordinates as unknown as Position[][]) ?? [[[]]],
-            type: "Polygon" as const,
-          },
-          id: feature.id,
-        })) ?? []),
-
-        // POINTS
-        ...(pageData?.pointData.map((feature) => ({
-          type: "Feature" as const,
-          properties: {
-            rowId: feature.rowId,
-            columnId: feature.columnId,
-            layerId: feature.layerId,
-            persisted: true,
-            color: feature.color ?? "#3b82f6",
-          },
-          geometry: {
-            coordinates: [feature.value!.x, feature.value!.y],
-            type: "Point" as const,
-          },
-          id: feature.id,
-        })) ?? []),
-      ],
-    },
+    features,
   });
 
   return (

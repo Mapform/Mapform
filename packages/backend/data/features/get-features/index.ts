@@ -345,4 +345,4 @@ export const getFeatures = (authClient: PublicClient | UserAuthClient) =>
       } satisfies BaseFeatureCollection;
     });
 
-export type GetPageData = UnwrapReturn<typeof getFeatures>;
+export type GetFeatures = UnwrapReturn<typeof getFeatures>;

@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useMapform } from "~/components/mapform";
 import { useAction } from "next-safe-action/hooks";
 import React, { useEffect, useMemo, useState } from "react";
-import type { GetPageData } from "@mapform/backend/data/features/get-features";
+import type { GetFeatures } from "@mapform/backend/data/features/get-features";
 import type { GetProjectWithPages } from "@mapform/backend/data/projects/get-project-with-pages";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import type { GetSubmission } from "@mapform/backend/data/form-submissions/get-submission";
@@ -56,7 +56,7 @@ import {
 import type { GetLayerFeature } from "@mapform/backend/data/features/get-full-feature";
 
 interface MapProps {
-  pageData: GetPageData["data"];
+  features: GetFeatures["data"];
   projectWithPages: NonNullable<GetProjectWithPages["data"]>;
   formValues: NonNullable<NonNullable<GetSubmission>["data"]>["row"]["cells"];
   selectedFeature?: GetLayerFeature["data"];
@@ -67,7 +67,7 @@ interface MapProps {
 type Page = NonNullable<GetProjectWithPages["data"]>["pages"][number];
 
 export function Map({
-  pageData,
+  features,
   formSubmissionId,
   formValues,
   isUsingSessions,
@@ -403,7 +403,7 @@ export function Map({
         className="flex h-full w-full flex-col md:overflow-hidden"
         onSubmit={form.handleSubmit(onStepSubmit)}
       >
-        <MapformContent drawerValues={drawerValues} pageData={pageData}>
+        <MapformContent drawerValues={drawerValues} features={features}>
           {currentPage.contentViewType === "split" ? (
             <MapformDrawerButton
               onDrawerStackOpenChange={setIsDrawerStackOpen}

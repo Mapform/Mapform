@@ -22,12 +22,12 @@ const fetchPageData = cache(async (id?: string) => {
     return undefined;
   }
 
-  const pageDataResponse = await publicClient.getFeatures({
+  const featuresResponse = await publicClient.getFeatures({
     pageId: id,
   });
-  const pageData = pageDataResponse?.data;
+  const features = featuresResponse?.data;
 
-  return pageData;
+  return features;
 });
 
 const fetchSelectedFeature = cache(async (param?: string) => {
@@ -68,7 +68,7 @@ export default async function Page(props: {
 
   const params = await props.params;
 
-  const [projectWithPagesResponse, pageData, selectedFeature] =
+  const [projectWithPagesResponse, features, selectedFeature] =
     await Promise.all([
       fetchProjectWithPages(params.pId),
       fetchPageData(searchParams?.p),
@@ -155,7 +155,7 @@ export default async function Page(props: {
         <Map
           formValues={formValues}
           isUsingSessions={isUsingSessions}
-          pageData={pageData}
+          features={features}
           projectWithPages={projectWithPages}
           selectedFeature={selectedFeature}
           formSubmissionId={formSubmissionId}
