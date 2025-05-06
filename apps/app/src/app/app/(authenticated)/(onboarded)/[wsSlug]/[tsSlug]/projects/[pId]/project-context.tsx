@@ -8,7 +8,6 @@ import {
   useOptimistic,
   useTransition,
 } from "react";
-import type { GetLayerFeature } from "@mapform/backend/data/features/get-full-feature";
 import { useCreateQueryString } from "@mapform/lib/hooks/use-create-query-string";
 import type { GetProjectWithPages } from "@mapform/backend/data/projects/get-project-with-pages";
 import { useMapform } from "~/components/mapform";
@@ -26,10 +25,11 @@ import { useDebouncedOptimisticAction } from "~/lib/use-debounced-optimistic-act
 import { usePreventPageUnload } from "@mapform/lib/hooks/use-prevent-page-unload";
 import { upsertCellAction } from "~/data/cells/upsert-cell";
 import { useSetQueryString } from "@mapform/lib/hooks/use-set-query-string";
+import type { GetFeature } from "@mapform/backend/data/features/get-feature";
 
-type LayerFeature = NonNullable<GetLayerFeature["data"]>;
+type Feature = NonNullable<GetFeature["data"]>;
 type PageWithLayers = NonNullable<GetPageWithLayers["data"]>;
-type PageData = NonNullable<GetFeatures["data"]>;
+type Features = NonNullable<GetFeatures["data"]>;
 type TeamspaceDatasets = NonNullable<ListTeamspaceDatasets["data"]>;
 type ProjectWithPages = NonNullable<GetProjectWithPages["data"]>;
 
@@ -38,15 +38,8 @@ export interface ProjectContextProps {
   isEditingPage: boolean;
   availableDatasets: TeamspaceDatasets;
   projectWithPages: ProjectWithPages;
-  selectedFeature?: LayerFeature;
-  setSelectedFeature: (
-    feature:
-      | {
-          rowId: LayerFeature["rowId"];
-          layerId: LayerFeature["layerId"];
-        }
-      | undefined,
-  ) => void;
+  selectedFeature?: Feature;
+  setSelectedFeature: (feature: Feature | undefined) => void;
   setActivePage: (
     page?: Pick<PageWithLayers, "id" | "center" | "zoom" | "pitch" | "bearing">,
   ) => void;
@@ -62,11 +55,11 @@ export interface ProjectContextProps {
     setOptimisticState: (state: PageWithLayers) => void;
   };
 
-  updatePageDataServerAction: {
+  updateFeaturesServerAction: {
     execute: (args: Parameters<typeof upsertCellAction>[0]) => void;
-    optimisticState: PageData | undefined;
+    optimisticState: Features | undefined;
     isPending: boolean;
-    setOptimisticState: (state: PageData) => void;
+    setOptimisticState: (state: Features) => void;
   };
 
   uploadImageServerAction: InferUseActionHookReturn<typeof uploadImageAction>;
@@ -90,8 +83,8 @@ export function ProjectProvider({
   children,
 }: {
   projectWithPages: ProjectWithPages;
-  selectedFeature?: LayerFeature;
-  features?: GetFeatures["data"];
+  selectedFeature?: Feature;
+  features?: Features;
   pageWithLayers?: PageWithLayers;
   availableDatasets: TeamspaceDatasets;
   children: React.ReactNode;
@@ -135,63 +128,41 @@ export function ProjectProvider({
     },
   });
 
-  const updatePageDataServerAction = useDebouncedOptimisticAction<
-    PageData,
+  const updateFeaturesServerAction = useDebouncedOptimisticAction<
+    Features,
     Parameters<typeof upsertCellAction>[0]
   >(upsertCellAction, {
     currentState: features,
-    updateFn: (state, newPage) => {
-      if (newPage.type === "point") {
-        return {
-          ...(state as PageData),
-          pointData: (state as PageData).pointData.map((point) =>
-            point.rowId === newPage.rowId && point.columnId === newPage.columnId
-              ? {
-                  ...point,
-                  value: newPage.value,
-                }
-              : point,
-          ),
-          markerData: (state as PageData).markerData.map((marker) =>
-            marker.rowId === newPage.rowId &&
-            marker.columnId === newPage.columnId
-              ? { ...marker, value: newPage.value }
-              : marker,
-          ),
-        };
-      }
+    updateFn: (
+      state: Features,
+      newPage: Parameters<typeof upsertCellAction>[0],
+    ) => {
+      return state;
 
-      if (newPage.type === "line") {
-        return {
-          ...(state as PageData),
-          lineData: (state as PageData).lineData.map((line) =>
-            line.rowId === newPage.rowId && line.columnId === newPage.columnId
-              ? {
-                  ...line,
-                  value: newPage.value,
-                }
-              : line,
-          ),
-        };
-      }
+      const updatedFeatures = state.features.map((feature) => {
+        if (!feature) return null;
+        if (
+          feature.properties.rowId === newPage.rowId &&
+          feature.properties.columnId === newPage.columnId
+        ) {
+          return {
+            ...feature,
+            properties: {
+              ...feature.properties,
+              value: newPage.value,
+            },
+          };
+        }
+        return feature;
+      });
 
-      if (newPage.type === "polygon") {
-        return {
-          ...(state as PageData),
-          polygonData: (state as PageData).polygonData.map((polygon) =>
-            polygon.rowId === newPage.rowId &&
-            polygon.columnId === newPage.columnId
-              ? {
-                  ...polygon,
-                  value: newPage.value,
-                }
-              : polygon,
-          ),
-        };
-      }
+      return {
+        type: "FeatureCollection",
+        features: updatedFeatures,
+      };
     },
     onError: ({ error }) => {
-      console.log("updatePageDataServerAction error", error);
+      console.log("updateFeaturesServerAction error", error);
 
       toast({
         title: "Uh oh! Something went wrong.",
@@ -224,26 +195,24 @@ export function ProjectProvider({
   });
 
   const [optimisticSelectedFeature, setOptimisticSelectedFeature] =
-    useOptimistic<LayerFeature | undefined, Partial<LayerFeature> | undefined>(
+    useOptimistic<Feature | undefined, Partial<Feature> | undefined>(
       selectedFeature,
       (state, newFeature) => {
         if (!newFeature) return undefined;
         return {
           ...state,
           ...newFeature,
-        } as LayerFeature;
+        } as Feature;
       },
     );
 
-  const setSelectedFeature = (
-    feature: Pick<LayerFeature, "rowId" | "layerId"> | undefined,
-  ) => {
+  const setSelectedFeature = (feature: Feature | undefined) => {
     startTransition(() => {
       setOptimisticSelectedFeature(feature);
     });
     setQueryString({
       key: "feature",
-      value: feature ? `${feature.rowId}_${feature.layerId}` : null,
+      value: feature ? feature.properties.id : null,
     });
   };
 
@@ -322,7 +291,7 @@ export function ProjectProvider({
 
         // Actions
         updatePageServerAction,
-        updatePageDataServerAction,
+        updateFeaturesServerAction,
         uploadImageServerAction,
       }}
     >

@@ -33,7 +33,7 @@ export const FeatureSettingsPopover = () => {
     if (!selectedFeature) return;
 
     executeDeleteRows({
-      rowIds: [selectedFeature.rowId],
+      rowIds: [selectedFeature.properties.rowId],
     });
 
     setSelectedFeature(undefined);

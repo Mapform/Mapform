@@ -31,7 +31,7 @@ function FeatureDrawerInner() {
   const {
     selectedFeature,
     updatePageServerAction,
-    updatePageDataServerAction,
+    updateFeaturesServerAction,
   } = useProject();
   const currentPage = updatePageServerAction.optimisticState;
 
@@ -156,7 +156,7 @@ function FeatureDrawerInner() {
           onIconChange={(value) => {
             if (
               !selectedFeatureIcon.icon ||
-              !updatePageDataServerAction.optimisticState
+              !updateFeaturesServerAction.optimisticState
             ) {
               return;
             }
@@ -204,7 +204,7 @@ function FeatureDrawerInner() {
       onIconChange={(value) => {
         if (
           !selectedFeatureIcon.icon ||
-          !updatePageDataServerAction.optimisticState
+          !updateFeaturesServerAction.optimisticState
         ) {
           return;
         }

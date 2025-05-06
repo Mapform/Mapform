@@ -64,7 +64,7 @@ export function Map({
   isStatic = true,
   selectedFeature,
 }: MapProps) {
-  const { updatePageDataServerAction, setSelectedFeature } = useProject();
+  const { updateFeaturesServerAction, setSelectedFeature } = useProject();
   const [bounds, setBounds] = useState<
     [number, number, number, number] | undefined
   >(undefined);
@@ -250,10 +250,7 @@ export function Map({
         if (isMobile) {
           window.scrollTo({ top: 0, behavior: "smooth" });
         }
-        setSelectedFeature({
-          rowId: feature.properties.rowId,
-          layerId: feature.properties.layerId,
-        });
+        setSelectedFeature(feature);
       }
     };
     const handleMouseEnterPoints = () => {
@@ -333,7 +330,7 @@ export function Map({
       }
 
       if (feature.geometry.type === "Polygon") {
-        updatePageDataServerAction.execute({
+        updateFeaturesServerAction.execute({
           type: "polygon",
           value: { coordinates: feature.geometry.coordinates },
           rowId: feature.properties?.rowId,
@@ -342,7 +339,7 @@ export function Map({
       }
 
       if (feature.geometry.type === "LineString") {
-        updatePageDataServerAction.execute({
+        updateFeaturesServerAction.execute({
           type: "line",
           value: { coordinates: feature.geometry.coordinates },
           rowId: feature.properties?.rowId,
@@ -351,7 +348,7 @@ export function Map({
       }
 
       if (feature.geometry.type === "Point") {
-        updatePageDataServerAction.execute({
+        updateFeaturesServerAction.execute({
           type: "point",
           value: {
             x: feature.geometry.coordinates[0],
@@ -366,17 +363,10 @@ export function Map({
     const handleDrawSelectionChange = (
       e: mapboxgl.MapMouseEvent & { features: mapboxgl.MapboxGeoJSONFeature[] },
     ) => {
-      const eventFeature = e.features[
-        e.features.length - 1
-      ] as GetFeature["data"];
+      const eventFeature = e.features[e.features.length - 1];
 
-      // When a feature is selected, set the query string to the feature. If not,
-      // set the query string to null
-      if (eventFeature?.properties?.persisted) {
-        setSelectedFeature({
-          rowId: eventFeature.properties.rowId,
-          layerId: eventFeature.properties.layerId,
-        });
+      if (eventFeature?.properties.id) {
+        setSelectedFeature(eventFeature);
       } else if (e.features.length === 0) {
         setSelectedFeature(undefined);
       }
@@ -417,7 +407,7 @@ export function Map({
     draw,
     setActiveFeature,
     activeFeature,
-    updatePageDataServerAction,
+    updateFeaturesServerAction,
     setSelectedFeature,
   ]);
 
@@ -528,7 +518,7 @@ export function Map({
                 draggable: markerIsDraggable,
               }}
               onDragEnd={(lngLat) => {
-                updatePageDataServerAction.execute({
+                updateFeaturesServerAction.execute({
                   type: "point",
                   value: { x: lngLat.lng, y: lngLat.lat },
                   rowId: cluster.properties.rowId,
@@ -559,10 +549,7 @@ export function Map({
                   // and isntead pass an onClick callback. The parent can do
                   // this.
                   if (isMobile) window.scrollTo({ top: 0, behavior: "smooth" });
-                  setSelectedFeature({
-                    rowId: cluster.properties.rowId,
-                    layerId: cluster.properties.layerId,
-                  });
+                  setSelectedFeature(cluster);
                 }}
                 style={{ backgroundColor: cluster.properties.color }}
                 type="button"

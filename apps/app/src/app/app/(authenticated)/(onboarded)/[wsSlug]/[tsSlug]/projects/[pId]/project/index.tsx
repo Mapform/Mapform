@@ -32,7 +32,7 @@ function Project() {
     setSelectedFeature,
     updatePageServerAction,
     uploadImageServerAction,
-    updatePageDataServerAction,
+    updateFeaturesServerAction,
   } = useProject();
   const { user } = useAuth();
   const [isTourOpen, setIsTourOpen] = useState(!user?.projectGuideCompleted);
@@ -85,7 +85,7 @@ function Project() {
             <MapformContent
               isEditing
               drawerValues={drawerValues}
-              features={updatePageDataServerAction.optimisticState}
+              features={updateFeaturesServerAction.optimisticState}
             >
               <CustomBlockProvider
                 isEditing
