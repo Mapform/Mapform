@@ -28,7 +28,7 @@ import { useSetQueryString } from "@mapform/lib/hooks/use-set-query-string";
 import type { GetFeature } from "@mapform/backend/data/features/get-feature";
 import type { BaseFeature } from "@mapform/backend/data/features/types";
 import type { UpsertCellSchema } from "@mapform/backend/data/cells/upsert-cell/schema";
-import { Position } from "geojson";
+import type { Position } from "geojson";
 
 type Feature = NonNullable<GetFeature["data"]>;
 type PageWithLayers = NonNullable<GetPageWithLayers["data"]>;

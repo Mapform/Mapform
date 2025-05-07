@@ -427,7 +427,14 @@ export function Map({
 
   useDrawFeatures({
     map,
-    features,
+    features: {
+      type: "FeatureCollection",
+      features:
+        // Filter out markers since they are handled by the marker layer
+        features?.features.filter(
+          (feature) => feature?.properties.layerType !== "marker",
+        ) ?? [],
+    },
   });
 
   return (
