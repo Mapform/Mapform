@@ -27,6 +27,8 @@ import { upsertCellAction } from "~/data/cells/upsert-cell";
 import { useSetQueryString } from "@mapform/lib/hooks/use-set-query-string";
 import type { GetFeature } from "@mapform/backend/data/features/get-feature";
 import type { BaseFeature } from "@mapform/backend/data/features/types";
+import type { UpsertCellSchema } from "@mapform/backend/data/cells/upsert-cell/schema";
+import { Position } from "geojson";
 
 type Feature = NonNullable<GetFeature["data"]>;
 type PageWithLayers = NonNullable<GetPageWithLayers["data"]>;
@@ -131,28 +133,39 @@ export function ProjectProvider({
 
   const updateFeaturesServerAction = useDebouncedOptimisticAction<
     Features,
-    Parameters<typeof upsertCellAction>[0]
+    UpsertCellSchema
   >(upsertCellAction, {
     currentState: features,
-    updateFn: (
-      state: Features,
-      newPage: Parameters<typeof upsertCellAction>[0],
-    ) => {
-      return state;
+    updateFn: (state, newPage) => {
+      const typeState = state as Features;
+      const typedNewPage = newPage as UpsertCellSchema;
 
-      const updatedFeatures = state.features.map((feature) => {
+      if (!["point", "line", "polygon"].includes(typedNewPage.type)) {
+        return state;
+      }
+
+      const updatedFeatures = typeState.features.map((feature) => {
         if (!feature) return null;
         if (
-          feature.properties.rowId === newPage.rowId &&
-          feature.properties.columnId === newPage.columnId
+          feature.properties.rowId === typedNewPage.rowId &&
+          feature.properties.columnId === typedNewPage.columnId
         ) {
+          console.log("typedNewPage", typedNewPage);
           return {
             ...feature,
+            geometry: {
+              ...feature.geometry,
+              coordinates:
+                typedNewPage.type === "point"
+                  ? ([typedNewPage.value!.x, typedNewPage.value!.y] as Position)
+                  : (typedNewPage.value as unknown as
+                      | Position[]
+                      | Position[][]),
+            },
             properties: {
               ...feature.properties,
-              value: newPage.value,
             },
-          };
+          } satisfies BaseFeature;
         }
         return feature;
       });
@@ -199,6 +212,8 @@ export function ProjectProvider({
     useOptimistic<Feature | undefined, BaseFeature | undefined>(
       selectedFeature,
       (state, newFeature) => {
+        if (!newFeature) return undefined;
+
         return {
           ...state,
           ...newFeature,
@@ -212,7 +227,7 @@ export function ProjectProvider({
     });
     setQueryString({
       key: "feature",
-      value: feature ? feature.id : null,
+      value: feature ? (feature.id as string) : null,
     });
   };
 
