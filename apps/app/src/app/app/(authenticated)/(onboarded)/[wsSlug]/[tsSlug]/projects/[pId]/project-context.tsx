@@ -217,6 +217,14 @@ export function ProjectProvider({
         return {
           ...state,
           ...newFeature,
+          geometry: {
+            ...state?.geometry,
+            coordinates: newFeature.geometry.coordinates,
+          },
+          properties: {
+            ...state?.properties,
+            ...newFeature.properties,
+          },
         } as Feature;
       },
     );

@@ -35,11 +35,7 @@ export function useDrawFeatures({
         const existingFeature = draw.get(feature.id);
         if (!existingFeature) return true; // Feature doesn't exist, add it
 
-        // Compare checksums to see if feature has changed
-        const existingChecksum = calculateFeatureChecksum(existingFeature);
-        const newChecksum = calculateFeatureChecksum(feature as Feature);
-
-        return existingChecksum !== newChecksum;
+        return false;
       }) as Feature[];
 
       // Only add new or modified features
@@ -49,10 +45,6 @@ export function useDrawFeatures({
           features: newFeatures,
         });
       }
-
-      // TODO: Delete features that exist in the map but not in the new
-      // collection. NOTE: Exception is when the feature is currently being
-      // drawn.
     });
   }, [map, features, draw]);
 }
