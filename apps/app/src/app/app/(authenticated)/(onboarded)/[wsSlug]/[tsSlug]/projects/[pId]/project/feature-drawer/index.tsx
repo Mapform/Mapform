@@ -36,7 +36,7 @@ function FeatureDrawerInner() {
   const currentPage = updatePageServerAction.optimisticState;
 
   const upsertIconCellServerAction = useDebouncedOptimisticAction<
-    LayerFeature,
+    LayerFeature | undefined,
     InferSafeActionFnInput<typeof upsertCellAction>["clientInput"]
   >(upsertCellAction, {
     currentState: selectedFeature,
@@ -67,7 +67,7 @@ function FeatureDrawerInner() {
   });
 
   const upsertStringCellServerAction = useDebouncedOptimisticAction<
-    LayerFeature,
+    LayerFeature | undefined,
     InferSafeActionFnInput<typeof upsertCellAction>["clientInput"]
   >(upsertCellAction, {
     currentState: selectedFeature,
@@ -103,7 +103,7 @@ function FeatureDrawerInner() {
   });
 
   const upsertRichtextCellServerAction = useDebouncedOptimisticAction<
-    LayerFeature,
+    LayerFeature | undefined,
     InferSafeActionFnInput<typeof upsertCellAction>["clientInput"]
   >(upsertCellAction, {
     currentState: selectedFeature,
@@ -147,7 +147,12 @@ function FeatureDrawerInner() {
     return null;
   }
 
-  if (!selectedFeature) {
+  if (
+    !selectedFeature ||
+    !selectedFeatureIcon ||
+    !selectedFeatureTitle ||
+    !selectedFeatureDescription
+  ) {
     return null;
   }
 
