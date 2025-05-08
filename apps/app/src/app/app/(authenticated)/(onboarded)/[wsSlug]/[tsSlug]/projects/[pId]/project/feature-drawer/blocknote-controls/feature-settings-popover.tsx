@@ -14,7 +14,8 @@ import { toast } from "@mapform/ui/components/toaster";
 
 export const FeatureSettingsPopover = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { selectedFeature, setSelectedFeature } = useProject();
+  const { selectedFeature, setSelectedFeature, updateFeaturesServerAction } =
+    useProject();
 
   const { execute: executeDeleteRows, isPending } = useAction(
     deleteRowsAction,
@@ -31,6 +32,20 @@ export const FeatureSettingsPopover = () => {
 
   const handleDelete = () => {
     if (!selectedFeature) return;
+
+    const optimisticState = updateFeaturesServerAction.optimisticState;
+
+    if (!optimisticState) return;
+
+    /**
+     * Optimistically update the feature state
+     */
+    updateFeaturesServerAction.setOptimisticState({
+      type: "FeatureCollection",
+      features: [
+        ...optimisticState.features.filter((f) => f?.id !== selectedFeature.id),
+      ],
+    });
 
     executeDeleteRows({
       rowIds: [selectedFeature.properties.rowId],

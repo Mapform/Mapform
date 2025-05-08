@@ -28,6 +28,29 @@ export function useDrawFeatures({
     if (!map || !draw) return;
 
     catchMapErrors(() => {
+      // Get all existing feature IDs from the draw tool
+      const existingFeatures = draw.getAll().features;
+      const existingFeatureIds = new Set(
+        existingFeatures
+          .map((f) => f.id)
+          .filter((id): id is string => typeof id === "string"),
+      );
+
+      // Get all incoming feature IDs
+      const incomingFeatureIds = new Set(
+        features.features
+          .map((f) => f?.id)
+          .filter((id): id is string => typeof id === "string"),
+      );
+
+      // Batch delete features that no longer exist
+      const featuresToDelete = Array.from(existingFeatureIds).filter(
+        (id) => !incomingFeatureIds.has(id),
+      );
+      if (featuresToDelete.length > 0) {
+        draw.delete(featuresToDelete);
+      }
+
       // Filter out features that haven't changed
       const newFeatures = features.features.filter((feature) => {
         if (!feature?.id) return true;
