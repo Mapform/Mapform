@@ -16,7 +16,10 @@ import { useDrawFeatures } from "~/lib/map-tools/draw-features";
 import { useProject } from "~/app/app/(authenticated)/(onboarded)/[wsSlug]/[tsSlug]/projects/[pId]/project-context";
 import type { GetFeature } from "@mapform/backend/data/features/get-feature";
 import type { FeatureCollection } from "geojson";
-import type { BaseFeature } from "@mapform/backend/data/features/types";
+import {
+  isPersistedFeature,
+  type BaseFeature,
+} from "@mapform/backend/data/features/types";
 import { LocationMarker } from "../../location-marker";
 import { mapStyles } from "./map-styles";
 import { useMapform } from "../index";
@@ -366,8 +369,8 @@ export function Map({
     ) => {
       const eventFeature = e.features[e.features.length - 1];
 
-      if (eventFeature?.id) {
-        setSelectedFeature(eventFeature as unknown as BaseFeature);
+      if (eventFeature && isPersistedFeature(eventFeature)) {
+        setSelectedFeature(eventFeature);
       } else if (e.features.length === 0) {
         setSelectedFeature(undefined);
       }
@@ -415,9 +418,12 @@ export function Map({
   // Used to select the feature on the map
   useEffect(() => {
     if (selectedFeature) {
-      draw?.changeMode("simple_select", {
-        featureIds: [selectedFeature.id],
-      });
+      const selected = draw?.get(selectedFeature.id);
+      if (!selected) {
+        draw?.changeMode("simple_select", {
+          featureIds: [selectedFeature.id],
+        });
+      }
     } else {
       draw?.changeMode("simple_select", {
         featureIds: [],

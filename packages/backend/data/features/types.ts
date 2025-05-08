@@ -98,3 +98,15 @@ export type FullFeatureCollection = FeatureCollection<
   Point | LineString | Polygon,
   FullProperties
 >;
+
+/**
+ * If the feature has a rowId and columnId, it is a persisted feature
+ */
+export function isPersistedFeature(
+  feature: BaseFeature | Feature,
+): feature is BaseFeature {
+  return (
+    "rowId" in (feature.properties as BaseProperties) &&
+    "columnId" in (feature.properties as BaseProperties)
+  );
+}
