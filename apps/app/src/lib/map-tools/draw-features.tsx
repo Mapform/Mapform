@@ -1,6 +1,7 @@
 "use client";
 
 import type { GetFeatures } from "@mapform/backend/data/features/get-features";
+import { isPersistedFeature } from "@mapform/backend/data/features/types";
 import type { Feature } from "geojson";
 import type mapboxgl from "mapbox-gl";
 import { useEffect } from "react";
@@ -28,12 +29,13 @@ export function useDrawFeatures({
     if (!map || !draw) return;
 
     catchMapErrors(() => {
-      // Get all existing feature IDs from the draw tool
-      const existingFeatures = draw.getAll().features;
+      // Get all existing feature IDs from the draw tool that are persisted (ie.
+      // we ignore features that are being drawn)
+      const existingFeatures = draw
+        .getAll()
+        .features.filter((f) => isPersistedFeature(f));
       const existingFeatureIds = new Set(
-        existingFeatures
-          .map((f) => f.id)
-          .filter((id): id is string => typeof id === "string"),
+        existingFeatures.map((f) => f.id as string),
       );
 
       // Get all incoming feature IDs
