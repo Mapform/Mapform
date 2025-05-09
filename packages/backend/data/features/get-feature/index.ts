@@ -128,32 +128,32 @@ export const getFeature = (authClient: UserAuthClient | PublicClient) =>
         throw new Error("Layer not found");
       }
 
-      const title = row.cells.find((c) => c.columnId === layer.titleColumnId);
-      const description = row.cells.find(
-        (c) => c.columnId === layer.descriptionColumnId,
-      );
-      const icon = row.cells.find((c) => c.columnId === layer.iconColumnId);
-
       const baseFeature = {
         rowId,
         layerId,
         layerType: layer.type,
-        title: title
+        title: layer.titleColumnId
           ? {
-              columnId: title.columnId,
-              value: title.stringCell?.value ?? null,
+              columnId: layer.titleColumnId,
+              value:
+                row.cells.find((c) => c.columnId === layer.titleColumnId)
+                  ?.stringCell?.value ?? null,
             }
           : null,
-        description: description
+        description: layer.descriptionColumnId
           ? {
-              columnId: description.columnId,
-              value: description.richtextCell?.value ?? null,
+              columnId: layer.descriptionColumnId,
+              value:
+                row.cells.find((c) => c.columnId === layer.descriptionColumnId)
+                  ?.richtextCell?.value ?? null,
             }
           : null,
-        icon: icon
+        icon: layer.iconColumnId
           ? {
-              columnId: icon.columnId,
-              value: icon.iconCell?.value ?? null,
+              columnId: layer.iconColumnId,
+              value:
+                row.cells.find((c) => c.columnId === layer.iconColumnId)
+                  ?.iconCell?.value ?? null,
             }
           : null,
         color: layer.color ?? null,
