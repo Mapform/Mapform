@@ -108,8 +108,6 @@ export default async function ProjectPage(props: {
     fetchSelectedFeature(searchParams?.feature),
   ]);
 
-  console.log("selectedFeature", selectedFeature);
-
   if (!projectWithPages) {
     return redirect(`/app/${params.wsSlug}/${params.tsSlug}`);
   }
@@ -126,7 +124,7 @@ export default async function ProjectPage(props: {
     );
   }
 
-  console.log("selectedFeature", selectedFeature);
+  console.log("features", features);
 
   return (
     <div className="flex flex-1 flex-col overflow-hidden p-4">

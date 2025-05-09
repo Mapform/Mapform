@@ -13,6 +13,7 @@ import { EmojiPopover } from "@mapform/ui/components/emoji-picker";
 import { AutoSizeTextArea } from "@mapform/ui/components/autosize-text-area";
 import { cn } from "@mapform/lib/classnames";
 import { useMemo } from "react";
+import { Skeleton } from "@mapform/ui/components/skeleton";
 
 interface BlocknoteProps {
   // null means the property exists but no value, undefined means the property does not exist
@@ -29,6 +30,7 @@ interface BlocknoteProps {
   };
   isFeature?: boolean;
   controls?: React.ReactNode;
+  isQueryPending?: boolean;
   onPrev?: () => void;
   onIconChange?: (icon: string | null) => void;
   onTitleChange?: (content: string) => void;
@@ -45,6 +47,7 @@ export function Blocknote({
   includeFormBlocks = false,
   onDescriptionChange,
   locationEditorProps,
+  isQueryPending = false,
 }: BlocknoteProps) {
   const { isEditing } = useCustomBlockContext();
 
@@ -124,6 +127,8 @@ export function Blocknote({
     );
   }, [description, includeFormBlocks, editor, onDescriptionChange]);
 
+  console.log(1111, isQueryPending);
+
   // Renders the editor instance using a React component.
   return (
     <div className="relative flex max-h-full flex-1 flex-col">
@@ -149,7 +154,11 @@ export function Blocknote({
       <div className={cn("p-4 md:overflow-y-auto", controls ? "mt-8" : "")}>
         {iconElement}
         {titleElement}
-        {descriptionElement}
+        {isQueryPending ? (
+          <Skeleton className="h-4 w-full" />
+        ) : (
+          descriptionElement
+        )}
       </div>
       <div
         className="flex-1"

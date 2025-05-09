@@ -29,6 +29,7 @@ export function FeatureDrawer() {
 
 function FeatureDrawerInner() {
   const {
+    isQueryPending,
     selectedFeature,
     updatePageServerAction,
     updateFeaturesServerAction,
@@ -159,6 +160,7 @@ function FeatureDrawerInner() {
   return (
     <Blocknote
       isFeature
+      isQueryPending={isQueryPending}
       controls={
         <BlocknoteControls
           allowAddEmoji={

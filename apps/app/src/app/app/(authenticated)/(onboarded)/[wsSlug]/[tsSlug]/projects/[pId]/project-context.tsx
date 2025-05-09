@@ -42,6 +42,8 @@ export interface ProjectContextProps {
   availableDatasets: TeamspaceDatasets;
   projectWithPages: ProjectWithPages;
   selectedFeature?: Feature;
+  // Used to show if the selectedFeature is loading
+  isQueryPending: boolean;
   setSelectedFeature: (feature: BaseFeature | undefined) => void;
   setActivePage: (
     page?: Pick<PageWithLayers, "id" | "center" | "zoom" | "pitch" | "bearing">,
@@ -98,6 +100,7 @@ export function ProjectProvider({
   const searchParams = useSearchParams();
   const createQueryString = useCreateQueryString();
   const [_, startTransition] = useTransition();
+  const [isQueryPending, startQueryTransition] = useTransition();
   const page = searchParams.get("page");
   const setQueryString = useSetQueryString();
 
@@ -214,6 +217,8 @@ export function ProjectProvider({
       (state, newFeature) => {
         if (!newFeature) return undefined;
 
+        console.log("newFeature", newFeature.properties);
+
         return {
           ...state,
           ...newFeature,
@@ -230,11 +235,11 @@ export function ProjectProvider({
     );
 
   const setSelectedFeature = (feature: BaseFeature | undefined) => {
-    setQueryString({
-      key: "feature",
-      value: feature ? (feature.id as string) : null,
-    });
-    startTransition(() => {
+    startQueryTransition(() => {
+      setQueryString({
+        key: "feature",
+        value: feature ? (feature.id as string) : null,
+      });
       setOptimisticSelectedFeature(feature);
     });
   };
@@ -299,6 +304,7 @@ export function ProjectProvider({
       value={{
         isEditingPage,
         setActivePage,
+        isQueryPending,
         projectWithPages,
         availableDatasets,
         selectedFeature: optimisticSelectedFeature,

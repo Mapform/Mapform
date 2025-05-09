@@ -110,11 +110,35 @@ export const getFeatures = (authClient: PublicClient | UserAuthClient) =>
               ),
             );
 
-          return cellsResponse.map((c) => ({
+          const groupedCells = cellsResponse.reduce(
+            (acc, c) => {
+              acc[c.cell.rowId] = {
+                ...acc[c.cell.rowId],
+                ...(c.point_cell ? { point_cell: c.point_cell } : {}),
+                ...(c.icon_cell ? { icon_cell: c.icon_cell } : {}),
+                ...(c.string_cell ? { string_cell: c.string_cell } : {}),
+                cell: c.cell,
+              };
+
+              return acc;
+            },
+            {} as Record<
+              string,
+              {
+                point_cell?: (typeof cellsResponse)[number]["point_cell"];
+                icon_cell?: (typeof cellsResponse)[number]["icon_cell"];
+                string_cell?: (typeof cellsResponse)[number]["string_cell"];
+                cell: (typeof cellsResponse)[number]["cell"];
+              }
+            >,
+          );
+
+          return Object.values(groupedCells).map((c) => ({
             ...c,
             color: pl.layer.color,
             rowId: c.cell.rowId,
             pointLayerId: pl.layer.pointLayer?.id,
+            point_cell: c.point_cell,
             layerId: pl.layer.id,
             icon: pl.layer.iconColumnId
               ? {
@@ -188,6 +212,7 @@ export const getFeatures = (authClient: PublicClient | UserAuthClient) =>
             rowId: c.cell.rowId,
             columnId: c.cell.columnId,
             pointLayerId: pl.layer.id,
+            point_cell: c.point_cell,
             layerId: pl.layer.id,
             icon: pl.layer.iconColumnId
               ? {
@@ -237,12 +262,36 @@ export const getFeatures = (authClient: PublicClient | UserAuthClient) =>
               ),
             );
 
-          return cellsResponse.map((c) => ({
+          const groupedCells = cellsResponse.reduce(
+            (acc, c) => {
+              acc[c.cell.rowId] = {
+                ...acc[c.cell.rowId],
+                ...(c.line_cell ? { line_cell: c.line_cell } : {}),
+                ...(c.icon_cell ? { icon_cell: c.icon_cell } : {}),
+                ...(c.string_cell ? { string_cell: c.string_cell } : {}),
+                cell: c.cell,
+              };
+
+              return acc;
+            },
+            {} as Record<
+              string,
+              {
+                line_cell?: (typeof cellsResponse)[number]["line_cell"];
+                icon_cell?: (typeof cellsResponse)[number]["icon_cell"];
+                string_cell?: (typeof cellsResponse)[number]["string_cell"];
+                cell: (typeof cellsResponse)[number]["cell"];
+              }
+            >,
+          );
+
+          return Object.values(groupedCells).map((c) => ({
             ...c,
             color: ll.layer.color,
             rowId: c.cell.rowId,
             columnId: c.cell.columnId,
             lineLayerId: ll.layer.lineLayer?.id,
+            line_cell: c.line_cell,
             layerId: ll.layer.id,
             icon: ll.layer.iconColumnId
               ? {
@@ -295,12 +344,36 @@ export const getFeatures = (authClient: PublicClient | UserAuthClient) =>
               ),
             );
 
-          return cellsResponse.map((c) => ({
+          const groupedCells = cellsResponse.reduce(
+            (acc, c) => {
+              acc[c.cell.rowId] = {
+                ...acc[c.cell.rowId],
+                ...(c.polygon_cell ? { polygon_cell: c.polygon_cell } : {}),
+                ...(c.icon_cell ? { icon_cell: c.icon_cell } : {}),
+                ...(c.string_cell ? { string_cell: c.string_cell } : {}),
+                cell: c.cell,
+              };
+
+              return acc;
+            },
+            {} as Record<
+              string,
+              {
+                polygon_cell?: (typeof cellsResponse)[number]["polygon_cell"];
+                icon_cell?: (typeof cellsResponse)[number]["icon_cell"];
+                string_cell?: (typeof cellsResponse)[number]["string_cell"];
+                cell: (typeof cellsResponse)[number]["cell"];
+              }
+            >,
+          );
+
+          return Object.values(groupedCells).map((c) => ({
             ...c,
             color: pl.layer.color,
             rowId: c.cell.rowId,
             columnId: c.cell.columnId,
             polygonLayerId: pl.layer.polygonLayer?.id,
+            polygon_cell: c.polygon_cell,
             layerId: pl.layer.id,
             icon: pl.layer.iconColumnId
               ? {
