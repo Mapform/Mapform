@@ -570,10 +570,9 @@ export function Map({
                     duration: 0.2,
                   }}
                   className={cn(
-                    "box-content flex size-10 cursor-pointer items-center justify-center rounded-full border-2 border-white text-lg shadow-md",
+                    "box-content flex size-8 cursor-pointer items-center justify-center rounded-full border-2 border-white text-lg shadow-md",
                     {
-                      "border-8": markerIsActive,
-                      "border-2": !markerIsActive,
+                      "size-10": markerIsActive,
                     },
                   )}
                   exit={{ opacity: 0, y: 20 }}
@@ -586,7 +585,11 @@ export function Map({
                       window.scrollTo({ top: 0, behavior: "smooth" });
                     setSelectedFeature(cluster);
                   }}
-                  style={{ backgroundColor: cluster.properties.color }}
+                  style={{
+                    backgroundColor: markerIsActive
+                      ? "#fbb03b"
+                      : cluster.properties.color,
+                  }}
                   type="button"
                 >
                   {cluster.properties.icon.value}

@@ -15,12 +15,10 @@ export function Cluster({ pointCount, onClick, uniqueFeatures }: ClusterProps) {
   // divided by the points in view. However, for some reason points that
   // are not in view (on the other side of the globe) will register as
   // in view. Until that is resolves this technique will have to do.
-  const size = 50 + Math.log2(pointCount) * 20;
+  const size = 40 + Math.log2(pointCount) * 16;
 
-  const maxIconsToShow = Math.floor(bounds.width / 30) - 1;
+  const maxIconsToShow = Math.floor(bounds.width / 24) - 1;
   const renderedFeatured = uniqueFeatures.slice(0, maxIconsToShow);
-
-  console.log(1111, renderedFeatured);
 
   return (
     <motion.button
@@ -39,7 +37,7 @@ export function Cluster({ pointCount, onClick, uniqueFeatures }: ClusterProps) {
       {renderedFeatured.map((feature, i) => (
         <div
           className={cn(
-            "flex aspect-square size-10 cursor-pointer items-center justify-center rounded-full border-2 border-white text-lg shadow-md",
+            "flex aspect-square size-8 cursor-pointer items-center justify-center rounded-full border-2 border-white text-lg shadow-md",
             {
               "-ml-4": i > 0,
             },
@@ -53,7 +51,7 @@ export function Cluster({ pointCount, onClick, uniqueFeatures }: ClusterProps) {
       {pointCount > maxIconsToShow && (
         <div
           className={cn(
-            "text-md text-muted-foreground flex aspect-square size-10 cursor-pointer items-center justify-center rounded-full border-2 border-white shadow-md",
+            "text-md text-muted-foreground flex aspect-square size-8 cursor-pointer items-center justify-center rounded-full border-2 border-white shadow-md",
             {
               "-ml-4": renderedFeatured.length > 0,
             },
