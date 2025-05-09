@@ -69,7 +69,7 @@ export function PolygonProperties({
         datasetId={datasetId}
         form={form}
         label="Title"
-        name="polygonProperties.titleColumnId"
+        name="titleColumnId"
         type="string"
       />
       <DataColField
@@ -77,7 +77,7 @@ export function PolygonProperties({
         datasetId={datasetId}
         form={form}
         label="Description"
-        name="polygonProperties.descriptionColumnId"
+        name="descriptionColumnId"
         type="richtext"
       />
       <DataColField
@@ -85,7 +85,7 @@ export function PolygonProperties({
         datasetId={datasetId}
         form={form}
         label="Icon"
-        name="polygonProperties.iconColumnId"
+        name="iconColumnId"
         type="icon"
       />
       <div className="col-span-2 mt-1 w-full border-t pt-3">
@@ -126,15 +126,15 @@ function DataColField({
       }
 
       if (input.type === "string") {
-        form.setValue("polygonProperties.titleColumnId", data.id);
+        form.setValue("titleColumnId", data.id);
       }
 
       if (input.type === "richtext") {
-        form.setValue("polygonProperties.descriptionColumnId", data.id);
+        form.setValue("descriptionColumnId", data.id);
       }
 
       if (input.type === "icon") {
-        form.setValue("polygonProperties.iconColumnId", data.id);
+        form.setValue("iconColumnId", data.id);
       }
 
       void form.trigger();

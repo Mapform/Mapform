@@ -39,7 +39,9 @@ interface MapProps {
 interface MarkerPointFeature {
   id: string;
   cluster: boolean;
-  icon: string;
+  icon: {
+    value: string;
+  };
   color: string;
   rowId: string;
   columnId: string;
@@ -524,6 +526,8 @@ export function Map({
 
           const markerIsDraggable = markerIsActive && !isStatic;
 
+          console.log(1111, cluster);
+
           return (
             <LocationMarker
               key={cluster.id}
@@ -569,7 +573,7 @@ export function Map({
                 style={{ backgroundColor: cluster.properties.color }}
                 type="button"
               >
-                {cluster.properties.icon}
+                {cluster.properties.icon.value}
               </motion.button>
             </LocationMarker>
           );

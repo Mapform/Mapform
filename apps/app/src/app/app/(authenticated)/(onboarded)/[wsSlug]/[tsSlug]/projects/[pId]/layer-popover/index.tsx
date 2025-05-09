@@ -164,6 +164,15 @@ const PropertiesForm = ({
       id: layerToEdit?.id,
       pageId: currentPage.id,
       color: layerToEdit?.color,
+      titleColumnId: layerToEdit
+        ? layerToEdit.titleColumnId
+        : getLastAvailableColumnId("string"),
+      descriptionColumnId: layerToEdit
+        ? layerToEdit.descriptionColumnId
+        : getLastAvailableColumnId("richtext"),
+      iconColumnId: layerToEdit
+        ? layerToEdit.iconColumnId
+        : getLastAvailableColumnId("icon"),
       pointProperties:
         currentType === "point"
           ? layerToEdit?.datasetId === currentDatasetId &&
@@ -172,17 +181,9 @@ const PropertiesForm = ({
             ? {
                 pointColumnId:
                   layerToEdit.pointLayer.pointColumnId ?? undefined,
-                titleColumnId: layerToEdit.pointLayer.titleColumnId,
-                descriptionColumnId: layerToEdit.pointLayer.descriptionColumnId,
-                iconColumnId: layerToEdit.pointLayer.iconColumnId,
-                color: layerToEdit.pointLayer.color,
               }
             : {
                 pointColumnId: getLastAvailableColumnId("point") ?? undefined,
-                titleColumnId: getLastAvailableColumnId("string"),
-                descriptionColumnId: getLastAvailableColumnId("richtext"),
-                iconColumnId: getLastAvailableColumnId("icon"),
-                color: null,
               }
           : undefined,
       markerProperties:
@@ -193,18 +194,9 @@ const PropertiesForm = ({
             ? {
                 pointColumnId:
                   layerToEdit.markerLayer.pointColumnId ?? undefined,
-                titleColumnId: layerToEdit.markerLayer.titleColumnId,
-                descriptionColumnId:
-                  layerToEdit.markerLayer.descriptionColumnId,
-                iconColumnId: layerToEdit.markerLayer.iconColumnId,
-                color: layerToEdit.markerLayer.color,
               }
             : {
                 pointColumnId: getLastAvailableColumnId("point") ?? undefined,
-                titleColumnId: getLastAvailableColumnId("string"),
-                descriptionColumnId: getLastAvailableColumnId("richtext"),
-                iconColumnId: getLastAvailableColumnId("icon"),
-                color: null,
               }
           : undefined,
       lineProperties:
@@ -214,15 +206,9 @@ const PropertiesForm = ({
             layerToEdit.lineLayer
             ? {
                 lineColumnId: layerToEdit.lineLayer.lineColumnId ?? undefined,
-                titleColumnId: layerToEdit.titleColumnId,
-                descriptionColumnId: layerToEdit.descriptionColumnId,
-                iconColumnId: layerToEdit.iconColumnId,
               }
             : {
                 lineColumnId: getLastAvailableColumnId("line") ?? undefined,
-                titleColumnId: getLastAvailableColumnId("string"),
-                descriptionColumnId: getLastAvailableColumnId("richtext"),
-                iconColumnId: getLastAvailableColumnId("icon"),
               }
           : undefined,
       polygonProperties:
@@ -233,16 +219,10 @@ const PropertiesForm = ({
             ? {
                 polygonColumnId:
                   layerToEdit.polygonLayer.polygonColumnId ?? undefined,
-                titleColumnId: layerToEdit.titleColumnId,
-                descriptionColumnId: layerToEdit.descriptionColumnId,
-                iconColumnId: layerToEdit.iconColumnId,
               }
             : {
                 polygonColumnId:
                   getLastAvailableColumnId("polygon") ?? undefined,
-                titleColumnId: getLastAvailableColumnId("string"),
-                descriptionColumnId: getLastAvailableColumnId("richtext"),
-                iconColumnId: getLastAvailableColumnId("icon"),
               }
           : undefined,
     },

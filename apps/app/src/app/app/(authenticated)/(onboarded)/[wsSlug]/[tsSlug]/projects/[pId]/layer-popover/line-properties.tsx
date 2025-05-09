@@ -65,7 +65,7 @@ export function LineProperties({ form, datasetId, type }: LinePropertiesProps) {
         datasetId={datasetId}
         form={form}
         label="Title"
-        name="lineProperties.titleColumnId"
+        name="titleColumnId"
         type="string"
       />
       <DataColField
@@ -73,7 +73,7 @@ export function LineProperties({ form, datasetId, type }: LinePropertiesProps) {
         datasetId={datasetId}
         form={form}
         label="Description"
-        name="lineProperties.descriptionColumnId"
+        name="descriptionColumnId"
         type="richtext"
       />
       <DataColField
@@ -81,7 +81,7 @@ export function LineProperties({ form, datasetId, type }: LinePropertiesProps) {
         datasetId={datasetId}
         form={form}
         label="Icon"
-        name="lineProperties.iconColumnId"
+        name="iconColumnId"
         type="icon"
       />
       <div className="col-span-2 mt-1 w-full border-t pt-3">
@@ -122,15 +122,15 @@ function DataColField({
       }
 
       if (input.type === "string") {
-        form.setValue("lineProperties.titleColumnId", data.id);
+        form.setValue("titleColumnId", data.id);
       }
 
       if (input.type === "richtext") {
-        form.setValue("lineProperties.descriptionColumnId", data.id);
+        form.setValue("descriptionColumnId", data.id);
       }
 
       if (input.type === "icon") {
-        form.setValue("lineProperties.iconColumnId", data.id);
+        form.setValue("iconColumnId", data.id);
       }
 
       void form.trigger();

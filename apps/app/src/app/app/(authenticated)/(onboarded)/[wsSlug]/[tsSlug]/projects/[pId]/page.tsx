@@ -124,6 +124,8 @@ export default async function ProjectPage(props: {
     );
   }
 
+  console.log("selectedFeature", selectedFeature);
+
   return (
     <div className="flex flex-1 flex-col overflow-hidden p-4">
       <Mapform>

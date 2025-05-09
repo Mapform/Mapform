@@ -68,7 +68,7 @@ export function MarkerProperties({
         availableColumns={availableStringColumns ?? []}
         form={form}
         label="Title"
-        name="markerProperties.titleColumnId"
+        name="titleColumnId"
         type="string"
         datasetId={datasetId}
       />
@@ -76,7 +76,7 @@ export function MarkerProperties({
         availableColumns={availableRichtextColumns ?? []}
         form={form}
         label="Description"
-        name="markerProperties.descriptionColumnId"
+        name="descriptionColumnId"
         type="richtext"
         datasetId={datasetId}
       />
@@ -84,7 +84,7 @@ export function MarkerProperties({
         availableColumns={availableIconColumns ?? []}
         form={form}
         label="Icon"
-        name="markerProperties.iconColumnId"
+        name="iconColumnId"
         type="icon"
         datasetId={datasetId}
       />
@@ -126,15 +126,15 @@ function DataColField({
       }
 
       if (input.type === "string") {
-        form.setValue("markerProperties.titleColumnId", data.id);
+        form.setValue("titleColumnId", data.id);
       }
 
       if (input.type === "richtext") {
-        form.setValue("markerProperties.descriptionColumnId", data.id);
+        form.setValue("descriptionColumnId", data.id);
       }
 
       if (input.type === "icon") {
-        form.setValue("markerProperties.iconColumnId", data.id);
+        form.setValue("iconColumnId", data.id);
       }
 
       void form.trigger();
