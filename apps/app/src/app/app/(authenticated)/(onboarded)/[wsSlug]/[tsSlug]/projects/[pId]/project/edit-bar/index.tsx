@@ -76,14 +76,10 @@ export function EditBar({ onSearchOpenChange }: EditBarProps) {
   const [selectedLineType, setSelectedLineType] =
     useState<keyof typeof lineTypes>("line");
 
+  // Change the active mode to hand when the draw mode changes
   useEffect(() => {
-    const handleDrawModeChange = (e: { mode: string }) => {
-      console.log(e.mode);
-      if (e.mode === "draw_polygon") {
-        setActiveMode("shape");
-      } else {
-        setActiveMode("hand");
-      }
+    const handleDrawModeChange = () => {
+      setActiveMode("hand");
     };
 
     map?.on("draw.modechange", handleDrawModeChange);

@@ -214,10 +214,10 @@ export function MapformDrawer({
             filter: `brightness(${1 - reverseValueIndex * 0.1})`,
             display: isMobile && reverseValueIndex !== 0 ? "none" : "flex",
             // Used for stacked ui
-            // ...(!isMobile && {
-            //   width: (isEditing ? 392 : 360) + reverseValueIndex * 10,
-            //   paddingLeft: (isEditing ? 32 : 0) + reverseValueIndex * 10,
-            // }),
+            ...(!isMobile && {
+              width: (isEditing ? 392 : 360) + reverseValueIndex * 10,
+              paddingLeft: (isEditing ? 32 : 0) + reverseValueIndex * 10,
+            }),
             ...(!isMobile && {
               width: isEditing ? 392 : 360,
               paddingLeft: isEditing ? 32 : 0,
