@@ -8,6 +8,7 @@ import {
   MapformContent,
   MapformDrawer,
   MapformDrawerButton,
+  useMapform,
 } from "~/components/mapform";
 import { CustomBlockProvider, type CustomBlock } from "@mapform/blocknote";
 import { Blocknote } from "~/components/mapform/block-note";
@@ -38,6 +39,7 @@ function Project() {
     setActiveMode,
   } = useProject();
   const { user } = useAuth();
+  const { draw } = useMapform();
   const [isTourOpen, setIsTourOpen] = useState(!user?.projectGuideCompleted);
 
   // This is just used to prevent the input blocks from throwing an error when
@@ -147,7 +149,11 @@ function Project() {
               </CustomBlockProvider>
               {currentPage.contentViewType === "split" ? (
                 <MapformDrawerButton
-                  onDrawerStackOpenChange={setIsDrawerStackOpen}
+                  onDrawerStackOpenChange={(open) => {
+                    setIsDrawerStackOpen(open);
+                    setActiveMode("hand");
+                    draw?.changeMode("simple_select");
+                  }}
                 />
               ) : null}
               <Map

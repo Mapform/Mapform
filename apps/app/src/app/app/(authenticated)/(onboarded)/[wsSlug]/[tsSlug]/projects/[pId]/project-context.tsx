@@ -123,23 +123,6 @@ export function ProjectProvider({
     "hand" | "search" | "shape" | "line" | "point"
   >("hand");
 
-  const drawerValues = useMemo(() => {
-    return isDrawerStackOpen || selectedFeature || activeMode === "search"
-      ? [
-          ...(pageWithLayers?.contentViewType === "split"
-            ? ["page-content"]
-            : []),
-          ...(activeMode === "search" ? ["location-search"] : []),
-          ...(selectedFeature ? ["feature"] : []),
-        ]
-      : [];
-  }, [
-    isDrawerStackOpen,
-    selectedFeature,
-    pageWithLayers?.contentViewType,
-    activeMode,
-  ]);
-
   // Reset isDrawerStackOpen when the search or feature is opened
   useEffect(() => {
     if (activeMode === "search" || !!selectedFeature) {
@@ -196,7 +179,6 @@ export function ProjectProvider({
           feature.properties.rowId === typedNewPage.rowId &&
           feature.properties.columnId === typedNewPage.columnId
         ) {
-          console.log("typedNewPage", typedNewPage);
           return {
             ...feature,
             geometry: {
@@ -222,8 +204,6 @@ export function ProjectProvider({
       };
     },
     onError: ({ error }) => {
-      console.log("updateFeaturesServerAction error", error);
-
       toast({
         title: "Uh oh! Something went wrong.",
         description:
@@ -260,8 +240,6 @@ export function ProjectProvider({
       (state, newFeature) => {
         if (!newFeature) return undefined;
 
-        console.log("newFeature", newFeature.properties);
-
         return {
           ...state,
           ...newFeature,
@@ -286,6 +264,32 @@ export function ProjectProvider({
       setOptimisticSelectedFeature(feature);
     });
   };
+
+  const drawerValues = useMemo(() => {
+    if (activeMode === "search") {
+      return ["location-search"];
+    }
+
+    if (activeMode === "hand") {
+      if (!isDrawerStackOpen) {
+        return [];
+      }
+
+      return [
+        ...(pageWithLayers?.contentViewType === "split"
+          ? ["page-content"]
+          : []),
+        ...(optimisticSelectedFeature ? ["feature"] : []),
+      ];
+    }
+
+    return [];
+  }, [
+    isDrawerStackOpen,
+    optimisticSelectedFeature,
+    pageWithLayers?.contentViewType,
+    activeMode,
+  ]);
 
   useEffect(() => {
     if (projectWithPages.pages[0] && !page) {

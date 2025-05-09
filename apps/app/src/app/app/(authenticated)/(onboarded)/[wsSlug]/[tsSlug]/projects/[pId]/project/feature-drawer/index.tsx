@@ -1,4 +1,4 @@
-import { MapformDrawer } from "~/components/mapform";
+import { MapformDrawer, useMapform } from "~/components/mapform";
 import { Blocknote } from "~/components/mapform/block-note";
 import { BlocknoteControls } from "./blocknote-controls";
 import { useProject } from "../../project-context";
@@ -12,11 +12,13 @@ type LayerFeature = NonNullable<GetFeature["data"]>;
 
 export function FeatureDrawer() {
   const { selectedFeature, setSelectedFeature } = useProject();
+  const { draw } = useMapform();
 
   return (
     <MapformDrawer
       onClose={() => {
         setSelectedFeature(undefined);
+        draw?.changeMode("simple_select");
       }}
       value="feature"
     >
