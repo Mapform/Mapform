@@ -572,7 +572,7 @@ export function Map({
                   className={cn(
                     "box-content flex size-8 cursor-pointer items-center justify-center rounded-full border-2 border-white text-lg shadow-md",
                     {
-                      "size-10 text-xl": markerIsActive,
+                      "size-10 !text-2xl": markerIsActive,
                     },
                   )}
                   exit={{ opacity: 0, y: 20 }}
