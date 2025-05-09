@@ -54,10 +54,18 @@ export function useDrawFeatures({
         const existingFeature = draw.get(feature.id);
         if (!existingFeature) return true; // Feature doesn't exist, add it
 
+        // Check if properties have changed
+        const existingProps = JSON.stringify(existingFeature.properties);
+        const newProps = JSON.stringify(feature.properties);
+        if (existingProps !== newProps) {
+          // Update the existing feature with new properties
+          draw.delete(feature.id);
+          return true;
+        }
+
         return false;
       }) as Feature[];
 
-      // Only add new or modified features
       if (newFeatures.length > 0) {
         draw.add({
           type: "FeatureCollection",
