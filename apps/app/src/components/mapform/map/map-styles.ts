@@ -1,4 +1,4 @@
-const orange = "#fbb03b";
+const orange = "#f59e0b";
 const white = "#fff";
 
 export const mapStyles = [

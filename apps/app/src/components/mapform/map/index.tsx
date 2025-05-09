@@ -572,22 +572,19 @@ export function Map({
                   className={cn(
                     "box-content flex size-8 cursor-pointer items-center justify-center rounded-full border-2 border-white text-lg shadow-md",
                     {
-                      "size-10": markerIsActive,
+                      "size-10 text-xl": markerIsActive,
                     },
                   )}
                   exit={{ opacity: 0, y: 20 }}
                   initial={{ opacity: 0, y: -20 }}
                   onClick={() => {
-                    // TODO: It might make sense to de-couple this from the map
-                    // and isntead pass an onClick callback. The parent can do
-                    // this.
                     if (isMobile)
                       window.scrollTo({ top: 0, behavior: "smooth" });
                     setSelectedFeature(cluster);
                   }}
                   style={{
                     backgroundColor: markerIsActive
-                      ? "#fbb03b"
+                      ? "#f59e0b"
                       : cluster.properties.color,
                   }}
                   type="button"
