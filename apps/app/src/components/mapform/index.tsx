@@ -8,19 +8,15 @@ import {
   type SetStateAction,
   useRef,
 } from "react";
-import type { ViewState } from "@mapform/map-utils/types";
 import type mapboxgl from "mapbox-gl";
 import { useMeasure } from "@mapform/lib/hooks/use-measure";
 import { cn } from "@mapform/lib/classnames";
 import { Button } from "@mapform/ui/components/button";
 import { ChevronsRightIcon, XIcon } from "lucide-react";
 
-import { Map } from "./map";
 import { useIsMobile } from "@mapform/lib/hooks/use-is-mobile";
 import { AnimatePresence, motion } from "motion/react";
-import type { GetFeatures } from "@mapform/backend/data/features/get-features";
 import type { MapboxGeoJSONFeature } from "mapbox-gl";
-import type { GetFeature } from "@mapform/backend/data/features/get-feature";
 
 export type MBMap = mapboxgl.Map;
 export interface ActivePoint {
@@ -88,13 +84,11 @@ interface MapformContentProps {
   children: React.ReactNode;
   drawerValues: string[];
   isEditing?: boolean;
-  features?: GetFeatures["data"];
 }
 
 interface MapformContentContextProps {
   drawerValues: string[];
   isEditing?: boolean;
-  features?: GetFeatures["data"];
 }
 
 export const MapformContentContext = createContext<MapformContentContextProps>(
@@ -104,56 +98,15 @@ export const useMapformContent = () => useContext(MapformContentContext);
 
 export function MapformContent({
   children,
-  features,
   isEditing,
   drawerValues,
 }: MapformContentProps) {
   return (
-    <MapformContentContext.Provider
-      value={{ isEditing, drawerValues, features }}
-    >
+    <MapformContentContext.Provider value={{ isEditing, drawerValues }}>
       <div className="relative flex-1 md:flex md:overflow-hidden">
         {children}
       </div>
     </MapformContentContext.Provider>
-  );
-}
-
-export function MapformMap({
-  children,
-  initialViewState,
-  isStatic = true,
-  selectedFeature,
-}: {
-  children?: React.ReactNode;
-  initialViewState: ViewState;
-  isStatic?: boolean;
-  selectedFeature?: GetFeature["data"];
-}) {
-  const isMobile = useIsMobile();
-  const { drawerValues, isEditing, features } = useMapformContent();
-
-  const mapPadding = {
-    top: 0,
-    bottom: isMobile ? (drawerValues.length ? 200 : 0) : 0,
-    left: !!drawerValues.length && !isMobile ? (isEditing ? 392 : 360) : 0,
-    right: 0,
-  };
-
-  return (
-    <div className="top-0 flex flex-1 max-md:sticky max-md:mb-[-200px] max-md:h-dvh">
-      <Map
-        isStatic={isStatic}
-        isEditing={isEditing}
-        initialViewState={initialViewState}
-        isMobile={isMobile}
-        mapPadding={mapPadding}
-        features={features}
-        selectedFeature={selectedFeature}
-      >
-        {children}
-      </Map>
-    </div>
   );
 }
 

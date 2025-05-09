@@ -8,7 +8,6 @@ import {
   MapformContent,
   MapformDrawer,
   MapformDrawerButton,
-  MapformMap,
 } from "~/components/mapform";
 import { CustomBlockProvider, type CustomBlock } from "@mapform/blocknote";
 import { Blocknote } from "~/components/mapform/block-note";
@@ -24,6 +23,7 @@ import {
   ProjectTourContent,
 } from "~/components/tours/project-tour";
 import { EditBar } from "./edit-bar";
+import { Map } from "~/components/mapform/map";
 
 function Project() {
   const {
@@ -82,11 +82,7 @@ function Project() {
       <DummyForm {...dummyForm}>
         <div className="flex flex-1 justify-center overflow-hidden p-4">
           <div className="flex flex-1">
-            <MapformContent
-              isEditing
-              drawerValues={drawerValues}
-              features={updateFeaturesServerAction.optimisticState}
-            >
+            <MapformContent isEditing drawerValues={drawerValues}>
               <CustomBlockProvider
                 isEditing
                 imageBlock={{
@@ -179,9 +175,11 @@ function Project() {
                   onDrawerStackOpenChange={setIsDrawerStackOpen}
                 />
               ) : null}
-              <MapformMap
+              <Map
                 isStatic={false}
                 selectedFeature={selectedFeature}
+                setSelectedFeature={setSelectedFeature}
+                updateFeaturesServerAction={updateFeaturesServerAction}
                 initialViewState={{
                   longitude: currentPage.center.x,
                   latitude: currentPage.center.y,
@@ -206,7 +204,7 @@ function Project() {
                     setIsSearchOpen(open);
                   }}
                 />
-              </MapformMap>
+              </Map>
             </MapformContent>
           </div>
         </div>

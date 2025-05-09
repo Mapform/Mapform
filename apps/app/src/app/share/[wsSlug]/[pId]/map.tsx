@@ -53,13 +53,13 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from "@mapform/ui/components/popover";
-import type { GetLayerFeature } from "@mapform/backend/data/features/get-full-feature";
+import type { GetFeature } from "@mapform/backend/data/features/get-feature";
 
 interface MapProps {
   features: GetFeatures["data"];
   projectWithPages: NonNullable<GetProjectWithPages["data"]>;
   formValues: NonNullable<NonNullable<GetSubmission>["data"]>["row"]["cells"];
-  selectedFeature?: GetLayerFeature["data"];
+  selectedFeature?: GetFeature["data"];
   formSubmissionId: string | null;
   isUsingSessions: boolean;
 }
@@ -403,7 +403,7 @@ export function Map({
         className="flex h-full w-full flex-col md:overflow-hidden"
         onSubmit={form.handleSubmit(onStepSubmit)}
       >
-        <MapformContent drawerValues={drawerValues} features={features}>
+        <MapformContent drawerValues={drawerValues}>
           {currentPage.contentViewType === "split" ? (
             <MapformDrawerButton
               onDrawerStackOpenChange={setIsDrawerStackOpen}

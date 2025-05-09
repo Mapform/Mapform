@@ -13,27 +13,35 @@ import { AnimatePresence, motion } from "motion/react";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import StaticMode from "@mapbox/mapbox-gl-draw-static-mode";
 import { useDrawFeatures } from "~/lib/map-tools/draw-features";
-import { useProject } from "~/app/app/(authenticated)/(onboarded)/[wsSlug]/[tsSlug]/projects/[pId]/project-context";
 import type { GetFeature } from "@mapform/backend/data/features/get-feature";
 import type { FeatureCollection } from "geojson";
-import { isPersistedFeature } from "@mapform/backend/data/features/types";
+import {
+  type BaseFeature,
+  isPersistedFeature,
+} from "@mapform/backend/data/features/types";
 import { LocationMarker } from "../../location-marker";
 import { mapStyles } from "./map-styles";
-import { useMapform } from "../index";
+import { useMapform, useMapformContent } from "../index";
 import { Cluster } from "./cluster";
 import "./style.css";
+import type { upsertCellAction } from "~/data/cells/upsert-cell";
+import { useIsMobile } from "@mapform/lib/hooks/use-is-mobile";
 
 const accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
 
-interface MapProps {
-  features?: GetFeatures["data"];
+export interface MapProps {
   isEditing?: boolean;
-  mapPadding: ViewState["padding"];
   initialViewState: ViewState;
   children?: React.ReactNode;
-  isMobile?: boolean;
   isStatic?: boolean;
   selectedFeature?: GetFeature["data"];
+  setSelectedFeature: (feature: BaseFeature | undefined) => void;
+  updateFeaturesServerAction?: {
+    execute: (args: Parameters<typeof upsertCellAction>[0]) => void;
+    optimisticState: NonNullable<GetFeatures["data"]> | undefined;
+    isPending: boolean;
+    setOptimisticState: (state: NonNullable<GetFeatures["data"]>) => void;
+  };
 }
 
 interface MarkerPointFeature {
@@ -59,15 +67,12 @@ interface MarkerPointFeature {
  */
 export function Map({
   initialViewState,
-  isEditing = false,
-  mapPadding,
-  features,
   children,
-  isMobile,
   isStatic = true,
   selectedFeature,
+  setSelectedFeature,
+  updateFeaturesServerAction,
 }: MapProps) {
-  const { updateFeaturesServerAction, setSelectedFeature } = useProject();
   const [bounds, setBounds] = useState<
     [number, number, number, number] | undefined
   >(undefined);
@@ -83,6 +88,19 @@ export function Map({
     drawFeature: drawFeature,
     setDrawFeature,
   } = useMapform();
+  const isMobile = useIsMobile();
+  const features = updateFeaturesServerAction?.optimisticState;
+  const { drawerValues, isEditing } = useMapformContent();
+
+  const mapPadding = useMemo(() => {
+    return {
+      top: 0,
+      bottom: isMobile ? (drawerValues.length ? 200 : 0) : 0,
+      left: !!drawerValues.length && !isMobile ? (isEditing ? 392 : 360) : 0,
+      right: 0,
+    };
+  }, [drawerValues, isEditing, isMobile]);
+
   // Condition in usePrevious resolves issue where map padding is not updated on first render
   const prevMapPadding = usePrevious(map ? mapPadding : undefined);
 
@@ -336,6 +354,10 @@ export function Map({
         return;
       }
 
+      if (!updateFeaturesServerAction) {
+        return;
+      }
+
       if (feature.geometry.type === "Polygon") {
         updateFeaturesServerAction.execute({
           type: "polygon",
@@ -443,144 +465,147 @@ export function Map({
   });
 
   return (
-    <div
-      className={cn("relative flex-1 overflow-hidden", {
-        "rounded-md": isEditing,
-      })}
-      ref={mapContainer}
-    >
-      {/* MARKERS */}
-      <AnimatePresence>
-        {clusters.map((cluster) => {
-          const [longitude, latitude] = cluster.geometry.coordinates;
+    <div className="top-0 flex flex-1 max-md:sticky max-md:mb-[-200px] max-md:h-dvh">
+      <div
+        className={cn("relative flex-1 overflow-hidden", {
+          "rounded-md": isEditing,
+        })}
+        ref={mapContainer}
+      >
+        {/* MARKERS */}
+        <AnimatePresence>
+          {clusters.map((cluster) => {
+            const [longitude, latitude] = cluster.geometry.coordinates;
 
-          if (!longitude || !latitude) {
-            return null;
-          }
+            if (!longitude || !latitude) {
+              return null;
+            }
 
-          if (cluster.properties.cluster) {
-            const { point_count: pointCount } = cluster.properties;
+            if (cluster.properties.cluster) {
+              const { point_count: pointCount } = cluster.properties;
 
-            const allFeatures = [
-              {
-                icon: cluster.properties.icon.value,
-                color: cluster.properties.color,
-              },
-              ...(cluster.properties.features ?? []),
-            ];
-            const uniqueFeatures = allFeatures
-              .filter(
-                (item, index, self) =>
-                  index === self.findIndex((obj) => obj.icon === item.icon),
-              )
-              .filter((item) => item.icon);
-            const expansionZoom =
-              supercluster &&
-              cluster.id &&
-              Math.min(
-                supercluster.getClusterExpansionZoom(Number(cluster.id)),
-                17,
+              const allFeatures = [
+                {
+                  icon: cluster.properties.icon.value,
+                  color: cluster.properties.color,
+                },
+                ...(cluster.properties.features ?? []),
+              ];
+              const uniqueFeatures = allFeatures
+                .filter(
+                  (item, index, self) =>
+                    index === self.findIndex((obj) => obj.icon === item.icon),
+                )
+                .filter((item) => item.icon);
+              const expansionZoom =
+                supercluster &&
+                cluster.id &&
+                Math.min(
+                  supercluster.getClusterExpansionZoom(Number(cluster.id)),
+                  17,
+                );
+
+              if (!map) {
+                return null;
+              }
+
+              return (
+                <LocationMarker
+                  key={cluster.id}
+                  latitude={latitude}
+                  longitude={longitude}
+                  map={map}
+                >
+                  <Cluster
+                    onClick={() => {
+                      if (!expansionZoom) {
+                        return;
+                      }
+
+                      map.easeTo({
+                        zoom: expansionZoom,
+                        center: [longitude, latitude],
+                        duration: 750,
+                      });
+                    }}
+                    pointCount={pointCount}
+                    uniqueFeatures={uniqueFeatures}
+                  />
+                </LocationMarker>
               );
+            }
 
             if (!map) {
               return null;
             }
+
+            const markerIsActive =
+              cluster.properties.rowId === selectedFeature?.properties.rowId &&
+              cluster.properties.layerId === selectedFeature.properties.layerId;
+
+            const markerIsDraggable = markerIsActive && !isStatic;
 
             return (
               <LocationMarker
                 key={cluster.id}
                 latitude={latitude}
                 longitude={longitude}
+                markerOptions={{
+                  draggable: markerIsDraggable,
+                }}
+                onDragEnd={(lngLat) => {
+                  updateFeaturesServerAction?.execute({
+                    type: "point",
+                    value: { x: lngLat.lng, y: lngLat.lat },
+                    rowId: cluster.properties.rowId,
+                    columnId: cluster.properties.columnId,
+                  });
+                }}
                 map={map}
               >
-                <Cluster
-                  onClick={() => {
-                    if (!expansionZoom) {
-                      return;
-                    }
-
-                    map.easeTo({
-                      zoom: expansionZoom,
-                      center: [longitude, latitude],
-                      duration: 750,
-                    });
+                <motion.button
+                  animate={{
+                    opacity: 1,
+                    y: 0,
                   }}
-                  pointCount={pointCount}
-                  uniqueFeatures={uniqueFeatures}
-                />
+                  transition={{
+                    duration: 0.2,
+                  }}
+                  className={cn(
+                    "box-content flex size-10 cursor-pointer items-center justify-center rounded-full border-2 border-white text-lg shadow-md",
+                    {
+                      "border-8": markerIsActive,
+                      "border-2": !markerIsActive,
+                    },
+                  )}
+                  exit={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: -20 }}
+                  onClick={() => {
+                    // TODO: It might make sense to de-couple this from the map
+                    // and isntead pass an onClick callback. The parent can do
+                    // this.
+                    if (isMobile)
+                      window.scrollTo({ top: 0, behavior: "smooth" });
+                    setSelectedFeature(cluster);
+                  }}
+                  style={{ backgroundColor: cluster.properties.color }}
+                  type="button"
+                >
+                  {cluster.properties.icon.value}
+                </motion.button>
               </LocationMarker>
             );
-          }
-
-          if (!map) {
-            return null;
-          }
-
-          const markerIsActive =
-            cluster.properties.rowId === selectedFeature?.properties.rowId &&
-            cluster.properties.layerId === selectedFeature.properties.layerId;
-
-          const markerIsDraggable = markerIsActive && !isStatic;
-
-          return (
-            <LocationMarker
-              key={cluster.id}
-              latitude={latitude}
-              longitude={longitude}
-              markerOptions={{
-                draggable: markerIsDraggable,
-              }}
-              onDragEnd={(lngLat) => {
-                updateFeaturesServerAction.execute({
-                  type: "point",
-                  value: { x: lngLat.lng, y: lngLat.lat },
-                  rowId: cluster.properties.rowId,
-                  columnId: cluster.properties.columnId,
-                });
-              }}
-              map={map}
-            >
-              <motion.button
-                animate={{
-                  opacity: 1,
-                  y: 0,
-                }}
-                transition={{
-                  duration: 0.2,
-                }}
-                className={cn(
-                  "box-content flex size-10 cursor-pointer items-center justify-center rounded-full border-2 border-white text-lg shadow-md",
-                  {
-                    "border-8": markerIsActive,
-                    "border-2": !markerIsActive,
-                  },
-                )}
-                exit={{ opacity: 0, y: 20 }}
-                initial={{ opacity: 0, y: -20 }}
-                onClick={() => {
-                  // TODO: It might make sense to de-couple this from the map
-                  // and isntead pass an onClick callback. The parent can do
-                  // this.
-                  if (isMobile) window.scrollTo({ top: 0, behavior: "smooth" });
-                  setSelectedFeature(cluster);
-                }}
-                style={{ backgroundColor: cluster.properties.color }}
-                type="button"
-              >
-                {cluster.properties.icon.value}
-              </motion.button>
-            </LocationMarker>
-          );
-        })}
-      </AnimatePresence>
-      <div
-        className={cn(
-          "absolute bottom-0 left-0 right-0 top-0 overflow-hidden transition-all duration-[250]",
-        )}
-        ref={visibleMapContainer}
-        style={mapPadding}
-      >
-        {children}
+          })}
+        </AnimatePresence>
+        <div
+          className={cn(
+            "absolute bottom-0 left-0 right-0 top-0 overflow-hidden transition-all duration-[250]",
+          )}
+          ref={visibleMapContainer}
+          style={mapPadding}
+        >
+          {children}
+        </div>
       </div>
     </div>
   );
