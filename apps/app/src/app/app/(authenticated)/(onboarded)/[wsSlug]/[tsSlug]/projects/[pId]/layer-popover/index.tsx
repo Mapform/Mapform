@@ -163,7 +163,7 @@ const PropertiesForm = ({
     defaultValues: {
       id: layerToEdit?.id,
       pageId: currentPage.id,
-      color: layerToEdit?.color,
+      color: layerToEdit?.color ?? "#3b82f6",
       titleColumnId: layerToEdit
         ? layerToEdit.titleColumnId
         : getLastAvailableColumnId("string"),

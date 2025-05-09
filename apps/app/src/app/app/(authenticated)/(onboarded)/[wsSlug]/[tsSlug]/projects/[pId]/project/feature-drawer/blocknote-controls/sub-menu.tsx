@@ -177,8 +177,6 @@ export function SubMenu({
     execute(values);
   };
 
-  console.log(2222, isPropertyPopoverOpen);
-
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
