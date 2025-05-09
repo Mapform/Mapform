@@ -162,8 +162,8 @@ function FeatureDrawerInner() {
       controls={
         <BlocknoteControls
           allowAddEmoji={
-            !!selectedFeature.properties.icon?.columnId &&
-            !!selectedFeature.properties.icon.value
+            !!selectedFeatureIcon.properties.icon?.columnId &&
+            !selectedFeatureIcon.properties.icon.value
           }
           onIconChange={(value) => {
             if (

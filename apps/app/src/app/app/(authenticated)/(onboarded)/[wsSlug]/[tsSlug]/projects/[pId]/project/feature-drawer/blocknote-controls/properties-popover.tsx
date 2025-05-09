@@ -47,8 +47,6 @@ export function PropertiesPopover() {
     type: Column["type"];
   }[];
 
-  console.log(1111, selectedProperty);
-
   return (
     <>
       <Popover modal open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>

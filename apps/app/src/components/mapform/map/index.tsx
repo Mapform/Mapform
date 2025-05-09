@@ -526,8 +526,6 @@ export function Map({
 
           const markerIsDraggable = markerIsActive && !isStatic;
 
-          console.log(1111, cluster);
-
           return (
             <LocationMarker
               key={cluster.id}
