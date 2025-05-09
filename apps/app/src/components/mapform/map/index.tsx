@@ -16,10 +16,7 @@ import { useDrawFeatures } from "~/lib/map-tools/draw-features";
 import { useProject } from "~/app/app/(authenticated)/(onboarded)/[wsSlug]/[tsSlug]/projects/[pId]/project-context";
 import type { GetFeature } from "@mapform/backend/data/features/get-feature";
 import type { FeatureCollection } from "geojson";
-import {
-  isPersistedFeature,
-  type BaseFeature,
-} from "@mapform/backend/data/features/types";
+import { isPersistedFeature } from "@mapform/backend/data/features/types";
 import { LocationMarker } from "../../location-marker";
 import { mapStyles } from "./map-styles";
 import { useMapform } from "../index";
@@ -81,8 +78,8 @@ export function Map({
     mapContainer,
     mapContainerBounds,
     visibleMapContainer,
-    activeFeature,
-    setActiveFeature,
+    drawFeature: drawFeature,
+    setDrawFeature,
   } = useMapform();
   // Condition in usePrevious resolves issue where map padding is not updated on first render
   const prevMapPadding = usePrevious(map ? mapPadding : undefined);
@@ -250,11 +247,11 @@ export function Map({
     ) => {
       const feature = e.features?.[0];
 
-      if (feature?.properties) {
+      if (feature && isPersistedFeature(feature)) {
         if (isMobile) {
           window.scrollTo({ top: 0, behavior: "smooth" });
         }
-        setSelectedFeature(feature as unknown as BaseFeature);
+        setSelectedFeature(feature);
       }
     };
     const handleMouseEnterPoints = () => {
@@ -317,7 +314,7 @@ export function Map({
 
       if (!feature) return;
 
-      setActiveFeature(feature);
+      setDrawFeature(feature);
     };
 
     const handleDrawUpdate = (
@@ -329,7 +326,11 @@ export function Map({
       if (!feature) return;
 
       if (!feature.id) {
-        setActiveFeature(feature);
+        setDrawFeature(feature);
+        return;
+      }
+
+      if (!isPersistedFeature(feature)) {
         return;
       }
 
@@ -337,8 +338,8 @@ export function Map({
         updateFeaturesServerAction.execute({
           type: "polygon",
           value: { coordinates: feature.geometry.coordinates },
-          rowId: feature.properties?.rowId,
-          columnId: feature.properties?.columnId,
+          rowId: feature.properties.rowId,
+          columnId: feature.properties.columnId,
         });
       }
 
@@ -346,8 +347,8 @@ export function Map({
         updateFeaturesServerAction.execute({
           type: "line",
           value: { coordinates: feature.geometry.coordinates },
-          rowId: feature.properties?.rowId,
-          columnId: feature.properties?.columnId,
+          rowId: feature.properties.rowId,
+          columnId: feature.properties.columnId,
         });
       }
 
@@ -358,8 +359,8 @@ export function Map({
             x: feature.geometry.coordinates[0],
             y: feature.geometry.coordinates[1],
           },
-          rowId: feature.properties?.rowId,
-          columnId: feature.properties?.columnId,
+          rowId: feature.properties.rowId,
+          columnId: feature.properties.columnId,
         });
       }
     };
@@ -375,10 +376,10 @@ export function Map({
         setSelectedFeature(undefined);
       }
 
-      if (activeFeature !== null && eventFeature?.id !== activeFeature.id) {
-        setActiveFeature(null);
+      if (drawFeature !== null && eventFeature?.id !== drawFeature.id) {
+        setDrawFeature(null);
         try {
-          draw.delete(activeFeature.id as string);
+          draw.delete(drawFeature.id as string);
         } catch (_) {
           // Do nothing
         }
@@ -409,8 +410,8 @@ export function Map({
   }, [
     map,
     draw,
-    setActiveFeature,
-    activeFeature,
+    setDrawFeature,
+    drawFeature,
     updateFeaturesServerAction,
     setSelectedFeature,
   ]);

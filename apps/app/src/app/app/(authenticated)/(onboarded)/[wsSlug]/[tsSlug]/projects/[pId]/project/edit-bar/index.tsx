@@ -64,7 +64,7 @@ export const lineTypes: Record<
 } as const;
 
 export function EditBar({ onSearchOpenChange }: EditBarProps) {
-  const { map, draw, activeFeature, setActiveFeature } = useMapform();
+  const { map, draw, drawFeature, setDrawFeature } = useMapform();
   const { drawerValues } = useMapformContent();
   const isSearchOpen = drawerValues.includes("location-search");
   const [activeMode, setActiveMode] = useState<
@@ -91,22 +91,22 @@ export function EditBar({ onSearchOpenChange }: EditBarProps) {
   }, [map]);
 
   const location = useMemo(() => {
-    if (!activeFeature) return null;
+    if (!drawFeature) return null;
 
-    if (activeFeature.geometry.type === "Point") {
-      return activeFeature.geometry.coordinates;
+    if (drawFeature.geometry.type === "Point") {
+      return drawFeature.geometry.coordinates;
     }
 
-    if (activeFeature.geometry.type === "Polygon") {
-      return getCenterOfPoints(activeFeature.geometry.coordinates[0]!);
+    if (drawFeature.geometry.type === "Polygon") {
+      return getCenterOfPoints(drawFeature.geometry.coordinates[0]!);
     }
 
-    if (activeFeature.geometry.type === "LineString") {
-      return getCenterOfPoints(activeFeature.geometry.coordinates);
+    if (drawFeature.geometry.type === "LineString") {
+      return getCenterOfPoints(drawFeature.geometry.coordinates);
     }
 
     return null;
-  }, [activeFeature]);
+  }, [drawFeature]);
 
   return (
     <div
@@ -248,16 +248,16 @@ export function EditBar({ onSearchOpenChange }: EditBarProps) {
       <div className="flex gap-1 pl-1.5">
         <MapOptions />
       </div>
-      {location && activeFeature && (
+      {location && drawFeature && (
         <FeaturePopover
           location={new mapboxgl.LngLat(location[0]!, location[1]!)}
           onSave={() => {
-            draw?.delete(activeFeature.id as string);
-            setActiveFeature(null);
+            draw?.delete(drawFeature.id as string);
+            setDrawFeature(null);
             draw?.changeMode("simple_select");
           }}
           isFetching={false}
-          feature={activeFeature}
+          feature={drawFeature}
         />
       )}
     </div>

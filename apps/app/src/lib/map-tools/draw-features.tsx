@@ -7,12 +7,6 @@ import type mapboxgl from "mapbox-gl";
 import { useEffect } from "react";
 import { useMapform } from "~/components/mapform";
 
-// Calculate a checksum for a feature by stringifying its properties and geometry
-const calculateFeatureChecksum = (feature: Feature): string => {
-  const { properties, geometry } = feature;
-  return JSON.stringify({ properties, geometry });
-};
-
 export function useDrawFeatures({
   map,
   features = {

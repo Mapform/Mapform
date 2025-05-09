@@ -20,7 +20,7 @@ import { useIsMobile } from "@mapform/lib/hooks/use-is-mobile";
 import { AnimatePresence, motion } from "motion/react";
 import type { GetFeatures } from "@mapform/backend/data/features/get-features";
 import type { MapboxGeoJSONFeature } from "mapbox-gl";
-import type { GetLayerFeature } from "@mapform/backend/data/features/get-full-feature";
+import type { GetFeature } from "@mapform/backend/data/features/get-feature";
 
 export type MBMap = mapboxgl.Map;
 export interface ActivePoint {
@@ -42,8 +42,8 @@ interface MapformContextProps {
   mapContainer: React.RefObject<HTMLDivElement | null>;
   visibleMapContainer: React.RefObject<HTMLDivElement | null>;
   mapContainerBounds: DOMRectReadOnly | undefined;
-  activeFeature: MapboxGeoJSONFeature | null;
-  setActiveFeature: Dispatch<SetStateAction<MapboxGeoJSONFeature | null>>;
+  drawFeature: MapboxGeoJSONFeature | null;
+  setDrawFeature: Dispatch<SetStateAction<MapboxGeoJSONFeature | null>>;
 }
 
 export const MapformContext = createContext<MapformContextProps>(
@@ -53,8 +53,10 @@ export const useMapform = () => useContext(MapformContext);
 
 export function Mapform({ children }: MapformProps) {
   const [map, setMap] = useState<MBMap>();
-  const [activeFeature, setActiveFeature] =
-    useState<MapboxGeoJSONFeature | null>(null);
+  // This is the feature that is currently being drawn using Mapbox Draw
+  const [drawFeature, setDrawFeature] = useState<MapboxGeoJSONFeature | null>(
+    null,
+  );
   const [draw, setDraw] = useState<MapboxDraw>();
   const { ref: mapContainer, bounds } = useMeasure<HTMLDivElement>();
   // This is the part of the map container that is visible to the user (ie. is
@@ -73,8 +75,8 @@ export function Mapform({ children }: MapformProps) {
         mapContainer,
         visibleMapContainer,
         mapContainerBounds,
-        activeFeature,
-        setActiveFeature,
+        drawFeature: drawFeature,
+        setDrawFeature,
       }}
     >
       {children}
@@ -126,7 +128,7 @@ export function MapformMap({
   children?: React.ReactNode;
   initialViewState: ViewState;
   isStatic?: boolean;
-  selectedFeature?: GetLayerFeature["data"];
+  selectedFeature?: GetFeature["data"];
 }) {
   const isMobile = useIsMobile();
   const { drawerValues, isEditing, features } = useMapformContent();
