@@ -36,6 +36,8 @@ const typeToLayerColumnId = {
   number: "numberColumnId",
   date: "dateColumnId",
   bool: "boolColumnId",
+  line: "lineColumnId",
+  polygon: "polygonColumnId",
 };
 
 export function SubMenu({
@@ -47,7 +49,7 @@ export function SubMenu({
   const { updatePageServerAction, selectedFeature, availableDatasets } =
     useProject();
   const layer = updatePageServerAction.optimisticState?.layersToPages.find(
-    (ltp) => ltp.layer.id === selectedFeature?.layerId,
+    (ltp) => ltp.layer.id === selectedFeature?.properties.layerId,
   );
   const dataset = availableDatasets.find(
     (ds) => ds.id === layer?.layer.datasetId,
@@ -75,20 +77,25 @@ export function SubMenu({
         layer?.layer.type === "point" && layer.layer.pointLayer
           ? {
               pointColumnId: layer.layer.pointLayer.pointColumnId ?? undefined,
-              titleColumnId: layer.layer.pointLayer.titleColumnId,
-              descriptionColumnId: layer.layer.pointLayer.descriptionColumnId,
-              iconColumnId: layer.layer.pointLayer.iconColumnId,
-              color: layer.layer.pointLayer.color,
             }
           : undefined,
       markerProperties:
         layer?.layer.type === "marker" && layer.layer.markerLayer
           ? {
               pointColumnId: layer.layer.markerLayer.pointColumnId ?? undefined,
-              titleColumnId: layer.layer.markerLayer.titleColumnId,
-              descriptionColumnId: layer.layer.markerLayer.descriptionColumnId,
-              iconColumnId: layer.layer.markerLayer.iconColumnId,
-              color: layer.layer.markerLayer.color,
+            }
+          : undefined,
+      lineProperties:
+        layer?.layer.type === "line" && layer.layer.lineLayer
+          ? {
+              lineColumnId: layer.layer.lineLayer.lineColumnId ?? undefined,
+            }
+          : undefined,
+      polygonProperties:
+        layer?.layer.type === "polygon" && layer.layer.polygonLayer
+          ? {
+              polygonColumnId:
+                layer.layer.polygonLayer.polygonColumnId ?? undefined,
             }
           : undefined,
     },
@@ -132,15 +139,15 @@ export function SubMenu({
       }
 
       if (input.type === "string") {
-        form.setValue("markerProperties.titleColumnId", data.id);
+        form.setValue("titleColumnId", data.id);
       }
 
       if (input.type === "richtext") {
-        form.setValue("markerProperties.descriptionColumnId", data.id);
+        form.setValue("descriptionColumnId", data.id);
       }
 
       if (input.type === "icon") {
-        form.setValue("markerProperties.iconColumnId", data.id);
+        form.setValue("iconColumnId", data.id);
       }
     },
 
@@ -153,20 +160,12 @@ export function SubMenu({
   });
 
   const fieldName = useMemo(() => {
-    let object: "pointProperties" | "markerProperties" | null = null;
-
-    if (selectedFeature?.type === "point") {
-      object = "pointProperties";
-    } else if (selectedFeature?.type === "marker") {
-      object = "markerProperties";
-    }
-
-    if (!object || !type) {
+    if (!type) {
       return null;
     }
 
-    return `${object}.${typeToLayerColumnId[type]}` as FieldPath<UpsertLayerSchema>;
-  }, [selectedFeature?.type, type]);
+    return `${typeToLayerColumnId[type]}` as FieldPath<UpsertLayerSchema>;
+  }, [type]);
 
   if (!type || !dataset || !fieldName) {
     return null;
@@ -177,6 +176,8 @@ export function SubMenu({
   const onSubmit = (values: UpsertLayerSchema) => {
     execute(values);
   };
+
+  console.log(2222, isPropertyPopoverOpen);
 
   return (
     <Form {...form}>
