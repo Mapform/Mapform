@@ -93,7 +93,7 @@ export function MarkerProperties({
           Styles
         </h3>
       </div>
-      <ColorPicker form={form} label="Color" name="markerProperties.color" />
+      <ColorPicker form={form} label="Color" name="color" />
     </>
   );
 }
