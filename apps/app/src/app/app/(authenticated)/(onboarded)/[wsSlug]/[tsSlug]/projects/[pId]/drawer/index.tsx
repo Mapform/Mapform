@@ -28,14 +28,14 @@ export function Drawer() {
 
   return (
     <Portal.Root className="flex-1 overflow-hidden" container={container}>
-      <Tabs defaultValue="settings" className="flex h-full w-full flex-col">
+      <Tabs defaultValue="content" className="flex h-full w-full flex-col">
         <div className="flex h-16 items-center p-2">
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="settings">Content</TabsTrigger>
-            <TabsTrigger value="password">Settings</TabsTrigger>
+            <TabsTrigger value="content">Content</TabsTrigger>
+            <TabsTrigger value="settings">Settings</TabsTrigger>
           </TabsList>
         </div>
-        <TabsContent className="mt-0 flex-1" value="settings">
+        <TabsContent className="mt-0 flex-1" value="content">
           <ResizablePanelGroup direction="vertical">
             <ResizablePanel minSize={15}>
               <PageList />
@@ -46,7 +46,10 @@ export function Drawer() {
             </ResizablePanel>
           </ResizablePanelGroup>
         </TabsContent>
-        <TabsContent className="flex flex-1 p-2" value="password">
+        <TabsContent
+          className="flex flex-1 p-2 data-[state=inactive]:hidden"
+          value="settings"
+        >
           <Settings />
         </TabsContent>
       </Tabs>
