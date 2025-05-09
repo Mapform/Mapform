@@ -20,6 +20,8 @@ export function Cluster({ pointCount, onClick, uniqueFeatures }: ClusterProps) {
   const maxIconsToShow = Math.floor(bounds.width / 30) - 1;
   const renderedFeatured = uniqueFeatures.slice(0, maxIconsToShow);
 
+  console.log(1111, renderedFeatured);
+
   return (
     <motion.button
       animate={{ opacity: 1, y: 0 }}
@@ -42,7 +44,7 @@ export function Cluster({ pointCount, onClick, uniqueFeatures }: ClusterProps) {
               "-ml-4": i > 0,
             },
           )}
-          key={feature.icon}
+          key={i}
           style={{ backgroundColor: feature.color }}
         >
           {feature.icon}

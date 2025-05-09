@@ -112,7 +112,7 @@ export const getFeatures = (authClient: PublicClient | UserAuthClient) =>
 
           return cellsResponse.map((c) => ({
             ...c,
-            color: pl.layer.pointLayer?.color,
+            color: pl.layer.color,
             rowId: c.cell.rowId,
             pointLayerId: pl.layer.pointLayer?.id,
             layerId: pl.layer.id,
@@ -184,10 +184,10 @@ export const getFeatures = (authClient: PublicClient | UserAuthClient) =>
 
           return Object.values(groupedCells).map((c) => ({
             ...c,
-            color: pl.layer.markerLayer?.color ?? null,
+            color: pl.layer.color ?? null,
             rowId: c.cell.rowId,
             columnId: c.cell.columnId,
-            pointLayerId: pl.layer.markerLayer?.id,
+            pointLayerId: pl.layer.id,
             layerId: pl.layer.id,
             icon: pl.layer.iconColumnId
               ? {

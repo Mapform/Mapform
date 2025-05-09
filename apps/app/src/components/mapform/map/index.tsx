@@ -114,8 +114,8 @@ export function Map({
   const reduceClusterItems = useCallback(
     (acc: MarkerPointFeature, cur: MarkerPointFeature) => {
       acc.features = acc.features
-        ? [...acc.features, { icon: cur.icon, color: cur.color }]
-        : [{ icon: cur.icon, color: cur.color }];
+        ? [...acc.features, { icon: cur.icon.value, color: cur.color }]
+        : [{ icon: cur.icon.value, color: cur.color }];
     },
     [],
   );
@@ -467,7 +467,7 @@ export function Map({
 
             const allFeatures = [
               {
-                icon: cluster.properties.icon,
+                icon: cluster.properties.icon.value,
                 color: cluster.properties.color,
               },
               ...(cluster.properties.features ?? []),
@@ -477,7 +477,7 @@ export function Map({
                 (item, index, self) =>
                   index === self.findIndex((obj) => obj.icon === item.icon),
               )
-              .filter((item) => item.icon); // Remove any empty icons
+              .filter((item) => item.icon);
             const expansionZoom =
               supercluster &&
               cluster.id &&
