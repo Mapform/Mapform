@@ -65,7 +65,7 @@ export function Blocknote({
       return null;
     }
 
-    if (isEditing) {
+    if (isEditing && !isQueryPending) {
       return (
         <EmojiPopover onIconChange={onIconChange}>
           <button className="mb-2 text-6xl" type="button">
@@ -76,14 +76,14 @@ export function Blocknote({
     }
 
     return <div className="mb-2 text-6xl">{icon}</div>;
-  }, [icon, isEditing, onIconChange]);
+  }, [icon, isEditing, onIconChange, isQueryPending]);
 
   const titleElement = useMemo(() => {
     if (title === undefined) {
       return null;
     }
 
-    if (isEditing) {
+    if (isEditing && !isQueryPending) {
       return (
         <AutoSizeTextArea
           className="mb-4 text-3xl font-bold placeholder-gray-300"
@@ -102,15 +102,30 @@ export function Blocknote({
     }
 
     return (
-      <h1 className="mb-2 w-full border-0 p-0 text-3xl font-bold">
+      <h1
+        className={cn("mb-4 w-full border-0 p-0 text-3xl font-bold", {
+          "text-gray-500": isQueryPending,
+        })}
+      >
         {title ?? "Untitled"}
       </h1>
     );
-  }, [title, isEditing, onTitleChange, description?.content, editor]);
+  }, [
+    title,
+    isEditing,
+    onTitleChange,
+    description?.content,
+    editor,
+    isQueryPending,
+  ]);
 
   const descriptionElement = useMemo(() => {
     if (description === undefined) {
       return null;
+    }
+
+    if (isQueryPending) {
+      return <Skeleton className="mt-7 h-4 w-full" />;
     }
 
     return (
@@ -125,9 +140,13 @@ export function Blocknote({
         }}
       />
     );
-  }, [description, includeFormBlocks, editor, onDescriptionChange]);
-
-  console.log(1111, isQueryPending);
+  }, [
+    description,
+    includeFormBlocks,
+    editor,
+    onDescriptionChange,
+    isQueryPending,
+  ]);
 
   // Renders the editor instance using a React component.
   return (
@@ -154,11 +173,7 @@ export function Blocknote({
       <div className={cn("p-4 md:overflow-y-auto", controls ? "mt-8" : "")}>
         {iconElement}
         {titleElement}
-        {isQueryPending ? (
-          <Skeleton className="h-4 w-full" />
-        ) : (
-          descriptionElement
-        )}
+        {descriptionElement}
       </div>
       <div
         className="flex-1"
