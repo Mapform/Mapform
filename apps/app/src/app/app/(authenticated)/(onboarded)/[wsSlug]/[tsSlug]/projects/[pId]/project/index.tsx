@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useEffect, useMemo, useState } from "react";
+import { useState } from "react";
 import { compressImage } from "~/lib/compress-image";
 import { useProject } from "../project-context";
 import {
@@ -33,6 +33,9 @@ function Project() {
     updatePageServerAction,
     uploadImageServerAction,
     updateFeaturesServerAction,
+    setIsDrawerStackOpen,
+    drawerValues,
+    setActiveMode,
   } = useProject();
   const { user } = useAuth();
   const [isTourOpen, setIsTourOpen] = useState(!user?.projectGuideCompleted);
@@ -43,35 +46,7 @@ function Project() {
 
   const currentPage = updatePageServerAction.optimisticState;
 
-  // Controls the location search drawer
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
-
   const { execute: updateCurrentUser } = useAction(updateCurrentUserAction);
-
-  // Controls the ChevronsRight button to open or close all drawers
-  const [isDrawerStackOpen, setIsDrawerStackOpen] = useState(true);
-  const drawerValues = useMemo(() => {
-    return isDrawerStackOpen || selectedFeature || isSearchOpen
-      ? [
-          ...(currentPage?.contentViewType === "split" ? ["page-content"] : []),
-          // The feature drawer only opens when the feature is specified in the URL
-          ...(isSearchOpen ? ["location-search"] : []),
-          ...(selectedFeature ? ["feature"] : []),
-        ]
-      : [];
-  }, [
-    isDrawerStackOpen,
-    selectedFeature,
-    isSearchOpen,
-    currentPage?.contentViewType,
-  ]);
-
-  // Reset isDrawerStackOpen when the search or feature is opened
-  useEffect(() => {
-    if (isSearchOpen || !!selectedFeature) {
-      setIsDrawerStackOpen(true);
-    }
-  }, [isSearchOpen, selectedFeature]);
 
   if (!currentPage) {
     return null;
@@ -167,7 +142,7 @@ function Project() {
                 <FeatureDrawer />
                 <LocationSearchDrawer
                   currentPage={currentPage}
-                  onClose={() => setIsSearchOpen(false)}
+                  onClose={() => setActiveMode("hand")}
                 />
               </CustomBlockProvider>
               {currentPage.contentViewType === "split" ? (
@@ -194,16 +169,7 @@ function Project() {
                   },
                 }}
               >
-                <EditBar
-                  key={currentPage.id}
-                  onSearchOpenChange={(open) => {
-                    if (open) {
-                      // Clear the feature when search is opened
-                      setSelectedFeature(undefined);
-                    }
-                    setIsSearchOpen(open);
-                  }}
-                />
+                <EditBar key={currentPage.id} />
               </Map>
             </MapformContent>
           </div>

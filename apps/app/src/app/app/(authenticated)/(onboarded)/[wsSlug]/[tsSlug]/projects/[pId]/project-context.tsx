@@ -7,6 +7,8 @@ import {
   useEffect,
   useOptimistic,
   useTransition,
+  useState,
+  useMemo,
 } from "react";
 import { useCreateQueryString } from "@mapform/lib/hooks/use-create-query-string";
 import type { GetProjectWithPages } from "@mapform/backend/data/projects/get-project-with-pages";
@@ -48,6 +50,15 @@ export interface ProjectContextProps {
   setActivePage: (
     page?: Pick<PageWithLayers, "id" | "center" | "zoom" | "pitch" | "bearing">,
   ) => void;
+
+  // Drawer state
+  isDrawerStackOpen: boolean;
+  setIsDrawerStackOpen: (open: boolean) => void;
+  drawerValues: string[];
+
+  // Edit bar state
+  activeMode: "hand" | "search" | "shape" | "line" | "point";
+  setActiveMode: (mode: "hand" | "search" | "shape" | "line" | "point") => void;
 
   updateProjectOptimistic: (
     action: NonNullable<GetProjectWithPages["data"]>,
@@ -103,6 +114,38 @@ export function ProjectProvider({
   const [isQueryPending, startQueryTransition] = useTransition();
   const page = searchParams.get("page");
   const setQueryString = useSetQueryString();
+
+  // Drawer state
+  const [isDrawerStackOpen, setIsDrawerStackOpen] = useState(true);
+
+  // Edit bar state
+  const [activeMode, setActiveMode] = useState<
+    "hand" | "search" | "shape" | "line" | "point"
+  >("hand");
+
+  const drawerValues = useMemo(() => {
+    return isDrawerStackOpen || selectedFeature || activeMode === "search"
+      ? [
+          ...(pageWithLayers?.contentViewType === "split"
+            ? ["page-content"]
+            : []),
+          ...(activeMode === "search" ? ["location-search"] : []),
+          ...(selectedFeature ? ["feature"] : []),
+        ]
+      : [];
+  }, [
+    isDrawerStackOpen,
+    selectedFeature,
+    pageWithLayers?.contentViewType,
+    activeMode,
+  ]);
+
+  // Reset isDrawerStackOpen when the search or feature is opened
+  useEffect(() => {
+    if (activeMode === "search" || !!selectedFeature) {
+      setIsDrawerStackOpen(true);
+    }
+  }, [activeMode, selectedFeature]);
 
   const [optimisticProject, updateProjectOptimistic] = useOptimistic<
     ProjectWithPages,
@@ -309,6 +352,13 @@ export function ProjectProvider({
         availableDatasets,
         selectedFeature: optimisticSelectedFeature,
         setSelectedFeature,
+        // Drawer state
+        isDrawerStackOpen,
+        setIsDrawerStackOpen,
+        drawerValues,
+        // Edit bar state
+        activeMode,
+        setActiveMode,
         // Optimistic state
         currentProject: optimisticProject,
         // For optimistic state updates

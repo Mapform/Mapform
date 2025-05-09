@@ -39,10 +39,6 @@ import {
 import { useProject } from "../../project-context";
 import { useSetQueryString } from "@mapform/lib/hooks/use-set-query-string";
 
-interface EditBarProps {
-  onSearchOpenChange: (isOpen: boolean) => void;
-}
-
 export const lineTypes: Record<
   "line" | "walk" | "bicycle" | "drive",
   { icon: LucideIcon; label: string }
@@ -65,14 +61,12 @@ export const lineTypes: Record<
   },
 } as const;
 
-export function EditBar({ onSearchOpenChange }: EditBarProps) {
+export function EditBar() {
   const { map, draw, drawFeature, setDrawFeature } = useMapform();
-  const { drawerValues } = useMapformContent();
+  const { drawerValues, activeMode, setActiveMode, setSelectedFeature } =
+    useProject();
   const setQueryString = useSetQueryString();
   const isSearchOpen = drawerValues.includes("location-search");
-  const [activeMode, setActiveMode] = useState<
-    "hand" | "shape" | "line" | "point"
-  >("hand");
   const [selectedLineType, setSelectedLineType] =
     useState<keyof typeof lineTypes>("line");
 
@@ -87,7 +81,7 @@ export function EditBar({ onSearchOpenChange }: EditBarProps) {
     return () => {
       map?.off("draw.modechange", handleDrawModeChange);
     };
-  }, [map]);
+  }, [map, setActiveMode]);
 
   const location = useMemo(() => {
     if (!drawFeature) return null;
@@ -118,7 +112,8 @@ export function EditBar({ onSearchOpenChange }: EditBarProps) {
           isActive={isSearchOpen}
           onClick={() => {
             if (!isSearchOpen) {
-              onSearchOpenChange(true);
+              setActiveMode("search");
+              setSelectedFeature(undefined);
             }
           }}
         />
@@ -130,7 +125,7 @@ export function EditBar({ onSearchOpenChange }: EditBarProps) {
           onClick={() => {
             setActiveMode("hand");
             draw?.changeMode("simple_select");
-            onSearchOpenChange(false);
+            setSelectedFeature(undefined);
           }}
         />
         <div className="flex items-center">
@@ -141,6 +136,7 @@ export function EditBar({ onSearchOpenChange }: EditBarProps) {
                 onClick={() => {
                   draw?.changeMode("draw_point");
                   setActiveMode("point");
+                  setSelectedFeature(undefined);
                 }}
                 size="icon"
                 variant={
@@ -160,6 +156,7 @@ export function EditBar({ onSearchOpenChange }: EditBarProps) {
                 onClick={() => {
                   draw?.changeMode("draw_line_string");
                   setActiveMode("line");
+                  setSelectedFeature(undefined);
                 }}
                 size="icon"
                 variant={
@@ -231,6 +228,7 @@ export function EditBar({ onSearchOpenChange }: EditBarProps) {
                 onClick={() => {
                   draw?.changeMode("draw_polygon");
                   setActiveMode("shape");
+                  setSelectedFeature(undefined);
                 }}
                 size="icon"
                 variant={
