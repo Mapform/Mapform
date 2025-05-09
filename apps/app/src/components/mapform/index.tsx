@@ -134,9 +134,7 @@ export function MapformDrawer({
 
   return (
     <AnimatePresence mode="popLayout">
-      {/* This can be used if we want to keep all drawer open. Helpful if going with stacked ui. */}
-      {/* drawerValues.includes(value) */}
-      {drawerValues[drawerValues.length - 1] === value ? (
+      {drawerValues.includes(value) ? (
         <motion.div
           className={cn(
             // BASE STYLES
@@ -166,14 +164,9 @@ export function MapformDrawer({
             marginBottom: isMobile ? 1 * reverseValueIndex * 10 : 0,
             filter: `brightness(${1 - reverseValueIndex * 0.1})`,
             display: isMobile && reverseValueIndex !== 0 ? "none" : "flex",
-            // Used for stacked ui
             ...(!isMobile && {
               width: (isEditing ? 392 : 360) + reverseValueIndex * 10,
               paddingLeft: (isEditing ? 32 : 0) + reverseValueIndex * 10,
-            }),
-            ...(!isMobile && {
-              width: isEditing ? 392 : 360,
-              paddingLeft: isEditing ? 32 : 0,
             }),
           }}
           transition={{
