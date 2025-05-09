@@ -427,10 +427,6 @@ export function Map({
           featureIds: [selectedFeature.id],
         });
       }
-    } else {
-      draw?.changeMode("simple_select", {
-        featureIds: [],
-      });
     }
   }, [selectedFeature, draw]);
 
