@@ -12,7 +12,13 @@ import { deleteRowsAction } from "~/data/rows/delete-rows";
 import { useProject } from "../../../project-context";
 import { toast } from "@mapform/ui/components/toaster";
 
-export const FeatureSettingsPopover = () => {
+interface FeatureSettingsPopoverProps {
+  disabled: boolean;
+}
+
+export const FeatureSettingsPopover = ({
+  disabled,
+}: FeatureSettingsPopoverProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const { selectedFeature, setSelectedFeature, updateFeaturesServerAction } =
     useProject();
@@ -57,7 +63,12 @@ export const FeatureSettingsPopover = () => {
   return (
     <DropdownMenu onOpenChange={setIsOpen} open={isOpen}>
       <DropdownMenuTrigger asChild>
-        <Button size="icon-sm" type="button" variant="ghost">
+        <Button
+          disabled={disabled}
+          size="icon-sm"
+          type="button"
+          variant="ghost"
+        >
           <EllipsisIcon className="size-4" />
         </Button>
       </DropdownMenuTrigger>

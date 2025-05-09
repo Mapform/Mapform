@@ -11,11 +11,13 @@ import { FeatureSettingsPopover } from "./feature-settings-popover";
 interface BlocknoteControlsProps {
   onIconChange?: (icon: string | null) => void;
   allowAddEmoji?: boolean;
+  isQueryPending: boolean;
 }
 
 export function BlocknoteControls({
   onIconChange,
   allowAddEmoji,
+  isQueryPending = false,
 }: BlocknoteControlsProps) {
   return (
     <>
@@ -23,7 +25,12 @@ export function BlocknoteControls({
         <Tooltip>
           <EmojiPopover onIconChange={onIconChange}>
             <TooltipTrigger asChild>
-              <Button size="icon-sm" type="button" variant="ghost">
+              <Button
+                disabled={isQueryPending}
+                size="icon-sm"
+                type="button"
+                variant="ghost"
+              >
                 <SmilePlusIcon className="size-4" />
               </Button>
             </TooltipTrigger>
@@ -31,8 +38,8 @@ export function BlocknoteControls({
           <TooltipContent>Add emoji</TooltipContent>
         </Tooltip>
       )}
-      <PropertiesPopover />
-      <FeatureSettingsPopover />
+      <PropertiesPopover disabled={isQueryPending} />
+      <FeatureSettingsPopover disabled={isQueryPending} />
       {/* <Tooltip>
         <TooltipTrigger asChild>
           <Button size="icon-sm" type="button" variant="ghost">

@@ -167,6 +167,7 @@ function FeatureDrawerInner() {
             !!selectedFeatureIcon.properties.icon?.columnId &&
             !selectedFeatureIcon.properties.icon.value
           }
+          isQueryPending={isQueryPending}
           onIconChange={(value) => {
             if (
               !selectedFeatureIcon.properties.icon ||
@@ -201,6 +202,7 @@ function FeatureDrawerInner() {
       key={`${currentPage.id}-${selectedFeatureIcon.properties.rowId}-${selectedFeatureDescription.properties.description?.columnId}`}
       onDescriptionChange={(value) => {
         if (
+          isQueryPending ||
           !selectedFeatureDescription.properties.description ||
           !selectedFeatureDescription.properties.description.columnId
         ) {
@@ -220,6 +222,7 @@ function FeatureDrawerInner() {
       }}
       onIconChange={(value) => {
         if (
+          isQueryPending ||
           !selectedFeatureIcon.properties.icon ||
           !updateFeaturesServerAction.optimisticState
         ) {
@@ -238,7 +241,11 @@ function FeatureDrawerInner() {
         });
       }}
       onTitleChange={(value) => {
-        if (!selectedFeatureTitle.properties.title) {
+        if (
+          isQueryPending ||
+          !selectedFeatureTitle.properties.title ||
+          !selectedFeatureTitle.properties.title.columnId
+        ) {
           return;
         }
 

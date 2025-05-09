@@ -61,14 +61,18 @@ export function Blocknote({
   });
 
   const iconElement = useMemo(() => {
-    if (icon === undefined) {
+    if (!icon) {
       return null;
     }
 
-    if (isEditing && !isQueryPending) {
+    if (isEditing) {
       return (
         <EmojiPopover onIconChange={onIconChange}>
-          <button className="mb-2 text-6xl" type="button">
+          <button
+            className="mb-2 text-6xl"
+            disabled={isQueryPending}
+            type="button"
+          >
             {icon}
           </button>
         </EmojiPopover>
