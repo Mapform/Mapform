@@ -230,7 +230,6 @@ export function ProjectProvider({
     );
 
   const setSelectedFeature = (feature: BaseFeature | undefined) => {
-    console.log("setSelectedFeature", feature);
     setQueryString({
       key: "feature",
       value: feature ? (feature.id as string) : null,

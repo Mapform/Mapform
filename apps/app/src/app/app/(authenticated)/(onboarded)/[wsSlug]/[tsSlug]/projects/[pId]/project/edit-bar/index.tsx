@@ -36,6 +36,8 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from "@mapform/ui/components/popover";
+import { useProject } from "../../project-context";
+import { useSetQueryString } from "@mapform/lib/hooks/use-set-query-string";
 
 interface EditBarProps {
   onSearchOpenChange: (isOpen: boolean) => void;
@@ -66,6 +68,7 @@ export const lineTypes: Record<
 export function EditBar({ onSearchOpenChange }: EditBarProps) {
   const { map, draw, drawFeature, setDrawFeature } = useMapform();
   const { drawerValues } = useMapformContent();
+  const setQueryString = useSetQueryString();
   const isSearchOpen = drawerValues.includes("location-search");
   const [activeMode, setActiveMode] = useState<
     "hand" | "shape" | "line" | "point"
@@ -251,10 +254,14 @@ export function EditBar({ onSearchOpenChange }: EditBarProps) {
       {location && drawFeature && (
         <FeaturePopover
           location={new mapboxgl.LngLat(location[0]!, location[1]!)}
-          onSave={() => {
+          onSave={(id) => {
             draw?.delete(drawFeature.id as string);
             setDrawFeature(null);
             draw?.changeMode("simple_select");
+            setQueryString({
+              key: "feature",
+              value: id,
+            });
           }}
           isFetching={false}
           feature={drawFeature}

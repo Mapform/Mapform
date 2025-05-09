@@ -13,7 +13,7 @@ interface LineToolPopoverProps {
   location: mapboxgl.LngLat;
   isFetching: boolean;
   feature: mapboxgl.MapboxGeoJSONFeature;
-  onSave: () => void;
+  onSave: (id: string) => void;
 }
 
 export function FeaturePopover({
@@ -27,8 +27,8 @@ export function FeaturePopover({
   const { execute: createPolygon, isPending: isCreatingPolygon } = useAction(
     createPolygonAction,
     {
-      onSuccess: () => {
-        onSave();
+      onSuccess: ({ data }) => {
+        onSave(`${data?.row.id}_${data?.layer.id}`);
         setIsLayerSaveOpen(false);
       },
     },
@@ -37,8 +37,8 @@ export function FeaturePopover({
   const { execute: createLine, isPending: isCreatingLine } = useAction(
     createLineAction,
     {
-      onSuccess: () => {
-        onSave();
+      onSuccess: ({ data }) => {
+        onSave(`${data?.row.id}_${data?.layer.id}`);
         setIsLayerSaveOpen(false);
       },
     },
@@ -47,8 +47,8 @@ export function FeaturePopover({
   const { execute: createPoint, isPending: isCreatingPoint } = useAction(
     createPointAction,
     {
-      onSuccess: () => {
-        onSave();
+      onSuccess: ({ data }) => {
+        onSave(`${data?.row.id}_${data?.layer.id}`);
         setIsLayerSaveOpen(false);
       },
     },
