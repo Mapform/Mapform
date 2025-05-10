@@ -24,7 +24,11 @@ import type { Column } from "@mapform/db/schema";
 import { Button } from "@mapform/ui/components/button";
 import { SubMenu } from "./sub-menu";
 
-export function PropertiesPopover() {
+interface PropertiesPopoverProps {
+  disabled: boolean;
+}
+
+export function PropertiesPopover({ disabled }: PropertiesPopoverProps) {
   const [query, setQuery] = useState("");
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [selectedProperty, setSelectedProperty] = useState<
@@ -53,7 +57,12 @@ export function PropertiesPopover() {
         <Tooltip>
           <TooltipTrigger asChild>
             <PopoverTrigger asChild>
-              <Button size="icon-sm" type="button" variant="ghost">
+              <Button
+                disabled={disabled}
+                size="icon-sm"
+                type="button"
+                variant="ghost"
+              >
                 <ListPlusIcon className="size-4" />
               </Button>
             </PopoverTrigger>

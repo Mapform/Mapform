@@ -12,6 +12,8 @@ import {
   booleanCells,
   richtextCells,
   iconsCells,
+  lineCells,
+  polygonCells,
 } from "./schema";
 
 /**
@@ -39,6 +41,38 @@ export const selectPointCellSchema = createSelectSchema(pointCells, {
 });
 export type InsertPointCell = z.infer<typeof insertPointCellSchema>;
 export type PointCell = typeof pointCells.$inferSelect;
+
+/**
+ * LINE CELLS
+ */
+export const insertLineCellSchema = createInsertSchema(lineCells, {
+  value: z.object({
+    coordinates: z.array(z.tuple([z.number(), z.number()])),
+  }),
+});
+export const selectLineCellSchema = createSelectSchema(lineCells, {
+  value: z.object({
+    coordinates: z.array(z.tuple([z.number(), z.number()])),
+  }),
+});
+export type InsertLineCell = z.infer<typeof insertLineCellSchema>;
+export type LineCell = typeof lineCells.$inferSelect;
+
+/**
+ * POLYGON CELLS
+ */
+export const insertPolygonCellSchema = createInsertSchema(polygonCells, {
+  value: z.object({
+    coordinates: z.array(z.array(z.tuple([z.number(), z.number()]))),
+  }),
+});
+export const selectPolygonCellSchema = createSelectSchema(polygonCells, {
+  value: z.object({
+    coordinates: z.array(z.array(z.tuple([z.number(), z.number()]))),
+  }),
+});
+export type InsertPolygonCell = z.infer<typeof insertPolygonCellSchema>;
+export type PolygonCell = typeof polygonCells.$inferSelect;
 
 /**
  * DATE CELLS

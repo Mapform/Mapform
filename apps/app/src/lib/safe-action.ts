@@ -16,10 +16,11 @@ import { getRowAndPageCount } from "@mapform/backend/data/usage/get-row-and-page
 import { updateWorkspace } from "@mapform/backend/data/workspaces/update-workspace";
 import { upsertCell } from "@mapform/backend/data/cells/upsert-cell";
 import { createColumn } from "@mapform/backend/data/columns/create-column";
-import { getLayerMarker } from "@mapform/backend/data/datalayer/get-layer-marker";
-import { getLayerPoint } from "@mapform/backend/data/datalayer/get-layer-point";
-import { getPageData } from "@mapform/backend/data/datalayer/get-page-data";
+import { getFeature } from "@mapform/backend/data/features/get-feature";
+import { getFeatures } from "@mapform/backend/data/features/get-features";
 import { createPoint } from "@mapform/backend/data/datasets/create-point";
+import { createLine } from "@mapform/backend/data/datasets/create-line";
+import { createPolygon } from "@mapform/backend/data/datasets/create-polygon";
 import { listTeamspaceDatasets } from "@mapform/backend/data/datasets/list-teamspace-datasets";
 import { uploadImage } from "@mapform/backend/data/images/upload-image";
 import { createPageLayer } from "@mapform/backend/data/layers-to-pages/create-page-layer";
@@ -124,13 +125,14 @@ const createUserAuthClient = () => {
     deleteColumn: deleteColumn(extendedClient),
 
     // Datalayers
-    getPageData: getPageData(extendedClient),
-    getLayerPoint: getLayerPoint(extendedClient),
-    getLayerMarker: getLayerMarker(extendedClient),
+    getFeatures: getFeatures(extendedClient),
+    getFeature: getFeature(extendedClient),
 
     // Datasets
     getDataset: getDataset(extendedClient),
     createPoint: createPoint(extendedClient), // Note: for createUserAuthClient this is causing 'The inferred type of this node exceeds the maximum length the compiler will serialize'
+    createLine: createLine(extendedClient),
+    createPolygon: createPolygon(extendedClient),
     deleteDataset: deleteDataset(extendedClient),
     updateDataset: updateDataset(extendedClient),
     createEmptyDataset: createEmptyDataset(extendedClient),
@@ -209,9 +211,8 @@ const createPublicClient = () => {
     submitPage: submitPage(extendedClient),
 
     // Datalayers
-    getPageData: getPageData(extendedClient),
-    getLayerPoint: getLayerPoint(extendedClient),
-    getLayerMarker: getLayerMarker(extendedClient),
+    getFeatures: getFeatures(extendedClient),
+    getFeature: getFeature(extendedClient),
 
     // Form Submissions
     getSubmission: getSubmission(extendedClient),

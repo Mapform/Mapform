@@ -24,8 +24,6 @@ export const useSetQueryString = () => {
         current.delete(key);
       } else if (value) {
         current.set(key, value);
-      } else {
-        return;
       }
 
       const search = current.toString();
