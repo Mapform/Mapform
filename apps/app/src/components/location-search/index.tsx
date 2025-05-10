@@ -68,18 +68,24 @@ export function LocationSearchWithMap({
     GeoapifyPlace["features"][number] | null
   >(null);
   const [isMoving, setIsMoving] = useState(false);
+  const [coordinates, setCoordinates] = useState<{
+    lat: number;
+    lng: number;
+  }>({
+    lat: map.getCenter().lat,
+    lng: map.getCenter().lng,
+  });
   const [showPinPopover, setShowPinPopover] = useState(true);
   const debouncedSearchQuery = useDebounce(query, 200);
 
   const {
     isFetching: isFetchingRGResults,
     selectedFeature: selectedFeatureFromDrag,
-    refetch,
   } = useReverseGeocode({
-    lat: map.getCenter().lat,
-    lng: map.getCenter().lng,
+    lat: Number(coordinates.lat.toFixed(10)),
+    lng: Number(coordinates.lng.toFixed(10)),
     retry: 0,
-    enabled: false,
+    enabled: true,
   });
 
   const selectedFeature = selectedFeatureFromSearch || selectedFeatureFromDrag;
@@ -111,7 +117,10 @@ export function LocationSearchWithMap({
   useEffect(() => {
     marker.addTo(map);
     // Fetch on mount
-    void refetch();
+    setCoordinates({
+      lat: map.getCenter().lat,
+      lng: map.getCenter().lng,
+    });
 
     // Focus on input
     setTimeout(() => {
@@ -138,7 +147,10 @@ export function LocationSearchWithMap({
 
       // Only refetch if we don't have cached data for these coordinates
       if (!queryClient.getQueryData(queryKey)) {
-        void refetch();
+        setCoordinates({
+          lat: map.getCenter().lat,
+          lng: map.getCenter().lng,
+        });
       }
       setShowPinPopover(true);
       setIsMoving(false);
