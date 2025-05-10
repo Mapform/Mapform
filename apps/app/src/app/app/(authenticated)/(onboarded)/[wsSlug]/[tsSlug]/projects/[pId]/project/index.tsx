@@ -160,7 +160,8 @@ function Project() {
                 isStatic={false}
                 selectedFeature={selectedFeature}
                 setSelectedFeature={setSelectedFeature}
-                updateFeaturesServerAction={updateFeaturesServerAction}
+                updateFeatures={updateFeaturesServerAction.execute}
+                features={updateFeaturesServerAction.optimisticState}
                 initialViewState={{
                   longitude: currentPage.center.x,
                   latitude: currentPage.center.y,

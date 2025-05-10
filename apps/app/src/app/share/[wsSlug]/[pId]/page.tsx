@@ -17,7 +17,7 @@ const fetchProjectWithPages = cache(async (id: string) => {
   return projectWithPagesResponse;
 });
 
-const fetchPageData = cache(async (id?: string) => {
+const fetchFatures = cache(async (id?: string) => {
   if (!id) {
     return undefined;
   }
@@ -71,7 +71,7 @@ export default async function Page(props: {
   const [projectWithPagesResponse, features, selectedFeature] =
     await Promise.all([
       fetchProjectWithPages(params.pId),
-      fetchPageData(searchParams?.p),
+      fetchFatures(searchParams?.p),
       fetchSelectedFeature(searchParams?.feature),
     ]);
 

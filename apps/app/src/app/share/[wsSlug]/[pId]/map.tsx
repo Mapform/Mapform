@@ -3,7 +3,13 @@
 import Image from "next/image";
 import { useMapform } from "~/components/mapform";
 import { useAction } from "next-safe-action/hooks";
-import React, { useEffect, useMemo, useState } from "react";
+import React, {
+  useEffect,
+  useMemo,
+  useOptimistic,
+  useState,
+  useTransition,
+} from "react";
 import type { GetFeatures } from "@mapform/backend/data/features/get-features";
 import type { GetProjectWithPages } from "@mapform/backend/data/projects/get-project-with-pages";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
@@ -21,8 +27,8 @@ import {
   MapformContent,
   MapformDrawer,
   MapformDrawerButton,
-  MapformMap,
 } from "~/components/mapform";
+import { Map as MapformMap } from "~/components/mapform/map";
 import { Blocknote } from "~/components/mapform/block-note";
 import { Form, useForm, zodResolver } from "@mapform/ui/components/form";
 import { useSetQueryString } from "@mapform/lib/hooks/use-set-query-string";
@@ -54,6 +60,8 @@ import {
   PopoverContent,
 } from "@mapform/ui/components/popover";
 import type { GetFeature } from "@mapform/backend/data/features/get-feature";
+import { BaseFeature } from "@mapform/backend/data/features/types";
+import { Feature } from "geojson";
 
 interface MapProps {
   features: GetFeatures["data"];
@@ -79,6 +87,7 @@ export function Map({
   const searchParams = useSearchParams();
   const p = searchParams.get("p");
   const setQueryString = useSetQueryString();
+  const [_, startTransition] = useTransition();
   const currentPage = projectWithPages.pages.find((page) => page.id === p);
   const [isSearchOpen, setIsSearching] = useState(false);
   const [isDrawerStackOpen, setIsDrawerStackOpen] = useState(true);
@@ -240,6 +249,42 @@ export function Map({
     form.reset(pageValues);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [p]);
+
+  const [optimisticSelectedFeature, setOptimisticSelectedFeature] =
+    useOptimistic<Feature | undefined, BaseFeature | undefined>(
+      selectedFeature,
+      (state, newFeature) => {
+        if (!newFeature) return undefined;
+
+        return {
+          ...state,
+          ...newFeature,
+          geometry: {
+            ...state?.geometry,
+            coordinates: newFeature.geometry.coordinates,
+          },
+          properties: {
+            ...state?.properties,
+            ...newFeature.properties,
+          },
+        } as Feature;
+      },
+    );
+
+  const setSelectedFeature = (feature: BaseFeature | undefined) => {
+    // Ignore if the feature is the same as the current selected feature
+    if (feature?.id === optimisticSelectedFeature?.id) {
+      return;
+    }
+
+    startTransition(() => {
+      setQueryString({
+        key: "feature",
+        value: feature ? (feature.id as string) : null,
+      });
+      setOptimisticSelectedFeature(feature);
+    });
+  };
 
   if ((isUsingSessions && !currentFormSubmission) || !currentPage) {
     return null;
@@ -410,6 +455,8 @@ export function Map({
             />
           ) : null}
           <MapformMap
+            features={features}
+            setSelectedFeature={setSelectedFeature}
             initialViewState={{
               longitude: currentPage.center.x,
               latitude: currentPage.center.y,
@@ -496,11 +543,11 @@ export function Map({
               <Blocknote
                 isFeature
                 description={
-                  selectedFeature?.description?.richtextCell?.value ?? undefined
+                  selectedFeature?.properties.description?.value ?? undefined
                 }
-                icon={selectedFeature?.icon?.iconCell?.value}
-                key={`${currentPage.id}-${selectedFeature?.rowId}`}
-                title={selectedFeature?.title?.stringCell?.value}
+                icon={selectedFeature?.properties.icon?.value}
+                key={`${currentPage.id}-${selectedFeature?.properties.rowId}`}
+                title={selectedFeature?.properties.title?.value}
               />
             </MapformDrawer>
           </CustomBlockProvider>

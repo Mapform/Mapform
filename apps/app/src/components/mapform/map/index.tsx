@@ -36,12 +36,8 @@ export interface MapProps {
   isStatic?: boolean;
   selectedFeature?: GetFeature["data"];
   setSelectedFeature: (feature: BaseFeature | undefined) => void;
-  updateFeaturesServerAction?: {
-    execute: (args: Parameters<typeof upsertCellAction>[0]) => void;
-    optimisticState: NonNullable<GetFeatures["data"]> | undefined;
-    isPending: boolean;
-    setOptimisticState: (state: NonNullable<GetFeatures["data"]>) => void;
-  };
+  features: NonNullable<GetFeatures["data"]> | undefined;
+  updateFeatures?: (args: Parameters<typeof upsertCellAction>[0]) => void;
 }
 
 interface MarkerPointFeature {
@@ -71,7 +67,8 @@ export function Map({
   isStatic = true,
   selectedFeature,
   setSelectedFeature,
-  updateFeaturesServerAction,
+  updateFeatures,
+  features,
 }: MapProps) {
   const [bounds, setBounds] = useState<
     [number, number, number, number] | undefined
@@ -89,7 +86,6 @@ export function Map({
     setDrawFeature,
   } = useMapform();
   const isMobile = useIsMobile();
-  const features = updateFeaturesServerAction?.optimisticState;
   const { drawerValues, isEditing } = useMapformContent();
 
   const mapPadding = useMemo(() => {
@@ -352,12 +348,12 @@ export function Map({
         return;
       }
 
-      if (!updateFeaturesServerAction) {
+      if (!updateFeatures) {
         return;
       }
 
       if (feature.geometry.type === "Polygon") {
-        updateFeaturesServerAction.execute({
+        updateFeatures({
           type: "polygon",
           value: { coordinates: feature.geometry.coordinates },
           rowId: feature.properties.rowId,
@@ -366,7 +362,7 @@ export function Map({
       }
 
       if (feature.geometry.type === "LineString") {
-        updateFeaturesServerAction.execute({
+        updateFeatures({
           type: "line",
           value: { coordinates: feature.geometry.coordinates },
           rowId: feature.properties.rowId,
@@ -375,7 +371,7 @@ export function Map({
       }
 
       if (feature.geometry.type === "Point") {
-        updateFeaturesServerAction.execute({
+        updateFeatures({
           type: "point",
           value: {
             x: feature.geometry.coordinates[0],
@@ -434,7 +430,7 @@ export function Map({
     draw,
     setDrawFeature,
     drawFeature,
-    updateFeaturesServerAction,
+    updateFeatures,
     setSelectedFeature,
   ]);
 
@@ -552,7 +548,7 @@ export function Map({
                   draggable: markerIsDraggable,
                 }}
                 onDragEnd={(lngLat) => {
-                  updateFeaturesServerAction?.execute({
+                  updateFeatures?.({
                     type: "point",
                     value: { x: lngLat.lng, y: lngLat.lat },
                     rowId: cluster.properties.rowId,
