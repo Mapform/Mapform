@@ -32,8 +32,14 @@ import { Button, type ButtonProps } from "@mapform/ui/components/button";
 import { Skeleton } from "@mapform/ui/components/skeleton";
 import { SelectionPin } from "../selection-pin";
 import { useReverseGeocode } from "~/hooks/use-reverse-geocode";
+import { motion, AnimatePresence } from "motion/react";
 
-export function LocationSearch(props: { children?: React.ReactNode }) {
+interface LocationSearchProps {
+  children?: React.ReactNode;
+  disableDragSearch?: boolean;
+}
+
+export function LocationSearch(props: LocationSearchProps) {
   const { map } = useMapform();
 
   if (!map) {
@@ -54,13 +60,15 @@ export const LocationSearchContext = createContext<LocationSearchContextProps>(
 );
 export const useLocationSearch = () => useContext(LocationSearchContext);
 
+interface LocationSearchWithMapProps extends LocationSearchProps {
+  map: mapboxgl.Map;
+}
+
 export function LocationSearchWithMap({
   map,
   children,
-}: {
-  map: mapboxgl.Map;
-  children?: React.ReactNode;
-}) {
+  disableDragSearch = false,
+}: LocationSearchWithMapProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [query, setQuery] = useState("");
   const queryClient = useQueryClient();
@@ -75,7 +83,7 @@ export function LocationSearchWithMap({
     lat: map.getCenter().lat,
     lng: map.getCenter().lng,
   });
-  const [showPinPopover, setShowPinPopover] = useState(true);
+  const [showPinPopover, setShowPinPopover] = useState(!disableDragSearch);
   const debouncedSearchQuery = useDebounce(query, 200);
 
   const {
@@ -85,7 +93,7 @@ export function LocationSearchWithMap({
     lat: Number(coordinates.lat.toFixed(10)),
     lng: Number(coordinates.lng.toFixed(10)),
     retry: 0,
-    enabled: true,
+    enabled: !disableDragSearch,
   });
 
   const selectedFeature = selectedFeatureFromSearch || selectedFeatureFromDrag;
@@ -145,14 +153,14 @@ export function LocationSearchWithMap({
 
       console.log(queryClient.getQueryData(queryKey));
 
-      // Only refetch if we don't have cached data for these coordinates
-      if (!queryClient.getQueryData(queryKey)) {
+      // Only refetch if we don't have cached data for these coordinates and drag search is enabled
+      if (!queryClient.getQueryData(queryKey) && !disableDragSearch) {
         setCoordinates({
           lat: map.getCenter().lat,
           lng: map.getCenter().lng,
         });
       }
-      setShowPinPopover(true);
+      setShowPinPopover(!disableDragSearch);
       setIsMoving(false);
     };
 
@@ -161,13 +169,13 @@ export function LocationSearchWithMap({
     map.on("moveend", handleMoveEnd);
 
     return () => {
-      setShowPinPopover(true);
+      setShowPinPopover(!disableDragSearch);
       marker.remove();
       map.off("move", handleMove);
       map.off("movestart", handleMoveStart);
       map.off("moveend", handleMoveEnd);
     };
-  }, []);
+  }, [disableDragSearch]);
 
   // Controls hot keys for selecting search results
   useEffect(() => {
@@ -364,9 +372,20 @@ export function LocationSearchWithMap({
         </div>
       </Command>
       <Portal.Root container={marker.getElement()}>
-        <Popover open={showPinPopover}>
+        <Popover open={showPinPopover || !!selectedFeatureFromSearch}>
           <PopoverAnchor>
-            <SelectionPin />
+            <AnimatePresence>
+              {(showPinPopover || !!selectedFeatureFromSearch) && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <SelectionPin />
+                </motion.div>
+              )}
+            </AnimatePresence>
           </PopoverAnchor>
           <PopoverContent
             className={cn({
@@ -400,9 +419,7 @@ export function LocationSearchWithMap({
                     <div className="mt-2">{children}</div>
                   </LocationSearchContext.Provider>
                 </>
-              ) : (
-                <div className="text-center">Drag map or search</div>
-              )}
+              ) : null}
             </div>
           </PopoverContent>
         </Popover>

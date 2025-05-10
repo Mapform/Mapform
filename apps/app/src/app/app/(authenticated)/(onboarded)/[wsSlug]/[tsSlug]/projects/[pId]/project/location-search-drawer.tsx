@@ -29,7 +29,7 @@ export function LocationSearchDrawer({
       value="location-search"
       hideDragBar
     >
-      <LocationSearch>
+      <LocationSearch disableDragSearch>
         <LocationSearchDrawerInner
           currentPage={currentPage}
           onClose={onClose}
