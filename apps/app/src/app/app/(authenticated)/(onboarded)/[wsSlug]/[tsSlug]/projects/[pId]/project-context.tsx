@@ -256,6 +256,11 @@ export function ProjectProvider({
     );
 
   const setSelectedFeature = (feature: BaseFeature | undefined) => {
+    // Ignore if the feature is the same as the current selected feature
+    if (feature?.id === optimisticSelectedFeature?.id) {
+      return;
+    }
+
     startQueryTransition(() => {
       setQueryString({
         key: "feature",
