@@ -272,6 +272,8 @@ export function Map({
     );
 
   const setSelectedFeature = (feature: BaseFeature | undefined) => {
+    console.log(11111, feature, optimisticSelectedFeature?.id);
+
     // Ignore if the feature is the same as the current selected feature
     if (feature?.id === optimisticSelectedFeature?.id) {
       return;
