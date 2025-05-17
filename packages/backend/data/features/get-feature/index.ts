@@ -56,6 +56,9 @@ export const getFeature = (authClient: UserAuthClient | PublicClient) =>
             layersToPages: {
               with: {
                 page: {
+                  columns: {
+                    id: true,
+                  },
                   with: {
                     project: true,
                   },

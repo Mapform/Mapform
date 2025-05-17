@@ -279,7 +279,6 @@ export function Map({
       } & mapboxgl.EventData,
     ) => {
       const feature = e.features?.[0];
-      console.log(123, e);
 
       if (feature && isPersistedFeature(feature)) {
         if (isMobile) {
