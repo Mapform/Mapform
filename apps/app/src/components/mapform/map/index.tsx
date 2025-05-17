@@ -479,7 +479,9 @@ export function Map({
           ...feature,
           properties: {
             ...feature?.properties,
-            active: (selectedFeature?.id === feature?.id).toString(),
+            ...(isStatic
+              ? { active: (selectedFeature?.id === feature?.id).toString() }
+              : {}),
           },
         })),
     },

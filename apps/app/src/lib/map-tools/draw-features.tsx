@@ -18,10 +18,6 @@ export function useDrawFeatures({
   features: GetFeatures["data"];
 }) {
   const { draw } = useMapform();
-  console.log(
-    9999,
-    features.features.find((f) => f.properties.active),
-  );
 
   /**
    * Render features using Draw. This makes features editable.
