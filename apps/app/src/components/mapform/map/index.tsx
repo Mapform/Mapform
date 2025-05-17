@@ -14,6 +14,7 @@ import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import { useDrawFeatures } from "~/lib/map-tools/draw-features";
 import type { GetFeature } from "@mapform/backend/data/features/get-feature";
 import type { FeatureCollection } from "geojson";
+// import StaticMode from "@mapbox/mapbox-gl-draw-static-mode";
 import {
   type BaseFeature,
   isPersistedFeature,
@@ -86,6 +87,25 @@ export function Map({
   } = useMapform();
   const isMobile = useIsMobile();
   const { drawerValues, isEditing } = useMapformContent();
+
+  const StaticMode = {
+    onClick: function (state, e) {
+      if (!e.featureTarget) {
+        return;
+      }
+
+      setSelectedFeature({
+        type: "Feature",
+        id: e.featureTarget.properties.id,
+        properties: e.featureTarget.properties,
+        geometry: e.featureTarget._geometry,
+      });
+    },
+
+    toDisplayFeatures: function (state, geojson, display) {
+      display(geojson);
+    },
+  };
 
   const mapPadding = useMemo(() => {
     return {
@@ -203,15 +223,13 @@ export function Map({
       m.on("load", () => {
         setMap(m);
 
-        if (isStatic) {
-          return;
-        }
-
         const draw = new MapboxDraw({
           displayControlsDefault: false,
           // @ts-expect-error -- This is the recommended way to set the new mode
-          modes: MapboxDraw.modes,
-          defaultMode: "simple_select",
+          modes: Object.assign(MapboxDraw.modes, {
+            static: StaticMode,
+          }),
+          defaultMode: isStatic ? "static" : "simple_select",
           styles: mapStyles,
           userProperties: true,
           // Disable multiselect with shift + click, and instead zooms to area
@@ -261,7 +279,7 @@ export function Map({
       } & mapboxgl.EventData,
     ) => {
       const feature = e.features?.[0];
-      console.log(123, feature);
+      console.log(123, e);
 
       if (feature && isPersistedFeature(feature)) {
         if (isMobile) {
@@ -300,7 +318,8 @@ export function Map({
 
     if (map) {
       // BIND EVENT HANDLERS
-      map.on("click", "features-point-outer", handleLayerClick);
+      // TODO: Figure out correct layer
+      // map.on("click", "gl-draw-point-inner.cold", handleLayerClick);
       map.on("mouseenter", "points", handleMouseEnterPoints);
       map.on("mouseleave", "points", handleMouseLeavePoints);
       map.on("moveend", handleBoundsChange);
@@ -309,8 +328,8 @@ export function Map({
 
     return () => {
       if (map) {
-        // CLEANUP EVENT HANDLERS
-        map.off("click", "features-point-outer", handleLayerClick);
+        // // CLEANUP EVENT HANDLERS
+        // map.off("click", "features-point-outer", handleLayerClick);
         map.off("mouseenter", "points", handleMouseEnterPoints);
         map.off("mouseleave", "points", handleMouseLeavePoints);
         map.off("moveend", handleBoundsChange);
@@ -446,11 +465,23 @@ export function Map({
     }
   }, [selectedFeature, draw]);
 
-  console.log(9999, selectedFeature);
+  console.log(
+    9999,
+    (
+      features?.features.filter(
+        (feature) => feature?.properties.layerType !== "marker",
+      ) ?? []
+    ).map((feature) => ({
+      ...feature,
+      properties: {
+        ...feature?.properties,
+        user_active: selectedFeature?.id === feature?.id,
+      },
+    })),
+  );
 
   useDrawFeatures({
     map,
-    isStatic,
     features: {
       type: "FeatureCollection",
       features:
@@ -467,8 +498,6 @@ export function Map({
           },
         })),
     },
-    selectedFeature,
-    setSelectedFeature,
   });
 
   return (
