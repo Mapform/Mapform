@@ -14,8 +14,8 @@ export const mapStyles = [
         "case",
         [
           "any",
-          ["==", ["get", "active"], "true"],
           ["==", ["get", "user_active"], "true"],
+          ["==", ["get", "active"], "true"],
         ],
         orange,
         ["get", "user_color"],
@@ -40,19 +40,15 @@ export const mapStyles = [
         "case",
         [
           "any",
-          ["==", ["get", "active"], "true"],
           ["==", ["get", "user_active"], "true"],
+          ["==", ["get", "active"], "true"],
         ],
         orange,
         ["get", "user_color"],
       ],
       "line-dasharray": [
         "case",
-        [
-          "any",
-          ["==", ["get", "active"], "true"],
-          ["==", ["get", "user_active"], "true"],
-        ],
+        ["==", ["get", "active"], "true"],
         [0.2, 2],
         [2, 0],
       ],
@@ -67,16 +63,7 @@ export const mapStyles = [
     type: "circle",
     filter: ["all", ["==", "$type", "Point"], ["==", "meta", "feature"]],
     paint: {
-      "circle-radius": [
-        "case",
-        [
-          "any",
-          ["==", ["get", "active"], "true"],
-          ["==", ["get", "user_active"], "true"],
-        ],
-        9,
-        7,
-      ],
+      "circle-radius": ["case", ["==", ["get", "active"], "true"], 9, 7],
       "circle-color": white,
     },
   },
@@ -85,22 +72,13 @@ export const mapStyles = [
     type: "circle",
     filter: ["all", ["==", "$type", "Point"], ["==", "meta", "feature"]],
     paint: {
-      "circle-radius": [
-        "case",
-        [
-          "any",
-          ["==", ["get", "active"], "true"],
-          ["==", ["get", "user_active"], "true"],
-        ],
-        7,
-        5,
-      ],
+      "circle-radius": ["case", ["==", ["get", "active"], "true"], 7, 5],
       "circle-color": [
         "case",
         [
           "any",
-          ["==", ["get", "active"], "true"],
           ["==", ["get", "user_active"], "true"],
+          ["==", ["get", "active"], "true"],
         ],
         orange,
         ["get", "user_color"],
@@ -121,16 +99,7 @@ export const mapStyles = [
       ["!=", "mode", "simple_select"],
     ],
     paint: {
-      "circle-radius": [
-        "case",
-        [
-          "any",
-          ["==", ["get", "active"], "true"],
-          ["==", ["get", "user_active"], "true"],
-        ],
-        7,
-        5,
-      ],
+      "circle-radius": ["case", ["==", ["get", "active"], "true"], 7, 5],
       "circle-color": white,
     },
   },
@@ -144,16 +113,7 @@ export const mapStyles = [
       ["!=", "mode", "simple_select"],
     ],
     paint: {
-      "circle-radius": [
-        "case",
-        [
-          "any",
-          ["==", ["get", "active"], "true"],
-          ["==", ["get", "user_active"], "true"],
-        ],
-        5,
-        3,
-      ],
+      "circle-radius": ["case", ["==", ["get", "active"], "true"], 5, 3],
       "circle-color": orange,
     },
   },

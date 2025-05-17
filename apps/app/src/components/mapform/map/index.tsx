@@ -465,21 +465,6 @@ export function Map({
     }
   }, [selectedFeature, draw]);
 
-  console.log(
-    9999,
-    (
-      features?.features.filter(
-        (feature) => feature?.properties.layerType !== "marker",
-      ) ?? []
-    ).map((feature) => ({
-      ...feature,
-      properties: {
-        ...feature?.properties,
-        user_active: selectedFeature?.id === feature?.id,
-      },
-    })),
-  );
-
   useDrawFeatures({
     map,
     features: {
@@ -494,7 +479,7 @@ export function Map({
           ...feature,
           properties: {
             ...feature?.properties,
-            active: selectedFeature?.id === feature?.id,
+            active: (selectedFeature?.id === feature?.id).toString(),
           },
         })),
     },
