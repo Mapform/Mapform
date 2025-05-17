@@ -25,7 +25,6 @@ import { Cluster } from "./cluster";
 import "./style.css";
 import type { upsertCellAction } from "~/data/cells/upsert-cell";
 import { useIsMobile } from "@mapform/lib/hooks/use-is-mobile";
-import { ShareMode } from "./share-mode";
 
 const accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
 
@@ -204,45 +203,15 @@ export function Map({
       m.on("load", () => {
         setMap(m);
 
-        const modes = Object.assign(
-          {
-            share_mode: ShareMode,
-          },
-          MapboxDraw.modes,
-        );
-        // modes.static = StaticMode;
-
-        // if (isStatic) {
-        // Disables drag
-        // modes.simple_select.onDrag = () => {};
-        // modes.direct_select.onDrag = () => {};
-        // Override cursor styles
-        // const style = document.createElement("style");
-        // style.textContent = `
-        //   .mapboxgl-map.mouse-pointer .mapboxgl-canvas-container.mapboxgl-interactive {
-        //     cursor: pointer;
-        //   }
-        //   .mapboxgl-map.mouse-move .mapboxgl-canvas-container.mapboxgl-interactive {
-        //     cursor: pointer;
-        //   }
-        //   .mapboxgl-map.mode-direct_select.feature-vertex.mouse-move .mapboxgl-canvas-container.mapboxgl-interactive {
-        //     cursor: pointer;
-        //   }
-        // `;
-        // document.head.appendChild(style);
-        // modes.simple_select.onClick = (state, e) => {
-        //   console.log(9999, state, e, e.featureTarget?.properties);
-        //   if (e.featureTarget?.properties) {
-        //     setSelectedFeature(e.featureTarget.properties);
-        //   }
-        // };
-        // }
+        if (isStatic) {
+          return;
+        }
 
         const draw = new MapboxDraw({
           displayControlsDefault: false,
           // @ts-expect-error -- This is the recommended way to set the new mode
-          modes,
-          defaultMode: isStatic ? "share_mode" : "simple_select",
+          modes: MapboxDraw.modes,
+          defaultMode: "simple_select",
           styles: mapStyles,
           userProperties: true,
           // Disable multiselect with shift + click, and instead zooms to area
@@ -478,6 +447,7 @@ export function Map({
 
   useDrawFeatures({
     map,
+    isStatic,
     features: {
       type: "FeatureCollection",
       features:

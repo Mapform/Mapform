@@ -60,8 +60,8 @@ import {
   PopoverContent,
 } from "@mapform/ui/components/popover";
 import type { GetFeature } from "@mapform/backend/data/features/get-feature";
-import { BaseFeature } from "@mapform/backend/data/features/types";
-import { Feature } from "geojson";
+import type { BaseFeature } from "@mapform/backend/data/features/types";
+import type { Feature } from "geojson";
 
 interface MapProps {
   features: GetFeatures["data"];
