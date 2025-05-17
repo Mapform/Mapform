@@ -8,6 +8,8 @@ import {
   ToggleLeftIcon,
   SmileIcon,
   type LucideIcon,
+  Waypoints,
+  PentagonIcon,
 } from "lucide-react";
 
 export const COLUMN_ICONS: {
@@ -20,4 +22,6 @@ export const COLUMN_ICONS: {
   bool: ToggleLeftIcon,
   date: CalendarIcon,
   icon: SmileIcon,
+  line: Waypoints,
+  polygon: PentagonIcon,
 };

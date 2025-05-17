@@ -3,10 +3,14 @@
 import Image from "next/image";
 import { useMapform } from "~/components/mapform";
 import { useAction } from "next-safe-action/hooks";
-import React, { useEffect, useMemo, useState } from "react";
-import type { GetPageData } from "@mapform/backend/data/datalayer/get-page-data";
-import type { GetLayerPoint } from "@mapform/backend/data/datalayer/get-layer-point";
-import { type GetLayerMarker } from "@mapform/backend/data/datalayer/get-layer-marker";
+import React, {
+  useEffect,
+  useMemo,
+  useOptimistic,
+  useState,
+  useTransition,
+} from "react";
+import type { GetFeatures } from "@mapform/backend/data/features/get-features";
 import type { GetProjectWithPages } from "@mapform/backend/data/projects/get-project-with-pages";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import type { GetSubmission } from "@mapform/backend/data/form-submissions/get-submission";
@@ -23,8 +27,8 @@ import {
   MapformContent,
   MapformDrawer,
   MapformDrawerButton,
-  MapformMap,
 } from "~/components/mapform";
+import { Map as MapformMap } from "~/components/mapform/map";
 import { Blocknote } from "~/components/mapform/block-note";
 import { Form, useForm, zodResolver } from "@mapform/ui/components/form";
 import { useSetQueryString } from "@mapform/lib/hooks/use-set-query-string";
@@ -55,12 +59,15 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from "@mapform/ui/components/popover";
+import type { GetFeature } from "@mapform/backend/data/features/get-feature";
+import type { BaseFeature } from "@mapform/backend/data/features/types";
+import type { Feature } from "geojson";
 
 interface MapProps {
-  pageData: GetPageData["data"];
+  features: GetFeatures["data"];
   projectWithPages: NonNullable<GetProjectWithPages["data"]>;
   formValues: NonNullable<NonNullable<GetSubmission>["data"]>["row"]["cells"];
-  selectedFeature?: GetLayerPoint["data"] | GetLayerMarker["data"];
+  selectedFeature?: GetFeature["data"];
   formSubmissionId: string | null;
   isUsingSessions: boolean;
 }
@@ -68,7 +75,7 @@ interface MapProps {
 type Page = NonNullable<GetProjectWithPages["data"]>["pages"][number];
 
 export function Map({
-  pageData,
+  features,
   formSubmissionId,
   formValues,
   isUsingSessions,
@@ -80,6 +87,7 @@ export function Map({
   const searchParams = useSearchParams();
   const p = searchParams.get("p");
   const setQueryString = useSetQueryString();
+  const [_, startTransition] = useTransition();
   const currentPage = projectWithPages.pages.find((page) => page.id === p);
   const [isSearchOpen, setIsSearching] = useState(false);
   const [isDrawerStackOpen, setIsDrawerStackOpen] = useState(true);
@@ -242,6 +250,42 @@ export function Map({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [p]);
 
+  const [optimisticSelectedFeature, setOptimisticSelectedFeature] =
+    useOptimistic<Feature | undefined, BaseFeature | undefined>(
+      selectedFeature,
+      (state, newFeature) => {
+        if (!newFeature) return undefined;
+
+        return {
+          ...state,
+          ...newFeature,
+          geometry: {
+            ...state?.geometry,
+            coordinates: newFeature.geometry.coordinates,
+          },
+          properties: {
+            ...state?.properties,
+            ...newFeature.properties,
+          },
+        } as Feature;
+      },
+    );
+
+  const setSelectedFeature = (feature: BaseFeature | undefined) => {
+    // Ignore if the feature is the same as the current selected feature
+    if (feature?.id === optimisticSelectedFeature?.id) {
+      return;
+    }
+
+    startTransition(() => {
+      setQueryString({
+        key: "feature",
+        value: feature ? (feature.id as string) : null,
+      });
+      setOptimisticSelectedFeature(feature);
+    });
+  };
+
   if ((isUsingSessions && !currentFormSubmission) || !currentPage) {
     return null;
   }
@@ -359,9 +403,9 @@ export function Map({
                       ? "Done"
                       : null}
                   {nextPage ? (
-                    <ArrowRightIcon className="ml-1 -mr-1 size-5" />
+                    <ArrowRightIcon className="-mr-1 ml-1 size-5" />
                   ) : (
-                    <CheckIcon className="ml-1 -mr-1 size-5" />
+                    <CheckIcon className="-mr-1 ml-1 size-5" />
                   )}
                 </Button>
               </div>
@@ -401,16 +445,18 @@ export function Map({
   return (
     <Form {...form}>
       <form
-        className="flex flex-col w-full h-full md:overflow-hidden"
+        className="flex h-full w-full flex-col md:overflow-hidden"
         onSubmit={form.handleSubmit(onStepSubmit)}
       >
-        <MapformContent drawerValues={drawerValues} pageData={pageData}>
+        <MapformContent drawerValues={drawerValues}>
           {currentPage.contentViewType === "split" ? (
             <MapformDrawerButton
               onDrawerStackOpenChange={setIsDrawerStackOpen}
             />
           ) : null}
           <MapformMap
+            features={features}
+            setSelectedFeature={setSelectedFeature}
             initialViewState={{
               longitude: currentPage.center.x,
               latitude: currentPage.center.y,
@@ -427,7 +473,7 @@ export function Map({
           >
             {!drawerValues.includes("location-search")
               ? selectedLocations.map((location) => {
-                  if (!location) {
+                  if (!location || !map) {
                     return null;
                   }
 
@@ -439,6 +485,7 @@ export function Map({
                       }}
                     >
                       <LocationMarker
+                        map={map}
                         latitude={location.y}
                         longitude={location.x}
                       >
@@ -448,7 +495,7 @@ export function Map({
                   );
                 })
               : null}
-            <div className="absolute z-10 flex items-center transform -translate-x-1/2 pointer-events-auto bottom-8 left-1/2 max-md:hidden">
+            <div className="pointer-events-auto absolute bottom-8 left-1/2 z-10 flex -translate-x-1/2 transform items-center max-md:hidden">
               {controls}
             </div>
           </MapformMap>
@@ -496,11 +543,11 @@ export function Map({
               <Blocknote
                 isFeature
                 description={
-                  selectedFeature?.description?.richtextCell?.value ?? undefined
+                  selectedFeature?.properties.description?.value ?? undefined
                 }
-                icon={selectedFeature?.icon?.iconCell?.value}
-                key={`${currentPage.id}-${selectedFeature?.rowId}`}
-                title={selectedFeature?.title?.stringCell?.value}
+                icon={selectedFeature?.properties.icon?.value}
+                key={`${currentPage.id}-${selectedFeature?.properties.rowId}`}
+                title={selectedFeature?.properties.title?.value}
               />
             </MapformDrawer>
           </CustomBlockProvider>

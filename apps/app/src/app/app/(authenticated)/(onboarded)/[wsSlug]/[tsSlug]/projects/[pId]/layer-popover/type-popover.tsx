@@ -31,6 +31,8 @@ import {
   ChevronsUpDownIcon,
   CircleDotIcon,
   MapPinIcon,
+  PentagonIcon,
+  WaypointsIcon,
 } from "lucide-react";
 
 interface TypePopoverProps {
@@ -51,6 +53,18 @@ const types = [
     icon: CircleDotIcon,
     description:
       "Basic location representation. Points are never clustered. Ideal for larger datasets.",
+  },
+  {
+    label: "Line",
+    value: "line",
+    icon: WaypointsIcon,
+    description: "Display a line between points. Ideal for routing and paths.",
+  },
+  {
+    label: "Polygon",
+    value: "polygon",
+    icon: PentagonIcon,
+    description: "Display a polygon. Ideal for areas and boundaries.",
   },
 ] as const;
 
@@ -103,40 +117,53 @@ export function TypePopover({ form }: TypePopoverProps) {
                 value={query}
               />
               <CommandList>
-                <CommandEmpty>No type found.</CommandEmpty>
-                <CommandGroup>
-                  {types.map((type) => (
-                    <Tooltip delayDuration={0} key={type.value}>
-                      <TooltipTrigger className="w-full">
-                        <CommandItem
-                          value={type.label}
-                          onSelect={() => {
-                            form.setValue("type", type.value);
-                            setQuery("");
-                            setOpen(false);
-                          }}
-                          className="flex items-center gap-2"
-                        >
-                          <type.icon className="size-4 flex-shrink-0" />
-                          <span className="flex-1 truncate text-left">
-                            {type.label}
-                          </span>
-                          <CheckIcon
-                            className={cn(
-                              "ml-auto size-4",
-                              field.value === type.value
-                                ? "opacity-100"
-                                : "opacity-0",
-                            )}
-                          />
-                        </CommandItem>
-                      </TooltipTrigger>
-                      <TooltipContent className="max-w-[200px]" side="right">
-                        {type.description}
-                      </TooltipContent>
-                    </Tooltip>
-                  ))}
-                </CommandGroup>
+                <CommandEmpty className="text-muted-foreground py-2 text-center text-sm">
+                  No type found.
+                </CommandEmpty>
+                {types.filter((type) =>
+                  type.label.toLowerCase().includes(query.toLowerCase()),
+                ).length > 0 && (
+                  <CommandGroup>
+                    {types
+                      .filter((type) =>
+                        type.label.toLowerCase().includes(query.toLowerCase()),
+                      )
+                      .map((type) => (
+                        <Tooltip delayDuration={0} key={type.value}>
+                          <TooltipTrigger className="w-full">
+                            <CommandItem
+                              value={type.label}
+                              onSelect={() => {
+                                form.setValue("type", type.value);
+                                setQuery("");
+                                setOpen(false);
+                              }}
+                              className="flex items-center gap-2"
+                            >
+                              <type.icon className="size-4 flex-shrink-0" />
+                              <span className="flex-1 truncate text-left">
+                                {type.label}
+                              </span>
+                              <CheckIcon
+                                className={cn(
+                                  "ml-auto size-4",
+                                  field.value === type.value
+                                    ? "opacity-100"
+                                    : "opacity-0",
+                                )}
+                              />
+                            </CommandItem>
+                          </TooltipTrigger>
+                          <TooltipContent
+                            className="max-w-[200px]"
+                            side="right"
+                          >
+                            {type.description}
+                          </TooltipContent>
+                        </Tooltip>
+                      ))}
+                  </CommandGroup>
+                )}
               </CommandList>
             </Command>
           </PopoverContent>

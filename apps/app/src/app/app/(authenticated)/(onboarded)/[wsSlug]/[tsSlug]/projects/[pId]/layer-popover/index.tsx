@@ -29,6 +29,8 @@ import { PointProperties } from "./point-properties";
 import { DatasetPopover } from "./dataset-popover";
 import { TypePopover } from "./type-popover";
 import { MarkerProperties } from "./marker-properties";
+import { LineProperties } from "./line-properties";
+import { PolygonProperties } from "./polygon-properties";
 import type { Column } from "@mapform/db/schema";
 
 interface LayerPopoverProps {
@@ -161,6 +163,16 @@ const PropertiesForm = ({
     defaultValues: {
       id: layerToEdit?.id,
       pageId: currentPage.id,
+      color: layerToEdit?.color ?? "#3b82f6",
+      titleColumnId: layerToEdit
+        ? layerToEdit.titleColumnId
+        : getLastAvailableColumnId("string"),
+      descriptionColumnId: layerToEdit
+        ? layerToEdit.descriptionColumnId
+        : getLastAvailableColumnId("richtext"),
+      iconColumnId: layerToEdit
+        ? layerToEdit.iconColumnId
+        : getLastAvailableColumnId("icon"),
       pointProperties:
         currentType === "point"
           ? layerToEdit?.datasetId === currentDatasetId &&
@@ -169,17 +181,9 @@ const PropertiesForm = ({
             ? {
                 pointColumnId:
                   layerToEdit.pointLayer.pointColumnId ?? undefined,
-                titleColumnId: layerToEdit.pointLayer.titleColumnId,
-                descriptionColumnId: layerToEdit.pointLayer.descriptionColumnId,
-                iconColumnId: layerToEdit.pointLayer.iconColumnId,
-                color: layerToEdit.pointLayer.color,
               }
             : {
                 pointColumnId: getLastAvailableColumnId("point") ?? undefined,
-                titleColumnId: getLastAvailableColumnId("string"),
-                descriptionColumnId: getLastAvailableColumnId("richtext"),
-                iconColumnId: getLastAvailableColumnId("icon"),
-                color: null,
               }
           : undefined,
       markerProperties:
@@ -190,18 +194,35 @@ const PropertiesForm = ({
             ? {
                 pointColumnId:
                   layerToEdit.markerLayer.pointColumnId ?? undefined,
-                titleColumnId: layerToEdit.markerLayer.titleColumnId,
-                descriptionColumnId:
-                  layerToEdit.markerLayer.descriptionColumnId,
-                iconColumnId: layerToEdit.markerLayer.iconColumnId,
-                color: layerToEdit.markerLayer.color,
               }
             : {
                 pointColumnId: getLastAvailableColumnId("point") ?? undefined,
-                titleColumnId: getLastAvailableColumnId("string"),
-                descriptionColumnId: getLastAvailableColumnId("richtext"),
-                iconColumnId: getLastAvailableColumnId("icon"),
-                color: null,
+              }
+          : undefined,
+      lineProperties:
+        currentType === "line"
+          ? layerToEdit?.datasetId === currentDatasetId &&
+            layerToEdit.type === "line" &&
+            layerToEdit.lineLayer
+            ? {
+                lineColumnId: layerToEdit.lineLayer.lineColumnId ?? undefined,
+              }
+            : {
+                lineColumnId: getLastAvailableColumnId("line") ?? undefined,
+              }
+          : undefined,
+      polygonProperties:
+        currentType === "polygon"
+          ? layerToEdit?.datasetId === currentDatasetId &&
+            layerToEdit.type === "polygon" &&
+            layerToEdit.polygonLayer
+            ? {
+                polygonColumnId:
+                  layerToEdit.polygonLayer.polygonColumnId ?? undefined,
+              }
+            : {
+                polygonColumnId:
+                  getLastAvailableColumnId("polygon") ?? undefined,
               }
           : undefined,
     },
@@ -272,6 +293,20 @@ const PropertiesForm = ({
         ) : null}
         {parentForm.watch("type") === "marker" ? (
           <MarkerProperties
+            form={form}
+            datasetId={parentForm.watch("datasetId")}
+            type={parentForm.watch("type")}
+          />
+        ) : null}
+        {parentForm.watch("type") === "line" ? (
+          <LineProperties
+            form={form}
+            datasetId={parentForm.watch("datasetId")}
+            type={parentForm.watch("type")}
+          />
+        ) : null}
+        {parentForm.watch("type") === "polygon" ? (
+          <PolygonProperties
             form={form}
             datasetId={parentForm.watch("datasetId")}
             type={parentForm.watch("type")}
