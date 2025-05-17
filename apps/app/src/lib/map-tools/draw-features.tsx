@@ -1,6 +1,8 @@
 "use client";
 
+import type { GetFeature } from "@mapform/backend/data/features/get-feature";
 import type { GetFeatures } from "@mapform/backend/data/features/get-features";
+import type { BaseFeature } from "@mapform/backend/data/features/types";
 import { isPersistedFeature } from "@mapform/backend/data/features/types";
 import type { Feature, FeatureCollection } from "geojson";
 import type mapboxgl from "mapbox-gl";
@@ -14,10 +16,14 @@ export function useDrawFeatures({
     features: [],
   },
   isStatic = false,
+  selectedFeature,
+  setSelectedFeature,
 }: {
   map?: mapboxgl.Map;
   features: GetFeatures["data"];
   isStatic?: boolean;
+  selectedFeature?: GetFeature["data"];
+  setSelectedFeature: (feature: BaseFeature | undefined) => void;
 }) {
   const { draw } = useMapform();
 
@@ -102,7 +108,41 @@ export function useDrawFeatures({
         });
       }
     });
-  }, [map, isStatic, features]);
+    const handleClick = (e: mapboxgl.MapMouseEvent) => {
+      // Query for all feature types: points, lines, and polygons
+      const clickedFeatures = map.queryRenderedFeatures(e.point, {
+        layers: [
+          "features-point-inner",
+          "features-point-outer",
+          "features-polygon-fill",
+          "features-lines",
+        ],
+      });
+
+      console.log(clickedFeatures);
+
+      if (clickedFeatures.length > 0 && clickedFeatures[0]?.id) {
+        const clickedId = clickedFeatures[0].id;
+        const matchingFeature = features.features.find(
+          (f) => f?.id === clickedId,
+        );
+        if (matchingFeature && isPersistedFeature(matchingFeature)) {
+          setSelectedFeature(matchingFeature as BaseFeature);
+        } else {
+          setSelectedFeature(undefined);
+        }
+      } else {
+        // Clear selection when clicking empty space
+        setSelectedFeature(undefined);
+      }
+    };
+
+    map.on("click", handleClick);
+
+    return () => {
+      map.off("click", handleClick);
+    };
+  }, [map, isStatic, features, selectedFeature, setSelectedFeature]);
 
   /**
    * Render features using Draw. This makes features editable.
@@ -161,7 +201,7 @@ export function useDrawFeatures({
         });
       }
     });
-  }, [map, features, draw, isStatic]);
+  }, [map, features, draw, isStatic, selectedFeature]);
 }
 
 // When changing pages and map unmounts calling function on map or draw can cause errors. Easier to just catch it.

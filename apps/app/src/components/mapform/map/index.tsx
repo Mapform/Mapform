@@ -456,6 +456,8 @@ export function Map({
           (feature) => feature?.properties.layerType !== "marker",
         ) ?? [],
     },
+    selectedFeature,
+    setSelectedFeature,
   });
 
   return (
