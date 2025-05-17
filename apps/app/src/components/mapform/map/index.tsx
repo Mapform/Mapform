@@ -261,6 +261,7 @@ export function Map({
       } & mapboxgl.EventData,
     ) => {
       const feature = e.features?.[0];
+      console.log(123, feature);
 
       if (feature && isPersistedFeature(feature)) {
         if (isMobile) {
@@ -299,7 +300,7 @@ export function Map({
 
     if (map) {
       // BIND EVENT HANDLERS
-      map.on("click", "points", handleLayerClick);
+      map.on("click", "features-point-outer", handleLayerClick);
       map.on("mouseenter", "points", handleMouseEnterPoints);
       map.on("mouseleave", "points", handleMouseLeavePoints);
       map.on("moveend", handleBoundsChange);
@@ -309,7 +310,7 @@ export function Map({
     return () => {
       if (map) {
         // CLEANUP EVENT HANDLERS
-        map.off("click", "points", handleLayerClick);
+        map.off("click", "features-point-outer", handleLayerClick);
         map.off("mouseenter", "points", handleMouseEnterPoints);
         map.off("mouseleave", "points", handleMouseLeavePoints);
         map.off("moveend", handleBoundsChange);
@@ -445,6 +446,8 @@ export function Map({
     }
   }, [selectedFeature, draw]);
 
+  console.log(9999, selectedFeature);
+
   useDrawFeatures({
     map,
     isStatic,
@@ -452,9 +455,17 @@ export function Map({
       type: "FeatureCollection",
       features:
         // Filter out markers since they are handled by the marker layer
-        features?.features.filter(
-          (feature) => feature?.properties.layerType !== "marker",
-        ) ?? [],
+        (
+          features?.features.filter(
+            (feature) => feature?.properties.layerType !== "marker",
+          ) ?? []
+        ).map((feature) => ({
+          ...feature,
+          properties: {
+            ...feature?.properties,
+            active: selectedFeature?.id === feature?.id,
+          },
+        })),
     },
     selectedFeature,
     setSelectedFeature,
