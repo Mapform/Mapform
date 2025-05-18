@@ -14,7 +14,6 @@ import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import { useDrawFeatures } from "~/lib/map-tools/draw-features";
 import type { GetFeature } from "@mapform/backend/data/features/get-feature";
 import type { FeatureCollection } from "geojson";
-// import StaticMode from "@mapbox/mapbox-gl-draw-static-mode";
 import {
   type BaseFeature,
   isPersistedFeature,
@@ -91,6 +90,7 @@ export function Map({
   const StaticMode = {
     onClick: function (state, e) {
       if (!e.featureTarget) {
+        setSelectedFeature(undefined);
         return;
       }
 
@@ -226,8 +226,6 @@ export function Map({
 
       // Add your custom markers and lines here
       m.on("load", () => {
-        setMap(m);
-
         const draw = new MapboxDraw({
           displayControlsDefault: false,
           // @ts-expect-error -- This is the recommended way to set the new mode
@@ -240,8 +238,10 @@ export function Map({
           // Disable multiselect with shift + click, and instead zooms to area
           boxSelect: false,
         });
+
         m.addControl(draw);
         setDraw(draw);
+        setMap(m);
       });
 
       // Clean up on unmount
@@ -440,7 +440,7 @@ export function Map({
 
   // Used to select the feature on the map
   useEffect(() => {
-    if (selectedFeature) {
+    if (selectedFeature && !isStatic) {
       const selected = draw?.get(selectedFeature.id);
       if (!selected) {
         draw?.changeMode("simple_select", {
@@ -448,7 +448,7 @@ export function Map({
         });
       }
     }
-  }, [selectedFeature, draw]);
+  }, [selectedFeature, draw, isStatic]);
 
   useDrawFeatures({
     map,
