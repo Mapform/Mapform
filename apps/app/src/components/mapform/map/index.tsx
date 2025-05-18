@@ -94,11 +94,16 @@ export function Map({
         return;
       }
 
+      const featureId = e.featureTarget.properties.id;
+      const originalFeature = this.getFeature(featureId);
+      const originalFeatureGeojson = originalFeature.toGeoJSON();
+
       setSelectedFeature({
-        type: "Feature",
-        id: e.featureTarget.properties.id,
-        properties: e.featureTarget.properties,
-        geometry: e.featureTarget._geometry,
+        ...originalFeatureGeojson,
+        properties: {
+          ...originalFeatureGeojson.properties,
+          id: originalFeatureGeojson.id,
+        },
       });
     },
 
@@ -273,20 +278,6 @@ export function Map({
    * Bind event handlers
    */
   useEffect(() => {
-    const handleLayerClick = (
-      e: mapboxgl.MapMouseEvent & {
-        features?: mapboxgl.MapboxGeoJSONFeature[] | undefined;
-      } & mapboxgl.EventData,
-    ) => {
-      const feature = e.features?.[0];
-
-      if (feature && isPersistedFeature(feature)) {
-        if (isMobile) {
-          window.scrollTo({ top: 0, behavior: "smooth" });
-        }
-        setSelectedFeature(feature);
-      }
-    };
     const handleMouseEnterPoints = () => {
       map && (map.getCanvas().style.cursor = "pointer");
     };
@@ -316,9 +307,6 @@ export function Map({
     };
 
     if (map) {
-      // BIND EVENT HANDLERS
-      // TODO: Figure out correct layer
-      // map.on("click", "gl-draw-point-inner.cold", handleLayerClick);
       map.on("mouseenter", "points", handleMouseEnterPoints);
       map.on("mouseleave", "points", handleMouseLeavePoints);
       map.on("moveend", handleBoundsChange);
@@ -327,8 +315,6 @@ export function Map({
 
     return () => {
       if (map) {
-        // // CLEANUP EVENT HANDLERS
-        // map.off("click", "features-point-outer", handleLayerClick);
         map.off("mouseenter", "points", handleMouseEnterPoints);
         map.off("mouseleave", "points", handleMouseLeavePoints);
         map.off("moveend", handleBoundsChange);

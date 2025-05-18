@@ -61,7 +61,6 @@ import {
 } from "@mapform/ui/components/popover";
 import type { GetFeature } from "@mapform/backend/data/features/get-feature";
 import type { BaseFeature } from "@mapform/backend/data/features/types";
-import type { Feature } from "geojson";
 
 interface MapProps {
   features: GetFeatures["data"];
@@ -72,6 +71,7 @@ interface MapProps {
   isUsingSessions: boolean;
 }
 
+type Feature = NonNullable<GetFeature["data"]>;
 type Page = NonNullable<GetProjectWithPages["data"]>["pages"][number];
 
 export function Map({
@@ -91,16 +91,38 @@ export function Map({
   const currentPage = projectWithPages.pages.find((page) => page.id === p);
   const [isSearchOpen, setIsSearching] = useState(false);
   const [isDrawerStackOpen, setIsDrawerStackOpen] = useState(true);
+
+  const [optimisticSelectedFeature, setOptimisticSelectedFeature] =
+    useOptimistic<Feature | undefined, BaseFeature | undefined>(
+      selectedFeature,
+      (state, newFeature) => {
+        if (!newFeature) return undefined;
+
+        return {
+          ...state,
+          ...newFeature,
+          geometry: {
+            ...state?.geometry,
+            coordinates: newFeature.geometry.coordinates,
+          },
+          properties: {
+            ...newFeature.properties,
+            ...state?.properties,
+          },
+        } as Feature;
+      },
+    );
+
   const drawerValues = useMemo(() => {
     return isDrawerStackOpen
       ? [
           ...(currentPage?.contentViewType === "split" ? ["page-content"] : []),
           ...(isSearchOpen ? ["location-search"] : []),
-          ...(selectedFeature ? ["feature"] : []),
+          ...(optimisticSelectedFeature ? ["feature"] : []),
         ]
       : [];
   }, [
-    selectedFeature,
+    optimisticSelectedFeature,
     isSearchOpen,
     isDrawerStackOpen,
     currentPage?.contentViewType,
@@ -249,27 +271,6 @@ export function Map({
     form.reset(pageValues);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [p]);
-
-  const [optimisticSelectedFeature, setOptimisticSelectedFeature] =
-    useOptimistic<Feature | undefined, BaseFeature | undefined>(
-      selectedFeature,
-      (state, newFeature) => {
-        if (!newFeature) return undefined;
-
-        return {
-          ...state,
-          ...newFeature,
-          geometry: {
-            ...state?.geometry,
-            coordinates: newFeature.geometry.coordinates,
-          },
-          properties: {
-            ...state?.properties,
-            ...newFeature.properties,
-          },
-        } as Feature;
-      },
-    );
 
   const setSelectedFeature = (feature: BaseFeature | undefined) => {
     // Ignore if the feature is the same as the current selected feature
@@ -534,21 +535,24 @@ export function Map({
             <MapformDrawer
               mobileBottomPadding
               onClose={() => {
-                setQueryString({
-                  key: "feature",
-                  value: null,
-                });
+                setSelectedFeature(undefined);
               }}
               value="feature"
             >
               <Blocknote
                 isFeature
                 description={
-                  selectedFeature?.properties.description?.value ?? undefined
+                  optimisticSelectedFeature?.properties.description?.value ??
+                  undefined
                 }
-                icon={selectedFeature?.properties.icon?.value}
-                key={`${currentPage.id}-${selectedFeature?.properties.rowId}`}
-                title={selectedFeature?.properties.title?.value}
+                icon={
+                  optimisticSelectedFeature?.properties.icon?.value ?? undefined
+                }
+                key={`${currentPage.id}-${optimisticSelectedFeature?.properties.rowId}-${Boolean(optimisticSelectedFeature?.properties.description?.value)}`}
+                title={
+                  optimisticSelectedFeature?.properties.title?.value ??
+                  undefined
+                }
               />
             </MapformDrawer>
           </CustomBlockProvider>
