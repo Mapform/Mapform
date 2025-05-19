@@ -85,18 +85,9 @@ export const createPoint = (authClient: UserAuthClient) =>
             layer.type === "point"
               ? result.point_layer?.pointColumnId
               : result.marker_layer?.pointColumnId;
-          const titleColumnId =
-            layer.type === "point"
-              ? result.point_layer?.titleColumnId
-              : result.marker_layer?.titleColumnId;
-          const descriptionColumnId =
-            layer.type === "point"
-              ? result.point_layer?.descriptionColumnId
-              : result.marker_layer?.descriptionColumnId;
-          const iconColumnId =
-            layer.type === "point"
-              ? result.point_layer?.iconColumnId
-              : result.marker_layer?.iconColumnId;
+          const titleColumnId = result.layer.titleColumnId;
+          const descriptionColumnId = result.layer.descriptionColumnId;
+          const iconColumnId = result.layer.iconColumnId;
 
           if (!pointColumnId) {
             throw new Error("Layer does not have a point column");

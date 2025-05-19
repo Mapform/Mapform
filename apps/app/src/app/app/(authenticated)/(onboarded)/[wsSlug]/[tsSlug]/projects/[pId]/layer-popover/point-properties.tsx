@@ -69,7 +69,7 @@ export function PointProperties({
         datasetId={datasetId}
         form={form}
         label="Title"
-        name="pointProperties.titleColumnId"
+        name="titleColumnId"
         type="string"
       />
       <DataColField
@@ -77,7 +77,7 @@ export function PointProperties({
         datasetId={datasetId}
         form={form}
         label="Description"
-        name="pointProperties.descriptionColumnId"
+        name="descriptionColumnId"
         type="richtext"
       />
       <DataColField
@@ -85,7 +85,7 @@ export function PointProperties({
         datasetId={datasetId}
         form={form}
         label="Icon"
-        name="pointProperties.iconColumnId"
+        name="iconColumnId"
         type="icon"
       />
       <div className="col-span-2 mt-1 w-full border-t pt-3">
@@ -93,7 +93,7 @@ export function PointProperties({
           Styles
         </h3>
       </div>
-      <ColorPicker form={form} label="Color" name="pointProperties.color" />
+      <ColorPicker form={form} label="Color" name="color" />
     </>
   );
 }
@@ -126,15 +126,15 @@ function DataColField({
       }
 
       if (input.type === "string") {
-        form.setValue("pointProperties.titleColumnId", data.id);
+        form.setValue("titleColumnId", data.id);
       }
 
       if (input.type === "richtext") {
-        form.setValue("pointProperties.descriptionColumnId", data.id);
+        form.setValue("descriptionColumnId", data.id);
       }
 
       if (input.type === "icon") {
-        form.setValue("pointProperties.iconColumnId", data.id);
+        form.setValue("iconColumnId", data.id);
       }
 
       void form.trigger();

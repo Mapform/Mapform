@@ -48,7 +48,6 @@ export function OnboardingForm({ email }: OnboardingFormProps) {
       });
     },
     onError: ({ error }) => {
-      console.error(123, error);
       if (error.serverError === "Workspace slug already exists") {
         form.setError("workspaceSlug", {
           type: "manual",

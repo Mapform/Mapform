@@ -1,37 +1,54 @@
 import "mapbox-gl/dist/mapbox-gl.css";
+import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import mapboxgl from "mapbox-gl";
 import { cn } from "@mapform/lib/classnames";
-import type { FeatureCollection } from "geojson";
 import type { ViewState } from "@mapform/map-utils/types";
-import type { GetPageData } from "@mapform/backend/data/datalayer/get-page-data";
+import type { GetFeatures } from "@mapform/backend/data/features/get-features";
 import { usePrevious } from "@mapform/lib/hooks/use-previous";
-import { useSetQueryString } from "@mapform/lib/hooks/use-set-query-string";
 import type Supercluster from "supercluster";
 import useSupercluster from "use-supercluster";
 import { AnimatePresence, motion } from "motion/react";
-import { useMapform } from "../index";
-import { LocationMarker } from "./location-marker";
+import MapboxDraw from "@mapbox/mapbox-gl-draw";
+import { useDrawFeatures } from "~/lib/map-tools/draw-features";
+import type { GetFeature } from "@mapform/backend/data/features/get-feature";
+import type { FeatureCollection } from "geojson";
+import {
+  type BaseFeature,
+  isPersistedFeature,
+} from "@mapform/backend/data/features/types";
+import { LocationMarker } from "../../location-marker";
+import { mapStyles } from "./map-styles";
+import { useMapform, useMapformContent } from "../index";
 import { Cluster } from "./cluster";
+import "./style.css";
+import type { upsertCellAction } from "~/data/cells/upsert-cell";
+import { useIsMobile } from "@mapform/lib/hooks/use-is-mobile";
 
 const accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
 
-interface MapProps {
-  pageData?: GetPageData["data"];
+export interface MapProps {
   isEditing?: boolean;
-  mapPadding: ViewState["padding"];
   initialViewState: ViewState;
   children?: React.ReactNode;
-  isMobile?: boolean;
+  isStatic?: boolean;
+  selectedFeature?: GetFeature["data"];
+  setSelectedFeature: (feature: BaseFeature | undefined) => void;
+  features: NonNullable<GetFeatures["data"]> | undefined;
+  updateFeatures?: (args: Parameters<typeof upsertCellAction>[0]) => void;
 }
 
 interface MarkerPointFeature {
   id: string;
   cluster: boolean;
-  icon: string;
+  icon: {
+    value: string;
+  };
   color: string;
   rowId: string;
+  columnId: string;
+  layerId: string;
   pointLayerId: string;
   point_count: number;
   features: { icon: string; color: string }[] | undefined;
@@ -45,68 +62,104 @@ interface MarkerPointFeature {
  */
 export function Map({
   initialViewState,
-  isEditing = false,
-  mapPadding,
-  pageData,
   children,
-  isMobile,
+  isStatic = true,
+  selectedFeature,
+  setSelectedFeature,
+  updateFeatures,
+  features,
 }: MapProps) {
-  const setQueryString = useSetQueryString();
   const [bounds, setBounds] = useState<
     [number, number, number, number] | undefined
   >(undefined);
   const [zoom, setZoom] = useState<number>(initialViewState.zoom);
-  const { map, setMap, mapContainer, mapContainerBounds } = useMapform();
+  const {
+    draw,
+    map,
+    setMap,
+    setDraw,
+    mapContainer,
+    mapContainerBounds,
+    visibleMapContainer,
+    drawFeature: drawFeature,
+    setDrawFeature,
+  } = useMapform();
+  const isMobile = useIsMobile();
+  const { drawerValues, isEditing } = useMapformContent();
+
+  const StaticMode = {
+    onClick: function (state, e) {
+      if (!e.featureTarget) {
+        setSelectedFeature(undefined);
+        return;
+      }
+
+      const featureId = e.featureTarget.properties.id;
+      const originalFeature = this.getFeature(featureId);
+      const originalFeatureGeojson = originalFeature.toGeoJSON();
+
+      setSelectedFeature({
+        ...originalFeatureGeojson,
+        properties: {
+          ...originalFeatureGeojson.properties,
+          id: originalFeatureGeojson.id,
+        },
+      });
+    },
+
+    onTap: function (state, e) {
+      if (!e.featureTarget) {
+        setSelectedFeature(undefined);
+        return;
+      }
+
+      const featureId = e.featureTarget.properties.id;
+      const originalFeature = this.getFeature(featureId);
+      const originalFeatureGeojson = originalFeature.toGeoJSON();
+
+      setSelectedFeature({
+        ...originalFeatureGeojson,
+        properties: {
+          ...originalFeatureGeojson.properties,
+          id: originalFeatureGeojson.id,
+        },
+      });
+    },
+
+    toDisplayFeatures: function (state, geojson, display) {
+      display(geojson);
+    },
+  };
+
+  const mapPadding = useMemo(() => {
+    return {
+      top: 0,
+      bottom: isMobile ? (drawerValues.length ? 200 : 0) : 0,
+      left: !!drawerValues.length && !isMobile ? (isEditing ? 392 : 360) : 0,
+      right: 0,
+    };
+  }, [drawerValues, isEditing, isMobile]);
+
   // Condition in usePrevious resolves issue where map padding is not updated on first render
   const prevMapPadding = usePrevious(map ? mapPadding : undefined);
 
-  const pointGeojson = useMemo(
+  const markerGeojson = useMemo(
     () => ({
-      type: "FeatureCollection",
-      features: (pageData?.pointData ?? []).map((feature) => ({
-        type: "Feature",
-        geometry: {
-          type: "Point",
-          coordinates: [feature.value!.x, feature.value!.y],
-        },
-        properties: {
-          id: feature.id,
-          color: feature.color ?? "#3b82f6",
-          rowId: feature.rowId,
-          pointLayerId: feature.pointLayerId,
-        },
-      })),
+      ...features,
+      features: features?.features.filter(
+        (feature) => feature?.properties.layerType === "marker",
+      ),
     }),
-    [pageData?.pointData],
-  ) satisfies FeatureCollection;
-
-  const markerGeojson: FeatureCollection = useMemo(
-    () => ({
-      type: "FeatureCollection",
-      features: (pageData?.markerData ?? []).map((feature) => ({
-        type: "Feature",
-        geometry: {
-          type: "Point",
-          coordinates: [feature.value!.x, feature.value!.y],
-        },
-        properties: {
-          id: feature.id,
-          color: feature.color ?? "#3b82f6",
-          rowId: feature.rowId,
-          icon: feature.icon,
-          pointLayerId: feature.pointLayerId,
-          cluster: false,
-        },
-      })),
-    }),
-    [pageData?.markerData],
-  );
+    [features],
+  ) as FeatureCollection;
 
   const mapClusterItems = useCallback(
     (item: MarkerPointFeature) => ({
       icon: item.icon,
       color: item.color,
       rowId: item.rowId,
+      layerId: item.layerId,
+      columnId: item.columnId,
       pointLayerId: item.pointLayerId,
       cluster: item.cluster,
       point_count: item.point_count,
@@ -118,8 +171,8 @@ export function Map({
   const reduceClusterItems = useCallback(
     (acc: MarkerPointFeature, cur: MarkerPointFeature) => {
       acc.features = acc.features
-        ? [...acc.features, { icon: cur.icon, color: cur.color }]
-        : [{ icon: cur.icon, color: cur.color }];
+        ? [...acc.features, { icon: cur.icon.value, color: cur.color }]
+        : [{ icon: cur.icon.value, color: cur.color }];
     },
     [],
   );
@@ -183,7 +236,7 @@ export function Map({
       if (isMobile) {
         m.addControl(
           new mapboxgl.AttributionControl({
-            compact: true, // Makes the attribution more compact if there’s not enough space
+            compact: true, // Makes the attribution more compact if there's not enough space
           }),
           "top-right",
         );
@@ -192,6 +245,21 @@ export function Map({
 
       // Add your custom markers and lines here
       m.on("load", () => {
+        const draw = new MapboxDraw({
+          displayControlsDefault: false,
+          // @ts-expect-error -- This is the recommended way to set the new mode
+          modes: Object.assign(MapboxDraw.modes, {
+            static: StaticMode,
+          }),
+          defaultMode: isStatic ? "static" : "simple_select",
+          styles: mapStyles,
+          userProperties: true,
+          // Disable multiselect with shift + click, and instead zooms to area
+          boxSelect: false,
+        });
+
+        m.addControl(draw);
+        setDraw(draw);
         setMap(m);
       });
 
@@ -229,23 +297,6 @@ export function Map({
    * Bind event handlers
    */
   useEffect(() => {
-    const handleLayerClick = (
-      e: mapboxgl.MapMouseEvent & {
-        features?: mapboxgl.MapboxGeoJSONFeature[] | undefined;
-      } & mapboxgl.EventData,
-    ) => {
-      const feature = e.features?.[0];
-
-      if (feature?.properties) {
-        if (isMobile) {
-          window.scrollTo({ top: 0, behavior: "smooth" });
-        }
-        setQueryString({
-          key: "feature",
-          value: `point_${feature.properties.rowId}_${feature.properties.pointLayerId}`,
-        });
-      }
-    };
     const handleMouseEnterPoints = () => {
       map && (map.getCanvas().style.cursor = "pointer");
     };
@@ -275,8 +326,6 @@ export function Map({
     };
 
     if (map) {
-      // BIND EVENT HANDLERS
-      map.on("click", "points", handleLayerClick);
       map.on("mouseenter", "points", handleMouseEnterPoints);
       map.on("mouseleave", "points", handleMouseLeavePoints);
       map.on("moveend", handleBoundsChange);
@@ -285,154 +334,310 @@ export function Map({
 
     return () => {
       if (map) {
-        // CLEANUP EVENT HANDLERS
-        map.off("click", "points", handleLayerClick);
         map.off("mouseenter", "points", handleMouseEnterPoints);
         map.off("mouseleave", "points", handleMouseLeavePoints);
         map.off("moveend", handleBoundsChange);
         map.off("zoomend", handleZoomChange);
       }
     };
-  }, [map, setQueryString, isMobile]);
+  }, [map, setSelectedFeature, isMobile]);
 
-  /**
-   * ADD LAYERS
-   */
   useEffect(() => {
-    if (!map) {
-      return;
+    if (!map || !draw) return;
+
+    const handleDrawCreate = (
+      e: mapboxgl.MapMouseEvent & { features: mapboxgl.MapboxGeoJSONFeature[] },
+    ) => {
+      const feature = e.features[0];
+
+      if (!feature) return;
+
+      setDrawFeature(feature);
+    };
+
+    const handleDrawUpdate = (
+      e: mapboxgl.MapMouseEvent & { features: mapboxgl.MapboxGeoJSONFeature[] },
+    ) => {
+      const feature = e.features[0];
+
+      if (!feature) return;
+
+      if (!feature.id) {
+        setDrawFeature(feature);
+        return;
+      }
+
+      if (!isPersistedFeature(feature)) {
+        return;
+      }
+
+      if (!updateFeatures) {
+        return;
+      }
+
+      if (feature.geometry.type === "Polygon") {
+        updateFeatures({
+          type: "polygon",
+          value: { coordinates: feature.geometry.coordinates },
+          rowId: feature.properties.rowId,
+          columnId: feature.properties.columnId,
+        });
+      }
+
+      if (feature.geometry.type === "LineString") {
+        updateFeatures({
+          type: "line",
+          value: { coordinates: feature.geometry.coordinates },
+          rowId: feature.properties.rowId,
+          columnId: feature.properties.columnId,
+        });
+      }
+
+      if (feature.geometry.type === "Point") {
+        updateFeatures({
+          type: "point",
+          value: {
+            x: feature.geometry.coordinates[0],
+            y: feature.geometry.coordinates[1],
+          },
+          rowId: feature.properties.rowId,
+          columnId: feature.properties.columnId,
+        });
+      }
+    };
+
+    const handleDrawSelectionChange = (
+      e: mapboxgl.MapMouseEvent & { features: mapboxgl.MapboxGeoJSONFeature[] },
+    ) => {
+      const eventFeature = e.features[e.features.length - 1];
+
+      if (eventFeature && isPersistedFeature(eventFeature)) {
+        setSelectedFeature(eventFeature);
+      } else if (e.features.length === 0) {
+        setSelectedFeature(undefined);
+      }
+
+      if (drawFeature !== null && eventFeature?.id !== drawFeature.id) {
+        setDrawFeature(null);
+        try {
+          draw.delete(drawFeature.id as string);
+        } catch (_) {
+          // Do nothing
+        }
+      }
+
+      // This is used to prevent multi select (default of MapboxDraw). We
+      // essentially always want to force only one feature to be selected
+      if (eventFeature && e.features.length > 1) {
+        try {
+          draw.changeMode("simple_select", {
+            featureIds: [eventFeature.id as string],
+          });
+        } catch (_) {
+          // Do nothing
+        }
+      }
+    };
+
+    map.on("draw.create", handleDrawCreate);
+    map.on("draw.update", handleDrawUpdate);
+    map.on("draw.selectionchange", handleDrawSelectionChange);
+
+    return () => {
+      map.off("draw.create", handleDrawCreate);
+      map.off("draw.update", handleDrawUpdate);
+      map.off("draw.selectionchange", handleDrawSelectionChange);
+    };
+  }, [
+    map,
+    draw,
+    setDrawFeature,
+    drawFeature,
+    updateFeatures,
+    setSelectedFeature,
+  ]);
+
+  // Used to select the feature on the map
+  useEffect(() => {
+    if (selectedFeature && !isStatic) {
+      const selected = draw?.get(selectedFeature.id);
+      if (!selected) {
+        draw?.changeMode("simple_select", {
+          featureIds: [selectedFeature.id],
+        });
+      }
     }
+  }, [selectedFeature, draw, isStatic]);
 
-    const currentSource = map.getSource("points") as
-      | mapboxgl.AnySourceImpl
-      | undefined;
-
-    if (currentSource) {
-      // Update the source data
-      (currentSource as mapboxgl.GeoJSONSource).setData(pointGeojson);
-    } else {
-      // Add a new source and layer
-      map.addSource("points", {
-        type: "geojson",
-        data: pointGeojson,
-      });
-
-      map.addLayer({
-        id: "points",
-        type: "circle",
-        source: "points",
-        paint: {
-          "circle-radius": 8,
-          "circle-color": ["get", "color"],
-          "circle-stroke-color": "#fff",
-          "circle-stroke-width": 2,
-        },
-      });
-    }
-  }, [map, pointGeojson]);
+  useDrawFeatures({
+    map,
+    features: {
+      type: "FeatureCollection",
+      features:
+        // Filter out markers since they are handled by the marker layer
+        (
+          features?.features.filter(
+            (feature) => feature?.properties.layerType !== "marker",
+          ) ?? []
+        ).map((feature) => ({
+          ...feature,
+          properties: {
+            ...feature?.properties,
+            ...(isStatic
+              ? { active: (selectedFeature?.id === feature?.id).toString() }
+              : {}),
+          },
+        })),
+    },
+  });
 
   return (
-    <div
-      className={cn("relative flex-1 overflow-hidden", {
-        "rounded-md": isEditing,
-      })}
-      ref={mapContainer}
-    >
-      {/* MARKERS */}
-      <AnimatePresence>
-        {clusters.map((cluster) => {
-          const [longitude, latitude] = cluster.geometry.coordinates;
+    <div className="top-0 flex flex-1 max-md:sticky max-md:mb-[-200px] max-md:h-dvh">
+      <div
+        className={cn("relative flex-1 overflow-hidden", {
+          "rounded-md": isEditing,
+        })}
+        ref={mapContainer}
+      >
+        {/* MARKERS */}
+        <AnimatePresence>
+          {clusters.map((cluster) => {
+            const [longitude, latitude] = cluster.geometry.coordinates;
 
-          if (!longitude || !latitude) {
-            return null;
-          }
+            if (!longitude || !latitude) {
+              return null;
+            }
 
-          if (cluster.properties.cluster) {
-            const { point_count: pointCount } = cluster.properties;
+            if (cluster.properties.cluster) {
+              const { point_count: pointCount } = cluster.properties;
 
-            const allFeatures = [
-              {
-                icon: cluster.properties.icon,
-                color: cluster.properties.color,
-              },
-              ...(cluster.properties.features ?? []),
-            ];
-            const uniqueFeatures = allFeatures
-              .filter(
-                (item, index, self) =>
-                  index === self.findIndex((obj) => obj.icon === item.icon),
-              )
-              .filter((item) => item.icon); // Remove any empty icons
-            const expansionZoom =
-              supercluster &&
-              cluster.id &&
-              Math.min(
-                supercluster.getClusterExpansionZoom(Number(cluster.id)),
-                17,
+              const allFeatures = [
+                {
+                  icon: cluster.properties.icon.value,
+                  color: cluster.properties.color,
+                },
+                ...(cluster.properties.features ?? []),
+              ];
+              const uniqueFeatures = allFeatures
+                .filter(
+                  (item, index, self) =>
+                    index === self.findIndex((obj) => obj.icon === item.icon),
+                )
+                .filter((item) => item.icon);
+              const expansionZoom =
+                supercluster &&
+                cluster.id &&
+                Math.min(
+                  supercluster.getClusterExpansionZoom(Number(cluster.id)),
+                  17,
+                );
+
+              if (!map) {
+                return null;
+              }
+
+              return (
+                <LocationMarker
+                  key={cluster.id}
+                  latitude={latitude}
+                  longitude={longitude}
+                  map={map}
+                >
+                  <Cluster
+                    onClick={() => {
+                      if (!expansionZoom) {
+                        return;
+                      }
+
+                      map.easeTo({
+                        zoom: expansionZoom,
+                        center: [longitude, latitude],
+                        duration: 750,
+                      });
+                    }}
+                    pointCount={pointCount}
+                    uniqueFeatures={uniqueFeatures}
+                  />
+                </LocationMarker>
               );
+            }
+
+            if (!map) {
+              return null;
+            }
+
+            const markerIsActive =
+              cluster.properties.rowId === selectedFeature?.properties.rowId &&
+              cluster.properties.layerId === selectedFeature.properties.layerId;
+
+            const markerIsDraggable = markerIsActive && !isStatic;
 
             return (
               <LocationMarker
                 key={cluster.id}
                 latitude={latitude}
                 longitude={longitude}
-              >
-                <Cluster
-                  onClick={() => {
-                    if (!expansionZoom || !map) {
-                      return;
-                    }
-
-                    map.easeTo({
-                      zoom: expansionZoom,
-                      center: [longitude, latitude],
-                      duration: 750,
-                    });
-                  }}
-                  pointCount={pointCount}
-                  uniqueFeatures={uniqueFeatures}
-                />
-              </LocationMarker>
-            );
-          }
-
-          return (
-            <LocationMarker
-              key={cluster.properties.id}
-              latitude={latitude}
-              longitude={longitude}
-            >
-              <motion.button
-                animate={{ opacity: 1, y: 0 }}
-                className="flex size-10 cursor-pointer items-center justify-center rounded-full border-2 border-white text-lg shadow-md"
-                exit={{ opacity: 0, y: 20 }}
-                initial={{ opacity: 0, y: -20 }}
-                onClick={() => {
-                  // TODO: It might make sense to de-couple this from the map
-                  // and isntead pass an onClick callback. The parent can do
-                  // this.
-                  if (isMobile) window.scrollTo({ top: 0, behavior: "smooth" });
-                  setQueryString({
-                    key: "feature",
-                    value: `marker_${cluster.properties.rowId}_${cluster.properties.pointLayerId}`,
+                markerOptions={{
+                  draggable: markerIsDraggable,
+                }}
+                onDragEnd={(lngLat) => {
+                  updateFeatures?.({
+                    type: "point",
+                    value: { x: lngLat.lng, y: lngLat.lat },
+                    rowId: cluster.properties.rowId,
+                    columnId: cluster.properties.columnId,
                   });
                 }}
-                style={{ backgroundColor: cluster.properties.color }}
-                type="button"
+                map={map}
               >
-                {cluster.properties.icon}
-              </motion.button>
-            </LocationMarker>
-          );
-        })}
-      </AnimatePresence>
-      <div
-        className={cn(
-          "absolute bottom-0 left-0 right-0 top-0 transition-all duration-[250]",
-        )}
-        style={mapPadding}
-      >
-        {children}
+                <motion.button
+                  animate={{
+                    opacity: 1,
+                    y: 0,
+                  }}
+                  transition={{
+                    duration: 0.2,
+                  }}
+                  className={cn(
+                    "box-border flex size-8 cursor-pointer items-center justify-center rounded-full border-2 border-white text-lg shadow-md",
+                    {
+                      "size-10 !text-2xl": markerIsActive,
+                    },
+                  )}
+                  exit={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: -20 }}
+                  onClick={() => {
+                    if (isMobile)
+                      window.scrollTo({ top: 0, behavior: "smooth" });
+                    setSelectedFeature(cluster);
+                  }}
+                  onTap={() => {
+                    if (isMobile)
+                      window.scrollTo({ top: 0, behavior: "smooth" });
+                    setSelectedFeature(cluster);
+                  }}
+                  style={{
+                    backgroundColor: markerIsActive
+                      ? "#f59e0b"
+                      : cluster.properties.color,
+                  }}
+                  type="button"
+                >
+                  {cluster.properties.icon.value}
+                </motion.button>
+              </LocationMarker>
+            );
+          })}
+        </AnimatePresence>
+        <div
+          className={cn(
+            "absolute bottom-0 left-0 right-0 top-0 overflow-hidden transition-all duration-[250]",
+          )}
+          ref={visibleMapContainer}
+          style={mapPadding}
+        >
+          {children}
+        </div>
       </div>
     </div>
   );

@@ -16,6 +16,7 @@
     "slugify": "catalog:",
     "stripe": "catalog:",
     "uuid": "catalog:",
+    "wellknown": "^0.5.0",
     "zod": "catalog:",
     "zod-form-data": "catalog:"
   },
@@ -23,8 +24,10 @@
     "@mapform/blocknote": "workspace:*",
     "@mapform/eslint-config": "workspace:*",
     "@mapform/typescript-config": "workspace:*",
+    "@types/geojson": "^7946.0.16",
     "@types/node": "catalog:",
     "@types/uuid": "catalog:",
+    "@types/wellknown": "^0.5.8",
     "eslint": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
