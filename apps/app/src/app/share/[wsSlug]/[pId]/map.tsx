@@ -87,7 +87,7 @@ export function Map({
   const searchParams = useSearchParams();
   const p = searchParams.get("p");
   const setQueryString = useSetQueryString();
-  const [_, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
   const currentPage = projectWithPages.pages.find((page) => page.id === p);
   const [isSearchOpen, setIsSearching] = useState(false);
   const [isDrawerStackOpen, setIsDrawerStackOpen] = useState(true);
@@ -106,8 +106,8 @@ export function Map({
             coordinates: newFeature.geometry.coordinates,
           },
           properties: {
-            ...newFeature.properties,
             ...state?.properties,
+            ...newFeature.properties,
           },
         } as Feature;
       },
