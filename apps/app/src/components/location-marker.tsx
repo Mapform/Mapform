@@ -46,7 +46,7 @@ export function LocationMarker({
     return () => {
       marker.remove();
     };
-  }, [map, marker, onDragEnd, markerOptions]);
+  }, [map, marker]); // Do not pass onDragEnd here because it will cause the marker to be recreated on every render
 
   return <Portal.Root container={marker.getElement()}>{children}</Portal.Root>;
 }
