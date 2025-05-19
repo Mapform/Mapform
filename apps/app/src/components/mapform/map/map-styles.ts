@@ -2,6 +2,18 @@ const orange = "#f59e0b";
 const white = "#fff";
 
 export const mapStyles = [
+  // Emoji Markers
+  {
+    id: "emoji-markers",
+    type: "symbol",
+    filter: ["all", ["==", "$type", "Point"], ["==", "meta", "feature"]],
+    layout: {
+      "icon-image": "emoji-marker",
+      "icon-size": 1,
+      "icon-allow-overlap": true,
+      "icon-ignore-placement": true,
+    },
+  },
   // Polygons
   //   Solid fill
   //   Active state defines color

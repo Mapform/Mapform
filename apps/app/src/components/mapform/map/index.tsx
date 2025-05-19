@@ -13,7 +13,7 @@ import { AnimatePresence, motion } from "motion/react";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import { useDrawFeatures } from "~/lib/map-tools/draw-features";
 import type { GetFeature } from "@mapform/backend/data/features/get-feature";
-import type { FeatureCollection } from "geojson";
+import type { FeatureCollection, Feature } from "geojson";
 import {
   type BaseFeature,
   isPersistedFeature,
@@ -25,6 +25,8 @@ import { Cluster } from "./cluster";
 import "./style.css";
 import type { upsertCellAction } from "~/data/cells/upsert-cell";
 import { useIsMobile } from "@mapform/lib/hooks/use-is-mobile";
+import { loadEmojiImage } from "~/lib/map-tools/emoji-utils";
+import type { MapMouseEvent } from "mapbox-gl";
 
 const accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
 
@@ -88,14 +90,16 @@ export function Map({
   const { drawerValues, isEditing } = useMapformContent();
 
   const StaticMode = {
-    onClick: function (state, e) {
+    onClick: function (state: unknown, e: MapMouseEvent) {
       if (!e.featureTarget) {
         setSelectedFeature(undefined);
         return;
       }
 
       const featureId = e.featureTarget.properties.id;
-      const originalFeature = this.getFeature(featureId);
+      const originalFeature = draw?.get(featureId);
+      if (!originalFeature) return;
+
       const originalFeatureGeojson = originalFeature.toGeoJSON();
 
       setSelectedFeature({
@@ -107,14 +111,16 @@ export function Map({
       });
     },
 
-    onTap: function (state, e) {
+    onTap: function (state: unknown, e: MapMouseEvent) {
       if (!e.featureTarget) {
         setSelectedFeature(undefined);
         return;
       }
 
       const featureId = e.featureTarget.properties.id;
-      const originalFeature = this.getFeature(featureId);
+      const originalFeature = draw?.get(featureId);
+      if (!originalFeature) return;
+
       const originalFeatureGeojson = originalFeature.toGeoJSON();
 
       setSelectedFeature({
@@ -126,7 +132,11 @@ export function Map({
       });
     },
 
-    toDisplayFeatures: function (state, geojson, display) {
+    toDisplayFeatures: function (
+      state: unknown,
+      geojson: Feature,
+      display: (feature: Feature) => void,
+    ) {
       display(geojson);
     },
   };
@@ -491,6 +501,81 @@ export function Map({
     },
   });
 
+  // Add this effect to load emoji images and add the emoji layer
+  useEffect(() => {
+    if (!map || !features) return;
+
+    const loadEmojis = async () => {
+      // const uniqueIcons = new Set(
+      //   features.features
+      //     .filter(
+      //       (f): f is NonNullable<typeof f> =>
+      //         f?.properties.layerType === "marker" &&
+      //         f?.properties.icon?.value != null,
+      //     )
+      //     .map((f) => f.properties.icon?.value),
+      // );
+
+      const uniqueIcons = ["👀"];
+
+      for (const emoji of uniqueIcons) {
+        if (!emoji) continue;
+        const imageId = `emoji-${emoji}`;
+        if (!map.hasImage(imageId)) {
+          try {
+            await loadEmojiImage(map, emoji, imageId);
+          } catch (error) {
+            console.error(`Failed to load emoji ${emoji}:`, error);
+          }
+        }
+      }
+
+      // Add or update the emoji markers source and layer
+      const emojiFeatures = features.features.filter(
+        (f) =>
+          f?.properties.layerType === "marker" && f?.properties.icon?.value,
+      );
+
+      if (emojiFeatures.length > 0) {
+        const sourceId = "emoji-markers";
+        const layerId = "emoji-markers";
+
+        // Add or update the source
+        if (map.getSource(sourceId)) {
+          (map.getSource(sourceId) as mapboxgl.GeoJSONSource).setData({
+            type: "FeatureCollection",
+            features: emojiFeatures,
+          });
+        } else {
+          map.addSource(sourceId, {
+            type: "geojson",
+            data: {
+              type: "FeatureCollection",
+              features: emojiFeatures,
+            },
+          });
+
+          // Add the layer if it doesn't exist
+          if (!map.getLayer(layerId)) {
+            map.addLayer({
+              id: layerId,
+              type: "symbol",
+              source: sourceId,
+              layout: {
+                "icon-image": ["get", "icon"],
+                "icon-size": 1,
+                "icon-allow-overlap": true,
+                "icon-ignore-placement": true,
+              },
+            });
+          }
+        }
+      }
+    };
+
+    loadEmojis();
+  }, [map, features]);
+
   return (
     <div className="top-0 flex flex-1 max-md:sticky max-md:mb-[-200px] max-md:h-dvh">
       <div
@@ -571,6 +656,8 @@ export function Map({
               cluster.properties.layerId === selectedFeature.properties.layerId;
 
             const markerIsDraggable = markerIsActive && !isStatic;
+            const emoji = cluster.properties.icon?.value;
+            const imageId = emoji ? `emoji-${emoji}` : undefined;
 
             return (
               <LocationMarker
@@ -579,6 +666,7 @@ export function Map({
                 longitude={longitude}
                 markerOptions={{
                   draggable: markerIsDraggable,
+                  image: imageId,
                 }}
                 onDragEnd={(lngLat) => {
                   updateFeatures?.({
@@ -590,41 +678,19 @@ export function Map({
                 }}
                 map={map}
               >
-                <motion.button
-                  animate={{
-                    opacity: 1,
-                    y: 0,
-                  }}
-                  transition={{
-                    duration: 0.2,
-                  }}
-                  className={cn(
-                    "box-border flex size-8 cursor-pointer items-center justify-center rounded-full border-2 border-white text-lg shadow-md",
-                    {
-                      "size-10 !text-2xl": markerIsActive,
-                    },
-                  )}
-                  exit={{ opacity: 0, y: 20 }}
-                  initial={{ opacity: 0, y: -20 }}
-                  onClick={() => {
-                    if (isMobile)
-                      window.scrollTo({ top: 0, behavior: "smooth" });
-                    setSelectedFeature(cluster);
-                  }}
-                  onTap={() => {
-                    if (isMobile)
-                      window.scrollTo({ top: 0, behavior: "smooth" });
-                    setSelectedFeature(cluster);
-                  }}
-                  style={{
-                    backgroundColor: markerIsActive
-                      ? "#f59e0b"
-                      : cluster.properties.color,
-                  }}
-                  type="button"
-                >
-                  {cluster.properties.icon.value}
-                </motion.button>
+                {!imageId && (
+                  <div
+                    className={cn(
+                      "flex aspect-square size-8 cursor-pointer items-center justify-center rounded-full border-2 border-white text-lg shadow-md",
+                      {
+                        "ring-2 ring-orange-500": markerIsActive,
+                      },
+                    )}
+                    style={{ backgroundColor: cluster.properties.color }}
+                  >
+                    {emoji}
+                  </div>
+                )}
               </LocationMarker>
             );
           })}

@@ -110,7 +110,7 @@ export function ProjectProvider({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const createQueryString = useCreateQueryString();
-  const [_, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
   const [isQueryPending, startQueryTransition] = useTransition();
   const page = searchParams.get("page");
   const setQueryString = useSetQueryString();
