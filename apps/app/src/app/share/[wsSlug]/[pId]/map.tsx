@@ -87,7 +87,7 @@ export function Map({
   const searchParams = useSearchParams();
   const p = searchParams.get("p");
   const setQueryString = useSetQueryString();
-  const [, startTransition] = useTransition();
+  const [isQueryPending, startTransition] = useTransition();
   const currentPage = projectWithPages.pages.find((page) => page.id === p);
   const [isSearchOpen, setIsSearching] = useState(false);
   const [isDrawerStackOpen, setIsDrawerStackOpen] = useState(true);
@@ -541,6 +541,7 @@ export function Map({
             >
               <Blocknote
                 isFeature
+                isQueryPending={isQueryPending}
                 description={
                   optimisticSelectedFeature?.properties.description?.value ??
                   undefined
