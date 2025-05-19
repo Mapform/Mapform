@@ -599,7 +599,7 @@ export function Map({
                     duration: 0.2,
                   }}
                   className={cn(
-                    "box-content flex size-8 cursor-pointer items-center justify-center rounded-full border-2 border-white text-lg shadow-md",
+                    "box-border flex size-8 cursor-pointer items-center justify-center rounded-full border-2 border-white text-lg shadow-md",
                     {
                       "size-10 !text-2xl": markerIsActive,
                     },
