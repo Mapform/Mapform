@@ -107,6 +107,25 @@ export function Map({
       });
     },
 
+    onTap: function (state, e) {
+      if (!e.featureTarget) {
+        setSelectedFeature(undefined);
+        return;
+      }
+
+      const featureId = e.featureTarget.properties.id;
+      const originalFeature = this.getFeature(featureId);
+      const originalFeatureGeojson = originalFeature.toGeoJSON();
+
+      setSelectedFeature({
+        ...originalFeatureGeojson,
+        properties: {
+          ...originalFeatureGeojson.properties,
+          id: originalFeatureGeojson.id,
+        },
+      });
+    },
+
     toDisplayFeatures: function (state, geojson, display) {
       display(geojson);
     },
@@ -588,6 +607,11 @@ export function Map({
                   exit={{ opacity: 0, y: 20 }}
                   initial={{ opacity: 0, y: -20 }}
                   onClick={() => {
+                    if (isMobile)
+                      window.scrollTo({ top: 0, behavior: "smooth" });
+                    setSelectedFeature(cluster);
+                  }}
+                  onTap={() => {
                     if (isMobile)
                       window.scrollTo({ top: 0, behavior: "smooth" });
                     setSelectedFeature(cluster);

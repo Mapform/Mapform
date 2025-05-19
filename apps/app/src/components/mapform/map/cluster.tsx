@@ -27,6 +27,7 @@ export function Cluster({ pointCount, onClick, uniqueFeatures }: ClusterProps) {
       exit={{ opacity: 0, y: 20 }}
       initial={{ opacity: 0, y: -20 }}
       onClick={onClick}
+      onTap={onClick}
       ref={ref}
       style={{
         width: `${size}px`,
