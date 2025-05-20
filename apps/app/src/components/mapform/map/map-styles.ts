@@ -110,7 +110,16 @@ export const mapStyles = [
     filter: ["all", ["==", "$type", "Point"], ["==", "meta", "feature"]],
     layout: {
       "icon-image": ["get", "user_flat_icon"],
-      "icon-size": 0.55,
+      "icon-size": [
+        "case",
+        [
+          "any",
+          ["==", ["get", "user_active"], "true"],
+          ["==", ["get", "active"], "true"],
+        ],
+        0.66,
+        0.55,
+      ],
       "icon-allow-overlap": true,
       "icon-ignore-placement": true,
       "icon-anchor": "center",
