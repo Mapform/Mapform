@@ -9,7 +9,7 @@ import type { GetFeatures } from "@mapform/backend/data/features/get-features";
 import { usePrevious } from "@mapform/lib/hooks/use-previous";
 import type Supercluster from "supercluster";
 import useSupercluster from "use-supercluster";
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence } from "motion/react";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import { useDrawFeatures } from "~/lib/map-tools/draw-features";
 import type { GetFeature } from "@mapform/backend/data/features/get-feature";
@@ -298,8 +298,12 @@ export function Map({
    * Resize to window effect
    */
   useEffect(() => {
-    if (map) {
-      map.resize();
+    try {
+      if (map) {
+        map.resize();
+      }
+    } catch (error) {
+      console.error(error);
     }
   }, [map, mapContainerBounds]);
 
@@ -492,6 +496,7 @@ export function Map({
         ).map((feature) => ({
           ...feature,
           properties: {
+            flat_icon: `emoji-${feature?.properties.icon?.value}`,
             ...feature?.properties,
             ...(isStatic
               ? { active: (selectedFeature?.id === feature?.id).toString() }
@@ -506,17 +511,15 @@ export function Map({
     if (!map || !features) return;
 
     const loadEmojis = async () => {
-      // const uniqueIcons = new Set(
-      //   features.features
-      //     .filter(
-      //       (f): f is NonNullable<typeof f> =>
-      //         f?.properties.layerType === "marker" &&
-      //         f?.properties.icon?.value != null,
-      //     )
-      //     .map((f) => f.properties.icon?.value),
-      // );
-
-      const uniqueIcons = ["👀"];
+      const uniqueIcons = new Set(
+        features.features
+          .filter(
+            (f): f is NonNullable<typeof f> =>
+              f?.properties.layerType === "point" &&
+              f.properties.icon?.value != null,
+          )
+          .map((f) => f.properties.icon?.value),
+      );
 
       for (const emoji of uniqueIcons) {
         if (!emoji) continue;
@@ -526,48 +529,6 @@ export function Map({
             await loadEmojiImage(map, emoji, imageId);
           } catch (error) {
             console.error(`Failed to load emoji ${emoji}:`, error);
-          }
-        }
-      }
-
-      // Add or update the emoji markers source and layer
-      const emojiFeatures = features.features.filter(
-        (f) =>
-          f?.properties.layerType === "marker" && f?.properties.icon?.value,
-      );
-
-      if (emojiFeatures.length > 0) {
-        const sourceId = "emoji-markers";
-        const layerId = "emoji-markers";
-
-        // Add or update the source
-        if (map.getSource(sourceId)) {
-          (map.getSource(sourceId) as mapboxgl.GeoJSONSource).setData({
-            type: "FeatureCollection",
-            features: emojiFeatures,
-          });
-        } else {
-          map.addSource(sourceId, {
-            type: "geojson",
-            data: {
-              type: "FeatureCollection",
-              features: emojiFeatures,
-            },
-          });
-
-          // Add the layer if it doesn't exist
-          if (!map.getLayer(layerId)) {
-            map.addLayer({
-              id: layerId,
-              type: "symbol",
-              source: sourceId,
-              layout: {
-                "icon-image": ["get", "icon"],
-                "icon-size": 1,
-                "icon-allow-overlap": true,
-                "icon-ignore-placement": true,
-              },
-            });
           }
         }
       }

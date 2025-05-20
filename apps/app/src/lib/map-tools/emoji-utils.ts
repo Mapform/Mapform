@@ -1,7 +1,8 @@
 export function emojiToDataURL(emoji: string, size = 64) {
+  const padding = 8; // Add padding to prevent clipping
   const canvas = document.createElement("canvas");
-  canvas.width = size;
-  canvas.height = size;
+  canvas.width = size + padding * 2;
+  canvas.height = size + padding * 2;
   const ctx = canvas.getContext("2d");
 
   if (!ctx) {
@@ -9,10 +10,10 @@ export function emojiToDataURL(emoji: string, size = 64) {
   }
 
   // Set font to system default emoji font
-  ctx.font = `${size}px sans-serif`;
+  ctx.font = `${size}px "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", sans-serif`;
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
-  ctx.fillText(emoji, size / 2, size / 2);
+  ctx.fillText(emoji, (size + padding * 2) / 2, (size + padding * 2) / 2);
 
   return canvas.toDataURL();
 }
@@ -22,15 +23,13 @@ export async function loadEmojiImage(
   emoji: string,
   imageId: string,
 ) {
-  console.log("Loading emoji image", emoji, imageId);
   return new Promise<void>((resolve, reject) => {
     const img = new Image();
     img.onload = () => {
-      map.addImage("emoji-marker", img, { pixelRatio: 2 }); // Adjust for HiDPI
+      map.addImage(imageId, img, { pixelRatio: 2 }); // Adjust for HiDPI
       resolve();
     };
     img.onerror = reject;
     img.src = emojiToDataURL(emoji);
-    console.log("Loaded emoji image", emoji, imageId);
   });
 }

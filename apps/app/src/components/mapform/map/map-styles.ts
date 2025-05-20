@@ -2,18 +2,6 @@ const orange = "#f59e0b";
 const white = "#fff";
 
 export const mapStyles = [
-  // Emoji Markers
-  {
-    id: "emoji-markers",
-    type: "symbol",
-    filter: ["all", ["==", "$type", "Point"], ["==", "meta", "feature"]],
-    layout: {
-      "icon-image": "emoji-marker",
-      "icon-size": 1,
-      "icon-allow-overlap": true,
-      "icon-ignore-placement": true,
-    },
-  },
   // Polygons
   //   Solid fill
   //   Active state defines color
@@ -82,8 +70,8 @@ export const mapStyles = [
           ["==", ["get", "user_active"], "true"],
           ["==", ["get", "active"], "true"],
         ],
-        9,
-        7,
+        18,
+        16,
       ],
       "circle-color": white,
     },
@@ -100,8 +88,8 @@ export const mapStyles = [
           ["==", ["get", "user_active"], "true"],
           ["==", ["get", "active"], "true"],
         ],
-        7,
-        5,
+        16,
+        14,
       ],
       "circle-color": [
         "case",
@@ -113,6 +101,20 @@ export const mapStyles = [
         orange,
         ["get", "user_color"],
       ],
+    },
+  },
+  // Emoji Markers
+  {
+    id: "emoji-markers",
+    type: "symbol",
+    filter: ["all", ["==", "$type", "Point"], ["==", "meta", "feature"]],
+    layout: {
+      "icon-image": ["get", "user_flat_icon"],
+      "icon-size": 0.55,
+      "icon-allow-overlap": true,
+      "icon-ignore-placement": true,
+      "icon-anchor": "center",
+      "icon-offset": [0, 3],
     },
   },
   // Vertex
