@@ -162,16 +162,14 @@ export function Map({
             }
 
             const featureId = e.featureTarget.properties.id;
-            const originalFeature = draw?.get(featureId);
+            const originalFeature = draw.get(featureId);
             if (!originalFeature) return;
 
-            const originalFeatureGeojson = originalFeature.toGeoJSON();
-
             setSelectedFeature({
-              ...originalFeatureGeojson,
+              ...originalFeature,
               properties: {
-                ...originalFeatureGeojson.properties,
-                id: originalFeatureGeojson.id,
+                ...originalFeature.properties,
+                id: originalFeature.id,
               },
             });
           },
@@ -234,37 +232,6 @@ export function Map({
       console.error(error);
     }
   }, [map, mapContainerBounds]);
-
-  /**
-   * Bind event handlers
-   */
-  useEffect(() => {
-    const handleMouseEnterPoints = () => {
-      map && (map.getCanvas().style.cursor = "pointer");
-    };
-    const handleMouseLeavePoints = () => {
-      map && (map.getCanvas().style.cursor = "");
-    };
-    const handleBoundsChange = () => {
-      if (!map) {
-        return;
-      }
-    };
-
-    if (map) {
-      map.on("mouseenter", "points", handleMouseEnterPoints);
-      map.on("mouseleave", "points", handleMouseLeavePoints);
-      map.on("moveend", handleBoundsChange);
-    }
-
-    return () => {
-      if (map) {
-        map.off("mouseenter", "points", handleMouseEnterPoints);
-        map.off("mouseleave", "points", handleMouseLeavePoints);
-        map.off("moveend", handleBoundsChange);
-      }
-    };
-  }, [map, setSelectedFeature, isMobile]);
 
   useEffect(() => {
     if (!map || !draw) return;
@@ -363,20 +330,49 @@ export function Map({
       }
     };
 
+    const handleDrawDelete = (
+      e: mapboxgl.MapMouseEvent & { features: mapboxgl.MapboxGeoJSONFeature[] },
+    ) => {
+      // TODO: Handle delete.
+    };
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (isStatic) {
+        return;
+      }
+
+      // We manually handle calling delete due to issue in MapboxDraw: https://github.com/mapbox/mapbox-gl-draw/issues/989
+      if (e.key === "Delete" || e.key === "Backspace") {
+        // TODO: Remove. Temporarily prevent deleting features in simple_select until handleDrawDelete is implemented
+        if (draw.getMode() === "simple_select") return;
+
+        // trash will handle either deleting the feature or the vertex depending on the mode
+        draw.trash();
+      }
+    };
+
+    const currentContainer = mapContainer.current;
+
     map.on("draw.create", handleDrawCreate);
     map.on("draw.update", handleDrawUpdate);
     map.on("draw.selectionchange", handleDrawSelectionChange);
+    map.on("draw.delete", handleDrawDelete);
+    currentContainer?.addEventListener("keydown", handleKeyDown);
 
     return () => {
       map.off("draw.create", handleDrawCreate);
       map.off("draw.update", handleDrawUpdate);
       map.off("draw.selectionchange", handleDrawSelectionChange);
+      map.off("draw.delete", handleDrawDelete);
+      currentContainer?.removeEventListener("keydown", handleKeyDown);
     };
   }, [
     map,
     draw,
-    setDrawFeature,
+    isStatic,
+    mapContainer,
     drawFeature,
+    setDrawFeature,
     updateFeatures,
     setSelectedFeature,
   ]);
@@ -448,7 +444,7 @@ export function Map({
       }
     };
 
-    loadPointImages();
+    void loadPointImages();
   }, [map, features]);
 
   return (
