@@ -526,7 +526,12 @@ export function Map({
         const imageId = `emoji-${emoji}`;
         if (!map.hasImage(imageId)) {
           try {
-            await loadEmojiImage(map, emoji, imageId);
+            // Find the first feature with this emoji to get its color
+            const featureWithEmoji = features.features.find(
+              (f) => f?.properties.icon?.value === emoji,
+            );
+            const color = featureWithEmoji?.properties.color ?? null;
+            await loadEmojiImage(map, emoji, imageId, color);
           } catch (error) {
             console.error(`Failed to load emoji ${emoji}:`, error);
           }

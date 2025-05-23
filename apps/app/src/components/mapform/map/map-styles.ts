@@ -58,51 +58,51 @@ export const mapStyles = [
   // Points
   //   Circle with an outline
   //   Active state defines size and color
-  {
-    id: "gl-draw-point-outer",
-    type: "circle",
-    filter: ["all", ["==", "$type", "Point"], ["==", "meta", "feature"]],
-    paint: {
-      "circle-radius": [
-        "case",
-        [
-          "any",
-          ["==", ["get", "user_active"], "true"],
-          ["==", ["get", "active"], "true"],
-        ],
-        18,
-        16,
-      ],
-      "circle-color": white,
-    },
-  },
-  {
-    id: "gl-draw-point-inner",
-    type: "circle",
-    filter: ["all", ["==", "$type", "Point"], ["==", "meta", "feature"]],
-    paint: {
-      "circle-radius": [
-        "case",
-        [
-          "any",
-          ["==", ["get", "user_active"], "true"],
-          ["==", ["get", "active"], "true"],
-        ],
-        16,
-        14,
-      ],
-      "circle-color": [
-        "case",
-        [
-          "any",
-          ["==", ["get", "user_active"], "true"],
-          ["==", ["get", "active"], "true"],
-        ],
-        orange,
-        ["get", "user_color"],
-      ],
-    },
-  },
+  // {
+  //   id: "gl-draw-point-outer",
+  //   type: "circle",
+  //   filter: ["all", ["==", "$type", "Point"], ["==", "meta", "feature"]],
+  //   paint: {
+  //     "circle-radius": [
+  //       "case",
+  //       [
+  //         "any",
+  //         ["==", ["get", "user_active"], "true"],
+  //         ["==", ["get", "active"], "true"],
+  //       ],
+  //       18,
+  //       16,
+  //     ],
+  //     "circle-color": white,
+  //   },
+  // },
+  // {
+  //   id: "gl-draw-point-inner",
+  //   type: "circle",
+  //   filter: ["all", ["==", "$type", "Point"], ["==", "meta", "feature"]],
+  //   paint: {
+  //     "circle-radius": [
+  //       "case",
+  //       [
+  //         "any",
+  //         ["==", ["get", "user_active"], "true"],
+  //         ["==", ["get", "active"], "true"],
+  //       ],
+  //       16,
+  //       14,
+  //     ],
+  //     "circle-color": [
+  //       "case",
+  //       [
+  //         "any",
+  //         ["==", ["get", "user_active"], "true"],
+  //         ["==", ["get", "active"], "true"],
+  //       ],
+  //       orange,
+  //       ["get", "user_color"],
+  //     ],
+  //   },
+  // },
   // Emoji Markers
   {
     id: "emoji-markers",
