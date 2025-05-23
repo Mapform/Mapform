@@ -59,58 +59,6 @@ export function Map({
   const isMobile = useIsMobile();
   const { drawerValues, isEditing } = useMapformContent();
 
-  const StaticMode = {
-    onClick: function (state: unknown, e: MapMouseEvent) {
-      if (!e.featureTarget) {
-        setSelectedFeature(undefined);
-        return;
-      }
-
-      const featureId = e.featureTarget.properties.id;
-      const originalFeature = draw?.get(featureId);
-      if (!originalFeature) return;
-
-      const originalFeatureGeojson = originalFeature.toGeoJSON();
-
-      setSelectedFeature({
-        ...originalFeatureGeojson,
-        properties: {
-          ...originalFeatureGeojson.properties,
-          id: originalFeatureGeojson.id,
-        },
-      });
-    },
-
-    onTap: function (state: unknown, e: MapMouseEvent) {
-      if (!e.featureTarget) {
-        setSelectedFeature(undefined);
-        return;
-      }
-
-      const featureId = e.featureTarget.properties.id;
-      const originalFeature = draw?.get(featureId);
-      if (!originalFeature) return;
-
-      const originalFeatureGeojson = originalFeature.toGeoJSON();
-
-      setSelectedFeature({
-        ...originalFeatureGeojson,
-        properties: {
-          ...originalFeatureGeojson.properties,
-          id: originalFeatureGeojson.id,
-        },
-      });
-    },
-
-    toDisplayFeatures: function (
-      state: unknown,
-      geojson: Feature,
-      display: (feature: Feature) => void,
-    ) {
-      display(geojson);
-    },
-  };
-
   const mapPadding = useMemo(() => {
     return {
       top: 0,
@@ -177,16 +125,74 @@ export function Map({
 
       // Add your custom markers and lines here
       m.on("load", () => {
+        const StaticMode = {
+          onClick: function (
+            state: unknown,
+            e: MapMouseEvent & {
+              featureTarget?: { properties: { id: string } };
+            },
+          ) {
+            if (!e.featureTarget) {
+              setSelectedFeature(undefined);
+              return;
+            }
+
+            const featureId = e.featureTarget.properties.id;
+            const originalFeature = draw.get(featureId);
+            if (!originalFeature) return;
+
+            setSelectedFeature({
+              ...originalFeature,
+              properties: {
+                ...originalFeature.properties,
+                id: originalFeature.id,
+              },
+            });
+          },
+
+          onTap: function (
+            state: unknown,
+            e: MapMouseEvent & {
+              featureTarget?: { properties: { id: string } };
+            },
+          ) {
+            if (!e.featureTarget) {
+              setSelectedFeature(undefined);
+              return;
+            }
+
+            const featureId = e.featureTarget.properties.id;
+            const originalFeature = draw?.get(featureId);
+            if (!originalFeature) return;
+
+            const originalFeatureGeojson = originalFeature.toGeoJSON();
+
+            setSelectedFeature({
+              ...originalFeatureGeojson,
+              properties: {
+                ...originalFeatureGeojson.properties,
+                id: originalFeatureGeojson.id,
+              },
+            });
+          },
+
+          toDisplayFeatures: function (
+            state: unknown,
+            geojson: GeoJSON.Feature,
+            display: (feature: GeoJSON.Feature) => void,
+          ) {
+            display(geojson);
+          },
+        };
+
         const draw = new MapboxDraw({
           displayControlsDefault: false,
-          // @ts-expect-error -- This is the recommended way to set the new mode
           modes: Object.assign(MapboxDraw.modes, {
             static: StaticMode,
           }),
           defaultMode: isStatic ? "static" : "simple_select",
           styles: mapStyles,
           userProperties: true,
-          // Disable multiselect with shift + click, and instead zooms to area
           boxSelect: false,
         });
 
