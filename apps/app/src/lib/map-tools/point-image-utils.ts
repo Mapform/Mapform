@@ -2,8 +2,8 @@ export function emojiToDataURL(
   emoji: string | null | undefined,
   color: string | null,
 ) {
-  const size = emoji ? 64 : 32;
-  const totalSize = size * 1.6; // Make canvas twice as large as the emoji
+  const size = emoji ? 48 : 32;
+  const totalSize = size * 2.1; // Increase canvas size for more padding
   const canvas = document.createElement("canvas");
   canvas.width = totalSize;
   canvas.height = totalSize;
