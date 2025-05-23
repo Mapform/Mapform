@@ -138,6 +138,7 @@ export function LayerSavePopover({
         <LayerPopoverContent
           align={align}
           initialName={query}
+          initialTypes={types}
           key={query}
           onClose={() => {
             setLayerPopoverOpen(false);

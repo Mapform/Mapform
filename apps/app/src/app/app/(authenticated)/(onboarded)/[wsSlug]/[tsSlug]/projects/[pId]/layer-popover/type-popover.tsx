@@ -23,7 +23,7 @@ import {
   TooltipTrigger,
 } from "@mapform/ui/components/tooltip";
 import type { UpsertLayerSchema } from "@mapform/backend/data/layers/upsert-layer/schema";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { cn } from "@mapform/lib/classnames";
 import { Button } from "@mapform/ui/components/button";
 import {
@@ -33,8 +33,10 @@ import {
   PentagonIcon,
   WaypointsIcon,
 } from "lucide-react";
+import type { LayerType } from "./types";
 
 interface TypePopoverProps {
+  initialTypes?: LayerType[];
   form: UseFormReturn<Pick<UpsertLayerSchema, "type" | "datasetId" | "name">>;
 }
 
@@ -59,9 +61,13 @@ const types = [
   },
 ] as const;
 
-export function TypePopover({ form }: TypePopoverProps) {
+export function TypePopover({ form, initialTypes }: TypePopoverProps) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
+
+  const filteredTypes = useMemo(() => {
+    return types.filter((type) => initialTypes?.includes(type.value));
+  }, [initialTypes]);
 
   return (
     <FormField
@@ -81,7 +87,7 @@ export function TypePopover({ form }: TypePopoverProps) {
                 {form.watch("type") && (
                   <span className="mr-2">
                     {(() => {
-                      const TypeIcon = types.find(
+                      const TypeIcon = filteredTypes.find(
                         (type) => type.value === field.value,
                       )?.icon;
                       return TypeIcon && <TypeIcon className="size-4" />;
@@ -90,7 +96,8 @@ export function TypePopover({ form }: TypePopoverProps) {
                 )}
                 <span className="flex-1 truncate text-left">
                   {form.watch("type")
-                    ? types.find((type) => type.value === field.value)?.label
+                    ? filteredTypes.find((type) => type.value === field.value)
+                        ?.label
                     : "Select type..."}
                 </span>
                 <ChevronsUpDownIcon className="size-4 flex-shrink-0 opacity-50" />
@@ -111,11 +118,11 @@ export function TypePopover({ form }: TypePopoverProps) {
                 <CommandEmpty className="text-muted-foreground py-2 text-center text-sm">
                   No type found.
                 </CommandEmpty>
-                {types.filter((type) =>
+                {filteredTypes.filter((type) =>
                   type.label.toLowerCase().includes(query.toLowerCase()),
                 ).length > 0 && (
                   <CommandGroup>
-                    {types
+                    {filteredTypes
                       .filter((type) =>
                         type.label.toLowerCase().includes(query.toLowerCase()),
                       )

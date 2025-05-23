@@ -31,12 +31,12 @@ import { TypePopover } from "./type-popover";
 import { LineProperties } from "./line-properties";
 import { PolygonProperties } from "./polygon-properties";
 import type { Column } from "@mapform/db/schema";
+import type { LayerToEdit, LayerType } from "./types";
 
 interface LayerPopoverProps {
   initialName?: string;
-  layerToEdit?: NonNullable<
-    GetPageWithLayers["data"]
-  >["layersToPages"][number]["layer"];
+  initialTypes?: LayerType[];
+  layerToEdit?: LayerToEdit;
   onSuccess?: (layerId: string) => void;
   onClose?: () => void;
 }
@@ -44,69 +44,76 @@ interface LayerPopoverProps {
 export const LayerPopoverContent = forwardRef<
   React.ElementRef<typeof PopoverContent>,
   React.ComponentPropsWithoutRef<typeof PopoverContent> & LayerPopoverProps
->(({ layerToEdit, initialName, onSuccess, onClose, ...props }, ref) => {
-  const { availableDatasets } = useProject();
-  const form = useForm<Pick<UpsertLayerSchema, "name" | "type" | "datasetId">>({
-    defaultValues: {
-      name: layerToEdit?.name ?? initialName ?? "",
-      type: layerToEdit?.type ?? "point",
-      datasetId: layerToEdit?.datasetId,
-    },
-    resolver: zodResolver(
-      upsertLayerSchema.pick({ name: true, type: true, datasetId: true }),
-    ),
-  });
+>(
+  (
+    { layerToEdit, initialName, initialTypes, onSuccess, onClose, ...props },
+    ref,
+  ) => {
+    const { availableDatasets } = useProject();
+    const form = useForm<
+      Pick<UpsertLayerSchema, "name" | "type" | "datasetId">
+    >({
+      defaultValues: {
+        name: layerToEdit?.name ?? initialName ?? "",
+        type: layerToEdit?.type ?? initialTypes?.[0] ?? "point",
+        datasetId: layerToEdit?.datasetId,
+      },
+      resolver: zodResolver(
+        upsertLayerSchema.pick({ name: true, type: true, datasetId: true }),
+      ),
+    });
 
-  return (
-    <PopoverContent ref={ref} {...props}>
-      <Form {...form}>
-        <form className="flex flex-1 flex-col">
-          <div className="grid grid-cols-[77px_minmax(0,1fr)] items-center gap-x-6 gap-y-3">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <>
-                  <FormLabel>Name</FormLabel>
-                  <div className="flex-1">
-                    <FormControl>
-                      <Input
-                        autoComplete="off"
-                        data-lpignore="true"
-                        data-1p-ignore
-                        disabled={field.disabled}
-                        name={field.name}
-                        onChange={field.onChange}
-                        placeholder="New Layer"
-                        ref={field.ref}
-                        s="sm"
-                        value={field.value ?? ""}
-                        variant="filled"
-                      />
-                    </FormControl>
-                  </div>
-                </>
-              )}
+    return (
+      <PopoverContent ref={ref} {...props}>
+        <Form {...form}>
+          <form className="flex flex-1 flex-col">
+            <div className="grid grid-cols-[77px_minmax(0,1fr)] items-center gap-x-6 gap-y-3">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <>
+                    <FormLabel>Name</FormLabel>
+                    <div className="flex-1">
+                      <FormControl>
+                        <Input
+                          autoComplete="off"
+                          data-lpignore="true"
+                          data-1p-ignore
+                          disabled={field.disabled}
+                          name={field.name}
+                          onChange={field.onChange}
+                          placeholder="New Layer"
+                          ref={field.ref}
+                          s="sm"
+                          value={field.value ?? ""}
+                          variant="filled"
+                        />
+                      </FormControl>
+                    </div>
+                  </>
+                )}
+              />
+
+              <TypePopover form={form} initialTypes={initialTypes} />
+
+              {form.watch("type") && <DatasetPopover form={form} />}
+            </div>
+          </form>
+          {form.watch("datasetId") && form.watch("type") && (
+            <PropertiesForm
+              key={`${form.watch("datasetId")}-${form.watch("type")}-${availableDatasets.length}`}
+              parentForm={form}
+              layerToEdit={layerToEdit}
+              onSuccess={onSuccess}
+              onClose={onClose}
             />
-
-            <TypePopover form={form} />
-
-            {form.watch("type") && <DatasetPopover form={form} />}
-          </div>
-        </form>
-        {form.watch("datasetId") && form.watch("type") && (
-          <PropertiesForm
-            key={`${form.watch("datasetId")}-${form.watch("type")}-${availableDatasets.length}`}
-            parentForm={form}
-            layerToEdit={layerToEdit}
-            onSuccess={onSuccess}
-            onClose={onClose}
-          />
-        )}
-      </Form>
-    </PopoverContent>
-  );
-});
+          )}
+        </Form>
+      </PopoverContent>
+    );
+  },
+);
 
 LayerPopoverContent.displayName = "LayerPopoverContent";
 
