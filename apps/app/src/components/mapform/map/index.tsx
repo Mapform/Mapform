@@ -336,6 +336,14 @@ export function Map({
       // TODO: Handle delete.
     };
 
+    /**
+     * This is needed for cursor hover on features (primarily in the share view)
+     */
+    const handleMouseMove = (e: mapboxgl.MapMouseEvent) => {
+      const features = map.queryRenderedFeatures(e.point);
+      map.getCanvas().style.cursor = features.length ? "pointer" : "";
+    };
+
     const handleKeyDown = (e: KeyboardEvent) => {
       if (isStatic) {
         return;
@@ -357,6 +365,7 @@ export function Map({
     map.on("draw.update", handleDrawUpdate);
     map.on("draw.selectionchange", handleDrawSelectionChange);
     map.on("draw.delete", handleDrawDelete);
+    map.on("mousemove", handleMouseMove);
     currentContainer?.addEventListener("keydown", handleKeyDown);
 
     return () => {
@@ -364,6 +373,7 @@ export function Map({
       map.off("draw.update", handleDrawUpdate);
       map.off("draw.selectionchange", handleDrawSelectionChange);
       map.off("draw.delete", handleDrawDelete);
+      map.off("mousemove", handleMouseMove);
       currentContainer?.removeEventListener("keydown", handleKeyDown);
     };
   }, [
