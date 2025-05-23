@@ -22,6 +22,21 @@ async function runDataMigration() {
 
     for (const layer of savedPointLayers) {
       await tx
+        .update(layers)
+        .set({
+          color: layer.color ?? layer.pointLayer?.color ?? null,
+          iconColumnId:
+            layer.iconColumnId ?? layer.pointLayer?.iconColumnId ?? null,
+          titleColumnId:
+            layer.titleColumnId ?? layer.pointLayer?.titleColumnId ?? null,
+          descriptionColumnId:
+            layer.descriptionColumnId ??
+            layer.pointLayer?.descriptionColumnId ??
+            null,
+        })
+        .where(eq(layers.id, layer.id));
+
+      await tx
         .update(pointLayers)
         .set({
           color: null,
@@ -30,16 +45,6 @@ async function runDataMigration() {
           descriptionColumnId: null,
         })
         .where(eq(pointLayers.layerId, layer.id));
-
-      await tx
-        .update(layers)
-        .set({
-          color: layer.pointLayer?.color ?? null,
-          iconColumnId: layer.pointLayer?.iconColumnId ?? null,
-          titleColumnId: layer.pointLayer?.titleColumnId ?? null,
-          descriptionColumnId: layer.pointLayer?.descriptionColumnId ?? null,
-        })
-        .where(eq(layers.id, layer.id));
     }
 
     console.log("Data migration completed!");
