@@ -43,20 +43,19 @@ const types = [
     label: "Point",
     value: "point",
     icon: CircleDotIcon,
-    description:
-      "Basic location representation. Points are never clustered. Ideal for larger datasets.",
+    description: "Used to render Point data on the map.",
   },
   {
     label: "Line",
     value: "line",
     icon: WaypointsIcon,
-    description: "Display a line between points. Ideal for routing and paths.",
+    description: "Used to render Line data on the map.",
   },
   {
     label: "Polygon",
     value: "polygon",
     icon: PentagonIcon,
-    description: "Display a polygon. Ideal for areas and boundaries.",
+    description: "Used to render Polygon data on the map.",
   },
 ] as const;
 
