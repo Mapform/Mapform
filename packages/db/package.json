@@ -15,7 +15,8 @@
     "with-env": "dotenv -e .env -c --",
     "data-migration:plans": "pnpm with-env tsx ./data-migrations/0024_blue_snowbird.ts",
     "data-migration:line": "pnpm with-env tsx ./scripts/add-line.ts",
-    "data-migration:convert-marker-layers-to-point-layers": "pnpm with-env tsx ./data-migrations/convert-marker-layers-to-point-layers.ts"
+    "data-migration:convert-marker-layers-to-point-layers": "pnpm with-env tsx ./data-migrations/convert-marker-layers-to-point-layers.ts",
+    "data-migration:root-layer-properties": "pnpm with-env tsx ./data-migrations/root-layer-properties.ts"
   },
   "devDependencies": {
     "@mapform/blocknote": "workspace:*",
