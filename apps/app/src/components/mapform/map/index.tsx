@@ -25,7 +25,7 @@ import { Cluster } from "./cluster";
 import "./style.css";
 import type { upsertCellAction } from "~/data/cells/upsert-cell";
 import { useIsMobile } from "@mapform/lib/hooks/use-is-mobile";
-import { loadEmojiImage } from "~/lib/map-tools/emoji-utils";
+import { loadPointImage } from "~/lib/map-tools/emoji-utils";
 import type { MapMouseEvent } from "mapbox-gl";
 
 const accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
@@ -496,7 +496,7 @@ export function Map({
         ).map((feature) => ({
           ...feature,
           properties: {
-            flat_icon: `emoji-${feature?.properties.icon?.value}`,
+            flat_icon: `image-${feature?.properties.icon?.value ?? "none"}-${feature?.properties.color ?? "none"}`,
             ...feature?.properties,
             ...(isStatic
               ? { active: (selectedFeature?.id === feature?.id).toString() }
@@ -510,36 +510,41 @@ export function Map({
   useEffect(() => {
     if (!map || !features) return;
 
-    const loadEmojis = async () => {
-      const uniqueIcons = new Set(
-        features.features
-          .filter(
-            (f): f is NonNullable<typeof f> =>
-              f?.properties.layerType === "point" &&
-              f.properties.icon?.value != null,
-          )
-          .map((f) => f.properties.icon?.value),
-      );
+    const loadPointImages = async () => {
+      const uniqueIconColorPairs = new Set<string>();
+      features.features
+        .filter(
+          (f): f is NonNullable<typeof f> =>
+            f?.properties.layerType === "point",
+        )
+        .forEach((f) => {
+          const icon = f.properties.icon?.value;
+          const color = f.properties.color;
+          uniqueIconColorPairs.add(`${icon ?? ""}|||${color ?? ""}`);
+        });
 
-      for (const emoji of uniqueIcons) {
-        if (!emoji) continue;
-        const imageId = `emoji-${emoji}`;
+      for (const pair of uniqueIconColorPairs) {
+        const [icon, color] = pair.split("|||");
+        const imageId = `image-${icon || "none"}-${color || "none"}`;
         if (!map.hasImage(imageId)) {
           try {
-            // Find the first feature with this emoji to get its color
-            const featureWithEmoji = features.features.find(
-              (f) => f?.properties.icon?.value === emoji,
+            await loadPointImage(
+              map,
+              icon,
+              imageId,
+              color === "none" ? null : color,
             );
-            const color = featureWithEmoji?.properties.color ?? null;
-            await loadEmojiImage(map, emoji, imageId, color);
           } catch (error) {
-            console.error(`Failed to load emoji ${emoji}:`, error);
+            console.error(
+              `Failed to load point image for icon ${icon} and color ${color}:`,
+              error,
+            );
           }
         }
       }
     };
 
-    loadEmojis();
+    loadPointImages();
   }, [map, features]);
 
   return (
@@ -622,8 +627,8 @@ export function Map({
               cluster.properties.layerId === selectedFeature.properties.layerId;
 
             const markerIsDraggable = markerIsActive && !isStatic;
-            const emoji = cluster.properties.icon?.value;
-            const imageId = emoji ? `emoji-${emoji}` : undefined;
+            const emoji = cluster.properties.icon.value;
+            const imageId = emoji ? `image-${emoji}` : `image-none`;
 
             return (
               <LocationMarker

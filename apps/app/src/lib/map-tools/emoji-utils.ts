@@ -1,4 +1,8 @@
-export function emojiToDataURL(emoji: string, color: string | null, size = 64) {
+export function emojiToDataURL(
+  emoji: string | null | undefined,
+  color: string | null,
+) {
+  const size = emoji ? 64 : 32;
   const totalSize = size * 1.6; // Make canvas twice as large as the emoji
   const canvas = document.createElement("canvas");
   canvas.width = totalSize;
@@ -11,7 +15,7 @@ export function emojiToDataURL(emoji: string, color: string | null, size = 64) {
 
   // Draw circular background if color is provided
   const center = totalSize / 2;
-  const borderWidth = size * 0.1;
+  const borderWidth = 7;
   ctx.beginPath();
   ctx.arc(center, center, totalSize / 2 - borderWidth / 2, 0, Math.PI * 2);
   ctx.fillStyle = color ?? "#3b82f6";
@@ -25,14 +29,17 @@ export function emojiToDataURL(emoji: string, color: string | null, size = 64) {
   ctx.font = `${size}px "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", sans-serif`;
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
-  ctx.fillText(emoji, totalSize / 2, totalSize / 2 + size * 0.1);
+
+  if (emoji) {
+    ctx.fillText(emoji, totalSize / 2, totalSize / 2 + size * 0.1);
+  }
 
   return canvas.toDataURL();
 }
 
-export async function loadEmojiImage(
+export async function loadPointImage(
   map: mapboxgl.Map,
-  emoji: string,
+  emoji: string | null | undefined,
   imageId: string,
   color: string | null = null,
 ) {

@@ -55,57 +55,39 @@ export const mapStyles = [
       "line-width": 2,
     },
   },
-  // Points
-  //   Circle with an outline
-  //   Active state defines size and color
-  // {
-  //   id: "gl-draw-point-outer",
-  //   type: "circle",
-  //   filter: ["all", ["==", "$type", "Point"], ["==", "meta", "feature"]],
-  //   paint: {
-  //     "circle-radius": [
-  //       "case",
-  //       [
-  //         "any",
-  //         ["==", ["get", "user_active"], "true"],
-  //         ["==", ["get", "active"], "true"],
-  //       ],
-  //       18,
-  //       16,
-  //     ],
-  //     "circle-color": white,
-  //   },
-  // },
-  // {
-  //   id: "gl-draw-point-inner",
-  //   type: "circle",
-  //   filter: ["all", ["==", "$type", "Point"], ["==", "meta", "feature"]],
-  //   paint: {
-  //     "circle-radius": [
-  //       "case",
-  //       [
-  //         "any",
-  //         ["==", ["get", "user_active"], "true"],
-  //         ["==", ["get", "active"], "true"],
-  //       ],
-  //       16,
-  //       14,
-  //     ],
-  //     "circle-color": [
-  //       "case",
-  //       [
-  //         "any",
-  //         ["==", ["get", "user_active"], "true"],
-  //         ["==", ["get", "active"], "true"],
-  //       ],
-  //       orange,
-  //       ["get", "user_color"],
-  //     ],
-  //   },
-  // },
+  // New points
+  // These will be used when adding a new point (which hasn't been saved yet)
+  {
+    id: "gl-draw-point-outer",
+    type: "circle",
+    filter: [
+      "all",
+      ["==", "$type", "Point"],
+      ["==", "meta", "feature"],
+      ["!has", "user_flat_icon"],
+    ],
+    paint: {
+      "circle-radius": 8,
+      "circle-color": white,
+    },
+  },
+  {
+    id: "gl-draw-point-inner",
+    type: "circle",
+    filter: [
+      "all",
+      ["==", "$type", "Point"],
+      ["==", "meta", "feature"],
+      ["!has", "user_flat_icon"],
+    ],
+    paint: {
+      "circle-radius": 6,
+      "circle-color": orange,
+    },
+  },
   // Emoji Markers
   {
-    id: "emoji-markers",
+    id: "image-markers",
     type: "symbol",
     filter: ["all", ["==", "$type", "Point"], ["==", "meta", "feature"]],
     layout: {
