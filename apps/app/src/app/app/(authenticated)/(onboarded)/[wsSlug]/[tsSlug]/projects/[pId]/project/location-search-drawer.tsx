@@ -130,7 +130,7 @@ export function LocationSearchDrawerInner({
         isPending={isPending}
         open={isLayerSaveOpen}
         onOpenChange={setIsLayerSaveOpen}
-        types={["point", "marker"]}
+        types={["point"]}
       >
         <LocationSearchButton
           className="w-full"

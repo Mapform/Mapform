@@ -19,11 +19,6 @@ export const upsertLayerSchema = z.object({
       pointColumnId: z.string(),
     })
     .optional(),
-  markerProperties: z
-    .object({
-      pointColumnId: z.string(),
-    })
-    .optional(),
   lineProperties: z
     .object({
       lineColumnId: z.string(),

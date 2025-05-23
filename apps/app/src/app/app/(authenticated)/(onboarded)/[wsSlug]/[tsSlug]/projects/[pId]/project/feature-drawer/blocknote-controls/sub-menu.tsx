@@ -79,12 +79,6 @@ export function SubMenu({
               pointColumnId: layer.layer.pointLayer.pointColumnId ?? undefined,
             }
           : undefined,
-      markerProperties:
-        layer?.layer.type === "marker" && layer.layer.markerLayer
-          ? {
-              pointColumnId: layer.layer.markerLayer.pointColumnId ?? undefined,
-            }
-          : undefined,
       lineProperties:
         layer?.layer.type === "line" && layer.layer.lineLayer
           ? {
@@ -135,7 +129,7 @@ export function SubMenu({
       if (!data?.id) return;
 
       if (input.type === "point") {
-        form.setValue("markerProperties.pointColumnId", data.id);
+        form.setValue("pointProperties.pointColumnId", data.id);
       }
 
       if (input.type === "string") {

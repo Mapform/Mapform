@@ -4,7 +4,6 @@ import { db } from "@mapform/db";
 import {
   layers,
   layersToPages,
-  markerLayers,
   pointLayers,
   datasets,
   lineLayers,
@@ -30,7 +29,6 @@ export const upsertLayer = (authClient: UserAuthClient) =>
           descriptionColumnId,
           iconColumnId,
           pointProperties,
-          markerProperties,
           lineProperties,
           polygonProperties,
         },
@@ -58,7 +56,7 @@ export const upsertLayer = (authClient: UserAuthClient) =>
             lineColumnId?: string | null;
             polygonColumnId?: string | null;
           },
-          type: "point" | "marker" | "line" | "polygon",
+          type: "point" | "line" | "polygon",
         ) => {
           const columnIds = dataset.columns.map((col) => col.id);
 
@@ -111,10 +109,6 @@ export const upsertLayer = (authClient: UserAuthClient) =>
         // Validate properties before upserting
         if (type === "point" && pointProperties) {
           validateColumnIds(pointProperties, "point");
-        }
-
-        if (type === "marker" && markerProperties) {
-          validateColumnIds(markerProperties, "marker");
         }
 
         if (type === "line" && lineProperties) {
@@ -205,19 +199,6 @@ export const upsertLayer = (authClient: UserAuthClient) =>
               .onConflictDoUpdate({
                 target: pointLayers.layerId,
                 set: pointProperties,
-              });
-          }
-
-          if (type === "marker" && markerProperties) {
-            await tx
-              .insert(markerLayers)
-              .values({
-                layerId: layer.id,
-                ...markerProperties,
-              })
-              .onConflictDoUpdate({
-                target: markerLayers.layerId,
-                set: markerProperties,
               });
           }
 

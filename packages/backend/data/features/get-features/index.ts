@@ -22,7 +22,6 @@ import type {
 import * as wellknown from "wellknown";
 import type {
   BaseGeoJsonLineString,
-  BaseGeoJsonPoint,
   BaseGeoJsonPolygon,
   BaseProperties,
   BaseFeatureCollection,
@@ -58,7 +57,6 @@ export const getFeatures = (authClient: PublicClient | UserAuthClient) =>
           layer: {
             with: {
               pointLayer: true,
-              markerLayer: true,
               lineLayer: true,
               polygonLayer: true,
             },
@@ -69,11 +67,6 @@ export const getFeatures = (authClient: PublicClient | UserAuthClient) =>
       const pointLayers = layersToPagesResponse.filter(
         (ltp) =>
           ltp.layer.type === "point" && ltp.layer.pointLayer?.pointColumnId,
-      );
-
-      const markerLayers = layersToPagesResponse.filter(
-        (ltp) =>
-          ltp.layer.type === "marker" && ltp.layer.markerLayer?.pointColumnId,
       );
 
       const lineLayers = layersToPagesResponse.filter(
@@ -138,80 +131,6 @@ export const getFeatures = (authClient: PublicClient | UserAuthClient) =>
             color: pl.layer.color,
             rowId: c.cell.rowId,
             pointLayerId: pl.layer.pointLayer?.id,
-            point_cell: c.point_cell,
-            layerId: pl.layer.id,
-            icon: pl.layer.iconColumnId
-              ? {
-                  value: c.icon_cell?.value ?? null,
-                  columnId: pl.layer.iconColumnId,
-                }
-              : null,
-            title: pl.layer.titleColumnId
-              ? {
-                  value: c.string_cell?.value ?? null,
-                  columnId: pl.layer.titleColumnId,
-                }
-              : null,
-          }));
-        }),
-      );
-
-      const markerCellsResponse = await Promise.all(
-        markerLayers.map(async (pl) => {
-          if (
-            !pl.layer.markerLayer?.pointColumnId ||
-            !pl.layer.markerLayer.id
-          ) {
-            return [];
-          }
-
-          const cellsResponse = await db
-            .select()
-            .from(cells)
-            .leftJoin(pointCells, eq(cells.id, pointCells.cellId))
-            .leftJoin(iconsCells, eq(cells.id, iconsCells.cellId))
-            .leftJoin(stringCells, eq(cells.id, stringCells.cellId))
-            .where(
-              or(
-                eq(cells.columnId, pl.layer.markerLayer.pointColumnId),
-                pl.layer.iconColumnId
-                  ? eq(cells.columnId, pl.layer.iconColumnId)
-                  : undefined,
-                pl.layer.titleColumnId
-                  ? eq(cells.columnId, pl.layer.titleColumnId)
-                  : undefined,
-              ),
-            );
-
-          const groupedCells = cellsResponse.reduce(
-            (acc, c) => {
-              acc[c.cell.rowId] = {
-                ...acc[c.cell.rowId],
-                ...(c.point_cell ? { point_cell: c.point_cell } : {}),
-                ...(c.icon_cell ? { icon_cell: c.icon_cell } : {}),
-                ...(c.string_cell ? { string_cell: c.string_cell } : {}),
-                cell: c.cell,
-              };
-
-              return acc;
-            },
-            {} as Record<
-              string,
-              {
-                point_cell?: (typeof cellsResponse)[number]["point_cell"];
-                icon_cell?: (typeof cellsResponse)[number]["icon_cell"];
-                string_cell?: (typeof cellsResponse)[number]["string_cell"];
-                cell: (typeof cellsResponse)[number]["cell"];
-              }
-            >,
-          );
-
-          return Object.values(groupedCells).map((c) => ({
-            ...c,
-            color: pl.layer.color ?? null,
-            rowId: c.cell.rowId,
-            columnId: c.cell.columnId,
-            pointLayerId: pl.layer.id,
             point_cell: c.point_cell,
             layerId: pl.layer.id,
             icon: pl.layer.iconColumnId
@@ -418,39 +337,6 @@ export const getFeatures = (authClient: PublicClient | UserAuthClient) =>
               title: pc.title,
             } satisfies BaseProperties,
           })),
-
-        ...markerCellsResponse
-          .flat()
-          .filter(
-            (pc) =>
-              pc.point_cell?.value?.x !== undefined &&
-              pc.point_cell.value.y !== undefined,
-          )
-          .map(
-            (pc) =>
-              ({
-                type: "Feature",
-                geometry: {
-                  type: "Point",
-                  coordinates: [
-                    pc.point_cell?.value?.x,
-                    pc.point_cell?.value?.y,
-                  ],
-                },
-                id: `${pc.rowId}_${pc.layerId}`,
-                properties: {
-                  rowId: pc.rowId,
-                  cellId: pc.cell.id,
-                  columnId: pc.cell.columnId,
-                  layerId: pc.layerId,
-                  childLayerId: pc.pointLayerId,
-                  layerType: "marker",
-                  color: pc.color ?? null,
-                  icon: pc.icon,
-                  title: pc.title,
-                },
-              }) satisfies BaseGeoJsonPoint,
-          ),
 
         ...lineCellsResponse
           .flat()

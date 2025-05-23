@@ -1,19 +1,15 @@
 import "mapbox-gl/dist/mapbox-gl.css";
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import mapboxgl from "mapbox-gl";
 import { cn } from "@mapform/lib/classnames";
 import type { ViewState } from "@mapform/map-utils/types";
 import type { GetFeatures } from "@mapform/backend/data/features/get-features";
 import { usePrevious } from "@mapform/lib/hooks/use-previous";
-import type Supercluster from "supercluster";
-import useSupercluster from "use-supercluster";
-import { AnimatePresence } from "motion/react";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import { useDrawFeatures } from "~/lib/map-tools/draw-features";
 import type { GetFeature } from "@mapform/backend/data/features/get-feature";
-import type { FeatureCollection, Feature } from "geojson";
 import {
   type BaseFeature,
   isPersistedFeature,
@@ -21,7 +17,6 @@ import {
 import { LocationMarker } from "../../location-marker";
 import { mapStyles } from "./map-styles";
 import { useMapform, useMapformContent } from "../index";
-import { Cluster } from "./cluster";
 import "./style.css";
 import type { upsertCellAction } from "~/data/cells/upsert-cell";
 import { useIsMobile } from "@mapform/lib/hooks/use-is-mobile";
@@ -41,27 +36,6 @@ export interface MapProps {
   updateFeatures?: (args: Parameters<typeof upsertCellAction>[0]) => void;
 }
 
-interface MarkerPointFeature {
-  id: string;
-  cluster: boolean;
-  icon: {
-    value: string;
-  };
-  color: string;
-  rowId: string;
-  columnId: string;
-  layerId: string;
-  pointLayerId: string;
-  point_count: number;
-  features: { icon: string; color: string }[] | undefined;
-}
-
-/**
- * TODO:
- * 1. Add ability to add markers
- * 2. Style points a bit better
- * 3. Add zIndex to points according to layer order
- */
 export function Map({
   initialViewState,
   children,
@@ -71,10 +45,6 @@ export function Map({
   updateFeatures,
   features,
 }: MapProps) {
-  const [bounds, setBounds] = useState<
-    [number, number, number, number] | undefined
-  >(undefined);
-  const [zoom, setZoom] = useState<number>(initialViewState.zoom);
   const {
     draw,
     map,
@@ -152,54 +122,6 @@ export function Map({
 
   // Condition in usePrevious resolves issue where map padding is not updated on first render
   const prevMapPadding = usePrevious(map ? mapPadding : undefined);
-
-  const markerGeojson = useMemo(
-    () => ({
-      ...features,
-      features: features?.features.filter(
-        (feature) => feature?.properties.layerType === "marker",
-      ),
-    }),
-    [features],
-  ) as FeatureCollection;
-
-  const mapClusterItems = useCallback(
-    (item: MarkerPointFeature) => ({
-      icon: item.icon,
-      color: item.color,
-      rowId: item.rowId,
-      layerId: item.layerId,
-      columnId: item.columnId,
-      pointLayerId: item.pointLayerId,
-      cluster: item.cluster,
-      point_count: item.point_count,
-      id: item.id,
-      features: undefined,
-    }),
-    [],
-  );
-  const reduceClusterItems = useCallback(
-    (acc: MarkerPointFeature, cur: MarkerPointFeature) => {
-      acc.features = acc.features
-        ? [...acc.features, { icon: cur.icon.value, color: cur.color }]
-        : [{ icon: cur.icon.value, color: cur.color }];
-    },
-    [],
-  );
-
-  const { clusters, supercluster } = useSupercluster({
-    points:
-      markerGeojson.features as Supercluster.PointFeature<MarkerPointFeature>[],
-    bounds,
-    zoom,
-    options: {
-      radius: 100,
-      minZoom: 0,
-      maxZoom: 20,
-      map: mapClusterItems,
-      reduce: reduceClusterItems,
-    },
-  });
 
   useEffect(() => {
     if (!accessToken) {
@@ -321,29 +243,12 @@ export function Map({
       if (!map) {
         return;
       }
-
-      const newBounds = map.getBounds().toArray().flat() as [
-        number,
-        number,
-        number,
-        number,
-      ];
-
-      setBounds(newBounds);
-    };
-    const handleZoomChange = () => {
-      if (!map) {
-        return;
-      }
-
-      setZoom(map.getZoom());
     };
 
     if (map) {
       map.on("mouseenter", "points", handleMouseEnterPoints);
       map.on("mouseleave", "points", handleMouseLeavePoints);
       map.on("moveend", handleBoundsChange);
-      map.on("zoomend", handleZoomChange);
     }
 
     return () => {
@@ -351,7 +256,6 @@ export function Map({
         map.off("mouseenter", "points", handleMouseEnterPoints);
         map.off("mouseleave", "points", handleMouseLeavePoints);
         map.off("moveend", handleBoundsChange);
-        map.off("zoomend", handleZoomChange);
       }
     };
   }, [map, setSelectedFeature, isMobile]);
@@ -487,22 +391,16 @@ export function Map({
     map,
     features: {
       type: "FeatureCollection",
-      features:
-        // Filter out markers since they are handled by the marker layer
-        (
-          features?.features.filter(
-            (feature) => feature?.properties.layerType !== "marker",
-          ) ?? []
-        ).map((feature) => ({
-          ...feature,
-          properties: {
-            flat_icon: `image-${feature?.properties.icon?.value ?? "none"}-${feature?.properties.color ?? "none"}`,
-            ...feature?.properties,
-            ...(isStatic
-              ? { active: (selectedFeature?.id === feature?.id).toString() }
-              : {}),
-          },
-        })),
+      features: features?.features.map((feature) => ({
+        ...feature,
+        properties: {
+          flat_icon: `image-${feature?.properties.icon?.value ?? "none"}-${feature?.properties.color ?? "none"}`,
+          ...feature?.properties,
+          ...(isStatic
+            ? { active: (selectedFeature?.id === feature?.id).toString() }
+            : {}),
+        },
+      })),
     },
   });
 
@@ -555,117 +453,6 @@ export function Map({
         })}
         ref={mapContainer}
       >
-        {/* MARKERS */}
-        <AnimatePresence>
-          {clusters.map((cluster) => {
-            const [longitude, latitude] = cluster.geometry.coordinates;
-
-            if (!longitude || !latitude) {
-              return null;
-            }
-
-            if (cluster.properties.cluster) {
-              const { point_count: pointCount } = cluster.properties;
-
-              const allFeatures = [
-                {
-                  icon: cluster.properties.icon.value,
-                  color: cluster.properties.color,
-                },
-                ...(cluster.properties.features ?? []),
-              ];
-              const uniqueFeatures = allFeatures
-                .filter(
-                  (item, index, self) =>
-                    index === self.findIndex((obj) => obj.icon === item.icon),
-                )
-                .filter((item) => item.icon);
-              const expansionZoom =
-                supercluster &&
-                cluster.id &&
-                Math.min(
-                  supercluster.getClusterExpansionZoom(Number(cluster.id)),
-                  17,
-                );
-
-              if (!map) {
-                return null;
-              }
-
-              return (
-                <LocationMarker
-                  key={cluster.id}
-                  latitude={latitude}
-                  longitude={longitude}
-                  map={map}
-                >
-                  <Cluster
-                    onClick={() => {
-                      if (!expansionZoom) {
-                        return;
-                      }
-
-                      map.easeTo({
-                        zoom: expansionZoom,
-                        center: [longitude, latitude],
-                        duration: 750,
-                      });
-                    }}
-                    pointCount={pointCount}
-                    uniqueFeatures={uniqueFeatures}
-                  />
-                </LocationMarker>
-              );
-            }
-
-            if (!map) {
-              return null;
-            }
-
-            const markerIsActive =
-              cluster.properties.rowId === selectedFeature?.properties.rowId &&
-              cluster.properties.layerId === selectedFeature.properties.layerId;
-
-            const markerIsDraggable = markerIsActive && !isStatic;
-            const emoji = cluster.properties.icon.value;
-            const imageId = emoji ? `image-${emoji}` : `image-none`;
-
-            return (
-              <LocationMarker
-                key={cluster.id}
-                latitude={latitude}
-                longitude={longitude}
-                markerOptions={{
-                  draggable: markerIsDraggable,
-                  image: imageId,
-                }}
-                onDragEnd={(lngLat) => {
-                  updateFeatures?.({
-                    type: "point",
-                    value: { x: lngLat.lng, y: lngLat.lat },
-                    rowId: cluster.properties.rowId,
-                    columnId: cluster.properties.columnId,
-                  });
-                }}
-                map={map}
-              >
-                {!imageId && (
-                  <div
-                    className={cn(
-                      "flex aspect-square size-8 cursor-pointer items-center justify-center rounded-full border-2 border-white text-lg shadow-md",
-                      {
-                        "ring-2 ring-orange-500": markerIsActive,
-                      },
-                    )}
-                    style={{ backgroundColor: cluster.properties.color }}
-                  >
-                    {emoji}
-                  </div>
-                )}
-              </LocationMarker>
-            );
-          })}
-        </AnimatePresence>
         <div
           className={cn(
             "absolute bottom-0 left-0 right-0 top-0 overflow-hidden transition-all duration-[250]",

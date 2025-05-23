@@ -30,7 +30,6 @@ import {
   CheckIcon,
   ChevronsUpDownIcon,
   CircleDotIcon,
-  MapPinIcon,
   PentagonIcon,
   WaypointsIcon,
 } from "lucide-react";
@@ -40,13 +39,6 @@ interface TypePopoverProps {
 }
 
 const types = [
-  {
-    label: "Marker",
-    value: "marker",
-    icon: MapPinIcon,
-    description:
-      "Display a place with an icon. Markers are clustered automatically. Ideal for smaller datasets.",
-  },
   {
     label: "Point",
     value: "point",

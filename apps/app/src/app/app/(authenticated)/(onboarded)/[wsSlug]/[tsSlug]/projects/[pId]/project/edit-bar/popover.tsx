@@ -97,7 +97,7 @@ export function FeaturePopover({
       return ["line"];
     }
 
-    return ["point", "marker"];
+    return ["point"];
   }, [feature.geometry.type]);
 
   return (

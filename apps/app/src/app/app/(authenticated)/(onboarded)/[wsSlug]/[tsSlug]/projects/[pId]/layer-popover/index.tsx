@@ -28,7 +28,6 @@ import { useProject } from "../project-context";
 import { PointProperties } from "./point-properties";
 import { DatasetPopover } from "./dataset-popover";
 import { TypePopover } from "./type-popover";
-import { MarkerProperties } from "./marker-properties";
 import { LineProperties } from "./line-properties";
 import { PolygonProperties } from "./polygon-properties";
 import type { Column } from "@mapform/db/schema";
@@ -50,7 +49,7 @@ export const LayerPopoverContent = forwardRef<
   const form = useForm<Pick<UpsertLayerSchema, "name" | "type" | "datasetId">>({
     defaultValues: {
       name: layerToEdit?.name ?? initialName ?? "",
-      type: layerToEdit?.type ?? "marker",
+      type: layerToEdit?.type ?? "point",
       datasetId: layerToEdit?.datasetId,
     },
     resolver: zodResolver(
@@ -186,19 +185,6 @@ const PropertiesForm = ({
                 pointColumnId: getLastAvailableColumnId("point") ?? undefined,
               }
           : undefined,
-      markerProperties:
-        currentType === "marker"
-          ? layerToEdit?.datasetId === currentDatasetId &&
-            layerToEdit.type === "marker" &&
-            layerToEdit.markerLayer
-            ? {
-                pointColumnId:
-                  layerToEdit.markerLayer.pointColumnId ?? undefined,
-              }
-            : {
-                pointColumnId: getLastAvailableColumnId("point") ?? undefined,
-              }
-          : undefined,
       lineProperties:
         currentType === "line"
           ? layerToEdit?.datasetId === currentDatasetId &&
@@ -286,13 +272,6 @@ const PropertiesForm = ({
       <div className="grid grid-cols-[77px_minmax(0,1fr)] items-center gap-x-6 gap-y-3">
         {parentForm.watch("type") === "point" ? (
           <PointProperties
-            form={form}
-            datasetId={parentForm.watch("datasetId")}
-            type={parentForm.watch("type")}
-          />
-        ) : null}
-        {parentForm.watch("type") === "marker" ? (
-          <MarkerProperties
             form={form}
             datasetId={parentForm.watch("datasetId")}
             type={parentForm.watch("type")}

@@ -50,7 +50,6 @@ export const getFeature = (authClient: UserAuthClient | PublicClient) =>
           where: eq(layers.id, layerId),
           with: {
             pointLayer: true,
-            markerLayer: true,
             lineLayer: true,
             polygonLayer: true,
             layersToPages: {
@@ -209,52 +208,7 @@ export const getFeature = (authClient: UserAuthClient | PublicClient) =>
             },
           } satisfies FullGeoJsonPoint;
         }
-        case "marker": {
-          if (!layer.markerLayer) {
-            throw new Error("Marker layer not found");
-          }
-          const pointCell = row.cells.find(
-            (c) => c.columnId === layer.markerLayer?.pointColumnId,
-          )?.pointCell;
 
-          if (!pointCell || !layer.markerLayer.pointColumnId) {
-            throw new Error("Point cell not found");
-          }
-
-          return {
-            type: "Feature",
-            geometry: {
-              type: "Point",
-              coordinates: [pointCell.x, pointCell.y],
-            },
-            id: `${rowId}_${layerId}`,
-            properties: {
-              ...baseFeature,
-              cellId: pointCell.id,
-              columnId: layer.markerLayer.pointColumnId,
-              childLayerId: layer.markerLayer.id,
-              properties: row.cells
-                .filter(
-                  (c) =>
-                    c.columnId !== layer.markerLayer?.pointColumnId &&
-                    c.columnId !== layer.titleColumnId &&
-                    c.columnId !== layer.descriptionColumnId &&
-                    c.columnId !== layer.iconColumnId,
-                )
-                .reduce((acc, cell) => {
-                  const value =
-                    cell.stringCell?.value ??
-                    cell.numberCell?.value ??
-                    cell.booleanCell?.value ??
-                    cell.dateCell?.value ??
-                    cell.richtextCell?.value ??
-                    cell.iconCell?.value ??
-                    null;
-                  return { ...acc, [cell.columnId]: value };
-                }, {}),
-            },
-          } satisfies FullGeoJsonPoint;
-        }
         case "line": {
           if (!layer.lineLayer) {
             throw new Error("Line layer not found");
