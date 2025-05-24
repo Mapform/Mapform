@@ -66,7 +66,9 @@ export function TypePopover({ form, initialTypes }: TypePopoverProps) {
   const [query, setQuery] = useState("");
 
   const filteredTypes = useMemo(() => {
-    return types.filter((type) => initialTypes?.includes(type.value));
+    return types.filter((type) =>
+      initialTypes ? initialTypes.includes(type.value) : true,
+    );
   }, [initialTypes]);
 
   return (
