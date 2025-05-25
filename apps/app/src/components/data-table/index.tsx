@@ -39,7 +39,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@mapform/ui/components/tooltip";
-import { Cell as CellType, ColumnType } from "./types";
+import type { Cell as CellType, ColumnType } from "./types";
 
 interface TableProps {
   dataset: NonNullable<GetDataset["data"]>;
