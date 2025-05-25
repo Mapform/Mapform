@@ -29,6 +29,7 @@ export const getDataset = (authClient: UserAuthClient) =>
             },
           },
           rows: {
+            orderBy: (rows, { asc }) => [asc(rows.createdAt)],
             with: {
               formSubmission: true,
               cells: {
