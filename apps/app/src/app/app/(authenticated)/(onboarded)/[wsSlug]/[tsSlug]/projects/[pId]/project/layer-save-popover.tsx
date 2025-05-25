@@ -11,7 +11,7 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from "@mapform/ui/components/popover";
-import { PlusIcon, Layers2Icon } from "lucide-react";
+import { PlusIcon } from "lucide-react";
 import { useState } from "react";
 import {
   LayerPopoverRoot,
@@ -20,6 +20,7 @@ import {
 } from "../layer-popover";
 import { useProject } from "../project-context";
 import type { Layer } from "@mapform/db/schema";
+import { LAYERS } from "~/constants/layers";
 
 interface LayerSavePopoverProps {
   children: React.ReactNode;
@@ -108,20 +109,24 @@ export function LayerSavePopover({
               <CommandSeparator />
               {pageLayers.length > 0 ? (
                 <CommandGroup heading="Save to existing layer">
-                  {pageLayers.map((pageLayer) => (
-                    <CommandItem
-                      disabled={isPending}
-                      key={pageLayer.layerId}
-                      keywords={[pageLayer.name || "Untitled"]}
-                      onSelect={() => onSelect(pageLayer.layerId)}
-                      value={pageLayer.layerId}
-                    >
-                      <div className="flex items-center overflow-hidden truncate">
-                        <Layers2Icon className="mr-2 size-4" />
-                        {pageLayer.name || "Untitled"}
-                      </div>
-                    </CommandItem>
-                  ))}
+                  {pageLayers.map((pageLayer) => {
+                    const Icon = LAYERS[pageLayer.type].icon;
+
+                    return (
+                      <CommandItem
+                        disabled={isPending}
+                        key={pageLayer.layerId}
+                        keywords={[pageLayer.name || "Untitled"]}
+                        onSelect={() => onSelect(pageLayer.layerId)}
+                        value={pageLayer.layerId}
+                      >
+                        <div className="flex items-center overflow-hidden truncate">
+                          <Icon className="mr-2 size-4" />
+                          {pageLayer.name || "Untitled"}
+                        </div>
+                      </CommandItem>
+                    );
+                  })}
                 </CommandGroup>
               ) : null}
             </CommandList>
