@@ -21,7 +21,8 @@ import "./style.css";
 import type { upsertCellAction } from "~/data/cells/upsert-cell";
 import { useIsMobile } from "@mapform/lib/hooks/use-is-mobile";
 import { loadPointImage } from "~/lib/map-tools/point-image-utils";
-import type { MapMouseEvent } from "mapbox-gl";
+import type { MapMouseEvent, MapTouchEvent } from "mapbox-gl";
+import { FeatureCollection } from "geojson";
 
 const accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
 
@@ -125,20 +126,25 @@ export function Map({
 
       // Add your custom markers and lines here
       m.on("load", () => {
+        /**
+         * Define custom mode which uses Draw to render features, but disables
+         * editing. This is used to keep rendering features consistent across
+         * modes.
+         */
         const StaticMode = {
-          onClick: function (
-            state: unknown,
-            e: MapMouseEvent & {
+          onClick: function (state: unknown, e: MapMouseEvent) {
+            const event = e as MapMouseEvent & {
               featureTarget?: { properties: { id: string } };
-            },
-          ) {
-            if (!e.featureTarget) {
+            };
+
+            if (!event.featureTarget) {
               setSelectedFeature(undefined);
               return;
             }
 
-            const featureId = e.featureTarget.properties.id;
+            const featureId = event.featureTarget.properties.id;
             const originalFeature = draw.get(featureId);
+
             if (!originalFeature) return;
 
             setSelectedFeature({
@@ -147,22 +153,22 @@ export function Map({
                 ...originalFeature.properties,
                 id: originalFeature.id,
               },
-            });
+            } as BaseFeature);
           },
 
-          onTap: function (
-            state: unknown,
-            e: MapMouseEvent & {
+          onTap: function (state: unknown, e: MapTouchEvent) {
+            const event = e as MapTouchEvent & {
               featureTarget?: { properties: { id: string } };
-            },
-          ) {
-            if (!e.featureTarget) {
+            };
+
+            if (!event.featureTarget) {
               setSelectedFeature(undefined);
               return;
             }
 
-            const featureId = e.featureTarget.properties.id;
+            const featureId = event.featureTarget.properties.id;
             const originalFeature = draw.get(featureId);
+
             if (!originalFeature) return;
 
             setSelectedFeature({
@@ -171,7 +177,7 @@ export function Map({
                 ...originalFeature.properties,
                 id: originalFeature.id,
               },
-            });
+            } as BaseFeature);
           },
 
           toDisplayFeatures: function (
@@ -185,9 +191,10 @@ export function Map({
 
         const draw = new MapboxDraw({
           displayControlsDefault: false,
-          modes: Object.assign(MapboxDraw.modes, {
+          modes: {
+            ...MapboxDraw.modes,
             static: StaticMode,
-          }),
+          },
           defaultMode: isStatic ? "static" : "simple_select",
           styles: mapStyles,
           userProperties: true,
@@ -403,17 +410,20 @@ export function Map({
     map,
     features: {
       type: "FeatureCollection",
-      features: features?.features.map((feature) => ({
-        ...feature,
-        properties: {
-          flat_icon: `image-${feature?.properties.icon?.value ?? "none"}-${feature?.properties.color ?? "none"}`,
-          ...feature?.properties,
-          ...(isStatic
-            ? { active: (selectedFeature?.id === feature?.id).toString() }
-            : {}),
-        },
-      })),
-    },
+      features:
+        features?.features.map((feature) => ({
+          type: feature.type,
+          geometry: feature.geometry,
+          id: feature.id,
+          properties: {
+            flat_icon: `image-${feature.properties.icon?.value ?? "none"}-${feature.properties.color ?? "none"}`,
+            ...feature.properties,
+            ...(isStatic
+              ? { active: (selectedFeature?.id === feature.id).toString() }
+              : {}),
+          },
+        })) ?? [],
+    } as FeatureCollection,
   });
 
   // Add this effect to load emoji images and add the emoji layer
@@ -424,8 +434,7 @@ export function Map({
       const uniqueIconColorPairs = new Set<string>();
       features.features
         .filter(
-          (f): f is NonNullable<typeof f> =>
-            f?.properties.layerType === "point",
+          (f): f is NonNullable<typeof f> => f.properties.layerType === "point",
         )
         .forEach((f) => {
           const icon = f.properties.icon?.value;

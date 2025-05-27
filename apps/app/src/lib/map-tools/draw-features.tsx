@@ -2,7 +2,7 @@
 
 import type { GetFeatures } from "@mapform/backend/data/features/get-features";
 import { isPersistedFeature } from "@mapform/backend/data/features/types";
-import type { Feature } from "geojson";
+import type { Feature, FeatureCollection } from "geojson";
 import type mapboxgl from "mapbox-gl";
 import { useEffect } from "react";
 import { useMapform } from "~/components/mapform";
@@ -15,7 +15,7 @@ export function useDrawFeatures({
   },
 }: {
   map?: mapboxgl.Map;
-  features: GetFeatures["data"];
+  features: FeatureCollection;
 }) {
   const { draw } = useMapform();
 

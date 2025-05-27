@@ -395,7 +395,9 @@ export const getFeatures = (authClient: PublicClient | UserAuthClient) =>
 
       return {
         type: "FeatureCollection",
-        features,
+        features: features.filter(
+          (f): f is NonNullable<typeof f> => f !== null,
+        ),
       } satisfies BaseFeatureCollection;
     });
 
