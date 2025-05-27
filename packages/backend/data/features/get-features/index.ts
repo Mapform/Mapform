@@ -130,7 +130,7 @@ export const getFeatures = (authClient: PublicClient | UserAuthClient) =>
             ...c,
             color: pl.layer.color,
             rowId: c.cell.rowId,
-            pointLayerId: pl.layer.pointLayer?.id,
+            pointLayerId: pl.layer.pointLayer!.id,
             point_cell: c.point_cell,
             layerId: pl.layer.id,
             icon: pl.layer.iconColumnId
@@ -160,7 +160,7 @@ export const getFeatures = (authClient: PublicClient | UserAuthClient) =>
               cell: cells,
               line_cell: {
                 ...lineCells,
-                value: sql`ST_AsText(${lineCells.value})`.as("value"),
+                value: sql<string>`ST_AsText(${lineCells.value})`.as("value"),
               },
               icon_cell: iconsCells,
               string_cell: stringCells,
@@ -242,7 +242,9 @@ export const getFeatures = (authClient: PublicClient | UserAuthClient) =>
               cell: cells,
               polygon_cell: {
                 ...polygonCells,
-                value: sql`ST_AsText(${polygonCells.value})`.as("value"),
+                value: sql<string>`ST_AsText(${polygonCells.value})`.as(
+                  "value",
+                ),
               },
               icon_cell: iconsCells,
               string_cell: stringCells,
@@ -319,13 +321,17 @@ export const getFeatures = (authClient: PublicClient | UserAuthClient) =>
               pc.point_cell.value.y !== undefined,
           )
           .map((pc) => ({
-            type: "Feature",
+            type: "Feature" as const,
             geometry: {
-              type: "Point",
-              coordinates: [pc.point_cell?.value?.x, pc.point_cell?.value?.y],
+              type: "Point" as const,
+              coordinates: [
+                pc.point_cell?.value?.x ?? 0,
+                pc.point_cell?.value?.y ?? 0,
+              ] as [number, number],
             },
             id: `${pc.rowId}_${pc.layerId}`,
             properties: {
+              id: `${pc.rowId}_${pc.layerId}`,
               rowId: pc.rowId,
               cellId: pc.cell.id,
               columnId: pc.cell.columnId,
@@ -340,23 +346,29 @@ export const getFeatures = (authClient: PublicClient | UserAuthClient) =>
 
         ...lineCellsResponse
           .flat()
-          .filter((lc) => lc.line_cell?.value)
+          .filter((lc) => lc.line_cell?.value !== null)
           .map((lc) => {
-            const geometry = wellknown.parse(lc.line_cell?.value);
+            if (!lc.line_cell?.value) return null;
+            const value = lc.line_cell.value as unknown as string;
+            const geometry = wellknown.parse(value);
             if (!geometry || geometry.type !== "LineString") {
               return null;
             }
 
             return {
-              type: "Feature",
-              geometry,
+              type: "Feature" as const,
+              geometry: {
+                type: "LineString" as const,
+                coordinates: geometry.coordinates as [number, number][],
+              },
               id: `${lc.rowId}_${lc.layerId}`,
               properties: {
+                id: `${lc.rowId}_${lc.layerId}`,
                 rowId: lc.rowId,
                 cellId: lc.cell.id,
                 columnId: lc.cell.columnId,
                 layerId: lc.layerId,
-                childLayerId: lc.lineLayerId,
+                childLayerId: lc.lineLayerId!,
                 layerType: "line",
                 color: lc.color ?? null,
                 icon: lc.icon,
@@ -369,21 +381,27 @@ export const getFeatures = (authClient: PublicClient | UserAuthClient) =>
           .flat()
           .filter((pc) => pc.polygon_cell?.value)
           .map((pc) => {
-            const geometry = wellknown.parse(pc.polygon_cell?.value);
+            if (!pc.polygon_cell?.value) return null;
+            const value = pc.polygon_cell.value as unknown as string;
+            const geometry = wellknown.parse(value);
             if (!geometry || geometry.type !== "Polygon") {
               return null;
             }
 
             return {
-              type: "Feature",
-              geometry,
+              type: "Feature" as const,
+              geometry: {
+                type: "Polygon" as const,
+                coordinates: geometry.coordinates as [number, number][][],
+              },
               id: `${pc.rowId}_${pc.layerId}`,
               properties: {
+                id: `${pc.rowId}_${pc.layerId}`,
                 rowId: pc.rowId,
                 cellId: pc.cell.id,
                 columnId: pc.cell.columnId,
                 layerId: pc.layerId,
-                childLayerId: pc.polygonLayerId,
+                childLayerId: pc.polygonLayerId!,
                 layerType: "polygon",
                 color: pc.color,
                 icon: pc.icon,
@@ -393,11 +411,13 @@ export const getFeatures = (authClient: PublicClient | UserAuthClient) =>
           }),
       ];
 
+      const filteredFeatures = features.filter(
+        (f): f is NonNullable<typeof f> => f !== null,
+      );
+
       return {
         type: "FeatureCollection",
-        features: features.filter(
-          (f): f is NonNullable<typeof f> => f !== null,
-        ),
+        features: filteredFeatures,
       } satisfies BaseFeatureCollection;
     });
 
