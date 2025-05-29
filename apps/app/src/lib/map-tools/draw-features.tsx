@@ -1,8 +1,7 @@
 "use client";
 
-import type { GetFeatures } from "@mapform/backend/data/features/get-features";
 import { isPersistedFeature } from "@mapform/backend/data/features/types";
-import type { Feature, FeatureCollection } from "geojson";
+import type { FeatureCollection } from "geojson";
 import type mapboxgl from "mapbox-gl";
 import { useEffect } from "react";
 import { useMapform } from "~/components/mapform";
@@ -52,9 +51,9 @@ export function useDrawFeatures({
 
       // Filter out features that haven't changed
       const newFeatures = features.features.filter((feature) => {
-        if (!feature?.id) return true;
+        if (!feature!.id) return true;
 
-        const existingFeature = draw.get(feature.id);
+        const existingFeature = draw.get(feature.id.toString());
         if (!existingFeature) return true; // Feature doesn't exist, add it
 
         // Check if properties have changed
@@ -62,12 +61,12 @@ export function useDrawFeatures({
         const newProps = JSON.stringify(feature.properties);
         if (existingProps !== newProps) {
           // Update the existing feature with new properties
-          draw.delete(feature.id);
+          draw.delete(feature.id.toString());
           return true;
         }
 
         return false;
-      }) as Feature[];
+      });
 
       if (newFeatures.length > 0) {
         draw.add({

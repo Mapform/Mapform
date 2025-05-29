@@ -183,6 +183,7 @@ export const getFeature = (authClient: UserAuthClient | PublicClient) =>
             id: `${rowId}_${layerId}`,
             properties: {
               ...baseFeature,
+              id: `${rowId}_${layerId}`,
               cellId: pointCell.id,
               columnId: layer.pointLayer.pointColumnId,
               childLayerId: layer.pointLayer.id,
@@ -233,6 +234,7 @@ export const getFeature = (authClient: UserAuthClient | PublicClient) =>
             id: `${rowId}_${layerId}`,
             properties: {
               ...baseFeature,
+              id: `${rowId}_${layerId}`,
               cellId: lineCell.id,
               columnId: layer.lineLayer.lineColumnId,
               childLayerId: layer.lineLayer.id,
@@ -282,6 +284,7 @@ export const getFeature = (authClient: UserAuthClient | PublicClient) =>
             id: `${rowId}_${layerId}`,
             properties: {
               ...baseFeature,
+              id: `${rowId}_${layerId}`,
               cellId: polygonCell.id,
               columnId: layer.polygonLayer.polygonColumnId,
               childLayerId: layer.polygonLayer.id,

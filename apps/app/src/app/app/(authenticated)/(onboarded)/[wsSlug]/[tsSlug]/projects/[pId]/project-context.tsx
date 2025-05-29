@@ -174,7 +174,6 @@ export function ProjectProvider({
       }
 
       const updatedFeatures = typeState.features.map((feature) => {
-        if (!feature) return null;
         if (
           feature.properties.rowId === typedNewPage.rowId &&
           feature.properties.columnId === typedNewPage.columnId
@@ -193,7 +192,7 @@ export function ProjectProvider({
             properties: {
               ...feature.properties,
             },
-          } satisfies BaseFeature;
+          };
         }
         return feature;
       });
