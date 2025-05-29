@@ -183,6 +183,12 @@ export const DataTable = function DataTable({ dataset }: TableProps) {
                   cell.richtextCell?.value ??
                   cell.dateCell?.value ??
                   cell.iconCell?.value ??
+                  (cell.lineCell && {
+                    coordinates: cell.lineCell.coordinates,
+                  }) ??
+                  (cell.polygonCell && {
+                    coordinates: cell.polygonCell.coordinates,
+                  }) ??
                   (cell.pointCell && {
                     x: cell.pointCell.x,
                     y: cell.pointCell.y,

@@ -28,7 +28,7 @@ import {
 } from "@mapform/backend/data/cells/upsert-cell/schema";
 import type { GetDataset } from "@mapform/backend/data/datasets/get-dataset";
 import { upsertCellAction } from "~/data/cells/upsert-cell";
-import StringInput from "./StringInput";
+import StringInput from "./string-input";
 import EmojiInput from "./emoji-input";
 import NumberInput from "./number-input";
 import DateInput from "./date-input";

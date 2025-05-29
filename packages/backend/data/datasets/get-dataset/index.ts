@@ -10,12 +10,27 @@ import {
   pointCells,
   polygonCells,
 } from "@mapform/db/schema";
+import * as wellknown from "wellknown";
+import type { LineString, Polygon } from "geojson";
+
+// Define types for cells with geometry
+type LineCellWithGeometry = {
+  id: string;
+  coordinates: string;
+  geometry: LineString;
+};
+
+type PolygonCellWithGeometry = {
+  id: string;
+  coordinates: string;
+  geometry: Polygon;
+};
 
 export const getDataset = (authClient: UserAuthClient) =>
   authClient
     .schema(getDatasetSchema)
     .action(async ({ parsedInput: { datasetId }, ctx: { userAccess } }) => {
-      return db.query.datasets.findFirst({
+      const dataset = await db.query.datasets.findFirst({
         where: and(
           eq(datasets.id, datasetId),
           inArray(datasets.teamspaceId, userAccess.teamspace.ids),
@@ -40,7 +55,6 @@ export const getDataset = (authClient: UserAuthClient) =>
                     columns: {
                       id: true,
                     },
-                    // TODO: Can remove this workaround once this is fixed: https://github.com/drizzle-team/drizzle-orm/pull/2778#issuecomment-2408519850
                     extras: {
                       x: sql<number>`ST_X(${pointCells.value})`.as("x"),
                       y: sql<number>`ST_Y(${pointCells.value})`.as("y"),
@@ -50,22 +64,22 @@ export const getDataset = (authClient: UserAuthClient) =>
                     columns: {
                       id: true,
                     },
-                    // TODO: Can remove this workaround once this is fixed: https://github.com/drizzle-team/drizzle-orm/pull/2778#issuecomment-2408519850
                     extras: {
-                      coordinates: sql<
-                        number[]
-                      >`ST_AsText(${lineCells.value})`.as("coordinates"),
+                      coordinates:
+                        sql<string>`ST_AsText(${lineCells.value})`.as(
+                          "coordinates",
+                        ),
                     },
                   },
                   polygonCell: {
                     columns: {
                       id: true,
                     },
-                    // TODO: Can remove this workaround once this is fixed: https://github.com/drizzle-team/drizzle-orm/pull/2778#issuecomment-2408519850
                     extras: {
-                      coordinates: sql<
-                        number[]
-                      >`ST_AsText(${polygonCells.value})`.as("coordinates"),
+                      coordinates:
+                        sql<string>`ST_AsText(${polygonCells.value})`.as(
+                          "coordinates",
+                        ),
                     },
                   },
                   numberCell: true,
@@ -83,6 +97,45 @@ export const getDataset = (authClient: UserAuthClient) =>
           },
         },
       });
+
+      if (!dataset) {
+        return null;
+      }
+
+      // Transform the dataset to include GeoJSON geometry
+      return {
+        ...dataset,
+        rows: dataset.rows.map((row) => ({
+          ...row,
+          cells: row.cells.map((cell) => {
+            if (cell.lineCell?.coordinates) {
+              const geometry = wellknown.parse(cell.lineCell.coordinates);
+              if (geometry && geometry.type === "LineString") {
+                return {
+                  ...cell,
+                  lineCell: {
+                    ...cell.lineCell,
+                    coordinates: geometry.coordinates,
+                  },
+                };
+              }
+            }
+            if (cell.polygonCell?.coordinates) {
+              const geometry = wellknown.parse(cell.polygonCell.coordinates);
+              if (geometry && geometry.type === "Polygon") {
+                return {
+                  ...cell,
+                  polygonCell: {
+                    ...cell.polygonCell,
+                    coordinates: geometry.coordinates,
+                  },
+                };
+              }
+            }
+            return cell;
+          }),
+        })),
+      };
     });
 
 export type GetDataset = UnwrapReturn<typeof getDataset>;
