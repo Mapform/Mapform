@@ -120,23 +120,6 @@ function LineInput({
 
   return (
     <div className="relative h-[280px] w-full">
-      <div className="absolute left-2 right-2 top-2 z-10 rounded bg-white/70 px-4 py-2 font-mono text-xs backdrop-blur-md">
-        {coordinates.length > 0 ? (
-          <div>
-            <div>Line Points: {coordinates.length}</div>
-            <div>
-              Start: {coordinates[0]?.x.toFixed(4)},{" "}
-              {coordinates[0]?.y.toFixed(4)}
-            </div>
-            <div>
-              End: {coordinates[coordinates.length - 1]?.x.toFixed(4)},{" "}
-              {coordinates[coordinates.length - 1]?.y.toFixed(4)}
-            </div>
-          </div>
-        ) : (
-          "Click to start drawing a line"
-        )}
-      </div>
       <div className="h-full w-full" ref={mapContainerRef} />
     </div>
   );
