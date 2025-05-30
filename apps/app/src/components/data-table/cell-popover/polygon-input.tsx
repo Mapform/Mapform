@@ -1,12 +1,11 @@
 import { useRef, useState, useEffect } from "react";
 import mapboxgl from "mapbox-gl";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
+import bbox from "@turf/bbox";
 import type { UseFormReturn } from "@mapform/ui/components/form";
 import type { UpsertCellSchema } from "@mapform/backend/data/cells/upsert-cell/schema";
 
 const accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN!;
-
-type XY = { x: number; y: number };
 
 type PolygonFeature = GeoJSON.Feature<
   GeoJSON.Polygon,
@@ -23,16 +22,9 @@ function PolygonInput({
     form.getValues().value?.coordinates,
   );
 
-  console.log(123, coordinates);
-
   useEffect(() => {
     mapboxgl.accessToken = accessToken;
     const map = new mapboxgl.Map({
-      // center: {
-      //   lng: coordinates?.[0]?.[0] || 0,
-      //   lat: coordinates?.[0]?.[1] || 0,
-      // },
-      zoom: coordinates ? 9 : 0,
       container: mapContainerRef.current ?? "",
       pitchWithRotate: false,
       dragRotate: false,
@@ -62,6 +54,20 @@ function PolygonInput({
           coordinates,
         },
       };
+
+      const bounds = bbox(polygon);
+
+      map.fitBounds(
+        [
+          [bounds[0], bounds[1]],
+          [bounds[2], bounds[3]],
+        ],
+        {
+          padding: 20,
+          animate: false,
+        },
+      );
+
       draw.add(polygon);
     }
 

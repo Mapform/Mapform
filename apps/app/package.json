@@ -35,6 +35,7 @@
     "@tanstack/react-query-devtools": "catalog:",
     "@tanstack/react-table": "catalog:",
     "@tanstack/react-virtual": "catalog:",
+    "@turf/bbox": "^7.2.0",
     "@types/mapbox-gl": "catalog:",
     "@vercel/analytics": "catalog:",
     "@vercel/blob": "catalog:",
