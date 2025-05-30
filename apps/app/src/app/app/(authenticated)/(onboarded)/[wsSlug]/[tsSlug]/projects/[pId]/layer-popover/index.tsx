@@ -28,14 +28,15 @@ import { useProject } from "../project-context";
 import { PointProperties } from "./point-properties";
 import { DatasetPopover } from "./dataset-popover";
 import { TypePopover } from "./type-popover";
-import { MarkerProperties } from "./marker-properties";
+import { LineProperties } from "./line-properties";
+import { PolygonProperties } from "./polygon-properties";
 import type { Column } from "@mapform/db/schema";
+import type { LayerToEdit, LayerType } from "./types";
 
 interface LayerPopoverProps {
   initialName?: string;
-  layerToEdit?: NonNullable<
-    GetPageWithLayers["data"]
-  >["layersToPages"][number]["layer"];
+  initialTypes?: LayerType[];
+  layerToEdit?: LayerToEdit;
   onSuccess?: (layerId: string) => void;
   onClose?: () => void;
 }
@@ -43,69 +44,76 @@ interface LayerPopoverProps {
 export const LayerPopoverContent = forwardRef<
   React.ElementRef<typeof PopoverContent>,
   React.ComponentPropsWithoutRef<typeof PopoverContent> & LayerPopoverProps
->(({ layerToEdit, initialName, onSuccess, onClose, ...props }, ref) => {
-  const { availableDatasets } = useProject();
-  const form = useForm<Pick<UpsertLayerSchema, "name" | "type" | "datasetId">>({
-    defaultValues: {
-      name: layerToEdit?.name ?? initialName ?? "",
-      type: layerToEdit?.type ?? "marker",
-      datasetId: layerToEdit?.datasetId,
-    },
-    resolver: zodResolver(
-      upsertLayerSchema.pick({ name: true, type: true, datasetId: true }),
-    ),
-  });
+>(
+  (
+    { layerToEdit, initialName, initialTypes, onSuccess, onClose, ...props },
+    ref,
+  ) => {
+    const { availableDatasets } = useProject();
+    const form = useForm<
+      Pick<UpsertLayerSchema, "name" | "type" | "datasetId">
+    >({
+      defaultValues: {
+        name: layerToEdit?.name ?? initialName ?? "",
+        type: layerToEdit?.type ?? initialTypes?.[0] ?? "point",
+        datasetId: layerToEdit?.datasetId,
+      },
+      resolver: zodResolver(
+        upsertLayerSchema.pick({ name: true, type: true, datasetId: true }),
+      ),
+    });
 
-  return (
-    <PopoverContent ref={ref} {...props}>
-      <Form {...form}>
-        <form className="flex flex-1 flex-col">
-          <div className="grid grid-cols-[77px_minmax(0,1fr)] items-center gap-x-6 gap-y-3">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <>
-                  <FormLabel>Name</FormLabel>
-                  <div className="flex-1">
-                    <FormControl>
-                      <Input
-                        autoComplete="off"
-                        data-lpignore="true"
-                        data-1p-ignore
-                        disabled={field.disabled}
-                        name={field.name}
-                        onChange={field.onChange}
-                        placeholder="New Layer"
-                        ref={field.ref}
-                        s="sm"
-                        value={field.value ?? ""}
-                        variant="filled"
-                      />
-                    </FormControl>
-                  </div>
-                </>
-              )}
+    return (
+      <PopoverContent ref={ref} {...props}>
+        <Form {...form}>
+          <form className="flex flex-1 flex-col">
+            <div className="grid grid-cols-[77px_minmax(0,1fr)] items-center gap-x-6 gap-y-3">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <>
+                    <FormLabel>Name</FormLabel>
+                    <div className="flex-1">
+                      <FormControl>
+                        <Input
+                          autoComplete="off"
+                          data-lpignore="true"
+                          data-1p-ignore
+                          disabled={field.disabled}
+                          name={field.name}
+                          onChange={field.onChange}
+                          placeholder="New Layer"
+                          ref={field.ref}
+                          s="sm"
+                          value={field.value ?? ""}
+                          variant="filled"
+                        />
+                      </FormControl>
+                    </div>
+                  </>
+                )}
+              />
+
+              <TypePopover form={form} initialTypes={initialTypes} />
+
+              {form.watch("type") && <DatasetPopover form={form} />}
+            </div>
+          </form>
+          {form.watch("datasetId") && form.watch("type") && (
+            <PropertiesForm
+              key={`${form.watch("datasetId")}-${form.watch("type")}-${availableDatasets.length}`}
+              parentForm={form}
+              layerToEdit={layerToEdit}
+              onSuccess={onSuccess}
+              onClose={onClose}
             />
-
-            <TypePopover form={form} />
-
-            {form.watch("type") && <DatasetPopover form={form} />}
-          </div>
-        </form>
-        {form.watch("datasetId") && form.watch("type") && (
-          <PropertiesForm
-            key={`${form.watch("datasetId")}-${form.watch("type")}-${availableDatasets.length}`}
-            parentForm={form}
-            layerToEdit={layerToEdit}
-            onSuccess={onSuccess}
-            onClose={onClose}
-          />
-        )}
-      </Form>
-    </PopoverContent>
-  );
-});
+          )}
+        </Form>
+      </PopoverContent>
+    );
+  },
+);
 
 LayerPopoverContent.displayName = "LayerPopoverContent";
 
@@ -161,6 +169,16 @@ const PropertiesForm = ({
     defaultValues: {
       id: layerToEdit?.id,
       pageId: currentPage.id,
+      color: layerToEdit?.color ?? "#3b82f6",
+      titleColumnId: layerToEdit
+        ? layerToEdit.titleColumnId
+        : getLastAvailableColumnId("string"),
+      descriptionColumnId: layerToEdit
+        ? layerToEdit.descriptionColumnId
+        : getLastAvailableColumnId("richtext"),
+      iconColumnId: layerToEdit
+        ? layerToEdit.iconColumnId
+        : getLastAvailableColumnId("icon"),
       pointProperties:
         currentType === "point"
           ? layerToEdit?.datasetId === currentDatasetId &&
@@ -169,39 +187,35 @@ const PropertiesForm = ({
             ? {
                 pointColumnId:
                   layerToEdit.pointLayer.pointColumnId ?? undefined,
-                titleColumnId: layerToEdit.pointLayer.titleColumnId,
-                descriptionColumnId: layerToEdit.pointLayer.descriptionColumnId,
-                iconColumnId: layerToEdit.pointLayer.iconColumnId,
-                color: layerToEdit.pointLayer.color,
               }
             : {
                 pointColumnId: getLastAvailableColumnId("point") ?? undefined,
-                titleColumnId: getLastAvailableColumnId("string"),
-                descriptionColumnId: getLastAvailableColumnId("richtext"),
-                iconColumnId: getLastAvailableColumnId("icon"),
-                color: null,
               }
           : undefined,
-      markerProperties:
-        currentType === "marker"
+      lineProperties:
+        currentType === "line"
           ? layerToEdit?.datasetId === currentDatasetId &&
-            layerToEdit.type === "marker" &&
-            layerToEdit.markerLayer
+            layerToEdit.type === "line" &&
+            layerToEdit.lineLayer
             ? {
-                pointColumnId:
-                  layerToEdit.markerLayer.pointColumnId ?? undefined,
-                titleColumnId: layerToEdit.markerLayer.titleColumnId,
-                descriptionColumnId:
-                  layerToEdit.markerLayer.descriptionColumnId,
-                iconColumnId: layerToEdit.markerLayer.iconColumnId,
-                color: layerToEdit.markerLayer.color,
+                lineColumnId: layerToEdit.lineLayer.lineColumnId ?? undefined,
               }
             : {
-                pointColumnId: getLastAvailableColumnId("point") ?? undefined,
-                titleColumnId: getLastAvailableColumnId("string"),
-                descriptionColumnId: getLastAvailableColumnId("richtext"),
-                iconColumnId: getLastAvailableColumnId("icon"),
-                color: null,
+                lineColumnId: getLastAvailableColumnId("line") ?? undefined,
+              }
+          : undefined,
+      polygonProperties:
+        currentType === "polygon"
+          ? layerToEdit?.datasetId === currentDatasetId &&
+            layerToEdit.type === "polygon" &&
+            layerToEdit.polygonLayer
+            ? {
+                polygonColumnId:
+                  layerToEdit.polygonLayer.polygonColumnId ?? undefined,
+              }
+            : {
+                polygonColumnId:
+                  getLastAvailableColumnId("polygon") ?? undefined,
               }
           : undefined,
     },
@@ -270,8 +284,15 @@ const PropertiesForm = ({
             type={parentForm.watch("type")}
           />
         ) : null}
-        {parentForm.watch("type") === "marker" ? (
-          <MarkerProperties
+        {parentForm.watch("type") === "line" ? (
+          <LineProperties
+            form={form}
+            datasetId={parentForm.watch("datasetId")}
+            type={parentForm.watch("type")}
+          />
+        ) : null}
+        {parentForm.watch("type") === "polygon" ? (
+          <PolygonProperties
             form={form}
             datasetId={parentForm.watch("datasetId")}
             type={parentForm.watch("type")}

@@ -4,9 +4,10 @@ import { db } from "@mapform/db";
 import {
   layers,
   layersToPages,
-  markerLayers,
   pointLayers,
   datasets,
+  lineLayers,
+  polygonLayers,
 } from "@mapform/db/schema";
 import { eq } from "@mapform/db/utils";
 import { upsertLayerSchema } from "./schema";
@@ -23,8 +24,13 @@ export const upsertLayer = (authClient: UserAuthClient) =>
           pageId,
           name,
           type,
+          color,
+          titleColumnId,
+          descriptionColumnId,
+          iconColumnId,
           pointProperties,
-          markerProperties,
+          lineProperties,
+          polygonProperties,
         },
       }) => {
         // Get dataset columns to validate against
@@ -39,88 +45,64 @@ export const upsertLayer = (authClient: UserAuthClient) =>
           throw new Error("Dataset not found");
         }
 
+        const columnTypes = new Map(
+          dataset.columns.map((col) => [col.id, col.type]),
+        );
+
         // Helper function to validate column IDs
         const validateColumnIds = (
           properties: {
             pointColumnId?: string | null;
-            titleColumnId?: string | null;
-            descriptionColumnId?: string | null;
-            iconColumnId?: string | null;
+            lineColumnId?: string | null;
+            polygonColumnId?: string | null;
           },
-          type: "point" | "marker",
+          type: "point" | "line" | "polygon",
         ) => {
-          // If no point column is provided, skip validation
-          if (!properties.pointColumnId) {
-            return;
-          }
-
           const columnIds = dataset.columns.map((col) => col.id);
-          const columnTypes = new Map(
-            dataset.columns.map((col) => [col.id, col.type]),
-          );
 
-          // Point column must be of type 'point' if provided
-          if (!columnIds.includes(properties.pointColumnId)) {
-            throw new Error(
-              `${type} layer's point column ID does not belong to the dataset`,
-            );
-          }
-          if (columnTypes.get(properties.pointColumnId) !== "point") {
-            throw new Error(
-              `${type} layer's point column must be of type 'point'`,
-            );
-          }
+          // Validate point column if provided
+          if (properties.pointColumnId) {
+            if (!columnIds.includes(properties.pointColumnId)) {
+              throw new Error(
+                `${type} layer's point column ID does not belong to the dataset`,
+              );
+            }
 
-          // Optional columns must exist in dataset if provided
-          if (
-            properties.titleColumnId &&
-            !columnIds.includes(properties.titleColumnId)
-          ) {
-            throw new Error(
-              `${type} layer's title column ID does not belong to the dataset`,
-            );
-          }
-          if (
-            properties.descriptionColumnId &&
-            !columnIds.includes(properties.descriptionColumnId)
-          ) {
-            throw new Error(
-              `${type} layer's description column ID does not belong to the dataset`,
-            );
-          }
-          if (
-            properties.iconColumnId &&
-            !columnIds.includes(properties.iconColumnId)
-          ) {
-            throw new Error(
-              `${type} layer's icon column ID does not belong to the dataset`,
-            );
+            if (columnTypes.get(properties.pointColumnId) !== "point") {
+              throw new Error(
+                `${type} layer's point column must be of type 'point'`,
+              );
+            }
           }
 
-          // Validate column types if provided
-          if (
-            properties.titleColumnId &&
-            columnTypes.get(properties.titleColumnId) !== "string"
-          ) {
-            throw new Error(
-              `${type} layer's title column must be of type 'string'`,
-            );
+          // Validate line column if provided
+          if (properties.lineColumnId) {
+            if (!columnIds.includes(properties.lineColumnId)) {
+              throw new Error(
+                `${type} layer's line column ID does not belong to the dataset`,
+              );
+            }
+
+            if (columnTypes.get(properties.lineColumnId) !== "line") {
+              throw new Error(
+                `${type} layer's line column must be of type 'line'`,
+              );
+            }
           }
-          if (
-            properties.descriptionColumnId &&
-            columnTypes.get(properties.descriptionColumnId) !== "richtext"
-          ) {
-            throw new Error(
-              `${type} layer's description column must be of type 'richtext'`,
-            );
-          }
-          if (
-            properties.iconColumnId &&
-            columnTypes.get(properties.iconColumnId) !== "icon"
-          ) {
-            throw new Error(
-              `${type} layer's icon column must be of type 'icon'`,
-            );
+
+          // Validate polygon column if provided
+          if (properties.polygonColumnId) {
+            if (!columnIds.includes(properties.polygonColumnId)) {
+              throw new Error(
+                `${type} layer's polygon column ID does not belong to the dataset`,
+              );
+            }
+
+            if (columnTypes.get(properties.polygonColumnId) !== "polygon") {
+              throw new Error(
+                `${type} layer's polygon column must be of type 'polygon'`,
+              );
+            }
           }
         };
 
@@ -129,8 +111,31 @@ export const upsertLayer = (authClient: UserAuthClient) =>
           validateColumnIds(pointProperties, "point");
         }
 
-        if (type === "marker" && markerProperties) {
-          validateColumnIds(markerProperties, "marker");
+        if (type === "line" && lineProperties) {
+          validateColumnIds(lineProperties, "line");
+        }
+
+        if (type === "polygon" && polygonProperties) {
+          validateColumnIds(polygonProperties, "polygon");
+        }
+
+        if (titleColumnId && columnTypes.get(titleColumnId) !== "string") {
+          throw new Error(
+            `${type} layer's title column must be of type 'string'`,
+          );
+        }
+
+        if (
+          descriptionColumnId &&
+          columnTypes.get(descriptionColumnId) !== "richtext"
+        ) {
+          throw new Error(
+            `${type} layer's description column must be of type 'richtext'`,
+          );
+        }
+
+        if (iconColumnId && columnTypes.get(iconColumnId) !== "icon") {
+          throw new Error(`${type} layer's icon column must be of type 'icon'`);
         }
 
         const newLayer = await db.transaction(async (tx) => {
@@ -143,10 +148,22 @@ export const upsertLayer = (authClient: UserAuthClient) =>
               datasetId,
               name,
               type,
+              color,
+              titleColumnId,
+              descriptionColumnId,
+              iconColumnId,
             })
             .onConflictDoUpdate({
               target: layers.id,
-              set: { datasetId, name, type },
+              set: {
+                datasetId,
+                name,
+                type,
+                color,
+                titleColumnId,
+                descriptionColumnId,
+                iconColumnId,
+              },
             })
             .returning();
 
@@ -185,22 +202,34 @@ export const upsertLayer = (authClient: UserAuthClient) =>
               });
           }
 
-          if (type === "marker" && markerProperties) {
+          if (type === "line" && lineProperties) {
             await tx
-              .insert(markerLayers)
+              .insert(lineLayers)
               .values({
                 layerId: layer.id,
-                ...markerProperties,
+                ...lineProperties,
               })
               .onConflictDoUpdate({
-                target: markerLayers.layerId,
-                set: markerProperties,
+                target: lineLayers.layerId,
+                set: lineProperties,
+              });
+          }
+
+          if (type === "polygon" && polygonProperties) {
+            await tx
+              .insert(polygonLayers)
+              .values({
+                layerId: layer.id,
+                ...polygonProperties,
+              })
+              .onConflictDoUpdate({
+                target: polygonLayers.layerId,
+                set: polygonProperties,
               });
           }
 
           return layer;
         });
-
         return newLayer;
       },
     );

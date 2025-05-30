@@ -58,3 +58,42 @@ export interface GeoapifyPlace {
     bbox?: [number, number, number, number];
   }[];
 }
+
+export interface GeoapifyRoute {
+  results: {
+    mode: string;
+    waypoints: {
+      location: [number, number];
+      original_index: number;
+    }[];
+    units: string;
+    distance: number;
+    distance_units: string;
+    time: number;
+    legs: {
+      distance: number;
+      time: number;
+      steps: {
+        from_index: number;
+        to_index: number;
+        distance: number;
+        time: number;
+        instruction: {
+          text: string;
+        };
+      }[];
+    }[];
+    geometry: {
+      lon: number;
+      lat: number;
+    }[][];
+  }[];
+  properties: {
+    mode: string;
+    waypoints: {
+      lat: number;
+      lon: number;
+    }[];
+    units: string;
+  };
+}

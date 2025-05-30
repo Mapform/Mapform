@@ -23,40 +23,53 @@ import {
   TooltipTrigger,
 } from "@mapform/ui/components/tooltip";
 import type { UpsertLayerSchema } from "@mapform/backend/data/layers/upsert-layer/schema";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { cn } from "@mapform/lib/classnames";
 import { Button } from "@mapform/ui/components/button";
 import {
   CheckIcon,
   ChevronsUpDownIcon,
   CircleDotIcon,
-  MapPinIcon,
+  PentagonIcon,
+  WaypointsIcon,
 } from "lucide-react";
+import type { LayerType } from "./types";
 
 interface TypePopoverProps {
+  initialTypes?: LayerType[];
   form: UseFormReturn<Pick<UpsertLayerSchema, "type" | "datasetId" | "name">>;
 }
 
 const types = [
   {
-    label: "Marker",
-    value: "marker",
-    icon: MapPinIcon,
-    description:
-      "Display a place with an icon. Markers are clustered automatically. Ideal for smaller datasets.",
-  },
-  {
     label: "Point",
     value: "point",
     icon: CircleDotIcon,
-    description:
-      "Basic location representation. Points are never clustered. Ideal for larger datasets.",
+    description: "Used to render Point data on the map.",
+  },
+  {
+    label: "Line",
+    value: "line",
+    icon: WaypointsIcon,
+    description: "Used to render Line data on the map.",
+  },
+  {
+    label: "Polygon",
+    value: "polygon",
+    icon: PentagonIcon,
+    description: "Used to render Polygon data on the map.",
   },
 ] as const;
 
-export function TypePopover({ form }: TypePopoverProps) {
+export function TypePopover({ form, initialTypes }: TypePopoverProps) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
+
+  const filteredTypes = useMemo(() => {
+    return types.filter((type) =>
+      initialTypes ? initialTypes.includes(type.value) : true,
+    );
+  }, [initialTypes]);
 
   return (
     <FormField
@@ -76,7 +89,7 @@ export function TypePopover({ form }: TypePopoverProps) {
                 {form.watch("type") && (
                   <span className="mr-2">
                     {(() => {
-                      const TypeIcon = types.find(
+                      const TypeIcon = filteredTypes.find(
                         (type) => type.value === field.value,
                       )?.icon;
                       return TypeIcon && <TypeIcon className="size-4" />;
@@ -85,7 +98,8 @@ export function TypePopover({ form }: TypePopoverProps) {
                 )}
                 <span className="flex-1 truncate text-left">
                   {form.watch("type")
-                    ? types.find((type) => type.value === field.value)?.label
+                    ? filteredTypes.find((type) => type.value === field.value)
+                        ?.label
                     : "Select type..."}
                 </span>
                 <ChevronsUpDownIcon className="size-4 flex-shrink-0 opacity-50" />
@@ -103,40 +117,53 @@ export function TypePopover({ form }: TypePopoverProps) {
                 value={query}
               />
               <CommandList>
-                <CommandEmpty>No type found.</CommandEmpty>
-                <CommandGroup>
-                  {types.map((type) => (
-                    <Tooltip delayDuration={0} key={type.value}>
-                      <TooltipTrigger className="w-full">
-                        <CommandItem
-                          value={type.label}
-                          onSelect={() => {
-                            form.setValue("type", type.value);
-                            setQuery("");
-                            setOpen(false);
-                          }}
-                          className="flex items-center gap-2"
-                        >
-                          <type.icon className="size-4 flex-shrink-0" />
-                          <span className="flex-1 truncate text-left">
-                            {type.label}
-                          </span>
-                          <CheckIcon
-                            className={cn(
-                              "ml-auto size-4",
-                              field.value === type.value
-                                ? "opacity-100"
-                                : "opacity-0",
-                            )}
-                          />
-                        </CommandItem>
-                      </TooltipTrigger>
-                      <TooltipContent className="max-w-[200px]" side="right">
-                        {type.description}
-                      </TooltipContent>
-                    </Tooltip>
-                  ))}
-                </CommandGroup>
+                <CommandEmpty className="text-muted-foreground py-2 text-center text-sm">
+                  No type found.
+                </CommandEmpty>
+                {filteredTypes.filter((type) =>
+                  type.label.toLowerCase().includes(query.toLowerCase()),
+                ).length > 0 && (
+                  <CommandGroup>
+                    {filteredTypes
+                      .filter((type) =>
+                        type.label.toLowerCase().includes(query.toLowerCase()),
+                      )
+                      .map((type) => (
+                        <Tooltip delayDuration={0} key={type.value}>
+                          <TooltipTrigger className="w-full">
+                            <CommandItem
+                              value={type.label}
+                              onSelect={() => {
+                                form.setValue("type", type.value);
+                                setQuery("");
+                                setOpen(false);
+                              }}
+                              className="flex items-center gap-2"
+                            >
+                              <type.icon className="size-4 flex-shrink-0" />
+                              <span className="flex-1 truncate text-left">
+                                {type.label}
+                              </span>
+                              <CheckIcon
+                                className={cn(
+                                  "ml-auto size-4",
+                                  field.value === type.value
+                                    ? "opacity-100"
+                                    : "opacity-0",
+                                )}
+                              />
+                            </CommandItem>
+                          </TooltipTrigger>
+                          <TooltipContent
+                            className="max-w-[200px]"
+                            side="right"
+                          >
+                            {type.description}
+                          </TooltipContent>
+                        </Tooltip>
+                      ))}
+                  </CommandGroup>
+                )}
               </CommandList>
             </Command>
           </PopoverContent>

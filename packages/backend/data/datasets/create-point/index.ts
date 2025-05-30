@@ -6,7 +6,6 @@ import {
   datasets,
   iconsCells,
   layers,
-  markerLayers,
   plans,
   pointCells,
   pointLayers,
@@ -36,7 +35,6 @@ export const createPoint = (authClient: UserAuthClient) =>
             .select()
             .from(layers)
             .leftJoin(pointLayers, eq(layers.id, pointLayers.layerId))
-            .leftJoin(markerLayers, eq(layers.id, markerLayers.layerId))
             .leftJoin(datasets, eq(layers.datasetId, datasets.id))
             .leftJoin(teamspaces, eq(datasets.teamspaceId, teamspaces.id))
             .leftJoin(workspaces, eq(teamspaces.workspaceSlug, workspaces.slug))
@@ -53,8 +51,8 @@ export const createPoint = (authClient: UserAuthClient) =>
             throw new Error("Layer not found");
           }
 
-          if (layer.type !== "point" && layer.type !== "marker") {
-            throw new Error("Layer is not a point or marker layer");
+          if (layer.type !== "point") {
+            throw new Error("Layer is not a point layer");
           }
 
           if (!result.teamspace) {
@@ -81,22 +79,10 @@ export const createPoint = (authClient: UserAuthClient) =>
             );
           }
 
-          const pointColumnId =
-            layer.type === "point"
-              ? result.point_layer?.pointColumnId
-              : result.marker_layer?.pointColumnId;
-          const titleColumnId =
-            layer.type === "point"
-              ? result.point_layer?.titleColumnId
-              : result.marker_layer?.titleColumnId;
-          const descriptionColumnId =
-            layer.type === "point"
-              ? result.point_layer?.descriptionColumnId
-              : result.marker_layer?.descriptionColumnId;
-          const iconColumnId =
-            layer.type === "point"
-              ? result.point_layer?.iconColumnId
-              : result.marker_layer?.iconColumnId;
+          const pointColumnId = result.point_layer?.pointColumnId;
+          const titleColumnId = result.layer.titleColumnId;
+          const descriptionColumnId = result.layer.descriptionColumnId;
+          const iconColumnId = result.layer.iconColumnId;
 
           if (!pointColumnId) {
             throw new Error("Layer does not have a point column");
@@ -178,7 +164,6 @@ export const createPoint = (authClient: UserAuthClient) =>
           return {
             row,
             layer,
-            marker_layer: result.marker_layer,
             point_layer: result.point_layer,
           };
         });

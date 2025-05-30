@@ -2,7 +2,13 @@ import { relations } from "drizzle-orm";
 import { datasets } from "../datasets/schema";
 import { layersToPages } from "../layers-to-pages/schema";
 import { columns } from "../columns/schema";
-import { layers, markerLayers, pointLayers } from "./schema";
+import {
+  layers,
+  markerLayers,
+  pointLayers,
+  lineLayers,
+  polygonLayers,
+} from "./schema";
 
 /**
  * PARENT LAYER
@@ -15,6 +21,8 @@ export const layersRelations = relations(layers, ({ one, many }) => ({
   layersToPages: many(layersToPages),
   pointLayer: one(pointLayers),
   markerLayer: one(markerLayers),
+  lineLayer: one(lineLayers),
+  polygonLayer: one(polygonLayers),
 }));
 
 /**
@@ -41,6 +49,34 @@ export const markerLayersRelations = relations(markerLayers, ({ one }) => ({
   }),
   pointColumn: one(columns, {
     fields: [markerLayers.pointColumnId],
+    references: [columns.id],
+  }),
+}));
+
+/**
+ * LINE LAYER
+ */
+export const lineLayersRelations = relations(lineLayers, ({ one }) => ({
+  layer: one(layers, {
+    fields: [lineLayers.layerId],
+    references: [layers.id],
+  }),
+  lineColumn: one(columns, {
+    fields: [lineLayers.lineColumnId],
+    references: [columns.id],
+  }),
+}));
+
+/**
+ * POLYGON LAYER
+ */
+export const polygonLayersRelations = relations(polygonLayers, ({ one }) => ({
+  layer: one(layers, {
+    fields: [polygonLayers.layerId],
+    references: [layers.id],
+  }),
+  polygonColumn: one(columns, {
+    fields: [polygonLayers.polygonColumnId],
     references: [columns.id],
   }),
 }));
