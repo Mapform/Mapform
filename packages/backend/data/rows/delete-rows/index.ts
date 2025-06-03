@@ -9,6 +9,30 @@ import { inArray } from "@mapform/db/utils";
 export const deleteRows = (authClient: UserAuthClient) =>
   authClient
     .schema(deleteRowsSchema)
-    .action(async ({ parsedInput: { rowIds } }) => {
-      return db.delete(rows).where(inArray(rows.id, rowIds));
+    .action(async ({ parsedInput: { rowIds }, ctx: { userAccess } }) => {
+      // First get the rows with their teamspace information
+      const rowsToDelete = await db.query.rows.findMany({
+        where: inArray(rows.id, rowIds),
+        with: {
+          dataset: {
+            columns: {
+              teamspaceId: true,
+            },
+          },
+        },
+      });
+
+      // Validate that all rows are from teamspaces the user has access to
+      if (
+        rowsToDelete.some(
+          (row) =>
+            !userAccess.teamspace.checkAccessById(row.dataset.teamspaceId),
+        )
+      ) {
+        throw new Error("Unauthorized");
+      }
+
+      return db.delete(rows).where(inArray(rows.id, rowIds)).returning({
+        id: rows.id,
+      });
     });

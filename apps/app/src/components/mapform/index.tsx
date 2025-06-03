@@ -6,18 +6,17 @@ import {
   createContext,
   type Dispatch,
   type SetStateAction,
+  useRef,
 } from "react";
-import type { ViewState } from "@mapform/map-utils/types";
 import type mapboxgl from "mapbox-gl";
 import { useMeasure } from "@mapform/lib/hooks/use-measure";
 import { cn } from "@mapform/lib/classnames";
 import { Button } from "@mapform/ui/components/button";
 import { ChevronsRightIcon, XIcon } from "lucide-react";
 
-import { Map } from "./map";
 import { useIsMobile } from "@mapform/lib/hooks/use-is-mobile";
 import { AnimatePresence, motion } from "motion/react";
-import type { GetPageData } from "@mapform/backend/data/datalayer/get-page-data";
+import type { MapboxGeoJSONFeature } from "mapbox-gl";
 
 export type MBMap = mapboxgl.Map;
 export interface ActivePoint {
@@ -33,9 +32,14 @@ interface MapformProps {
 
 interface MapformContextProps {
   map?: MBMap;
+  draw?: MapboxDraw;
   setMap: Dispatch<SetStateAction<MBMap | undefined>>;
+  setDraw: Dispatch<SetStateAction<MapboxDraw | undefined>>;
   mapContainer: React.RefObject<HTMLDivElement | null>;
+  visibleMapContainer: React.RefObject<HTMLDivElement | null>;
   mapContainerBounds: DOMRectReadOnly | undefined;
+  drawFeature: MapboxGeoJSONFeature | null;
+  setDrawFeature: Dispatch<SetStateAction<MapboxGeoJSONFeature | null>>;
 }
 
 export const MapformContext = createContext<MapformContextProps>(
@@ -45,7 +49,15 @@ export const useMapform = () => useContext(MapformContext);
 
 export function Mapform({ children }: MapformProps) {
   const [map, setMap] = useState<MBMap>();
+  // This is the feature that is currently being drawn using Mapbox Draw
+  const [drawFeature, setDrawFeature] = useState<MapboxGeoJSONFeature | null>(
+    null,
+  );
+  const [draw, setDraw] = useState<MapboxDraw>();
   const { ref: mapContainer, bounds } = useMeasure<HTMLDivElement>();
+  // This is the part of the map container that is visible to the user (ie. is
+  // not behind the drawers)
+  const visibleMapContainer = useRef<HTMLDivElement>(null);
 
   const mapContainerBounds = bounds;
 
@@ -53,9 +65,14 @@ export function Mapform({ children }: MapformProps) {
     <MapformContext.Provider
       value={{
         map,
+        draw,
         setMap,
+        setDraw,
         mapContainer,
+        visibleMapContainer,
         mapContainerBounds,
+        drawFeature: drawFeature,
+        setDrawFeature,
       }}
     >
       {children}
@@ -67,13 +84,11 @@ interface MapformContentProps {
   children: React.ReactNode;
   drawerValues: string[];
   isEditing?: boolean;
-  pageData?: GetPageData["data"];
 }
 
 interface MapformContentContextProps {
   drawerValues: string[];
   isEditing?: boolean;
-  pageData?: GetPageData["data"];
 }
 
 export const MapformContentContext = createContext<MapformContentContextProps>(
@@ -83,50 +98,15 @@ export const useMapformContent = () => useContext(MapformContentContext);
 
 export function MapformContent({
   children,
-  pageData,
   isEditing,
   drawerValues,
 }: MapformContentProps) {
   return (
-    <MapformContentContext.Provider
-      value={{ isEditing, drawerValues, pageData }}
-    >
+    <MapformContentContext.Provider value={{ isEditing, drawerValues }}>
       <div className="relative flex-1 md:flex md:overflow-hidden">
         {children}
       </div>
     </MapformContentContext.Provider>
-  );
-}
-
-export function MapformMap({
-  children,
-  initialViewState,
-}: {
-  children?: React.ReactNode;
-  initialViewState: ViewState;
-}) {
-  const isMobile = useIsMobile();
-  const { drawerValues, isEditing, pageData } = useMapformContent();
-
-  const mapPadding = {
-    top: 0,
-    bottom: isMobile ? (drawerValues.length ? 200 : 0) : 0,
-    left: !!drawerValues.length && !isMobile ? (isEditing ? 392 : 360) : 0,
-    right: 0,
-  };
-
-  return (
-    <div className="top-0 flex flex-1 max-md:sticky max-md:mb-[-200px] max-md:h-dvh">
-      <Map
-        isEditing={isEditing}
-        initialViewState={initialViewState}
-        isMobile={isMobile}
-        mapPadding={mapPadding}
-        pageData={pageData}
-      >
-        {children}
-      </Map>
-    </div>
   );
 }
 
@@ -154,9 +134,7 @@ export function MapformDrawer({
 
   return (
     <AnimatePresence mode="popLayout">
-      {/* This can be used if we want to keep all drawer open. Helpful if going with stacked ui. */}
-      {/* drawerValues.includes(value) */}
-      {drawerValues[drawerValues.length - 1] === value ? (
+      {drawerValues.includes(value) ? (
         <motion.div
           className={cn(
             // BASE STYLES
@@ -186,14 +164,9 @@ export function MapformDrawer({
             marginBottom: isMobile ? 1 * reverseValueIndex * 10 : 0,
             filter: `brightness(${1 - reverseValueIndex * 0.1})`,
             display: isMobile && reverseValueIndex !== 0 ? "none" : "flex",
-            // Used for stacked ui
-            // ...(!isMobile && {
-            //   width: (isEditing ? 392 : 360) + reverseValueIndex * 10,
-            //   paddingLeft: (isEditing ? 32 : 0) + reverseValueIndex * 10,
-            // }),
             ...(!isMobile && {
-              width: isEditing ? 392 : 360,
-              paddingLeft: isEditing ? 32 : 0,
+              width: (isEditing ? 392 : 360) + reverseValueIndex * 10,
+              paddingLeft: (isEditing ? 32 : 0) + reverseValueIndex * 10,
             }),
           }}
           transition={{
@@ -213,13 +186,13 @@ export function MapformDrawer({
           }}
         >
           {!hideDragBar && (
-            <div className="absolute -translate-x-1/2 left-1/2 top-1 md:hidden">
+            <div className="absolute left-1/2 top-1 -translate-x-1/2 md:hidden">
               <div className="h-1.5 w-12 rounded-full bg-gray-300" />
             </div>
           )}
           {onClose ? (
             <Button
-              className="absolute z-50 right-2 top-2"
+              className="absolute right-2 top-2 z-50"
               onClick={onClose}
               size="icon-sm"
               type="button"

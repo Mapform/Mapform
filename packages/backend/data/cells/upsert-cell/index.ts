@@ -1,6 +1,6 @@
 "server-only";
 
-import { db } from "@mapform/db";
+import { db, sql } from "@mapform/db";
 import {
   cells,
   numberCells,
@@ -14,6 +14,8 @@ import {
   datasets,
   teamspaces,
   columns,
+  lineCells,
+  polygonCells,
 } from "@mapform/db/schema";
 import { and, eq, inArray } from "@mapform/db/utils";
 import { upsertCellSchema } from "./schema";
@@ -166,6 +168,52 @@ export const upsertCell = (authClient: UserAuthClient) =>
               .onConflictDoUpdate({
                 target: iconsCells.cellId,
                 set: { value },
+              });
+          }
+
+          if (type === "line") {
+            await tx
+              .insert(lineCells)
+              .values({
+                cellId: cell.id,
+                value: sql.raw(`ST_GeomFromGeoJSON('{
+                  "type": "LineString",
+                  "coordinates": ${JSON.stringify(value?.coordinates ?? [])}
+                }')`),
+              })
+              .onConflictDoUpdate({
+                target: lineCells.cellId,
+                set: {
+                  value: sql.raw(`ST_GeomFromGeoJSON('{
+                  "type": "LineString",
+                  "coordinates": ${JSON.stringify(value?.coordinates ?? [])}
+                }')`),
+                },
+              });
+          }
+
+          if (type === "polygon") {
+            await tx
+              .insert(polygonCells)
+              .values({
+                cellId: cell.id,
+                value: sql.raw(
+                  `ST_GeomFromGeoJSON('{
+                    "type": "Polygon",
+                    "coordinates": ${JSON.stringify(value?.coordinates ?? [])}
+                  }')`,
+                ),
+              })
+              .onConflictDoUpdate({
+                target: polygonCells.cellId,
+                set: {
+                  value: sql.raw(
+                    `ST_GeomFromGeoJSON('{
+                    "type": "Polygon",
+                    "coordinates": ${JSON.stringify(value?.coordinates ?? [])}
+                  }')`,
+                  ),
+                },
               });
           }
         });

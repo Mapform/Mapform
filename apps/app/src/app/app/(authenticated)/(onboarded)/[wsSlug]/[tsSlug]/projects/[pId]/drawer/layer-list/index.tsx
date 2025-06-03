@@ -14,7 +14,7 @@ import {
   SortableContext,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { Layers2Icon, PlusIcon } from "lucide-react";
+import { PlusIcon } from "lucide-react";
 import { useState } from "react";
 import {
   Command,
@@ -47,6 +47,7 @@ import {
   LayerPopoverAnchor,
 } from "../../layer-popover";
 import { Item } from "./item";
+import { LAYERS } from "~/constants/layers";
 
 export function LayerList() {
   const { currentProject, updatePageServerAction } = useProject();
@@ -195,23 +196,27 @@ export function LayerList() {
                 <CommandSeparator />
                 {layersFromOtherPages.length > 0 ? (
                   <CommandGroup heading="Connect existing layer">
-                    {layersFromOtherPages.map((layer) => (
-                      <CommandItem
-                        key={layer.layerId}
-                        keywords={[layer.name ?? "Untitled"]}
-                        onSelect={() => {
-                          handleCreatePageLayer(layer.layerId);
-                        }}
-                        value={layer.layerId}
-                      >
-                        <div className="flex items-center overflow-hidden">
-                          <Layers2Icon className="mr-2 size-4 flex-shrink-0" />
-                          <span className="truncate">
-                            {layer.name ?? "Untitled"}
-                          </span>
-                        </div>
-                      </CommandItem>
-                    ))}
+                    {layersFromOtherPages.map((layer) => {
+                      const Icon = LAYERS[layer.type].icon;
+
+                      return (
+                        <CommandItem
+                          key={layer.layerId}
+                          keywords={[layer.name ?? "Untitled"]}
+                          onSelect={() => {
+                            handleCreatePageLayer(layer.layerId);
+                          }}
+                          value={layer.layerId}
+                        >
+                          <div className="flex items-center overflow-hidden">
+                            <Icon className="mr-2 size-4 flex-shrink-0" />
+                            <span className="truncate">
+                              {layer.name ?? "Untitled"}
+                            </span>
+                          </div>
+                        </CommandItem>
+                      );
+                    })}
                   </CommandGroup>
                 ) : null}
               </CommandList>

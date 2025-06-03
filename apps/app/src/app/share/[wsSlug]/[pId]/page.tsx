@@ -17,17 +17,17 @@ const fetchProjectWithPages = cache(async (id: string) => {
   return projectWithPagesResponse;
 });
 
-const fetchPageData = cache(async (id?: string) => {
+const fetchFatures = cache(async (id?: string) => {
   if (!id) {
     return undefined;
   }
 
-  const pageDataResponse = await publicClient.getPageData({
+  const featuresResponse = await publicClient.getFeatures({
     pageId: id,
   });
-  const pageData = pageDataResponse?.data;
+  const features = featuresResponse?.data;
 
-  return pageData;
+  return features;
 });
 
 const fetchSelectedFeature = cache(async (param?: string) => {
@@ -35,22 +35,16 @@ const fetchSelectedFeature = cache(async (param?: string) => {
     return undefined;
   }
 
-  const [type, rowId, subLayerId] = param.split("_");
+  const [rowId, layerId] = param.split("_");
 
-  if (!type || !rowId || !subLayerId) {
+  if (!rowId || !layerId) {
     return undefined;
   }
 
-  const featureResponse =
-    type === "point"
-      ? await publicClient.getLayerPoint({
-          rowId,
-          pointLayerId: subLayerId,
-        })
-      : await publicClient.getLayerMarker({
-          rowId,
-          markerLayerId: subLayerId,
-        });
+  const featureResponse = await publicClient.getFeature({
+    rowId,
+    layerId,
+  });
 
   const feature = featureResponse?.data;
 
@@ -74,10 +68,10 @@ export default async function Page(props: {
 
   const params = await props.params;
 
-  const [projectWithPagesResponse, pageData, selectedFeature] =
+  const [projectWithPagesResponse, features, selectedFeature] =
     await Promise.all([
       fetchProjectWithPages(params.pId),
-      fetchPageData(searchParams?.p),
+      fetchFatures(searchParams?.p),
       fetchSelectedFeature(searchParams?.feature),
     ]);
 
@@ -161,7 +155,7 @@ export default async function Page(props: {
         <Map
           formValues={formValues}
           isUsingSessions={isUsingSessions}
-          pageData={pageData}
+          features={features}
           projectWithPages={projectWithPages}
           selectedFeature={selectedFeature}
           formSubmissionId={formSubmissionId}

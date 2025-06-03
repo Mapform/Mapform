@@ -13,6 +13,7 @@ import { EmojiPopover } from "@mapform/ui/components/emoji-picker";
 import { AutoSizeTextArea } from "@mapform/ui/components/autosize-text-area";
 import { cn } from "@mapform/lib/classnames";
 import { useMemo } from "react";
+import { Skeleton } from "@mapform/ui/components/skeleton";
 
 interface BlocknoteProps {
   // null means the property exists but no value, undefined means the property does not exist
@@ -29,6 +30,7 @@ interface BlocknoteProps {
   };
   isFeature?: boolean;
   controls?: React.ReactNode;
+  isQueryPending?: boolean;
   onPrev?: () => void;
   onIconChange?: (icon: string | null) => void;
   onTitleChange?: (content: string) => void;
@@ -45,6 +47,7 @@ export function Blocknote({
   includeFormBlocks = false,
   onDescriptionChange,
   locationEditorProps,
+  isQueryPending = false,
 }: BlocknoteProps) {
   const { isEditing } = useCustomBlockContext();
 
@@ -58,14 +61,18 @@ export function Blocknote({
   });
 
   const iconElement = useMemo(() => {
-    if (icon === undefined) {
+    if (!icon) {
       return null;
     }
 
     if (isEditing) {
       return (
         <EmojiPopover onIconChange={onIconChange}>
-          <button className="mb-2 text-6xl" type="button">
+          <button
+            className="mb-2 text-6xl"
+            disabled={isQueryPending}
+            type="button"
+          >
             {icon}
           </button>
         </EmojiPopover>
@@ -73,14 +80,14 @@ export function Blocknote({
     }
 
     return <div className="mb-2 text-6xl">{icon}</div>;
-  }, [icon, isEditing, onIconChange]);
+  }, [icon, isEditing, onIconChange, isQueryPending]);
 
   const titleElement = useMemo(() => {
     if (title === undefined) {
       return null;
     }
 
-    if (isEditing) {
+    if (isEditing && !isQueryPending) {
       return (
         <AutoSizeTextArea
           className="mb-4 text-3xl font-bold placeholder-gray-300"
@@ -99,15 +106,30 @@ export function Blocknote({
     }
 
     return (
-      <h1 className="mb-2 w-full border-0 p-0 text-3xl font-bold">
+      <h1
+        className={cn("mb-4 w-full border-0 p-0 text-3xl font-bold", {
+          "text-gray-500": isQueryPending,
+        })}
+      >
         {title ?? "Untitled"}
       </h1>
     );
-  }, [title, isEditing, onTitleChange, description?.content, editor]);
+  }, [
+    title,
+    isEditing,
+    onTitleChange,
+    description?.content,
+    editor,
+    isQueryPending,
+  ]);
 
   const descriptionElement = useMemo(() => {
     if (description === undefined) {
       return null;
+    }
+
+    if (isQueryPending) {
+      return <Skeleton className="mt-7 h-4 w-full" />;
     }
 
     return (
@@ -122,7 +144,13 @@ export function Blocknote({
         }}
       />
     );
-  }, [description, includeFormBlocks, editor, onDescriptionChange]);
+  }, [
+    description,
+    includeFormBlocks,
+    editor,
+    onDescriptionChange,
+    isQueryPending,
+  ]);
 
   // Renders the editor instance using a React component.
   return (

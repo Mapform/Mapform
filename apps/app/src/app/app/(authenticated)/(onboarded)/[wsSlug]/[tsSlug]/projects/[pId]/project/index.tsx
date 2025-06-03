@@ -1,15 +1,14 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useEffect, useMemo, useState } from "react";
+import { useState } from "react";
 import { compressImage } from "~/lib/compress-image";
 import { useProject } from "../project-context";
-import { EditBar } from "./edit-bar";
 import {
   MapformContent,
   MapformDrawer,
   MapformDrawerButton,
-  MapformMap,
+  useMapform,
 } from "~/components/mapform";
 import { CustomBlockProvider, type CustomBlock } from "@mapform/blocknote";
 import { Blocknote } from "~/components/mapform/block-note";
@@ -17,7 +16,6 @@ import { LocationSearchDrawer } from "./location-search-drawer";
 import { Form as DummyForm, useForm } from "@mapform/ui/components/form";
 import { BlocknoteControls } from "./page-blocknote-controls";
 import { FeatureDrawer } from "./feature-drawer";
-import { useSetQueryString } from "@mapform/lib/hooks/use-set-query-string";
 import { useAuth } from "~/app/root-providers";
 import { updateCurrentUserAction } from "~/data/users/update-current-user";
 import { useAction } from "next-safe-action/hooks";
@@ -25,16 +23,23 @@ import {
   ProjectTour,
   ProjectTourContent,
 } from "~/components/tours/project-tour";
+import { EditBar } from "./edit-bar";
+import { Map } from "~/components/mapform/map";
 
 function Project() {
   const {
     selectedFeature,
-    currentPageData,
     projectWithPages,
+    setSelectedFeature,
     updatePageServerAction,
     uploadImageServerAction,
+    updateFeaturesServerAction,
+    setIsDrawerStackOpen,
+    drawerValues,
+    setActiveMode,
   } = useProject();
   const { user } = useAuth();
+  const { draw } = useMapform();
   const [isTourOpen, setIsTourOpen] = useState(!user?.projectGuideCompleted);
 
   // This is just used to prevent the input blocks from throwing an error when
@@ -43,36 +48,7 @@ function Project() {
 
   const currentPage = updatePageServerAction.optimisticState;
 
-  // Controls the location search drawer
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const setQueryString = useSetQueryString();
-
   const { execute: updateCurrentUser } = useAction(updateCurrentUserAction);
-
-  // Controls the ChevronsRight button to open or close all drawers
-  const [isDrawerStackOpen, setIsDrawerStackOpen] = useState(true);
-  const drawerValues = useMemo(() => {
-    return isDrawerStackOpen || selectedFeature || isSearchOpen
-      ? [
-          ...(currentPage?.contentViewType === "split" ? ["page-content"] : []),
-          // The feature drawer only opens when the feature is specified in the URL
-          ...(isSearchOpen ? ["location-search"] : []),
-          ...(selectedFeature ? ["feature"] : []),
-        ]
-      : [];
-  }, [
-    isDrawerStackOpen,
-    selectedFeature,
-    isSearchOpen,
-    currentPage?.contentViewType,
-  ]);
-
-  // Reset isDrawerStackOpen when the search or feature is opened
-  useEffect(() => {
-    if (isSearchOpen || !!selectedFeature) {
-      setIsDrawerStackOpen(true);
-    }
-  }, [isSearchOpen, selectedFeature]);
 
   if (!currentPage) {
     return null;
@@ -83,11 +59,7 @@ function Project() {
       <DummyForm {...dummyForm}>
         <div className="flex flex-1 justify-center overflow-hidden p-4">
           <div className="flex flex-1">
-            <MapformContent
-              isEditing
-              drawerValues={drawerValues}
-              pageData={currentPageData}
-            >
+            <MapformContent isEditing drawerValues={drawerValues}>
               <CustomBlockProvider
                 isEditing
                 imageBlock={{
@@ -172,15 +144,24 @@ function Project() {
                 <FeatureDrawer />
                 <LocationSearchDrawer
                   currentPage={currentPage}
-                  onClose={() => setIsSearchOpen(false)}
+                  onClose={() => setActiveMode("hand")}
                 />
               </CustomBlockProvider>
               {currentPage.contentViewType === "split" ? (
                 <MapformDrawerButton
-                  onDrawerStackOpenChange={setIsDrawerStackOpen}
+                  onDrawerStackOpenChange={(open) => {
+                    setIsDrawerStackOpen(open);
+                    setActiveMode("hand");
+                    draw?.changeMode("simple_select");
+                  }}
                 />
               ) : null}
-              <MapformMap
+              <Map
+                isStatic={false}
+                selectedFeature={selectedFeature}
+                setSelectedFeature={setSelectedFeature}
+                updateFeatures={updateFeaturesServerAction.execute}
+                features={updateFeaturesServerAction.optimisticState}
                 initialViewState={{
                   longitude: currentPage.center.x,
                   latitude: currentPage.center.y,
@@ -195,20 +176,8 @@ function Project() {
                   },
                 }}
               >
-                <EditBar
-                  key={currentPage.id}
-                  onSearchOpenChange={(open) => {
-                    if (open) {
-                      // Clear the feature when search is opened
-                      setQueryString({
-                        key: "feature",
-                        value: null,
-                      });
-                    }
-                    setIsSearchOpen(open);
-                  }}
-                />
-              </MapformMap>
+                <EditBar key={currentPage.id} />
+              </Map>
             </MapformContent>
           </div>
         </div>

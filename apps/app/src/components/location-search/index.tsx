@@ -31,8 +31,15 @@ import { useMapform } from "~/components/mapform";
 import { Button, type ButtonProps } from "@mapform/ui/components/button";
 import { Skeleton } from "@mapform/ui/components/skeleton";
 import { SelectionPin } from "../selection-pin";
+import { useReverseGeocode } from "~/hooks/use-reverse-geocode";
+import { motion, AnimatePresence } from "motion/react";
 
-export function LocationSearch(props: { children?: React.ReactNode }) {
+interface LocationSearchProps {
+  children?: React.ReactNode;
+  disableDragSearch?: boolean;
+}
+
+export function LocationSearch(props: LocationSearchProps) {
   const { map } = useMapform();
 
   if (!map) {
@@ -53,59 +60,43 @@ export const LocationSearchContext = createContext<LocationSearchContextProps>(
 );
 export const useLocationSearch = () => useContext(LocationSearchContext);
 
+interface LocationSearchWithMapProps extends LocationSearchProps {
+  map: mapboxgl.Map;
+}
+
 export function LocationSearchWithMap({
   map,
   children,
-}: {
-  map: mapboxgl.Map;
-  children?: React.ReactNode;
-}) {
+  disableDragSearch = false,
+}: LocationSearchWithMapProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [query, setQuery] = useState("");
   const queryClient = useQueryClient();
-  const [isFetchingRGResults, setIsFetchingRGResults] = useState(false);
   const [selectedFeatureFromSearch, setSelectedFeatureFromSearch] = useState<
     GeoapifyPlace["features"][number] | null
   >(null);
-  const [selectedFeatureFromDrag, setSelectedFeatureFromDrag] = useState<
-    GeoapifyPlace["features"][number] | null
-  >(null);
   const [isMoving, setIsMoving] = useState(false);
-  const selectedFeature = selectedFeatureFromSearch || selectedFeatureFromDrag;
-  const [showPinPopover, setShowPinPopover] = useState(true);
+  const [coordinates, setCoordinates] = useState<{
+    lat: number;
+    lng: number;
+  }>({
+    lat: map.getCenter().lat,
+    lng: map.getCenter().lng,
+  });
+  const [showPinPopover, setShowPinPopover] = useState(!disableDragSearch);
   const debouncedSearchQuery = useDebounce(query, 200);
 
-  const reverseGeocode = async ({ lat, lng }: { lat: number; lng: number }) => {
-    setIsFetchingRGResults(true);
-    const response = await fetch(
-      `/api/places/reverse-geocode?lat=${lat}&lng=${lng}`,
-    );
+  const {
+    isFetching: isFetchingRGResults,
+    selectedFeature: selectedFeatureFromDrag,
+  } = useReverseGeocode({
+    lat: Number(coordinates.lat.toFixed(10)),
+    lng: Number(coordinates.lng.toFixed(10)),
+    retry: 0,
+    enabled: !disableDragSearch,
+  });
 
-    setIsFetchingRGResults(false);
-
-    if (!response.ok) {
-      throw new Error(`Response status: ${response.status}`);
-    }
-
-    const json = await response.json();
-    const result = json.data as GeoapifyPlace;
-    const firstFeature = result.features[0];
-
-    if (firstFeature) {
-      setSelectedFeatureFromDrag({
-        ...firstFeature,
-        ...(firstFeature.properties && {
-          properties: {
-            ...firstFeature.properties,
-            lat,
-            lon: lng,
-          },
-        }),
-      });
-    }
-
-    return result;
-  };
+  const selectedFeature = selectedFeatureFromSearch || selectedFeatureFromDrag;
 
   const { data: searchResults, isFetching } = useQuery({
     enabled: !!debouncedSearchQuery,
@@ -122,19 +113,6 @@ export function LocationSearchWithMap({
     placeholderData: (prev) => prev,
   });
 
-  const { refetch } = useQuery({
-    enabled: false,
-    queryKey: ["reverse-geocode", map.getCenter().lat, map.getCenter().lng],
-    queryFn: () =>
-      reverseGeocode({
-        lat: map.getCenter().lat,
-        lng: map.getCenter().lng,
-      }),
-    placeholderData: (prev) => prev,
-    staleTime: Infinity,
-    retry: false,
-  });
-
   const marker = useMemo(() => {
     const currentLocation = map.getCenter();
     const el = document.createElement("div");
@@ -147,7 +125,10 @@ export function LocationSearchWithMap({
   useEffect(() => {
     marker.addTo(map);
     // Fetch on mount
-    void refetch();
+    setCoordinates({
+      lat: map.getCenter().lat,
+      lng: map.getCenter().lng,
+    });
 
     // Focus on input
     setTimeout(() => {
@@ -172,11 +153,14 @@ export function LocationSearchWithMap({
 
       console.log(queryClient.getQueryData(queryKey));
 
-      // Only refetch if we don't have cached data for these coordinates
-      if (!queryClient.getQueryData(queryKey)) {
-        void refetch();
+      // Only refetch if we don't have cached data for these coordinates and drag search is enabled
+      if (!queryClient.getQueryData(queryKey) && !disableDragSearch) {
+        setCoordinates({
+          lat: map.getCenter().lat,
+          lng: map.getCenter().lng,
+        });
       }
-      setShowPinPopover(true);
+      setShowPinPopover(!disableDragSearch);
       setIsMoving(false);
     };
 
@@ -185,13 +169,13 @@ export function LocationSearchWithMap({
     map.on("moveend", handleMoveEnd);
 
     return () => {
-      setShowPinPopover(true);
+      setShowPinPopover(!disableDragSearch);
       marker.remove();
       map.off("move", handleMove);
       map.off("movestart", handleMoveStart);
       map.off("moveend", handleMoveEnd);
     };
-  }, []);
+  }, [disableDragSearch]);
 
   // Controls hot keys for selecting search results
   useEffect(() => {
@@ -388,9 +372,20 @@ export function LocationSearchWithMap({
         </div>
       </Command>
       <Portal.Root container={marker.getElement()}>
-        <Popover open={showPinPopover}>
+        <Popover open={showPinPopover || !!selectedFeatureFromSearch}>
           <PopoverAnchor>
-            <SelectionPin />
+            <AnimatePresence>
+              {(showPinPopover || !!selectedFeatureFromSearch) && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <SelectionPin />
+                </motion.div>
+              )}
+            </AnimatePresence>
           </PopoverAnchor>
           <PopoverContent
             className={cn({
@@ -424,9 +419,7 @@ export function LocationSearchWithMap({
                     <div className="mt-2">{children}</div>
                   </LocationSearchContext.Provider>
                 </>
-              ) : (
-                <div className="text-center">Drag map or search</div>
-              )}
+              ) : null}
             </div>
           </PopoverContent>
         </Popover>

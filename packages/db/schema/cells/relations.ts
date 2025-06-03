@@ -10,6 +10,8 @@ import {
   dateCells,
   richtextCells,
   iconsCells,
+  lineCells,
+  polygonCells,
 } from "./schema";
 
 /**
@@ -28,6 +30,8 @@ export const cellsRelations = relations(cells, ({ one }) => ({
   numberCell: one(numberCells),
   booleanCell: one(booleanCells),
   pointCell: one(pointCells),
+  lineCell: one(lineCells),
+  polygonCell: one(polygonCells),
   dateCell: one(dateCells),
   richtextCell: one(richtextCells),
   iconCell: one(iconsCells),
@@ -69,6 +73,26 @@ export const booleanCellsRelations = relations(booleanCells, ({ one }) => ({
 export const pointCellsRelations = relations(pointCells, ({ one }) => ({
   cell: one(cells, {
     fields: [pointCells.cellId],
+    references: [cells.id],
+  }),
+}));
+
+/**
+ * LINE CELL
+ */
+export const lineCellsRelations = relations(lineCells, ({ one }) => ({
+  cell: one(cells, {
+    fields: [lineCells.cellId],
+    references: [cells.id],
+  }),
+}));
+
+/**
+ * POLYGON CELL
+ */
+export const polygonCellsRelations = relations(polygonCells, ({ one }) => ({
+  cell: one(cells, {
+    fields: [polygonCells.cellId],
     references: [cells.id],
   }),
 }));

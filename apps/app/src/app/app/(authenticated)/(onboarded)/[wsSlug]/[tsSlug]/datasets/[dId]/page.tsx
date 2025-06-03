@@ -23,5 +23,9 @@ export default async function DatasetPage(props: {
   const params = await props.params;
   const dataset = await fetchDataset(params.dId);
 
+  if (!dataset) {
+    return null;
+  }
+
   return <DataTable dataset={dataset} />;
 }

@@ -3,7 +3,6 @@
 import {
   ArrowUpRightIcon,
   EllipsisIcon,
-  Layers2Icon,
   Settings2Icon,
   Trash2Icon,
   UnlinkIcon,
@@ -52,6 +51,7 @@ import {
   LayerPopoverContent,
   LayerPopoverAnchor,
 } from "../../layer-popover";
+import { LAYERS } from "~/constants/layers";
 
 interface ItemProps {
   layer: NonNullable<
@@ -108,6 +108,8 @@ export function Item({ layer }: ItemProps) {
     });
   };
 
+  const Icon = LAYERS[layer.type].icon;
+
   return (
     <DragItem id={layer.id} key={layer.id}>
       <ContextMenu>
@@ -120,7 +122,7 @@ export function Item({ layer }: ItemProps) {
                   setLayerPopoverOpen(true);
                 }}
               >
-                <Layers2Icon />
+                <Icon />
                 <span className="truncate text-sm">
                   {layer.name || "Untitled"}
                 </span>

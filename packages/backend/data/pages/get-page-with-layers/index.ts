@@ -26,7 +26,8 @@ export const getPageWithLayers = (authClient: UserAuthClient) =>
           layer: {
             with: {
               pointLayer: true,
-              markerLayer: true,
+              lineLayer: true,
+              polygonLayer: true,
             },
           },
         },

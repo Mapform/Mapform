@@ -9,7 +9,7 @@ export const layersToPagesRelations = relations(layersToPages, ({ one }) => ({
     references: [layers.id],
   }),
   page: one(pages, {
-    fields: [layersToPages.layerId],
+    fields: [layersToPages.pageId],
     references: [pages.id],
   }),
 }));

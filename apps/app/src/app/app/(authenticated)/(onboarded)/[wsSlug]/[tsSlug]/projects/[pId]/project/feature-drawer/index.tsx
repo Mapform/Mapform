@@ -1,46 +1,45 @@
-import { MapformDrawer } from "~/components/mapform";
+import { MapformDrawer, useMapform } from "~/components/mapform";
 import { Blocknote } from "~/components/mapform/block-note";
 import { BlocknoteControls } from "./blocknote-controls";
-import { useSetQueryString } from "@mapform/lib/hooks/use-set-query-string";
 import { useProject } from "../../project-context";
 import { toast } from "@mapform/ui/components/toaster";
 import type { InferSafeActionFnInput } from "next-safe-action";
 import { upsertCellAction } from "~/data/cells/upsert-cell";
 import { useDebouncedOptimisticAction } from "~/lib/use-debounced-optimistic-action";
-import type { GetLayerMarker } from "@mapform/backend/data/datalayer/get-layer-marker";
-import type { GetLayerPoint } from "@mapform/backend/data/datalayer/get-layer-point";
+import type { GetFeature } from "@mapform/backend/data/features/get-feature";
 
-type LayerPoint = NonNullable<GetLayerPoint["data"]>;
-type LayerMarker = NonNullable<GetLayerMarker["data"]>;
+type LayerFeature = NonNullable<GetFeature["data"]>;
 
 export function FeatureDrawer() {
-  const setQueryString = useSetQueryString();
-  const { selectedFeature } = useProject();
+  const { selectedFeature, setSelectedFeature } = useProject();
+  const { draw } = useMapform();
 
   return (
     <MapformDrawer
       onClose={() => {
-        setQueryString({
-          key: "feature",
-          value: null,
-        });
+        setSelectedFeature(undefined);
+        draw?.changeMode("simple_select");
       }}
       value="feature"
     >
       {selectedFeature ? (
-        <FeatureDrawerInner key={selectedFeature.rowId} />
+        <FeatureDrawerInner key={selectedFeature.properties.rowId} />
       ) : null}
     </MapformDrawer>
   );
 }
 
 function FeatureDrawerInner() {
-  const { selectedFeature, currentPageData, updatePageServerAction } =
-    useProject();
+  const {
+    isQueryPending,
+    selectedFeature,
+    updatePageServerAction,
+    updateFeaturesServerAction,
+  } = useProject();
   const currentPage = updatePageServerAction.optimisticState;
 
   const upsertIconCellServerAction = useDebouncedOptimisticAction<
-    LayerPoint | LayerMarker,
+    LayerFeature | undefined,
     InferSafeActionFnInput<typeof upsertCellAction>["clientInput"]
   >(upsertCellAction, {
     currentState: selectedFeature,
@@ -48,16 +47,15 @@ function FeatureDrawerInner() {
       state: unknown,
       payload: InferSafeActionFnInput<typeof upsertCellAction>["clientInput"],
     ) => {
-      const typedState = state as LayerPoint | LayerMarker | undefined;
-      if (!typedState || !typedState.icon || payload.type !== "icon")
-        return state;
+      const typedState = state as LayerFeature | undefined;
+      if (!typedState) return state;
 
       return {
         ...typedState,
-        icon: {
-          ...typedState.icon,
-          iconCell: {
-            ...typedState.icon.iconCell,
+        properties: {
+          ...typedState.properties,
+          icon: {
+            columnId: payload.columnId,
             value: payload.value,
           },
         },
@@ -72,7 +70,7 @@ function FeatureDrawerInner() {
   });
 
   const upsertStringCellServerAction = useDebouncedOptimisticAction<
-    LayerPoint | LayerMarker,
+    LayerFeature | undefined,
     InferSafeActionFnInput<typeof upsertCellAction>["clientInput"]
   >(upsertCellAction, {
     currentState: selectedFeature,
@@ -80,16 +78,20 @@ function FeatureDrawerInner() {
       state: unknown,
       payload: InferSafeActionFnInput<typeof upsertCellAction>["clientInput"],
     ) => {
-      const typedState = state as LayerPoint | LayerMarker | undefined;
-      if (!typedState || !typedState.title || payload.type !== "string")
+      const typedState = state as LayerFeature | undefined;
+      if (
+        !typedState ||
+        !typedState.properties.title ||
+        payload.type !== "string"
+      )
         return state;
 
       return {
         ...typedState,
-        title: {
-          ...typedState.title,
-          stringCell: {
-            ...typedState.title.stringCell,
+        properties: {
+          ...typedState.properties,
+          title: {
+            columnId: payload.columnId,
             value: payload.value,
           },
         },
@@ -104,7 +106,7 @@ function FeatureDrawerInner() {
   });
 
   const upsertRichtextCellServerAction = useDebouncedOptimisticAction<
-    LayerPoint | LayerMarker,
+    LayerFeature | undefined,
     InferSafeActionFnInput<typeof upsertCellAction>["clientInput"]
   >(upsertCellAction, {
     currentState: selectedFeature,
@@ -112,16 +114,20 @@ function FeatureDrawerInner() {
       state: unknown,
       payload: InferSafeActionFnInput<typeof upsertCellAction>["clientInput"],
     ) => {
-      const typedState = state as LayerPoint | LayerMarker | undefined;
-      if (!typedState || !typedState.description || payload.type !== "richtext")
+      const typedState = state as LayerFeature | undefined;
+      if (
+        !typedState ||
+        !typedState.properties.description ||
+        payload.type !== "richtext"
+      )
         return state;
 
       return {
         ...typedState,
-        description: {
-          ...typedState.description,
-          richtextCell: {
-            ...typedState.description.richtextCell,
+        properties: {
+          ...typedState.properties,
+          description: {
+            columnId: payload.columnId,
             value: payload.value,
           },
         },
@@ -144,99 +150,121 @@ function FeatureDrawerInner() {
     return null;
   }
 
-  if (!selectedFeature) {
+  if (
+    !selectedFeature ||
+    !selectedFeatureIcon ||
+    !selectedFeatureTitle ||
+    !selectedFeatureDescription
+  ) {
     return null;
   }
 
   return (
     <Blocknote
       isFeature
+      isQueryPending={isQueryPending}
       controls={
         <BlocknoteControls
           allowAddEmoji={
-            !!selectedFeatureIcon.icon?.columnId &&
-            !selectedFeatureIcon.icon.iconCell?.value
+            !!selectedFeatureIcon.properties.icon?.columnId &&
+            !selectedFeatureIcon.properties.icon.value
           }
+          isQueryPending={isQueryPending}
           onIconChange={(value) => {
-            if (!selectedFeatureIcon.icon || !currentPageData) {
+            if (
+              !selectedFeatureIcon.properties.icon ||
+              !updateFeaturesServerAction.optimisticState
+            ) {
               return;
             }
 
-            if (!selectedFeatureIcon.icon.columnId) {
+            if (!selectedFeatureIcon.properties.icon.columnId) {
               return;
             }
 
             void upsertIconCellServerAction.execute({
               type: "icon",
               value,
-              rowId: selectedFeatureIcon.rowId,
-              columnId: selectedFeatureIcon.icon.columnId,
+              rowId: selectedFeatureIcon.properties.rowId,
+              columnId: selectedFeatureIcon.properties.icon.columnId,
             });
           }}
         />
       }
       description={
-        selectedFeatureDescription.description?.columnId
-          ? selectedFeatureDescription.description.richtextCell?.value ?? null
+        selectedFeatureDescription.properties.description?.columnId
+          ? selectedFeatureDescription.properties.description.value ?? null
           : undefined
       }
       icon={
-        selectedFeatureIcon.icon?.columnId
-          ? selectedFeatureIcon.icon.iconCell?.value ?? null
+        selectedFeatureIcon.properties.icon?.columnId
+          ? selectedFeatureIcon.properties.icon.value ?? null
           : undefined
       }
-      key={`${currentPage.id}-${selectedFeatureIcon.rowId}-${selectedFeatureDescription.description?.columnId}`}
+      key={`${currentPage.id}-${selectedFeatureIcon.properties.rowId}-${selectedFeatureDescription.properties.description?.columnId}`}
       onDescriptionChange={(value) => {
-        if (selectedFeatureDescription.description === undefined) {
+        if (
+          isQueryPending ||
+          !selectedFeatureDescription.properties.description ||
+          !selectedFeatureDescription.properties.description.columnId
+        ) {
           return;
         }
 
-        if (!selectedFeatureDescription.description.columnId) {
+        if (!selectedFeatureDescription.properties.description.columnId) {
           return;
         }
 
         void upsertRichtextCellServerAction.execute({
           type: "richtext",
           value,
-          rowId: selectedFeatureDescription.rowId,
-          columnId: selectedFeatureDescription.description.columnId,
+          rowId: selectedFeatureDescription.properties.rowId,
+          columnId: selectedFeatureDescription.properties.description.columnId,
         });
       }}
       onIconChange={(value) => {
-        if (!selectedFeatureIcon.icon || !currentPageData) {
+        if (
+          isQueryPending ||
+          !selectedFeatureIcon.properties.icon ||
+          !updateFeaturesServerAction.optimisticState
+        ) {
           return;
         }
 
-        if (!selectedFeatureIcon.icon.columnId) {
+        if (!selectedFeatureIcon.properties.icon.columnId) {
           return;
         }
 
         void upsertIconCellServerAction.execute({
           type: "icon",
           value,
-          rowId: selectedFeatureIcon.rowId,
-          columnId: selectedFeatureIcon.icon.columnId,
+          rowId: selectedFeatureIcon.properties.rowId,
+          columnId: selectedFeatureIcon.properties.icon.columnId,
         });
       }}
       onTitleChange={(value) => {
-        if (!selectedFeatureTitle.title) {
+        if (
+          isQueryPending ||
+          !selectedFeatureTitle.properties.title ||
+          !selectedFeatureTitle.properties.title.columnId
+        ) {
           return;
         }
 
-        if (!selectedFeatureTitle.title.columnId) {
+        if (!selectedFeatureTitle.properties.title.columnId) {
           return;
         }
 
         void upsertStringCellServerAction.execute({
           type: "string",
           value,
-          rowId: selectedFeatureTitle.rowId,
-          columnId: selectedFeatureTitle.title.columnId,
+          rowId: selectedFeatureTitle.properties.rowId,
+          columnId: selectedFeatureTitle.properties.title.columnId,
         });
       }}
       title={
-        selectedFeatureTitle.title?.columnId
-          ? selectedFeatureTitle.title.stringCell?.value ?? null
+        selectedFeatureTitle.properties.title?.columnId
+          ? selectedFeatureTitle.properties.title.value ?? null
           : undefined
       }
     />

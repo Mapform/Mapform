@@ -10,13 +10,18 @@ import { Button } from "@mapform/ui/components/button";
 import { useAction } from "next-safe-action/hooks";
 import { deleteRowsAction } from "~/data/rows/delete-rows";
 import { useProject } from "../../../project-context";
-import { useSetQueryString } from "@mapform/lib/hooks/use-set-query-string";
 import { toast } from "@mapform/ui/components/toaster";
 
-export const FeatureSettingsPopover = () => {
+interface FeatureSettingsPopoverProps {
+  disabled: boolean;
+}
+
+export const FeatureSettingsPopover = ({
+  disabled,
+}: FeatureSettingsPopoverProps) => {
   const [isOpen, setIsOpen] = useState(false);
-  const { selectedFeature } = useProject();
-  const setQueryString = useSetQueryString();
+  const { selectedFeature, setSelectedFeature, updateFeaturesServerAction } =
+    useProject();
 
   const { execute: executeDeleteRows, isPending } = useAction(
     deleteRowsAction,
@@ -34,21 +39,36 @@ export const FeatureSettingsPopover = () => {
   const handleDelete = () => {
     if (!selectedFeature) return;
 
-    executeDeleteRows({
-      rowIds: [selectedFeature.rowId],
+    const optimisticState = updateFeaturesServerAction.optimisticState;
+
+    if (!optimisticState) return;
+
+    /**
+     * Optimistically update the feature state
+     */
+    updateFeaturesServerAction.setOptimisticState({
+      type: "FeatureCollection",
+      features: [
+        ...optimisticState.features.filter((f) => f?.id !== selectedFeature.id),
+      ],
     });
 
-    // Clear the feature from the URL
-    setQueryString({
-      key: "feature",
-      value: null,
+    executeDeleteRows({
+      rowIds: [selectedFeature.properties.rowId],
     });
+
+    setSelectedFeature(undefined);
   };
 
   return (
     <DropdownMenu onOpenChange={setIsOpen} open={isOpen}>
       <DropdownMenuTrigger asChild>
-        <Button size="icon-sm" type="button" variant="ghost">
+        <Button
+          disabled={disabled}
+          size="icon-sm"
+          type="button"
+          variant="ghost"
+        >
           <EllipsisIcon className="size-4" />
         </Button>
       </DropdownMenuTrigger>
@@ -62,7 +82,7 @@ export const FeatureSettingsPopover = () => {
           className="flex items-center gap-2"
           disabled={isPending}
         >
-          <Trash2Icon className="flex-shrink-0 size-4" />
+          <Trash2Icon className="size-4 flex-shrink-0" />
           Delete feature
         </DropdownMenuItem>
       </DropdownMenuContent>

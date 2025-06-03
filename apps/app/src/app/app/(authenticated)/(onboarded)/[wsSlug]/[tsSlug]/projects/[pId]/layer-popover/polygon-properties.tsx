@@ -17,17 +17,17 @@ import {
   PropertyPopoverContent,
 } from "~/components/property-popover";
 
-interface MarkerPropertiesProps {
+interface PolygonPropertiesProps {
   form: UseFormReturn<Omit<UpsertLayerSchema, "name" | "type" | "datasetId">>;
   datasetId: Layer["datasetId"];
   type: Layer["type"];
 }
 
-export function MarkerProperties({
+export function PolygonProperties({
   form,
   datasetId,
   type,
-}: MarkerPropertiesProps) {
+}: PolygonPropertiesProps) {
   const { availableDatasets } = useProject();
   const dataset = availableDatasets.find((ds) => ds.id === datasetId);
 
@@ -44,7 +44,7 @@ export function MarkerProperties({
     [dataset, type],
   );
 
-  const availablePointColumns = getAvailableColumns("point");
+  const availablePolygonColumns = getAvailableColumns("polygon");
   const availableStringColumns = getAvailableColumns("string");
   const availableRichtextColumns = getAvailableColumns("richtext");
   const availableIconColumns = getAvailableColumns("icon");
@@ -57,43 +57,43 @@ export function MarkerProperties({
         </h3>
       </div>
       <DataColField
-        availableColumns={availablePointColumns ?? []}
+        availableColumns={availablePolygonColumns ?? []}
         datasetId={datasetId}
         form={form}
-        label="Location"
-        name="markerProperties.pointColumnId"
-        type="point"
+        label="Polygon"
+        name="polygonProperties.polygonColumnId"
+        type="polygon"
       />
       <DataColField
         availableColumns={availableStringColumns ?? []}
+        datasetId={datasetId}
         form={form}
         label="Title"
-        name="markerProperties.titleColumnId"
+        name="titleColumnId"
         type="string"
-        datasetId={datasetId}
       />
       <DataColField
         availableColumns={availableRichtextColumns ?? []}
+        datasetId={datasetId}
         form={form}
         label="Description"
-        name="markerProperties.descriptionColumnId"
+        name="descriptionColumnId"
         type="richtext"
-        datasetId={datasetId}
       />
       <DataColField
         availableColumns={availableIconColumns ?? []}
+        datasetId={datasetId}
         form={form}
         label="Icon"
-        name="markerProperties.iconColumnId"
+        name="iconColumnId"
         type="icon"
-        datasetId={datasetId}
       />
       <div className="col-span-2 mt-1 w-full border-t pt-3">
         <h3 className="-mb-2 text-xs font-semibold leading-6 text-stone-400">
           Styles
         </h3>
       </div>
-      <ColorPicker form={form} label="Color" name="markerProperties.color" />
+      <ColorPicker form={form} label="Color" name="color" />
     </>
   );
 }
@@ -117,24 +117,24 @@ function DataColField({
 }) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
-  const { executeAsync, isPending } = useAction(createColumnAction, {
+  const { executeAsync } = useAction(createColumnAction, {
     onSuccess: ({ data, input }) => {
       if (!data?.id) return;
 
-      if (input.type === "point") {
-        form.setValue("markerProperties.pointColumnId", data.id);
+      if (input.type === "polygon") {
+        form.setValue("polygonProperties.polygonColumnId", data.id);
       }
 
       if (input.type === "string") {
-        form.setValue("markerProperties.titleColumnId", data.id);
+        form.setValue("titleColumnId", data.id);
       }
 
       if (input.type === "richtext") {
-        form.setValue("markerProperties.descriptionColumnId", data.id);
+        form.setValue("descriptionColumnId", data.id);
       }
 
       if (input.type === "icon") {
-        form.setValue("markerProperties.iconColumnId", data.id);
+        form.setValue("iconColumnId", data.id);
       }
 
       void form.trigger();
@@ -152,67 +152,54 @@ function DataColField({
     <FormField
       control={form.control}
       name={name}
-      render={({ field, fieldState }) => {
-        const currentColumn = availableColumns.find(
-          (col) => col.id === field.value,
-        );
-
-        const getButtonText = () => {
-          if (isPending) return "Creating...";
-          if (currentColumn) return currentColumn.name;
-          if (field.value) return "⚠️ Not found";
-          return "Select...";
-        };
-
-        return (
-          <PropertyPopover modal onOpenChange={setOpen} open={open}>
-            <FormLabel
-              htmlFor={name}
-              className={fieldState.error ? "text-destructive" : ""}
-            >
-              {label}
-            </FormLabel>
-            <div className="flex w-full justify-end">
-              <PropertyPopoverTrigger asChild>
-                <Button
-                  className={`ring-offset-background placeholder:text-muted-foreground focus:ring-ring flex h-7 w-full items-center justify-between whitespace-nowrap rounded-md border-0 bg-stone-100 px-2 py-0.5 text-sm font-normal shadow-sm focus:outline-none focus:ring-1 disabled:cursor-not-allowed disabled:opacity-50 ${fieldState.error ? "!ring-destructive !ring-1" : ""}`}
-                  id={name}
-                  size="icon-xs"
-                  variant="ghost"
-                  disabled={isPending}
-                >
-                  <span className="flex-1 truncate text-left">
-                    {getButtonText()}
-                  </span>
-                  <ChevronsUpDownIcon className="size-4 flex-shrink-0 opacity-50" />
-                </Button>
-              </PropertyPopoverTrigger>
-              <PropertyPopoverContent
-                align="start"
-                side="right"
-                value={field.value as string | null}
-                query={query}
-                setQuery={setQuery}
-                availableItems={availableColumns}
-                onSelect={(value) => {
-                  form.setValue(name, value as string | null);
-                  void form.trigger(name);
-                  setOpen(false);
-                }}
-                onCreate={async (name) => {
-                  await executeAsync({
-                    name,
-                    datasetId,
-                    type,
-                  });
-                  setQuery("");
-                  setOpen(false);
-                }}
-              />
-            </div>
-          </PropertyPopover>
-        );
-      }}
+      render={({ field, fieldState }) => (
+        <PropertyPopover modal onOpenChange={setOpen} open={open}>
+          <FormLabel
+            htmlFor={name}
+            className={fieldState.error ? "text-destructive" : ""}
+          >
+            {label}
+          </FormLabel>
+          <div className="flex w-full flex-shrink-0 justify-end">
+            <PropertyPopoverTrigger asChild>
+              <Button
+                className={`ring-offset-background placeholder:text-muted-foreground focus:ring-ring flex h-7 w-full items-center justify-between whitespace-nowrap rounded-md border-0 bg-stone-100 px-2 py-0.5 text-sm font-normal shadow-sm focus:outline-none focus:ring-1 disabled:cursor-not-allowed disabled:opacity-50 ${fieldState.error ? "!ring-destructive !ring-1" : ""}`}
+                id={name}
+                size="icon-xs"
+                variant="ghost"
+              >
+                <span className="flex-1 truncate text-left">
+                  {availableColumns.find((col) => col.id === field.value)
+                    ?.name ?? "Select..."}
+                </span>
+                <ChevronsUpDownIcon className="size-4 flex-shrink-0 opacity-50" />
+              </Button>
+            </PropertyPopoverTrigger>
+            <PropertyPopoverContent
+              align="start"
+              side="right"
+              value={field.value as string | null}
+              query={query}
+              setQuery={setQuery}
+              availableItems={availableColumns}
+              onSelect={(value) => {
+                form.setValue(name, value as string | null);
+                void form.trigger();
+                setOpen(false);
+              }}
+              onCreate={(name) => {
+                void executeAsync({
+                  name,
+                  datasetId,
+                  type,
+                });
+                setQuery("");
+                setOpen(false);
+              }}
+            />
+          </div>
+        </PropertyPopover>
+      )}
     />
   );
 }

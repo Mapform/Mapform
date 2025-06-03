@@ -54,12 +54,12 @@ const fetchPageData = cache(async (id?: string) => {
     return undefined;
   }
 
-  const pageDataResponse = await authClient.getPageData({
+  const featuresResponse = await authClient.getFeatures({
     pageId: id,
   });
-  const pageData = pageDataResponse?.data;
+  const features = featuresResponse?.data;
 
-  return pageData;
+  return features;
 });
 
 const fetchSelectedFeature = cache(async (param?: string) => {
@@ -67,22 +67,16 @@ const fetchSelectedFeature = cache(async (param?: string) => {
     return undefined;
   }
 
-  const [type, rowId, subLayerId] = param.split("_");
+  const [rowId, layerId] = param.split("_");
 
-  if (!type || !rowId || !subLayerId) {
+  if (!rowId || !layerId) {
     return undefined;
   }
 
-  const featureResponse =
-    type === "point"
-      ? await authClient.getLayerPoint({
-          rowId,
-          pointLayerId: subLayerId,
-        })
-      : await authClient.getLayerMarker({
-          rowId,
-          markerLayerId: subLayerId,
-        });
+  const featureResponse = await authClient.getFeature({
+    rowId,
+    layerId,
+  });
 
   const feature = featureResponse?.data;
 
@@ -104,7 +98,7 @@ export default async function ProjectPage(props: {
     projectWithPages,
     pageWithLayers,
     availableDatasets,
-    pageData,
+    features,
     selectedFeature,
   ] = await Promise.all([
     fetchProjectWithPages(pId),
@@ -135,7 +129,7 @@ export default async function ProjectPage(props: {
       <Mapform>
         <ProjectProvider
           availableDatasets={availableDatasets ?? []}
-          pageData={pageData}
+          features={features}
           pageWithLayers={pageWithLayers}
           projectWithPages={projectWithPages}
           selectedFeature={selectedFeature}

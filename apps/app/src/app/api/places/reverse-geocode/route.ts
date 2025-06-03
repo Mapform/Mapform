@@ -25,7 +25,6 @@ export async function GET(request: Request) {
     );
 
     if (!response.ok) {
-      console.log(789, response);
       throw new Error(`Response status: ${response.status}`);
     }
 
