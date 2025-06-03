@@ -281,6 +281,13 @@
       "when": 1748923194635,
       "tag": "0039_polite_jazinda",
       "breakpoints": true
+    },
+    {
+      "idx": 40,
+      "version": "7",
+      "when": 1748923389518,
+      "tag": "0040_cool_rhodey",
+      "breakpoints": true
     }
   ]
 }

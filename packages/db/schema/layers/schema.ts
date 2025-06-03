@@ -2,12 +2,7 @@ import { timestamp, pgTable, uuid, text, pgEnum } from "drizzle-orm/pg-core";
 import { datasets } from "../datasets/schema";
 import { columns } from "../columns/schema";
 
-export const layerTypeEnum = pgEnum("layer_type", [
-  "point",
-  "marker",
-  "line",
-  "polygon",
-]);
+export const layerTypeEnum = pgEnum("layer_type", ["point", "line", "polygon"]);
 export const colorEnum = pgEnum("color", ["black", "gray", ""]);
 
 /**
@@ -57,17 +52,6 @@ export const pointLayers = pgTable("point_layer", {
   pointColumnId: uuid("point_column_id").references(() => columns.id, {
     onDelete: "set null",
   }),
-  titleColumnId: uuid("title_column_id").references(() => columns.id, {
-    onDelete: "set null",
-  }),
-  descriptionColumnId: uuid("description_column_id").references(
-    () => columns.id,
-    { onDelete: "set null" },
-  ),
-  iconColumnId: uuid("icon_column_id").references(() => columns.id, {
-    onDelete: "set null",
-  }),
-  color: text("color"),
 
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()
