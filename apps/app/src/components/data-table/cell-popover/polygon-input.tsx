@@ -36,10 +36,6 @@ function PolygonInput({
 
     const draw = new MapboxDraw({
       displayControlsDefault: false,
-      controls: {
-        polygon: true,
-        trash: true,
-      },
     });
 
     map.addControl(draw);
@@ -71,29 +67,29 @@ function PolygonInput({
       draw.add(polygon);
     }
 
-    map.on("draw.create", () => {
-      const features = draw.getAll();
-      const polygon = features.features[0];
-      if (polygon?.geometry.type === "Polygon") {
-        const coords = polygon.geometry.coordinates[0];
-        setCoordinates(coords);
-        form.setValue("value", {
-          coordinates,
-        });
-      }
-    });
+    // map.on("draw.create", () => {
+    //   const features = draw.getAll();
+    //   const polygon = features.features[0];
+    //   if (polygon?.geometry.type === "Polygon") {
+    //     const coords = polygon.geometry.coordinates[0];
+    //     setCoordinates(coords);
+    //     form.setValue("value", {
+    //       coordinates,
+    //     });
+    //   }
+    // });
 
-    map.on("draw.update", () => {
-      const features = draw.getAll();
-      const polygon = features.features[0];
-      if (polygon?.geometry.type === "Polygon") {
-        const coords = polygon.geometry.coordinates[0] as [number, number][];
-        setCoordinates(coords);
-        form.setValue("value", {
-          coordinates,
-        });
-      }
-    });
+    // map.on("draw.update", () => {
+    //   const features = draw.getAll();
+    //   const polygon = features.features[0];
+    //   if (polygon?.geometry.type === "Polygon") {
+    //     const coords = polygon.geometry.coordinates[0] as [number, number][];
+    //     setCoordinates(coords);
+    //     form.setValue("value", {
+    //       coordinates,
+    //     });
+    //   }
+    // });
 
     map.on("draw.delete", () => {
       setCoordinates([]);

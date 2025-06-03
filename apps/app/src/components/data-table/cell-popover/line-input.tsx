@@ -71,38 +71,38 @@ function LineInput({
       draw.add(line);
     }
 
-    map.on("draw.create", () => {
-      const features = draw.getAll();
-      const line = features.features[0];
-      if (line?.geometry.type === "LineString") {
-        const coords = (line.geometry.coordinates as [number, number][]).map(
-          ([x, y]) => ({ x, y }),
-        );
-        setCoordinates(coords);
-        form.setValue("value", {
-          coordinates: coords.map(({ x, y }) => [x, y] as [number, number]),
-        });
-      }
-    });
+    // map.on("draw.create", () => {
+    //   const features = draw.getAll();
+    //   const line = features.features[0];
+    //   if (line?.geometry.type === "LineString") {
+    //     const coords = (line.geometry.coordinates as [number, number][]).map(
+    //       ([x, y]) => ({ x, y }),
+    //     );
+    //     setCoordinates(coords);
+    //     form.setValue("value", {
+    //       coordinates: coords.map(({ x, y }) => [x, y] as [number, number]),
+    //     });
+    //   }
+    // });
 
-    map.on("draw.update", () => {
-      const features = draw.getAll();
-      const line = features.features[0];
-      if (line?.geometry.type === "LineString") {
-        const coords = (line.geometry.coordinates as [number, number][]).map(
-          ([x, y]) => ({ x, y }),
-        );
-        setCoordinates(coords);
-        form.setValue("value", {
-          coordinates: coords.map(({ x, y }) => [x, y] as [number, number]),
-        });
-      }
-    });
+    // map.on("draw.update", () => {
+    //   const features = draw.getAll();
+    //   const line = features.features[0];
+    //   if (line?.geometry.type === "LineString") {
+    //     const coords = (line.geometry.coordinates as [number, number][]).map(
+    //       ([x, y]) => ({ x, y }),
+    //     );
+    //     setCoordinates(coords);
+    //     form.setValue("value", {
+    //       coordinates: coords.map(({ x, y }) => [x, y] as [number, number]),
+    //     });
+    //   }
+    // });
 
-    map.on("draw.delete", () => {
-      setCoordinates([]);
-      form.setValue("value", { coordinates: [] });
-    });
+    // map.on("draw.delete", () => {
+    //   setCoordinates([]);
+    //   form.setValue("value", { coordinates: [] });
+    // });
 
     return () => {
       map.remove();
