@@ -1,7 +1,6 @@
 import type { Layer } from "@mapform/db/schema";
 import {
   CircleDotIcon,
-  MapPinIcon,
   PentagonIcon,
   SplineIcon,
   type LucideIcon,
@@ -17,10 +16,6 @@ export const LAYERS: Record<
   point: {
     icon: CircleDotIcon,
     label: "Point",
-  },
-  marker: {
-    icon: MapPinIcon,
-    label: "Marker",
   },
   line: {
     icon: SplineIcon,
