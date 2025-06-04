@@ -112,6 +112,8 @@ export function EditBar() {
           isActive={isSearchOpen}
           onClick={() => {
             if (!isSearchOpen) {
+              draw?.trash();
+              setDrawFeature(null);
               setActiveMode("search");
               setSelectedFeature(undefined);
             }
@@ -134,6 +136,8 @@ export function EditBar() {
             <TooltipTrigger asChild>
               <Button
                 onClick={() => {
+                  draw?.trash();
+                  setDrawFeature(null);
                   draw?.changeMode("draw_point");
                   setActiveMode("point");
                   setSelectedFeature(undefined);
@@ -154,6 +158,8 @@ export function EditBar() {
             <TooltipTrigger asChild>
               <Button
                 onClick={() => {
+                  draw?.trash();
+                  setDrawFeature(null);
                   draw?.changeMode("draw_line_string");
                   setActiveMode("line");
                   setSelectedFeature(undefined);
@@ -165,9 +171,7 @@ export function EditBar() {
               >
                 {(() => {
                   const LineTypeIcon = lineTypes[selectedLineType].icon;
-                  return LineTypeIcon ? (
-                    <LineTypeIcon className="size-5" />
-                  ) : null;
+                  return <LineTypeIcon className="size-5" />;
                 })()}
               </Button>
             </TooltipTrigger>
@@ -226,6 +230,8 @@ export function EditBar() {
             <TooltipTrigger asChild>
               <Button
                 onClick={() => {
+                  draw?.trash();
+                  setDrawFeature(null);
                   draw?.changeMode("draw_polygon");
                   setActiveMode("shape");
                   setSelectedFeature(undefined);
