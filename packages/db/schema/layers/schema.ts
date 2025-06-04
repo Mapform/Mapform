@@ -57,17 +57,6 @@ export const pointLayers = pgTable("point_layer", {
   pointColumnId: uuid("point_column_id").references(() => columns.id, {
     onDelete: "set null",
   }),
-  titleColumnId: uuid("title_column_id").references(() => columns.id, {
-    onDelete: "set null",
-  }),
-  descriptionColumnId: uuid("description_column_id").references(
-    () => columns.id,
-    { onDelete: "set null" },
-  ),
-  iconColumnId: uuid("icon_column_id").references(() => columns.id, {
-    onDelete: "set null",
-  }),
-  color: text("color"),
 
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()
