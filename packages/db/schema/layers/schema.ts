@@ -4,6 +4,12 @@ import { columns } from "../columns/schema";
 
 export const layerTypeEnum = pgEnum("layer_type", ["point", "line", "polygon"]);
 
+export const directionTypeEnum = pgEnum("direction_type", [
+  "walking",
+  "cycling",
+  "driving",
+]);
+
 /**
  * PARENT LAYER
  */
@@ -39,9 +45,6 @@ export const layers = pgTable("layer", {
     .notNull(),
 });
 
-/**
- * POINT LAYER
- */
 export const pointLayers = pgTable("point_layer", {
   id: uuid("id").primaryKey().defaultRandom(),
   layerId: uuid("layer_id")
@@ -70,11 +73,25 @@ export const lineLayers = pgTable("line_layer", {
   lineColumnId: uuid("line_column_id").references(() => columns.id, {
     onDelete: "set null",
   }),
+  directionType: directionTypeEnum("direction_type")
+    .default("walking")
+    .notNull(),
 
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()
     .notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }),
+});
+
+export const directionLayers = pgTable("direction_layer", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  layerId: uuid("layer_id")
+    .unique()
+    .notNull()
+    .references(() => layers.id, { onDelete: "cascade" }),
+  lineColumnId: uuid("line_column_id").references(() => columns.id, {
+    onDelete: "set null",
+  }),
 });
 
 export const polygonLayers = pgTable("polygon_layer", {
