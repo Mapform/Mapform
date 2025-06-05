@@ -96,12 +96,6 @@ function PointInput({
 
   return (
     <div className="relative size-[500px]">
-      <div className="absolute left-2 right-2 top-2 z-10 rounded bg-white/70 px-4 py-2 font-mono text-xs backdrop-blur-md">
-        Lng:{" "}
-        {marker.current?.getLngLat().lng.toFixed(4) || center[0].toFixed(4)} |
-        Lat:{" "}
-        {marker.current?.getLngLat().lat.toFixed(4) || center[1].toFixed(4)}
-      </div>
       <div className="h-full w-full" ref={mapContainerRef} />
       <div className="pointer-events-auto absolute bottom-8 left-1/2 z-30 flex -translate-x-1/2 transform items-center gap-1 rounded-xl border bg-white p-1.5 shadow-lg">
         <Button onClick={handleReset} variant="ghost">
