@@ -104,7 +104,7 @@ export function EditBar() {
   return (
     <div
       className={cn(
-        "pointer-events-auto absolute bottom-8 left-1/2 z-30 flex -translate-x-1/2 transform items-center gap-2 divide-x rounded-xl border bg-white p-1.5 shadow-lg",
+        "pointer-events-auto absolute bottom-8 left-1/2 z-30 flex -translate-x-1/2 transform items-center divide-x rounded-xl border bg-white p-1.5 shadow-lg",
       )}
     >
       <div className="flex gap-1 pr-1.5">
