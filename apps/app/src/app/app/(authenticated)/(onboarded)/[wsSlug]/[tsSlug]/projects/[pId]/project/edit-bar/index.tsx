@@ -15,9 +15,8 @@ import {
   BikeIcon,
   CarIcon,
   CheckIcon,
-  Command,
   PentagonIcon,
-  ChevronDown,
+  ChevronDownIcon,
   FootprintsIcon,
   SplineIcon,
   MapPinPlusIcon,
@@ -26,6 +25,7 @@ import type { Position } from "geojson";
 import { FeaturePopover } from "./popover";
 import mapboxgl from "mapbox-gl";
 import {
+  Command,
   CommandList,
   CommandEmpty,
   CommandGroup,
@@ -178,14 +178,14 @@ export function EditBar() {
             <TooltipContent>Line tool</TooltipContent>
           </Tooltip>
           {/* TODO: Add suport for directional lines */}
-          {/* <Popover
+          <Popover
             modal
             // onOpenChange={setOpen}
             // open={open}
           >
             <PopoverTrigger asChild>
               <button className="hover:bg-accent hover:text-accent-foreground ml-[1px] h-full rounded-md p-0.5">
-                <ChevronDown size={10} strokeWidth={3} />
+                <ChevronDownIcon size={10} strokeWidth={3} />
               </button>
             </PopoverTrigger>
             <PopoverContent align="center" className="w-[200px] p-0" side="top">
@@ -223,7 +223,7 @@ export function EditBar() {
                 </CommandList>
               </Command>
             </PopoverContent>
-          </Popover> */}
+          </Popover>
 
           {/* POLYGON TOOL */}
           <Tooltip>
