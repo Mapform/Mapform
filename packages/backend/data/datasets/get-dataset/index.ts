@@ -110,27 +110,31 @@ export const getDataset = (authClient: UserAuthClient) =>
           cells: row.cells.map((cell) => {
             if (cell.lineCell?.coordinates) {
               const geometry = wellknown.parse(cell.lineCell.coordinates);
-              if (geometry && geometry.type === "LineString") {
-                return {
-                  ...cell,
-                  lineCell: {
-                    ...cell.lineCell,
-                    coordinates: geometry.coordinates,
-                  },
-                };
-              }
+
+              return {
+                ...cell,
+                lineCell: {
+                  ...cell.lineCell,
+                  coordinates:
+                    geometry && geometry.type === "LineString"
+                      ? geometry.coordinates
+                      : [],
+                },
+              };
             }
             if (cell.polygonCell?.coordinates) {
               const geometry = wellknown.parse(cell.polygonCell.coordinates);
-              if (geometry && geometry.type === "Polygon") {
-                return {
-                  ...cell,
-                  polygonCell: {
-                    ...cell.polygonCell,
-                    coordinates: geometry.coordinates,
-                  },
-                };
-              }
+
+              return {
+                ...cell,
+                polygonCell: {
+                  ...cell.polygonCell,
+                  coordinates:
+                    geometry && geometry.type === "Polygon"
+                      ? geometry.coordinates
+                      : [],
+                },
+              };
             }
             return cell;
           }),

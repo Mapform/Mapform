@@ -1,10 +1,11 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import mapboxgl from "mapbox-gl";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import type { UseFormReturn } from "@mapform/ui/components/form";
 import type { UpsertCellSchema } from "@mapform/backend/data/cells/upsert-cell/schema";
 import bbox from "@turf/bbox";
 import { Button } from "@mapform/ui/components/button";
+import { Position } from "geojson";
 
 const accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN!;
 
@@ -19,11 +20,17 @@ function LineInput({
   form: UseFormReturn<Extract<UpsertCellSchema, { type: "line" }>>;
 }) {
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
-  const coordinates = form.getValues("value.coordinates");
+  const [coordinates] = useState<Position[] | undefined>(
+    form.getValues("value.coordinates"),
+  );
   const draw = useRef<MapboxDraw | null>(null);
   const map = useRef<mapboxgl.Map | null>(null);
 
-  const drawLine = (coordinates: [number, number][]) => {
+  const drawLine = (coordinates: Position[] | undefined) => {
+    if (!coordinates || coordinates.length === 0) {
+      return;
+    }
+
     const line: LineFeature = {
       type: "Feature",
       properties: {},
@@ -44,10 +51,11 @@ function LineInput({
     );
 
     const featureIds = draw.current?.add(line);
+    const featureId = featureIds?.[0];
 
-    if (featureIds) {
-      draw.current?.changeMode("simple_select", {
-        featureIds,
+    if (featureId) {
+      draw.current?.changeMode("direct_select", {
+        featureId,
       });
     }
   };
@@ -111,12 +119,22 @@ function LineInput({
       },
     );
 
-    // map.on("draw.delete", () => {
-    //   setCoordinates([]);
-    //   form.setValue("value", { coordinates: [] });
-    // });
+    map.current.on("draw.delete", () => {
+      form.setValue("value", { coordinates: [] });
+    });
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // We manually handle calling delete due to issue in MapboxDraw: https://github.com/mapbox/mapbox-gl-draw/issues/989
+      if (e.key === "Delete" || e.key === "Backspace") {
+        draw.current?.trash();
+      }
+    };
+
+    const container = mapContainerRef.current;
+    container?.addEventListener("keydown", handleKeyDown);
 
     return () => {
+      container?.removeEventListener("keydown", handleKeyDown);
       map.current?.remove();
     };
   }, [form]);
