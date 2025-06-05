@@ -5,7 +5,8 @@ import type { UseFormReturn } from "@mapform/ui/components/form";
 import type { UpsertCellSchema } from "@mapform/backend/data/cells/upsert-cell/schema";
 import bbox from "@turf/bbox";
 import { Button } from "@mapform/ui/components/button";
-import { Position } from "geojson";
+import type { Position } from "geojson";
+import { Separator } from "@mapform/ui/components/separator";
 
 const accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN!;
 
@@ -154,16 +155,21 @@ function LineInput({
     drawLine(coordinates);
 
     form.setValue("value", {
-      coordinates,
+      coordinates: coordinates ? (coordinates as [number, number][]) : [],
     });
   };
 
   return (
     <div className="relative size-[500px]">
       <div className="h-full w-full" ref={mapContainerRef} />
-      <div className="pointer-events-auto absolute bottom-8 left-1/2 z-30 flex -translate-x-1/2 transform items-center divide-x rounded-xl border bg-white p-1.5 shadow-lg">
-        <Button onClick={handleNew}>New</Button>
-        <Button onClick={handleReset}>Reset</Button>
+      <div className="pointer-events-auto absolute bottom-8 left-1/2 z-30 flex -translate-x-1/2 transform items-center gap-1 rounded-xl border bg-white p-1.5 shadow-lg">
+        <Button onClick={handleNew} variant="ghost">
+          New
+        </Button>
+        <Separator orientation="vertical" className="h-4" />
+        <Button onClick={handleReset} variant="ghost">
+          Reset
+        </Button>
       </div>
     </div>
   );
