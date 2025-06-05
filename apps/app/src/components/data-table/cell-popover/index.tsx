@@ -266,7 +266,9 @@ export function CellPopover({
       <Form {...form}>
         <form
           onKeyDown={(e) => {
-            if (type !== "richtext" && e.key === "Enter") {
+            const ignoreEnterTypes = ["richtext", "line", "polygon"];
+
+            if (!ignoreEnterTypes.includes(type) && e.key === "Enter") {
               onSubmit(form.getValues());
               cellEl.current?.focus();
             }
