@@ -104,7 +104,8 @@ export function CellPopover({
       if (!value || !Array.isArray(value.coordinates)) {
         return null;
       }
-      return `Polygon: ${value.coordinates[0]?.length ?? 0} vertices`;
+      const polygonCoordinates = value.coordinates[0];
+      return `Polygon: ${polygonCoordinates ? polygonCoordinates.length - 1 : 0} vertices`;
     }
 
     if (parsedType === "richtext") {
