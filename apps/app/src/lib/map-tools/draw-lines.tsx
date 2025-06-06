@@ -10,6 +10,10 @@ export function useDrawLines({
   sourceId = "lines",
   layerId = "lines",
   connectStartAndEnd = false,
+  paint = {
+    "line-color": "#3b82f6",
+    "line-width": 4,
+  },
 }: {
   map: mapboxgl.Map | null;
   coordinates: Position[][]; // Array of LineString coordinates
@@ -17,6 +21,7 @@ export function useDrawLines({
   sourceId?: string;
   layerId?: string;
   connectStartAndEnd?: boolean;
+  paint?: mapboxgl.LinePaint;
 }) {
   // Used for creating lines on the map
   const linesGeoJson = useMemo(() => {
@@ -99,14 +104,11 @@ export function useDrawLines({
           layout: {
             visibility: isVisible ? "visible" : "none",
           },
-          paint: {
-            "line-color": "#3b82f6",
-            "line-width": 4,
-          },
+          paint,
         });
       }
     } catch (e) {
       console.error(e);
     }
-  }, [map, linesGeoJson, isVisible, sourceId, layerId]);
+  }, [map, linesGeoJson, isVisible, sourceId, layerId, paint]);
 }

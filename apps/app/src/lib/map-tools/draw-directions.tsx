@@ -127,6 +127,11 @@ export function useDrawDirections({
     isVisible: true,
     sourceId: "route-source",
     layerId: "route-layer",
+    paint: {
+      "line-color": "#f59e0b",
+      "line-dasharray": [2, 1],
+      "line-width": 4,
+    },
   });
 
   const firstPoint = coordinates[0]?.[0] ?? routeVertices[0];

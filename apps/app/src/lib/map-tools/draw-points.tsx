@@ -8,12 +8,19 @@ export function useDrawPoints({
   isVisible = true,
   sourceId = "points",
   layerId = "points",
+  paint = {
+    "circle-radius": 6,
+    "circle-color": "#f59e0b",
+    "circle-stroke-color": "#ffffff",
+    "circle-stroke-width": 2,
+  },
 }: {
   map: mapboxgl.Map | null;
   points: Position[];
   isVisible?: boolean;
   sourceId?: string;
   layerId?: string;
+  paint?: mapboxgl.CirclePaint;
 }) {
   // Used for creating points on the map
   const pointsGeoJson = useMemo(
@@ -68,26 +75,11 @@ export function useDrawPoints({
           layout: {
             visibility: isVisible ? "visible" : "none",
           },
-          paint: {
-            "circle-radius": 5,
-            "circle-color": [
-              "case",
-              ["==", ["get", "isLast"], true],
-              "#3b82f6",
-              "#ffffff",
-            ],
-            "circle-stroke-color": [
-              "case",
-              ["==", ["get", "isLast"], true],
-              "#ffffff",
-              "#3b82f6",
-            ],
-            "circle-stroke-width": 2,
-          },
+          paint,
         });
       }
     } catch (e) {
       console.error(e);
     }
-  }, [map, pointsGeoJson, isVisible, sourceId, layerId]);
+  }, [map, pointsGeoJson, isVisible, sourceId, layerId, paint]);
 }
