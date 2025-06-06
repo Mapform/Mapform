@@ -1,5 +1,5 @@
 import { cn } from "@mapform/lib/classnames";
-import { useMapform, useMapformContent } from "~/components/mapform";
+import { useMapform } from "~/components/mapform";
 import { useMemo, useEffect, useState } from "react";
 import { HandTool } from "./hand-tool";
 import { MapOptions } from "./map-options";
@@ -38,12 +38,16 @@ import {
 } from "@mapform/ui/components/popover";
 import { useProject } from "../../project-context";
 import { useSetQueryString } from "@mapform/lib/hooks/use-set-query-string";
+import { useDrawDirections } from "~/lib/map-tools/draw-directions";
 
 export const lineTypes: Record<
-  "line" | "walk" | "bicycle" | "drive",
-  { icon: LucideIcon; label: string }
+  "default" | "walk" | "bicycle" | "drive",
+  {
+    icon: LucideIcon;
+    label: string;
+  }
 > = {
-  line: {
+  default: {
     icon: SplineIcon,
     label: "Line",
   },
@@ -63,12 +67,16 @@ export const lineTypes: Record<
 
 export function EditBar() {
   const { map, draw, drawFeature, setDrawFeature } = useMapform();
-  const { drawerValues, activeMode, setActiveMode, setSelectedFeature } =
-    useProject();
+  const {
+    drawerValues,
+    activeMode,
+    setActiveMode,
+    setSelectedFeature,
+    activeLineMode,
+    setActiveLineMode,
+  } = useProject();
   const setQueryString = useSetQueryString();
   const isSearchOpen = drawerValues.includes("location-search");
-  const [selectedLineType, setSelectedLineType] =
-    useState<keyof typeof lineTypes>("line");
   const [lineTypePopoverOpen, setLineTypePopoverOpen] = useState(false);
 
   // Change the active mode to hand when the draw mode changes
@@ -101,6 +109,14 @@ export function EditBar() {
 
     return null;
   }, [drawFeature]);
+
+  useDrawDirections({
+    features: {
+      type: "FeatureCollection",
+      features: [],
+    },
+    drawMode: activeLineMode === "default" ? null : activeLineMode,
+  });
 
   return (
     <div
@@ -171,7 +187,7 @@ export function EditBar() {
                 }
               >
                 {(() => {
-                  const LineTypeIcon = lineTypes[selectedLineType].icon;
+                  const LineTypeIcon = lineTypes[activeLineMode].icon;
                   return <LineTypeIcon className="size-5" />;
                 })()}
               </Button>
@@ -201,7 +217,7 @@ export function EditBar() {
                           value={label}
                           onSelect={() => {
                             setActiveMode("line");
-                            setSelectedLineType(key as keyof typeof lineTypes);
+                            setActiveLineMode(key as keyof typeof lineTypes);
                             setLineTypePopoverOpen(false);
                           }}
                           className="flex items-center gap-2"
@@ -213,7 +229,7 @@ export function EditBar() {
                           <CheckIcon
                             className={cn(
                               "ml-auto size-4",
-                              selectedLineType === key
+                              activeLineMode === key
                                 ? "opacity-100"
                                 : "opacity-0",
                             )}

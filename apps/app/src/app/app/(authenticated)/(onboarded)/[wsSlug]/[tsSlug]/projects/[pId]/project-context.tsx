@@ -59,6 +59,8 @@ export interface ProjectContextProps {
   // Edit bar state
   activeMode: "hand" | "search" | "shape" | "line" | "point";
   setActiveMode: (mode: "hand" | "search" | "shape" | "line" | "point") => void;
+  activeLineMode: "default" | "drive" | "bicycle" | "walk";
+  setActiveLineMode: (mode: "default" | "drive" | "bicycle" | "walk") => void;
 
   updateProjectOptimistic: (
     action: NonNullable<GetProjectWithPages["data"]>,
@@ -122,6 +124,9 @@ export function ProjectProvider({
   const [activeMode, setActiveMode] = useState<
     "hand" | "search" | "shape" | "line" | "point"
   >("hand");
+  const [activeLineMode, setActiveLineMode] = useState<
+    "default" | "drive" | "bicycle" | "walk"
+  >("default");
 
   // Reset isDrawerStackOpen when the search or feature is opened
   useEffect(() => {
@@ -367,6 +372,8 @@ export function ProjectProvider({
         // Edit bar state
         activeMode,
         setActiveMode,
+        activeLineMode,
+        setActiveLineMode,
         // Optimistic state
         currentProject: optimisticProject,
         // For optimistic state updates
