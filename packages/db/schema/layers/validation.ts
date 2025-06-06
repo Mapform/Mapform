@@ -1,6 +1,12 @@
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import { z } from "zod";
-import { layers, lineLayers, pointLayers, polygonLayers } from "./schema";
+import {
+  directionLayers,
+  layers,
+  lineLayers,
+  pointLayers,
+  polygonLayers,
+} from "./schema";
 
 /**
  * LAYERS
@@ -35,6 +41,15 @@ export const selectLineLayerSchema = createSelectSchema(lineLayers);
 
 export type InsertLineLayer = z.infer<typeof insertLineLayerSchema>;
 export type LineLayer = typeof lineLayers.$inferSelect;
+
+/**
+ * DIRECTION LAYERS
+ */
+export const insertDirectionLayerSchema = createInsertSchema(directionLayers);
+export const selectDirectionLayerSchema = createSelectSchema(directionLayers);
+
+export type InsertDirectionLayer = z.infer<typeof insertDirectionLayerSchema>;
+export type DirectionLayer = typeof directionLayers.$inferSelect;
 
 /**
  * POLYGON LAYERS

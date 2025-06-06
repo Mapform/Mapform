@@ -2,7 +2,13 @@ import { relations } from "drizzle-orm";
 import { datasets } from "../datasets/schema";
 import { layersToPages } from "../layers-to-pages/schema";
 import { columns } from "../columns/schema";
-import { layers, pointLayers, lineLayers, polygonLayers } from "./schema";
+import {
+  layers,
+  pointLayers,
+  lineLayers,
+  polygonLayers,
+  directionLayers,
+} from "./schema";
 
 /**
  * PARENT LAYER
@@ -46,6 +52,22 @@ export const lineLayersRelations = relations(lineLayers, ({ one }) => ({
   }),
 }));
 
+/**
+ * DIRECTION LAYER
+ */
+export const directionLayersRelations = relations(
+  directionLayers,
+  ({ one }) => ({
+    layer: one(layers, {
+      fields: [directionLayers.layerId],
+      references: [layers.id],
+    }),
+    directionColumn: one(columns, {
+      fields: [directionLayers.lineColumnId],
+      references: [columns.id],
+    }),
+  }),
+);
 /**
  * POLYGON LAYER
  */

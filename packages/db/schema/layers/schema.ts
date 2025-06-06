@@ -73,9 +73,6 @@ export const lineLayers = pgTable("line_layer", {
   lineColumnId: uuid("line_column_id").references(() => columns.id, {
     onDelete: "set null",
   }),
-  directionType: directionTypeEnum("direction_type")
-    .default("walking")
-    .notNull(),
 
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()
@@ -92,6 +89,14 @@ export const directionLayers = pgTable("direction_layer", {
   lineColumnId: uuid("line_column_id").references(() => columns.id, {
     onDelete: "set null",
   }),
+  directionType: directionTypeEnum("direction_type")
+    .default("walking")
+    .notNull(),
+
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }),
 });
 
 export const polygonLayers = pgTable("polygon_layer", {
