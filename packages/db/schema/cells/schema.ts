@@ -11,10 +11,18 @@ import {
   index,
   varchar,
   customType,
+  pgEnum,
 } from "drizzle-orm/pg-core";
 import type { DocumentContent } from "@mapform/blocknote";
 import { rows } from "../rows/schema";
 import { columns } from "../columns/schema";
+
+export const lineCellTypeEnum = pgEnum("line_cell_type", [
+  "line",
+  "directions_walking",
+  "directions_cycling",
+  "directions_driving",
+]);
 
 /**
  * PARENT CELL
@@ -126,6 +134,7 @@ export const lineCells = pgTable(
   {
     id: uuid("id").primaryKey().defaultRandom(),
     value: lineGeometry("value"),
+    type: lineCellTypeEnum("type").notNull().default("line"),
 
     cellId: uuid("cell_id")
       .notNull()

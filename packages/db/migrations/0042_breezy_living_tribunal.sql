@@ -1,0 +1,2 @@
+CREATE TYPE "public"."line_cell_type" AS ENUM('line', 'directions_walking', 'directions_cycling', 'directions_driving');--> statement-breakpoint
+ALTER TABLE "line_cell" ADD COLUMN "type" "line_cell_type" DEFAULT 'line' NOT NULL;
