@@ -2,10 +2,10 @@ import { useDebounce } from "@mapform/lib/hooks/use-debounce";
 import type { GeoapifyRoute } from "@mapform/map-utils/types";
 import { useQuery } from "@tanstack/react-query";
 import type { FeatureCollection, Position } from "geojson";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useMapform } from "~/components/mapform";
-import { useDrawFeatures } from "~/lib/map-tools/draw-features";
 import { useDrawLines } from "./draw-lines";
+import { useDrawPoints } from "./draw-points";
 
 const fetchDirections = async (
   waypoints: Position[],
@@ -112,17 +112,38 @@ export function useDrawDirections({
     };
   }, [map, drawMode, isSelecting]);
 
-  useDrawLines({
-    map: map ?? null,
-    coordinates: [
+  const coordinates = useMemo(() => {
+    return [
       (directions?.results[0]?.geometry.flatMap((r) => r) ?? []).map((c) => [
         c.lon,
         c.lat,
       ]),
-    ],
+    ];
+  }, [directions]);
+
+  useDrawLines({
+    map: map ?? null,
+    coordinates,
     isVisible: true,
     sourceId: "route-source",
     layerId: "route-layer",
+  });
+
+  const firstPoint = coordinates[0]?.[0] ?? routeVertices[0];
+  const lastPoint = isFetching
+    ? routeVertices[routeVertices.length - 1]
+    : coordinates[0]?.[coordinates[0]?.length - 1] ??
+      routeVertices[routeVertices.length - 1];
+
+  useDrawPoints({
+    map: map ?? null,
+    points: [
+      ...(firstPoint ? [firstPoint] : []),
+      ...(lastPoint ? [lastPoint] : []),
+    ],
+    isVisible: true,
+    sourceId: "route-points-source",
+    layerId: "route-points-layer",
   });
 
   return {
