@@ -69,6 +69,7 @@ export function EditBar() {
   const isSearchOpen = drawerValues.includes("location-search");
   const [selectedLineType, setSelectedLineType] =
     useState<keyof typeof lineTypes>("line");
+  const [lineTypePopoverOpen, setLineTypePopoverOpen] = useState(false);
 
   // Change the active mode to hand when the draw mode changes
   useEffect(() => {
@@ -120,7 +121,7 @@ export function EditBar() {
           }}
         />
       </div>
-      <div className="flex gap-1 px-1.5">
+      <div className="flex items-center gap-1 px-1.5">
         <HandTool
           isActive={activeMode === "hand" && !isSearchOpen}
           isSearchOpen={isSearchOpen}
@@ -130,30 +131,30 @@ export function EditBar() {
             setSelectedFeature(undefined);
           }}
         />
-        <div className="flex items-center">
-          {/* POINT TOOL */}
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                onClick={() => {
-                  draw?.trash();
-                  setDrawFeature(null);
-                  draw?.changeMode("draw_point");
-                  setActiveMode("point");
-                  setSelectedFeature(undefined);
-                }}
-                size="icon"
-                variant={
-                  activeMode === "point" && !isSearchOpen ? "default" : "ghost"
-                }
-              >
-                <MapPinPlusIcon className="size-5" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Point tool</TooltipContent>
-          </Tooltip>
+        {/* POINT TOOL */}
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              onClick={() => {
+                draw?.trash();
+                setDrawFeature(null);
+                draw?.changeMode("draw_point");
+                setActiveMode("point");
+                setSelectedFeature(undefined);
+              }}
+              size="icon"
+              variant={
+                activeMode === "point" && !isSearchOpen ? "default" : "ghost"
+              }
+            >
+              <MapPinPlusIcon className="size-5" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Point tool</TooltipContent>
+        </Tooltip>
 
-          {/* LINE TOOL */}
+        {/* LINE TOOL */}
+        <div className="flex items-center">
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
@@ -180,11 +181,11 @@ export function EditBar() {
           {/* TODO: Add suport for directional lines */}
           <Popover
             modal
-            // onOpenChange={setOpen}
-            // open={open}
+            onOpenChange={setLineTypePopoverOpen}
+            open={lineTypePopoverOpen}
           >
             <PopoverTrigger asChild>
-              <button className="hover:bg-accent hover:text-accent-foreground ml-[1px] h-full rounded-md p-0.5">
+              <button className="hover:bg-accent hover:text-accent-foreground ml-[1px] h-9 rounded-md p-0.5">
                 <ChevronDownIcon size={10} strokeWidth={3} />
               </button>
             </PopoverTrigger>
@@ -199,8 +200,9 @@ export function EditBar() {
                           key={key}
                           value={label}
                           onSelect={() => {
-                            // setSelectedLineType(key as keyof typeof lineTypes);
-                            // setOpen(false);
+                            setActiveMode("line");
+                            setSelectedLineType(key as keyof typeof lineTypes);
+                            setLineTypePopoverOpen(false);
                           }}
                           className="flex items-center gap-2"
                         >
@@ -224,29 +226,29 @@ export function EditBar() {
               </Command>
             </PopoverContent>
           </Popover>
-
-          {/* POLYGON TOOL */}
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                onClick={() => {
-                  draw?.trash();
-                  setDrawFeature(null);
-                  draw?.changeMode("draw_polygon");
-                  setActiveMode("shape");
-                  setSelectedFeature(undefined);
-                }}
-                size="icon"
-                variant={
-                  activeMode === "shape" && !isSearchOpen ? "default" : "ghost"
-                }
-              >
-                <PentagonIcon className="size-5" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Shape tool</TooltipContent>
-          </Tooltip>
         </div>
+
+        {/* POLYGON TOOL */}
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              onClick={() => {
+                draw?.trash();
+                setDrawFeature(null);
+                draw?.changeMode("draw_polygon");
+                setActiveMode("shape");
+                setSelectedFeature(undefined);
+              }}
+              size="icon"
+              variant={
+                activeMode === "shape" && !isSearchOpen ? "default" : "ghost"
+              }
+            >
+              <PentagonIcon className="size-5" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Shape tool</TooltipContent>
+        </Tooltip>
       </div>
       <div className="flex gap-1 pl-1.5">
         <MapOptions />
