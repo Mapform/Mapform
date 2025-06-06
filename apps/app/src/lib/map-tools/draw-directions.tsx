@@ -5,6 +5,7 @@ import type { FeatureCollection, Position } from "geojson";
 import { useCallback, useEffect, useState } from "react";
 import { useMapform } from "~/components/mapform";
 import { useDrawFeatures } from "~/lib/map-tools/draw-features";
+import { useDrawLines } from "./draw-lines";
 
 const fetchDirections = async (
   waypoints: Position[],
@@ -48,6 +49,9 @@ export function useDrawDirections({
       map.getCanvas().style.cursor = "crosshair";
     }
   }, [map]);
+
+  console.log(1111, routeVertices);
+  console.log(2222, directions);
 
   // Handle map events for adding vertices
   useEffect(() => {
@@ -108,84 +112,18 @@ export function useDrawDirections({
     };
   }, [map, drawMode, isSelecting]);
 
-  // Render features and route
-  useEffect(() => {
-    if (!map || !map.isStyleLoaded()) return;
-
-    // Add or update the route source
-    const routeSource = map.getSource("route-source");
-    if (routeSource) {
-      (routeSource as mapboxgl.GeoJSONSource).setData({
-        type: "FeatureCollection",
-        features: [
-          ...features.features,
-          ...(directions?.results[0]?.geometry?.[0]
-            ? [
-                {
-                  type: "Feature" as const,
-                  properties: {},
-                  geometry: {
-                    type: "LineString" as const,
-                    coordinates: directions.results[0].geometry[0].map((c) => [
-                      c.lon,
-                      c.lat,
-                    ]),
-                  },
-                },
-              ]
-            : []),
-        ],
-      });
-    } else {
-      map.addSource("route-source", {
-        type: "geojson",
-        data: {
-          type: "FeatureCollection",
-          features: [
-            ...features.features,
-            ...(directions?.results[0]?.geometry?.[0]
-              ? [
-                  {
-                    type: "Feature" as const,
-                    properties: {},
-                    geometry: {
-                      type: "LineString" as const,
-                      coordinates: directions.results[0].geometry[0].map(
-                        (c) => [c.lon, c.lat],
-                      ),
-                    },
-                  },
-                ]
-              : []),
-          ],
-        },
-      });
-
-      // Add the route layer
-      map.addLayer({
-        id: "route-layer",
-        type: "line",
-        source: "route-source",
-        layout: {
-          "line-join": "round",
-          "line-cap": "round",
-        },
-        paint: {
-          "line-color": "#0080ff",
-          "line-width": 4,
-        },
-      });
-    }
-
-    return () => {
-      if (map.getLayer("route-layer")) {
-        map.removeLayer("route-layer");
-      }
-      if (map.getSource("route-source")) {
-        map.removeSource("route-source");
-      }
-    };
-  }, [map, features, directions]);
+  useDrawLines({
+    map: map ?? null,
+    coordinates: [
+      (directions?.results[0]?.geometry.flatMap((r) => r) ?? []).map((c) => [
+        c.lon,
+        c.lat,
+      ]),
+    ],
+    isVisible: true,
+    sourceId: "route-source",
+    layerId: "route-layer",
+  });
 
   return {
     routeVertices,
