@@ -1,6 +1,6 @@
 import { useDebounce } from "@mapform/lib/hooks/use-debounce";
 import type { GeoapifyRoute } from "@mapform/map-utils/types";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { FeatureCollection, Position } from "geojson";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useMapform } from "~/components/mapform";
@@ -19,10 +19,6 @@ const fetchDirections = async (
 };
 
 export function useDrawDirections({
-  features = {
-    type: "FeatureCollection",
-    features: [],
-  },
   drawMode,
   isActive,
 }: {
@@ -31,6 +27,7 @@ export function useDrawDirections({
   isActive: boolean;
 }) {
   const { map } = useMapform();
+  const queryClient = useQueryClient();
   const [routeVertices, setRouteVertices] = useState<Position[]>([]);
 
   const debouncedRouteVertices = useDebounce(routeVertices, 200);
@@ -44,9 +41,26 @@ export function useDrawDirections({
   });
 
   const resetRouteTool = useCallback(() => {
+    console.log("resetRouteTool");
     setRouteVertices([]);
+    queryClient.removeQueries({ queryKey: ["directions"] });
+
     if (map) {
       map.getCanvas().style.cursor = "crosshair";
+
+      if (map.getLayer("route-layer")) {
+        console.log("remove route-layer");
+        map.removeLayer("route-layer");
+      }
+      if (map.getSource("route-source")) {
+        map.removeSource("route-source");
+      }
+      if (map.getLayer("route-points-layer")) {
+        map.removeLayer("route-points-layer");
+      }
+      if (map.getSource("route-points-source")) {
+        map.removeSource("route-points-source");
+      }
     }
   }, [map]);
 
@@ -145,24 +159,6 @@ export function useDrawDirections({
     sourceId: "route-points-source",
     layerId: "route-points-layer",
   });
-
-  // Remove layers and sources when not active
-  useEffect(() => {
-    if (!map || isActive) return;
-
-    if (map.getLayer("route-layer")) {
-      map.removeLayer("route-layer");
-    }
-    if (map.getSource("route-source")) {
-      map.removeSource("route-source");
-    }
-    if (map.getLayer("route-points-layer")) {
-      map.removeLayer("route-points-layer");
-    }
-    if (map.getSource("route-points-source")) {
-      map.removeSource("route-points-source");
-    }
-  }, [map, isActive]);
 
   return {
     routeVertices,

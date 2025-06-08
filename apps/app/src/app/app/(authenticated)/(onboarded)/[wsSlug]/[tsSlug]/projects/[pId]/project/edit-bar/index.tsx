@@ -110,7 +110,7 @@ export function EditBar() {
     return null;
   }, [drawFeature]);
 
-  useDrawDirections({
+  const { resetRouteTool } = useDrawDirections({
     features: {
       type: "FeatureCollection",
       features: [],
@@ -134,6 +134,7 @@ export function EditBar() {
               setDrawFeature(null);
               setActiveMode("search");
               setSelectedFeature(undefined);
+              resetRouteTool();
             }
           }}
         />
@@ -146,6 +147,7 @@ export function EditBar() {
             setActiveMode("hand");
             draw?.changeMode("simple_select");
             setSelectedFeature(undefined);
+            resetRouteTool();
           }}
         />
         {/* POINT TOOL */}
@@ -158,6 +160,7 @@ export function EditBar() {
                 draw?.changeMode("draw_point");
                 setActiveMode("point");
                 setSelectedFeature(undefined);
+                resetRouteTool();
               }}
               size="icon"
               variant={
@@ -181,6 +184,7 @@ export function EditBar() {
                   draw?.changeMode("draw_line_string");
                   setActiveMode("line");
                   setSelectedFeature(undefined);
+                  resetRouteTool();
                 }}
                 size="icon"
                 variant={
@@ -221,6 +225,7 @@ export function EditBar() {
                             setActiveMode("line");
                             setActiveLineMode(key as keyof typeof lineTypes);
                             setLineTypePopoverOpen(false);
+                            resetRouteTool();
 
                             if (key === "default") {
                               draw?.changeMode("draw_line_string");
@@ -262,6 +267,7 @@ export function EditBar() {
                 draw?.changeMode("draw_polygon");
                 setActiveMode("shape");
                 setSelectedFeature(undefined);
+                resetRouteTool();
               }}
               size="icon"
               variant={
