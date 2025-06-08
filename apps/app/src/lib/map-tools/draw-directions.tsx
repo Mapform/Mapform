@@ -24,13 +24,14 @@ export function useDrawDirections({
     features: [],
   },
   drawMode,
+  isActive,
 }: {
   features: FeatureCollection;
   drawMode: "drive" | "bicycle" | "walk" | null;
+  isActive: boolean;
 }) {
   const { map } = useMapform();
   const [routeVertices, setRouteVertices] = useState<Position[]>([]);
-  const [isSelecting, setIsSelecting] = useState(true);
 
   const debouncedRouteVertices = useDebounce(routeVertices, 200);
 
@@ -44,42 +45,36 @@ export function useDrawDirections({
 
   const resetRouteTool = useCallback(() => {
     setRouteVertices([]);
-    setIsSelecting(true);
     if (map) {
       map.getCanvas().style.cursor = "crosshair";
     }
   }, [map]);
-
-  console.log(1111, routeVertices);
-  console.log(2222, directions);
 
   // Handle map events for adding vertices
   useEffect(() => {
     if (!map || !drawMode) return;
 
     const handleClick = (e: mapboxgl.MapMouseEvent) => {
-      if (!isSelecting) return;
+      if (!isActive) return;
       const { lng, lat } = e.lngLat;
       setRouteVertices((prev) => [...prev, [lng, lat]]);
     };
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Enter") {
-        setIsSelecting(false);
         if (map) {
           map.getCanvas().style.cursor = "";
         }
       } else if (e.key === "Escape") {
-        if (isSelecting) {
+        if (isActive) {
           resetRouteTool();
         } else {
-          setIsSelecting(true);
           if (map) {
             map.getCanvas().style.cursor = "crosshair";
           }
         }
       } else if (e.key === "Backspace") {
-        if (isSelecting) {
+        if (isActive) {
           setRouteVertices((prev) => prev.slice(0, -1));
         } else {
           resetRouteTool();
@@ -94,14 +89,13 @@ export function useDrawDirections({
       map.off("click", handleClick);
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [map, drawMode, isSelecting, resetRouteTool]);
+  }, [map, drawMode, isActive, resetRouteTool]);
 
   // Update cursor style
   useEffect(() => {
     if (!map || !drawMode) return;
 
-    if (isSelecting) {
-      console.log(4444);
+    if (isActive) {
       map.getCanvas().style.cursor = "crosshair";
     } else {
       map.getCanvas().style.cursor = "";
@@ -109,10 +103,9 @@ export function useDrawDirections({
 
     return () => {
       if (!map.isStyleLoaded()) return;
-      console.log(5555);
       map.getCanvas().style.cursor = "";
     };
-  }, [map, drawMode, isSelecting]);
+  }, [map, drawMode, isActive]);
 
   const coordinates = useMemo(() => {
     return [
@@ -153,9 +146,26 @@ export function useDrawDirections({
     layerId: "route-points-layer",
   });
 
+  // Remove layers and sources when not active
+  useEffect(() => {
+    if (!map || isActive) return;
+
+    if (map.getLayer("route-layer")) {
+      map.removeLayer("route-layer");
+    }
+    if (map.getSource("route-source")) {
+      map.removeSource("route-source");
+    }
+    if (map.getLayer("route-points-layer")) {
+      map.removeLayer("route-points-layer");
+    }
+    if (map.getSource("route-points-source")) {
+      map.removeSource("route-points-source");
+    }
+  }, [map, isActive]);
+
   return {
     routeVertices,
-    isSelecting,
     directions,
     isFetching,
     resetRouteTool,

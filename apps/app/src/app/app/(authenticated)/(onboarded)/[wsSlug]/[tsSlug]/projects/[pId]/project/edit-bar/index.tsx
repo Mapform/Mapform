@@ -116,6 +116,7 @@ export function EditBar() {
       features: [],
     },
     drawMode: activeLineMode === "default" ? null : activeLineMode,
+    isActive: activeMode === "line",
   });
 
   return (
@@ -217,7 +218,6 @@ export function EditBar() {
                           value={label}
                           onSelect={() => {
                             draw?.trash();
-                            setDrawFeature(null);
                             setActiveMode("line");
                             setActiveLineMode(key as keyof typeof lineTypes);
                             setLineTypePopoverOpen(false);
