@@ -216,9 +216,17 @@ export function EditBar() {
                           key={key}
                           value={label}
                           onSelect={() => {
+                            draw?.trash();
+                            setDrawFeature(null);
                             setActiveMode("line");
                             setActiveLineMode(key as keyof typeof lineTypes);
                             setLineTypePopoverOpen(false);
+
+                            if (key === "default") {
+                              draw?.changeMode("draw_line_string");
+                            } else {
+                              draw?.changeMode("simple_select");
+                            }
                           }}
                           className="flex items-center gap-2"
                         >

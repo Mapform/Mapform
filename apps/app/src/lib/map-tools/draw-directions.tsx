@@ -101,6 +101,7 @@ export function useDrawDirections({
     if (!map || !drawMode) return;
 
     if (isSelecting) {
+      console.log(4444);
       map.getCanvas().style.cursor = "crosshair";
     } else {
       map.getCanvas().style.cursor = "";
@@ -108,6 +109,7 @@ export function useDrawDirections({
 
     return () => {
       if (!map.isStyleLoaded()) return;
+      console.log(5555);
       map.getCanvas().style.cursor = "";
     };
   }, [map, drawMode, isSelecting]);

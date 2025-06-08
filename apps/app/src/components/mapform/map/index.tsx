@@ -344,9 +344,11 @@ export function Map({
     };
 
     /**
-     * This is needed for cursor hover on features (primarily in the share view)
+     * This is needed for cursor hover on features when in static mode.
      */
     const handleMouseMove = (e: mapboxgl.MapMouseEvent) => {
+      if (!isStatic) return;
+
       const features = map.queryRenderedFeatures(e.point);
       map.getCanvas().style.cursor = features.length ? "pointer" : "";
     };
