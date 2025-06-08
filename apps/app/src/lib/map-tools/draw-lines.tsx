@@ -10,6 +10,7 @@ export function useDrawLines({
   sourceId = "lines",
   layerId = "lines",
   connectStartAndEnd = false,
+  isActive = true,
   paint = {
     "line-color": "#3b82f6",
     "line-width": 4,
@@ -21,6 +22,7 @@ export function useDrawLines({
   sourceId?: string;
   layerId?: string;
   connectStartAndEnd?: boolean;
+  isActive?: boolean;
   paint?: mapboxgl.LinePaint;
 }) {
   // Used for creating lines on the map
@@ -81,6 +83,17 @@ export function useDrawLines({
         | mapboxgl.AnySourceImpl
         | undefined;
 
+      if (!isActive) {
+        // Remove layer and source if they exist
+        if (map.getLayer(layerId)) {
+          map.removeLayer(layerId);
+        }
+        if (currentLineSource) {
+          map.removeSource(sourceId);
+        }
+        return;
+      }
+
       if (currentLineSource) {
         // Update the source data
         (currentLineSource as mapboxgl.GeoJSONSource).setData(linesGeoJson);
@@ -110,5 +123,5 @@ export function useDrawLines({
     } catch (e) {
       console.error(e);
     }
-  }, [map, linesGeoJson, isVisible, sourceId, layerId, paint]);
+  }, [map, linesGeoJson, isVisible, sourceId, layerId, paint, isActive]);
 }

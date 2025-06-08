@@ -8,6 +8,7 @@ export function useDrawPoints({
   isVisible = true,
   sourceId = "points",
   layerId = "points",
+  isActive = true,
   paint = {
     "circle-radius": 6,
     "circle-color": "#f59e0b",
@@ -20,6 +21,7 @@ export function useDrawPoints({
   isVisible?: boolean;
   sourceId?: string;
   layerId?: string;
+  isActive?: boolean;
   paint?: mapboxgl.CirclePaint;
 }) {
   // Used for creating points on the map
@@ -52,6 +54,17 @@ export function useDrawPoints({
         | mapboxgl.AnySourceImpl
         | undefined;
 
+      if (!isActive) {
+        // Remove layer and source if they exist
+        if (map.getLayer(layerId)) {
+          map.removeLayer(layerId);
+        }
+        if (currentPointSource) {
+          map.removeSource(sourceId);
+        }
+        return;
+      }
+
       if (currentPointSource) {
         // Update the source data
         (currentPointSource as mapboxgl.GeoJSONSource).setData(pointsGeoJson);
@@ -81,5 +94,5 @@ export function useDrawPoints({
     } catch (e) {
       console.error(e);
     }
-  }, [map, pointsGeoJson, isVisible, sourceId, layerId, paint]);
+  }, [map, pointsGeoJson, isVisible, sourceId, layerId, paint, isActive]);
 }

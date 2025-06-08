@@ -44,25 +44,7 @@ export function useDrawDirections({
     console.log("resetRouteTool");
     setRouteVertices([]);
     queryClient.removeQueries({ queryKey: ["directions"] });
-
-    if (map) {
-      map.getCanvas().style.cursor = "crosshair";
-
-      if (map.getLayer("route-layer")) {
-        console.log("remove route-layer");
-        map.removeLayer("route-layer");
-      }
-      if (map.getSource("route-source")) {
-        map.removeSource("route-source");
-      }
-      if (map.getLayer("route-points-layer")) {
-        map.removeLayer("route-points-layer");
-      }
-      if (map.getSource("route-points-source")) {
-        map.removeSource("route-points-source");
-      }
-    }
-  }, [map]);
+  }, [queryClient]);
 
   // Handle map events for adding vertices
   useEffect(() => {
@@ -136,6 +118,7 @@ export function useDrawDirections({
     isVisible: true,
     sourceId: "route-source",
     layerId: "route-layer",
+    isActive,
     paint: {
       "line-color": "#f59e0b",
       "line-dasharray": [2, 1],
@@ -158,6 +141,7 @@ export function useDrawDirections({
     isVisible: true,
     sourceId: "route-points-source",
     layerId: "route-points-layer",
+    isActive,
   });
 
   return {
