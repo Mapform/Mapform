@@ -37,11 +37,9 @@ export function useDrawDirections({
     queryKey: ["directions", drawMode, ...debouncedRouteVertices],
     queryFn: () => fetchDirections(debouncedRouteVertices, drawMode!),
     retry: false,
-    placeholderData: (prev) => prev,
   });
 
   const resetRouteTool = useCallback(() => {
-    console.log("resetRouteTool");
     setRouteVertices([]);
     queryClient.removeQueries({ queryKey: ["directions"] });
   }, [queryClient]);
