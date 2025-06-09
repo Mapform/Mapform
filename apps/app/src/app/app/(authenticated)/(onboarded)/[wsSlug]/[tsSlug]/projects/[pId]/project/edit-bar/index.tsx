@@ -225,9 +225,9 @@ export function EditBar() {
                             setActiveMode("line");
                             setActiveLineMode(key as keyof typeof lineTypes);
                             setLineTypePopoverOpen(false);
-                            resetRouteTool();
 
                             if (key === "default") {
+                              resetRouteTool();
                               draw?.changeMode("draw_line_string");
                             } else {
                               draw?.changeMode("simple_select");

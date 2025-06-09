@@ -25,8 +25,6 @@ export function useDrawLines({
   isActive?: boolean;
   paint?: mapboxgl.LinePaint;
 }) {
-  console.log(1111, coordinates);
-
   // Used for creating lines on the map
   const linesGeoJson = useMemo(() => {
     const features: Feature<LineString, any>[] = coordinates.map(

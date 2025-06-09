@@ -55,17 +55,17 @@ export function useDrawDirections({
     };
 
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (!map) return;
+
+      const canvas = map.getCanvas();
+
       if (e.key === "Enter") {
-        if (map) {
-          map.getCanvas().style.cursor = "";
-        }
+        canvas.style.cursor = "";
       } else if (e.key === "Escape") {
         if (isActive) {
           resetRouteTool();
         } else {
-          if (map) {
-            map.getCanvas().style.cursor = "crosshair";
-          }
+          canvas.style.cursor = "crosshair";
         }
       } else if (e.key === "Backspace") {
         if (isActive) {
