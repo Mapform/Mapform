@@ -1,7 +1,7 @@
 import { useDebounce } from "@mapform/lib/hooks/use-debounce";
 import type { GeoapifyRoute } from "@mapform/map-utils/types";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import type { FeatureCollection, Position } from "geojson";
+import type { Position } from "geojson";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useMapform } from "~/components/mapform";
 import { useDrawLines } from "./draw-lines";
@@ -21,12 +21,13 @@ const fetchDirections = async (
 export function useDrawDirections({
   drawMode,
   isActive,
+  onEnter,
 }: {
-  features: FeatureCollection;
   drawMode: "drive" | "bicycle" | "walk" | null;
   isActive: boolean;
+  onEnter: (geojsonFeature: GeoJSON.Feature) => void;
 }) {
-  const { map, setDrawFeature } = useMapform();
+  const { map } = useMapform();
   const queryClient = useQueryClient();
   const [routeVertices, setRouteVertices] = useState<Position[]>([]);
 
@@ -70,10 +71,16 @@ export function useDrawDirections({
 
       if (e.key === "Enter") {
         canvas.style.cursor = "";
-        if (isActive && map) {
-          const features = map.querySourceFeatures("route-source");
-          console.log("Drawn route features:", features);
-        }
+        onEnter({
+          type: "Feature",
+          geometry: {
+            type: "LineString",
+            coordinates: coordinates[0] ?? [],
+          },
+          properties: {
+            type: "_mapform_directions",
+          },
+        });
       } else if (e.key === "Escape") {
         if (isActive) {
           resetRouteTool();

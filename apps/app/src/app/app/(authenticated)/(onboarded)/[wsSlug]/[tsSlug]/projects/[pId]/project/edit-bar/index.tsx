@@ -78,6 +78,8 @@ export function EditBar() {
   const setQueryString = useSetQueryString();
   const isSearchOpen = drawerValues.includes("location-search");
   const [lineTypePopoverOpen, setLineTypePopoverOpen] = useState(false);
+  const [directionsFeature, setDirectionsFeature] =
+    useState<GeoJSON.Feature | null>(null);
 
   // Change the active mode to hand when the draw mode changes
   useEffect(() => {
@@ -92,7 +94,7 @@ export function EditBar() {
     };
   }, [map, setActiveMode]);
 
-  const location = useMemo(() => {
+  const drawCenterLocation = useMemo(() => {
     if (!drawFeature) return null;
 
     if (drawFeature.geometry.type === "Point") {
@@ -110,13 +112,18 @@ export function EditBar() {
     return null;
   }, [drawFeature]);
 
+  const directionsCenterLocation = useMemo(() => {
+    if (!directionsFeature) return null;
+    if (directionsFeature.geometry.type !== "LineString") return null;
+    return getCenterOfPoints(directionsFeature.geometry.coordinates);
+  }, [directionsFeature]);
+
   const { resetRouteTool } = useDrawDirections({
-    features: {
-      type: "FeatureCollection",
-      features: [],
-    },
     drawMode: activeLineMode === "default" ? null : activeLineMode,
     isActive: activeMode === "line",
+    onEnter: (geojsonLineString) => {
+      setDirectionsFeature(geojsonLineString);
+    },
   });
 
   return (
@@ -286,9 +293,24 @@ export function EditBar() {
       <div className="flex gap-1 pl-1.5">
         <MapOptions />
       </div>
-      {location && drawFeature && (
+      {directionsFeature && directionsCenterLocation && (
         <FeaturePopover
-          location={new mapboxgl.LngLat(location[0]!, location[1]!)}
+          location={
+            new mapboxgl.LngLat(
+              directionsCenterLocation[0]!,
+              directionsCenterLocation[1]!,
+            )
+          }
+          onSave={() => {}}
+          isFetching={false}
+          feature={directionsFeature}
+        />
+      )}
+      {drawCenterLocation && drawFeature && (
+        <FeaturePopover
+          location={
+            new mapboxgl.LngLat(drawCenterLocation[0]!, drawCenterLocation[1]!)
+          }
           onSave={(id) => {
             draw?.delete(drawFeature.id as string);
             setDrawFeature(null);
