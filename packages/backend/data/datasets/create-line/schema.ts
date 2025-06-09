@@ -3,6 +3,7 @@ import {
   insertStringCellSchema,
   insertRichtextCellSchema,
   insertLineCellSchema,
+  lineCellTypeEnum,
 } from "@mapform/db/schema";
 
 export const createLineSchema = z.object({
@@ -10,6 +11,7 @@ export const createLineSchema = z.object({
   title: insertStringCellSchema.shape.value,
   description: insertRichtextCellSchema.shape.value,
   value: insertLineCellSchema.shape.value,
+  type: z.enum(lineCellTypeEnum.enumValues).optional(),
 });
 
 export type CreateLineSchema = z.infer<typeof createLineSchema>;

@@ -39,27 +39,28 @@ import {
 import { useProject } from "../../project-context";
 import { useSetQueryString } from "@mapform/lib/hooks/use-set-query-string";
 import { useDrawDirections } from "~/lib/map-tools/draw-directions";
+import type { lineCellTypeEnum } from "@mapform/db/schema";
 
 export const lineTypes: Record<
-  "default" | "walk" | "bicycle" | "drive",
+  (typeof lineCellTypeEnum.enumValues)[number],
   {
     icon: LucideIcon;
     label: string;
   }
 > = {
-  default: {
+  line: {
     icon: SplineIcon,
     label: "Line",
   },
-  walk: {
+  directions_walking: {
     icon: FootprintsIcon,
     label: "Walking route",
   },
-  bicycle: {
+  directions_cycling: {
     icon: BikeIcon,
     label: "Cycling route",
   },
-  drive: {
+  directions_driving: {
     icon: CarIcon,
     label: "Driving route",
   },
@@ -119,7 +120,7 @@ export function EditBar() {
   }, [directionsFeature]);
 
   const { resetRouteTool } = useDrawDirections({
-    drawMode: activeLineMode === "default" ? null : activeLineMode,
+    drawMode: activeLineMode === "line" ? null : activeLineMode,
     isActive: activeMode === "line",
     onEnter: (geojsonLineString) => {
       setDirectionsFeature(geojsonLineString);
@@ -139,6 +140,7 @@ export function EditBar() {
             if (!isSearchOpen) {
               draw?.trash();
               setDrawFeature(null);
+              setDirectionsFeature(null);
               setActiveMode("search");
               setSelectedFeature(undefined);
               resetRouteTool();
@@ -164,6 +166,7 @@ export function EditBar() {
               onClick={() => {
                 draw?.trash();
                 setDrawFeature(null);
+                setDirectionsFeature(null);
                 draw?.changeMode("draw_point");
                 setActiveMode("point");
                 setSelectedFeature(undefined);
@@ -192,7 +195,7 @@ export function EditBar() {
                   setSelectedFeature(undefined);
                   resetRouteTool();
 
-                  if (activeLineMode === "default") {
+                  if (activeLineMode === "line") {
                     draw?.changeMode("draw_line_string");
                   }
                 }}
@@ -274,6 +277,7 @@ export function EditBar() {
               onClick={() => {
                 draw?.trash();
                 setDrawFeature(null);
+                setDirectionsFeature(null);
                 draw?.changeMode("draw_polygon");
                 setActiveMode("shape");
                 setSelectedFeature(undefined);
@@ -314,6 +318,7 @@ export function EditBar() {
           onSave={(id) => {
             draw?.delete(drawFeature.id as string);
             setDrawFeature(null);
+            setDirectionsFeature(null);
             draw?.changeMode("simple_select");
             setQueryString({
               key: "feature",

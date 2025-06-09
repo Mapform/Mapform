@@ -6,7 +6,7 @@ import { createPolygonAction } from "~/data/datasets/create-polygon";
 import { useAction } from "next-safe-action/hooks";
 import { useMemo, useState } from "react";
 import { createLineAction } from "~/data/datasets/create-line";
-import type { Layer } from "@mapform/db/schema";
+import type { Layer, lineCellTypeEnum } from "@mapform/db/schema";
 import { createPointAction } from "~/data/datasets/create-point";
 
 interface LineToolPopoverProps {
@@ -70,6 +70,8 @@ export function FeaturePopover({
         value: {
           coordinates: feature.geometry.coordinates as [number, number][],
         },
+        type: feature.properties
+          ?._mapform_directions_type as (typeof lineCellTypeEnum.enumValues)[number],
       });
     }
 

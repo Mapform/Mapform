@@ -4,12 +4,13 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { Position } from "geojson";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useMapform } from "~/components/mapform";
+import type { lineCellTypeEnum } from "@mapform/db/schema";
 import { useDrawLines } from "./draw-lines";
 import { useDrawPoints } from "./draw-points";
 
 const fetchDirections = async (
   waypoints: Position[],
-  selectedLineType: "drive" | "bicycle" | "walk",
+  selectedLineType: (typeof lineCellTypeEnum.enumValues)[number],
 ) => {
   const response = await fetch(
     `/api/places/routing?waypoints=${waypoints.map((w) => `lonlat:${w.join(",")}`).join("|")}&mode=${selectedLineType}`,
@@ -23,7 +24,7 @@ export function useDrawDirections({
   isActive,
   onEnter,
 }: {
-  drawMode: "drive" | "bicycle" | "walk" | null;
+  drawMode: (typeof lineCellTypeEnum.enumValues)[number] | null;
   isActive: boolean;
   onEnter: (geojsonFeature: GeoJSON.Feature) => void;
 }) {
@@ -78,7 +79,7 @@ export function useDrawDirections({
             coordinates: coordinates[0] ?? [],
           },
           properties: {
-            type: "_mapform_directions",
+            _mapform_directions_type: drawMode,
           },
         });
       } else if (e.key === "Escape") {

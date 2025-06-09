@@ -27,7 +27,7 @@ export const createLine = (authClient: UserAuthClient) =>
     .schema(createLineSchema)
     .action(
       async ({
-        parsedInput: { layerId, title, description, value },
+        parsedInput: { layerId, title, description, value, type },
         ctx: { userAccess },
       }) => {
         return db.transaction(async (tx) => {
@@ -145,6 +145,7 @@ export const createLine = (authClient: UserAuthClient) =>
                   "type": "LineString",
                   "coordinates": ${JSON.stringify(value?.coordinates ?? [])}
                 }')`),
+                type,
               }),
               titleCell &&
                 tx.insert(stringCells).values({

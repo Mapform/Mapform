@@ -31,6 +31,7 @@ import type { GetFeature } from "@mapform/backend/data/features/get-feature";
 import type { BaseFeature } from "@mapform/backend/data/features/types";
 import type { UpsertCellSchema } from "@mapform/backend/data/cells/upsert-cell/schema";
 import type { Position } from "geojson";
+import type { lineCellTypeEnum } from "@mapform/db/schema";
 
 type Feature = NonNullable<GetFeature["data"]>;
 type PageWithLayers = NonNullable<GetPageWithLayers["data"]>;
@@ -59,8 +60,10 @@ export interface ProjectContextProps {
   // Edit bar state
   activeMode: "hand" | "search" | "shape" | "line" | "point";
   setActiveMode: (mode: "hand" | "search" | "shape" | "line" | "point") => void;
-  activeLineMode: "default" | "drive" | "bicycle" | "walk";
-  setActiveLineMode: (mode: "default" | "drive" | "bicycle" | "walk") => void;
+  activeLineMode: (typeof lineCellTypeEnum.enumValues)[number];
+  setActiveLineMode: (
+    mode: (typeof lineCellTypeEnum.enumValues)[number],
+  ) => void;
 
   updateProjectOptimistic: (
     action: NonNullable<GetProjectWithPages["data"]>,
@@ -124,9 +127,8 @@ export function ProjectProvider({
   const [activeMode, setActiveMode] = useState<
     "hand" | "search" | "shape" | "line" | "point"
   >("hand");
-  const [activeLineMode, setActiveLineMode] = useState<
-    "default" | "drive" | "bicycle" | "walk"
-  >("default");
+  const [activeLineMode, setActiveLineMode] =
+    useState<(typeof lineCellTypeEnum.enumValues)[number]>("line");
 
   // Reset isDrawerStackOpen when the search or feature is opened
   useEffect(() => {
