@@ -26,7 +26,7 @@ export function useDrawDirections({
   drawMode: "drive" | "bicycle" | "walk" | null;
   isActive: boolean;
 }) {
-  const { map } = useMapform();
+  const { map, setDrawFeature } = useMapform();
   const queryClient = useQueryClient();
   const [routeVertices, setRouteVertices] = useState<Position[]>([]);
 

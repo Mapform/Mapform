@@ -181,10 +181,13 @@ export function EditBar() {
                 onClick={() => {
                   draw?.trash();
                   setDrawFeature(null);
-                  draw?.changeMode("draw_line_string");
                   setActiveMode("line");
                   setSelectedFeature(undefined);
                   resetRouteTool();
+
+                  if (activeLineMode === "default") {
+                    draw?.changeMode("draw_line_string");
+                  }
                 }}
                 size="icon"
                 variant={
