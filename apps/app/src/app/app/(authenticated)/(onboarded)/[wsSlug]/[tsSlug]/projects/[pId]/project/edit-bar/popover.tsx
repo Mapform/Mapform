@@ -12,7 +12,7 @@ import { createPointAction } from "~/data/datasets/create-point";
 interface LineToolPopoverProps {
   location: mapboxgl.LngLat;
   isFetching: boolean;
-  feature: mapboxgl.MapboxGeoJSONFeature;
+  feature: GeoJSON.Feature;
   onSave: (id: string) => void;
 }
 

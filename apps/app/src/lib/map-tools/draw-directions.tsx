@@ -39,6 +39,15 @@ export function useDrawDirections({
     retry: false,
   });
 
+  const coordinates = useMemo(() => {
+    return [
+      (directions?.results[0]?.geometry.flatMap((r) => r) ?? []).map((c) => [
+        c.lon,
+        c.lat,
+      ]),
+    ];
+  }, [directions]);
+
   const resetRouteTool = useCallback(() => {
     setRouteVertices([]);
     queryClient.removeQueries({ queryKey: ["directions"] });
@@ -61,6 +70,10 @@ export function useDrawDirections({
 
       if (e.key === "Enter") {
         canvas.style.cursor = "";
+        if (isActive && map) {
+          const features = map.querySourceFeatures("route-source");
+          console.log("Drawn route features:", features);
+        }
       } else if (e.key === "Escape") {
         if (isActive) {
           resetRouteTool();
@@ -83,7 +96,15 @@ export function useDrawDirections({
       map.off("click", handleClick);
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [map, drawMode, isActive, resetRouteTool]);
+  }, [
+    map,
+    drawMode,
+    isActive,
+    resetRouteTool,
+    directions,
+    routeVertices,
+    coordinates,
+  ]);
 
   // Update cursor style
   useEffect(() => {
@@ -100,15 +121,6 @@ export function useDrawDirections({
       map.getCanvas().style.cursor = "";
     };
   }, [map, drawMode, isActive]);
-
-  const coordinates = useMemo(() => {
-    return [
-      (directions?.results[0]?.geometry.flatMap((r) => r) ?? []).map((c) => [
-        c.lon,
-        c.lat,
-      ]),
-    ];
-  }, [directions]);
 
   useDrawLines({
     map: map ?? null,
