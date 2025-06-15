@@ -1,1 +1,0 @@
-ALTER TABLE "plan" RENAME COLUMN "position" TO "row_limit";

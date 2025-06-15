@@ -156,7 +156,6 @@ export function CreateProjectDialog({
               />
               <FormField
                 control={form.control}
-                name="formsEnabled"
                 render={({ field }) => (
                   <FormItem className="flex flex-row items-center justify-between">
                     <div className="space-y-0.5">

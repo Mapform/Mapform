@@ -1,19 +1,19 @@
 "server-only";
 
 import { db } from "@mapform/db";
-import { datasets, rows } from "@mapform/db/schema";
+import { projects, rows } from "@mapform/db/schema";
 import { createRowSchema } from "./schema";
 import type { UserAuthClient } from "../../../lib/types";
-import { getRowAndPageCount } from "../../usage/get-row-and-page-count";
+import { getRowCount } from "../../usage/get-row-count";
 import { eq } from "@mapform/db/utils";
 import { ServerError } from "../../../lib/server-error";
 
 export const createRow = (authClient: UserAuthClient) =>
   authClient
     .schema(createRowSchema)
-    .action(async ({ parsedInput: { datasetId }, ctx: { userAccess } }) => {
-      const existingDataset = await db.query.datasets.findFirst({
-        where: eq(datasets.id, datasetId),
+    .action(async ({ parsedInput: { projectId }, ctx: { userAccess } }) => {
+      const existingProject = await db.query.projects.findFirst({
+        where: eq(projects.id, projectId),
         with: {
           teamspace: {
             columns: {
@@ -36,28 +36,24 @@ export const createRow = (authClient: UserAuthClient) =>
         },
       });
 
-      if (!existingDataset) {
-        throw new Error("Dataset not found.");
+      if (!existingProject) {
+        throw new Error("Project not found.");
       }
 
-      if (!userAccess.teamspace.checkAccessById(existingDataset.teamspace.id)) {
+      if (!userAccess.teamspace.checkAccessById(existingProject.teamspace.id)) {
         throw new Error("Unauthorized.");
       }
 
-      const response = await getRowAndPageCount(authClient)({
-        workspaceSlug: existingDataset.teamspace.workspaceSlug,
+      const response = await getRowCount(authClient)({
+        workspaceSlug: existingProject.teamspace.workspaceSlug,
       });
-      const rowCount = response?.data?.rowCount;
-      const pageCount = response?.data?.pageCount;
+      const rowCount = response?.data;
 
-      if (rowCount === undefined || pageCount === undefined) {
+      if (rowCount === undefined) {
         throw new Error("Row count or page count is undefined.");
       }
 
-      if (
-        rowCount + pageCount >=
-        existingDataset.teamspace.workspace.plan!.rowLimit
-      ) {
+      if (rowCount >= existingProject.teamspace.workspace.plan!.rowLimit) {
         throw new ServerError(
           "Row limit exceeded. Delete some rows, or upgrade your plan.",
         );
@@ -66,7 +62,8 @@ export const createRow = (authClient: UserAuthClient) =>
       const [newRow] = await db
         .insert(rows)
         .values({
-          datasetId,
+          name: "",
+          projectId,
         })
         .returning();
 

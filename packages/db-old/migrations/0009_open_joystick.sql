@@ -1,1 +1,0 @@
-ALTER TABLE "richtext_cell" RENAME COLUMN "content" TO "value";

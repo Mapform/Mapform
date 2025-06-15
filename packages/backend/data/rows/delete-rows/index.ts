@@ -14,7 +14,7 @@ export const deleteRows = (authClient: UserAuthClient) =>
       const rowsToDelete = await db.query.rows.findMany({
         where: inArray(rows.id, rowIds),
         with: {
-          dataset: {
+          project: {
             columns: {
               teamspaceId: true,
             },
@@ -26,7 +26,7 @@ export const deleteRows = (authClient: UserAuthClient) =>
       if (
         rowsToDelete.some(
           (row) =>
-            !userAccess.teamspace.checkAccessById(row.dataset.teamspaceId),
+            !userAccess.teamspace.checkAccessById(row.project.teamspaceId),
         )
       ) {
         throw new Error("Unauthorized");

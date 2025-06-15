@@ -44,7 +44,7 @@ import { usePathname } from "next/navigation";
 import { signOutAction } from "~/data/auth/sign-out";
 import { useAuth } from "~/app/root-providers";
 import { useWorkspace } from "./workspace-context";
-import { CreateProjectDialog } from "~/components/create-project-dialog";
+import { CreateProjectDropdown } from "~/components/create-project-dialog";
 import {
   ProjectTour,
   ProjectTourContent,
@@ -112,20 +112,6 @@ export function AppSidebar() {
           isActive:
             pathname ===
             `/app/${workspaceSlug}/${teamspace.slug}/projects/${project.id}`,
-        })),
-      },
-      dataset: {
-        url: `/app/${workspaceSlug}/${teamspace.slug}/datasets`,
-        isActive:
-          pathname === `/app/${workspaceSlug}/${teamspace.slug}/datasets`,
-        datasets: teamspace.datasets.map((dataset) => ({
-          id: dataset.id,
-          title: dataset.name,
-          url: `/app/${workspaceSlug}/${teamspace.slug}/datasets/${dataset.id}`,
-          isActive:
-            pathname ===
-            `/app/${workspaceSlug}/${teamspace.slug}/datasets/${dataset.id}`,
-          hasProject: !!dataset.project?.id,
         })),
       },
     })),
@@ -219,36 +205,17 @@ export function AppSidebar() {
                     </Link>
                   </SidebarMenuButton>
                   <div className="absolute right-1 top-1.5 flex gap-1">
-                    <CreateProjectDialog tsSlug={space.slug}>
+                    <CreateProjectDropdown tsSlug={space.slug}>
                       <SidebarMenuAction className="relative right-0 top-0">
                         <PlusIcon />
                       </SidebarMenuAction>
-                    </CreateProjectDialog>
+                    </CreateProjectDropdown>
                     <CollapsibleTrigger asChild>
                       <SidebarMenuAction className="relative right-0 top-0">
                         <ChevronRightIcon className="transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
                       </SidebarMenuAction>
                     </CollapsibleTrigger>
                   </div>
-                  {/* <CollapsibleContent>
-                    <SidebarMenuSub>
-                      {space.project.projects.length ? (
-                        space.project.projects.map((project) => (
-                          <ProjectMenuSubItem
-                            key={project.id}
-                            project={project}
-                            teamspaceSlug={space.slug}
-                          />
-                        ))
-                      ) : (
-                        <SidebarMenuSubItem>
-                          <SidebarLeftMenuButton disabled>
-                            No projects
-                          </SidebarLeftMenuButton>
-                        </SidebarMenuSubItem>
-                      )}
-                    </SidebarMenuSub>
-                  </CollapsibleContent> */}
                 </SidebarMenuItem>
               </Collapsible>
             </SidebarMenu>

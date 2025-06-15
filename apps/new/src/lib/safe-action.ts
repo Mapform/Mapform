@@ -5,22 +5,16 @@ import { requestMagicLink } from "@mapform/backend/data/auth/request-magic-link"
 import { validateMagicLink } from "@mapform/backend/data/auth/validate-magic-link";
 import { signOut } from "@mapform/backend/data/auth/sign-out";
 import { getUserWorkspaceMemberships } from "@mapform/backend/data/workspace-memberships/get-user-workspace-memberships";
-import { getRowAndPageCount } from "@mapform/backend/data/usage/get-row-and-page-count";
 import { updateWorkspace } from "@mapform/backend/data/workspaces/update-workspace";
-import { getFeature } from "@mapform/backend/data/features/get-feature";
-import { getFeatures } from "@mapform/backend/data/features/get-features";
 import { uploadImage } from "@mapform/backend/data/images/upload-image";
-import { getProjectWithPages } from "@mapform/backend/data/projects/get-project-with-pages";
 import { getTeamspaceWithProjects } from "@mapform/backend/data/teamspaces/get-teamspace-with-projects";
-import { createSubmission } from "@mapform/backend/data/form-submissions/create-submission";
-import { submitPage } from "@mapform/backend/data/cells/submit-page";
-import { getSubmission } from "@mapform/backend/data/form-submissions/get-submission";
 import { getCurrentSession } from "@mapform/backend/data/auth/get-current-session";
 import { completeOnboarding } from "@mapform/backend/data/workspaces/complete-onboarding";
 import { createCheckoutSession } from "@mapform/backend/data/stripe/create-checkout-session";
 import { createBillingSession } from "@mapform/backend/data/stripe/create-billing-session";
 import { getStorageUsage } from "@mapform/backend/data/usage/get-storage-usage";
 import { getRecentProjects } from "@mapform/backend/data/projects/get-recent-projects";
+import { createRow } from "@mapform/backend/data/rows/create-row";
 import {
   baseClient,
   UserAccess,
@@ -95,6 +89,9 @@ const createUserAuthClient = () => {
     getRecentProjects: getRecentProjects(extendedClient),
     createProject: createProject(extendedClient),
 
+    // Rows
+    createRow: createRow(extendedClient),
+
     // Stripe
     createBillingSession: createBillingSession(extendedClient),
     createCheckoutSession: createCheckoutSession(extendedClient),
@@ -114,7 +111,6 @@ const createUserAuthClient = () => {
     getUserWorkspaceMemberships: getUserWorkspaceMemberships(extendedClient),
 
     // Usage
-    getRowAndPageCount: getRowAndPageCount(extendedClient),
     getStorageUsage: getStorageUsage(extendedClient),
   };
 };
@@ -131,22 +127,6 @@ const createPublicClient = () => {
     // Auth
     requestMagicLink: requestMagicLink(extendedClient),
     validateMagicLink: validateMagicLink(extendedClient),
-
-    // Cells
-    submitPage: submitPage(extendedClient),
-
-    // Datalayers
-    getFeatures: getFeatures(extendedClient),
-    getFeature: getFeature(extendedClient),
-
-    // Form Submissions
-    getSubmission: getSubmission(extendedClient),
-
-    // Rows
-    createSubmission: createSubmission(extendedClient),
-
-    // Projects
-    getProjectWithPages: getProjectWithPages(extendedClient),
 
     // Users
     getCurrentSession: getCurrentSession(extendedClient),

@@ -15,6 +15,13 @@
       "when": 1750011385672,
       "tag": "0001_narrow_killraven",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1750012050868,
+      "tag": "0002_handy_zzzax",
+      "breakpoints": true
     }
   ]
 }

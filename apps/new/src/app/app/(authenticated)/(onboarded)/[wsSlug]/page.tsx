@@ -18,7 +18,7 @@ import {
 } from "@mapform/ui/components/carousel";
 import { authClient } from "~/lib/safe-action";
 import { getWorkspaceDirectory } from "~/data/workspaces/get-workspace-directory";
-import { CreateProjectDialog } from "~/components/create-project-dialog";
+import { CreateProjectDropdown } from "~/components/create-project-dialog";
 import { Button } from "@mapform/ui/components/button";
 import { WelcomeTour } from "./welcome-tour";
 
@@ -97,13 +97,13 @@ export default async function HomePage(props: {
                   <p className="mt-1 text-sm text-gray-500">
                     Get started by creating a new project.
                   </p>
-                  <CreateProjectDialog
+                  <CreateProjectDropdown
                     tsSlug={workspaceDirectory.teamspaces[0]!.slug}
                   >
                     <Button className="mt-4" size="sm">
                       Create Project
                     </Button>
-                  </CreateProjectDialog>
+                  </CreateProjectDropdown>
                 </div>
               </div>
             )}

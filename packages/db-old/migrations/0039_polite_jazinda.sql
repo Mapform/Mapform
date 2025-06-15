@@ -1,1 +1,0 @@
-DROP TABLE "marker_layer" CASCADE;

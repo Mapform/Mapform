@@ -5,10 +5,7 @@ import { projects } from "../projects/schema";
 
 export const foldersRelations = relations(folders, ({ one, many }) => ({
   // Self-referential relationship for parent-child folders
-  parent: one(folders, {
-    fields: [folders.parentId],
-    references: [folders.id],
-  }),
+  parent: one(folders),
   children: many(folders),
 
   // Teamspace relationship
@@ -18,8 +15,5 @@ export const foldersRelations = relations(folders, ({ one, many }) => ({
   }),
 
   // Project relationship
-  project: one(projects, {
-    fields: [folders.projectId],
-    references: [projects.id],
-  }),
+  project: many(projects),
 }));

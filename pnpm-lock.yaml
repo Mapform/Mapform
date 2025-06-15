@@ -424,7 +424,7 @@ importers:
         version: link:../../packages/blocknote
       '@mapform/db':
         specifier: workspace:*
-        version: link:../../packages/db-old
+        version: link:../../packages/db
       '@mapform/lib':
         specifier: workspace:*
         version: link:../../packages/lib
@@ -620,7 +620,7 @@ importers:
         version: link:../../packages/blocknote
       '@mapform/db':
         specifier: workspace:*
-        version: link:../../packages/db-old
+        version: link:../../packages/db
       '@mapform/lib':
         specifier: workspace:*
         version: link:../../packages/lib
@@ -783,7 +783,7 @@ importers:
     dependencies:
       '@mapform/db':
         specifier: workspace:*
-        version: link:../db-old
+        version: link:../db
       '@oslojs/crypto':
         specifier: 'catalog:'
         version: 1.0.1
@@ -847,7 +847,7 @@ importers:
         version: link:../auth
       '@mapform/db':
         specifier: workspace:*
-        version: link:../db-old
+        version: link:../db
       '@mapform/lib':
         specifier: workspace:*
         version: link:../lib
@@ -1066,83 +1066,6 @@ importers:
         specifier: 'catalog:'
         version: 5.6.3
 
-  packages/db-old:
-    dependencies:
-      '@mapform/typescript-config':
-        specifier: workspace:*
-        version: link:../typescript-config
-      '@neondatabase/serverless':
-        specifier: 'catalog:'
-        version: 0.9.0
-      '@t3-oss/env-nextjs':
-        specifier: 'catalog:'
-        version: 0.11.1(typescript@5.6.3)(zod@3.23.8)
-      dotenv:
-        specifier: 'catalog:'
-        version: 16.4.5
-      drizzle-orm:
-        specifier: 'catalog:'
-        version: 0.36.1(@neondatabase/serverless@0.9.0)(@types/pg@8.11.10)(@types/react@19.0.1)(pg@8.13.0)(react@19.0.0)
-      drizzle-zod:
-        specifier: 'catalog:'
-        version: 0.5.1(drizzle-orm@0.36.1(@neondatabase/serverless@0.9.0)(@types/pg@8.11.10)(@types/react@19.0.1)(pg@8.13.0)(react@19.0.0))(zod@3.23.8)
-      emoji-regex:
-        specifier: 'catalog:'
-        version: 10.4.0
-      pg:
-        specifier: 'catalog:'
-        version: 8.13.0
-      uuid:
-        specifier: 'catalog:'
-        version: 9.0.1
-      ws:
-        specifier: 'catalog:'
-        version: 8.18.0(bufferutil@4.0.8)
-      zod:
-        specifier: 'catalog:'
-        version: 3.23.8
-    optionalDependencies:
-      bufferutil:
-        specifier: 'catalog:'
-        version: 4.0.8
-    devDependencies:
-      '@mapform/blocknote':
-        specifier: workspace:*
-        version: link:../blocknote
-      '@mapform/eslint-config':
-        specifier: workspace:*
-        version: link:../eslint-config
-      '@types/eslint':
-        specifier: 'catalog:'
-        version: 8.56.5
-      '@types/node':
-        specifier: 'catalog:'
-        version: 20.11.25
-      '@types/pg':
-        specifier: 'catalog:'
-        version: 8.11.10
-      '@types/uuid':
-        specifier: 'catalog:'
-        version: 9.0.8
-      '@types/ws':
-        specifier: 'catalog:'
-        version: 8.5.10
-      dotenv-cli:
-        specifier: ^8.0.0
-        version: 8.0.0
-      drizzle-kit:
-        specifier: 'catalog:'
-        version: 0.28.0
-      eslint:
-        specifier: 'catalog:'
-        version: 9.16.0(jiti@1.21.6)
-      stripe:
-        specifier: 'catalog:'
-        version: 17.5.0
-      typescript:
-        specifier: 'catalog:'
-        version: 5.6.3
-
   packages/eslint-config:
     devDependencies:
       '@next/eslint-plugin-next':
@@ -1248,7 +1171,7 @@ importers:
     devDependencies:
       '@mapform/db':
         specifier: workspace:*
-        version: link:../db-old
+        version: link:../db
       '@mapform/eslint-config':
         specifier: workspace:*
         version: link:../eslint-config
