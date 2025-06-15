@@ -20,6 +20,7 @@ import { completeOnboarding } from "@mapform/backend/data/workspaces/complete-on
 import { createCheckoutSession } from "@mapform/backend/data/stripe/create-checkout-session";
 import { createBillingSession } from "@mapform/backend/data/stripe/create-billing-session";
 import { getStorageUsage } from "@mapform/backend/data/usage/get-storage-usage";
+import { getRecentProjects } from "@mapform/backend/data/projects/get-recent-projects";
 import {
   baseClient,
   UserAccess,
@@ -28,6 +29,7 @@ import {
 } from "@mapform/backend";
 import { headers } from "next/headers";
 import { updateCurrentUser } from "@mapform/backend/data/users/update-current-user";
+import { createProject } from "@mapform/backend/data/projects/create-project";
 const ignoredWorkspaceSlugs = ["onboarding"];
 const ignoredTeamspaceSlugs = ["settings"];
 
@@ -88,6 +90,10 @@ const createUserAuthClient = () => {
 
     // Images
     uploadImage: uploadImage(extendedClient),
+
+    // Projects
+    getRecentProjects: getRecentProjects(extendedClient),
+    createProject: createProject(extendedClient),
 
     // Stripe
     createBillingSession: createBillingSession(extendedClient),
