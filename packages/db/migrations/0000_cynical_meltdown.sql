@@ -2,7 +2,7 @@ CREATE TYPE "public"."workspace_role" AS ENUM('owner', 'member');--> statement-b
 CREATE TYPE "public"."teamspace_role" AS ENUM('owner', 'member');--> statement-breakpoint
 CREATE TYPE "public"."visibility" AS ENUM('public', 'closed');--> statement-breakpoint
 CREATE TYPE "public"."column_type" AS ENUM('string', 'bool', 'number', 'date');--> statement-breakpoint
-CREATE TYPE "public"."cell_type" AS ENUM('string', 'number', 'boolean', 'date');--> statement-breakpoint
+CREATE TYPE "public"."view_type" AS ENUM('table', 'map');--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "magic_link" (
 	"token" text PRIMARY KEY NOT NULL,
 	"email" text NOT NULL,
@@ -127,14 +127,21 @@ CREATE TABLE IF NOT EXISTS "folder" (
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "map_view" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"project_id" uuid NOT NULL,
-	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
-	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
+	"view_id" uuid NOT NULL,
+	CONSTRAINT "map_view_unq" UNIQUE("view_id")
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "table_view" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"view_id" uuid NOT NULL,
+	CONSTRAINT "table_view_unq" UNIQUE("view_id")
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "view" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"project_id" uuid NOT NULL,
+	"type" "view_type" NOT NULL,
+	"name" text,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
 );
@@ -148,7 +155,6 @@ CREATE TABLE IF NOT EXISTS "boolean_cell" (
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "cell" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"type" "cell_type" NOT NULL,
 	"row_id" uuid NOT NULL,
 	"column_id" uuid NOT NULL,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
@@ -244,13 +250,19 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "map_view" ADD CONSTRAINT "map_view_project_id_project_id_fk" FOREIGN KEY ("project_id") REFERENCES "public"."project"("id") ON DELETE cascade ON UPDATE no action;
+ ALTER TABLE "map_view" ADD CONSTRAINT "map_view_view_id_view_id_fk" FOREIGN KEY ("view_id") REFERENCES "public"."view"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "table_view" ADD CONSTRAINT "table_view_project_id_project_id_fk" FOREIGN KEY ("project_id") REFERENCES "public"."project"("id") ON DELETE cascade ON UPDATE no action;
+ ALTER TABLE "table_view" ADD CONSTRAINT "table_view_view_id_view_id_fk" FOREIGN KEY ("view_id") REFERENCES "public"."view"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "view" ADD CONSTRAINT "view_project_id_project_id_fk" FOREIGN KEY ("project_id") REFERENCES "public"."project"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;

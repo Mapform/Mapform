@@ -1,5 +1,5 @@
 {
-  "id": "2ef38d86-df3c-4cb4-b49c-536ece18b2d7",
+  "id": "c984e266-f359-48ec-bdf1-82338af8b681",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -890,35 +890,21 @@
           "notNull": true,
           "default": "gen_random_uuid()"
         },
-        "project_id": {
-          "name": "project_id",
+        "view_id": {
+          "name": "view_id",
           "type": "uuid",
           "primaryKey": false,
           "notNull": true
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
         }
       },
       "indexes": {},
       "foreignKeys": {
-        "map_view_project_id_project_id_fk": {
-          "name": "map_view_project_id_project_id_fk",
+        "map_view_view_id_view_id_fk": {
+          "name": "map_view_view_id_view_id_fk",
           "tableFrom": "map_view",
-          "tableTo": "project",
+          "tableTo": "view",
           "columnsFrom": [
-            "project_id"
+            "view_id"
           ],
           "columnsTo": [
             "id"
@@ -928,7 +914,15 @@
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
+      "uniqueConstraints": {
+        "map_view_unq": {
+          "name": "map_view_unq",
+          "nullsNotDistinct": false,
+          "columns": [
+            "view_id"
+          ]
+        }
+      },
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
@@ -944,11 +938,72 @@
           "notNull": true,
           "default": "gen_random_uuid()"
         },
+        "view_id": {
+          "name": "view_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "table_view_view_id_view_id_fk": {
+          "name": "table_view_view_id_view_id_fk",
+          "tableFrom": "table_view",
+          "tableTo": "view",
+          "columnsFrom": [
+            "view_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "table_view_unq": {
+          "name": "table_view_unq",
+          "nullsNotDistinct": false,
+          "columns": [
+            "view_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.view": {
+      "name": "view",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
         "project_id": {
           "name": "project_id",
           "type": "uuid",
           "primaryKey": false,
           "notNull": true
+        },
+        "type": {
+          "name": "type",
+          "type": "view_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         },
         "created_at": {
           "name": "created_at",
@@ -967,9 +1022,9 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "table_view_project_id_project_id_fk": {
-          "name": "table_view_project_id_project_id_fk",
-          "tableFrom": "table_view",
+        "view_project_id_project_id_fk": {
+          "name": "view_project_id_project_id_fk",
+          "tableFrom": "view",
           "tableTo": "project",
           "columnsFrom": [
             "project_id"
@@ -1051,13 +1106,6 @@
           "primaryKey": true,
           "notNull": true,
           "default": "gen_random_uuid()"
-        },
-        "type": {
-          "name": "type",
-          "type": "cell_type",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": true
         },
         "row_id": {
           "name": "row_id",
@@ -1328,14 +1376,12 @@
         "date"
       ]
     },
-    "public.cell_type": {
-      "name": "cell_type",
+    "public.view_type": {
+      "name": "view_type",
       "schema": "public",
       "values": [
-        "string",
-        "number",
-        "boolean",
-        "date"
+        "table",
+        "map"
       ]
     }
   },

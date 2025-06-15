@@ -5,6 +5,7 @@ import { mapViews, tableViews, projects, teamspaces } from "@mapform/db/schema";
 import { createProjectSchema } from "./schema";
 import type { UserAuthClient } from "../../../lib/types";
 import { eq } from "@mapform/db/utils";
+import { views } from "@mapform/db/schema/views/schema";
 
 export const createProject = (authClient: UserAuthClient) =>
   authClient
@@ -48,13 +49,25 @@ export const createProject = (authClient: UserAuthClient) =>
             throw new Error("Failed to create project");
           }
 
+          const [view] = await tx
+            .insert(views)
+            .values({
+              projectId: project.id,
+              type: rest.viewType,
+            })
+            .returning();
+
+          if (!view) {
+            throw new Error("Failed to create view");
+          }
+
           if (rest.viewType === "table") {
             await tx.insert(tableViews).values({
-              projectId: project.id,
+              viewId: view.id,
             });
           } else if (rest.viewType === "map") {
             await tx.insert(mapViews).values({
-              projectId: project.id,
+              viewId: view.id,
             });
           }
 

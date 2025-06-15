@@ -5,15 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1750020636090,
-      "tag": "0000_useful_stardust",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1750021447583,
-      "tag": "0001_careful_arachne",
+      "when": 1750021911885,
+      "tag": "0000_cynical_meltdown",
       "breakpoints": true
     }
   ]
