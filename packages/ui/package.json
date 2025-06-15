@@ -6,7 +6,8 @@
   "main": "./src/index.tsx",
   "types": "./src/index.tsx",
   "exports": {
-    "./components/*": "./src/*.tsx",
+    "./components/*": "./src/components/*.tsx",
+    "./hooks/*": "./src/hooks/*.ts",
     "./tailwind.config.ts": "./tailwind.config.ts",
     "./globals.css": "./globals.css"
   },

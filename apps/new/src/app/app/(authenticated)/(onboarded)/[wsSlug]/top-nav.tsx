@@ -11,7 +11,7 @@ import {
 } from "@mapform/ui/components/tooltip";
 import { useParams, usePathname } from "next/navigation";
 import { cn } from "@mapform/lib/classnames";
-import { useSidebarLeft } from "@mapform/ui/components/sidebar";
+import { useSidebar } from "@mapform/ui/components/sidebar";
 // import { RenameProjectPopover } from "~/components/rename-project-popover";
 import { useWorkspace } from "./workspace-context";
 
@@ -26,7 +26,7 @@ export function TopNav({ navSlot }: TopNavProps) {
     pId?: string;
     dId?: string;
   }>();
-  const { open, setOpen } = useSidebarLeft();
+  const { open, setOpen } = useSidebar();
   const { workspaceDirectory } = useWorkspace();
   const pathname = usePathname();
 
