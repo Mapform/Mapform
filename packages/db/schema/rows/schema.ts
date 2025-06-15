@@ -1,11 +1,31 @@
-import { timestamp, pgTable, uuid } from "drizzle-orm/pg-core";
-import { datasets } from "../datasets/schema";
+import {
+  timestamp,
+  pgTable,
+  uuid,
+  varchar,
+  customType,
+} from "drizzle-orm/pg-core";
+import type { Geometry } from "geojson";
+import { projects } from "../projects/schema";
+
+const geometry = customType<{
+  data: Geometry;
+}>({
+  dataType() {
+    return "geometry";
+  },
+});
 
 export const rows = pgTable("row", {
   id: uuid("id").primaryKey().defaultRandom(),
-  datasetId: uuid("dataset_id")
+  name: varchar("name", { length: 256 }).notNull(),
+  // description: varchar("description", { length: 512 }),
+  icon: varchar("icon", { length: 256 }),
+  geometry: geometry("geometry"),
+
+  projectId: uuid("project_id")
     .notNull()
-    .references(() => datasets.id, { onDelete: "cascade" }),
+    .references(() => projects.id, { onDelete: "cascade" }),
 
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()

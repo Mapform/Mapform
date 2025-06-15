@@ -2,7 +2,6 @@ import { timestamp, pgTable, varchar, uuid } from "drizzle-orm/pg-core";
 
 export const workspaces = pgTable("workspace", {
   id: uuid("id").primaryKey().defaultRandom(),
-  icon: varchar("icon", { length: 256 }),
   slug: varchar("slug", { length: 256 }).unique().notNull(),
   name: varchar("name", { length: 256 }).notNull(),
 

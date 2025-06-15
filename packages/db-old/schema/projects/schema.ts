@@ -1,5 +1,13 @@
-import { timestamp, pgTable, varchar, uuid, pgEnum } from "drizzle-orm/pg-core";
+import {
+  timestamp,
+  pgTable,
+  varchar,
+  uuid,
+  boolean,
+  pgEnum,
+} from "drizzle-orm/pg-core";
 import { teamspaces } from "../teamspaces/schema";
+import { datasets } from "../datasets/schema";
 
 export const visibilityEnum = pgEnum("visibility", ["public", "closed"]);
 
@@ -9,11 +17,17 @@ export const projects = pgTable("project", {
   description: varchar("description", { length: 512 }),
   icon: varchar("icon", { length: 256 }),
 
-  visibility: visibilityEnum("visibility").default("closed").notNull(),
+  visibility: visibilityEnum("visibility").default("public").notNull(),
+
+  formsEnabled: boolean("forms_enabled").default(false).notNull(),
 
   teamspaceId: uuid("teamspace_id")
     .notNull()
     .references(() => teamspaces.id, { onDelete: "cascade" }),
+
+  datasetId: uuid("dataset_id").references(() => datasets.id, {
+    onDelete: "set null",
+  }),
 
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()
