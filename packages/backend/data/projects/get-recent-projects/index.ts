@@ -2,7 +2,7 @@
 
 import { db } from "@mapform/db";
 import { eq, desc } from "@mapform/db/utils";
-import { projects, teamspaces } from "@mapform/db/schema";
+import { projects, teamspaces, views } from "@mapform/db/schema";
 import { getRecentProjectsSchema } from "./schema";
 import type { UserAuthClient } from "../../../lib/types";
 
@@ -18,6 +18,7 @@ export const getRecentProjects = (authClient: UserAuthClient) =>
         .select()
         .from(projects)
         .leftJoin(teamspaces, eq(teamspaces.id, projects.teamspaceId))
+        .leftJoin(views, eq(views.projectId, projects.id))
         .where(eq(teamspaces.workspaceSlug, workspaceSlug))
         .orderBy(desc(projects.updatedAt))
         .limit(5);

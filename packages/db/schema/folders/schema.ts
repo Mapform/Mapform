@@ -4,6 +4,7 @@ import {
   varchar,
   uuid,
   foreignKey,
+  smallint,
 } from "drizzle-orm/pg-core";
 import { teamspaces } from "../teamspaces/schema";
 
@@ -22,7 +23,7 @@ export const folders = pgTable(
       .references(() => teamspaces.id, { onDelete: "cascade" }),
 
     // Order within parent folder
-    order: varchar("order", { length: 256 }).notNull().default("0"),
+    position: smallint("position").notNull().default(0),
 
     createdAt: timestamp("created_at", { withTimezone: true })
       .defaultNow()

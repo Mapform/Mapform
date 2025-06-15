@@ -5,6 +5,7 @@ import {
   pgEnum,
   text,
   unique,
+  smallint,
 } from "drizzle-orm/pg-core";
 import { projects } from "../projects/schema";
 
@@ -23,6 +24,8 @@ export const views = pgTable("view", {
   type: viewTypes("type").notNull(),
 
   name: text("name"),
+
+  position: smallint("position").notNull().default(0),
 
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()
