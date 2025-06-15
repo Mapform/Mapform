@@ -8,7 +8,7 @@ import {
   numeric,
 } from "drizzle-orm/pg-core";
 import { rows } from "../rows/schema";
-import { properties } from "../properties/schema";
+import { columns } from "../columns/schema";
 
 /**
  * PARENT CELL
@@ -21,9 +21,9 @@ export const cells = pgTable(
     rowId: uuid("row_id")
       .notNull()
       .references(() => rows.id, { onDelete: "cascade" }),
-    propertyId: uuid("property_id")
+    columnId: uuid("column_id")
       .notNull()
-      .references(() => properties.id, { onDelete: "cascade" }),
+      .references(() => columns.id, { onDelete: "cascade" }),
 
     createdAt: timestamp("created_at", { withTimezone: true })
       .defaultNow()
@@ -33,7 +33,7 @@ export const cells = pgTable(
       .$onUpdate(() => new Date())
       .notNull(),
   },
-  (t) => [unique().on(t.rowId, t.propertyId)],
+  (t) => [unique().on(t.rowId, t.columnId)],
 );
 
 /**

@@ -1,10 +1,10 @@
 import { relations } from "drizzle-orm";
-import { properties } from "./schema";
+import { columns } from "./schema";
 import { projects } from "../projects/schema";
 
-export const propertiesRelations = relations(properties, ({ one }) => ({
+export const columnsRelations = relations(columns, ({ one }) => ({
   project: one(projects, {
-    fields: [properties.projectId],
+    fields: [columns.projectId],
     references: [projects.id],
   }),
 }));

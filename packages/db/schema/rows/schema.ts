@@ -4,8 +4,10 @@ import {
   uuid,
   varchar,
   customType,
+  jsonb,
 } from "drizzle-orm/pg-core";
 import type { Geometry } from "geojson";
+import type { DocumentContent } from "@mapform/blocknote";
 import { projects } from "../projects/schema";
 
 const geometry = customType<{
@@ -19,7 +21,7 @@ const geometry = customType<{
 export const rows = pgTable("row", {
   id: uuid("id").primaryKey().defaultRandom(),
   name: varchar("name", { length: 256 }).notNull(),
-  // description: varchar("description", { length: 512 }),
+  description: jsonb("description").$type<{ content: DocumentContent }>(),
   icon: varchar("icon", { length: 256 }),
   geometry: geometry("geometry"),
 

@@ -15,6 +15,7 @@ export * from "./cells/schema";
 export * from "./plans/schema";
 export * from "./blobs/schema";
 export * from "./form-submissions/schema";
+export * from "./folders/schema";
 
 // RELATIONS
 export * from "./users/relations";
@@ -33,6 +34,7 @@ export * from "./cells/relations";
 export * from "./plans/relations";
 export * from "./blobs/relations";
 export * from "./form-submissions/relations";
+export * from "./folders/relations";
 
 // VALIDATIONS
 export * from "./users/validation";
@@ -50,3 +52,4 @@ export * from "./cells/validation";
 export * from "./plans/validation";
 export * from "./blobs/validation";
 export * from "./form-submissions/validation";
+export * from "./folders/validation";
