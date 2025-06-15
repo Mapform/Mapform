@@ -62,7 +62,6 @@ export const createRow = (authClient: UserAuthClient) =>
       const [newRow] = await db
         .insert(rows)
         .values({
-          name: "",
           projectId,
         })
         .returning();

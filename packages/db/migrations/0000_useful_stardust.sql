@@ -2,6 +2,7 @@ CREATE TYPE "public"."workspace_role" AS ENUM('owner', 'member');--> statement-b
 CREATE TYPE "public"."teamspace_role" AS ENUM('owner', 'member');--> statement-breakpoint
 CREATE TYPE "public"."visibility" AS ENUM('public', 'closed');--> statement-breakpoint
 CREATE TYPE "public"."column_type" AS ENUM('string', 'bool', 'number', 'date');--> statement-breakpoint
+CREATE TYPE "public"."cell_type" AS ENUM('string', 'number', 'boolean', 'date');--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "magic_link" (
 	"token" text PRIMARY KEY NOT NULL,
 	"email" text NOT NULL,
@@ -55,7 +56,7 @@ CREATE TABLE IF NOT EXISTS "teamspace_membership" (
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "project" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"name" varchar(256) NOT NULL,
+	"name" varchar(256),
 	"description" varchar(512),
 	"icon" varchar(256),
 	"visibility" "visibility" DEFAULT 'closed' NOT NULL,
@@ -66,7 +67,7 @@ CREATE TABLE IF NOT EXISTS "project" (
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "row" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"name" varchar(256) NOT NULL,
+	"name" varchar(256),
 	"description" jsonb,
 	"icon" varchar(256),
 	"geometry" geometry,
@@ -122,6 +123,58 @@ CREATE TABLE IF NOT EXISTS "folder" (
 	"order" varchar(256) DEFAULT '0' NOT NULL,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "map_view" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"project_id" uuid NOT NULL,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "table_view" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"project_id" uuid NOT NULL,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "boolean_cell" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"value" boolean,
+	"cell_id" uuid NOT NULL,
+	CONSTRAINT "bool_cell_unq" UNIQUE("cell_id")
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "cell" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"type" "cell_type" NOT NULL,
+	"row_id" uuid NOT NULL,
+	"column_id" uuid NOT NULL,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
+	CONSTRAINT "cell_row_id_column_id_unique" UNIQUE("row_id","column_id")
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "date_cell" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"value" timestamp with time zone,
+	"cell_id" uuid NOT NULL,
+	CONSTRAINT "date_cell_unq" UNIQUE("cell_id")
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "number_cell" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"value" numeric,
+	"cell_id" uuid NOT NULL,
+	CONSTRAINT "number_cell_unq" UNIQUE("cell_id")
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "string_cell" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"value" text,
+	"cell_id" uuid NOT NULL,
+	CONSTRAINT "string_cell_unq" UNIQUE("cell_id")
 );
 --> statement-breakpoint
 DO $$ BEGIN
@@ -186,6 +239,54 @@ END $$;
 --> statement-breakpoint
 DO $$ BEGIN
  ALTER TABLE "folder" ADD CONSTRAINT "custom_fk" FOREIGN KEY ("parent_id") REFERENCES "public"."folder"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "map_view" ADD CONSTRAINT "map_view_project_id_project_id_fk" FOREIGN KEY ("project_id") REFERENCES "public"."project"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "table_view" ADD CONSTRAINT "table_view_project_id_project_id_fk" FOREIGN KEY ("project_id") REFERENCES "public"."project"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "boolean_cell" ADD CONSTRAINT "boolean_cell_cell_id_cell_id_fk" FOREIGN KEY ("cell_id") REFERENCES "public"."cell"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "cell" ADD CONSTRAINT "cell_row_id_row_id_fk" FOREIGN KEY ("row_id") REFERENCES "public"."row"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "cell" ADD CONSTRAINT "cell_column_id_column_id_fk" FOREIGN KEY ("column_id") REFERENCES "public"."column"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "date_cell" ADD CONSTRAINT "date_cell_cell_id_cell_id_fk" FOREIGN KEY ("cell_id") REFERENCES "public"."cell"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "number_cell" ADD CONSTRAINT "number_cell_cell_id_cell_id_fk" FOREIGN KEY ("cell_id") REFERENCES "public"."cell"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "string_cell" ADD CONSTRAINT "string_cell_cell_id_cell_id_fk" FOREIGN KEY ("cell_id") REFERENCES "public"."cell"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;

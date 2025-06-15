@@ -5,22 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1750009294525,
-      "tag": "0000_loose_warbird",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1750011385672,
-      "tag": "0001_narrow_killraven",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1750012050868,
-      "tag": "0002_handy_zzzax",
+      "when": 1750020636090,
+      "tag": "0000_useful_stardust",
       "breakpoints": true
     }
   ]

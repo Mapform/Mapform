@@ -40,7 +40,6 @@ export const createProject = (authClient: UserAuthClient) =>
           const [project] = await tx
             .insert(projects)
             .values({
-              name: "",
               teamspaceId,
             })
             .returning();

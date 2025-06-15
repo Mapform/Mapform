@@ -47,7 +47,6 @@ export function CreateDatasetDialog({
   );
   const form = useForm<CreateEmptyDatasetSchema>({
     defaultValues: {
-      name: "",
       teamspaceId: teamspace?.id,
     },
     resolver: zodResolver(createEmptyDatasetSchema),

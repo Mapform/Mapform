@@ -58,7 +58,6 @@ export function CreateProjectDialog({
   );
   const form = useForm<CreateProjectSchema>({
     defaultValues: {
-      name: "",
       teamspaceId: teamspace?.id,
       description: "",
     },
