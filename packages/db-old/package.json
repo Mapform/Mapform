@@ -1,5 +1,5 @@
 {
-  "name": "@mapform/db",
+  "name": "@mapform/db-old",
   "version": "0.0.0",
   "type": "module",
   "main": "index.ts",

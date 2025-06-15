@@ -10,6 +10,8 @@ export * from "./columns/schema";
 export * from "./plans/schema";
 export * from "./blobs/schema";
 export * from "./folders/schema";
+export * from "./map-view/schema";
+export * from "./table-view/schema";
 
 // RELATIONS
 export * from "./users/relations";
@@ -23,6 +25,8 @@ export * from "./columns/relations";
 export * from "./plans/relations";
 export * from "./blobs/relations";
 export * from "./folders/relations";
+export * from "./map-view/relations";
+export * from "./table-view/relations";
 
 // VALIDATIONS
 export * from "./users/validation";
