@@ -6,17 +6,9 @@ import {
   unique,
   boolean,
   numeric,
-  pgEnum,
 } from "drizzle-orm/pg-core";
 import { rows } from "../rows/schema";
 import { columns } from "../columns/schema";
-
-export const cellTypes = pgEnum("cell_type", [
-  "string",
-  "number",
-  "boolean",
-  "date",
-]);
 
 /**
  * PARENT CELL
@@ -26,7 +18,8 @@ export const cells = pgTable(
   {
     id: uuid("id").primaryKey().defaultRandom(),
 
-    type: cellTypes("type").notNull(),
+    // Don't need explicit 'type' descriminator on cells before its on the
+    // linked column table
 
     rowId: uuid("row_id")
       .notNull()
