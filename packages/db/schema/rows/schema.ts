@@ -20,7 +20,7 @@ const geometry = customType<{
 
 export const rows = pgTable("row", {
   id: uuid("id").primaryKey().defaultRandom(),
-  name: varchar("name", { length: 256 }).notNull(),
+  name: varchar("name", { length: 256 }),
   description: jsonb("description").$type<{ content: DocumentContent }>(),
   icon: varchar("icon", { length: 256 }),
   geometry: geometry("geometry"),

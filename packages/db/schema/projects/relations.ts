@@ -5,6 +5,7 @@ import { mapViews } from "../map-view/schema";
 import { tableViews } from "../table-view/schema";
 import { rows } from "../rows/schema";
 import { columns } from "../columns/schema";
+import { views } from "../views/schema";
 
 export const projectsRelations = relations(projects, ({ one, many }) => ({
   teamspace: one(teamspaces, {
@@ -15,4 +16,5 @@ export const projectsRelations = relations(projects, ({ one, many }) => ({
   mapView: one(mapViews),
   rows: many(rows),
   columns: many(columns),
+  views: many(views),
 }));
