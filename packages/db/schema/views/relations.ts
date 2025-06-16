@@ -11,6 +11,7 @@ export const viewsRelations = relations(views, ({ one }) => ({
     references: [projects.id],
   }),
   tableView: one(tableViews),
+  mapView: one(mapViews),
 }));
 
 /**

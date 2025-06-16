@@ -16,5 +16,10 @@ export default async function ViewPage(props: {
 
   console.log(1111, project);
 
-  return <div>{project.data?.id}</div>;
+  return (
+    <div>
+      <h1>{project.data?.name}</h1>
+      <p>{project.data?.description}</p>
+    </div>
+  );
 }

@@ -10,7 +10,6 @@ export const getProject = (authClient: UserAuthClient) =>
   authClient
     .schema(getProjectSchema)
     .action(async ({ parsedInput: { projectId }, ctx: { user } }) => {
-      console.log(1111, projectId);
       const teamspaceIds = user.workspaceMemberships
         .map((m) => m.workspace.teamspaces.map((t) => t.id))
         .flat();
@@ -21,7 +20,12 @@ export const getProject = (authClient: UserAuthClient) =>
           inArray(projects.teamspaceId, teamspaceIds),
         ),
         with: {
-          views: true,
+          views: {
+            with: {
+              tableView: true,
+              mapView: true,
+            },
+          },
           rows: {
             columns: {
               id: true,
