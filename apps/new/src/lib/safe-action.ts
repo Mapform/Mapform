@@ -25,6 +25,7 @@ import {
 import { headers } from "next/headers";
 import { updateCurrentUser } from "@mapform/backend/data/users/update-current-user";
 import { createProject } from "@mapform/backend/data/projects/create-project";
+import { createView } from "@mapform/backend/data/views/create-view";
 const ignoredWorkspaceSlugs = ["onboarding"];
 const ignoredTeamspaceSlugs = ["settings"];
 
@@ -103,6 +104,9 @@ const createUserAuthClient = () => {
 
     // Users
     updateCurrentUser: updateCurrentUser(extendedClient),
+
+    // Views
+    createView: createView(extendedClient),
 
     // Workspaces
     updateWorkspace: updateWorkspace(extendedClient),

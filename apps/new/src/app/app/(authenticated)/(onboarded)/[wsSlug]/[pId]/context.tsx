@@ -1,10 +1,11 @@
 "use client";
 
 import type { GetProject } from "@mapform/backend/data/projects/get-project";
+import { notFound } from "next/navigation";
 import { createContext, useContext } from "react";
 
 export interface ProjectContextProps {
-  project: GetProject["data"];
+  project: NonNullable<GetProject["data"]>;
   activeView?: NonNullable<GetProject["data"]>["views"][number];
 }
 
@@ -22,6 +23,10 @@ export function ProjectProvider({
   activeView?: NonNullable<GetProject["data"]>["views"][number];
   children: React.ReactNode;
 }) {
+  if (!project) {
+    notFound();
+  }
+
   return (
     <ProjectContext.Provider value={{ project, activeView }}>
       {children}

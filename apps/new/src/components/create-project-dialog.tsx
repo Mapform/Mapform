@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 import { useWorkspace } from "~/app/app/(authenticated)/(onboarded)/[wsSlug]/workspace-context";
 import { createProjectAction } from "~/data/projects/create-project";
 import { useAction } from "next-safe-action/hooks";
+import { VIEWS } from "~/constants/views";
 
 interface CreateProjectDropdownProps {
   tsSlug: string;
@@ -21,7 +22,6 @@ export function CreateProjectDropdown({
   tsSlug,
   children,
 }: CreateProjectDropdownProps) {
-  const router = useRouter();
   const { workspaceDirectory } = useWorkspace();
   const teamspace = workspaceDirectory.teamspaces.find(
     (ts) => ts.slug === tsSlug,
@@ -47,13 +47,15 @@ export function CreateProjectDropdown({
           disabled={isPending}
           onClick={() => handleCreateProject("table")}
         >
-          Table view
+          <VIEWS.table.icon className="mr-2 size-4" />
+          <span>{VIEWS.table.name} View</span>
         </DropdownMenuItem>
         <DropdownMenuItem
           disabled={isPending}
           onClick={() => handleCreateProject("map")}
         >
-          Map view
+          <VIEWS.map.icon className="mr-2 size-4" />
+          <span>{VIEWS.map.name} View</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
