@@ -14,6 +14,7 @@ import { createCheckoutSession } from "@mapform/backend/data/stripe/create-check
 import { createBillingSession } from "@mapform/backend/data/stripe/create-billing-session";
 import { getStorageUsage } from "@mapform/backend/data/usage/get-storage-usage";
 import { getRecentProjects } from "@mapform/backend/data/projects/get-recent-projects";
+import { getProject } from "@mapform/backend/data/projects/get-project";
 import { createRow } from "@mapform/backend/data/rows/create-row";
 import {
   baseClient,
@@ -86,6 +87,7 @@ const createUserAuthClient = () => {
     uploadImage: uploadImage(extendedClient),
 
     // Projects
+    getProject: getProject(extendedClient),
     getRecentProjects: getRecentProjects(extendedClient),
     createProject: createProject(extendedClient),
 

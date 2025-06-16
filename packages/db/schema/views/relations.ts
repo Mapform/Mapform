@@ -6,7 +6,10 @@ import { projects } from "../projects/schema";
  * PARENT VIEW
  */
 export const viewsRelations = relations(views, ({ one }) => ({
-  project: one(projects),
+  project: one(projects, {
+    fields: [views.projectId],
+    references: [projects.id],
+  }),
   tableView: one(tableViews),
 }));
 
