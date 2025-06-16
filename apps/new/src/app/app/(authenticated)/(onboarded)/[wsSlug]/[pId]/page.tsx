@@ -2,10 +2,11 @@ import { notFound, redirect } from "next/navigation";
 import { authClient } from "~/lib/safe-action";
 import { ProjectProvider } from "./context";
 import { TableView } from "./table-view";
+import type { QUERY_PARAMS } from "~/constants/query-params";
 
 export default async function ViewPage(props: {
   params: Promise<{ wsSlug: string; pId: string }>;
-  searchParams: Promise<{ v: string }>;
+  searchParams: Promise<{ [QUERY_PARAMS.VIEW]: string }>;
 }) {
   const params = await props.params;
   const searchParams = await props.searchParams;

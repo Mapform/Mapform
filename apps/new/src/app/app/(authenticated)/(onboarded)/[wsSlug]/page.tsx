@@ -49,7 +49,7 @@ export default async function HomePage(props: {
                     <li key={project.id}>
                       <Link
                         className="flex items-center justify-between rounded-lg px-4 py-2 font-medium text-gray-900 shadow"
-                        href={`/app/${params.wsSlug}/${project.id}/${project.views.find((v) => v.position === 0)?.id}`}
+                        href={`/app/${params.wsSlug}/${project.id}?v=${project.views.find((v) => v.position === 0)?.id}`}
                       >
                         <span className="truncate">
                           {project.name || "Untitled"}

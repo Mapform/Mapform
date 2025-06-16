@@ -14,9 +14,17 @@ import {
 } from "@mapform/ui/components/dropdown-menu";
 import { useAction } from "next-safe-action/hooks";
 import { createViewAction } from "~/data/views/create-view";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@mapform/ui/components/tooltip";
+import { QUERY_PARAMS } from "~/constants/query-params";
+import { useSetQueryString } from "@mapform/lib/hooks/use-set-query-string";
 
 export function TableView() {
   const { project, activeView } = useProject();
+  const setQueryString = useSetQueryString();
 
   const { execute, isPending } = useAction(createViewAction);
 
@@ -48,6 +56,12 @@ export function TableView() {
               key={view.id}
               size="sm"
               variant={isActive ? "secondary" : "outline"}
+              onClick={() => {
+                setQueryString({
+                  key: QUERY_PARAMS.VIEW,
+                  value: view.id,
+                });
+              }}
             >
               <ViewIcon className="mr-2 size-4" />
               <span>{view.name ?? VIEWS[viewType].name}</span>
@@ -55,11 +69,16 @@ export function TableView() {
           );
         })}
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button size="icon-sm" variant="ghost">
-              <PlusIcon className="size-4" />
-            </Button>
-          </DropdownMenuTrigger>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <DropdownMenuTrigger asChild>
+                <Button size="icon-sm" variant="ghost">
+                  <PlusIcon className="size-4" />
+                </Button>
+              </DropdownMenuTrigger>
+            </TooltipTrigger>
+            <TooltipContent>Add View</TooltipContent>
+          </Tooltip>
           <DropdownMenuContent align="start">
             <DropdownMenuItem
               onClick={() => {

@@ -45,17 +45,17 @@ export function CreateProjectDropdown({
       <DropdownMenuContent align="end">
         <DropdownMenuItem
           disabled={isPending}
-          onClick={() => handleCreateProject("table")}
-        >
-          <VIEWS.table.icon className="mr-2 size-4" />
-          <span>{VIEWS.table.name} View</span>
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          disabled={isPending}
           onClick={() => handleCreateProject("map")}
         >
           <VIEWS.map.icon className="mr-2 size-4" />
           <span>{VIEWS.map.name} View</span>
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          disabled={isPending}
+          onClick={() => handleCreateProject("table")}
+        >
+          <VIEWS.table.icon className="mr-2 size-4" />
+          <span>{VIEWS.table.name} View</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
