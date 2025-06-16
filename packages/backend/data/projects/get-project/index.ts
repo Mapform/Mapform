@@ -3,7 +3,7 @@
 import { db, sql } from "@mapform/db";
 import { eq, and, inArray } from "@mapform/db/utils";
 import { projects, rows } from "@mapform/db/schema";
-import type { UserAuthClient } from "../../../lib/types";
+import type { UnwrapReturn, UserAuthClient } from "../../../lib/types";
 import { getProjectSchema } from "./schema";
 
 export const getProject = (authClient: UserAuthClient) =>
@@ -59,3 +59,5 @@ export const getProject = (authClient: UserAuthClient) =>
 
       return project;
     });
+
+export type GetProject = UnwrapReturn<typeof getProject>;

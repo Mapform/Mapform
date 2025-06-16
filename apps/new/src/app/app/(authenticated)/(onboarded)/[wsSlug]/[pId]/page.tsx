@@ -1,11 +1,15 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { authClient } from "~/lib/safe-action";
+import { ProjectProvider } from "./context";
+import { TableView } from "./table-view";
 
 export default async function ViewPage(props: {
   params: Promise<{ wsSlug: string; pId: string }>;
   searchParams: Promise<{ v: string }>;
 }) {
   const params = await props.params;
+  const searchParams = await props.searchParams;
+
   const project = await authClient.getProject({
     projectId: params.pId,
   });
@@ -14,12 +18,23 @@ export default async function ViewPage(props: {
     return notFound();
   }
 
-  console.log(1111, project);
+  const activeView = project.data?.views.find(
+    (view) => view.id === searchParams.v,
+  );
+
+  if (!activeView) {
+    const firstView = project.data?.views.find((v) => v.position === 0);
+
+    if (!firstView) {
+      return notFound();
+    }
+
+    redirect(`/app/${params.wsSlug}/${params.pId}?v=${firstView.id}`);
+  }
 
   return (
-    <div>
-      <h1>{project.data?.name}</h1>
-      <p>{project.data?.description}</p>
-    </div>
+    <ProjectProvider project={project.data} activeView={activeView}>
+      {activeView.type === "table" && <TableView />}
+    </ProjectProvider>
   );
 }
