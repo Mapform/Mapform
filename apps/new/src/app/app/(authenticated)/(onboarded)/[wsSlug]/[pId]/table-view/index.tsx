@@ -4,6 +4,7 @@ import { AutoSizeTextArea } from "@mapform/ui/components/autosize-text-area";
 import { useProject } from "../context";
 import { VIEWS } from "~/constants/views";
 import { Button } from "@mapform/ui/components/button";
+import { Table } from "./table";
 
 export function TableView() {
   const { project, activeView } = useProject();
@@ -45,6 +46,7 @@ export function TableView() {
           );
         })}
       </div>
+      <Table />
     </div>
   );
 }
