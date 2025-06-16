@@ -1,9 +1,11 @@
 "use client";
 
+import type { Row } from "@tanstack/react-table";
 import {
   flexRender,
   getCoreRowModel,
   useReactTable,
+  type Table,
 } from "@tanstack/react-table";
 import {
   Table as TableRoot,
@@ -29,6 +31,7 @@ export function Table() {
         const rowCells = row.cells;
 
         return {
+          name: row.name,
           ...rowCells.reduce<
             Record<
               string,
@@ -57,9 +60,12 @@ export function Table() {
   );
 
   const columns = useMemo(() => {
-    // const sortedColumns = [...dataset.columns].sort(
-    //   (a, b) => a.createdAt.getTime() - b.createdAt.getTime(),
-    // );
+    const columns = [
+      {
+        id: "title",
+        header: "Title",
+      },
+    ];
 
     return [
       {
@@ -68,7 +74,7 @@ export function Table() {
         minSize: 50,
         maxSize: 50,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Not worth creating a workaround type
-        header: ({ table }: any) => (
+        header: ({ table }: { table: Table<any> }) => (
           <Checkbox
             aria-label="Select all"
             checked={
@@ -81,7 +87,7 @@ export function Table() {
           />
         ),
         // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Not worth creating a workaround type
-        cell: ({ row }: any) => (
+        cell: ({ row }: { row: Row<any> }) => (
           <Checkbox
             aria-label="Select row"
             checked={row.getIsSelected()}
@@ -93,10 +99,7 @@ export function Table() {
         enableSorting: false,
         enableHiding: false,
       },
-      // ...project?.columns.map((column) => ({
-      //   accessorKey: column.id,
-      //   header: <div>{column.name}</div>,
-      // })),
+      ...columns,
     ];
   }, [project?.columns]);
 
