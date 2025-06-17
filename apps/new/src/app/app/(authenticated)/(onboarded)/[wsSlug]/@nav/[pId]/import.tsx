@@ -10,7 +10,7 @@ import {
 } from "@mapform/ui/components/dialog";
 import { useDropzone } from "react-dropzone";
 import { parse } from "@loaders.gl/core";
-import { CSVLoader } from "@loaders.gl/csv";
+import { KMLLoader } from "@loaders.gl/kml";
 import { JSONLoader } from "@loaders.gl/json";
 import { useState } from "react";
 import { cn } from "@mapform/lib/classnames";
@@ -23,13 +23,16 @@ interface ParsedData {
 }
 
 async function parseUploadedFile(file: File): Promise<ParsedData[]> {
-  const isCsv = file.name.endsWith(".csv");
+  const isKml = file.name.endsWith(".kml");
   const isGeoJson =
     file.name.endsWith(".geojson") || file.name.endsWith(".json");
 
-  if (isCsv) {
-    const csvData = await parse(file, CSVLoader);
-    return csvData.data as ParsedData[];
+  if (isKml) {
+    const kmlData = (await parse(file.text(), KMLLoader)) as FeatureCollection;
+    return kmlData.features.map((f: Feature) => ({
+      ...f.properties,
+      geom: JSON.stringify(f.geometry),
+    }));
   } else if (isGeoJson) {
     const geojson = (await parse(file, JSONLoader)) as FeatureCollection;
     // Convert each GeoJSON feature to a flat row with geometry
@@ -46,8 +49,6 @@ export function Import() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [parsedData, setParsedData] = useState<ParsedData[] | null>(null);
-
-  console.log(11111, parsedData);
 
   const onDrop = async (acceptedFiles: File[]) => {
     if (acceptedFiles.length === 0) return;
@@ -73,7 +74,7 @@ export function Import() {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: {
-      "text/csv": [".csv"],
+      "application/vnd.google-earth.kml+xml": [".kml"],
       "application/json": [".geojson", ".json"],
     },
     maxFiles: 1,
@@ -109,7 +110,7 @@ export function Import() {
                 : "Drag files here, or click to select"}
             </p>
             <p className="text-muted-foreground mt-1 font-mono text-xs">
-              .csv, .geojson, .json
+              .kml, .geojson, .json
             </p>
           </div>
 

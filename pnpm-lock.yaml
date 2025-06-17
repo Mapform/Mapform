@@ -612,6 +612,9 @@ importers:
       '@loaders.gl/json':
         specifier: ^4.3.3
         version: 4.3.3(@loaders.gl/core@4.3.3)
+      '@loaders.gl/kml':
+        specifier: ^4.3.3
+        version: 4.3.3(@loaders.gl/core@4.3.3)
       '@mapbox/mapbox-gl-draw':
         specifier: ^1.5.0
         version: 1.5.0
@@ -2581,6 +2584,11 @@ packages:
     peerDependencies:
       '@loaders.gl/core': ^4.3.0
 
+  '@loaders.gl/kml@4.3.3':
+    resolution: {integrity: sha512-3qz2przlmoy00lseHj/jupIvq6w6jV7fHACxxzzPlvFSq+bCBWEThDslOqAJb0RTacZsUjjk/ukN0T2WEHFbtw==}
+    peerDependencies:
+      '@loaders.gl/core': ^4.3.0
+
   '@loaders.gl/loader-utils@4.3.3':
     resolution: {integrity: sha512-8erUIwWLiIsZX36fFa/seZsfTsWlLk72Sibh/YZJrPAefuVucV4mGGzMBZ96LE2BUfJhadn250eio/59TUFbNw==}
     peerDependencies:
@@ -4442,6 +4450,9 @@ packages:
       react: ^17.0.0 || ^18.0.0
       react-dom: ^17.0.0 || ^18.0.0
 
+  '@tmcw/togeojson@4.7.0':
+    resolution: {integrity: sha512-edAPymgIEIY/jrEmATYe56a46XHvPVm7SXhf29h7jSAUrRhLOIFIlbHPCsic/gGDSvWODTSioRFpXgou47ZLYg==}
+
   '@tsconfig/node10@1.0.9':
     resolution: {integrity: sha512-jNsYVVxU8v5g43Erja32laIDHXeoNvFEpX33OK4d6hljo3jDhCBDhx5dhCCTMWUojscpAagGiRkBKxpdl9fxqA==}
 
@@ -4751,6 +4762,11 @@ packages:
 
   '@vitest/utils@2.1.1':
     resolution: {integrity: sha512-Y6Q9TsI+qJ2CC0ZKj6VBb+T8UPz593N113nnUykqwANqhgf3QkZeHFlusgKLTqrnVHbj/XDKZcDHol+dxVT+rQ==}
+
+  '@xmldom/xmldom@0.7.13':
+    resolution: {integrity: sha512-lm2GW5PkosIzccsaZIz7tp8cPADSIlIHWDFTR1N0SzfinhhYgeIQjFMz4rYzanCScr3DqQLeomUDArp6MWKm+g==}
+    engines: {node: '>=10.0.0'}
+    deprecated: this version is no longer supported, please update to at least 0.8.*
 
   '@zkochan/rimraf@3.0.2':
     resolution: {integrity: sha512-GBf4ua7ogWTr7fATnzk/JLowZDBnBJMm8RkMaC/KcvxZ9gxbMWix0/jImd815LmqKyIHZ7h7lADRddGMdGBuCA==}
@@ -9545,6 +9561,15 @@ snapshots:
       '@loaders.gl/loader-utils': 4.3.3(@loaders.gl/core@4.3.3)
       '@loaders.gl/schema': 4.3.3(@loaders.gl/core@4.3.3)
 
+  '@loaders.gl/kml@4.3.3(@loaders.gl/core@4.3.3)':
+    dependencies:
+      '@loaders.gl/core': 4.3.3
+      '@loaders.gl/gis': 4.3.3(@loaders.gl/core@4.3.3)
+      '@loaders.gl/loader-utils': 4.3.3(@loaders.gl/core@4.3.3)
+      '@loaders.gl/schema': 4.3.3(@loaders.gl/core@4.3.3)
+      '@tmcw/togeojson': 4.7.0
+      '@xmldom/xmldom': 0.7.13
+
   '@loaders.gl/loader-utils@4.3.3(@loaders.gl/core@4.3.3)':
     dependencies:
       '@loaders.gl/core': 4.3.3
@@ -11436,6 +11461,8 @@ snapshots:
       react-dom: 19.0.0(react@19.0.0)
       use-sync-external-store: 1.2.2(react@19.0.0)
 
+  '@tmcw/togeojson@4.7.0': {}
+
   '@tsconfig/node10@1.0.9':
     optional: true
 
@@ -11761,6 +11788,8 @@ snapshots:
       '@vitest/pretty-format': 2.1.1
       loupe: 3.1.1
       tinyrainbow: 1.2.0
+
+  '@xmldom/xmldom@0.7.13': {}
 
   '@zkochan/rimraf@3.0.2': {}
 

@@ -22,6 +22,7 @@
     "@loaders.gl/core": "^4.3.3",
     "@loaders.gl/csv": "^4.3.3",
     "@loaders.gl/json": "^4.3.3",
+    "@loaders.gl/kml": "^4.3.3",
     "@mapbox/mapbox-gl-draw": "^1.5.0",
     "@mapbox/mapbox-gl-draw-static-mode": "^1.0.1",
     "@mapform/auth": "workspace:*",
