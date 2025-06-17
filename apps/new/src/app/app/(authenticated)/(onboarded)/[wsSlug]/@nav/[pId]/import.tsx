@@ -12,10 +12,13 @@ import { useDropzone } from "react-dropzone";
 import { parse } from "@loaders.gl/core";
 import { KMLLoader } from "@loaders.gl/kml";
 import { JSONLoader } from "@loaders.gl/json";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { cn } from "@mapform/lib/classnames";
 import { UploadIcon } from "lucide-react";
+import { useAction } from "next-safe-action/hooks";
+import { createManyRowsAction } from "~/data/rows/create-many-rows";
 import type { Feature, FeatureCollection } from "geojson";
+import { toast } from "@mapform/ui/components/toaster";
 
 interface ParsedData {
   [key: string]: any;
@@ -45,10 +48,24 @@ async function parseUploadedFile(file: File): Promise<ParsedData[]> {
   }
 }
 
-export function Import() {
+export function Import({ projectId }: { projectId: string }) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [parsedData, setParsedData] = useState<ParsedData[] | null>(null);
+
+  const { execute, isPending } = useAction(createManyRowsAction, {
+    onSuccess: () => {
+      toast({
+        title: "Rows created successfully",
+      });
+    },
+    onError: ({ error }) => {
+      toast({
+        title: "Error",
+        description: error.serverError ?? "Failed to create rows",
+      });
+    },
+  });
 
   const onDrop = async (acceptedFiles: File[]) => {
     if (acceptedFiles.length === 0) return;
@@ -64,6 +81,14 @@ export function Import() {
 
       const data = await parseUploadedFile(file);
       setParsedData(data);
+
+      execute({
+        projectId,
+        rows: data.map((d) => ({
+          name: "test",
+          geometry: d.geom,
+        })),
+      });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to parse file");
     } finally {
