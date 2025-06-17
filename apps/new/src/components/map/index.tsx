@@ -40,7 +40,13 @@ export function MapRoot({ children }: MapformProps) {
   );
 }
 
-export const Map = ({ className }: { className?: string }) => {
+export const Map = ({
+  children,
+  className,
+}: {
+  children?: React.ReactNode;
+  className?: string;
+}) => {
   const { map, mapContainer, setMap } = useMap();
 
   useEffect(() => {
@@ -59,5 +65,9 @@ export const Map = ({ className }: { className?: string }) => {
     };
   }, []);
 
-  return <div ref={mapContainer} className={className} />;
+  return (
+    <div ref={mapContainer} className={className}>
+      {children}
+    </div>
+  );
 };
