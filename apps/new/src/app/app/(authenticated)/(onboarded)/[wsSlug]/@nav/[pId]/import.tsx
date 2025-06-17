@@ -47,6 +47,8 @@ export function Import() {
   const [error, setError] = useState<string | null>(null);
   const [parsedData, setParsedData] = useState<ParsedData[] | null>(null);
 
+  console.log(11111, parsedData);
+
   const onDrop = async (acceptedFiles: File[]) => {
     if (acceptedFiles.length === 0) return;
 
