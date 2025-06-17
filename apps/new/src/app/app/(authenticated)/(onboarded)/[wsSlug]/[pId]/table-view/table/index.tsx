@@ -67,6 +67,7 @@ export function Table() {
     const columns = [
       {
         id: "name",
+        accessorKey: "name",
         header: "Name",
       },
     ];
@@ -209,10 +210,15 @@ export function Table() {
                 data-state={row.getIsSelected() && "selected"}
                 key={row.id}
               >
-                {row.getVisibleCells().map((cell) => (
-                  // <CellPopover cell={cell} dataset={dataset} key={cell.id} />
-                  <TableCell key={cell.id}>{cell.getValue()}</TableCell>
-                ))}
+                {row.getVisibleCells().map((cell) => {
+                  return (
+                    <TableCell key={cell.id}>
+                      {typeof cell.getValue() === "object"
+                        ? JSON.stringify(cell.getValue())
+                        : String(cell.getValue() ?? "")}
+                    </TableCell>
+                  );
+                })}
               </TableRow>
             ))
           ) : (
