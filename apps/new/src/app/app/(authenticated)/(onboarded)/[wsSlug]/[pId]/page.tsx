@@ -3,6 +3,7 @@ import { authClient } from "~/lib/safe-action";
 import { ProjectProvider } from "./context";
 import { TableView } from "./table-view";
 import type { QUERY_PARAMS } from "~/constants/query-params";
+import { MapView } from "./map-view";
 
 export default async function ViewPage(props: {
   params: Promise<{ wsSlug: string; pId: string }>;
@@ -36,6 +37,7 @@ export default async function ViewPage(props: {
   return (
     <ProjectProvider project={project.data} activeView={activeView}>
       {activeView.type === "table" && <TableView />}
+      {activeView.type === "map" && <MapView />}
     </ProjectProvider>
   );
 }
