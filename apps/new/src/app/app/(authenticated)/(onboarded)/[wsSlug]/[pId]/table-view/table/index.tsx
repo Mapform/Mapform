@@ -25,9 +25,11 @@ import { Button } from "@mapform/ui/components/button";
 export function Table() {
   const { project } = useProject();
 
+  console.log(1111, project?.rows);
+
   const rows = useMemo(
     () =>
-      project?.rows.map((row) => {
+      project.rows.map((row) => {
         const rowCells = row.cells;
 
         return {
@@ -56,14 +58,16 @@ export function Table() {
           ),
         };
       }),
-    [project?.rows],
+    [project.rows],
   );
+
+  console.log(2222, rows);
 
   const columns = useMemo(() => {
     const columns = [
       {
-        id: "title",
-        header: "Title",
+        id: "name",
+        header: "Name",
       },
     ];
 
@@ -119,6 +123,8 @@ export function Table() {
 
   const numberOfSelectedRows = table.getFilteredSelectedRowModel().rows.length;
   const totalNumberOfRows = table.getFilteredRowModel().rows.length;
+
+  console.log(3333, table.getRowModel().rows);
 
   return (
     <div className="relative flex flex-1 flex-col overflow-auto bg-white p-4 pt-0">
@@ -203,9 +209,10 @@ export function Table() {
                 data-state={row.getIsSelected() && "selected"}
                 key={row.id}
               >
-                {/* {row.getVisibleCells().map((cell) => (
-                  <CellPopover cell={cell} dataset={dataset} key={cell.id} />
-                ))} */}
+                {row.getVisibleCells().map((cell) => (
+                  // <CellPopover cell={cell} dataset={dataset} key={cell.id} />
+                  <TableCell key={cell.id}>{cell.getValue()}</TableCell>
+                ))}
               </TableRow>
             ))
           ) : (
