@@ -66,7 +66,7 @@ export function Header({ className }: HeaderProps) {
                 execute({ projectId: project.id, viewType: "map" });
               }}
             >
-              <VIEWS.map.icon className="mr-2 size-4" />
+              <VIEWS.map.icon className="size-4" />
               <span>{VIEWS.map.name} View</span>
             </DropdownMenuItem>
             <DropdownMenuItem
@@ -74,7 +74,7 @@ export function Header({ className }: HeaderProps) {
                 execute({ projectId: project.id, viewType: "table" });
               }}
             >
-              <VIEWS.table.icon className="mr-2 size-4" />
+              <VIEWS.table.icon className="size-4" />
               <span>{VIEWS.table.name} View</span>
             </DropdownMenuItem>
           </DropdownMenuContent>

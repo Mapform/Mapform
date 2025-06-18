@@ -5,8 +5,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@mapform/ui/components/dropdown-menu";
 import { useState } from "react";
@@ -16,6 +14,9 @@ import type { GetProject } from "@mapform/backend/data/projects/get-project";
 import { TrashIcon } from "lucide-react";
 import { useProject } from "../context";
 import { useSetQueryString } from "@mapform/lib/hooks/use-set-query-string";
+import { useAction } from "next-safe-action/hooks";
+import { deleteViewAction } from "~/data/views/delete-view";
+import { toast } from "@mapform/ui/components/toaster";
 
 export const ViewButton = ({
   view,
@@ -29,6 +30,19 @@ export const ViewButton = ({
   const ViewIcon = VIEWS[viewType].icon;
   const isActive = activeView?.id === view.id;
   const [isOpen, setIsOpen] = useState(false);
+
+  const { execute: executeDeleteView, isPending: isDeletingView } = useAction(
+    deleteViewAction,
+    {
+      onError: ({ error }) => {
+        toast({
+          title: "Uh oh! Something went wrong.",
+          description:
+            error.serverError ?? "There was an error updating the page.",
+        });
+      },
+    },
+  );
 
   return (
     <DropdownMenu
@@ -60,8 +74,13 @@ export const ViewButton = ({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start">
-        <DropdownMenuItem>
-          <TrashIcon className="mr-2 size-4" />
+        <DropdownMenuItem
+          disabled={isDeletingView}
+          onClick={() => {
+            executeDeleteView({ viewId: view.id });
+          }}
+        >
+          <TrashIcon className="size-4" />
           <span>Delete View</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
