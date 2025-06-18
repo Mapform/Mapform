@@ -12,11 +12,11 @@ import { useDropzone } from "react-dropzone";
 import { parse } from "@loaders.gl/core";
 import { KMLLoader } from "@loaders.gl/kml";
 import { JSONLoader } from "@loaders.gl/json";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { cn } from "@mapform/lib/classnames";
 import { UploadIcon } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
-import { createManyRowsAction } from "~/data/rows/create-many-rows";
+import { createRowsAction } from "~/data/rows/create-rows";
 import type { Feature, FeatureCollection } from "geojson";
 import { toast } from "@mapform/ui/components/toaster";
 
@@ -53,7 +53,7 @@ export function Import({ projectId }: { projectId: string }) {
   const [error, setError] = useState<string | null>(null);
   const [parsedData, setParsedData] = useState<ParsedData[] | null>(null);
 
-  const { execute, isPending } = useAction(createManyRowsAction, {
+  const { execute, isPending } = useAction(createRowsAction, {
     onSuccess: () => {
       toast({
         title: "Rows created successfully",

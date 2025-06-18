@@ -2,4 +2,4 @@
 
 import { authClient } from "~/lib/safe-action";
 
-export const createManyRowsAction = authClient.createManyRows;
+export const createRowsAction = authClient.createRows;

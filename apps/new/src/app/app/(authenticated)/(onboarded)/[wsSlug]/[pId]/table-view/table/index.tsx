@@ -19,13 +19,11 @@ import { Checkbox } from "@mapform/ui/components/checkbox";
 import { useMemo } from "react";
 import { useProject } from "../../context";
 import type { GetProject } from "@mapform/backend/data/projects/get-project";
-import { CopyIcon, PlusIcon, Trash2Icon } from "lucide-react";
-import { Button } from "@mapform/ui/components/button";
+import { PlusIcon } from "lucide-react";
+import { TopBar } from "./top-bar";
 
 export function Table() {
   const { project } = useProject();
-
-  console.log(1111, project?.rows);
 
   const rows = useMemo(
     () =>
@@ -60,8 +58,6 @@ export function Table() {
       }),
     [project.rows],
   );
-
-  console.log(2222, rows);
 
   const columns = useMemo(() => {
     const columns = [
@@ -125,52 +121,14 @@ export function Table() {
   const numberOfSelectedRows = table.getFilteredSelectedRowModel().rows.length;
   const totalNumberOfRows = table.getFilteredRowModel().rows.length;
 
-  console.log(3333, table.getRowModel().rows);
-
   return (
     <div className="relative flex flex-1 flex-col overflow-auto bg-white p-4 pt-0">
       {/* Top bar */}
-      <div className="sticky left-0 top-0 z-20 mb-0 box-content flex h-8 flex-shrink-0 items-center gap-2 border-b bg-white pb-2 pt-4">
-        <div className="text-muted-foreground text-sm">
-          {numberOfSelectedRows} of {totalNumberOfRows} row(s) selected.
-        </div>
-        {numberOfSelectedRows > 0 ? (
-          <>
-            <Button
-              // disabled={statusDeleteRows === "executing"}
-              onClick={() => {
-                const selectedRowIds = table
-                  .getFilteredSelectedRowModel()
-                  .flatRows.map((row) => row.id);
-
-                // executeDeleteRows({
-                //   rowIds: selectedRowIds,
-                // });
-              }}
-              size="sm"
-              variant="outline"
-            >
-              <Trash2Icon className="mr-2 size-4" /> Delete
-            </Button>
-            <Button
-              // disabled={statusDuplicateRows === "executing"}
-              onClick={() => {
-                const selectedRowIds = table
-                  .getFilteredSelectedRowModel()
-                  .flatRows.map((row) => row.id);
-
-                // executeDuplicateRows({
-                //   rowIds: selectedRowIds,
-                // });
-              }}
-              size="sm"
-              variant="outline"
-            >
-              <CopyIcon className="mr-2 size-4" /> Duplicate
-            </Button>
-          </>
-        ) : null}
-      </div>
+      <TopBar
+        table={table}
+        numberOfSelectedRows={numberOfSelectedRows}
+        totalNumberOfRows={totalNumberOfRows}
+      />
       <TableRoot className="border-b">
         <TableHeader
           className="sticky top-[57px] z-10 bg-white"

@@ -26,7 +26,10 @@ import { headers } from "next/headers";
 import { updateCurrentUser } from "@mapform/backend/data/users/update-current-user";
 import { createProject } from "@mapform/backend/data/projects/create-project";
 import { createView } from "@mapform/backend/data/views/create-view";
-import { createManyRows } from "@mapform/backend/data/rows/create-many-rows";
+import { createRows } from "@mapform/backend/data/rows/create-rows";
+import { deleteRows } from "@mapform/backend/data/rows/delete-rows";
+import { duplicateRows } from "@mapform/backend/data/rows/duplicate-rows";
+
 const ignoredWorkspaceSlugs = ["onboarding"];
 const ignoredTeamspaceSlugs = ["settings"];
 
@@ -95,7 +98,9 @@ const createUserAuthClient = () => {
 
     // Rows
     createRow: createRow(extendedClient),
-    createManyRows: createManyRows(extendedClient),
+    createRows: createRows(extendedClient),
+    deleteRows: deleteRows(extendedClient),
+    duplicateRows: duplicateRows(extendedClient),
 
     // Stripe
     createBillingSession: createBillingSession(extendedClient),

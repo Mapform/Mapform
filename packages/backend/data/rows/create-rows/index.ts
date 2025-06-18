@@ -2,15 +2,15 @@
 
 import { db } from "@mapform/db";
 import { projects, rows } from "@mapform/db/schema";
-import { createManyRowsSchema } from "./schema";
+import { createRowsSchema } from "./schema";
 import type { UserAuthClient } from "../../../lib/types";
 import { getRowCount } from "../../usage/get-row-count";
 import { eq } from "@mapform/db/utils";
 import { ServerError } from "../../../lib/server-error";
 
-export const createManyRows = (authClient: UserAuthClient) =>
+export const createRows = (authClient: UserAuthClient) =>
   authClient
-    .schema(createManyRowsSchema)
+    .schema(createRowsSchema)
     .action(
       async ({
         parsedInput: { projectId, rows: rowsToInsert },
