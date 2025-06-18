@@ -82,6 +82,7 @@ export function Header({ className }: HeaderProps) {
           </Tooltip>
           <DropdownMenuContent align="start">
             <DropdownMenuItem
+              disabled={isPending}
               onClick={() => {
                 execute({ projectId: project.id, viewType: "map" });
               }}
