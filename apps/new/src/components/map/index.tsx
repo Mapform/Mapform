@@ -5,6 +5,8 @@ import type { Dispatch, SetStateAction } from "react";
 import "mapbox-gl/dist/mapbox-gl.css";
 
 import { env } from "~/env.mjs";
+import { Source } from "./source";
+import { Layer } from "./layer";
 
 interface MapformProps {
   children: React.ReactNode;
@@ -58,7 +60,9 @@ export const Map = ({
       container: mapContainer.current,
     });
 
-    setMap(instance);
+    instance.on("load", () => {
+      setMap(instance);
+    });
 
     return () => {
       instance.remove();
@@ -71,3 +75,5 @@ export const Map = ({
     </div>
   );
 };
+
+export { Source, Layer };
