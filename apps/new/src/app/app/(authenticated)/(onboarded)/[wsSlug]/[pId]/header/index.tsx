@@ -15,17 +15,15 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@mapform/ui/components/tooltip";
-import { QUERY_PARAMS } from "~/constants/query-params";
-import { useSetQueryString } from "@mapform/lib/hooks/use-set-query-string";
-import { useProject } from "./context";
+import { useProject } from "../context";
+import { ViewButton } from "./view-button";
 
 interface HeaderProps {
   className?: string;
 }
 
 export function Header({ className }: HeaderProps) {
-  const { project, activeView } = useProject();
-  const setQueryString = useSetQueryString();
+  const { project } = useProject();
 
   const { execute, isPending } = useAction(createViewAction);
 
@@ -47,28 +45,9 @@ export function Header({ className }: HeaderProps) {
         }}
       />
       <div className="flex gap-1">
-        {project.views.map((view) => {
-          const viewType = view.type;
-          const ViewIcon = VIEWS[viewType].icon;
-          const isActive = activeView?.id === view.id;
-
-          return (
-            <Button
-              key={view.id}
-              size="sm"
-              variant={isActive ? "secondary" : "outline"}
-              onClick={() => {
-                setQueryString({
-                  key: QUERY_PARAMS.VIEW,
-                  value: view.id,
-                });
-              }}
-            >
-              <ViewIcon className="mr-2 size-4" />
-              <span>{view.name ?? VIEWS[viewType].name}</span>
-            </Button>
-          );
-        })}
+        {project.views.map((view) => (
+          <ViewButton key={view.id} view={view} />
+        ))}
         <DropdownMenu>
           <Tooltip>
             <TooltipTrigger asChild>

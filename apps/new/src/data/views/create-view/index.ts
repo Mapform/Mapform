@@ -8,7 +8,7 @@ export const createViewAction = async (
 ) => {
   const result = await authClient.createView(params);
 
-  revalidatePath("/app/[wsSlug]/[pId]", "page");
+  revalidatePath(`/app/[wsSlug]/${params.projectId}`, "page");
 
   return result;
 };

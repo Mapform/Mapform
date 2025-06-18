@@ -29,6 +29,8 @@ import { createView } from "@mapform/backend/data/views/create-view";
 import { createRows } from "@mapform/backend/data/rows/create-rows";
 import { deleteRows } from "@mapform/backend/data/rows/delete-rows";
 import { duplicateRows } from "@mapform/backend/data/rows/duplicate-rows";
+import { deleteView } from "@mapform/backend/data/views/delete-view";
+import { updateView } from "@mapform/backend/data/views/update-view";
 
 const ignoredWorkspaceSlugs = ["onboarding"];
 const ignoredTeamspaceSlugs = ["settings"];
@@ -114,6 +116,8 @@ const createUserAuthClient = () => {
 
     // Views
     createView: createView(extendedClient),
+    deleteView: deleteView(extendedClient),
+    updateView: updateView(extendedClient),
 
     // Workspaces
     updateWorkspace: updateWorkspace(extendedClient),
