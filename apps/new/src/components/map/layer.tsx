@@ -1,9 +1,9 @@
 import { useEffect } from "react";
-import type { AnyLayer } from "mapbox-gl";
+import type { AnyLayer, Layer as MapboxLayer } from "mapbox-gl";
 import { useMap } from "./index";
 import { useSource } from "./source";
 
-interface LayerProps extends Omit<AnyLayer, "id" | "source"> {
+interface LayerProps extends Omit<MapboxLayer, "id" | "source"> {
   id: string;
   source?: string;
   beforeId?: string;
