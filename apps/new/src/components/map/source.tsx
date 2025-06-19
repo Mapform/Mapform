@@ -44,7 +44,18 @@ export const Source = ({
     }
 
     return () => {
-      if (map.getSource(id)) {
+      if (map.isStyleLoaded() && map.getSource(id)) {
+        // Reference: https://github.com/visgl/react-map-gl/blob/master/modules/react-mapbox/src/components/source.ts
+        // Parent effects are destroyed before child ones, see
+        // https://github.com/facebook/react/issues/16728
+        // Source can only be removed after all child layers are removed
+        const allLayers = map.getStyle().layers;
+        for (const layer of allLayers) {
+          // @ts-expect-error -- source does not exist on all layer types
+          if (map.isStyleLoaded() && layer.source === id) {
+            map.removeLayer(layer.id);
+          }
+        }
         map.removeSource(id);
       }
     };

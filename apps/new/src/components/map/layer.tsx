@@ -47,7 +47,7 @@ export const Layer = ({
 
     // If source is already loaded, add the layer immediately
     const mapSource = map.getSource(source);
-    if (mapSource && (mapSource as any).loaded) {
+    if (map.isStyleLoaded() && mapSource) {
       handleSourceData({
         sourceId: source,
         isSourceLoaded: true,
@@ -56,7 +56,7 @@ export const Layer = ({
 
     return () => {
       map.off("sourcedata", handleSourceData);
-      if (map.getLayer(id)) {
+      if (map.isStyleLoaded() && map.getLayer(id)) {
         map.removeLayer(id);
       }
     };

@@ -7,7 +7,7 @@ import { useProject } from "../context";
 
 export function MapView() {
   const { project } = useProject();
-  console.log(project.rows);
+  console.log("rows", project.rows);
 
   return (
     <MapRoot>
