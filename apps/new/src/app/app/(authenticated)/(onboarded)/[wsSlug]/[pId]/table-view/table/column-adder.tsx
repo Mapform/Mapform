@@ -13,7 +13,7 @@ import {
   createColumnSchema,
   type CreateColumnSchema,
 } from "@mapform/backend/data/columns/create-column/schema";
-import { Icon, PlusIcon } from "lucide-react";
+import { PlusIcon } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import { createColumnAction } from "~/data/columns/create-column";
 import { useState } from "react";
@@ -24,7 +24,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@mapform/ui/components/dropdown-menu";
-import { Input } from "@mapform/ui/components/input";
 import { COLUMNS } from "~/constants/columns";
 
 export function ColumnAdder() {
@@ -79,7 +78,7 @@ export function ColumnAdder() {
               <DropdownMenuItem
                 className="hover:outline-none"
                 key={type}
-                onSelect={(e) => {
+                onSelect={() => {
                   handleColumnTypeSelect(type as CreateColumnSchema["type"]);
                 }}
               >
