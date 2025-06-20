@@ -74,7 +74,6 @@ export function Table() {
         size: 50,
         minSize: 50,
         maxSize: 50,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Not worth creating a workaround type
         header: ({ table }: { table: Table<any> }) => (
           <Checkbox
             aria-label="Select all"
@@ -87,7 +86,6 @@ export function Table() {
             }}
           />
         ),
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Not worth creating a workaround type
         cell: ({ row }: { row: Row<any> }) => (
           <Checkbox
             aria-label="Select row"
@@ -171,9 +169,10 @@ export function Table() {
                 {row.getVisibleCells().map((cell) => {
                   return (
                     <TableCell key={cell.id}>
-                      {typeof cell.getValue() === "object"
-                        ? JSON.stringify(cell.getValue())
-                        : String(cell.getValue() ?? "")}
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext(),
+                      )}
                     </TableCell>
                   );
                 })}

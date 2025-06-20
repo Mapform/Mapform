@@ -55,6 +55,7 @@
     "next-safe-action": "catalog:",
     "next-themes": "catalog:",
     "next-video": "^2.2.0",
+    "nuqs": "^2.4.3",
     "papaparse": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
