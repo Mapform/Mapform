@@ -24,6 +24,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@mapform/ui/components/dropdown-menu";
+import { Input } from "@mapform/ui/components/input";
 import { COLUMNS } from "~/constants/columns";
 
 export function ColumnAdder() {
@@ -35,16 +36,30 @@ export function ColumnAdder() {
       setPopoverOpen(false);
       form.reset();
     },
+    onError: (error) => {
+      console.error(error);
+    },
   });
   const form = useForm<CreateColumnSchema>({
     defaultValues: {
       projectId: project.id,
+      name: "",
+      type: "string",
     },
     resolver: zodResolver(createColumnSchema),
   });
 
   const onSubmit = (values: CreateColumnSchema) => {
+    console.log("onSubmit", values);
     execute(values);
+  };
+
+  const handleColumnTypeSelect = (type: CreateColumnSchema["type"]) => {
+    form.setValue("type", type);
+    // Auto-generate a name based on the type
+    const typeName = COLUMNS[type].name;
+    form.setValue("name", typeName);
+    void form.handleSubmit(onSubmit)();
   };
 
   return (
@@ -54,14 +69,20 @@ export function ColumnAdder() {
           <PlusIcon className="size-4" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="w-[240px]" side="right">
+      <DropdownMenuContent align="start" side="right" className="w-56">
         <Form {...form}>
           <form
             className="flex flex-1 flex-col"
             onSubmit={form.handleSubmit(onSubmit)}
           >
             {Object.entries(COLUMNS).map(([type, { name, icon: Icon }]) => (
-              <DropdownMenuItem className="hover:outline-none" key={type}>
+              <DropdownMenuItem
+                className="hover:outline-none"
+                key={type}
+                onSelect={(e) => {
+                  handleColumnTypeSelect(type as CreateColumnSchema["type"]);
+                }}
+              >
                 <Icon className="size-4" />
                 {name}
               </DropdownMenuItem>
