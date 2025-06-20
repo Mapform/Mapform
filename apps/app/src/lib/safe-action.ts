@@ -36,7 +36,7 @@ import { updatePageOrder } from "@mapform/backend/data/pages/update-page-order";
 import { getProjectWithPages } from "@mapform/backend/data/projects/get-project-with-pages";
 import { getTeamspaceWithProjects } from "@mapform/backend/data/teamspaces/get-teamspace-with-projects";
 import { deleteColumn } from "@mapform/backend/data/columns/delete-column";
-import { editColumn } from "@mapform/backend/data/columns/edit-column";
+import { editColumn } from "@mapform/backend/data/columns/update-column";
 import { getDataset } from "@mapform/backend/data/datasets/get-dataset";
 import { createRow } from "@mapform/backend/data/rows/create-row";
 import { deleteRows } from "@mapform/backend/data/rows/delete-rows";

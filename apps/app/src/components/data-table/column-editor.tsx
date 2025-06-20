@@ -32,7 +32,7 @@ import {
 import {
   editColumnSchema,
   type EditColumnSchema,
-} from "@mapform/backend/data/columns/edit-column/schema";
+} from "@mapform/backend/data/columns/update-column/schema";
 import { editColumnAction } from "~/data/columns/edit-column";
 import { deleteColumnAction } from "~/data/columns/delete-column";
 import { COLUMN_ICONS } from "~/constants/column-icons";

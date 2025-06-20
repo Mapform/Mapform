@@ -1,9 +1,9 @@
 import { z } from "zod";
 import { selectColumnSchema } from "@mapform/db/schema";
 
-export const editColumnSchema = z.object({
+export const updateColumnSchema = z.object({
   id: selectColumnSchema.shape.id,
   name: selectColumnSchema.shape.name,
 });
 
-export type EditColumnSchema = z.infer<typeof editColumnSchema>;
+export type EditColumnSchema = z.infer<typeof updateColumnSchema>;

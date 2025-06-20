@@ -31,6 +31,9 @@ import { deleteRows } from "@mapform/backend/data/rows/delete-rows";
 import { duplicateRows } from "@mapform/backend/data/rows/duplicate-rows";
 import { deleteView } from "@mapform/backend/data/views/delete-view";
 import { updateView } from "@mapform/backend/data/views/update-view";
+import { createColumn } from "@mapform/backend/data/columns/create-column";
+import { deleteColumn } from "@mapform/backend/data/columns/delete-column";
+import { updateColumn } from "@mapform/backend/data/columns/update-column";
 
 const ignoredWorkspaceSlugs = ["onboarding"];
 const ignoredTeamspaceSlugs = ["settings"];
@@ -89,6 +92,11 @@ const createUserAuthClient = () => {
   return {
     // Auth
     signOut: signOut(extendedClient),
+
+    // Columns
+    createColumn: createColumn(extendedClient),
+    deleteColumn: deleteColumn(extendedClient),
+    updateColumn: updateColumn(extendedClient),
 
     // Images
     uploadImage: uploadImage(extendedClient),

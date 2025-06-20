@@ -21,9 +21,12 @@ import { useProject } from "../../context";
 import type { GetProject } from "@mapform/backend/data/projects/get-project";
 import { PlusIcon } from "lucide-react";
 import { TopBar } from "./top-bar";
+import { ColumnAdder } from "./column-adder";
 
 export function Table() {
   const { project } = useProject();
+
+  console.log(project);
 
   const rows = useMemo(
     () =>
@@ -60,6 +63,7 @@ export function Table() {
   );
 
   const columns = useMemo(() => {
+    // TODO: Add Icon and cells
     const columns = [
       {
         id: "name",
@@ -99,8 +103,15 @@ export function Table() {
         enableHiding: false,
       },
       ...columns,
+      {
+        id: "create-column",
+        accessorKey: "create-column",
+        header: () => <ColumnAdder />,
+        enableSorting: false,
+        enableHiding: false,
+      },
     ];
-  }, [project?.columns]);
+  }, []);
 
   const table = useReactTable({
     data: rows ?? [],
