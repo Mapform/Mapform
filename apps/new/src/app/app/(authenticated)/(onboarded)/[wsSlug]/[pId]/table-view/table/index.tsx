@@ -136,7 +136,7 @@ export function Table() {
   const totalNumberOfRows = table.getFilteredRowModel().rows.length;
 
   return (
-    <div className="relative flex flex-1 flex-col overflow-auto bg-white p-4 pt-0">
+    <div className="relative flex flex-1 flex-col overflow-auto bg-white py-4">
       {/* Top bar */}
       <TopBar
         table={table}
