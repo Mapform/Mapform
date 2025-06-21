@@ -133,7 +133,11 @@ export function Table() {
       {
         id: "create-column",
         accessorKey: "create-column",
-        header: () => <ColumnAdder />,
+        header: () => (
+          <div className="flex flex-grow-0 items-center">
+            <ColumnAdder />
+          </div>
+        ),
         enableSorting: false,
         enableHiding: false,
       },
