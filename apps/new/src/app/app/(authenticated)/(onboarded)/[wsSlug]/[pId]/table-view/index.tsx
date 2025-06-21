@@ -5,7 +5,7 @@ import { Table } from "./table";
 
 export function TableView() {
   return (
-    <div className="overflow-auto p-8">
+    <div className="overflow-auto p-12">
       <Header />
       <Table />
     </div>
