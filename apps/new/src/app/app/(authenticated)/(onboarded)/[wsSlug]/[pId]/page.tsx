@@ -14,6 +14,10 @@ export default async function ViewPage(props: {
 
   const project = await authClient.getProject({
     projectId: params.pId,
+    filter: {
+      type: "page",
+      page: 0,
+    },
   });
 
   if (!project) {

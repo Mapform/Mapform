@@ -9,6 +9,7 @@ import { ThemeProvider } from "next-themes";
 import { createContext, useContext, useState, useEffect, use } from "react";
 import type { GetCurrentSession } from "~/data/auth/get-current-session";
 import { TooltipProvider } from "@mapform/ui/components/tooltip";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 type User = NonNullable<
   NonNullable<Awaited<GetCurrentSession>>["data"]
@@ -86,7 +87,9 @@ export function RootProviders({
           disableTransitionOnChange
           enableSystem
         >
-          <TooltipProvider delayDuration={200}>{children}</TooltipProvider>
+          <NuqsAdapter>
+            <TooltipProvider delayDuration={200}>{children}</TooltipProvider>
+          </NuqsAdapter>
         </ThemeProvider>
       </QueryClientProvider>
     </AuthContext.Provider>
