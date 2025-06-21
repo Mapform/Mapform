@@ -70,6 +70,11 @@ export function Table() {
         accessorKey: "name",
         header: "Name",
       },
+      ...project.columns.map((column) => ({
+        id: column.id,
+        accessorKey: column.id,
+        header: column.name,
+      })),
     ];
 
     return [
@@ -111,7 +116,7 @@ export function Table() {
         enableHiding: false,
       },
     ];
-  }, []);
+  }, [project.columns]);
 
   const table = useReactTable({
     data: rows ?? [],
