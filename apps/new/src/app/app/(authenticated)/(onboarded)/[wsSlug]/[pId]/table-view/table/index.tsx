@@ -19,9 +19,10 @@ import { Checkbox } from "@mapform/ui/components/checkbox";
 import { useMemo } from "react";
 import { useProject } from "../../context";
 import type { GetProject } from "@mapform/backend/data/projects/get-project";
-import { PlusIcon, SmileIcon } from "lucide-react";
+import { CaseSensitiveIcon, PlusIcon, SmileIcon } from "lucide-react";
 import { TopBar } from "./top-bar";
 import { ColumnAdder } from "./column-adder";
+import { ColumnEditor } from "./column-editor";
 
 export function Table() {
   const { project } = useProject();
@@ -67,7 +68,11 @@ export function Table() {
       {
         id: "name",
         accessorKey: "name",
-        header: "Name",
+        header: () => (
+          <div className="flex flex-grow-0 items-center gap-1.5">
+            <CaseSensitiveIcon className="size-4" /> Name
+          </div>
+        ),
         cell: ({ row }: { row: Row<any> }) => {
           const icon = row.original.icon ?? (
             <SmileIcon className="text-muted-foreground size-4" />
@@ -83,7 +88,13 @@ export function Table() {
       ...project.columns.map((column) => ({
         id: column.id,
         accessorKey: column.id,
-        header: column.name,
+        header: () => (
+          <ColumnEditor
+            columnId={column.id}
+            columnName={column.name}
+            columnType={column.type}
+          />
+        ),
       })),
     ];
 
@@ -94,16 +105,18 @@ export function Table() {
         minSize: 50,
         maxSize: 50,
         header: ({ table }: { table: Table<any> }) => (
-          <Checkbox
-            aria-label="Select all"
-            checked={
-              table.getIsAllPageRowsSelected() ||
-              (table.getIsSomePageRowsSelected() && "indeterminate")
-            }
-            onCheckedChange={(value) => {
-              table.toggleAllPageRowsSelected(Boolean(value));
-            }}
-          />
+          <div className="flex flex-grow-0 items-center">
+            <Checkbox
+              aria-label="Select all"
+              checked={
+                table.getIsAllPageRowsSelected() ||
+                (table.getIsSomePageRowsSelected() && "indeterminate")
+              }
+              onCheckedChange={(value) => {
+                table.toggleAllPageRowsSelected(Boolean(value));
+              }}
+            />
+          </div>
         ),
         cell: ({ row }: { row: Row<any> }) => (
           <Checkbox
@@ -161,11 +174,11 @@ export function Table() {
           }}
         >
           {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow className="border-none" key={headerGroup.id}>
+            <TableRow className="flex border-none" key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
                 return (
                   <TableHead
-                    className="flex-grow-0 truncate"
+                    className="flex flex-grow-0 truncate"
                     key={header.id}
                     style={{
                       width: `${header.getSize()}px`,

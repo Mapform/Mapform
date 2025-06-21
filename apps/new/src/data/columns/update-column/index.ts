@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { authClient } from "~/lib/safe-action";
 
-export const editColumnAction = async (
+export const updateColumnAction = async (
   params: Last<Parameters<typeof authClient.updateColumn>>,
 ) => {
   const result = await authClient.updateColumn(params);

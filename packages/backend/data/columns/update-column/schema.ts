@@ -6,4 +6,4 @@ export const updateColumnSchema = z.object({
   name: selectColumnSchema.shape.name,
 });
 
-export type EditColumnSchema = z.infer<typeof updateColumnSchema>;
+export type UpdateColumnSchema = z.infer<typeof updateColumnSchema>;
