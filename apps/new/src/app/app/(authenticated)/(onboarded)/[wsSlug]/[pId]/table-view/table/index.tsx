@@ -19,7 +19,7 @@ import { Checkbox } from "@mapform/ui/components/checkbox";
 import { useMemo } from "react";
 import { useProject } from "../../context";
 import type { GetProject } from "@mapform/backend/data/projects/get-project";
-import { PlusIcon } from "lucide-react";
+import { PlusIcon, SmileIcon } from "lucide-react";
 import { TopBar } from "./top-bar";
 import { ColumnAdder } from "./column-adder";
 
@@ -63,12 +63,22 @@ export function Table() {
   );
 
   const columns = useMemo(() => {
-    // TODO: Add Icon and cells
     const columns = [
       {
         id: "name",
         accessorKey: "name",
         header: "Name",
+        cell: ({ row }: { row: Row<any> }) => {
+          const icon = row.original.icon ?? (
+            <SmileIcon className="text-muted-foreground size-4" />
+          );
+
+          return (
+            <div className="flex items-center gap-2">
+              {icon} {row.original.name}
+            </div>
+          );
+        },
       },
       ...project.columns.map((column) => ({
         id: column.id,
