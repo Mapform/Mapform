@@ -1,6 +1,6 @@
 "server-only";
 
-import { db } from "@mapform/db";
+import { db, sql } from "@mapform/db";
 import { eq, inArray } from "@mapform/db/utils";
 import {
   rows,
@@ -22,6 +22,11 @@ export const duplicateRows = (authClient: UserAuthClient) =>
     .action(async ({ parsedInput: { rowIds }, ctx: { userAccess } }) => {
       const dataToDuplicate = await db.query.rows.findMany({
         where: inArray(rows.id, rowIds),
+        extras: {
+          geometry: sql<string>`ST_AsGeoJSON(${rows.geometry})::jsonb`.as(
+            "geometry",
+          ),
+        },
         with: {
           cells: {
             with: {
@@ -97,7 +102,10 @@ export const duplicateRows = (authClient: UserAuthClient) =>
             dataToDuplicate.map((row) => {
               return {
                 name: row.name,
+                icon: row.icon,
+                description: row.description,
                 projectId: row.projectId,
+                geometry: row.geometry,
               };
             }),
           )

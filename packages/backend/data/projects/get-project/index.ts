@@ -8,6 +8,9 @@ import { getProjectSchema } from "./schema";
 
 const ROWS_PER_PAGE = 50;
 
+/**
+ * return the project and associated rows and column data
+ */
 export const getProject = (authClient: UserAuthClient) =>
   authClient
     .schema(getProjectSchema)
