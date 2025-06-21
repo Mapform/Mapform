@@ -2,13 +2,12 @@
 
 import { Layer, Map, MapRoot, Source } from "~/components/map";
 import { rowsToGeoJSON } from "~/lib/rows-to-geojson";
-import { Header } from "../header";
-import { useProject } from "../context";
 import { useMemo } from "react";
+import { useProject } from "../context";
+import { MapDrawer } from "./map-drawer";
 
 export function MapView() {
   const { project } = useProject();
-  console.log("rows", project.rows);
 
   // Separate rows by geometry type
   const pointRows = useMemo(
@@ -37,7 +36,7 @@ export function MapView() {
   return (
     <MapRoot>
       <div className="h-full p-4">
-        <div className="relative h-full">
+        <div className="relative h-full overflow-hidden">
           <Map className="size-full rounded-lg">
             {/* Points Layer */}
             {pointRows.length > 0 && (
@@ -92,7 +91,7 @@ export function MapView() {
               </Source>
             )}
           </Map>
-          <Header className="absolute left-4 top-4 z-10 w-fit p-4" />
+          <MapDrawer />
         </div>
       </div>
     </MapRoot>
