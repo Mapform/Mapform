@@ -177,11 +177,11 @@ export function Table() {
           }}
         >
           {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow className="flex border-none" key={headerGroup.id}>
+            <TableRow className="border-none" key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
                 return (
                   <TableHead
-                    className="flex flex-grow-0 truncate"
+                    className="flex-grow-0 truncate"
                     key={header.id}
                     style={{
                       width: `${header.getSize()}px`,

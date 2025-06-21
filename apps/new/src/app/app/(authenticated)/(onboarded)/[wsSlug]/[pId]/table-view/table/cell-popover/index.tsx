@@ -12,9 +12,9 @@ import {
   PopoverAnchor,
   PopoverContent,
 } from "@mapform/ui/components/popover";
+import { TableCell } from "@mapform/ui/components/table";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { Switch } from "@mapform/ui/components/switch";
-import { TableCell } from "@mapform/ui/components/table";
 import { flexRender, type Cell } from "@tanstack/react-table";
 import { useAction } from "next-safe-action/hooks";
 import { useCallback, useRef, useState } from "react";
