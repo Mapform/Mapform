@@ -34,6 +34,7 @@ import { updateView } from "@mapform/backend/data/views/update-view";
 import { createColumn } from "@mapform/backend/data/columns/create-column";
 import { deleteColumn } from "@mapform/backend/data/columns/delete-column";
 import { updateColumn } from "@mapform/backend/data/columns/update-column";
+import { upsertCell } from "@mapform/backend/data/cells/upsert-cell";
 
 const ignoredWorkspaceSlugs = ["onboarding"];
 const ignoredTeamspaceSlugs = ["settings"];
@@ -92,6 +93,9 @@ const createUserAuthClient = () => {
   return {
     // Auth
     signOut: signOut(extendedClient),
+
+    // Cells
+    upsertCell: upsertCell(extendedClient),
 
     // Columns
     createColumn: createColumn(extendedClient),

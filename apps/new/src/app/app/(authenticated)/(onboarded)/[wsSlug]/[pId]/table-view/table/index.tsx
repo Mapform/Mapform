@@ -23,11 +23,10 @@ import { CaseSensitiveIcon, PlusIcon, SmileIcon } from "lucide-react";
 import { TopBar } from "./top-bar";
 import { ColumnAdder } from "./column-adder";
 import { ColumnEditor } from "./column-editor";
+import { CellPopover } from "./cell-popover";
 
 export function Table() {
   const { project } = useProject();
-
-  console.log(project);
 
   const rows = useMemo(
     () =>
@@ -205,16 +204,9 @@ export function Table() {
                 data-state={row.getIsSelected() && "selected"}
                 key={row.id}
               >
-                {row.getVisibleCells().map((cell) => {
-                  return (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
-                    </TableCell>
-                  );
-                })}
+                {row.getVisibleCells().map((cell) => (
+                  <CellPopover cell={cell} key={cell.id} />
+                ))}
               </TableRow>
             ))
           ) : (
