@@ -33,7 +33,7 @@ export function MapDrawer({ drawerOpen, setDrawerOpen }: MapDrawerProps) {
             } as React.CSSProperties
           }
         >
-          <div className="flex h-full w-full grow flex-col rounded-lg bg-white p-6">
+          <div className="flex h-full w-full grow flex-col rounded-lg border bg-white p-6">
             <Header />
           </div>
         </DrawerPrimitive.Content>

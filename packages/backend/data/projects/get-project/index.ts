@@ -6,7 +6,7 @@ import { projects, rows } from "@mapform/db/schema";
 import type { UnwrapReturn, UserAuthClient } from "../../../lib/types";
 import { getProjectSchema } from "./schema";
 
-const ROWS_PER_PAGE = 50;
+const ROWS_PER_PAGE = 1;
 
 /**
  * return the project and associated rows and column data

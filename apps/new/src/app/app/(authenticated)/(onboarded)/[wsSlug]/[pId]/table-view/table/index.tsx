@@ -16,7 +16,7 @@ import {
   TableRow,
 } from "@mapform/ui/components/table";
 import { Checkbox } from "@mapform/ui/components/checkbox";
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
 import { useProject } from "../../context";
 import type { GetProject } from "@mapform/backend/data/projects/get-project";
 import { CaseSensitiveIcon, PlusIcon, SmileIcon } from "lucide-react";
@@ -24,9 +24,12 @@ import { TopBar } from "./top-bar";
 import { ColumnAdder } from "./column-adder";
 import { ColumnEditor } from "./column-editor";
 import { CellPopover } from "./cell-popover";
+import { TablePagination } from "./table-pagination";
+import { TableActionBar, TableActionBarSelection } from "./table-action-bar";
 
 export function Table() {
   const { project } = useProject();
+  const tableContainerRef = useRef<HTMLDivElement>(null);
 
   const rows = useMemo(
     () =>
@@ -147,6 +150,7 @@ export function Table() {
   const table = useReactTable({
     data: rows ?? [],
     columns,
+    // pageCount: 3,
     getCoreRowModel: getCoreRowModel(),
     getRowId: (row) => {
       return row.rowId;
@@ -162,7 +166,10 @@ export function Table() {
   const totalNumberOfRows = table.getFilteredRowModel().rows.length;
 
   return (
-    <div className="relative flex flex-1 flex-col overflow-auto bg-white py-4">
+    <div
+      className="relative flex flex-1 flex-col overflow-auto bg-white py-4"
+      ref={tableContainerRef}
+    >
       {/* Top bar */}
       <TopBar
         table={table}
@@ -235,6 +242,12 @@ export function Table() {
           Add row
         </button>
       </div>
+      <TablePagination table={table} />
+      {table.getFilteredSelectedRowModel().rows.length > 0 && (
+        <TableActionBar container={tableContainerRef.current} table={table}>
+          <TableActionBarSelection table={table} />
+        </TableActionBar>
+      )}
     </div>
   );
 }
