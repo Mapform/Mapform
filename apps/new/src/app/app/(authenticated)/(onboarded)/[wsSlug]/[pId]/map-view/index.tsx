@@ -2,7 +2,7 @@
 
 import { Layer, Map, MapRoot, Source } from "~/components/map";
 import { rowsToGeoJSON } from "~/lib/rows-to-geojson";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useMediaQuery } from "@mapform/ui/hooks/use-media-query";
 import { useQueryStates } from "nuqs";
 import { useProject } from "../context";
@@ -15,18 +15,18 @@ const POINTS_LAYER_ID = "points-layer";
 const LINES_LAYER_ID = "lines-layer";
 const POLYGONS_FILL_LAYER_ID = "polygons-fill-layer";
 const POLYGONS_OUTLINE_LAYER_ID = "polygons-outline-layer";
+import { DrawerPrimitive as Drawer } from "@mapform/ui/components/drawer";
 
 export function MapView() {
   const { project, feature } = useProject();
   const isDesktop = useMediaQuery("(min-width: 768px)");
   const [drawerOpen, setDrawerOpen] = useState(true);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const [_, setProjectSearchParams] = useQueryStates(projectSearchParams, {
     urlKeys: projectSearchParamsUrlKeys,
     shallow: false,
   });
-
-  console.log(111, feature);
 
   const mapPadding = useMemo(() => {
     return {
@@ -82,8 +82,8 @@ export function MapView() {
 
   return (
     <MapRoot padding={mapPadding}>
-      <div className="h-full p-4">
-        <div className="relative h-full overflow-hidden">
+      <div className="h-full overflow-hidden p-4">
+        <div className="relative h-full overflow-hidden" ref={containerRef}>
           <Map className="size-full rounded-lg" onClick={handleClick}>
             {/* Points Layer */}
             {pointRows.length > 0 && (
@@ -138,7 +138,11 @@ export function MapView() {
               </Source>
             )}
           </Map>
-          <MapDrawer drawerOpen={drawerOpen} setDrawerOpen={setDrawerOpen} />
+          <MapDrawer
+            containerRef={containerRef}
+            drawerOpen={drawerOpen}
+            setDrawerOpen={setDrawerOpen}
+          />
           <MapControls />
         </div>
       </div>
