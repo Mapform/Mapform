@@ -30,16 +30,18 @@ export function Header({ className }: HeaderProps) {
 
   return (
     <header className={className}>
-      <Tooltip>
-        <EmojiPopover onIconChange={() => {}}>
-          <TooltipTrigger asChild>
-            <Button size="icon-sm" type="button" variant="ghost">
-              <SmilePlusIcon className="size-4" />
-            </Button>
-          </TooltipTrigger>
-        </EmojiPopover>
-        <TooltipContent>Add emoji</TooltipContent>
-      </Tooltip>
+      <div className="-m-2 mb-0">
+        <Tooltip>
+          <EmojiPopover onIconChange={() => {}}>
+            <TooltipTrigger asChild>
+              <Button size="icon-sm" type="button" variant="ghost">
+                <SmilePlusIcon className="size-4" />
+              </Button>
+            </TooltipTrigger>
+          </EmojiPopover>
+          <TooltipContent>Add emoji</TooltipContent>
+        </Tooltip>
+      </div>
       <AutoSizeTextArea
         className="text-4xl font-bold"
         placeholder="Untitled"

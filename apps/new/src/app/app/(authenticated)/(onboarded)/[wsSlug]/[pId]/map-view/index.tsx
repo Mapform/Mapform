@@ -7,6 +7,7 @@ import { useMediaQuery } from "@mapform/ui/hooks/use-media-query";
 import { useProject } from "../context";
 import { MapDrawer } from "./map-drawer";
 import { DRAWER_WIDTH } from "./contants";
+import { MapControls } from "./map-controls";
 
 export function MapView() {
   const { project } = useProject();
@@ -105,6 +106,7 @@ export function MapView() {
             )}
           </Map>
           <MapDrawer drawerOpen={drawerOpen} setDrawerOpen={setDrawerOpen} />
+          <MapControls />
         </div>
       </div>
     </MapRoot>

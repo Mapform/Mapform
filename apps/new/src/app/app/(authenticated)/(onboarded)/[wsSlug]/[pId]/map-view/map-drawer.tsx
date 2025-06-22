@@ -3,6 +3,7 @@ import { DrawerPrimitive } from "@mapform/ui/components/drawer";
 import { Header } from "../header";
 import { DRAWER_WIDTH } from "./contants";
 import { cn } from "@mapform/lib/classnames";
+import { useProject } from "../context";
 
 interface MapDrawerProps {
   drawerOpen: boolean;
@@ -10,6 +11,7 @@ interface MapDrawerProps {
 }
 
 export function MapDrawer({ drawerOpen, setDrawerOpen }: MapDrawerProps) {
+  const { project } = useProject();
   const isDesktop = useMediaQuery("(min-width: 768px)");
 
   if (isDesktop) {
