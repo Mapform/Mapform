@@ -5,7 +5,6 @@ import {
   flexRender,
   getCoreRowModel,
   useReactTable,
-  functionalUpdate,
 } from "@tanstack/react-table";
 import {
   Table as TableRoot,
@@ -49,12 +48,10 @@ export function Table() {
   const { execute: executeDuplicateRows, isPending: isPendingDuplicateRows } =
     useAction(duplicateRowsAction);
   const tableContainerRef = useRef<HTMLDivElement>(null);
-  const [{ perPage, page }, setProjectSearchParams] = useQueryStates(
-    projectSearchParams,
-    {
-      urlKeys: projectSearchParamsUrlKeys,
-    },
-  );
+  const [{ perPage, page }] = useQueryStates(projectSearchParams, {
+    urlKeys: projectSearchParamsUrlKeys,
+    shallow: false,
+  });
 
   const rows = useMemo(
     () =>
@@ -178,8 +175,8 @@ export function Table() {
     pageCount: Math.ceil(project.rowCount / perPage),
     state: {
       pagination: {
-        pageIndex: page ?? 0,
-        pageSize: perPage ?? 1,
+        pageIndex: page,
+        pageSize: perPage,
       },
     },
     getCoreRowModel: getCoreRowModel(),
@@ -190,16 +187,6 @@ export function Table() {
       size: 200, //starting column size
       minSize: 200, //enforced during column resizing
       maxSize: 200, //enforced during column resizing
-    },
-    onPaginationChange: (updaterFunction) => {
-      const newValue = functionalUpdate(updaterFunction, {
-        pageSize: perPage,
-        pageIndex: page,
-      });
-      void setProjectSearchParams({
-        perPage: newValue.pageSize,
-        page: newValue.pageIndex,
-      });
     },
   });
 

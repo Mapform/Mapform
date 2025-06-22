@@ -36,7 +36,7 @@ export default async function ViewPage(props: {
     }
 
     redirect(
-      `/app/${params.wsSlug}/${params.pId}?viewId=${firstView.id}&perPage=${perPage}&page=${page}`,
+      `/app/${params.wsSlug}/${params.pId}?v=${firstView.id}&pp=${perPage}&p=${page}`,
     );
   }
 

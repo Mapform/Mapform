@@ -15,6 +15,8 @@ import {
   SelectValue,
 } from "@mapform/ui/components/select";
 import { cn } from "@mapform/lib/classnames";
+import { useQueryStates } from "nuqs";
+import { projectSearchParams, projectSearchParamsUrlKeys } from "../../params";
 
 interface TablePaginationProps<TData> extends React.ComponentProps<"div"> {
   table: Table<TData>;
@@ -27,6 +29,14 @@ export function TablePagination<TData>({
   className,
   ...props
 }: TablePaginationProps<TData>) {
+  const [{ perPage, page }, setProjectSearchParams] = useQueryStates(
+    projectSearchParams,
+    {
+      urlKeys: projectSearchParamsUrlKeys,
+      shallow: false,
+    },
+  );
+
   return (
     <div
       className={cn(
@@ -45,7 +55,14 @@ export function TablePagination<TData>({
           <Select
             value={`${table.getState().pagination.pageSize}`}
             onValueChange={(value) => {
-              table.setPageSize(Number(value));
+              void setProjectSearchParams(
+                {
+                  perPage: Number(value),
+                },
+                {
+                  shallow: false,
+                },
+              );
             }}
           >
             <SelectTrigger className="h-8 w-[4.5rem] [&[data-size]]:h-8">
@@ -70,7 +87,17 @@ export function TablePagination<TData>({
             variant="outline"
             size="icon"
             className="hidden size-8 lg:flex"
-            onClick={() => table.setPageIndex(0)}
+            onClick={() => {
+              void setProjectSearchParams(
+                {
+                  perPage,
+                  page: 0,
+                },
+                {
+                  shallow: false,
+                },
+              );
+            }}
             disabled={!table.getCanPreviousPage()}
           >
             <ChevronsLeft className="size-5" />
@@ -80,7 +107,17 @@ export function TablePagination<TData>({
             variant="outline"
             size="icon"
             className="size-8"
-            onClick={() => table.previousPage()}
+            onClick={() => {
+              void setProjectSearchParams(
+                {
+                  perPage,
+                  page: page - 1,
+                },
+                {
+                  shallow: false,
+                },
+              );
+            }}
             disabled={!table.getCanPreviousPage()}
           >
             <ChevronLeft className="size-5" />
@@ -90,7 +127,17 @@ export function TablePagination<TData>({
             variant="outline"
             size="icon"
             className="size-8"
-            onClick={() => table.nextPage()}
+            onClick={() => {
+              void setProjectSearchParams(
+                {
+                  perPage,
+                  page: page + 1,
+                },
+                {
+                  shallow: false,
+                },
+              );
+            }}
             disabled={!table.getCanNextPage()}
           >
             <ChevronRight className="size-5" />
@@ -100,7 +147,17 @@ export function TablePagination<TData>({
             variant="outline"
             size="icon"
             className="hidden size-8 lg:flex"
-            onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+            onClick={() => {
+              void setProjectSearchParams(
+                {
+                  perPage,
+                  page: table.getPageCount() - 1,
+                },
+                {
+                  shallow: false,
+                },
+              );
+            }}
             disabled={!table.getCanNextPage()}
           >
             <ChevronsRight className="size-5" />
