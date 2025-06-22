@@ -1,7 +1,7 @@
 import { AutoSizeTextArea } from "@mapform/ui/components/autosize-text-area";
 import { VIEWS } from "~/constants/views";
 import { Button } from "@mapform/ui/components/button";
-import { PlusIcon } from "lucide-react";
+import { PlusIcon, SmilePlusIcon } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,6 +17,7 @@ import {
 } from "@mapform/ui/components/tooltip";
 import { useProject } from "../context";
 import { ViewButton } from "./view-button";
+import { EmojiPopover } from "@mapform/ui/components/emoji-picker";
 
 interface HeaderProps {
   className?: string;
@@ -29,6 +30,16 @@ export function Header({ className }: HeaderProps) {
 
   return (
     <header className={className}>
+      <Tooltip>
+        <EmojiPopover onIconChange={() => {}}>
+          <TooltipTrigger asChild>
+            <Button size="icon-sm" type="button" variant="ghost">
+              <SmilePlusIcon className="size-4" />
+            </Button>
+          </TooltipTrigger>
+        </EmojiPopover>
+        <TooltipContent>Add emoji</TooltipContent>
+      </Tooltip>
       <AutoSizeTextArea
         className="text-4xl font-bold"
         placeholder="Untitled"
