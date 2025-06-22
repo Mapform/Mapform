@@ -2,12 +2,25 @@
 
 import { Layer, Map, MapRoot, Source } from "~/components/map";
 import { rowsToGeoJSON } from "~/lib/rows-to-geojson";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
+import { useMediaQuery } from "@mapform/ui/hooks/use-media-query";
 import { useProject } from "../context";
 import { MapDrawer } from "./map-drawer";
+import { DRAWER_WIDTH } from "./contants";
 
 export function MapView() {
   const { project } = useProject();
+  const isDesktop = useMediaQuery("(min-width: 768px)");
+  const [drawerOpen, setDrawerOpen] = useState(true);
+
+  const mapPadding = useMemo(() => {
+    return {
+      top: 0,
+      bottom: isDesktop ? 0 : drawerOpen ? 200 : 0,
+      left: drawerOpen ? DRAWER_WIDTH : 0,
+      right: 0,
+    };
+  }, [drawerOpen, isDesktop]);
 
   // Separate rows by geometry type
   const pointRows = useMemo(
@@ -34,7 +47,7 @@ export function MapView() {
   );
 
   return (
-    <MapRoot>
+    <MapRoot padding={mapPadding}>
       <div className="h-full p-4">
         <div className="relative h-full overflow-hidden">
           <Map className="size-full rounded-lg">
@@ -91,7 +104,7 @@ export function MapView() {
               </Source>
             )}
           </Map>
-          <MapDrawer />
+          <MapDrawer drawerOpen={drawerOpen} setDrawerOpen={setDrawerOpen} />
         </div>
       </div>
     </MapRoot>

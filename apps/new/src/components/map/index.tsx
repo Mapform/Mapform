@@ -9,6 +9,12 @@ import { Source } from "./source";
 import { Layer } from "./layer";
 
 interface MapformProps {
+  padding?: {
+    top: number;
+    bottom: number;
+    left: number;
+    right: number;
+  };
   children: React.ReactNode;
 }
 
@@ -17,6 +23,12 @@ interface MapContextProps {
   setMap: Dispatch<SetStateAction<mapboxgl.Map | undefined>>;
   mapBounds: DOMRectReadOnly | undefined;
   mapContainer: React.RefObject<HTMLDivElement | null>;
+  padding?: {
+    top: number;
+    bottom: number;
+    left: number;
+    right: number;
+  };
 }
 
 export const MapContext = createContext<MapContextProps>({} as MapContextProps);
@@ -24,7 +36,7 @@ export const useMap = () => useContext(MapContext);
 
 const accessToken = env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
 
-export function MapRoot({ children }: MapformProps) {
+export function MapRoot({ children, padding }: MapformProps) {
   const [map, setMap] = useState<mapboxgl.Map>();
   const { ref: mapContainer, bounds: mapBounds } = useMeasure<HTMLDivElement>();
 
@@ -35,6 +47,7 @@ export function MapRoot({ children }: MapformProps) {
         setMap,
         mapBounds,
         mapContainer,
+        padding,
       }}
     >
       {children}
@@ -49,7 +62,7 @@ export const Map = ({
   children?: React.ReactNode;
   className?: string;
 }) => {
-  const { map, mapContainer, setMap } = useMap();
+  const { map, mapContainer, setMap, padding } = useMap();
 
   useEffect(() => {
     if (!mapContainer.current || map) return;
@@ -68,6 +81,18 @@ export const Map = ({
       instance.remove();
     };
   }, []);
+
+  /**
+   * React to drawer padding change
+   */
+  useEffect(() => {
+    if (!map) return;
+
+    map.easeTo({
+      padding,
+      duration: 500,
+    });
+  }, [map, padding]);
 
   return (
     <div ref={mapContainer} className={className}>

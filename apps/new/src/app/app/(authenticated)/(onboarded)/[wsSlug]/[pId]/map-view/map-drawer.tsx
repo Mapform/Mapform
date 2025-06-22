@@ -1,22 +1,30 @@
 import { useMediaQuery } from "@mapform/ui/hooks/use-media-query";
 import { DrawerPrimitive } from "@mapform/ui/components/drawer";
-import { useState } from "react";
 import { Header } from "../header";
+import { DRAWER_WIDTH } from "./contants";
+import { cn } from "@mapform/lib/classnames";
 
-export function MapDrawer() {
+interface MapDrawerProps {
+  drawerOpen: boolean;
+  setDrawerOpen: (open: boolean) => void;
+}
+
+export function MapDrawer({ drawerOpen, setDrawerOpen }: MapDrawerProps) {
   const isDesktop = useMediaQuery("(min-width: 768px)");
-  const [open, setOpen] = useState(true);
 
   if (isDesktop) {
     return (
       <DrawerPrimitive.Root
         direction="left"
-        open={open}
-        onOpenChange={setOpen}
+        open={drawerOpen}
+        onOpenChange={setDrawerOpen}
         modal={false}
       >
         <DrawerPrimitive.Content
-          className="absolute bottom-2 left-2 top-2 z-10 flex w-[320px] outline-none"
+          className={cn(
+            "absolute bottom-2 left-2 top-2 z-10 flex outline-none",
+            `w-[${DRAWER_WIDTH}px]`,
+          )}
           style={
             {
               "--initial-transform": "calc(100% + 8px)",
@@ -25,15 +33,6 @@ export function MapDrawer() {
         >
           <div className="flex h-full w-full grow flex-col rounded-lg bg-white p-6">
             <Header />
-            {/* <div className="mx-auto max-w-md">
-              <DrawerPrimitive.Title className="mb-2 font-medium text-zinc-900">
-                It supports all directions.
-              </DrawerPrimitive.Title>
-              <DrawerPrimitive.Description className="mb-2 text-zinc-600">
-                This one specifically is not touching the edge of the screen,
-                but that&apos;s not required for a side drawer.
-              </DrawerPrimitive.Description>
-            </div> */}
           </div>
         </DrawerPrimitive.Content>
       </DrawerPrimitive.Root>
