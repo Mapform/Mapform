@@ -1,11 +1,11 @@
 "use client";
 
-import type { Row } from "@tanstack/react-table";
+import type { Row, Table } from "@tanstack/react-table";
 import {
   flexRender,
   getCoreRowModel,
   useReactTable,
-  type Table,
+  functionalUpdate,
 } from "@tanstack/react-table";
 import {
   Table as TableRoot,
@@ -39,6 +39,8 @@ import {
 import { deleteRowsAction } from "~/data/rows/delete-rows";
 import { duplicateRowsAction } from "~/data/rows/dupliate-rows";
 import { useAction } from "next-safe-action/hooks";
+import { useQueryStates } from "nuqs";
+import { projectSearchParams, projectSearchParamsUrlKeys } from "../../params";
 
 export function Table() {
   const { project } = useProject();
@@ -47,6 +49,12 @@ export function Table() {
   const { execute: executeDuplicateRows, isPending: isPendingDuplicateRows } =
     useAction(duplicateRowsAction);
   const tableContainerRef = useRef<HTMLDivElement>(null);
+  const [{ perPage, page }, setProjectSearchParams] = useQueryStates(
+    projectSearchParams,
+    {
+      urlKeys: projectSearchParamsUrlKeys,
+    },
+  );
 
   const rows = useMemo(
     () =>
@@ -167,7 +175,13 @@ export function Table() {
   const table = useReactTable({
     data: rows ?? [],
     columns,
-    pageCount: Math.ceil(project.rowCount / 1),
+    pageCount: Math.ceil(project.rowCount / perPage),
+    state: {
+      pagination: {
+        pageIndex: page ?? 0,
+        pageSize: perPage ?? 1,
+      },
+    },
     getCoreRowModel: getCoreRowModel(),
     getRowId: (row) => {
       return row.rowId;
@@ -176,6 +190,16 @@ export function Table() {
       size: 200, //starting column size
       minSize: 200, //enforced during column resizing
       maxSize: 200, //enforced during column resizing
+    },
+    onPaginationChange: (updaterFunction) => {
+      const newValue = functionalUpdate(updaterFunction, {
+        pageSize: perPage,
+        pageIndex: page,
+      });
+      void setProjectSearchParams({
+        perPage: newValue.pageSize,
+        page: newValue.pageIndex,
+      });
     },
   });
 

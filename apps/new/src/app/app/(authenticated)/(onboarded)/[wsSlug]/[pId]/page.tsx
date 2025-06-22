@@ -2,21 +2,23 @@ import { notFound, redirect } from "next/navigation";
 import { authClient } from "~/lib/safe-action";
 import { ProjectProvider } from "./context";
 import { TableView } from "./table-view";
-import type { QUERY_PARAMS } from "~/constants/query-params";
 import { MapView } from "./map-view";
+import { loadSearchParams } from "./params";
+import type { SearchParams } from "nuqs/server";
 
 export default async function ViewPage(props: {
   params: Promise<{ wsSlug: string; pId: string }>;
-  searchParams: Promise<{ [QUERY_PARAMS.VIEW]: string }>;
+  searchParams: Promise<SearchParams>;
 }) {
   const params = await props.params;
-  const searchParams = await props.searchParams;
+  const { viewId, perPage, page } = await loadSearchParams(props.searchParams);
 
   const project = await authClient.getProject({
     projectId: params.pId,
     filter: {
       type: "page",
-      page: 0,
+      page,
+      perPage,
     },
   });
 
@@ -24,9 +26,7 @@ export default async function ViewPage(props: {
     return notFound();
   }
 
-  const activeView = project.data?.views.find(
-    (view) => view.id === searchParams.v,
-  );
+  const activeView = project.data?.views.find((view) => view.id === viewId);
 
   if (!activeView) {
     const firstView = project.data?.views.find((v) => v.position === 0);
@@ -35,7 +35,9 @@ export default async function ViewPage(props: {
       return notFound();
     }
 
-    redirect(`/app/${params.wsSlug}/${params.pId}?v=${firstView.id}`);
+    redirect(
+      `/app/${params.wsSlug}/${params.pId}?viewId=${firstView.id}&perPage=${perPage}&page=${page}`,
+    );
   }
 
   return (

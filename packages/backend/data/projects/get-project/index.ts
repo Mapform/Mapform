@@ -6,8 +6,6 @@ import { projects, rows } from "@mapform/db/schema";
 import type { UnwrapReturn, UserAuthClient } from "../../../lib/types";
 import { getProjectSchema } from "./schema";
 
-const ROWS_PER_PAGE = 1;
-
 /**
  * return the project and associated rows and column data
  */
@@ -45,9 +43,9 @@ export const getProject = (authClient: UserAuthClient) =>
         }),
         db.query.rows.findMany({
           where: rowWhereOptions,
-          limit: filter?.type === "page" ? ROWS_PER_PAGE : undefined,
+          limit: filter?.type === "page" ? filter.perPage : undefined,
           offset:
-            filter?.type === "page" ? filter.page * ROWS_PER_PAGE : undefined,
+            filter?.type === "page" ? filter.page * filter.perPage : undefined,
           columns: {
             id: true,
             icon: true,
