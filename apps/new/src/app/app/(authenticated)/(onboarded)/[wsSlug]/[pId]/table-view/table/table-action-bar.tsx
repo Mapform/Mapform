@@ -121,10 +121,7 @@ function TableActionBarAction({
   return (
     <Tooltip>
       <TooltipTrigger asChild>{trigger}</TooltipTrigger>
-      <TooltipContent
-        sideOffset={6}
-        className="bg-accent text-foreground border font-semibold dark:bg-zinc-900 [&>span]:hidden"
-      >
+      <TooltipContent>
         <p>{tooltip}</p>
       </TooltipContent>
     </Tooltip>
@@ -162,10 +159,7 @@ function TableActionBarSelection<TData>({
             <X className="size-3.5" />
           </Button>
         </TooltipTrigger>
-        <TooltipContent
-          sideOffset={10}
-          className="bg-accent text-foreground flex items-center gap-2 border px-2 py-1 font-semibold dark:bg-zinc-900 [&>span]:hidden"
-        >
+        <TooltipContent sideOffset={10} className="flex items-center gap-2">
           <p>Clear selection</p>
           <kbd className="bg-background text-foreground shadow-xs select-none rounded border px-1.5 py-px font-mono text-[0.7rem] font-normal">
             <abbr title="Escape" className="no-underline">

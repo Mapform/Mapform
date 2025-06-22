@@ -35,9 +35,16 @@ import {
   TableActionBarAction,
   TableActionBarSelection,
 } from "./table-action-bar";
+import { useAction } from "next-safe-action/hooks";
+import { duplicateRowsAction } from "~/data/rows/dupliate-rows";
+import { deleteRowsAction } from "~/data/rows/delete-rows";
 
 export function Table() {
   const { project } = useProject();
+  const { execute: executeDeleteRows, isPending: isPendingDeleteRows } =
+    useAction(deleteRowsAction);
+  const { execute: executeDuplicateRows, isPending: isPendingDuplicateRows } =
+    useAction(duplicateRowsAction);
   const tableContainerRef = useRef<HTMLDivElement>(null);
 
   const rows = useMemo(
@@ -246,10 +253,28 @@ export function Table() {
       {table.getFilteredSelectedRowModel().rows.length > 0 && (
         <TableActionBar container={tableContainerRef.current} table={table}>
           <TableActionBarSelection table={table} />
-          <TableActionBarAction>
+          <TableActionBarAction
+            isPending={isPendingDuplicateRows}
+            onClick={() => {
+              executeDuplicateRows({
+                rowIds: table
+                  .getFilteredSelectedRowModel()
+                  .rows.map((row) => row.id),
+              });
+            }}
+          >
             <CopyIcon /> Duplicate
           </TableActionBarAction>
-          <TableActionBarAction>
+          <TableActionBarAction
+            isPending={isPendingDeleteRows}
+            onClick={() => {
+              executeDeleteRows({
+                rowIds: table
+                  .getFilteredSelectedRowModel()
+                  .rows.map((row) => row.id),
+              });
+            }}
+          >
             <Trash2Icon /> Delete
           </TableActionBarAction>
         </TableActionBar>
