@@ -22,6 +22,7 @@ import type { GetProject } from "@mapform/backend/data/projects/get-project";
 import {
   CaseSensitiveIcon,
   CopyIcon,
+  Loader2Icon,
   PlusIcon,
   SmileIcon,
   Trash2Icon,
@@ -35,9 +36,16 @@ import {
   TableActionBarAction,
   TableActionBarSelection,
 } from "./table-action-bar";
+import { deleteRowsAction } from "~/data/rows/delete-rows";
+import { duplicateRowsAction } from "~/data/rows/dupliate-rows";
+import { useAction } from "next-safe-action/hooks";
 
 export function Table() {
   const { project } = useProject();
+  const { execute: executeDeleteRows, isPending: isPendingDeleteRows } =
+    useAction(deleteRowsAction);
+  const { execute: executeDuplicateRows, isPending: isPendingDuplicateRows } =
+    useAction(duplicateRowsAction);
   const tableContainerRef = useRef<HTMLDivElement>(null);
 
   const rows = useMemo(
@@ -241,11 +249,39 @@ export function Table() {
       {table.getFilteredSelectedRowModel().rows.length > 0 && (
         <TableActionBar container={tableContainerRef.current} table={table}>
           <TableActionBarSelection table={table} />
-          <TableActionBarAction>
-            <CopyIcon /> Duplicate
+          <TableActionBarAction
+            disabled={isPendingDuplicateRows}
+            onClick={() => {
+              executeDuplicateRows({
+                rowIds: table
+                  .getFilteredSelectedRowModel()
+                  .rows.map((row) => row.id),
+              });
+            }}
+          >
+            {isPendingDuplicateRows ? (
+              <Loader2Icon className="animate-spin" />
+            ) : (
+              <CopyIcon />
+            )}
+            Duplicate
           </TableActionBarAction>
-          <TableActionBarAction>
-            <Trash2Icon /> Delete
+          <TableActionBarAction
+            disabled={isPendingDeleteRows}
+            onClick={() => {
+              executeDeleteRows({
+                rowIds: table
+                  .getFilteredSelectedRowModel()
+                  .rows.map((row) => row.id),
+              });
+            }}
+          >
+            {isPendingDeleteRows ? (
+              <Loader2Icon className="animate-spin" />
+            ) : (
+              <Trash2Icon />
+            )}
+            Delete
           </TableActionBarAction>
         </TableActionBar>
       )}

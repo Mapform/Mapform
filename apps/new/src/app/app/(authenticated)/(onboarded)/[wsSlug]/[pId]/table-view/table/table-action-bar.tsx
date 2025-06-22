@@ -9,7 +9,7 @@ import {
 } from "@mapform/ui/components/tooltip";
 import { cn } from "@mapform/lib/classnames";
 import type { Table } from "@tanstack/react-table";
-import { Loader, X } from "lucide-react";
+import { X } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
@@ -94,7 +94,6 @@ interface TableActionBarActionProps
 function TableActionBarAction({
   size = "sm",
   tooltip,
-  isPending,
   disabled,
   className,
   children,
@@ -109,10 +108,10 @@ function TableActionBarAction({
         size === "icon" ? "size-7" : "h-7",
         className,
       )}
-      disabled={disabled || isPending}
+      disabled={disabled}
       {...props}
     >
-      {isPending ? <Loader className="animate-spin" /> : children}
+      {children}
     </Button>
   );
 
