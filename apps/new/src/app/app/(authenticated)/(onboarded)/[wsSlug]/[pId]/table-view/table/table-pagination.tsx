@@ -25,7 +25,7 @@ interface TablePaginationProps<TData> extends React.ComponentProps<"div"> {
 
 export function TablePagination<TData>({
   table,
-  pageSizeOptions = [10, 20, 30, 40, 50],
+  pageSizeOptions = [10, 50, 100],
   className,
   ...props
 }: TablePaginationProps<TData>) {
