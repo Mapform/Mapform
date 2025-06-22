@@ -16,6 +16,7 @@ import { getStorageUsage } from "@mapform/backend/data/usage/get-storage-usage";
 import { getRecentProjects } from "@mapform/backend/data/projects/get-recent-projects";
 import { getProject } from "@mapform/backend/data/projects/get-project";
 import { createRow } from "@mapform/backend/data/rows/create-row";
+import { getRow } from "@mapform/backend/data/rows/get-row";
 import {
   baseClient,
   UserAccess,
@@ -111,6 +112,7 @@ const createUserAuthClient = () => {
     createProject: createProject(extendedClient),
 
     // Rows
+    getRow: getRow(extendedClient),
     createRow: createRow(extendedClient),
     createRows: createRows(extendedClient),
     deleteRows: deleteRows(extendedClient),

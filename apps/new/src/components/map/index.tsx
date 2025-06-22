@@ -8,7 +8,7 @@ import { env } from "~/env.mjs";
 import { Source } from "./source";
 import { Layer } from "./layer";
 
-interface MapformProps {
+interface MapRootProps {
   padding?: {
     top: number;
     bottom: number;
@@ -36,7 +36,7 @@ export const useMap = () => useContext(MapContext);
 
 const accessToken = env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
 
-export function MapRoot({ children, padding }: MapformProps) {
+export function MapRoot({ children, padding }: MapRootProps) {
   const [map, setMap] = useState<mapboxgl.Map>();
   const { ref: mapContainer, bounds: mapBounds } = useMeasure<HTMLDivElement>();
 
@@ -55,13 +55,13 @@ export function MapRoot({ children, padding }: MapformProps) {
   );
 }
 
-export const Map = ({
-  children,
-  className,
-}: {
-  children?: React.ReactNode;
+interface MapProps {
   className?: string;
-}) => {
+  children?: React.ReactNode;
+  onClick?: (e: mapboxgl.MapMouseEvent) => void;
+}
+
+export const Map = ({ children, className, onClick }: MapProps) => {
   const { map, mapContainer, setMap, padding } = useMap();
 
   useEffect(() => {
@@ -75,9 +75,17 @@ export const Map = ({
 
     instance.on("load", () => {
       setMap(instance);
+
+      if (onClick) {
+        instance.on("click", onClick);
+      }
     });
 
     return () => {
+      if (onClick) {
+        instance.off("click", onClick);
+      }
+
       instance.remove();
     };
   }, []);

@@ -11,16 +11,21 @@ export default async function ViewPage(props: {
   searchParams: Promise<SearchParams>;
 }) {
   const params = await props.params;
-  const { viewId, perPage, page } = await loadSearchParams(props.searchParams);
+  const { viewId, perPage, page, rowId } = await loadSearchParams(
+    props.searchParams,
+  );
 
-  const project = await authClient.getProject({
-    projectId: params.pId,
-    filter: {
-      type: "page",
-      page,
-      perPage,
-    },
-  });
+  const [project, feature] = await Promise.all([
+    authClient.getProject({
+      projectId: params.pId,
+      filter: {
+        type: "page",
+        page,
+        perPage,
+      },
+    }),
+    rowId ? authClient.getRow({ rowId }) : null,
+  ]);
 
   if (!project) {
     return notFound();
@@ -41,7 +46,11 @@ export default async function ViewPage(props: {
   }
 
   return (
-    <ProjectProvider project={project.data} activeView={activeView}>
+    <ProjectProvider
+      feature={feature?.data}
+      project={project.data}
+      activeView={activeView}
+    >
       {activeView.type === "table" && <TableView />}
       {activeView.type === "map" && <MapView />}
     </ProjectProvider>
