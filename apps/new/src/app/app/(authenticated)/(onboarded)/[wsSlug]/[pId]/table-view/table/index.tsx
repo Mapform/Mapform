@@ -35,16 +35,9 @@ import {
   TableActionBarAction,
   TableActionBarSelection,
 } from "./table-action-bar";
-import { useAction } from "next-safe-action/hooks";
-import { duplicateRowsAction } from "~/data/rows/dupliate-rows";
-import { deleteRowsAction } from "~/data/rows/delete-rows";
 
 export function Table() {
   const { project } = useProject();
-  const { execute: executeDeleteRows, isPending: isPendingDeleteRows } =
-    useAction(deleteRowsAction);
-  const { execute: executeDuplicateRows, isPending: isPendingDuplicateRows } =
-    useAction(duplicateRowsAction);
   const tableContainerRef = useRef<HTMLDivElement>(null);
 
   const rows = useMemo(
@@ -184,12 +177,7 @@ export function Table() {
       ref={tableContainerRef}
     >
       <TableRoot className="border-b">
-        <TableHeader
-          className="sticky top-[57px] z-10 bg-white"
-          style={{
-            boxShadow: "inset 0 -1px 0 #e5e7eb",
-          }}
-        >
+        <TableHeader className="border-b">
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow className="border-none" key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
@@ -253,28 +241,10 @@ export function Table() {
       {table.getFilteredSelectedRowModel().rows.length > 0 && (
         <TableActionBar container={tableContainerRef.current} table={table}>
           <TableActionBarSelection table={table} />
-          <TableActionBarAction
-            isPending={isPendingDuplicateRows}
-            onClick={() => {
-              executeDuplicateRows({
-                rowIds: table
-                  .getFilteredSelectedRowModel()
-                  .rows.map((row) => row.id),
-              });
-            }}
-          >
+          <TableActionBarAction>
             <CopyIcon /> Duplicate
           </TableActionBarAction>
-          <TableActionBarAction
-            isPending={isPendingDeleteRows}
-            onClick={() => {
-              executeDeleteRows({
-                rowIds: table
-                  .getFilteredSelectedRowModel()
-                  .rows.map((row) => row.id),
-              });
-            }}
-          >
+          <TableActionBarAction>
             <Trash2Icon /> Delete
           </TableActionBarAction>
         </TableActionBar>
