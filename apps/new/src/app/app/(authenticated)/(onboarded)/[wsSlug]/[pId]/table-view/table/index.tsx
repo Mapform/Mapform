@@ -19,13 +19,22 @@ import { Checkbox } from "@mapform/ui/components/checkbox";
 import { useMemo, useRef } from "react";
 import { useProject } from "../../context";
 import type { GetProject } from "@mapform/backend/data/projects/get-project";
-import { CaseSensitiveIcon, PlusIcon, SmileIcon } from "lucide-react";
-import { TopBar } from "./top-bar";
+import {
+  CaseSensitiveIcon,
+  CopyIcon,
+  PlusIcon,
+  SmileIcon,
+  Trash2Icon,
+} from "lucide-react";
 import { ColumnAdder } from "./column-adder";
 import { ColumnEditor } from "./column-editor";
 import { CellPopover } from "./cell-popover";
 import { TablePagination } from "./table-pagination";
-import { TableActionBar, TableActionBarSelection } from "./table-action-bar";
+import {
+  TableActionBar,
+  TableActionBarAction,
+  TableActionBarSelection,
+} from "./table-action-bar";
 
 export function Table() {
   const { project } = useProject();
@@ -162,20 +171,11 @@ export function Table() {
     },
   });
 
-  const numberOfSelectedRows = table.getFilteredSelectedRowModel().rows.length;
-  const totalNumberOfRows = table.getFilteredRowModel().rows.length;
-
   return (
     <div
       className="relative flex flex-1 flex-col overflow-auto bg-white py-4"
       ref={tableContainerRef}
     >
-      {/* Top bar */}
-      <TopBar
-        table={table}
-        numberOfSelectedRows={numberOfSelectedRows}
-        totalNumberOfRows={totalNumberOfRows}
-      />
       <TableRoot className="border-b">
         <TableHeader
           className="sticky top-[57px] z-10 bg-white"
@@ -246,6 +246,12 @@ export function Table() {
       {table.getFilteredSelectedRowModel().rows.length > 0 && (
         <TableActionBar container={tableContainerRef.current} table={table}>
           <TableActionBarSelection table={table} />
+          <TableActionBarAction>
+            <CopyIcon /> Duplicate
+          </TableActionBarAction>
+          <TableActionBarAction>
+            <Trash2Icon /> Delete
+          </TableActionBarAction>
         </TableActionBar>
       )}
     </div>

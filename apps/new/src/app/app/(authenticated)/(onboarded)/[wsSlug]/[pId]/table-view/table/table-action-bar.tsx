@@ -13,6 +13,7 @@ import { Loader, X } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
+import { useSidebar } from "@mapform/ui/components/sidebar";
 
 interface TableActionBarProps<TData>
   extends React.ComponentProps<typeof motion.div> {
@@ -30,6 +31,7 @@ function TableActionBar<TData>({
   ...props
 }: TableActionBarProps<TData>) {
   const [mounted, setMounted] = React.useState(false);
+  const { open } = useSidebar();
 
   React.useLayoutEffect(() => {
     setMounted(true);
@@ -66,6 +68,11 @@ function TableActionBar<TData>({
           transition={{ duration: 0.2, ease: "easeInOut" }}
           className={cn(
             "bg-background text-foreground fixed inset-x-0 bottom-6 z-50 mx-auto flex w-fit flex-wrap items-center justify-center gap-2 rounded-md border p-2 shadow-sm",
+            // Position centered in container. Need to adjust for sidebar width.
+            "transition-[left] duration-200 ease-linear",
+            {
+              "left-[var(--sidebar-width)]": open,
+            },
             className,
           )}
           {...props}
