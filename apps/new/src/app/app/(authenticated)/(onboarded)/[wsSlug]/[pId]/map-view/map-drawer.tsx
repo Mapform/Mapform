@@ -11,7 +11,6 @@ interface MapDrawerProps {
 }
 
 export function MapDrawer({ drawerOpen, setDrawerOpen }: MapDrawerProps) {
-  const { project } = useProject();
   const isDesktop = useMediaQuery("(min-width: 768px)");
 
   if (isDesktop) {
@@ -23,12 +22,10 @@ export function MapDrawer({ drawerOpen, setDrawerOpen }: MapDrawerProps) {
         modal={false}
       >
         <DrawerPrimitive.Content
-          className={cn(
-            "absolute bottom-2 left-2 top-2 z-10 flex outline-none",
-            `w-[${DRAWER_WIDTH}px]`,
-          )}
+          className="absolute bottom-2 left-2 top-2 z-10 flex outline-none"
           style={
             {
+              width: DRAWER_WIDTH,
               "--initial-transform": "calc(100% + 8px)",
             } as React.CSSProperties
           }
