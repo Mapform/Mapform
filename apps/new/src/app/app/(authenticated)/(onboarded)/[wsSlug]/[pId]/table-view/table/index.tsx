@@ -159,7 +159,7 @@ export function Table() {
   const table = useReactTable({
     data: rows ?? [],
     columns,
-    // pageCount: 3,
+    pageCount: Math.ceil(project.rowCount / 1),
     getCoreRowModel: getCoreRowModel(),
     getRowId: (row) => {
       return row.rowId;

@@ -25,7 +25,9 @@ export const getProject = (authClient: UserAuthClient) =>
           ? sql`ST_Intersects(${rows.geometry}, ST_MakeEnvelope(${filter.bounds.west}, ${filter.bounds.south}, ${filter.bounds.east}, ${filter.bounds.north}, 4326))`
           : undefined;
 
-      const [project, projectRows] = await Promise.all([
+      const rowWhereOptions = and(eq(rows.projectId, projectId), boundsFilter);
+
+      const [project, projectRows, rowCount] = await Promise.all([
         db.query.projects.findFirst({
           where: and(
             eq(projects.id, projectId),
@@ -42,7 +44,7 @@ export const getProject = (authClient: UserAuthClient) =>
           },
         }),
         db.query.rows.findMany({
-          where: and(eq(rows.projectId, projectId), boundsFilter),
+          where: rowWhereOptions,
           limit: filter?.type === "page" ? ROWS_PER_PAGE : undefined,
           offset:
             filter?.type === "page" ? filter.page * ROWS_PER_PAGE : undefined,
@@ -70,6 +72,7 @@ export const getProject = (authClient: UserAuthClient) =>
             },
           },
         }),
+        db.$count(rows, rowWhereOptions),
       ]);
 
       if (!project) {
@@ -79,6 +82,7 @@ export const getProject = (authClient: UserAuthClient) =>
       return {
         ...project,
         rows: projectRows,
+        rowCount,
       };
     });
 
