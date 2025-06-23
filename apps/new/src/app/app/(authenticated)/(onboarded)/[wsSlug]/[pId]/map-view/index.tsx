@@ -8,6 +8,9 @@ import { useProject } from "../context";
 import { MapDrawer } from "./map-drawer/index";
 import { DRAWER_WIDTH } from "./constants";
 import { MapControls } from "./map-controls";
+import { PanelLeftOpenIcon } from "lucide-react";
+import { Button } from "@mapform/ui/components/button";
+import { cn } from "@mapform/lib/classnames";
 
 const POINTS_LAYER_ID = "points-layer";
 const LINES_LAYER_ID = "lines-layer";
@@ -123,6 +126,23 @@ export function MapView() {
               </Source>
             )}
           </Map>
+          <Button
+            className={cn(
+              "absolute left-2 top-2 z-10 transition-opacity delay-300 duration-300",
+              {
+                "opacity-0": drawerOpen,
+                "opacity-100": !drawerOpen,
+              },
+            )}
+            size="icon-sm"
+            type="button"
+            variant="outline"
+            onClick={() => {
+              setDrawerOpen(true);
+            }}
+          >
+            <PanelLeftOpenIcon className="size-4" />
+          </Button>
           <MapDrawer
             containerRef={containerRef}
             drawerOpen={drawerOpen}

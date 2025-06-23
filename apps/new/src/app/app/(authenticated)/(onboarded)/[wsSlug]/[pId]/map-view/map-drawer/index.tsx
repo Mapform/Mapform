@@ -6,6 +6,9 @@ import { Header } from "../../header";
 import { DRAWER_WIDTH } from "../constants";
 import { projectSearchParams, projectSearchParamsUrlKeys } from "../../params";
 import { FeatureDrawer } from "./feature-drawer";
+import { useProject } from "../../context";
+import { Button } from "@mapform/ui/components/button";
+import { XIcon } from "lucide-react";
 
 interface MapDrawerProps {
   drawerOpen: boolean;
@@ -18,6 +21,7 @@ export function MapDrawer({
   containerRef,
   setDrawerOpen,
 }: MapDrawerProps) {
+  const { project } = useProject();
   const [{ rowId }] = useQueryStates(projectSearchParams, {
     urlKeys: projectSearchParamsUrlKeys,
     shallow: false,
@@ -45,11 +49,27 @@ export function MapDrawer({
           >
             <div
               className={cn(
-                "flex h-full w-full grow flex-col rounded-lg border bg-white p-6 transition-transform",
+                "flex h-full w-full grow flex-col gap-4 rounded-lg border bg-white p-6 transition-transform",
                 { "scale-[99%] border-gray-300 bg-gray-300": !!rowId },
               )}
             >
+              <Button
+                className="absolute right-4 top-4"
+                size="icon-sm"
+                type="button"
+                variant="ghost"
+                onClick={() => {
+                  setDrawerOpen(false);
+                }}
+              >
+                <XIcon className="size-4" />
+              </Button>
               <Header />
+              <ul>
+                {project.rows.map((row) => (
+                  <li key={row.id}>{row.name}</li>
+                ))}
+              </ul>
             </div>
             <FeatureDrawer containerRef={containerRef} />
           </DrawerPrimitive.Content>
