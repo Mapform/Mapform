@@ -6,8 +6,8 @@ import { useMemo, useRef, useState } from "react";
 import { useMediaQuery } from "@mapform/ui/hooks/use-media-query";
 import { useQueryStates } from "nuqs";
 import { useProject } from "../context";
-import { MapDrawer } from "./map-drawer";
-import { DRAWER_WIDTH } from "./contants";
+import { MapDrawer } from "./map-drawer/index";
+import { DRAWER_WIDTH } from "./constants";
 import { MapControls } from "./map-controls";
 import { projectSearchParams, projectSearchParamsUrlKeys } from "../params";
 
@@ -15,10 +15,9 @@ const POINTS_LAYER_ID = "points-layer";
 const LINES_LAYER_ID = "lines-layer";
 const POLYGONS_FILL_LAYER_ID = "polygons-fill-layer";
 const POLYGONS_OUTLINE_LAYER_ID = "polygons-outline-layer";
-import { DrawerPrimitive as Drawer } from "@mapform/ui/components/drawer";
 
 export function MapView() {
-  const { project, feature } = useProject();
+  const { project } = useProject();
   const isDesktop = useMediaQuery("(min-width: 768px)");
   const [drawerOpen, setDrawerOpen] = useState(true);
   const containerRef = useRef<HTMLDivElement>(null);
