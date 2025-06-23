@@ -7,11 +7,11 @@ import { useQueryStates } from "nuqs";
 import { projectSearchParams, projectSearchParamsUrlKeys } from "../params";
 import { XIcon } from "lucide-react";
 import { Button } from "@mapform/ui/components/button";
-import { useEffect, useState } from "react";
+import { cn } from "@mapform/lib/classnames";
 
 interface MapDrawerProps {
   drawerOpen: boolean;
-  containerRef: React.RefObject<HTMLDivElement>;
+  containerRef: React.RefObject<HTMLDivElement | null>;
   setDrawerOpen: (open: boolean) => void;
 }
 
@@ -21,7 +21,6 @@ export function MapDrawer({
   setDrawerOpen,
 }: MapDrawerProps) {
   const { feature } = useProject();
-  const [isFeatureDrawerOpen, setIsFeatureDrawerOpen] = useState(false);
   const [{ rowId }, setProjectSearchParams] = useQueryStates(
     projectSearchParams,
     {
@@ -31,12 +30,6 @@ export function MapDrawer({
   );
   const isDesktop = useMediaQuery("(min-width: 768px)");
 
-  useEffect(() => {
-    setTimeout(() => {
-      setIsFeatureDrawerOpen(!!rowId);
-    }, 1000);
-  }, [rowId]);
-
   if (isDesktop) {
     return (
       <DrawerPrimitive.Root
@@ -45,18 +38,23 @@ export function MapDrawer({
         onOpenChange={setDrawerOpen}
         modal={false}
         container={containerRef.current}
+        dismissible={false}
       >
         <DrawerPrimitive.Portal>
           <DrawerPrimitive.Content
-            className="absolute bottom-2 left-2 top-2 z-10 flex !select-text outline-none"
+            className="!pointer-events-auto absolute bottom-2 left-2 top-2 z-10 flex !select-text outline-none"
             style={
               {
                 width: DRAWER_WIDTH,
-                "--initial-transform": "calc(100% + 8px)",
               } as React.CSSProperties
             }
           >
-            <div className="flex h-full w-full grow flex-col rounded-lg border bg-white p-6">
+            <div
+              className={cn(
+                "flex h-full w-full grow flex-col rounded-lg border bg-white p-6 transition-transform",
+                { "scale-[99%] border-gray-300 bg-gray-300": !!rowId },
+              )}
+            >
               <Header />
             </div>
             <DrawerPrimitive.NestedRoot
@@ -64,6 +62,7 @@ export function MapDrawer({
               open={!!rowId}
               direction="left"
               modal={false}
+              dismissible={false}
               onOpenChange={(open) => {
                 if (!open) {
                   void setProjectSearchParams({ rowId: undefined });
@@ -72,11 +71,11 @@ export function MapDrawer({
             >
               <DrawerPrimitive.Portal>
                 <DrawerPrimitive.Content
-                  className="absolute bottom-2 left-2 top-2 z-20 flex !select-text outline-none"
+                  // point-events-auto needed to work around Vaul bug: https://github.com/emilkowalski/vaul/pull/576
+                  className="!pointer-events-auto absolute bottom-2 left-2 top-2 z-20 flex !select-text outline-none"
                   style={
                     {
                       width: DRAWER_WIDTH - 16,
-                      "--initial-transform": "calc(100% + 8px)",
                     } as React.CSSProperties
                   }
                 >
