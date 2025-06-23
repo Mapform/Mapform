@@ -1,4 +1,4 @@
-import { SmilePlusIcon } from "lucide-react";
+import { SmilePlusIcon, XIcon } from "lucide-react";
 import { Button } from "@mapform/ui/components/button";
 import { DrawerPrimitive } from "@mapform/ui/components/drawer";
 import { projectSearchParams, projectSearchParamsUrlKeys } from "../../params";
@@ -12,32 +12,18 @@ import {
   TooltipTrigger,
 } from "@mapform/ui/components/tooltip";
 import { EmojiPopover } from "@mapform/ui/components/emoji-picker";
+import { Skeleton } from "@mapform/ui/components/skeleton";
 
 interface FeatureDrawerProps {
   containerRef: React.RefObject<HTMLDivElement | null>;
 }
 
 export function FeatureDrawer({ containerRef }: FeatureDrawerProps) {
-  const { feature } = useProject();
-  const [{ rowId }, setProjectSearchParams] = useQueryStates(
-    projectSearchParams,
-    {
-      urlKeys: projectSearchParamsUrlKeys,
-      shallow: false,
-    },
-  );
-
-  if (!feature) {
-    return (
-      <div className="flex flex-1 flex-col justify-center rounded-lg bg-gray-50 p-8">
-        <div className="text-center">
-          <h3 className="text-foreground mt-2 text-sm font-medium">
-            No feature found
-          </h3>
-        </div>
-      </div>
-    );
-  }
+  const { feature, isFeaturePending, setSelectedFeature } = useProject();
+  const [{ rowId }] = useQueryStates(projectSearchParams, {
+    urlKeys: projectSearchParamsUrlKeys,
+    shallow: false,
+  });
 
   return (
     <DrawerPrimitive.NestedRoot
@@ -48,7 +34,7 @@ export function FeatureDrawer({ containerRef }: FeatureDrawerProps) {
       dismissible={false}
       onOpenChange={(open) => {
         if (!open) {
-          void setProjectSearchParams({ rowId: null });
+          setSelectedFeature(null);
         }
       }}
     >
@@ -63,28 +49,54 @@ export function FeatureDrawer({ containerRef }: FeatureDrawerProps) {
           }
         >
           <div className="flex h-full w-full grow flex-col rounded-lg border bg-white p-6">
-            <header>
-              <div className="-m-2 mb-0">
-                <Tooltip>
-                  <EmojiPopover onIconChange={() => {}}>
-                    <TooltipTrigger asChild>
-                      <Button size="icon-sm" type="button" variant="ghost">
-                        <SmilePlusIcon className="size-4" />
-                      </Button>
-                    </TooltipTrigger>
-                  </EmojiPopover>
-                  <TooltipContent>Add emoji</TooltipContent>
-                </Tooltip>
+            <Button
+              className="absolute right-4 top-4"
+              size="icon-sm"
+              type="button"
+              variant="ghost"
+              onClick={() => {
+                setSelectedFeature(null);
+              }}
+            >
+              <XIcon className="size-4" />
+            </Button>
+            {isFeaturePending ? (
+              <>
+                <Skeleton className="mb-2 size-8 rounded-full" />
+                <Skeleton className="h-6" />
+              </>
+            ) : feature ? (
+              <header>
+                <div className="-m-2 mb-0">
+                  <Tooltip>
+                    <EmojiPopover onIconChange={() => {}}>
+                      <TooltipTrigger asChild>
+                        <Button size="icon-sm" type="button" variant="ghost">
+                          <SmilePlusIcon className="size-4" />
+                        </Button>
+                      </TooltipTrigger>
+                    </EmojiPopover>
+                    <TooltipContent>Add emoji</TooltipContent>
+                  </Tooltip>
+                </div>
+                <AutoSizeTextArea
+                  className="text-4xl font-bold"
+                  placeholder="Untitled"
+                  value={feature.name ?? ""}
+                  onChange={(value) => {
+                    console.log(value);
+                  }}
+                />
+              </header>
+            ) : (
+              <div className="flex flex-1 flex-col justify-center rounded-lg bg-gray-50 p-8">
+                <div className="text-center">
+                  <h3 className="text-foreground mt-2 text-sm font-medium">
+                    No feature found
+                  </h3>
+                </div>
               </div>
-              <AutoSizeTextArea
-                className="text-4xl font-bold"
-                placeholder="Untitled"
-                value={feature.name ?? ""}
-                onChange={(value) => {
-                  console.log(value);
-                }}
-              />
-            </header>
+            )}
           </div>
         </DrawerPrimitive.Content>
       </DrawerPrimitive.Portal>

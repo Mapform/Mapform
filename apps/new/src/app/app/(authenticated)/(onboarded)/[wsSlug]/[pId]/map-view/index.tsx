@@ -4,12 +4,10 @@ import { Layer, Map, MapRoot, Source } from "~/components/map";
 import { rowsToGeoJSON } from "~/lib/rows-to-geojson";
 import { useMemo, useRef, useState } from "react";
 import { useMediaQuery } from "@mapform/ui/hooks/use-media-query";
-import { useQueryStates } from "nuqs";
 import { useProject } from "../context";
 import { MapDrawer } from "./map-drawer/index";
 import { DRAWER_WIDTH } from "./constants";
 import { MapControls } from "./map-controls";
-import { projectSearchParams, projectSearchParamsUrlKeys } from "../params";
 
 const POINTS_LAYER_ID = "points-layer";
 const LINES_LAYER_ID = "lines-layer";
@@ -17,15 +15,10 @@ const POLYGONS_FILL_LAYER_ID = "polygons-fill-layer";
 const POLYGONS_OUTLINE_LAYER_ID = "polygons-outline-layer";
 
 export function MapView() {
-  const { project } = useProject();
+  const { project, setSelectedFeature } = useProject();
   const isDesktop = useMediaQuery("(min-width: 768px)");
   const [drawerOpen, setDrawerOpen] = useState(true);
   const containerRef = useRef<HTMLDivElement>(null);
-
-  const [_, setProjectSearchParams] = useQueryStates(projectSearchParams, {
-    urlKeys: projectSearchParamsUrlKeys,
-    shallow: false,
-  });
 
   const mapPadding = useMemo(() => {
     return {
@@ -68,14 +61,7 @@ export function MapView() {
     const feature = features[0];
 
     if (feature?.properties?.id) {
-      void setProjectSearchParams(
-        {
-          rowId: feature.properties.id as string,
-        },
-        {
-          shallow: false,
-        },
-      );
+      setSelectedFeature(feature.properties.id as string);
     }
   };
 
