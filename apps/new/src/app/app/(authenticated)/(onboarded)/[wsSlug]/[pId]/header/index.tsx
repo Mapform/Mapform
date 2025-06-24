@@ -18,6 +18,7 @@ import {
 import { useProject } from "../context";
 import { ViewButton } from "./view-button";
 import { EmojiPopover } from "@mapform/ui/components/emoji-picker";
+import { Search } from "./search";
 
 interface HeaderProps {
   className?: string;
@@ -30,7 +31,8 @@ export function Header({ className }: HeaderProps) {
 
   return (
     <header className={className}>
-      <div className="-m-2 mb-0">
+      <Search />
+      <div className="-mx-2 mb-0 mt-2">
         <Tooltip>
           <EmojiPopover onIconChange={() => {}}>
             <TooltipTrigger asChild>

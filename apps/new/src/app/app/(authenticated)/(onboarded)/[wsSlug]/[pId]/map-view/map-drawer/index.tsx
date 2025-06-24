@@ -32,6 +32,7 @@ export function MapDrawer({
     return (
       <DrawerPrimitive.Root
         direction="left"
+        defaultOpen
         open={drawerOpen}
         onOpenChange={setDrawerOpen}
         modal={false}
@@ -49,12 +50,12 @@ export function MapDrawer({
           >
             <div
               className={cn(
-                "flex h-full w-full grow flex-col gap-4 rounded-lg border bg-white p-6 transition-transform",
+                "flex h-full w-full grow flex-col gap-4 rounded-lg bg-white p-6 transition-transform",
                 { "scale-[99%] border-gray-300 bg-gray-300": !!rowId },
               )}
             >
               <Button
-                className="absolute right-4 top-4"
+                className="absolute right-2.5 top-2.5 z-10"
                 size="icon-sm"
                 type="button"
                 variant="ghost"
