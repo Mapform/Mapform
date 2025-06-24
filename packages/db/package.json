@@ -14,7 +14,6 @@
     "postinstall": "pnpm db:generate"
   },
   "devDependencies": {
-    "@mapform/blocknote": "workspace:*",
     "@mapform/eslint-config": "workspace:*",
     "@types/eslint": "catalog:",
     "@types/geojson": "catalog:",

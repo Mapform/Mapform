@@ -21,7 +21,6 @@
     "zod-form-data": "catalog:"
   },
   "devDependencies": {
-    "@mapform/blocknote": "workspace:*",
     "@mapform/eslint-config": "workspace:*",
     "@mapform/typescript-config": "workspace:*",
     "@types/geojson": "^7946.0.16",

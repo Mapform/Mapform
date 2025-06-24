@@ -195,7 +195,7 @@ export function AppSidebar() {
           <SidebarGroup key={space.title}>
             <SidebarGroupLabel>{space.title}</SidebarGroupLabel>
             {/* Projects */}
-            <SidebarMenu>
+            {/* <SidebarMenu>
               <Collapsible className="group/collapsible" defaultOpen>
                 <SidebarMenuItem>
                   <SidebarMenuButton asChild isActive={space.project.isActive}>
@@ -218,7 +218,7 @@ export function AppSidebar() {
                   </div>
                 </SidebarMenuItem>
               </Collapsible>
-            </SidebarMenu>
+            </SidebarMenu> */}
           </SidebarGroup>
         ))}
       </SidebarContent>

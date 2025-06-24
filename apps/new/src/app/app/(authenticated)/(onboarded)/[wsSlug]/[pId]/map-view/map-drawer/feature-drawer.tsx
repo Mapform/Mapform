@@ -13,6 +13,7 @@ import {
 } from "@mapform/ui/components/tooltip";
 import { EmojiPopover } from "@mapform/ui/components/emoji-picker";
 import { Skeleton } from "@mapform/ui/components/skeleton";
+import { Blocknote } from "~/components/blocknote";
 
 interface FeatureDrawerProps {
   containerRef: React.RefObject<HTMLDivElement | null>;
@@ -66,28 +67,31 @@ export function FeatureDrawer({ containerRef }: FeatureDrawerProps) {
                 <Skeleton className="h-6" />
               </>
             ) : feature ? (
-              <header>
-                <div className="-m-2 mb-0">
-                  <Tooltip>
-                    <EmojiPopover onIconChange={() => {}}>
-                      <TooltipTrigger asChild>
-                        <Button size="icon-sm" type="button" variant="ghost">
-                          <SmilePlusIcon className="size-4" />
-                        </Button>
-                      </TooltipTrigger>
-                    </EmojiPopover>
-                    <TooltipContent>Add emoji</TooltipContent>
-                  </Tooltip>
-                </div>
-                <AutoSizeTextArea
-                  className="text-4xl font-bold"
-                  placeholder="Untitled"
-                  value={feature.name ?? ""}
-                  onChange={(value) => {
-                    console.log(value);
-                  }}
-                />
-              </header>
+              <div>
+                <header>
+                  <div className="-m-2 mb-0">
+                    <Tooltip>
+                      <EmojiPopover onIconChange={() => {}}>
+                        <TooltipTrigger asChild>
+                          <Button size="icon-sm" type="button" variant="ghost">
+                            <SmilePlusIcon className="size-4" />
+                          </Button>
+                        </TooltipTrigger>
+                      </EmojiPopover>
+                      <TooltipContent>Add emoji</TooltipContent>
+                    </Tooltip>
+                  </div>
+                  <AutoSizeTextArea
+                    className="text-4xl font-bold"
+                    placeholder="Untitled"
+                    value={feature.name ?? ""}
+                    onChange={(value) => {
+                      console.log(value);
+                    }}
+                  />
+                </header>
+                <Blocknote />
+              </div>
             ) : (
               <div className="flex flex-1 flex-col justify-center rounded-lg bg-gray-50 p-8">
                 <div className="text-center">
