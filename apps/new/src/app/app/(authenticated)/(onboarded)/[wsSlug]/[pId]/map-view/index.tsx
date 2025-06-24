@@ -18,7 +18,6 @@ const POLYGONS_FILL_LAYER_ID = "polygons-fill-layer";
 const POLYGONS_OUTLINE_LAYER_ID = "polygons-outline-layer";
 
 export function MapView() {
-  const { project, setSelectedFeature } = useProject();
   const isDesktop = useMediaQuery("(min-width: 768px)");
   const [drawerOpen, setDrawerOpen] = useState(true);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -31,6 +30,41 @@ export function MapView() {
       right: 0,
     };
   }, [drawerOpen, isDesktop]);
+
+  return (
+    <MapRoot padding={mapPadding}>
+      <MapViewInner
+        containerRef={containerRef}
+        drawerOpen={drawerOpen}
+        setDrawerOpen={setDrawerOpen}
+      />
+    </MapRoot>
+  );
+}
+
+function MapViewInner({
+  containerRef,
+  drawerOpen,
+  setDrawerOpen,
+}: {
+  containerRef: React.RefObject<HTMLDivElement | null>;
+  drawerOpen: boolean;
+  setDrawerOpen: (open: boolean) => void;
+}) {
+  const { project, setSelectedFeature } = useProject();
+
+  const handleClick = (e: mapboxgl.MapMouseEvent) => {
+    const features = e.target.queryRenderedFeatures(e.point, {
+      layers: [POINTS_LAYER_ID, LINES_LAYER_ID, POLYGONS_FILL_LAYER_ID],
+    });
+
+    const feature = features[0];
+
+    if (feature?.properties?.id) {
+      setDrawerOpen(true);
+      setSelectedFeature(feature.properties.id as string);
+    }
+  };
 
   // Separate rows by geometry type
   const pointRows = useMemo(
@@ -56,102 +90,87 @@ export function MapView() {
     [project.rows],
   );
 
-  const handleClick = (e: mapboxgl.MapMouseEvent) => {
-    const features = e.target.queryRenderedFeatures(e.point, {
-      layers: [POINTS_LAYER_ID, LINES_LAYER_ID, POLYGONS_FILL_LAYER_ID],
-    });
-
-    const feature = features[0];
-
-    if (feature?.properties?.id) {
-      setDrawerOpen(true);
-      setSelectedFeature(feature.properties.id as string);
-    }
-  };
-
   return (
-    <MapRoot padding={mapPadding}>
-      <div className="h-full overflow-hidden p-4">
-        <div className="relative h-full overflow-hidden" ref={containerRef}>
-          <Map className="size-full rounded-lg" onClick={handleClick}>
-            {/* Points Layer */}
-            {pointRows.length > 0 && (
-              <Source id="points-source" data={rowsToGeoJSON(pointRows)}>
-                <Layer
-                  id={POINTS_LAYER_ID}
-                  type="circle"
-                  paint={{
-                    "circle-radius": 8,
-                    "circle-color": "#3b82f6",
-                    "circle-stroke-width": 2,
-                    "circle-stroke-color": "#ffffff",
-                  }}
-                />
-              </Source>
-            )}
+    <div className="h-full overflow-hidden p-4">
+      <div className="relative h-full overflow-hidden" ref={containerRef}>
+        <Map className="size-full rounded-lg" onClick={handleClick}>
+          {/* Points Layer */}
+          {pointRows.length > 0 && (
+            <Source id="points-source" data={rowsToGeoJSON(pointRows)}>
+              <Layer
+                id={POINTS_LAYER_ID}
+                type="circle"
+                paint={{
+                  "circle-radius": 8,
+                  "circle-color": "#3b82f6",
+                  "circle-stroke-width": 2,
+                  "circle-stroke-color": "#ffffff",
+                }}
+              />
+            </Source>
+          )}
 
-            {/* Lines Layer */}
-            {lineRows.length > 0 && (
-              <Source id="lines-source" data={rowsToGeoJSON(lineRows)}>
-                <Layer
-                  id={LINES_LAYER_ID}
-                  type="line"
-                  paint={{
-                    "line-color": "#10b981",
-                    "line-width": 3,
-                    "line-opacity": 0.8,
-                  }}
-                />
-              </Source>
-            )}
+          {/* Lines Layer */}
+          {lineRows.length > 0 && (
+            <Source id="lines-source" data={rowsToGeoJSON(lineRows)}>
+              <Layer
+                id={LINES_LAYER_ID}
+                type="line"
+                paint={{
+                  "line-color": "#10b981",
+                  "line-width": 3,
+                  "line-opacity": 0.8,
+                }}
+              />
+            </Source>
+          )}
 
-            {/* Polygons Layer */}
-            {polygonRows.length > 0 && (
-              <Source id="polygons-source" data={rowsToGeoJSON(polygonRows)}>
-                <Layer
-                  id={POLYGONS_FILL_LAYER_ID}
-                  type="fill"
-                  paint={{
-                    "fill-color": "#8b5cf6",
-                    "fill-opacity": 0.4,
-                  }}
-                />
-                <Layer
-                  id={POLYGONS_OUTLINE_LAYER_ID}
-                  type="line"
-                  paint={{
-                    "line-color": "#7c3aed",
-                    "line-width": 2,
-                  }}
-                />
-              </Source>
-            )}
-          </Map>
-          <Button
-            className={cn(
-              "absolute left-2 top-2 z-10 transition-opacity delay-300 duration-300",
-              {
-                "opacity-0": drawerOpen,
-                "opacity-100": !drawerOpen,
-              },
-            )}
-            size="icon-sm"
-            type="button"
-            variant="outline"
-            onClick={() => {
-              setDrawerOpen(true);
-            }}
-          >
-            <PanelLeftOpenIcon className="size-4" />
-          </Button>
-          <MapDrawer
-            containerRef={containerRef}
-            drawerOpen={drawerOpen}
-            setDrawerOpen={setDrawerOpen}
-          />
-          <MapControls />
-        </div>
+          {/* Polygons Layer */}
+          {polygonRows.length > 0 && (
+            <Source id="polygons-source" data={rowsToGeoJSON(polygonRows)}>
+              <Layer
+                id={POLYGONS_FILL_LAYER_ID}
+                type="fill"
+                paint={{
+                  "fill-color": "#8b5cf6",
+                  "fill-opacity": 0.4,
+                }}
+              />
+              <Layer
+                id={POLYGONS_OUTLINE_LAYER_ID}
+                type="line"
+                paint={{
+                  "line-color": "#7c3aed",
+                  "line-width": 2,
+                }}
+              />
+            </Source>
+          )}
+        </Map>
+        <Button
+          className={cn(
+            "absolute left-2 top-2 z-10 transition-opacity delay-300 duration-300",
+            {
+              "opacity-0": drawerOpen,
+              "opacity-100": !drawerOpen,
+            },
+          )}
+          size="icon-sm"
+          type="button"
+          variant="outline"
+          onClick={() => {
+            setDrawerOpen(true);
+          }}
+        >
+          <PanelLeftOpenIcon className="size-4" />
+        </Button>
+        <MapDrawer
+          containerRef={containerRef}
+          drawerOpen={drawerOpen}
+          setDrawerOpen={setDrawerOpen}
+        />
+        <MapControls />
       </div>
-    </MapRoot>
+    </div>
   );
 }
