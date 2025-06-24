@@ -1,6 +1,6 @@
 {
-  "id": "35138594-f807-4861-beb6-01570c66962d",
-  "prevId": "fa698b1c-051f-4566-84c4-b5ed59b4521e",
+  "id": "090bb1cb-cdbf-4bec-b94e-16eb0de7058a",
+  "prevId": "880d4e6f-21cf-4b86-8781-778e5f423179",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -92,10 +92,10 @@
       "uniqueConstraints": {
         "user_email_unique": {
           "name": "user_email_unique",
+          "nullsNotDistinct": false,
           "columns": [
             "email"
-          ],
-          "nullsNotDistinct": false
+          ]
         }
       },
       "policies": {},
@@ -152,10 +152,10 @@
       "uniqueConstraints": {
         "workspace_slug_unique": {
           "name": "workspace_slug_unique",
+          "nullsNotDistinct": false,
           "columns": [
             "slug"
-          ],
-          "nullsNotDistinct": false
+          ]
         }
       },
       "policies": {},
@@ -191,28 +191,28 @@
         "workspace_membership_user_id_user_id_fk": {
           "name": "workspace_membership_user_id_user_id_fk",
           "tableFrom": "workspace_membership",
+          "tableTo": "user",
           "columnsFrom": [
             "user_id"
           ],
-          "tableTo": "user",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         },
         "workspace_membership_workspace_id_workspace_id_fk": {
           "name": "workspace_membership_workspace_id_workspace_id_fk",
           "tableFrom": "workspace_membership",
+          "tableTo": "workspace",
           "columnsFrom": [
             "workspace_id"
           ],
-          "tableTo": "workspace",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {
@@ -278,26 +278,26 @@
         "teamspace_workspace_slug_workspace_slug_fk": {
           "name": "teamspace_workspace_slug_workspace_slug_fk",
           "tableFrom": "teamspace",
+          "tableTo": "workspace",
           "columnsFrom": [
             "workspace_slug"
           ],
-          "tableTo": "workspace",
           "columnsTo": [
             "slug"
           ],
-          "onUpdate": "cascade",
-          "onDelete": "cascade"
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "teamspace_workspace_slug_slug_unique": {
           "name": "teamspace_workspace_slug_slug_unique",
+          "nullsNotDistinct": false,
           "columns": [
             "workspace_slug",
             "slug"
-          ],
-          "nullsNotDistinct": false
+          ]
         }
       },
       "policies": {},
@@ -333,28 +333,28 @@
         "teamspace_membership_user_id_user_id_fk": {
           "name": "teamspace_membership_user_id_user_id_fk",
           "tableFrom": "teamspace_membership",
+          "tableTo": "user",
           "columnsFrom": [
             "user_id"
           ],
-          "tableTo": "user",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         },
         "teamspace_membership_teamspace_id_teamspace_id_fk": {
           "name": "teamspace_membership_teamspace_id_teamspace_id_fk",
           "tableFrom": "teamspace_membership",
+          "tableTo": "teamspace",
           "columnsFrom": [
             "teamspace_id"
           ],
-          "tableTo": "teamspace",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {
@@ -447,28 +447,28 @@
         "project_folder_id_folder_id_fk": {
           "name": "project_folder_id_folder_id_fk",
           "tableFrom": "project",
+          "tableTo": "folder",
           "columnsFrom": [
             "folder_id"
           ],
-          "tableTo": "folder",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         },
         "project_teamspace_id_teamspace_id_fk": {
           "name": "project_teamspace_id_teamspace_id_fk",
           "tableFrom": "project",
+          "tableTo": "teamspace",
           "columnsFrom": [
             "teamspace_id"
           ],
-          "tableTo": "teamspace",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -552,24 +552,24 @@
             }
           ],
           "isUnique": false,
-          "with": {},
+          "concurrently": false,
           "method": "hnsw",
-          "concurrently": false
+          "with": {}
         }
       },
       "foreignKeys": {
         "row_project_id_project_id_fk": {
           "name": "row_project_id_project_id_fk",
           "tableFrom": "row",
+          "tableTo": "project",
           "columnsFrom": [
             "project_id"
           ],
-          "tableTo": "project",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -628,15 +628,15 @@
         "column_project_id_project_id_fk": {
           "name": "column_project_id_project_id_fk",
           "tableFrom": "column",
+          "tableTo": "project",
           "columnsFrom": [
             "project_id"
           ],
-          "tableTo": "project",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -731,39 +731,39 @@
         "plan_workspace_slug_workspace_slug_fk": {
           "name": "plan_workspace_slug_workspace_slug_fk",
           "tableFrom": "plan",
+          "tableTo": "workspace",
           "columnsFrom": [
             "workspace_slug"
           ],
-          "tableTo": "workspace",
           "columnsTo": [
             "slug"
           ],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "plan_stripe_customer_id_unique": {
           "name": "plan_stripe_customer_id_unique",
+          "nullsNotDistinct": false,
           "columns": [
             "stripe_customer_id"
-          ],
-          "nullsNotDistinct": false
+          ]
         },
         "plan_stripe_subscription_id_unique": {
           "name": "plan_stripe_subscription_id_unique",
+          "nullsNotDistinct": false,
           "columns": [
             "stripe_subscription_id"
-          ],
-          "nullsNotDistinct": false
+          ]
         },
         "plan_workspace_slug_unique": {
           "name": "plan_workspace_slug_unique",
+          "nullsNotDistinct": false,
           "columns": [
             "workspace_slug"
-          ],
-          "nullsNotDistinct": false
+          ]
         }
       },
       "policies": {},
@@ -826,10 +826,10 @@
       "uniqueConstraints": {
         "blob_url_unique": {
           "name": "blob_url_unique",
+          "nullsNotDistinct": false,
           "columns": [
             "url"
-          ],
-          "nullsNotDistinct": false
+          ]
         }
       },
       "policies": {},
@@ -898,28 +898,28 @@
         "folder_teamspace_id_teamspace_id_fk": {
           "name": "folder_teamspace_id_teamspace_id_fk",
           "tableFrom": "folder",
+          "tableTo": "teamspace",
           "columnsFrom": [
             "teamspace_id"
           ],
-          "tableTo": "teamspace",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         },
         "custom_fk": {
           "name": "custom_fk",
           "tableFrom": "folder",
+          "tableTo": "folder",
           "columnsFrom": [
             "parent_id"
           ],
-          "tableTo": "folder",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -957,25 +957,25 @@
         "map_view_view_id_view_id_fk": {
           "name": "map_view_view_id_view_id_fk",
           "tableFrom": "map_view",
+          "tableTo": "view",
           "columnsFrom": [
             "view_id"
           ],
-          "tableTo": "view",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "map_view_unq": {
           "name": "map_view_unq",
+          "nullsNotDistinct": false,
           "columns": [
             "view_id"
-          ],
-          "nullsNotDistinct": false
+          ]
         }
       },
       "policies": {},
@@ -1005,25 +1005,25 @@
         "table_view_view_id_view_id_fk": {
           "name": "table_view_view_id_view_id_fk",
           "tableFrom": "table_view",
+          "tableTo": "view",
           "columnsFrom": [
             "view_id"
           ],
-          "tableTo": "view",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "table_view_unq": {
           "name": "table_view_unq",
+          "nullsNotDistinct": false,
           "columns": [
             "view_id"
-          ],
-          "nullsNotDistinct": false
+          ]
         }
       },
       "policies": {},
@@ -1087,15 +1087,15 @@
         "view_project_id_project_id_fk": {
           "name": "view_project_id_project_id_fk",
           "tableFrom": "view",
+          "tableTo": "project",
           "columnsFrom": [
             "project_id"
           ],
-          "tableTo": "project",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -1133,25 +1133,25 @@
         "boolean_cell_cell_id_cell_id_fk": {
           "name": "boolean_cell_cell_id_cell_id_fk",
           "tableFrom": "boolean_cell",
+          "tableTo": "cell",
           "columnsFrom": [
             "cell_id"
           ],
-          "tableTo": "cell",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "bool_cell_unq": {
           "name": "bool_cell_unq",
+          "nullsNotDistinct": false,
           "columns": [
             "cell_id"
-          ],
-          "nullsNotDistinct": false
+          ]
         }
       },
       "policies": {},
@@ -1201,39 +1201,39 @@
         "cell_row_id_row_id_fk": {
           "name": "cell_row_id_row_id_fk",
           "tableFrom": "cell",
+          "tableTo": "row",
           "columnsFrom": [
             "row_id"
           ],
-          "tableTo": "row",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         },
         "cell_column_id_column_id_fk": {
           "name": "cell_column_id_column_id_fk",
           "tableFrom": "cell",
+          "tableTo": "column",
           "columnsFrom": [
             "column_id"
           ],
-          "tableTo": "column",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "cell_row_id_column_id_unique": {
           "name": "cell_row_id_column_id_unique",
+          "nullsNotDistinct": false,
           "columns": [
             "row_id",
             "column_id"
-          ],
-          "nullsNotDistinct": false
+          ]
         }
       },
       "policies": {},
@@ -1269,25 +1269,25 @@
         "date_cell_cell_id_cell_id_fk": {
           "name": "date_cell_cell_id_cell_id_fk",
           "tableFrom": "date_cell",
+          "tableTo": "cell",
           "columnsFrom": [
             "cell_id"
           ],
-          "tableTo": "cell",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "date_cell_unq": {
           "name": "date_cell_unq",
+          "nullsNotDistinct": false,
           "columns": [
             "cell_id"
-          ],
-          "nullsNotDistinct": false
+          ]
         }
       },
       "policies": {},
@@ -1323,25 +1323,25 @@
         "number_cell_cell_id_cell_id_fk": {
           "name": "number_cell_cell_id_cell_id_fk",
           "tableFrom": "number_cell",
+          "tableTo": "cell",
           "columnsFrom": [
             "cell_id"
           ],
-          "tableTo": "cell",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "number_cell_unq": {
           "name": "number_cell_unq",
+          "nullsNotDistinct": false,
           "columns": [
             "cell_id"
-          ],
-          "nullsNotDistinct": false
+          ]
         }
       },
       "policies": {},
@@ -1377,25 +1377,25 @@
         "string_cell_cell_id_cell_id_fk": {
           "name": "string_cell_cell_id_cell_id_fk",
           "tableFrom": "string_cell",
+          "tableTo": "cell",
           "columnsFrom": [
             "cell_id"
           ],
-          "tableTo": "cell",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "string_cell_unq": {
           "name": "string_cell_unq",
+          "nullsNotDistinct": false,
           "columns": [
             "cell_id"
-          ],
-          "nullsNotDistinct": false
+          ]
         }
       },
       "policies": {},
@@ -1448,10 +1448,10 @@
     }
   },
   "schemas": {},
-  "views": {},
   "sequences": {},
   "roles": {},
   "policies": {},
+  "views": {},
   "_meta": {
     "columns": {},
     "schemas": {},
