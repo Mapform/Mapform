@@ -59,7 +59,7 @@ export const Source = ({
         map.removeSource(id);
       }
     };
-  }, [map, id, data, type]);
+  }, []);
 
   return (
     <SourceContext.Provider value={{ sourceId: id }}>

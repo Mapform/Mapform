@@ -2,7 +2,7 @@
 
 import { Layer, Map, MapRoot, Source } from "~/components/map";
 import { rowsToGeoJSON } from "~/lib/rows-to-geojson";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useMediaQuery } from "@mapform/ui/hooks/use-media-query";
 import { useProject } from "../context";
 import { MapDrawer } from "./map-drawer/index";
@@ -111,6 +111,12 @@ function MapViewInner({
     [project.rows],
   );
 
+  useEffect(() => {
+    return () => {
+      console.log("unmounting!");
+    };
+  }, []);
+
   return (
     <div className="h-full overflow-hidden p-4">
       <div className="relative h-full overflow-hidden" ref={containerRef}>
@@ -120,57 +126,51 @@ function MapViewInner({
           onContextMenu={handleContextMenu}
         >
           {/* Points Layer */}
-          {pointRows.length > 0 && (
-            <Source id="points-source" data={rowsToGeoJSON(pointRows)}>
-              <Layer
-                id={POINTS_LAYER_ID}
-                type="circle"
-                paint={{
-                  "circle-radius": 8,
-                  "circle-color": "#3b82f6",
-                  "circle-stroke-width": 2,
-                  "circle-stroke-color": "#ffffff",
-                }}
-              />
-            </Source>
-          )}
+          <Source id="points-source" data={rowsToGeoJSON(pointRows)}>
+            <Layer
+              id={POINTS_LAYER_ID}
+              type="circle"
+              paint={{
+                "circle-radius": 8,
+                "circle-color": "#3b82f6",
+                "circle-stroke-width": 2,
+                "circle-stroke-color": "#ffffff",
+              }}
+            />
+          </Source>
 
           {/* Lines Layer */}
-          {lineRows.length > 0 && (
-            <Source id="lines-source" data={rowsToGeoJSON(lineRows)}>
-              <Layer
-                id={LINES_LAYER_ID}
-                type="line"
-                paint={{
-                  "line-color": "#10b981",
-                  "line-width": 3,
-                  "line-opacity": 0.8,
-                }}
-              />
-            </Source>
-          )}
+          <Source id="lines-source" data={rowsToGeoJSON(lineRows)}>
+            <Layer
+              id={LINES_LAYER_ID}
+              type="line"
+              paint={{
+                "line-color": "#10b981",
+                "line-width": 3,
+                "line-opacity": 0.8,
+              }}
+            />
+          </Source>
 
           {/* Polygons Layer */}
-          {polygonRows.length > 0 && (
-            <Source id="polygons-source" data={rowsToGeoJSON(polygonRows)}>
-              <Layer
-                id={POLYGONS_FILL_LAYER_ID}
-                type="fill"
-                paint={{
-                  "fill-color": "#8b5cf6",
-                  "fill-opacity": 0.4,
-                }}
-              />
-              <Layer
-                id={POLYGONS_OUTLINE_LAYER_ID}
-                type="line"
-                paint={{
-                  "line-color": "#7c3aed",
-                  "line-width": 2,
-                }}
-              />
-            </Source>
-          )}
+          <Source id="polygons-source" data={rowsToGeoJSON(polygonRows)}>
+            <Layer
+              id={POLYGONS_FILL_LAYER_ID}
+              type="fill"
+              paint={{
+                "fill-color": "#8b5cf6",
+                "fill-opacity": 0.4,
+              }}
+            />
+            <Layer
+              id={POLYGONS_OUTLINE_LAYER_ID}
+              type="line"
+              paint={{
+                "line-color": "#7c3aed",
+                "line-width": 2,
+              }}
+            />
+          </Source>
         </Map>
 
         {/* Context Menu */}

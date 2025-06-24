@@ -60,7 +60,7 @@ export const Layer = ({
         map.removeLayer(id);
       }
     };
-  }, [map, id, source, beforeId, layerProps]);
+  }, []);
 
   return null;
 };

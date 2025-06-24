@@ -118,7 +118,7 @@ export const Map = ({
 
   return (
     <div ref={mapContainer} className={className}>
-      {children}
+      {map ? children : null}
     </div>
   );
 };

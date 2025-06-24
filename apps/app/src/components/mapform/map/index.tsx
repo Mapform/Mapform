@@ -22,7 +22,7 @@ import type { upsertCellAction } from "~/data/cells/upsert-cell";
 import { useIsMobile } from "@mapform/lib/hooks/use-is-mobile";
 import { loadPointImage } from "~/lib/map-tools/point-image-utils";
 import type { MapMouseEvent, MapTouchEvent } from "mapbox-gl";
-import { FeatureCollection } from "geojson";
+import type { FeatureCollection } from "geojson";
 
 const accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
 
