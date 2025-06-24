@@ -3,13 +3,6 @@
   "dialect": "postgresql",
   "entries": [
     {
-      "idx": 0,
-      "version": "7",
-      "when": 1750794357472,
-      "tag": "0000_warm_shooting_star",
-      "breakpoints": true
-    },
-    {
       "idx": 1,
       "version": "7",
       "when": 1750794365963,
