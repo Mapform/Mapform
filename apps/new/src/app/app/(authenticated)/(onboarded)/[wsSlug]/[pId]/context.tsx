@@ -44,26 +44,13 @@ export function ProjectProvider({
       return;
     }
 
-    if (featureId) {
-      startTransition(() => {
-        void setProjectSearchParams(
-          {
-            rowId: featureId,
-          },
-          {
-            shallow: false,
-          },
-        );
-      });
-    }
-
-    // If null don't worry about transition
     void setProjectSearchParams(
       {
         rowId: featureId,
       },
       {
         shallow: false,
+        ...(featureId ? { startTransition } : {}),
       },
     );
   };
