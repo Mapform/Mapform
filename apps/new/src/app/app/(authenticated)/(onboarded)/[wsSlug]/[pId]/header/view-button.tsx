@@ -69,7 +69,7 @@ export const ViewButton = ({
             setIsOpen(true);
           }}
         >
-          <ViewIcon className="mr-2 size-4" />
+          <ViewIcon className="size-4" />
           <span>{view.name ?? VIEWS[viewType].name}</span>
         </Button>
       </DropdownMenuTrigger>

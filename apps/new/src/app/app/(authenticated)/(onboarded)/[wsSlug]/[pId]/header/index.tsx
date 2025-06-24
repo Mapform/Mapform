@@ -60,7 +60,7 @@ export function Header({ className }: HeaderProps) {
           console.log(value);
         }}
       />
-      <div className="flex gap-1">
+      <div className="mt-2 flex gap-1">
         {project.views.map((view) => (
           <ViewButton key={view.id} view={view} />
         ))}

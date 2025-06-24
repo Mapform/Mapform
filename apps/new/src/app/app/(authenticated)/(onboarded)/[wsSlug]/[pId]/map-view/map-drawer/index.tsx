@@ -9,6 +9,7 @@ import { FeatureDrawer } from "./feature-drawer";
 import { useProject } from "../../context";
 import { Button } from "@mapform/ui/components/button";
 import { XIcon } from "lucide-react";
+import { useMap } from "~/components/map";
 
 interface MapDrawerProps {
   drawerOpen: boolean;
@@ -21,7 +22,8 @@ export function MapDrawer({
   containerRef,
   setDrawerOpen,
 }: MapDrawerProps) {
-  const { project } = useProject();
+  const { map } = useMap();
+  const { project, setSelectedFeature } = useProject();
   const [{ rowId }] = useQueryStates(projectSearchParams, {
     urlKeys: projectSearchParamsUrlKeys,
     shallow: false,
@@ -77,9 +79,22 @@ export function MapDrawer({
                 <XIcon className="size-4" />
               </Button>
               <Header />
-              <ul>
+              <ul className="flex flex-col gap-2">
                 {project.rows.map((row) => (
-                  <li key={row.id}>{row.name}</li>
+                  <li
+                    key={row.id}
+                    className="cursor-pointer rounded-lg border p-2 transition-colors hover:border-gray-300 hover:bg-gray-50"
+                    onClick={() => {
+                      setSelectedFeature(row.id);
+
+                      map?.flyTo({
+                        center: row.geometry.coordinates,
+                        // zoom: 15,
+                      });
+                    }}
+                  >
+                    {row.name}
+                  </li>
                 ))}
               </ul>
             </div>
