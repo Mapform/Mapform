@@ -8,17 +8,10 @@ import { useProject } from "../context";
 import { MapDrawer } from "./map-drawer/index";
 import { DRAWER_WIDTH } from "./constants";
 import { MapControls } from "./map-controls";
-import { PanelLeftOpenIcon, ScanIcon } from "lucide-react";
+import { PanelLeftOpenIcon } from "lucide-react";
 import { Button } from "@mapform/ui/components/button";
 import { cn } from "@mapform/lib/classnames";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@mapform/ui/components/dropdown-menu";
-import { PlusIcon, Trash2Icon, EditIcon } from "lucide-react";
+import { MapContextMenu } from "./map-context-menu";
 
 const POINTS_LAYER_ID = "points-layer";
 const LINES_LAYER_ID = "lines-layer";
@@ -180,49 +173,12 @@ function MapViewInner({
           )}
         </Map>
 
-        {/* Context Menu Dropdown */}
-        <DropdownMenu open={contextMenuOpen} onOpenChange={setContextMenuOpen}>
-          <DropdownMenuTrigger asChild>
-            <div
-              className="pointer-events-none absolute"
-              style={{
-                left: contextMenuPosition.x,
-                top: contextMenuPosition.y,
-                width: 1,
-                height: 1,
-              }}
-            />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            align="start"
-            side="right"
-            className="w-48"
-            onEscapeKeyDown={() => setContextMenuOpen(false)}
-            onInteractOutside={() => setContextMenuOpen(false)}
-          >
-            <DropdownMenuItem
-              onClick={() => {
-                setContextMenuOpen(false);
-                // Add your action here
-                console.log("Add new feature");
-              }}
-            >
-              <ScanIcon className="size-4" />
-              Set default view
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={() => {
-                setContextMenuOpen(false);
-                // Add your action here
-                console.log("Add new feature");
-              }}
-            >
-              <PlusIcon className="size-4" />
-              Add location
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        {/* Context Menu */}
+        <MapContextMenu
+          open={contextMenuOpen}
+          onOpenChange={setContextMenuOpen}
+          position={contextMenuPosition}
+        />
 
         <Button
           className={cn(
