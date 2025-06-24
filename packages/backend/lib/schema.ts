@@ -4,7 +4,7 @@ import {
   selectWorkspaceSchema,
   selectTeamspaceSchema,
 } from "@mapform/db/schema";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 export const userAuthSchema = z.object({
   authType: z.literal("user"),

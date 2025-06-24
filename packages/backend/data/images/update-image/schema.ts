@@ -1,4 +1,4 @@
-import type { z } from "zod";
+import type { z } from "zod/v4";
 import { insertBlobSchema } from "@mapform/db/schema";
 
 export const updateImageSchema = insertBlobSchema.partial().extend({

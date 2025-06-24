@@ -32,7 +32,7 @@ import { Map as MapformMap } from "~/components/mapform/map";
 import { Blocknote } from "~/components/mapform/block-note";
 import { Form, useForm, zodResolver } from "@mapform/ui/components/form";
 import { useSetQueryString } from "@mapform/lib/hooks/use-set-query-string";
-import type { z } from "zod";
+import type { z } from "zod/v4";
 import {
   LocationSearch,
   LocationSearchButton,

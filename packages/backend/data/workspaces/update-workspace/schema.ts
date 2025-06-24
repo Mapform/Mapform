@@ -1,5 +1,5 @@
 import { selectWorkspaceSchema } from "@mapform/db/schema";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 export const updateWorkspaceSchema = z.object({
   id: selectWorkspaceSchema.shape.id,

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { SafeActionClient } from "next-safe-action";
 import type { publicSchema, userAuthSchema } from "./schema";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 export type UnwrapReturn<T extends (...args: any) => any> = NonNullable<
   Awaited<NonNullable<ReturnType<NonNullable<Awaited<ReturnType<T>>>>>>

@@ -1,4 +1,4 @@
-import type { z } from "zod";
+import type { z } from "zod/v4";
 import { insertRowSchema } from "@mapform/db/schema";
 
 export const createRowSchema = insertRowSchema;

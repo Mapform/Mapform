@@ -1,1 +1,0 @@
-ALTER TABLE "map_view" ADD COLUMN "center" geometry(point) NOT NULL;

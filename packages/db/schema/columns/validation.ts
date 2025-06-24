@@ -1,12 +1,12 @@
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
-import type { z } from "zod";
+import type { z } from "zod/v4";
 import { columns } from "./schema";
 
 /**
  * Columns
  */
 export const insertColumnSchema = createInsertSchema(columns, {
-  name: (schema) => schema.name.min(3),
+  name: (schema) => schema.min(3),
 });
 
 export const selectColumnSchema = createSelectSchema(columns);

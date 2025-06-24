@@ -1,5 +1,5 @@
 import { selectProjectSchema } from "@mapform/db/schema";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 export const updateProjectSchema = z
   .object({

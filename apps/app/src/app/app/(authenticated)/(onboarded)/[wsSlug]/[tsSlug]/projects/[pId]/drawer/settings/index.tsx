@@ -5,7 +5,7 @@ import {
   useForm,
   zodResolver,
 } from "@mapform/ui/components/form";
-import { z } from "zod";
+import { z } from "zod/v4";
 import { useProject } from "../../project-context";
 import { Button } from "@mapform/ui/components/button";
 import {

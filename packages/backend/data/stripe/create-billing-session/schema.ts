@@ -1,5 +1,5 @@
 import { selectPlanSchema } from "@mapform/db/schema";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 export const createBillingSessionSchema = z.object({
   stripeCustomerId: selectPlanSchema.shape.stripeCustomerId,

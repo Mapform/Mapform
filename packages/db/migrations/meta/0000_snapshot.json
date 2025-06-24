@@ -1,5 +1,5 @@
 {
-  "id": "c984e266-f359-48ec-bdf1-82338af8b681",
+  "id": "fa698b1c-051f-4566-84c4-b5ed59b4521e",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -400,6 +400,13 @@
           "primaryKey": false,
           "notNull": false
         },
+        "position": {
+          "name": "position",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
         "visibility": {
           "name": "visibility",
           "type": "visibility",
@@ -407,6 +414,12 @@
           "primaryKey": false,
           "notNull": true,
           "default": "'closed'"
+        },
+        "folder_id": {
+          "name": "folder_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
         },
         "teamspace_id": {
           "name": "teamspace_id",
@@ -431,6 +444,19 @@
       },
       "indexes": {},
       "foreignKeys": {
+        "project_folder_id_folder_id_fk": {
+          "name": "project_folder_id_folder_id_fk",
+          "tableFrom": "project",
+          "tableTo": "folder",
+          "columnsFrom": [
+            "folder_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
         "project_teamspace_id_teamspace_id_fk": {
           "name": "project_teamspace_id_teamspace_id_fk",
           "tableFrom": "project",
@@ -486,6 +512,12 @@
           "primaryKey": false,
           "notNull": false
         },
+        "row_embedding": {
+          "name": "row_embedding",
+          "type": "vector(1536)",
+          "primaryKey": false,
+          "notNull": false
+        },
         "project_id": {
           "name": "project_id",
           "type": "uuid",
@@ -507,7 +539,24 @@
           "default": "now()"
         }
       },
-      "indexes": {},
+      "indexes": {
+        "row_embedding_index": {
+          "name": "row_embedding_index",
+          "columns": [
+            {
+              "expression": "row_embedding",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last",
+              "opclass": "vector_cosine_ops"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "hnsw",
+          "with": {}
+        }
+      },
       "foreignKeys": {
         "row_project_id_project_id_fk": {
           "name": "row_project_id_project_id_fk",
@@ -822,12 +871,12 @@
           "primaryKey": false,
           "notNull": true
         },
-        "order": {
-          "name": "order",
-          "type": "varchar(256)",
+        "position": {
+          "name": "position",
+          "type": "smallint",
           "primaryKey": false,
           "notNull": true,
-          "default": "'0'"
+          "default": 0
         },
         "created_at": {
           "name": "created_at",
@@ -889,6 +938,12 @@
           "primaryKey": true,
           "notNull": true,
           "default": "gen_random_uuid()"
+        },
+        "center": {
+          "name": "center",
+          "type": "geometry(point)",
+          "primaryKey": false,
+          "notNull": true
         },
         "view_id": {
           "name": "view_id",
@@ -1004,6 +1059,13 @@
           "type": "text",
           "primaryKey": false,
           "notNull": false
+        },
+        "position": {
+          "name": "position",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
         },
         "created_at": {
           "name": "created_at",

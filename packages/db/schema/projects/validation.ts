@@ -1,5 +1,5 @@
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
-import type { z } from "zod";
+import type { z } from "zod/v4";
 import { projects } from "./schema";
 
 export const insertProjectSchema = createInsertSchema(projects);

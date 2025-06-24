@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "zod/v4";
 import { selectColumnSchema } from "@mapform/db/schema";
 
 export const updateColumnSchema = z.object({
