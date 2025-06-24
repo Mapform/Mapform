@@ -9,7 +9,7 @@ import { eq } from "@mapform/db/utils";
 
 export const getRow = (authClient: UserAuthClient) =>
   authClient
-    .schema(getRowSchema)
+    .inputSchema(getRowSchema)
     .action(async ({ parsedInput: { rowId }, ctx: { userAccess } }) => {
       // First get the rows with their teamspace information
       const row = await db.query.rows.findFirst({

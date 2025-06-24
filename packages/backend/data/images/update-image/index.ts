@@ -8,7 +8,7 @@ import { eq } from "@mapform/db/utils";
 
 export const updateImage = (authClient: UserAuthClient) =>
   authClient
-    .schema(updateImageSchema)
+    .inputSchema(updateImageSchema)
     .action(
       async ({
         parsedInput: { url, workspaceId, queuedForDeletionDate },

@@ -8,7 +8,7 @@ import { eq } from "@mapform/db/utils";
 
 export const updateView = (authClient: UserAuthClient) =>
   authClient
-    .schema(updateViewSchema)
+    .inputSchema(updateViewSchema)
     .action(
       async ({ parsedInput: { viewId, ...updates }, ctx: { userAccess } }) => {
         // First get the view with its project and teamspace information

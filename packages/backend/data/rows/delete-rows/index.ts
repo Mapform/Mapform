@@ -8,7 +8,7 @@ import { inArray } from "@mapform/db/utils";
 
 export const deleteRows = (authClient: UserAuthClient) =>
   authClient
-    .schema(deleteRowsSchema)
+    .inputSchema(deleteRowsSchema)
     .action(async ({ parsedInput: { rowIds }, ctx: { userAccess } }) => {
       // First get the rows with their teamspace information
       const rowsToDelete = await db.query.rows.findMany({

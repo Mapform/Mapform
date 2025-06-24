@@ -11,7 +11,7 @@ import { ServerError } from "../../../lib/server-error";
 
 export const validateMagicLink = (authClient: PublicClient) =>
   authClient
-    .schema(validateMagicLinkSchema)
+    .inputSchema(validateMagicLinkSchema)
     .action(async ({ parsedInput: { token } }) => {
       const hashedToken = hashToken(token);
       const magicLink = await db.query.magicLinks.findFirst({

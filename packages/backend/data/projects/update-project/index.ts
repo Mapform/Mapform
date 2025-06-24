@@ -8,7 +8,7 @@ import type { UserAuthClient } from "../../../lib/types";
 
 export const updateProject = (authClient: UserAuthClient) =>
   authClient
-    .schema(updateProjectSchema)
+    .inputSchema(updateProjectSchema)
     .action(async ({ parsedInput: { id, ...rest }, ctx: { user } }) => {
       const teamspaceIds = user.workspaceMemberships
         .map((m) => m.workspace.teamspaces.map((t) => t.id))

@@ -8,7 +8,7 @@ import type { UserAuthClient, PublicClient } from "../../../lib/types";
 
 export const getStorageUsage = (authClient: UserAuthClient | PublicClient) =>
   authClient
-    .schema(getStorageUsageSchema)
+    .inputSchema(getStorageUsageSchema)
     .action(async ({ parsedInput: { workspaceSlug }, ctx }) => {
       if (
         ctx.authType === "user" &&

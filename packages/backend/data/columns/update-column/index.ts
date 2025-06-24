@@ -8,7 +8,7 @@ import type { UserAuthClient } from "../../../lib/types";
 
 export const updateColumn = (authClient: UserAuthClient) =>
   authClient
-    .schema(updateColumnSchema)
+    .inputSchema(updateColumnSchema)
     .action(async ({ parsedInput: { id, name } }) => {
       const [col] = await db
         .update(columns)

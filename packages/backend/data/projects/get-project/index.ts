@@ -12,7 +12,7 @@ import { getProjectSchema } from "./schema";
  */
 export const getProject = (authClient: UserAuthClient) =>
   authClient
-    .schema(getProjectSchema)
+    .inputSchema(getProjectSchema)
     .action(async ({ parsedInput: { projectId, filter }, ctx: { user } }) => {
       const teamspaceIds = user.workspaceMemberships
         .map((m) => m.workspace.teamspaces.map((t) => t.id))

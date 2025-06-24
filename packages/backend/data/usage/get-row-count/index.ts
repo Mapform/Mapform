@@ -8,7 +8,7 @@ import type { UserAuthClient, PublicClient } from "../../../lib/types";
 
 export const getRowCount = (authClient: UserAuthClient | PublicClient) =>
   authClient
-    .schema(getRowAndPageCountSchema)
+    .inputSchema(getRowAndPageCountSchema)
     .action(async ({ parsedInput: { workspaceSlug }, ctx }) => {
       if (
         ctx.authType === "user" &&

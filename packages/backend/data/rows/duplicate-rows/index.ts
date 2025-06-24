@@ -18,7 +18,7 @@ import { getRowCount } from "../../usage/get-row-count";
 
 export const duplicateRows = (authClient: UserAuthClient) =>
   authClient
-    .schema(duplicateRowsSchema)
+    .inputSchema(duplicateRowsSchema)
     .action(async ({ parsedInput: { rowIds }, ctx: { userAccess } }) => {
       const dataToDuplicate = await db.query.rows.findMany({
         where: inArray(rows.id, rowIds),

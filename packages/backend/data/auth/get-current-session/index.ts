@@ -9,7 +9,7 @@ import { eq } from "@mapform/db/utils";
 
 export const getCurrentSession = (authClient: PublicClient) =>
   authClient
-    .schema(getCurrentSessionSchema)
+    .inputSchema(getCurrentSessionSchema)
     .action(async ({ parsedInput: { token } }) => {
       if (!token) {
         return null;

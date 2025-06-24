@@ -10,7 +10,7 @@ import { ServerError } from "../../../lib/server-error";
 
 export const createRow = (authClient: UserAuthClient) =>
   authClient
-    .schema(createRowSchema)
+    .inputSchema(createRowSchema)
     .action(async ({ parsedInput: { projectId }, ctx: { userAccess } }) => {
       const existingProject = await db.query.projects.findFirst({
         where: eq(projects.id, projectId),

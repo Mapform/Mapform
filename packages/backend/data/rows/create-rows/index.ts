@@ -10,7 +10,7 @@ import { ServerError } from "../../../lib/server-error";
 
 export const createRows = (authClient: UserAuthClient) =>
   authClient
-    .schema(createRowsSchema)
+    .inputSchema(createRowsSchema)
     .action(
       async ({
         parsedInput: { projectId, rows: rowsToInsert },

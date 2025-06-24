@@ -9,7 +9,7 @@ import { views } from "@mapform/db/schema/views/schema";
 
 export const createView = (authClient: UserAuthClient) =>
   authClient
-    .schema(createViewSchema)
+    .inputSchema(createViewSchema)
     .action(
       async ({ parsedInput: { projectId, ...rest }, ctx: { userAccess } }) => {
         const project = await db.query.projects.findFirst({

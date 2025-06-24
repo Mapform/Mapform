@@ -8,7 +8,7 @@ import type { UserAuthClient } from "../../../lib/types";
 
 export const deleteColumn = (authClient: UserAuthClient) =>
   authClient
-    .schema(deleteColumnSchema)
+    .inputSchema(deleteColumnSchema)
     .action(async ({ parsedInput: { id } }) => {
       await db.delete(columns).where(eq(columns.id, id));
     });

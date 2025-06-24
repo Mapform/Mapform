@@ -10,7 +10,7 @@ import { ServerError } from "../../../lib/server-error";
 
 export const updateWorkspace = (authClient: UserAuthClient) =>
   authClient
-    .schema(updateWorkspaceSchema)
+    .inputSchema(updateWorkspaceSchema)
     .action(async ({ parsedInput: { id, ...rest }, ctx: { userAccess } }) => {
       if (!userAccess.workspace.checkAccessById(id)) {
         throw new Error("Unauthorized");

@@ -18,7 +18,7 @@ import type { UserAuthClient } from "../../../lib/types";
 
 export const upsertCell = (authClient: UserAuthClient) =>
   authClient
-    .schema(upsertCellSchema)
+    .inputSchema(upsertCellSchema)
     .action(
       async ({
         parsedInput: { rowId, columnId, type, value },

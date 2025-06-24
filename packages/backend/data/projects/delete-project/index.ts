@@ -8,7 +8,7 @@ import type { UserAuthClient } from "../../../lib/types";
 
 export const deleteProject = (authClient: UserAuthClient) =>
   authClient
-    .schema(deleteProjectSchema)
+    .inputSchema(deleteProjectSchema)
     .action(async ({ parsedInput: { projectId }, ctx: { user } }) => {
       const teamspaceIds = user.workspaceMemberships
         .map((m) => m.workspace.teamspaces.map((t) => t.id))

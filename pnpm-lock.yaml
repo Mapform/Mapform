@@ -28,8 +28,8 @@ catalogs:
       specifier: ^1.7.18
       version: 1.7.18
     '@hookform/resolvers':
-      specifier: ^3.3.4
-      version: 3.3.4
+      specifier: ^5.1.1
+      version: 5.1.1
     '@infra-blocks/zod-utils':
       specifier: ^0.4.5
       version: 0.4.5
@@ -265,8 +265,8 @@ catalogs:
       specifier: 15.2.4
       version: 15.2.4
     next-safe-action:
-      specifier: ^7.10.4
-      version: 7.10.4
+      specifier: ^8.0.4
+      version: 8.0.4
     next-themes:
       specifier: ^0.3.0
       version: 0.3.0
@@ -484,7 +484,7 @@ importers:
         version: 15.2.4(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       next-safe-action:
         specifier: 'catalog:'
-        version: 7.10.4(next@15.2.4(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(zod@3.25.67)
+        version: 8.0.4(next@15.2.4(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       next-themes:
         specifier: 'catalog:'
         version: 0.3.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -698,7 +698,7 @@ importers:
         version: 15.2.4(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       next-safe-action:
         specifier: 'catalog:'
-        version: 7.10.4(next@15.2.4(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(zod@3.25.67)
+        version: 8.0.4(next@15.2.4(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       next-themes:
         specifier: 'catalog:'
         version: 0.3.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -880,7 +880,7 @@ importers:
         version: 0.23.3
       next-safe-action:
         specifier: 'catalog:'
-        version: 7.10.4(next@15.2.4(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(zod@3.25.67)
+        version: 8.0.4(next@15.2.4(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       slugify:
         specifier: 'catalog:'
         version: 1.6.6
@@ -1206,7 +1206,7 @@ importers:
         version: 1.1.1(emoji-mart@5.6.0)(react@19.0.0)
       '@hookform/resolvers':
         specifier: 'catalog:'
-        version: 3.3.4(react-hook-form@7.51.3(react@19.0.0))
+        version: 5.1.1(react-hook-form@7.51.3(react@19.0.0))
       '@mapform/lib':
         specifier: workspace:*
         version: link:../lib
@@ -2295,10 +2295,10 @@ packages:
       react: ^16 || ^17 || ^18
       react-dom: ^16 || ^17 || ^18
 
-  '@hookform/resolvers@3.3.4':
-    resolution: {integrity: sha512-o5cgpGOuJYrd+iMKvkttOclgwRW86EsWJZZRC23prf0uU2i48Htq4PuT73AVb9ionFyZrwYEITuOFGF+BydEtQ==}
+  '@hookform/resolvers@5.1.1':
+    resolution: {integrity: sha512-J/NVING3LMAEvexJkyTLjruSm7aOFx7QX21pzkiJfMoNG0wl5aFEjLTl7ay7IQb9EWY6AkrBy7tHL2Alijpdcg==}
     peerDependencies:
-      react-hook-form: ^7.0.0
+      react-hook-form: ^7.55.0
 
   '@humanfs/core@0.19.1':
     resolution: {integrity: sha512-5DyQ4+1JEUzejeK1JGICcideyfUbGixgS9jNgex5nqkW+cY7WZhxBigmieN5Qnw9ZosSNVC9KQKyb+GUaGyKUA==}
@@ -4439,6 +4439,9 @@ packages:
 
   '@socket.io/component-emitter@3.1.2':
     resolution: {integrity: sha512-9BCxFwvbGg/RsZK9tjXd8s4UcwR0MWeFQ1XEKIQVVvAGJyINdrqKMcTRyLoK8Rse1GjzLV9cwjWV1olXRWEXVA==}
+
+  '@standard-schema/utils@0.3.0':
+    resolution: {integrity: sha512-e7Mew686owMaPJVNNLs55PUvgz371nKgwsc4vxE49zsODpJEnxgxRo2y/OKrqueavXgZNMDVj3DdHFlaSAeU8g==}
 
   '@svta/common-media-library@0.7.4':
     resolution: {integrity: sha512-9E01gxhdwdA601GUa+SQ8Q3erQhQaA8X1xJdrrPiQxrNT6gakKfCPMM8zUhu91FpruuHzYeTV8qJz+PedS81hQ==}
@@ -6722,26 +6725,13 @@ packages:
     resolution: {integrity: sha512-+EUsqGPLsM+j/zdChZjsnX51g4XrHFOIXwfnCVPGlQk/k5giakcKsuxCObBRu6DSm9opw/O6slWbJdghQM4bBg==}
     engines: {node: '>= 0.6'}
 
-  next-safe-action@7.10.4:
-    resolution: {integrity: sha512-rZE89DTNgiTJ8oPQBOZm+jd0Uf/pLkN+GE3PndER6vWqHGYGN7HMLvhpggkbE8W4TGp+qM7CPyrXye1wCjZLVg==}
+  next-safe-action@8.0.4:
+    resolution: {integrity: sha512-G9PtlnKyJ5/px52QBhzXpk4RbKveiNQpDXbbKJ8zy8QknNorkw8CeeMbXDyU5mHf1peozUyj3h94wmUEo2y8Qg==}
     engines: {node: '>=18.17'}
     peerDependencies:
-      '@sinclair/typebox': '>= 0.33.3'
       next: '>= 14.0.0'
       react: '>= 18.2.0'
       react-dom: '>= 18.2.0'
-      valibot: '>= 0.36.0'
-      yup: '>= 1.0.0'
-      zod: '>= 3.0.0'
-    peerDependenciesMeta:
-      '@sinclair/typebox':
-        optional: true
-      valibot:
-        optional: true
-      yup:
-        optional: true
-      zod:
-        optional: true
 
   next-themes@0.3.0:
     resolution: {integrity: sha512-/QHIrsYpd6Kfk7xakK4svpDI5mmXP0gfvCoJdGpZQ2TOrQZmsW0QxjaiLn8wbIKjtm4BTSqLoix4lxYYOnLJ/w==}
@@ -9423,8 +9413,9 @@ snapshots:
       react: 19.0.0
       react-dom: 19.0.0(react@19.0.0)
 
-  '@hookform/resolvers@3.3.4(react-hook-form@7.51.3(react@19.0.0))':
+  '@hookform/resolvers@5.1.1(react-hook-form@7.51.3(react@19.0.0))':
     dependencies:
+      '@standard-schema/utils': 0.3.0
       react-hook-form: 7.51.3(react@19.0.0)
 
   '@humanfs/core@0.19.1': {}
@@ -11592,6 +11583,8 @@ snapshots:
       tslib: 2.8.1
 
   '@socket.io/component-emitter@3.1.2': {}
+
+  '@standard-schema/utils@0.3.0': {}
 
   '@svta/common-media-library@0.7.4': {}
 
@@ -14221,13 +14214,11 @@ snapshots:
 
   negotiator@0.6.3: {}
 
-  next-safe-action@7.10.4(next@15.2.4(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(zod@3.25.67):
+  next-safe-action@8.0.4(next@15.2.4(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0):
     dependencies:
       next: 15.2.4(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       react: 19.0.0
       react-dom: 19.0.0(react@19.0.0)
-    optionalDependencies:
-      zod: 3.25.67
 
   next-themes@0.3.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0):
     dependencies:

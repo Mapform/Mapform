@@ -8,7 +8,7 @@ import { and, eq, inArray } from "@mapform/db/utils";
 
 export const createColumn = (authClient: UserAuthClient) =>
   authClient
-    .schema(createColumnSchema)
+    .inputSchema(createColumnSchema)
     .action(
       async ({ parsedInput: { name, projectId, type }, ctx: { user } }) => {
         const teamspaceIds = user.workspaceMemberships

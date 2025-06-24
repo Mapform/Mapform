@@ -9,7 +9,7 @@ catalog:
   "@emoji-mart/react": ^1.1.1
   "@geoapify/geocoder-autocomplete": ^2.0.1
   "@headlessui/react": ^1.7.18
-  "@hookform/resolvers": ^3.3.4
+  "@hookform/resolvers": ^5.1.1
   "@infra-blocks/zod-utils": ^0.4.5
   "@mapbox/geo-viewport": ^0.5.0
   "@neondatabase/serverless": ^0.9.0
@@ -100,7 +100,7 @@ catalog:
   mapbox-gl: ^3.2.0
   motion: 12.0.0-alpha.2
   next: 15.2.4
-  next-safe-action: ^7.10.4
+  next-safe-action: ^8.0.4
   next-themes: ^0.3.0
   papaparse: ^5.4.1
   pg: ^8.13.0

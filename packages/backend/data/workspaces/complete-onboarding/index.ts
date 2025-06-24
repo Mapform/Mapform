@@ -21,7 +21,7 @@ export const stripe = new Stripe(env.STRIPE_SECRET_KEY);
 
 export const completeOnboarding = (authClient: UserAuthClient) =>
   authClient
-    .schema(completeOnboardingSchema)
+    .inputSchema(completeOnboardingSchema)
     .action(
       async ({
         parsedInput: { userName, workspaceName, workspaceSlug },

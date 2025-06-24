@@ -9,7 +9,7 @@ export const stripe = new Stripe(env.STRIPE_SECRET_KEY);
 
 export const createCheckoutSession = (authClient: UserAuthClient) =>
   authClient
-    .schema(createCheckoutSessionSchema)
+    .inputSchema(createCheckoutSessionSchema)
     .action(
       async ({
         parsedInput: { stripeCustomerId, workspaceSlug, priceId },

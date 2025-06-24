@@ -8,7 +8,7 @@ import type { UserAuthClient } from "../../../lib/types";
 
 export const updateCurrentUser = (authClient: UserAuthClient) =>
   authClient
-    .schema(updateCurrentUserSchema)
+    .inputSchema(updateCurrentUserSchema)
     .action(async ({ parsedInput, ctx: { user } }) => {
       return db
         .update(users)

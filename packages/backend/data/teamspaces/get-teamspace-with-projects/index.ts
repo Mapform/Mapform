@@ -8,7 +8,7 @@ import type { UserAuthClient, UnwrapReturn } from "../../../lib/types";
 
 export const getTeamspaceWithProjects = (authClient: UserAuthClient) =>
   authClient
-    .schema(getTeamspaceWithProjectsSchema)
+    .inputSchema(getTeamspaceWithProjectsSchema)
     .action(
       async ({
         parsedInput: { teamspaceSlug, workspaceSlug },

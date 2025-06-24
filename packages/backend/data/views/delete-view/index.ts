@@ -8,7 +8,7 @@ import { eq } from "@mapform/db/utils";
 
 export const deleteView = (authClient: UserAuthClient) =>
   authClient
-    .schema(deleteViewSchema)
+    .inputSchema(deleteViewSchema)
     .action(async ({ parsedInput: { viewId }, ctx: { userAccess } }) => {
       // First get the rows with their teamspace information
       const viewToDelete = await db.query.views.findFirst({

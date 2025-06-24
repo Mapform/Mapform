@@ -11,7 +11,7 @@ import { getStorageUsage } from "../../usage/get-storage-usage";
 
 export const uploadImage = (authClient: UserAuthClient) =>
   authClient
-    .schema(uploadImageSchema)
+    .inputSchema(uploadImageSchema)
     .action(
       async ({ parsedInput: { image, workspaceId }, ctx: { userAccess } }) => {
         if (!userAccess.workspace.checkAccessById(workspaceId)) {

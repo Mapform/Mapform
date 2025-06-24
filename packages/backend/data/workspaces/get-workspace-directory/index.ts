@@ -8,7 +8,7 @@ import type { UserAuthClient, UnwrapReturn } from "../../../lib/types";
 
 export const getWorkspaceDirectory = (authClient: UserAuthClient) =>
   authClient
-    .schema(getWorkspaceDirectorySchema)
+    .inputSchema(getWorkspaceDirectorySchema)
     .action(({ parsedInput: { slug } }) => {
       return db.query.workspaces.findFirst({
         where: eq(workspaces.slug, slug),

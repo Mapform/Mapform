@@ -8,7 +8,7 @@ import type { UserAuthClient } from "../../../lib/types";
 
 export const getRecentProjects = (authClient: UserAuthClient) =>
   authClient
-    .schema(getRecentProjectsSchema)
+    .inputSchema(getRecentProjectsSchema)
     .action(async ({ parsedInput: { workspaceSlug }, ctx: { userAccess } }) => {
       if (!userAccess.workspace.checkAccessBySlug(workspaceSlug)) {
         throw new Error("Unauthorized");

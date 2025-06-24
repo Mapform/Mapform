@@ -9,7 +9,7 @@ import { views } from "@mapform/db/schema/views/schema";
 
 export const createProject = (authClient: UserAuthClient) =>
   authClient
-    .schema(createProjectSchema)
+    .inputSchema(createProjectSchema)
     .action(
       async ({
         parsedInput: { teamspaceId, ...rest },

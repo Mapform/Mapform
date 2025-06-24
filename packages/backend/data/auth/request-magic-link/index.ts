@@ -13,7 +13,7 @@ const baseUrl = env.NEXT_PUBLIC_BASE_URL;
 
 export const requestMagicLink = (authClient: PublicClient) =>
   authClient
-    .schema(requestMagicLinkSchema)
+    .inputSchema(requestMagicLinkSchema)
     .action(async ({ parsedInput: { email } }) => {
       // 1. Generate token
       const token = generateToken(32);
