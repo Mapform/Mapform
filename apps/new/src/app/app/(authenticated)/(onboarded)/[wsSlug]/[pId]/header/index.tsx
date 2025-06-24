@@ -19,6 +19,7 @@ import { useProject } from "../context";
 import { ViewButton } from "./view-button";
 import { EmojiPopover } from "@mapform/ui/components/emoji-picker";
 import { Search } from "./search";
+import { cn } from "@mapform/lib/classnames";
 
 interface HeaderProps {
   className?: string;
@@ -30,7 +31,7 @@ export function Header({ className }: HeaderProps) {
   const { execute, isPending } = useAction(createViewAction);
 
   return (
-    <header className={className}>
+    <header className={cn("mb-4", className)}>
       <Search />
       <div className="-mx-2 mb-0 mt-2">
         <Tooltip>

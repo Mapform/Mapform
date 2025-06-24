@@ -64,6 +64,7 @@ export function MapView() {
     const feature = features[0];
 
     if (feature?.properties?.id) {
+      setDrawerOpen(true);
       setSelectedFeature(feature.properties.id as string);
     }
   };

@@ -50,10 +50,21 @@ export function MapDrawer({
           >
             <div
               className={cn(
-                "flex h-full w-full grow flex-col gap-4 rounded-lg bg-white p-6 transition-transform",
-                { "scale-[99%] border-gray-300 bg-gray-300": !!rowId },
+                "flex h-full w-full grow flex-col gap-4 overflow-hidden rounded-lg bg-white p-6 transition-transform",
+                { "scale-[99%]": !!rowId },
               )}
             >
+              {/* Overlay when feature is displayed over the drawer */}
+              <div
+                className={cn(
+                  "pointer-events-none absolute inset-0 z-10 bg-gray-950 transition-opacity duration-200",
+                  {
+                    "opacity-50": !!rowId,
+                    "opacity-0": !rowId,
+                  },
+                )}
+              />
+
               <Button
                 className="absolute right-2.5 top-2.5 z-10"
                 size="icon-sm"
