@@ -6,6 +6,7 @@ import {
   text,
   unique,
   smallint,
+  geometry,
 } from "drizzle-orm/pg-core";
 import { projects } from "../projects/schema";
 
@@ -58,6 +59,11 @@ export const mapViews = pgTable(
   "map_view",
   {
     id: uuid("id").primaryKey().defaultRandom(),
+    center: geometry("center", {
+      type: "point",
+      mode: "tuple",
+      srid: 4326,
+    }).notNull(),
 
     viewId: uuid("view_id")
       .notNull()
