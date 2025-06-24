@@ -88,8 +88,8 @@ export function MapDrawer({
                       setSelectedFeature(row.id);
 
                       map?.flyTo({
-                        center: row.geometry.coordinates,
-                        // zoom: 15,
+                        center: row.center.coordinates as [number, number],
+                        duration: 500,
                       });
                     }}
                   >

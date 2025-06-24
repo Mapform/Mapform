@@ -2,6 +2,7 @@
 
 import { db, sql } from "@mapform/db";
 import { rows } from "@mapform/db/schema";
+import type { Geometry, Point } from "geojson";
 import { getRowSchema } from "./schema";
 import type { UnwrapReturn, UserAuthClient } from "../../../lib/types";
 import { eq } from "@mapform/db/utils";
@@ -21,9 +22,13 @@ export const getRow = (authClient: UserAuthClient) =>
           geometry: true,
         },
         extras: {
-          geometry: sql<string>`ST_AsGeoJSON(${rows.geometry})::jsonb`.as(
+          geometry: sql<Geometry>`ST_AsGeoJSON(${rows.geometry})::jsonb`.as(
             "geometry",
           ),
+          center:
+            sql<Point>`ST_AsGeoJSON(ST_Centroid(${rows.geometry}))::jsonb`.as(
+              "center",
+            ),
         },
         with: {
           project: true,
