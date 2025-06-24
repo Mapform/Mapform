@@ -6,7 +6,6 @@ import { rows } from "./schema";
  * Rows
  */
 export const insertRowSchema = createInsertSchema(rows);
-
 export const selectRowSchema = createSelectSchema(rows);
 
 export type InsertRow = z.infer<typeof insertRowSchema>;

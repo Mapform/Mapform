@@ -8,37 +8,38 @@ import { z } from "zod/v4";
 
 export const userAuthSchema = z.object({
   authType: z.literal("user"),
-  user: selectUserSchema.merge(
-    z.object({
-      workspaceMemberships: z.array(
-        selectWorkspaceMembershipSchema.merge(
-          z.object({
-            workspace: selectWorkspaceSchema
-              .pick({ id: true, slug: true })
-              .merge(
-                z.object({
-                  teamspaces: z.array(
-                    selectTeamspaceSchema.pick({ id: true, slug: true }),
-                  ),
-                }),
-              ),
-          }),
-        ),
-      ),
-    }),
-  ),
+  user: selectUserSchema.extend({
+    workspaceMemberships: selectWorkspaceMembershipSchema
+      .extend({
+        workspace: selectWorkspaceSchema.pick({ id: true, slug: true }).extend({
+          teamspaces: selectTeamspaceSchema
+            .pick({ id: true, slug: true })
+            .array(),
+        }),
+      })
+      .array(),
+  }),
   userAccess: z.object({
     workspace: z.object({
-      checkAccessBySlug: z.function().args(z.string()).returns(z.boolean()),
-      checkAccessById: z.function().args(z.string()).returns(z.boolean()),
+      checkAccessBySlug: z.function({
+        input: [z.string()],
+        output: z.boolean(),
+      }),
+      checkAccessById: z.function({
+        input: [z.string()],
+        output: z.boolean(),
+      }),
     }),
     teamspace: z.object({
       ids: z.array(z.string()),
-      checkAccessBySlug: z
-        .function()
-        .args(z.string(), z.string())
-        .returns(z.boolean()),
-      checkAccessById: z.function().args(z.string()).returns(z.boolean()),
+      checkAccessBySlug: z.function({
+        input: [z.string(), z.string()],
+        output: z.boolean(),
+      }),
+      checkAccessById: z.function({
+        input: [z.string()],
+        output: z.boolean(),
+      }),
     }),
   }),
 });
