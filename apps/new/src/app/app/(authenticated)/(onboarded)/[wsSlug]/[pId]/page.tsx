@@ -51,8 +51,10 @@ export default async function ViewPage(props: {
       project={project.data}
       activeView={activeView}
     >
-      {activeView.type === "table" && <TableView />}
-      {activeView.type === "map" && <MapView />}
+      <div className="relative h-full">
+        {activeView.type === "table" && <TableView />}
+        {activeView.type === "map" && <MapView />}
+      </div>
     </ProjectProvider>
   );
 }
