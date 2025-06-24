@@ -59,9 +59,15 @@ interface MapProps {
   className?: string;
   children?: React.ReactNode;
   onClick?: (e: mapboxgl.MapMouseEvent) => void;
+  onContextMenu?: (e: mapboxgl.MapMouseEvent) => void;
 }
 
-export const Map = ({ children, className, onClick }: MapProps) => {
+export const Map = ({
+  children,
+  className,
+  onClick,
+  onContextMenu,
+}: MapProps) => {
   const { map, mapContainer, setMap, padding } = useMap();
 
   useEffect(() => {
@@ -79,11 +85,19 @@ export const Map = ({ children, className, onClick }: MapProps) => {
       if (onClick) {
         instance.on("click", onClick);
       }
+
+      if (onContextMenu) {
+        instance.on("contextmenu", onContextMenu);
+      }
     });
 
     return () => {
       if (onClick) {
         instance.off("click", onClick);
+      }
+
+      if (onContextMenu) {
+        instance.off("contextmenu", onContextMenu);
       }
 
       instance.remove();

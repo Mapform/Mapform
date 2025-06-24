@@ -8,9 +8,17 @@ import { useProject } from "../context";
 import { MapDrawer } from "./map-drawer/index";
 import { DRAWER_WIDTH } from "./constants";
 import { MapControls } from "./map-controls";
-import { PanelLeftOpenIcon } from "lucide-react";
+import { PanelLeftOpenIcon, ScanIcon } from "lucide-react";
 import { Button } from "@mapform/ui/components/button";
 import { cn } from "@mapform/lib/classnames";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@mapform/ui/components/dropdown-menu";
+import { PlusIcon, Trash2Icon, EditIcon } from "lucide-react";
 
 const POINTS_LAYER_ID = "points-layer";
 const LINES_LAYER_ID = "lines-layer";
@@ -52,6 +60,11 @@ function MapViewInner({
   setDrawerOpen: (open: boolean) => void;
 }) {
   const { project, setSelectedFeature } = useProject();
+  const [contextMenuOpen, setContextMenuOpen] = useState(false);
+  const [contextMenuPosition, setContextMenuPosition] = useState({
+    x: 0,
+    y: 0,
+  });
 
   const handleClick = (e: mapboxgl.MapMouseEvent) => {
     const features = e.target.queryRenderedFeatures(e.point, {
@@ -64,6 +77,21 @@ function MapViewInner({
       setDrawerOpen(true);
       setSelectedFeature(feature.properties.id as string);
     }
+  };
+
+  const handleContextMenu = (e: mapboxgl.MapMouseEvent) => {
+    e.preventDefault();
+
+    // Get the container's bounding rect to calculate relative position
+    const containerRect = containerRef.current?.getBoundingClientRect();
+    if (!containerRect) return;
+
+    // Calculate position relative to the container
+    const x = e.point.x;
+    const y = e.point.y;
+
+    setContextMenuPosition({ x, y });
+    setContextMenuOpen(true);
   };
 
   // Separate rows by geometry type
@@ -93,7 +121,11 @@ function MapViewInner({
   return (
     <div className="h-full overflow-hidden p-4">
       <div className="relative h-full overflow-hidden" ref={containerRef}>
-        <Map className="size-full rounded-lg" onClick={handleClick}>
+        <Map
+          className="size-full rounded-lg"
+          onClick={handleClick}
+          onContextMenu={handleContextMenu}
+        >
           {/* Points Layer */}
           {pointRows.length > 0 && (
             <Source id="points-source" data={rowsToGeoJSON(pointRows)}>
@@ -147,6 +179,51 @@ function MapViewInner({
             </Source>
           )}
         </Map>
+
+        {/* Context Menu Dropdown */}
+        <DropdownMenu open={contextMenuOpen} onOpenChange={setContextMenuOpen}>
+          <DropdownMenuTrigger asChild>
+            <div
+              className="pointer-events-none absolute"
+              style={{
+                left: contextMenuPosition.x,
+                top: contextMenuPosition.y,
+                width: 1,
+                height: 1,
+              }}
+            />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            align="start"
+            side="right"
+            className="w-48"
+            onEscapeKeyDown={() => setContextMenuOpen(false)}
+            onInteractOutside={() => setContextMenuOpen(false)}
+          >
+            <DropdownMenuItem
+              onClick={() => {
+                setContextMenuOpen(false);
+                // Add your action here
+                console.log("Add new feature");
+              }}
+            >
+              <ScanIcon className="size-4" />
+              Set default view
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onClick={() => {
+                setContextMenuOpen(false);
+                // Add your action here
+                console.log("Add new feature");
+              }}
+            >
+              <PlusIcon className="size-4" />
+              Add location
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
         <Button
           className={cn(
             "absolute left-2 top-2 z-10 transition-opacity delay-300 duration-300",

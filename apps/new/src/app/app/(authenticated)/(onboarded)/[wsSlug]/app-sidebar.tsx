@@ -196,28 +196,26 @@ export function AppSidebar() {
             <SidebarGroupLabel>{space.title}</SidebarGroupLabel>
             {/* Projects */}
             {/* <SidebarMenu>
-              <Collapsible className="group/collapsible" defaultOpen>
-                <SidebarMenuItem>
-                  <SidebarMenuButton asChild isActive={space.project.isActive}>
-                    <Link href={space.project.url}>
-                      <BoxIcon />
-                      <span>Projects</span>
-                    </Link>
-                  </SidebarMenuButton>
-                  <div className="absolute right-1 top-1.5 flex gap-1">
-                    <CreateProjectDropdown tsSlug={space.slug}>
-                      <SidebarMenuAction className="relative right-0 top-0">
-                        <PlusIcon />
-                      </SidebarMenuAction>
-                    </CreateProjectDropdown>
-                    <CollapsibleTrigger asChild>
-                      <SidebarMenuAction className="relative right-0 top-0">
-                        <ChevronRightIcon className="transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                      </SidebarMenuAction>
-                    </CollapsibleTrigger>
-                  </div>
-                </SidebarMenuItem>
-              </Collapsible>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={space.project.isActive}>
+                  <Link href={space.project.url}>
+                    <BoxIcon />
+                    <span>Projects</span>
+                  </Link>
+                </SidebarMenuButton>
+                <div className="absolute right-1 top-1.5 flex gap-1">
+                  <CreateProjectDropdown tsSlug={space.slug}>
+                    <SidebarMenuAction className="relative right-0 top-0">
+                      <PlusIcon />
+                    </SidebarMenuAction>
+                  </CreateProjectDropdown>
+                  <CollapsibleTrigger asChild>
+                    <SidebarMenuAction className="relative right-0 top-0">
+                      <ChevronRightIcon className="transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                    </SidebarMenuAction>
+                  </CollapsibleTrigger>
+                </div>
+              </SidebarMenuItem>
             </SidebarMenu> */}
           </SidebarGroup>
         ))}
