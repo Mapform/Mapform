@@ -9,5 +9,6 @@ export const insertRowSchema = createInsertSchema(rows);
 
 export const selectRowSchema = createSelectSchema(rows);
 
+// @ts-ignore -- Likely drizzle bug
 export type InsertRow = z.infer<typeof insertRowSchema>;
 export type Row = typeof rows.$inferSelect;
