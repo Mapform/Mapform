@@ -8,11 +8,24 @@ import {
   vector,
   index,
 } from "drizzle-orm/pg-core";
-import type { Geometry } from "geojson";
 import { projects } from "../projects/schema";
+import type { Geometry } from "geojson";
+
+// Define geometry types explicitly to avoid circular references
+export type GeometryType =
+  | { type: "Point"; coordinates: [number, number] }
+  | { type: "LineString"; coordinates: [number, number][] }
+  | { type: "Polygon"; coordinates: [number, number][][] }
+  | { type: "MultiPoint"; coordinates: [number, number][] }
+  | { type: "MultiLineString"; coordinates: [number, number][][] }
+  | { type: "MultiPolygon"; coordinates: [number, number][][][] };
+// export type GeometryType = Geometry;
+
+// Also export Point type for convenience
+export type PointType = { type: "Point"; coordinates: [number, number] };
 
 const geometry = customType<{
-  data: Geometry;
+  data: GeometryType;
 }>({
   dataType() {
     return "geometry";
