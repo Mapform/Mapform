@@ -1,6 +1,6 @@
 {
-  "id": "0009df68-59be-4cf3-bd06-f9b6a1229b31",
-  "prevId": "c984e266-f359-48ec-bdf1-82338af8b681",
+  "id": "ec2c4b9b-44cd-4ef4-bc2b-53d4caa9a596",
+  "prevId": "ca55b923-7eb9-4c6b-a469-133526a6b081",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -512,6 +512,12 @@
           "primaryKey": false,
           "notNull": false
         },
+        "row_embedding": {
+          "name": "row_embedding",
+          "type": "vector(1536)",
+          "primaryKey": false,
+          "notNull": false
+        },
         "project_id": {
           "name": "project_id",
           "type": "uuid",
@@ -533,7 +539,24 @@
           "default": "now()"
         }
       },
-      "indexes": {},
+      "indexes": {
+        "row_embedding_index": {
+          "name": "row_embedding_index",
+          "columns": [
+            {
+              "expression": "row_embedding",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last",
+              "opclass": "vector_cosine_ops"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "hnsw",
+          "with": {}
+        }
+      },
       "foreignKeys": {
         "row_project_id_project_id_fk": {
           "name": "row_project_id_project_id_fk",
@@ -915,6 +938,12 @@
           "primaryKey": true,
           "notNull": true,
           "default": "gen_random_uuid()"
+        },
+        "center": {
+          "name": "center",
+          "type": "geometry(point)",
+          "primaryKey": false,
+          "notNull": true
         },
         "view_id": {
           "name": "view_id",

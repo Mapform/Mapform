@@ -80,7 +80,7 @@ catalog:
   dotenv: ^16.4.5
   drizzle-kit: ^0.28.0
   drizzle-orm: ^0.36.1
-  drizzle-zod: ^0.5.1
+  drizzle-zod: ^0.7.1
   embla-carousel-react: ^8.5.1
   emoji-mart: ^5.6.0
   emoji-regex: ^10.4.0
@@ -131,5 +131,5 @@ catalog:
   vaul: ^1.1.2
   vitest: ^2.1.1
   ws: ^8.18.0
-  zod: 3.23.8
+  zod: 3.25.1
   zod-form-data: ^2.0.2

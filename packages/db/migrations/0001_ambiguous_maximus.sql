@@ -59,7 +59,9 @@ CREATE TABLE IF NOT EXISTS "project" (
 	"name" varchar(256),
 	"description" varchar(512),
 	"icon" varchar(256),
+	"position" smallint DEFAULT 0 NOT NULL,
 	"visibility" "visibility" DEFAULT 'closed' NOT NULL,
+	"folder_id" uuid,
 	"teamspace_id" uuid NOT NULL,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
@@ -71,6 +73,7 @@ CREATE TABLE IF NOT EXISTS "row" (
 	"description" jsonb,
 	"icon" varchar(256),
 	"geometry" geometry,
+	"row_embedding" vector(1536),
 	"project_id" uuid NOT NULL,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
@@ -120,13 +123,14 @@ CREATE TABLE IF NOT EXISTS "folder" (
 	"icon" varchar(256),
 	"parent_id" uuid,
 	"teamspace_id" uuid NOT NULL,
-	"order" varchar(256) DEFAULT '0' NOT NULL,
+	"position" smallint DEFAULT 0 NOT NULL,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "map_view" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"center" geometry(point) NOT NULL,
 	"view_id" uuid NOT NULL,
 	CONSTRAINT "map_view_unq" UNIQUE("view_id")
 );
@@ -142,6 +146,7 @@ CREATE TABLE IF NOT EXISTS "view" (
 	"project_id" uuid NOT NULL,
 	"type" "view_type" NOT NULL,
 	"name" text,
+	"position" smallint DEFAULT 0 NOT NULL,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
 );
@@ -209,6 +214,12 @@ END $$;
 --> statement-breakpoint
 DO $$ BEGIN
  ALTER TABLE "teamspace_membership" ADD CONSTRAINT "teamspace_membership_teamspace_id_teamspace_id_fk" FOREIGN KEY ("teamspace_id") REFERENCES "public"."teamspace"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "project" ADD CONSTRAINT "project_folder_id_folder_id_fk" FOREIGN KEY ("folder_id") REFERENCES "public"."folder"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
@@ -302,3 +313,5 @@ DO $$ BEGIN
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
+--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "row_embedding_index" ON "row" USING hnsw ("row_embedding" vector_cosine_ops);
