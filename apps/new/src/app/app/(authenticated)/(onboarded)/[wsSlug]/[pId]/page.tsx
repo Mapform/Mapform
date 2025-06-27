@@ -9,6 +9,11 @@ import type { SearchParams } from "nuqs/server";
 
 /**
  * Cached search rows function
+ *
+ * Note: React cache only works within a single server request.
+ * The cache is invalidated on every new request, so this won't
+ * provide cross-request caching. It's useful for sharing work
+ * between multiple components in the same render tree.
  */
 const getVectorSearchResults = cache(
   async (query: string, projectId: string) => {
@@ -21,10 +26,7 @@ const getVectorSearchResults = cache(
 );
 
 const getGeoapifySearchResults = cache(
-  async (
-    query: string,
-    { bounds }: { bounds?: [number, number, number, number] } = {},
-  ) => {
+  async (query: string, bounds?: [number, number, number, number]) => {
     const searchResults = await publicClient.searchPlaces({
       query,
       bounds,
@@ -54,7 +56,7 @@ export default async function ViewPage(props: {
       }),
       rowId ? authClient.getRow({ rowId }) : null,
       query ? getVectorSearchResults(query, params.pId) : null,
-      query ? getGeoapifySearchResults(query) : null,
+      query ? getGeoapifySearchResults(query, undefined) : null,
     ]);
 
   if (!project) {

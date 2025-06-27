@@ -2,7 +2,7 @@ import { Input } from "@mapform/ui/components/input";
 import { useDebounce } from "@mapform/lib/hooks/use-debounce";
 import { cn } from "@mapform/lib/classnames";
 import { BoxIcon, GlobeIcon, MessageCircle, SearchIcon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import {
   Command,
   CommandList,
@@ -22,10 +22,35 @@ export function Search() {
   );
   const [searchQuery, setSearchQuery] = useState(query);
   const debouncedSearchQuery = useDebounce(searchQuery, 0);
+  const listRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     void setQuery({ query: debouncedSearchQuery });
   }, [debouncedSearchQuery, setQuery]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      console.log(
+        22222,
+        listRef.current && listRef.current.contains(event.target as Node),
+        inputRef.current && inputRef.current.contains(event.target as Node),
+      );
+      if (
+        (listRef.current && listRef.current.contains(event.target as Node)) ||
+        (inputRef.current && inputRef.current.contains(event.target as Node))
+      ) {
+        return;
+      }
+
+      setSearchFocused(false);
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const filteredFeatures =
     geoapifySearchResults?.features.filter(
@@ -45,10 +70,15 @@ export function Search() {
           <SearchIcon className="text-muted-foreground pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2" />
           <Input
             value={searchQuery}
+            ref={inputRef}
             onFocus={() => setSearchFocused(true)}
-            // onBlur={() => setSearchFocused(false)}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="hover:bg-muted focus:bg-muted w-full border-none pl-10 shadow-none"
+            className={cn(
+              "hover:bg-muted ring-ring w-full border-none pl-10 shadow-none ring-1",
+              {
+                "bg-muted": searchFocused,
+              },
+            )}
             placeholder="Search or ask..."
           />
         </div>
@@ -63,13 +93,15 @@ export function Search() {
             },
           )}
         >
-          <CommandList className="mt-16 max-h-full flex-1 px-8 py-4 pb-6">
+          <CommandList className="mt-16 max-h-full px-2" ref={listRef}>
             <CommandGroup>
-              <CommandItem>
-                <MessageCircle className="text-muted-foreground mr-2 size-4" />
-                {searchQuery}
-                <span className="text-muted-foreground ml-1"> — Chat</span>
-              </CommandItem>
+              {searchQuery && (
+                <CommandItem>
+                  <MessageCircle className="text-muted-foreground mr-2 size-4" />
+                  {searchQuery}
+                  <span className="text-muted-foreground ml-1"> — Chat</span>
+                </CommandItem>
+              )}
               {vectorSearchResults?.map((result) => (
                 <CommandItem key={result.id} value={result.id}>
                   {project.icon ? (
