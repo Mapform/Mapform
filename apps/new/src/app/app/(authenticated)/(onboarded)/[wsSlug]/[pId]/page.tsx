@@ -15,7 +15,7 @@ export default async function ViewPage(props: {
     props.searchParams,
   );
 
-  const [project, feature] = await Promise.all([
+  const [project, feature, searchResults] = await Promise.all([
     authClient.getProject({
       projectId: params.pId,
       filter: {
@@ -25,7 +25,13 @@ export default async function ViewPage(props: {
       },
     }),
     rowId ? authClient.getRow({ rowId }) : null,
+    authClient.searchRows({
+      query: "tes",
+      projectId: params.pId,
+    }),
   ]);
+
+  console.log(1111, searchResults);
 
   if (!project) {
     return notFound();

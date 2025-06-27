@@ -36,6 +36,7 @@ import { createColumn } from "@mapform/backend/data/columns/create-column";
 import { deleteColumn } from "@mapform/backend/data/columns/delete-column";
 import { updateColumn } from "@mapform/backend/data/columns/update-column";
 import { upsertCell } from "@mapform/backend/data/cells/upsert-cell";
+import { searchRows } from "@mapform/backend/data/rows/search-rows";
 
 const ignoredWorkspaceSlugs = ["onboarding"];
 const ignoredTeamspaceSlugs = ["settings"];
@@ -117,6 +118,7 @@ const createUserAuthClient = () => {
     createRows: createRows(extendedClient),
     deleteRows: deleteRows(extendedClient),
     duplicateRows: duplicateRows(extendedClient),
+    searchRows: searchRows(extendedClient),
 
     // Stripe
     createBillingSession: createBillingSession(extendedClient),
