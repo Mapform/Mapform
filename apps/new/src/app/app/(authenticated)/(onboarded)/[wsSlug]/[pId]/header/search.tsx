@@ -1,7 +1,7 @@
 import { Input } from "@mapform/ui/components/input";
 import { useDebounce } from "@mapform/lib/hooks/use-debounce";
 import { cn } from "@mapform/lib/classnames";
-import { SearchIcon } from "lucide-react";
+import { BoxIcon, GlobeIcon, MessageCircle, SearchIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
   Command,
@@ -14,7 +14,7 @@ import { projectSearchParams, projectSearchParamsOptions } from "../params";
 import { useProject } from "../context";
 
 export function Search() {
-  const { vectorSearchResults, geoapifySearchResults } = useProject();
+  const { project, vectorSearchResults, geoapifySearchResults } = useProject();
   const [searchFocused, setSearchFocused] = useState(false);
   const [{ query }, setQuery] = useQueryStates(
     projectSearchParams,
@@ -64,22 +64,28 @@ export function Search() {
           )}
         >
           <CommandList className="mt-16 max-h-full flex-1 px-6 pb-6">
-            <CommandGroup heading="Chat">
-              <CommandItem>{searchQuery}</CommandItem>
-            </CommandGroup>
-            <CommandGroup heading="From your map">
+            <CommandGroup>
+              <CommandItem>
+                <MessageCircle className="text-muted-foreground mr-2 size-4" />
+                {searchQuery}
+                <span className="text-muted-foreground ml-1"> — Chat</span>
+              </CommandItem>
               {vectorSearchResults?.map((result) => (
                 <CommandItem key={result.id} value={result.id}>
+                  <BoxIcon className="text-muted-foreground mr-2 size-4" />
                   {result.name}
+                  <span className="text-muted-foreground ml-1">
+                    {" "}
+                    — From {project.name ?? "your map"}
+                  </span>
                 </CommandItem>
               ))}
-            </CommandGroup>
-            <CommandGroup heading="Search results">
               {filteredFeatures.map((feature) => (
                 <CommandItem
                   key={feature.properties?.place_id}
                   value={feature.properties?.place_id}
                 >
+                  <GlobeIcon className="text-muted-foreground mr-2 size-4" />
                   {feature.properties?.name ??
                     feature.properties?.address_line1}
                 </CommandItem>
