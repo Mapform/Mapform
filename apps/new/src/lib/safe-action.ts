@@ -37,6 +37,7 @@ import { deleteColumn } from "@mapform/backend/data/columns/delete-column";
 import { updateColumn } from "@mapform/backend/data/columns/update-column";
 import { upsertCell } from "@mapform/backend/data/cells/upsert-cell";
 import { searchRows } from "@mapform/backend/data/rows/search-rows";
+import { searchPlaces } from "@mapform/backend/data/geoapify/search";
 
 const ignoredWorkspaceSlugs = ["onboarding"];
 const ignoredTeamspaceSlugs = ["settings"];
@@ -160,6 +161,9 @@ const createPublicClient = () => {
     // Auth
     requestMagicLink: requestMagicLink(extendedClient),
     validateMagicLink: validateMagicLink(extendedClient),
+
+    // Geoapify
+    searchPlaces: searchPlaces(extendedClient),
 
     // Users
     getCurrentSession: getCurrentSession(extendedClient),

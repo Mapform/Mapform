@@ -1,6 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import { cache } from "react";
-import { authClient } from "~/lib/safe-action";
+import { authClient, publicClient } from "~/lib/safe-action";
 import { ProjectProvider } from "./context";
 import { TableView } from "./table-view";
 import { MapView } from "./map-view";
@@ -10,13 +10,28 @@ import type { SearchParams } from "nuqs/server";
 /**
  * Cached search rows function
  */
-const fetchSearchResults = cache(async (query: string, projectId: string) => {
-  const searchResults = await authClient.searchRows({
-    query,
-    projectId,
-  });
-  return searchResults;
-});
+const getVectorSearchResults = cache(
+  async (query: string, projectId: string) => {
+    const searchResults = await authClient.searchRows({
+      query,
+      projectId,
+    });
+    return searchResults;
+  },
+);
+
+const getGeoapifySearchResults = cache(
+  async (
+    query: string,
+    { bounds }: { bounds?: [number, number, number, number] } = {},
+  ) => {
+    const searchResults = await publicClient.searchPlaces({
+      query,
+      bounds,
+    });
+    return searchResults;
+  },
+);
 
 export default async function ViewPage(props: {
   params: Promise<{ wsSlug: string; pId: string }>;
@@ -27,20 +42,20 @@ export default async function ViewPage(props: {
     props.searchParams,
   );
 
-  const [project, feature, searchResults] = await Promise.all([
-    authClient.getProject({
-      projectId: params.pId,
-      filter: {
-        type: "page",
-        page,
-        perPage,
-      },
-    }),
-    rowId ? authClient.getRow({ rowId }) : null,
-    query ? fetchSearchResults(query, params.pId) : null,
-  ]);
-
-  console.log(1111, searchResults);
+  const [project, feature, vectorSearchResults, geoapifySearchResults] =
+    await Promise.all([
+      authClient.getProject({
+        projectId: params.pId,
+        filter: {
+          type: "page",
+          page,
+          perPage,
+        },
+      }),
+      rowId ? authClient.getRow({ rowId }) : null,
+      query ? getVectorSearchResults(query, params.pId) : null,
+      query ? getGeoapifySearchResults(query) : null,
+    ]);
 
   if (!project) {
     return notFound();
@@ -60,11 +75,15 @@ export default async function ViewPage(props: {
     );
   }
 
+  console.log(1111, vectorSearchResults, geoapifySearchResults);
+
   return (
     <ProjectProvider
       feature={feature?.data}
       project={project.data}
       activeView={activeView}
+      vectorSearchResults={vectorSearchResults?.data}
+      geoapifySearchResults={geoapifySearchResults?.data}
     >
       <div className="relative h-full">
         {activeView.type === "table" && <TableView />}

@@ -1,10 +1,8 @@
 import { Input } from "@mapform/ui/components/input";
-import type { GeoapifyPlace } from "~/app/api/places/search/route";
 import { useDebounce } from "@mapform/lib/hooks/use-debounce";
 import { cn } from "@mapform/lib/classnames";
 import { SearchIcon } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 import {
   Command,
   CommandList,
@@ -13,8 +11,10 @@ import {
 } from "@mapform/ui/components/command";
 import { useQueryStates } from "nuqs";
 import { projectSearchParams, projectSearchParamsOptions } from "../params";
+import { useProject } from "../context";
 
 export function Search() {
+  const { vectorSearchResults, geoapifySearchResults } = useProject();
   const [searchFocused, setSearchFocused] = useState(false);
   const [{ query }, setQuery] = useQueryStates(
     projectSearchParams,
@@ -23,19 +23,12 @@ export function Search() {
   const [searchQuery, setSearchQuery] = useState(query);
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
-  const { data: searchResults, isFetching } = useQuery({
-    enabled: !!debouncedSearchQuery,
-    queryKey: ["search", debouncedSearchQuery],
-    queryFn: () => searchPlaces(debouncedSearchQuery ?? undefined),
-    placeholderData: (prev) => prev,
-  });
-
   useEffect(() => {
     void setQuery({ query: debouncedSearchQuery });
   }, [debouncedSearchQuery, setQuery]);
 
   const filteredFeatures =
-    searchResults?.features.filter(
+    geoapifySearchResults?.features.filter(
       (f, i, self) =>
         f.properties &&
         f.bbox &&
@@ -45,12 +38,15 @@ export function Search() {
           ),
     ) ?? [];
 
+  console.log(1111, vectorSearchResults, geoapifySearchResults);
+
   return (
     <div className="-mx-6 -mt-6 border-b">
       <Command>
         <div className="relative z-20 m-2 flex items-center gap-1">
           <SearchIcon className="text-muted-foreground pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2" />
           <Input
+            value={searchQuery}
             onFocus={() => setSearchFocused(true)}
             // onBlur={() => setSearchFocused(false)}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -73,7 +69,13 @@ export function Search() {
             <CommandGroup heading="Chat">
               <CommandItem>{searchQuery}</CommandItem>
             </CommandGroup>
-            <CommandGroup heading="From your map"></CommandGroup>
+            <CommandGroup heading="From your map">
+              {vectorSearchResults?.map((result) => (
+                <CommandItem key={result.id} value={result.id}>
+                  {result.name}
+                </CommandItem>
+              ))}
+            </CommandGroup>
             <CommandGroup heading="Search results">
               {filteredFeatures.map((feature) => (
                 <CommandItem
@@ -90,27 +92,4 @@ export function Search() {
       </Command>
     </div>
   );
-}
-
-async function searchPlaces(
-  query?: string,
-  { bounds }: { bounds?: [number, number, number, number] } = {},
-) {
-  if (!query) {
-    return undefined;
-  }
-
-  const response = await fetch(
-    `/api/places/search?query=${query}${
-      bounds ? `&bounds=${bounds.join(",")}` : ""
-    }`,
-  );
-
-  if (!response.ok) {
-    throw new Error(`Response status: ${response.status}`);
-  }
-
-  const json = await response.json();
-
-  return json.data as GeoapifyPlace;
 }

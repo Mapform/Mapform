@@ -4,12 +4,10 @@ import type { GetProject } from "@mapform/backend/data/projects/get-project";
 import type { GetRow } from "@mapform/backend/data/rows/get-row";
 import { notFound } from "next/navigation";
 import { createContext, useContext, useTransition } from "react";
-import {
-  projectSearchParams,
-  projectSearchParamsOptions,
-  projectSearchParamsUrlKeys,
-} from "./params";
+import { projectSearchParams, projectSearchParamsOptions } from "./params";
 import { useQueryStates } from "nuqs";
+import type { SearchPlaces } from "@mapform/backend/data/geoapify/search";
+import type { SearchRows } from "@mapform/backend/data/rows/search-rows";
 
 export interface ProjectContextProps {
   feature?: GetRow["data"];
@@ -17,6 +15,8 @@ export interface ProjectContextProps {
   activeView?: NonNullable<GetProject["data"]>["views"][number];
   isFeaturePending: boolean;
   setSelectedFeature: (featureId: string | null) => void;
+  vectorSearchResults?: SearchRows["data"];
+  geoapifySearchResults?: SearchPlaces["data"];
 }
 
 export const ProjectContext = createContext<ProjectContextProps>(
@@ -29,10 +29,14 @@ export function ProjectProvider({
   feature,
   project,
   activeView,
+  vectorSearchResults,
+  geoapifySearchResults,
 }: {
   feature?: GetRow["data"];
   project: GetProject["data"];
   activeView?: NonNullable<GetProject["data"]>["views"][number];
+  vectorSearchResults?: SearchRows["data"];
+  geoapifySearchResults?: SearchPlaces["data"];
   children: React.ReactNode;
 }) {
   const [isFeaturePending, startTransition] = useTransition();
@@ -71,6 +75,8 @@ export function ProjectProvider({
         activeView,
         isFeaturePending,
         setSelectedFeature,
+        vectorSearchResults,
+        geoapifySearchResults,
       }}
     >
       {children}
