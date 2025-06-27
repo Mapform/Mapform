@@ -21,7 +21,7 @@ export function Search() {
     projectSearchParamsOptions,
   );
   const [searchQuery, setSearchQuery] = useState(query);
-  const debouncedSearchQuery = useDebounce(searchQuery, 300);
+  const debouncedSearchQuery = useDebounce(searchQuery, 0);
 
   useEffect(() => {
     void setQuery({ query: debouncedSearchQuery });
@@ -37,8 +37,6 @@ export function Search() {
             (t) => t.properties?.place_id === f.properties?.place_id,
           ),
     ) ?? [];
-
-  console.log(1111, vectorSearchResults, geoapifySearchResults);
 
   return (
     <div className="-mx-6 -mt-6 border-b">
