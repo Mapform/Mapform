@@ -24,8 +24,6 @@ export const searchRows = (authClient: UserAuthClient) =>
           throw new Error("You are not a member of this project");
         }
 
-        console.log(22222, query);
-
         const response = await openai.embeddings.create({
           input: [query],
           model: "text-embedding-3-small",

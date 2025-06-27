@@ -1,4 +1,5 @@
 import { notFound, redirect } from "next/navigation";
+import { cache } from "react";
 import { authClient } from "~/lib/safe-action";
 import { ProjectProvider } from "./context";
 import { TableView } from "./table-view";
@@ -6,12 +7,23 @@ import { MapView } from "./map-view";
 import { loadSearchParams } from "./params";
 import type { SearchParams } from "nuqs/server";
 
+/**
+ * Cached search rows function
+ */
+const fetchSearchResults = cache(async (query: string, projectId: string) => {
+  const searchResults = await authClient.searchRows({
+    query,
+    projectId,
+  });
+  return searchResults;
+});
+
 export default async function ViewPage(props: {
   params: Promise<{ wsSlug: string; pId: string }>;
   searchParams: Promise<SearchParams>;
 }) {
   const params = await props.params;
-  const { viewId, perPage, page, rowId } = await loadSearchParams(
+  const { viewId, perPage, page, rowId, query } = await loadSearchParams(
     props.searchParams,
   );
 
@@ -25,10 +37,7 @@ export default async function ViewPage(props: {
       },
     }),
     rowId ? authClient.getRow({ rowId }) : null,
-    authClient.searchRows({
-      query: "tes",
-      projectId: params.pId,
-    }),
+    query ? fetchSearchResults(query, params.pId) : null,
   ]);
 
   console.log(1111, searchResults);

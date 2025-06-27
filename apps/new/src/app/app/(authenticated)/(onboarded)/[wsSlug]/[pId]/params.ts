@@ -7,6 +7,7 @@ export const projectSearchParams = {
   page: parseAsInteger.withDefault(0),
   viewId: parseAsString,
   rowId: parseAsString,
+  query: parseAsString.withDefault(""),
 };
 
 export const projectSearchParamsUrlKeys: UrlKeys<typeof projectSearchParams> = {
@@ -14,6 +15,12 @@ export const projectSearchParamsUrlKeys: UrlKeys<typeof projectSearchParams> = {
   perPage: "pp",
   page: "p",
   rowId: "r",
+  query: "q",
+};
+
+export const projectSearchParamsOptions = {
+  urlKeys: projectSearchParamsUrlKeys,
+  shallow: false,
 };
 
 export const loadSearchParams = createLoader(projectSearchParams, {

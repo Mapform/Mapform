@@ -4,7 +4,11 @@ import type { GetProject } from "@mapform/backend/data/projects/get-project";
 import type { GetRow } from "@mapform/backend/data/rows/get-row";
 import { notFound } from "next/navigation";
 import { createContext, useContext, useTransition } from "react";
-import { projectSearchParams, projectSearchParamsUrlKeys } from "./params";
+import {
+  projectSearchParams,
+  projectSearchParamsOptions,
+  projectSearchParamsUrlKeys,
+} from "./params";
 import { useQueryStates } from "nuqs";
 
 export interface ProjectContextProps {
@@ -33,10 +37,10 @@ export function ProjectProvider({
 }) {
   const [isFeaturePending, startTransition] = useTransition();
 
-  const [_, setProjectSearchParams] = useQueryStates(projectSearchParams, {
-    urlKeys: projectSearchParamsUrlKeys,
-    shallow: false,
-  });
+  const [_, setProjectSearchParams] = useQueryStates(
+    projectSearchParams,
+    projectSearchParamsOptions,
+  );
 
   const setSelectedFeature = (featureId: string | null) => {
     // Ignore if the feature is the same as the current selected feature

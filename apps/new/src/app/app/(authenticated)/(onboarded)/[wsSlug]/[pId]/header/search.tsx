@@ -3,7 +3,7 @@ import type { GeoapifyPlace } from "~/app/api/places/search/route";
 import { useDebounce } from "@mapform/lib/hooks/use-debounce";
 import { cn } from "@mapform/lib/classnames";
 import { SearchIcon } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
   Command,
@@ -11,18 +11,28 @@ import {
   CommandItem,
   CommandGroup,
 } from "@mapform/ui/components/command";
+import { useQueryStates } from "nuqs";
+import { projectSearchParams, projectSearchParamsOptions } from "../params";
 
 export function Search() {
   const [searchFocused, setSearchFocused] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-  const debouncedSearchQuery = useDebounce(searchQuery, 200);
+  const [{ query }, setQuery] = useQueryStates(
+    projectSearchParams,
+    projectSearchParamsOptions,
+  );
+  const [searchQuery, setSearchQuery] = useState(query);
+  const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
   const { data: searchResults, isFetching } = useQuery({
     enabled: !!debouncedSearchQuery,
     queryKey: ["search", debouncedSearchQuery],
-    queryFn: () => searchPlaces(debouncedSearchQuery),
+    queryFn: () => searchPlaces(debouncedSearchQuery ?? undefined),
     placeholderData: (prev) => prev,
   });
+
+  useEffect(() => {
+    void setQuery({ query: debouncedSearchQuery });
+  }, [debouncedSearchQuery, setQuery]);
 
   const filteredFeatures =
     searchResults?.features.filter(
