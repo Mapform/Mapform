@@ -63,7 +63,7 @@ export function Search() {
             },
           )}
         >
-          <CommandList className="mt-16 max-h-full flex-1 px-6 pb-6">
+          <CommandList className="mt-16 max-h-full flex-1 px-8 py-4 pb-6">
             <CommandGroup>
               <CommandItem>
                 <MessageCircle className="text-muted-foreground mr-2 size-4" />
@@ -72,7 +72,11 @@ export function Search() {
               </CommandItem>
               {vectorSearchResults?.map((result) => (
                 <CommandItem key={result.id} value={result.id}>
-                  <BoxIcon className="text-muted-foreground mr-2 size-4" />
+                  {project.icon ? (
+                    <span>{project.icon}</span>
+                  ) : (
+                    <BoxIcon className="text-muted-foreground mr-2 size-4" />
+                  )}
                   {result.name}
                   <span className="text-muted-foreground ml-1">
                     {" "}
