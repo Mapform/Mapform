@@ -31,11 +31,6 @@ export function Search() {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      console.log(
-        22222,
-        listRef.current && listRef.current.contains(event.target as Node),
-        inputRef.current && inputRef.current.contains(event.target as Node),
-      );
       if (
         (listRef.current && listRef.current.contains(event.target as Node)) ||
         (inputRef.current && inputRef.current.contains(event.target as Node))
@@ -66,7 +61,14 @@ export function Search() {
   return (
     <div className="-mx-6 -mt-6 border-b">
       <Command>
-        <div className="relative z-20 m-2 flex items-center gap-1">
+        <div
+          className="relative z-20 m-2 flex items-center gap-1"
+          onClick={(e) => e.stopPropagation()}
+          onMouseDown={(e) => e.stopPropagation()}
+          onFocus={(e) => e.stopPropagation()}
+          onPointerDown={(e) => e.stopPropagation()}
+          onKeyDown={(e) => e.stopPropagation()}
+        >
           <SearchIcon className="text-muted-foreground pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2" />
           <Input
             value={searchQuery}
@@ -74,9 +76,9 @@ export function Search() {
             onFocus={() => setSearchFocused(true)}
             onChange={(e) => setSearchQuery(e.target.value)}
             className={cn(
-              "hover:bg-muted ring-ring w-full border-none pl-10 shadow-none ring-1",
+              "hover:bg-muted w-full border-none pl-10 shadow-none",
               {
-                "bg-muted": searchFocused,
+                "bg-muted ring-ring ring-1": searchFocused,
               },
             )}
             placeholder="Search or ask..."
@@ -93,7 +95,15 @@ export function Search() {
             },
           )}
         >
-          <CommandList className="mt-16 max-h-full px-2" ref={listRef}>
+          <CommandList
+            className="mt-16 max-h-full px-2"
+            ref={listRef}
+            onClick={(e) => e.stopPropagation()}
+            onMouseDown={(e) => e.stopPropagation()}
+            onFocus={(e) => e.stopPropagation()}
+            onPointerDown={(e) => e.stopPropagation()}
+            onKeyDown={(e) => e.stopPropagation()}
+          >
             <CommandGroup>
               {searchQuery && (
                 <CommandItem>
