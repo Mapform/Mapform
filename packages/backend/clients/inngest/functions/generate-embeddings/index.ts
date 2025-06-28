@@ -6,7 +6,7 @@ import { openai } from "../../../openai";
 export const generateEmbeddings = inngest.createFunction(
   { id: "generate-embeddings" },
   { event: "app/generate.embeddings" },
-  async ({ event, step, db }) => {
+  async ({ event, db }) => {
     const { rows } = event.data;
 
     // Create input text for each row
