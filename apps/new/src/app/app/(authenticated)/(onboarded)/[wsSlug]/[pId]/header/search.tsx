@@ -59,16 +59,16 @@ export function Search() {
     ) ?? [];
 
   return (
-    <div className="-mx-6 -mt-6 border-b">
+    <div
+      className="-mx-6 -mt-6 border-b"
+      onClick={(e) => e.stopPropagation()}
+      onMouseDown={(e) => e.stopPropagation()}
+      onFocus={(e) => e.stopPropagation()}
+      onPointerDown={(e) => e.stopPropagation()}
+      onKeyDown={(e) => e.stopPropagation()}
+    >
       <Command>
-        <div
-          className="relative z-20 m-2 flex items-center gap-1"
-          onClick={(e) => e.stopPropagation()}
-          onMouseDown={(e) => e.stopPropagation()}
-          onFocus={(e) => e.stopPropagation()}
-          onPointerDown={(e) => e.stopPropagation()}
-          onKeyDown={(e) => e.stopPropagation()}
-        >
+        <div className="relative z-20 m-2 flex items-center gap-1">
           <SearchIcon className="text-muted-foreground pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2" />
           <Input
             value={searchQuery}
@@ -95,15 +95,7 @@ export function Search() {
             },
           )}
         >
-          <CommandList
-            className="mt-16 max-h-full px-2"
-            ref={listRef}
-            onClick={(e) => e.stopPropagation()}
-            onMouseDown={(e) => e.stopPropagation()}
-            onFocus={(e) => e.stopPropagation()}
-            onPointerDown={(e) => e.stopPropagation()}
-            onKeyDown={(e) => e.stopPropagation()}
-          >
+          <CommandList className="mt-16 max-h-full px-2" ref={listRef}>
             <CommandGroup>
               {searchQuery && (
                 <CommandItem>
