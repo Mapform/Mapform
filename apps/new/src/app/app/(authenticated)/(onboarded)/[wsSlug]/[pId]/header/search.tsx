@@ -1,31 +1,54 @@
 import { Input } from "@mapform/ui/components/input";
-import type { GeoapifyPlace } from "~/app/api/places/search/route";
 import { useDebounce } from "@mapform/lib/hooks/use-debounce";
 import { cn } from "@mapform/lib/classnames";
-import { SearchIcon } from "lucide-react";
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { BoxIcon, GlobeIcon, MessageCircle, SearchIcon } from "lucide-react";
+import { useEffect, useState, useRef } from "react";
 import {
   Command,
   CommandList,
   CommandItem,
   CommandGroup,
 } from "@mapform/ui/components/command";
+import { useQueryStates } from "nuqs";
+import { projectSearchParams, projectSearchParamsOptions } from "../params";
+import { useProject } from "../context";
 
 export function Search() {
+  const { project, vectorSearchResults, geoapifySearchResults } = useProject();
   const [searchFocused, setSearchFocused] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-  const debouncedSearchQuery = useDebounce(searchQuery, 200);
+  const [{ query }, setQuery] = useQueryStates(
+    projectSearchParams,
+    projectSearchParamsOptions,
+  );
+  const [searchQuery, setSearchQuery] = useState(query);
+  const debouncedSearchQuery = useDebounce(searchQuery, 0);
+  const listRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  const { data: searchResults, isFetching } = useQuery({
-    enabled: !!debouncedSearchQuery,
-    queryKey: ["search", debouncedSearchQuery],
-    queryFn: () => searchPlaces(debouncedSearchQuery),
-    placeholderData: (prev) => prev,
-  });
+  useEffect(() => {
+    void setQuery({ query: debouncedSearchQuery });
+  }, [debouncedSearchQuery, setQuery]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        (listRef.current && listRef.current.contains(event.target as Node)) ||
+        (inputRef.current && inputRef.current.contains(event.target as Node))
+      ) {
+        return;
+      }
+
+      setSearchFocused(false);
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const filteredFeatures =
-    searchResults?.features.filter(
+    geoapifySearchResults?.features.filter(
       (f, i, self) =>
         f.properties &&
         f.bbox &&
@@ -38,13 +61,26 @@ export function Search() {
   return (
     <div className="-mx-6 -mt-6 border-b">
       <Command>
-        <div className="relative z-20 m-2 flex items-center gap-1">
+        <div
+          className="relative z-20 m-2 flex items-center gap-1"
+          onClick={(e) => e.stopPropagation()}
+          onMouseDown={(e) => e.stopPropagation()}
+          onFocus={(e) => e.stopPropagation()}
+          onPointerDown={(e) => e.stopPropagation()}
+          onKeyDown={(e) => e.stopPropagation()}
+        >
           <SearchIcon className="text-muted-foreground pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2" />
           <Input
+            value={searchQuery}
+            ref={inputRef}
             onFocus={() => setSearchFocused(true)}
-            // onBlur={() => setSearchFocused(false)}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="hover:bg-muted focus:bg-muted w-full border-none pl-10 shadow-none"
+            className={cn(
+              "hover:bg-muted w-full border-none pl-10 shadow-none",
+              {
+                "bg-muted ring-ring ring-1": searchFocused,
+              },
+            )}
             placeholder="Search or ask..."
           />
         </div>
@@ -59,17 +95,43 @@ export function Search() {
             },
           )}
         >
-          <CommandList className="mt-16 max-h-full flex-1 px-6 pb-6">
-            <CommandGroup heading="Chat">
-              <CommandItem>{searchQuery}</CommandItem>
-            </CommandGroup>
-            <CommandGroup heading="From your map"></CommandGroup>
-            <CommandGroup heading="Search results">
+          <CommandList
+            className="mt-16 max-h-full px-2"
+            ref={listRef}
+            onClick={(e) => e.stopPropagation()}
+            onMouseDown={(e) => e.stopPropagation()}
+            onFocus={(e) => e.stopPropagation()}
+            onPointerDown={(e) => e.stopPropagation()}
+            onKeyDown={(e) => e.stopPropagation()}
+          >
+            <CommandGroup>
+              {searchQuery && (
+                <CommandItem>
+                  <MessageCircle className="text-muted-foreground mr-2 size-4" />
+                  {searchQuery}
+                  <span className="text-muted-foreground ml-1"> — Chat</span>
+                </CommandItem>
+              )}
+              {vectorSearchResults?.map((result) => (
+                <CommandItem key={result.id} value={result.id}>
+                  {project.icon ? (
+                    <span>{project.icon}</span>
+                  ) : (
+                    <BoxIcon className="text-muted-foreground mr-2 size-4" />
+                  )}
+                  {result.name}
+                  <span className="text-muted-foreground ml-1">
+                    {" "}
+                    — From {project.name ?? "your map"}
+                  </span>
+                </CommandItem>
+              ))}
               {filteredFeatures.map((feature) => (
                 <CommandItem
                   key={feature.properties?.place_id}
                   value={feature.properties?.place_id}
                 >
+                  <GlobeIcon className="text-muted-foreground mr-2 size-4" />
                   {feature.properties?.name ??
                     feature.properties?.address_line1}
                 </CommandItem>
@@ -80,27 +142,4 @@ export function Search() {
       </Command>
     </div>
   );
-}
-
-async function searchPlaces(
-  query?: string,
-  { bounds }: { bounds?: [number, number, number, number] } = {},
-) {
-  if (!query) {
-    return undefined;
-  }
-
-  const response = await fetch(
-    `/api/places/search?query=${query}${
-      bounds ? `&bounds=${bounds.join(",")}` : ""
-    }`,
-  );
-
-  if (!response.ok) {
-    throw new Error(`Response status: ${response.status}`);
-  }
-
-  const json = await response.json();
-
-  return json.data as GeoapifyPlace;
 }

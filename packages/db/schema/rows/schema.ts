@@ -5,35 +5,62 @@ import {
   varchar,
   customType,
   jsonb,
+  vector,
+  index,
 } from "drizzle-orm/pg-core";
-import type { Geometry } from "geojson";
-import type { DocumentContent } from "@mapform/blocknote";
 import { projects } from "../projects/schema";
+import type { Geometry } from "geojson";
+
+// Define geometry types explicitly to avoid circular references
+export type GeometryType =
+  | { type: "Point"; coordinates: [number, number] }
+  | { type: "LineString"; coordinates: [number, number][] }
+  | { type: "Polygon"; coordinates: [number, number][][] }
+  | { type: "MultiPoint"; coordinates: [number, number][] }
+  | { type: "MultiLineString"; coordinates: [number, number][][] }
+  | { type: "MultiPolygon"; coordinates: [number, number][][][] };
+// export type GeometryType = Geometry;
+
+// Also export Point type for convenience
+export type PointType = { type: "Point"; coordinates: [number, number] };
 
 const geometry = customType<{
-  data: Geometry;
+  data: GeometryType;
 }>({
   dataType() {
     return "geometry";
   },
 });
 
-export const rows = pgTable("row", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  name: varchar("name", { length: 256 }),
-  description: jsonb("description").$type<{ content: DocumentContent }>(),
-  icon: varchar("icon", { length: 256 }),
-  geometry: geometry("geometry"),
+export const rows = pgTable(
+  "row",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    name: varchar("name", { length: 256 }),
+    description: jsonb("description").$type<{
+      content: Record<string, any>[];
+    }>(),
+    icon: varchar("icon", { length: 256 }),
+    geometry: geometry("geometry"),
 
-  projectId: uuid("project_id")
-    .notNull()
-    .references(() => projects.id, { onDelete: "cascade" }),
+    embedding: vector("row_embedding", { dimensions: 1536 }),
 
-  createdAt: timestamp("created_at", { withTimezone: true })
-    .defaultNow()
-    .notNull(),
-  updatedAt: timestamp("updated_at", { withTimezone: true })
-    .defaultNow()
-    .$onUpdate(() => new Date())
-    .notNull(),
-});
+    projectId: uuid("project_id")
+      .notNull()
+      .references(() => projects.id, { onDelete: "cascade" }),
+
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .$onUpdate(() => new Date())
+      .notNull(),
+  },
+  (table) => [
+    index("row_embedding_index").using(
+      "hnsw",
+      table.embedding.op("vector_cosine_ops"),
+    ),
+  ],
+);

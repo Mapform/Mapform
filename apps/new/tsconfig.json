@@ -8,8 +8,9 @@
       "~/*": [
         "./src/*",
         "env.mjs"
-      ],
-    }
+      ]
+    },
+    "skipLibCheck": true
   },
   "include": [
     ".eslintrc.js",

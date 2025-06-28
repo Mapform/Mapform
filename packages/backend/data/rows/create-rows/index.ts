@@ -7,6 +7,7 @@ import type { UserAuthClient } from "../../../lib/types";
 import { getRowCount } from "../../usage/get-row-count";
 import { eq } from "@mapform/db/utils";
 import { ServerError } from "../../../lib/server-error";
+import { inngest } from "../../../clients/inngest/client";
 
 export const createRows = (authClient: UserAuthClient) =>
   authClient
@@ -65,7 +66,7 @@ export const createRows = (authClient: UserAuthClient) =>
           );
         }
 
-        const [newRow] = await db
+        const newRows = await db
           .insert(rows)
           .values(
             rowsToInsert.map((r) => ({
@@ -77,6 +78,18 @@ export const createRows = (authClient: UserAuthClient) =>
           )
           .returning();
 
-        return newRow;
+        await inngest.send({
+          name: "app/generate.embeddings",
+          data: {
+            rows: newRows.map((r) => ({
+              id: r.id,
+              name: r.name,
+              description: r.description,
+              cells: [],
+            })),
+          },
+        });
+
+        return newRows;
       },
     );
