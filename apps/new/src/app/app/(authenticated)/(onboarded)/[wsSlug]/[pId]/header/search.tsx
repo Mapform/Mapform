@@ -12,6 +12,7 @@ import {
 import { useQueryStates } from "nuqs";
 import { projectSearchParams, projectSearchParamsOptions } from "../params";
 import { useProject } from "../context";
+import { inngest } from "@mapform/backend/clients/inngest";
 
 export function Search() {
   const { project, vectorSearchResults, geoapifySearchResults } = useProject();
@@ -21,7 +22,7 @@ export function Search() {
     projectSearchParamsOptions,
   );
   const [searchQuery, setSearchQuery] = useState(query);
-  const debouncedSearchQuery = useDebounce(searchQuery, 0);
+  const debouncedSearchQuery = useDebounce(searchQuery, 200);
   const listRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -57,6 +58,12 @@ export function Search() {
             (t) => t.properties?.place_id === f.properties?.place_id,
           ),
     ) ?? [];
+
+  const handleChat = async () => {
+    const response = await fetch(`/api/chat?message=${searchQuery}`);
+    const data = await response.json();
+    console.log(4444, data);
+  };
 
   return (
     <div
@@ -98,7 +105,7 @@ export function Search() {
           <CommandList className="mt-16 max-h-full px-2" ref={listRef}>
             <CommandGroup>
               {searchQuery && (
-                <CommandItem>
+                <CommandItem onSelect={handleChat}>
                   <MessageCircle className="text-muted-foreground mr-2 size-4" />
                   {searchQuery}
                   <span className="text-muted-foreground ml-1"> — Chat</span>

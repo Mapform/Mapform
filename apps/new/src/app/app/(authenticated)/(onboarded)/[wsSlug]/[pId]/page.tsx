@@ -77,8 +77,6 @@ export default async function ViewPage(props: {
     );
   }
 
-  console.log(1111, vectorSearchResults, geoapifySearchResults);
-
   return (
     <ProjectProvider
       feature={feature?.data}
