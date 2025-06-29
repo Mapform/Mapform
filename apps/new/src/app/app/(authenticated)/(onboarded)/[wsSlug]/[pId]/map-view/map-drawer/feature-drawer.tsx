@@ -13,7 +13,7 @@ import {
 } from "@mapform/ui/components/tooltip";
 import { EmojiPopover } from "@mapform/ui/components/emoji-picker";
 import { Skeleton } from "@mapform/ui/components/skeleton";
-import { Blocknote } from "~/components/blocknote";
+import { Blocknote } from "@mapform/blocknote/editor";
 
 interface FeatureDrawerProps {
   containerRef: React.RefObject<HTMLDivElement | null>;
@@ -96,9 +96,11 @@ export function FeatureDrawer({ containerRef }: FeatureDrawerProps) {
                 <Blocknote
                   content={featureService.optimisticState.description}
                   onChange={(content) => {
+                    console.log(22222, content);
+
                     featureService.execute({
                       id: featureService.optimisticState!.id,
-                      content,
+                      description: content,
                     });
                   }}
                 />

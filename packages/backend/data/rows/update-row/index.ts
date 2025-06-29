@@ -31,6 +31,8 @@ export const updateRow = (authClient: UserAuthClient) =>
           throw new Error("Unauthorized.");
         }
 
+        console.log(11111, description);
+
         return db
           .update(rows)
           .set({

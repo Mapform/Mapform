@@ -3,7 +3,7 @@ import forms from "@tailwindcss/forms";
 import typography from "@tailwindcss/typography";
 import animate from "tailwindcss-animate";
 import container from "@tailwindcss/container-queries";
-import { Config } from "tailwindcss/types/config";
+import type { Config } from "tailwindcss/types/config";
 import plugin from "tailwindcss/plugin";
 
 const config: Config = {
@@ -108,4 +108,4 @@ const config: Config = {
 };
 
 export default config;
-export { forms, typography, animate, container };
+export { forms, typography, animate, container, type Config };

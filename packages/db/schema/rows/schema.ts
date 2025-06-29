@@ -10,6 +10,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { projects } from "../projects/schema";
 import type { Geometry } from "geojson";
+import type { CustomBlock } from "@mapform/blocknote/schema";
 
 // Define geometry types explicitly to avoid circular references
 export type GeometryType =
@@ -37,9 +38,7 @@ export const rows = pgTable(
   {
     id: uuid("id").primaryKey().defaultRandom(),
     name: varchar("name", { length: 256 }),
-    description: jsonb("description").$type<{
-      content: Record<string, any>[];
-    }>(),
+    description: jsonb("description").$type<CustomBlock[]>(),
     icon: varchar("icon", { length: 256 }),
     geometry: geometry("geometry"),
 

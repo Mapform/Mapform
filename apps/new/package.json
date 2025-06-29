@@ -27,6 +27,7 @@
     "@mapbox/mapbox-gl-draw-static-mode": "^1.0.1",
     "@mapform/auth": "workspace:*",
     "@mapform/backend": "workspace:*",
+    "@mapform/blocknote": "workspace:*",
     "@mapform/db": "workspace:*",
     "@mapform/lib": "workspace:*",
     "@mapform/map-utils": "workspace:*",

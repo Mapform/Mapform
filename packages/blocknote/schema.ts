@@ -29,4 +29,6 @@ export const schema = BlockNoteSchema.create({
   // },
 });
 
-export type BlocknoteSchema = typeof schema;
+export type CustomBlock = typeof schema.Block;
+export type CustomPartialBlock = typeof schema.PartialBlock;
+export type CustomBlockNoteEditor = typeof schema.BlockNoteEditor;

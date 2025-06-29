@@ -624,6 +624,9 @@ importers:
       '@mapform/backend':
         specifier: workspace:*
         version: link:../../packages/backend
+      '@mapform/blocknote':
+        specifier: workspace:*
+        version: link:../../packages/blocknote
       '@mapform/db':
         specifier: workspace:*
         version: link:../../packages/db
@@ -1038,6 +1041,9 @@ importers:
         specifier: 'catalog:'
         version: 4.0.8
     devDependencies:
+      '@mapform/blocknote':
+        specifier: workspace:*
+        version: link:../blocknote
       '@mapform/eslint-config':
         specifier: workspace:*
         version: link:../eslint-config

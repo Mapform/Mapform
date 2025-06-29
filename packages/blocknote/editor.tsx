@@ -8,18 +8,19 @@ import {
   useCreateBlockNote,
 } from "@blocknote/react";
 import "./style.css";
-import type { PartialBlock } from "@blocknote/core";
+import { schema, type CustomBlock } from "./schema";
 
 interface BlocknoteProps {
-  content: PartialBlock[];
-  onChange: (content: PartialBlock[]) => void;
+  content: CustomBlock[] | null;
+  onChange: (content: CustomBlock[] | null) => void;
 }
 
 export function Blocknote({ content, onChange }: BlocknoteProps) {
   // Creates a new editor instance.
   const editor = useCreateBlockNote({
+    schema,
     animations: false,
-    initialContent: content,
+    initialContent: content ?? undefined,
   });
 
   // Renders the editor instance using a React component.
