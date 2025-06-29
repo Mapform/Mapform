@@ -6,6 +6,15 @@ settings:
 
 catalogs:
   default:
+    '@blocknote/core':
+      specifier: ^0.31.3
+      version: 0.31.3
+    '@blocknote/mantine':
+      specifier: ^0.31.3
+      version: 0.31.3
+    '@blocknote/react':
+      specifier: ^0.31.3
+      version: 0.31.3
     '@dnd-kit/core':
       specifier: ^6.1.0
       version: 6.1.0
@@ -573,15 +582,6 @@ importers:
 
   apps/new:
     dependencies:
-      '@blocknote/core':
-        specifier: ^0.31.3
-        version: 0.31.3(@types/hast@3.0.4)
-      '@blocknote/mantine':
-        specifier: ^0.31.3
-        version: 0.31.3(@types/hast@3.0.4)(@types/react@19.0.1)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
-      '@blocknote/react':
-        specifier: ^0.31.3
-        version: 0.31.3(@types/hast@3.0.4)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@dnd-kit/core':
         specifier: 'catalog:'
         version: 6.1.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -933,6 +933,70 @@ importers:
       vitest:
         specifier: 'catalog:'
         version: 2.1.1(@types/node@20.11.25)
+
+  packages/blocknote:
+    dependencies:
+      '@blocknote/core':
+        specifier: 'catalog:'
+        version: 0.31.3(@types/hast@3.0.4)
+      '@blocknote/mantine':
+        specifier: 'catalog:'
+        version: 0.31.3(@types/hast@3.0.4)(@types/react@19.0.1)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      '@blocknote/react':
+        specifier: 'catalog:'
+        version: 0.31.3(@types/hast@3.0.4)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      '@mapform/lib':
+        specifier: workspace:*
+        version: link:../lib
+      '@mapform/ui':
+        specifier: workspace:*
+        version: link:../ui
+      '@tanstack/react-query':
+        specifier: 'catalog:'
+        version: 5.29.0(react@19.0.0)
+      lucide-react:
+        specifier: 'catalog:'
+        version: 0.501.0(react@19.0.0)
+      next:
+        specifier: 'catalog:'
+        version: 15.2.4(@opentelemetry/api@1.9.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      zod:
+        specifier: 'catalog:'
+        version: 3.25.1
+    devDependencies:
+      '@mapform/eslint-config':
+        specifier: workspace:*
+        version: link:../eslint-config
+      '@mapform/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      '@types/eslint':
+        specifier: 'catalog:'
+        version: 8.56.5
+      '@types/node':
+        specifier: 'catalog:'
+        version: 20.11.25
+      '@types/react':
+        specifier: 'catalog:'
+        version: 19.0.1
+      '@types/react-dom':
+        specifier: 'catalog:'
+        version: 19.0.2(@types/react@19.0.1)
+      eslint:
+        specifier: 'catalog:'
+        version: 9.16.0(jiti@1.21.6)
+      react:
+        specifier: 'catalog:'
+        version: 19.0.0
+      react-dom:
+        specifier: 'catalog:'
+        version: 19.0.0(react@19.0.0)
+      tailwindcss:
+        specifier: 'catalog:'
+        version: 3.4.17(ts-node@10.9.2(@types/node@20.11.25)(typescript@5.6.3))
+      typescript:
+        specifier: 'catalog:'
+        version: 5.6.3
 
   packages/db:
     dependencies:
@@ -6990,11 +7054,6 @@ packages:
     engines: {node: '>=16'}
     hasBin: true
 
-  lib0@0.2.93:
-    resolution: {integrity: sha512-M5IKsiFJYulS+8Eal8f+zAqf5ckm1vffW0fFDxfgxJ+uiVopvDdd3PxJmz0GsVi3YNO7QCFSq0nAsiDmNhLj9Q==}
-    engines: {node: '>=16'}
-    hasBin: true
-
   lie@3.1.1:
     resolution: {integrity: sha512-RiNhHysUjhrDQntfYSfY4MU24coXXdEOgw9WGcKHNeEwffDYbF//u87M1EWaMGzuFoSbqW0C9C6lEEhDOAswfw==}
 
@@ -7259,10 +7318,6 @@ packages:
 
   minimatch@9.0.1:
     resolution: {integrity: sha512-0jWhJpD/MdhPXwPuiRkCbfYfSKp2qnn2eOc279qI7f+osl/l+prKSrvhg157zSYvx/1nmgn2NqdT6k2Z7zSH9w==}
-    engines: {node: '>=16 || 14 >=14.17'}
-
-  minimatch@9.0.3:
-    resolution: {integrity: sha512-RHiac9mvaRw0x3AYRgDC1CxAP7HTcNrrECeA8YYJeWnpo+2Q5CegtZjaotWTWxDG3UeGA1coE05iH1mPjT/2mg==}
     engines: {node: '>=16 || 14 >=14.17'}
 
   minimatch@9.0.5:
@@ -14692,7 +14747,7 @@ snapshots:
     dependencies:
       foreground-child: 3.1.1
       jackspeak: 2.3.6
-      minimatch: 9.0.3
+      minimatch: 9.0.5
       minipass: 7.0.4
       path-scurry: 1.10.1
 
@@ -14700,7 +14755,7 @@ snapshots:
     dependencies:
       foreground-child: 3.1.1
       jackspeak: 2.3.6
-      minimatch: 9.0.3
+      minimatch: 9.0.5
       minipass: 7.0.4
       path-scurry: 1.10.1
 
@@ -15208,10 +15263,6 @@ snapshots:
     dependencies:
       isomorphic.js: 0.2.5
 
-  lib0@0.2.93:
-    dependencies:
-      isomorphic.js: 0.2.5
-
   lie@3.1.1:
     dependencies:
       immediate: 3.0.6
@@ -15674,10 +15725,6 @@ snapshots:
       brace-expansion: 1.1.11
 
   minimatch@9.0.1:
-    dependencies:
-      brace-expansion: 2.0.1
-
-  minimatch@9.0.3:
     dependencies:
       brace-expansion: 2.0.1
 
@@ -17427,7 +17474,7 @@ snapshots:
 
   y-protocols@1.0.6(yjs@13.6.15):
     dependencies:
-      lib0: 0.2.93
+      lib0: 0.2.109
       yjs: 13.6.15
 
   y18n@5.0.8: {}
@@ -17450,7 +17497,7 @@ snapshots:
 
   yjs@13.6.15:
     dependencies:
-      lib0: 0.2.93
+      lib0: 0.2.109
 
   yn@3.1.1:
     optional: true

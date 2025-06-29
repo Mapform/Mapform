@@ -13,9 +13,6 @@
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf .next"
   },
   "dependencies": {
-    "@blocknote/core": "^0.31.3",
-    "@blocknote/mantine": "^0.31.3",
-    "@blocknote/react": "^0.31.3",
     "@dnd-kit/core": "catalog:",
     "@dnd-kit/sortable": "catalog:",
     "@dnd-kit/utilities": "catalog:",

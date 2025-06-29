@@ -8,15 +8,25 @@ import { projectSearchParams, projectSearchParamsOptions } from "./params";
 import { useQueryStates } from "nuqs";
 import type { SearchPlaces } from "@mapform/backend/data/geoapify/search";
 import type { SearchRows } from "@mapform/backend/data/rows/search-rows";
+import {
+  type StateServiceProps,
+  useStateService,
+} from "~/lib/use-state-service";
+import { updateRowAction } from "~/data/rows/update-row";
+import type { UpdateRowSchema } from "@mapform/backend/data/rows/update-row/schema";
 
 export interface ProjectContextProps {
-  feature?: GetRow["data"];
+  features: NonNullable<GetProject["data"]>["rows"];
   project: NonNullable<GetProject["data"]>;
   activeView?: NonNullable<GetProject["data"]>["views"][number];
   isFeaturePending: boolean;
   setSelectedFeature: (featureId: string | null) => void;
   vectorSearchResults?: SearchRows["data"];
   geoapifySearchResults?: SearchPlaces["data"];
+  featureService: StateServiceProps<
+    GetRow["data"] | undefined,
+    UpdateRowSchema
+  >;
 }
 
 export const ProjectContext = createContext<ProjectContextProps>(
@@ -63,20 +73,45 @@ export function ProjectProvider({
     );
   };
 
+  const featureService = useStateService<GetRow["data"], UpdateRowSchema>(
+    updateRowAction,
+    {
+      currentState: feature,
+      updateFn: (state, newRow) => {
+        if (!state) return state;
+        return {
+          ...state,
+          ...newRow,
+        };
+      },
+    },
+  );
+
   if (!project) {
     notFound();
   }
+
+  const features = project.rows.map((row) => {
+    if (row.id === feature?.id) {
+      return {
+        ...row,
+        ...featureService.optimisticState,
+      };
+    }
+    return row;
+  });
 
   return (
     <ProjectContext.Provider
       value={{
         project,
-        feature,
+        features,
         activeView,
         isFeaturePending,
         setSelectedFeature,
         vectorSearchResults,
         geoapifySearchResults,
+        featureService,
       }}
     >
       {children}

@@ -20,7 +20,7 @@ interface FeatureDrawerProps {
 }
 
 export function FeatureDrawer({ containerRef }: FeatureDrawerProps) {
-  const { feature, isFeaturePending, setSelectedFeature } = useProject();
+  const { isFeaturePending, setSelectedFeature, featureService } = useProject();
   const [{ rowId }] = useQueryStates(projectSearchParams, {
     urlKeys: projectSearchParamsUrlKeys,
     shallow: false,
@@ -66,7 +66,7 @@ export function FeatureDrawer({ containerRef }: FeatureDrawerProps) {
                 <Skeleton className="mb-2 size-8 rounded-full" />
                 <Skeleton className="h-6" />
               </>
-            ) : feature ? (
+            ) : featureService.optimisticState ? (
               <div>
                 <header>
                   <div className="-m-2 mb-0">
@@ -84,13 +84,24 @@ export function FeatureDrawer({ containerRef }: FeatureDrawerProps) {
                   <AutoSizeTextArea
                     className="text-4xl font-bold"
                     placeholder="Untitled"
-                    value={feature.name ?? ""}
+                    value={featureService.optimisticState.name ?? ""}
                     onChange={(value) => {
-                      console.log(value);
+                      featureService.execute({
+                        id: featureService.optimisticState!.id,
+                        name: value,
+                      });
                     }}
                   />
                 </header>
-                <Blocknote />
+                <Blocknote
+                  content={featureService.optimisticState.description}
+                  onChange={(content) => {
+                    featureService.execute({
+                      id: featureService.optimisticState!.id,
+                      content,
+                    });
+                  }}
+                />
               </div>
             ) : (
               <div className="flex flex-1 flex-col justify-center rounded-lg bg-gray-50 p-8">
