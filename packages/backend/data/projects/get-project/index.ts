@@ -51,7 +51,6 @@ export const getProject = (authClient: UserAuthClient) =>
             id: true,
             icon: true,
             name: true,
-            description: true,
             geometry: true,
           },
           extras: {
