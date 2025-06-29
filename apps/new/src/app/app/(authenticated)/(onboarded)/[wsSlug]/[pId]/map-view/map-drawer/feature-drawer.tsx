@@ -71,11 +71,31 @@ export function FeatureDrawer({ containerRef }: FeatureDrawerProps) {
                 <header>
                   <div className="-m-2 mb-0">
                     <Tooltip>
-                      <EmojiPopover onIconChange={() => {}}>
+                      <EmojiPopover
+                        onIconChange={(emoji) => {
+                          featureService.execute({
+                            id: featureService.optimisticState!.id,
+                            icon: emoji,
+                          });
+                        }}
+                      >
                         <TooltipTrigger asChild>
-                          <Button size="icon-sm" type="button" variant="ghost">
-                            <SmilePlusIcon className="size-4" />
-                          </Button>
+                          {featureService.optimisticState.icon ? (
+                            <button
+                              className="hover:bg-muted rounded-lg text-6xl"
+                              type="button"
+                            >
+                              {featureService.optimisticState.icon}
+                            </button>
+                          ) : (
+                            <Button
+                              size="icon-sm"
+                              type="button"
+                              variant="ghost"
+                            >
+                              <SmilePlusIcon className="size-4" />
+                            </Button>
+                          )}
                         </TooltipTrigger>
                       </EmojiPopover>
                       <TooltipContent>Add emoji</TooltipContent>
@@ -96,8 +116,6 @@ export function FeatureDrawer({ containerRef }: FeatureDrawerProps) {
                 <Blocknote
                   content={featureService.optimisticState.description}
                   onChange={(content) => {
-                    console.log(22222, content);
-
                     featureService.execute({
                       id: featureService.optimisticState!.id,
                       description: content,
