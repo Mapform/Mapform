@@ -14,13 +14,16 @@ import {
 import { EmojiPopover } from "@mapform/ui/components/emoji-picker";
 import { Skeleton } from "@mapform/ui/components/skeleton";
 import { Blocknote } from "@mapform/blocknote/editor";
+import { PropertyValueEditor } from "../../properties/property-value-editor";
+import { PropertyColumnEditor } from "../../properties/property-column-editor";
 
 interface FeatureDrawerProps {
   containerRef: React.RefObject<HTMLDivElement | null>;
 }
 
 export function FeatureDrawer({ containerRef }: FeatureDrawerProps) {
-  const { isFeaturePending, setSelectedFeature, featureService } = useProject();
+  const { isFeaturePending, setSelectedFeature, featureService, project } =
+    useProject();
   const [{ rowId }] = useQueryStates(projectSearchParams, {
     urlKeys: projectSearchParamsUrlKeys,
     shallow: false,
@@ -112,6 +115,38 @@ export function FeatureDrawer({ containerRef }: FeatureDrawerProps) {
                       });
                     }}
                   />
+                  <div className="flex flex-col gap-2">
+                    {project.columns.map((column) => (
+                      <div className="grid grid-cols-2 gap-4" key={column.id}>
+                        <PropertyColumnEditor
+                          columnId={column.id}
+                          columnName={column.name}
+                          columnType={column.type}
+                        />
+                        <PropertyValueEditor
+                          columnId={column.id}
+                          rowId={featureService.optimisticState!.id}
+                          type={column.type}
+                          value={
+                            featureService.optimisticState?.cells.find(
+                              (cell) => cell.columnId === column.id,
+                            )?.stringCell?.value ??
+                            featureService.optimisticState?.cells.find(
+                              (cell) => cell.columnId === column.id,
+                            )?.numberCell?.value ??
+                            featureService.optimisticState?.cells.find(
+                              (cell) => cell.columnId === column.id,
+                            )?.booleanCell?.value ??
+                            featureService.optimisticState?.cells.find(
+                              (cell) => cell.columnId === column.id,
+                            )?.dateCell?.value ??
+                            null
+                          }
+                          key={column.id}
+                        />
+                      </div>
+                    ))}
+                  </div>
                 </header>
                 <Blocknote
                   content={featureService.optimisticState.description}

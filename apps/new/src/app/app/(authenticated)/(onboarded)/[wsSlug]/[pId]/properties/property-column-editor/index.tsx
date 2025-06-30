@@ -5,7 +5,6 @@ import {
   Form,
   FormControl,
   FormField,
-  FormLabel,
   FormMessage,
 } from "@mapform/ui/components/form";
 import { Input } from "@mapform/ui/components/input";
@@ -37,17 +36,17 @@ import { updateColumnAction } from "~/data/columns/update-column";
 import { deleteColumnAction } from "~/data/columns/delete-column";
 import { COLUMNS } from "~/constants/columns";
 
-interface ColumnEditorProps {
+interface PropertyColumnEditorProps {
   columnId: string;
   columnName: string;
   columnType: Column["type"];
 }
 
-export function ColumnEditor({
+export function PropertyColumnEditor({
   columnId,
   columnName,
   columnType,
-}: ColumnEditorProps) {
+}: PropertyColumnEditorProps) {
   const Icon = COLUMNS[columnType].icon;
   const [open, setOpen] = useState(false);
   const { execute: executeDeleteColumn, isPending: isPendingDeleteColumn } =

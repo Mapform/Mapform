@@ -27,8 +27,8 @@ import {
   Trash2Icon,
 } from "lucide-react";
 import { ColumnAdder } from "./column-adder";
-import { ColumnEditor } from "./column-editor";
-import { CellPopover } from "./cell-popover";
+import { PropertyColumnEditor } from "../../properties/property-column-editor";
+import { PropertyValueEditor } from "../../properties/property-value-editor";
 import { TablePagination } from "./table-pagination";
 import {
   TableActionBar,
@@ -113,7 +113,7 @@ export function Table() {
         id: column.id,
         accessorKey: column.id,
         header: () => (
-          <ColumnEditor
+          <PropertyColumnEditor
             columnId={column.id}
             columnName={column.name}
             columnType={column.type}
@@ -229,9 +229,32 @@ export function Table() {
                 data-state={row.getIsSelected() && "selected"}
                 key={row.id}
               >
-                {row.getVisibleCells().map((cell) => (
-                  <CellPopover cell={cell} key={cell.id} />
-                ))}
+                {row.getVisibleCells().map((cell) => {
+                  const value = cell.getValue()?.toString();
+                  const type = project.columns.find(
+                    (column) => column.id === cell.column.id,
+                  )?.type;
+
+                  return (
+                    <TableCell key={cell.id}>
+                      {type ? (
+                        <PropertyValueEditor
+                          value={value ?? ""}
+                          type={type}
+                          rowId={row.id}
+                          columnId={cell.column.id}
+                        />
+                      ) : (
+                        <span className="text-muted-foreground">
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext(),
+                          )}
+                        </span>
+                      )}
+                    </TableCell>
+                  );
+                })}
               </TableRow>
             ))
           ) : (
