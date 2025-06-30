@@ -43,7 +43,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOutAction } from "~/data/auth/sign-out";
 import { useAuth } from "~/app/root-providers";
-import { useWorkspace } from "./workspace-context";
+import { useWorkspace } from "../workspace-context";
 import { CreateProjectDropdown } from "~/components/create-project-dialog";
 import {
   ProjectTour,
@@ -54,6 +54,7 @@ import {
   WelcomeTourContent,
 } from "~/components/tours/welcome-tour";
 import { useState } from "react";
+import { Files } from "./files";
 
 export function AppSidebar() {
   const { user } = useAuth();
@@ -194,6 +195,7 @@ export function AppSidebar() {
         {data.spaces.map((space) => (
           <SidebarGroup key={space.title}>
             <SidebarGroupLabel>{space.title}</SidebarGroupLabel>
+            <Files />
             {/* Projects */}
             {/* <SidebarMenu>
               <SidebarMenuItem>

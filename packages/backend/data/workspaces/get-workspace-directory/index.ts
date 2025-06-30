@@ -36,6 +36,13 @@ export const getWorkspaceDirectory = (authClient: UserAuthClient) =>
                 },
                 orderBy: (projects, { asc }) => [asc(projects.createdAt)],
               },
+              folders: {
+                columns: {
+                  id: true,
+                  name: true,
+                  position: true,
+                },
+              },
             },
           },
         },
