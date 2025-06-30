@@ -20,6 +20,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarMenuAction,
+  SidebarGroupAction,
 } from "@mapform/ui/components/sidebar";
 import {
   ChevronsUpDown,
@@ -33,6 +34,7 @@ import {
   BookOpenIcon,
   BookMarkedIcon,
   HelpCircleIcon,
+  CirclePlusIcon,
 } from "lucide-react";
 import {
   Collapsible,
@@ -103,18 +105,12 @@ export function AppSidebar() {
       id: teamspace.id,
       slug: teamspace.slug,
       title: teamspace.name,
-      project: {
-        url: `/app/${workspaceSlug}/${teamspace.slug}`,
-        isActive: pathname === `/app/${workspaceSlug}/${teamspace.slug}`,
-        projects: teamspace.projects.map((project) => ({
-          id: project.id,
-          title: project.name,
-          url: `/app/${workspaceSlug}/${teamspace.slug}/projects/${project.id}`,
-          isActive:
-            pathname ===
-            `/app/${workspaceSlug}/${teamspace.slug}/projects/${project.id}`,
-        })),
-      },
+      projects: teamspace.projects.map((project) => ({
+        id: project.id,
+        title: project.name,
+        icon: project.icon,
+        url: `/app/${workspaceSlug}/${project.id}`,
+      })),
     })),
   };
 
@@ -195,30 +191,10 @@ export function AppSidebar() {
         {data.spaces.map((space) => (
           <SidebarGroup key={space.title}>
             <SidebarGroupLabel>{space.title}</SidebarGroupLabel>
-            <Files />
-            {/* Projects */}
-            {/* <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={space.project.isActive}>
-                  <Link href={space.project.url}>
-                    <BoxIcon />
-                    <span>Projects</span>
-                  </Link>
-                </SidebarMenuButton>
-                <div className="absolute right-1 top-1.5 flex gap-1">
-                  <CreateProjectDropdown tsSlug={space.slug}>
-                    <SidebarMenuAction className="relative right-0 top-0">
-                      <PlusIcon />
-                    </SidebarMenuAction>
-                  </CreateProjectDropdown>
-                  <CollapsibleTrigger asChild>
-                    <SidebarMenuAction className="relative right-0 top-0">
-                      <ChevronRightIcon className="transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                    </SidebarMenuAction>
-                  </CollapsibleTrigger>
-                </div>
-              </SidebarMenuItem>
-            </SidebarMenu> */}
+            <SidebarGroupAction title="Add Project">
+              <PlusIcon /> <span className="sr-only">Add Project</span>
+            </SidebarGroupAction>
+            <Files space={space} />
           </SidebarGroup>
         ))}
       </SidebarContent>
