@@ -4,7 +4,7 @@ import { authClient, publicClient } from "~/lib/safe-action";
 import { ProjectProvider } from "./context";
 import { TableView } from "./table-view";
 import { MapView } from "./map-view";
-import { loadSearchParams } from "./params";
+import { loadSearchParams } from "~/lib/params/server";
 import type { SearchParams } from "nuqs/server";
 
 /**

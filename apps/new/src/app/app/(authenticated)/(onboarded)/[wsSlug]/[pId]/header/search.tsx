@@ -9,26 +9,25 @@ import {
   CommandItem,
   CommandGroup,
 } from "@mapform/ui/components/command";
-import { useQueryStates } from "nuqs";
-import { projectSearchParams, projectSearchParamsOptions } from "../params";
+import { useParamsContext } from "~/lib/params/client";
 import { useProject } from "../context";
-import { inngest } from "@mapform/backend/clients/inngest";
 
 export function Search() {
-  const { project, vectorSearchResults, geoapifySearchResults } = useProject();
+  const { projectService, vectorSearchResults, geoapifySearchResults } =
+    useProject();
   const [searchFocused, setSearchFocused] = useState(false);
-  const [{ query }, setQuery] = useQueryStates(
-    projectSearchParams,
-    projectSearchParamsOptions,
-  );
+  const {
+    params: { query },
+    setQueryStates,
+  } = useParamsContext();
   const [searchQuery, setSearchQuery] = useState(query);
   const debouncedSearchQuery = useDebounce(searchQuery, 200);
   const listRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    void setQuery({ query: debouncedSearchQuery });
-  }, [debouncedSearchQuery, setQuery]);
+    void setQueryStates({ query: debouncedSearchQuery });
+  }, [debouncedSearchQuery, setQueryStates]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -113,15 +112,15 @@ export function Search() {
               )}
               {vectorSearchResults?.map((result) => (
                 <CommandItem key={result.id} value={result.id}>
-                  {project.icon ? (
-                    <span>{project.icon}</span>
+                  {projectService.optimisticState.icon ? (
+                    <span>{projectService.optimisticState.icon}</span>
                   ) : (
                     <BoxIcon className="text-muted-foreground mr-2 size-4" />
                   )}
                   {result.name}
                   <span className="text-muted-foreground ml-1">
                     {" "}
-                    — From {project.name ?? "your map"}
+                    — From {projectService.optimisticState.name ?? "your map"}
                   </span>
                 </CommandItem>
               ))}

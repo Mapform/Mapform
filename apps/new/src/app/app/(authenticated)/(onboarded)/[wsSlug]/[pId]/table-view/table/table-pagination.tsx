@@ -15,8 +15,7 @@ import {
   SelectValue,
 } from "@mapform/ui/components/select";
 import { cn } from "@mapform/lib/classnames";
-import { useQueryStates } from "nuqs";
-import { projectSearchParams, projectSearchParamsUrlKeys } from "../../params";
+import { useParamsContext } from "~/lib/params/client";
 
 interface TablePaginationProps<TData> extends React.ComponentProps<"div"> {
   table: Table<TData>;
@@ -29,13 +28,10 @@ export function TablePagination<TData>({
   className,
   ...props
 }: TablePaginationProps<TData>) {
-  const [{ perPage, page }, setProjectSearchParams] = useQueryStates(
-    projectSearchParams,
-    {
-      urlKeys: projectSearchParamsUrlKeys,
-      shallow: false,
-    },
-  );
+  const {
+    params: { perPage, page },
+    setQueryStates,
+  } = useParamsContext();
 
   return (
     <div
@@ -55,14 +51,9 @@ export function TablePagination<TData>({
           <Select
             value={`${table.getState().pagination.pageSize}`}
             onValueChange={(value) => {
-              void setProjectSearchParams(
-                {
-                  perPage: Number(value),
-                },
-                {
-                  shallow: false,
-                },
-              );
+              void setQueryStates({
+                perPage: Number(value),
+              });
             }}
           >
             <SelectTrigger className="h-8 w-[4.5rem] [&[data-size]]:h-8">
@@ -88,15 +79,10 @@ export function TablePagination<TData>({
             size="icon"
             className="hidden size-8 lg:flex"
             onClick={() => {
-              void setProjectSearchParams(
-                {
-                  perPage,
-                  page: 0,
-                },
-                {
-                  shallow: false,
-                },
-              );
+              void setQueryStates({
+                perPage,
+                page: 0,
+              });
             }}
             disabled={!table.getCanPreviousPage()}
           >
@@ -108,15 +94,10 @@ export function TablePagination<TData>({
             size="icon"
             className="size-8"
             onClick={() => {
-              void setProjectSearchParams(
-                {
-                  perPage,
-                  page: page - 1,
-                },
-                {
-                  shallow: false,
-                },
-              );
+              void setQueryStates({
+                perPage,
+                page: page - 1,
+              });
             }}
             disabled={!table.getCanPreviousPage()}
           >
@@ -128,15 +109,10 @@ export function TablePagination<TData>({
             size="icon"
             className="size-8"
             onClick={() => {
-              void setProjectSearchParams(
-                {
-                  perPage,
-                  page: page + 1,
-                },
-                {
-                  shallow: false,
-                },
-              );
+              void setQueryStates({
+                perPage,
+                page: page + 1,
+              });
             }}
             disabled={!table.getCanNextPage()}
           >
@@ -148,15 +124,10 @@ export function TablePagination<TData>({
             size="icon"
             className="hidden size-8 lg:flex"
             onClick={() => {
-              void setProjectSearchParams(
-                {
-                  perPage,
-                  page: table.getPageCount() - 1,
-                },
-                {
-                  shallow: false,
-                },
-              );
+              void setQueryStates({
+                perPage,
+                page: table.getPageCount() - 1,
+              });
             }}
             disabled={!table.getCanNextPage()}
           >

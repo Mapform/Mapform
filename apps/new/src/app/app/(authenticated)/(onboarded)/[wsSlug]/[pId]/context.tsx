@@ -2,9 +2,7 @@
 
 import type { GetProject } from "@mapform/backend/data/projects/get-project";
 import type { GetRow } from "@mapform/backend/data/rows/get-row";
-import { createContext, useContext, useTransition } from "react";
-import { projectSearchParams, projectSearchParamsOptions } from "./params";
-import { useQueryStates } from "nuqs";
+import { createContext, useContext } from "react";
 import type { SearchPlaces } from "@mapform/backend/data/geoapify/search";
 import type { SearchRows } from "@mapform/backend/data/rows/search-rows";
 import {
@@ -19,8 +17,6 @@ import type { UpdateProjectSchema } from "@mapform/backend/data/projects/update-
 export interface ProjectContextProps {
   features: NonNullable<GetProject["data"]>["rows"];
   activeView?: NonNullable<GetProject["data"]>["views"][number];
-  isFeaturePending: boolean;
-  setSelectedFeature: (featureId: string | null) => void;
   vectorSearchResults?: SearchRows["data"];
   geoapifySearchResults?: SearchPlaces["data"];
   featureService: StateServiceProps<
@@ -53,30 +49,6 @@ export function ProjectProvider({
   geoapifySearchResults?: SearchPlaces["data"];
   children: React.ReactNode;
 }) {
-  const [isFeaturePending, startTransition] = useTransition();
-
-  const [_, setProjectSearchParams] = useQueryStates(
-    projectSearchParams,
-    projectSearchParamsOptions,
-  );
-
-  const setSelectedFeature = (featureId: string | null) => {
-    // Ignore if the feature is the same as the current selected feature
-    if (feature?.id === featureId) {
-      return;
-    }
-
-    void setProjectSearchParams(
-      {
-        rowId: featureId,
-      },
-      {
-        shallow: false,
-        startTransition,
-      },
-    );
-  };
-
   const projectService = useStateService<
     NonNullable<GetProject["data"]>,
     UpdateProjectSchema
@@ -119,8 +91,6 @@ export function ProjectProvider({
       value={{
         features,
         activeView,
-        isFeaturePending,
-        setSelectedFeature,
         vectorSearchResults,
         geoapifySearchResults,
         featureService,

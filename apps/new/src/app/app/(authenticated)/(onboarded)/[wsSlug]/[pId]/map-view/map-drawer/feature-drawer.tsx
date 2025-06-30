@@ -1,9 +1,7 @@
 import { SmilePlusIcon, XIcon } from "lucide-react";
 import { Button } from "@mapform/ui/components/button";
 import { DrawerPrimitive } from "@mapform/ui/components/drawer";
-import { projectSearchParams, projectSearchParamsUrlKeys } from "../../params";
 import { useProject } from "../../context";
-import { useQueryStates } from "nuqs";
 import { DRAWER_WIDTH } from "../constants";
 import { AutoSizeTextArea } from "@mapform/ui/components/autosize-text-area";
 import {
@@ -16,22 +14,19 @@ import { Skeleton } from "@mapform/ui/components/skeleton";
 import { Blocknote } from "@mapform/blocknote/editor";
 import { PropertyValueEditor } from "../../properties/property-value-editor";
 import { PropertyColumnEditor } from "../../properties/property-column-editor";
+import { useParamsContext } from "~/lib/params/client";
 
 interface FeatureDrawerProps {
   containerRef: React.RefObject<HTMLDivElement | null>;
 }
 
 export function FeatureDrawer({ containerRef }: FeatureDrawerProps) {
+  const { featureService, projectService } = useProject();
   const {
-    isFeaturePending,
-    setSelectedFeature,
-    featureService,
-    projectService,
-  } = useProject();
-  const [{ rowId }] = useQueryStates(projectSearchParams, {
-    urlKeys: projectSearchParamsUrlKeys,
-    shallow: false,
-  });
+    isPending,
+    params: { rowId },
+    setQueryStates,
+  } = useParamsContext();
 
   return (
     <DrawerPrimitive.NestedRoot
@@ -42,7 +37,7 @@ export function FeatureDrawer({ containerRef }: FeatureDrawerProps) {
       dismissible={false}
       onOpenChange={(open) => {
         if (!open) {
-          setSelectedFeature(null);
+          void setQueryStates({ rowId: null });
         }
       }}
     >
@@ -63,12 +58,12 @@ export function FeatureDrawer({ containerRef }: FeatureDrawerProps) {
               type="button"
               variant="ghost"
               onClick={() => {
-                setSelectedFeature(null);
+                void setQueryStates({ rowId: null });
               }}
             >
               <XIcon className="size-4" />
             </Button>
-            {isFeaturePending ? (
+            {isPending ? (
               <>
                 <Skeleton className="mb-2 size-8 rounded-full" />
                 <Skeleton className="h-6" />

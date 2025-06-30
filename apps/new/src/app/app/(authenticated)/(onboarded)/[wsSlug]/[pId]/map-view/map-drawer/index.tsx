@@ -1,15 +1,14 @@
 import { useMediaQuery } from "@mapform/ui/hooks/use-media-query";
 import { DrawerPrimitive } from "@mapform/ui/components/drawer";
 import { cn } from "@mapform/lib/classnames";
-import { useQueryStates } from "nuqs";
 import { Header } from "../../header";
 import { DRAWER_WIDTH } from "../constants";
-import { projectSearchParams, projectSearchParamsUrlKeys } from "../../params";
 import { FeatureDrawer } from "./feature-drawer";
 import { useProject } from "../../context";
 import { Button } from "@mapform/ui/components/button";
 import { XIcon } from "lucide-react";
 import { useMap } from "~/components/map";
+import { useParamsContext } from "~/lib/params/client";
 
 interface MapDrawerProps {
   drawerOpen: boolean;
@@ -23,11 +22,11 @@ export function MapDrawer({
   setDrawerOpen,
 }: MapDrawerProps) {
   const { map } = useMap();
-  const { projectService, setSelectedFeature } = useProject();
-  const [{ rowId }] = useQueryStates(projectSearchParams, {
-    urlKeys: projectSearchParamsUrlKeys,
-    shallow: false,
-  });
+  const { projectService } = useProject();
+  const {
+    params: { rowId },
+    setQueryStates,
+  } = useParamsContext();
   const isDesktop = useMediaQuery("(min-width: 768px)");
 
   if (isDesktop) {
@@ -85,7 +84,7 @@ export function MapDrawer({
                     key={row.id}
                     className="cursor-pointer rounded-lg border p-2 transition-colors hover:border-gray-300 hover:bg-gray-50"
                     onClick={() => {
-                      setSelectedFeature(row.id);
+                      void setQueryStates({ rowId: row.id });
 
                       map?.flyTo({
                         center: row.center.coordinates as [number, number],

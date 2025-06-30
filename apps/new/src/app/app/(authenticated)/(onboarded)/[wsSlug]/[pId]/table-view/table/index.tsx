@@ -38,8 +38,7 @@ import {
 import { deleteRowsAction } from "~/data/rows/delete-rows";
 import { duplicateRowsAction } from "~/data/rows/dupliate-rows";
 import { useAction } from "next-safe-action/hooks";
-import { useQueryStates } from "nuqs";
-import { projectSearchParams, projectSearchParamsUrlKeys } from "../../params";
+import { useParamsContext } from "~/lib/params/client";
 
 export function Table() {
   const { projectService } = useProject();
@@ -48,10 +47,9 @@ export function Table() {
   const { execute: executeDuplicateRows, isPending: isPendingDuplicateRows } =
     useAction(duplicateRowsAction);
   const tableContainerRef = useRef<HTMLDivElement>(null);
-  const [{ perPage, page }] = useQueryStates(projectSearchParams, {
-    urlKeys: projectSearchParamsUrlKeys,
-    shallow: false,
-  });
+  const {
+    params: { perPage, page },
+  } = useParamsContext();
 
   const rows = useMemo(
     () =>

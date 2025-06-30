@@ -6,10 +6,18 @@ import {
   QueryClientProvider,
 } from "@tanstack/react-query";
 import { ThemeProvider } from "next-themes";
-import { createContext, useContext, useState, useEffect, use } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  use,
+  Suspense,
+} from "react";
 import type { GetCurrentSession } from "~/data/auth/get-current-session";
 import { TooltipProvider } from "@mapform/ui/components/tooltip";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
+import { ParamsProvider } from "~/lib/params/client";
 
 type User = NonNullable<
   NonNullable<Awaited<GetCurrentSession>>["data"]
@@ -87,9 +95,15 @@ export function RootProviders({
           disableTransitionOnChange
           enableSystem
         >
-          <NuqsAdapter>
-            <TooltipProvider delayDuration={200}>{children}</TooltipProvider>
-          </NuqsAdapter>
+          <Suspense>
+            <NuqsAdapter>
+              <ParamsProvider>
+                <TooltipProvider delayDuration={200}>
+                  {children}
+                </TooltipProvider>
+              </ParamsProvider>
+            </NuqsAdapter>
+          </Suspense>
         </ThemeProvider>
       </QueryClientProvider>
     </AuthContext.Provider>
