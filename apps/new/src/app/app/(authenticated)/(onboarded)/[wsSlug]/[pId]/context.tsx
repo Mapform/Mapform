@@ -2,7 +2,6 @@
 
 import type { GetProject } from "@mapform/backend/data/projects/get-project";
 import type { GetRow } from "@mapform/backend/data/rows/get-row";
-import { notFound } from "next/navigation";
 import { createContext, useContext, useTransition } from "react";
 import { projectSearchParams, projectSearchParamsOptions } from "./params";
 import { useQueryStates } from "nuqs";
@@ -73,7 +72,7 @@ export function ProjectProvider({
       },
       {
         shallow: false,
-        ...(featureId ? { startTransition } : {}),
+        startTransition,
       },
     );
   };
