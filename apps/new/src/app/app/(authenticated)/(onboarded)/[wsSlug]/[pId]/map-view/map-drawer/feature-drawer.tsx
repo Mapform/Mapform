@@ -115,7 +115,7 @@ export function FeatureDrawer({ containerRef }: FeatureDrawerProps) {
                       });
                     }}
                   />
-                  <div className="flex flex-col gap-2">
+                  <div className="mb-4 mt-2 flex flex-col gap-2">
                     {project.columns.map((column) => (
                       <div className="grid grid-cols-2 gap-4" key={column.id}>
                         <PropertyColumnEditor
