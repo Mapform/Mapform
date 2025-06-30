@@ -23,7 +23,7 @@ export function MapDrawer({
   setDrawerOpen,
 }: MapDrawerProps) {
   const { map } = useMap();
-  const { project, setSelectedFeature } = useProject();
+  const { projectService, setSelectedFeature } = useProject();
   const [{ rowId }] = useQueryStates(projectSearchParams, {
     urlKeys: projectSearchParamsUrlKeys,
     shallow: false,
@@ -80,7 +80,7 @@ export function MapDrawer({
               </Button>
               <Header />
               <ul className="flex flex-col gap-2">
-                {project.rows.map((row) => (
+                {projectService.optimisticState.rows.map((row) => (
                   <li
                     key={row.id}
                     className="cursor-pointer rounded-lg border p-2 transition-colors hover:border-gray-300 hover:bg-gray-50"

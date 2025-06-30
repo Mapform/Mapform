@@ -4,7 +4,7 @@ import { useState, useRef, useCallback, useMemo, useEffect } from "react";
 
 export interface StateServiceProps<TState, TAction> {
   execute: (args: TAction) => void;
-  optimisticState: TState | undefined;
+  optimisticState: TState;
   isPending: boolean;
   setOptimisticState: (state: TState) => void;
   resetOptimisticState: () => void;

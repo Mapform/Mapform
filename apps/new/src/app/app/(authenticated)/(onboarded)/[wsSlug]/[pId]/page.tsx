@@ -77,6 +77,10 @@ export default async function ViewPage(props: {
     );
   }
 
+  if (!project.data) {
+    return notFound();
+  }
+
   return (
     <ProjectProvider
       feature={feature?.data}

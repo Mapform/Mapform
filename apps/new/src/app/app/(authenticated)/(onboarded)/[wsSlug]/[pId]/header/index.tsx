@@ -26,7 +26,7 @@ interface HeaderProps {
 }
 
 export function Header({ className }: HeaderProps) {
-  const { project } = useProject();
+  const { projectService } = useProject();
 
   const { execute, isPending } = useAction(createViewAction);
 
@@ -35,11 +35,27 @@ export function Header({ className }: HeaderProps) {
       <Search />
       <div className="-mx-2 mb-0 mt-2">
         <Tooltip>
-          <EmojiPopover onIconChange={() => {}}>
+          <EmojiPopover
+            onIconChange={(emoji) => {
+              projectService.execute({
+                id: projectService.optimisticState.id,
+                icon: emoji,
+              });
+            }}
+          >
             <TooltipTrigger asChild>
-              <Button size="icon-sm" type="button" variant="ghost">
-                <SmilePlusIcon className="size-4" />
-              </Button>
+              {projectService.optimisticState.icon ? (
+                <button
+                  className="hover:bg-muted rounded-lg text-6xl"
+                  type="button"
+                >
+                  {projectService.optimisticState.icon}
+                </button>
+              ) : (
+                <Button size="icon-sm" type="button" variant="ghost">
+                  <SmilePlusIcon className="size-4" />
+                </Button>
+              )}
             </TooltipTrigger>
           </EmojiPopover>
           <TooltipContent>Add emoji</TooltipContent>
@@ -48,20 +64,26 @@ export function Header({ className }: HeaderProps) {
       <AutoSizeTextArea
         className="text-4xl font-bold"
         placeholder="Untitled"
-        value={project.name ?? ""}
+        value={projectService.optimisticState.name ?? ""}
         onChange={(value) => {
-          console.log(value);
+          projectService.execute({
+            id: projectService.optimisticState.id,
+            name: value,
+          });
         }}
       />
       <AutoSizeTextArea
         placeholder="Description"
-        value={project.description ?? ""}
+        value={projectService.optimisticState.description ?? ""}
         onChange={(value) => {
-          console.log(value);
+          projectService.execute({
+            id: projectService.optimisticState.id,
+            description: value,
+          });
         }}
       />
       <div className="mt-2 flex gap-1">
-        {project.views.map((view) => (
+        {projectService.optimisticState.views.map((view) => (
           <ViewButton key={view.id} view={view} />
         ))}
         <DropdownMenu>
@@ -79,7 +101,10 @@ export function Header({ className }: HeaderProps) {
             <DropdownMenuItem
               disabled={isPending}
               onClick={() => {
-                execute({ projectId: project.id, viewType: "map" });
+                execute({
+                  projectId: projectService.optimisticState.id,
+                  viewType: "map",
+                });
               }}
             >
               <VIEWS.map.icon className="size-4" />
@@ -87,7 +112,10 @@ export function Header({ className }: HeaderProps) {
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => {
-                execute({ projectId: project.id, viewType: "table" });
+                execute({
+                  projectId: projectService.optimisticState.id,
+                  viewType: "table",
+                });
               }}
             >
               <VIEWS.table.icon className="size-4" />

@@ -1,14 +1,5 @@
-import { columnTypeEnum } from "@mapform/db/schema";
 import { Button } from "@mapform/ui/components/button";
-import {
-  useForm,
-  zodResolver,
-  Form,
-  FormControl,
-  FormField,
-  FormLabel,
-  FormMessage,
-} from "@mapform/ui/components/form";
+import { useForm, zodResolver, Form } from "@mapform/ui/components/form";
 import {
   createColumnSchema,
   type CreateColumnSchema,
@@ -28,7 +19,7 @@ import { COLUMNS } from "~/constants/columns";
 
 export function ColumnAdder() {
   const [popoverOpen, setPopoverOpen] = useState(false);
-  const { project } = useProject();
+  const { projectService } = useProject();
   const { execute, isPending } = useAction(createColumnAction, {
     onSuccess: () => {
       console.log("success");
@@ -41,7 +32,7 @@ export function ColumnAdder() {
   });
   const form = useForm<CreateColumnSchema>({
     defaultValues: {
-      projectId: project.id,
+      projectId: projectService.optimisticState.id,
       name: "",
       type: "string",
     },

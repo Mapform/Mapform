@@ -39,6 +39,7 @@ import { upsertCell } from "@mapform/backend/data/cells/upsert-cell";
 import { searchRows } from "@mapform/backend/data/rows/search-rows";
 import { searchPlaces } from "@mapform/backend/data/geoapify/search";
 import { updateRow } from "@mapform/backend/data/rows/update-row";
+import { updateProject } from "@mapform/backend/data/projects/update-project";
 
 const ignoredWorkspaceSlugs = ["onboarding"];
 const ignoredTeamspaceSlugs = ["settings"];
@@ -113,6 +114,7 @@ const createUserAuthClient = () => {
     getProject: getProject(extendedClient),
     getRecentProjects: getRecentProjects(extendedClient),
     createProject: createProject(extendedClient),
+    updateProject: updateProject(extendedClient),
 
     // Rows
     getRow: getRow(extendedClient),

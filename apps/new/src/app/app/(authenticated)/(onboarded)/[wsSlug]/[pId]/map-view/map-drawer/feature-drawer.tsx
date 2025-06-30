@@ -22,8 +22,12 @@ interface FeatureDrawerProps {
 }
 
 export function FeatureDrawer({ containerRef }: FeatureDrawerProps) {
-  const { isFeaturePending, setSelectedFeature, featureService, project } =
-    useProject();
+  const {
+    isFeaturePending,
+    setSelectedFeature,
+    featureService,
+    projectService,
+  } = useProject();
   const [{ rowId }] = useQueryStates(projectSearchParams, {
     urlKeys: projectSearchParamsUrlKeys,
     shallow: false,
@@ -72,7 +76,7 @@ export function FeatureDrawer({ containerRef }: FeatureDrawerProps) {
             ) : featureService.optimisticState ? (
               <div>
                 <header>
-                  <div className="-m-2 mb-0">
+                  <div className="-mx-2 mb-0 mt-2">
                     <Tooltip>
                       <EmojiPopover
                         onIconChange={(emoji) => {
@@ -116,7 +120,7 @@ export function FeatureDrawer({ containerRef }: FeatureDrawerProps) {
                     }}
                   />
                   <div className="mb-4 mt-2 flex flex-col gap-2">
-                    {project.columns.map((column) => (
+                    {projectService.optimisticState.columns.map((column) => (
                       <div className="grid grid-cols-2 gap-4" key={column.id}>
                         <PropertyColumnEditor
                           columnId={column.id}

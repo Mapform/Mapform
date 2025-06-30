@@ -42,7 +42,7 @@ import { useQueryStates } from "nuqs";
 import { projectSearchParams, projectSearchParamsUrlKeys } from "../../params";
 
 export function Table() {
-  const { project } = useProject();
+  const { projectService } = useProject();
   const { execute: executeDeleteRows, isPending: isPendingDeleteRows } =
     useAction(deleteRowsAction);
   const { execute: executeDuplicateRows, isPending: isPendingDuplicateRows } =
@@ -55,7 +55,7 @@ export function Table() {
 
   const rows = useMemo(
     () =>
-      project.rows.map((row) => {
+      projectService.optimisticState.rows.map((row) => {
         const rowCells = row.cells;
 
         return {
@@ -84,7 +84,7 @@ export function Table() {
           ),
         };
       }),
-    [project.rows],
+    [projectService.optimisticState.rows],
   );
 
   const columns = useMemo(() => {
@@ -109,7 +109,7 @@ export function Table() {
           );
         },
       },
-      ...project.columns.map((column) => ({
+      ...projectService.optimisticState.columns.map((column) => ({
         id: column.id,
         accessorKey: column.id,
         header: () => (
@@ -167,12 +167,12 @@ export function Table() {
         enableHiding: false,
       },
     ];
-  }, [project.columns]);
+  }, [projectService.optimisticState.columns]);
 
   const table = useReactTable({
     data: rows ?? [],
     columns,
-    pageCount: Math.ceil(project.rowCount / perPage),
+    pageCount: Math.ceil(projectService.optimisticState.rowCount / perPage),
     state: {
       pagination: {
         pageIndex: page,
@@ -231,7 +231,7 @@ export function Table() {
               >
                 {row.getVisibleCells().map((cell) => {
                   const value = cell.getValue()?.toString();
-                  const type = project.columns.find(
+                  const type = projectService.optimisticState.columns.find(
                     (column) => column.id === cell.column.id,
                   )?.type;
 

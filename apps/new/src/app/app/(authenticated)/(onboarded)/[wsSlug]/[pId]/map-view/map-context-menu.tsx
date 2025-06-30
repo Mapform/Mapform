@@ -1,11 +1,10 @@
 "use client";
 
-import { ScanIcon, PlusIcon } from "lucide-react";
+import { PlusIcon } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@mapform/ui/components/dropdown-menu";
 

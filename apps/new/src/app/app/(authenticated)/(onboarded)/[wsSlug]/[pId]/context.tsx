@@ -14,10 +14,11 @@ import {
 } from "~/lib/use-state-service";
 import { updateRowAction } from "~/data/rows/update-row";
 import type { UpdateRowSchema } from "@mapform/backend/data/rows/update-row/schema";
+import { updateProjectAction } from "~/data/projects/update-project";
+import type { UpdateProjectSchema } from "@mapform/backend/data/projects/update-project/schema";
 
 export interface ProjectContextProps {
   features: NonNullable<GetProject["data"]>["rows"];
-  project: NonNullable<GetProject["data"]>;
   activeView?: NonNullable<GetProject["data"]>["views"][number];
   isFeaturePending: boolean;
   setSelectedFeature: (featureId: string | null) => void;
@@ -26,6 +27,10 @@ export interface ProjectContextProps {
   featureService: StateServiceProps<
     GetRow["data"] | undefined,
     UpdateRowSchema
+  >;
+  projectService: StateServiceProps<
+    NonNullable<GetProject["data"]>,
+    UpdateProjectSchema
   >;
 }
 
@@ -43,7 +48,7 @@ export function ProjectProvider({
   geoapifySearchResults,
 }: {
   feature?: GetRow["data"];
-  project: GetProject["data"];
+  project: NonNullable<GetProject["data"]>;
   activeView?: NonNullable<GetProject["data"]>["views"][number];
   vectorSearchResults?: SearchRows["data"];
   geoapifySearchResults?: SearchPlaces["data"];
@@ -73,6 +78,19 @@ export function ProjectProvider({
     );
   };
 
+  const projectService = useStateService<
+    NonNullable<GetProject["data"]>,
+    UpdateProjectSchema
+  >(updateProjectAction, {
+    currentState: project,
+    updateFn: (state, newProject) => {
+      return {
+        ...state,
+        ...newProject,
+      };
+    },
+  });
+
   const featureService = useStateService<GetRow["data"], UpdateRowSchema>(
     updateRowAction,
     {
@@ -87,10 +105,6 @@ export function ProjectProvider({
     },
   );
 
-  if (!project) {
-    notFound();
-  }
-
   const features = project.rows.map((row) => {
     if (row.id === feature?.id) {
       return {
@@ -104,7 +118,6 @@ export function ProjectProvider({
   return (
     <ProjectContext.Provider
       value={{
-        project,
         features,
         activeView,
         isFeaturePending,
@@ -112,6 +125,7 @@ export function ProjectProvider({
         vectorSearchResults,
         geoapifySearchResults,
         featureService,
+        projectService,
       }}
     >
       {children}

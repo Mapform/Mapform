@@ -52,7 +52,7 @@ function MapViewInner({
   drawerOpen: boolean;
   setDrawerOpen: (open: boolean) => void;
 }) {
-  const { project, setSelectedFeature } = useProject();
+  const { projectService, setSelectedFeature } = useProject();
   const [contextMenuOpen, setContextMenuOpen] = useState(false);
   const [contextMenuPosition, setContextMenuPosition] = useState({
     x: 0,
@@ -89,26 +89,29 @@ function MapViewInner({
 
   // Separate rows by geometry type
   const pointRows = useMemo(
-    () => project.rows.filter((row) => row.geometry.type === "Point"),
-    [project.rows],
+    () =>
+      projectService.optimisticState.rows.filter(
+        (row) => row.geometry.type === "Point",
+      ),
+    [projectService.optimisticState.rows],
   );
   const lineRows = useMemo(
     () =>
-      project.rows.filter(
+      projectService.optimisticState.rows.filter(
         (row) =>
           row.geometry.type === "LineString" ||
           row.geometry.type === "MultiLineString",
       ),
-    [project.rows],
+    [projectService.optimisticState.rows],
   );
   const polygonRows = useMemo(
     () =>
-      project.rows.filter(
+      projectService.optimisticState.rows.filter(
         (row) =>
           row.geometry.type === "Polygon" ||
           row.geometry.type === "MultiPolygon",
       ),
-    [project.rows],
+    [projectService.optimisticState.rows],
   );
 
   useEffect(() => {
