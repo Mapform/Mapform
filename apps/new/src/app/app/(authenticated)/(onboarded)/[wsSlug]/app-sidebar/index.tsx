@@ -72,7 +72,7 @@ export function AppSidebar() {
     workspaceMemberships,
     workspaceDirectory,
     workspaceSlug,
-    currentWorkspace,
+    optimisticWorkspace,
   } = useWorkspace();
   const [isProjectGuideOpen, setIsProjectGuideOpen] = useState(false);
   const [isWelcomeGuideOpen, setIsWelcomeGuideOpen] = useState(false);
@@ -175,7 +175,7 @@ export function AppSidebar() {
                   </div>
                   <div className="grid flex-1 text-left text-sm leading-tight">
                     <span className="truncate font-semibold">
-                      {currentWorkspace?.workspace.name}
+                      {optimisticWorkspace?.name}
                     </span>
                     <span className="truncate text-xs">Basic</span>
                   </div>

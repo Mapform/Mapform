@@ -25,7 +25,8 @@ import {
 import { useAction } from "next-safe-action/hooks";
 import { updateFileTreePositionsAction } from "~/data/file-tree-positions/update-positions";
 import { DragItem, DragHandle } from "~/components/draggable";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
+import { useWorkspace } from "../workspace-context";
 
 export function Files({
   space,
@@ -58,6 +59,7 @@ export function Files({
 }) {
   const router = useRouter();
   const pathname = usePathname();
+  const { updateOptimisticWorkspace } = useWorkspace();
 
   const allFiles = useMemo(() => {
     return [
@@ -72,7 +74,7 @@ export function Files({
     ];
   }, [space.projects, space.folders]);
 
-  const [optimisticFiles, setOptimisticFiles] = useState(() => {
+  const optimisticFiles = useMemo(() => {
     type FileItem = (typeof allFiles)[0] & { children: FileItem[] };
 
     const buildTree = (
@@ -91,7 +93,7 @@ export function Files({
     };
 
     return buildTree(allFiles);
-  });
+  }, [allFiles]);
 
   const { execute: executeUpdatePositions } = useAction(
     updateFileTreePositionsAction,
@@ -122,7 +124,7 @@ export function Files({
     }
 
     const newFiles = arrayMove(optimisticFiles, activeIndex, overIndex);
-    setOptimisticFiles(newFiles);
+    // setOptimisticFiles(newFiles);
 
     // Update backend
     const items = newFiles.map((file, index) => ({

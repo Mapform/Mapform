@@ -12,8 +12,8 @@ export const generateEmbeddings = inngest.createFunction(
     // Create input text for each row
     const inputs = rows.map((row) => {
       const name = row.name || "";
-      const description = row.description?.content
-        ? JSON.stringify(row.description.content)
+      const description = row.description
+        ? JSON.stringify(row.description)
         : "";
       return `${name} ${description}`.trim();
     });
@@ -27,6 +27,8 @@ export const generateEmbeddings = inngest.createFunction(
     if (!response.data || response.data.length === 0) {
       throw new Error("No embeddings generated");
     }
+
+    console.log(1111, response.data);
 
     // Update each row with its corresponding embedding
     const updatePromises = response.data.map((embeddingData, index) => {
