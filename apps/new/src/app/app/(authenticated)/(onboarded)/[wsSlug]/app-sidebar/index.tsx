@@ -37,6 +37,7 @@ import {
   CirclePlusIcon,
   FolderIcon,
   FolderOpenIcon,
+  EarthIcon,
 } from "lucide-react";
 import {
   Collapsible,
@@ -61,6 +62,8 @@ import { useState } from "react";
 import { Files } from "./files";
 import { createProjectAction } from "~/data/projects/create-project";
 import { useAction } from "next-safe-action/hooks";
+import { toast } from "@mapform/ui/components/toaster";
+import { createFolderAction } from "~/data/folders/create-folder";
 
 export function AppSidebar() {
   const { user } = useAuth();
@@ -76,11 +79,23 @@ export function AppSidebar() {
 
   const { execute: executeCreateProject, isPending: isCreateProjectPending } =
     useAction(createProjectAction, {
-      onSuccess: () => {
-        console.log("Project created");
+      onError: ({ error }) => {
+        toast({
+          title: "Uh oh! Something went wrong.",
+          description:
+            error.serverError ?? "There was an error creating the project.",
+        });
       },
-      onError: (error) => {
-        console.error(error);
+    });
+
+  const { execute: executeCreateFolder, isPending: isCreateFolderPending } =
+    useAction(createFolderAction, {
+      onError: ({ error }) => {
+        toast({
+          title: "Uh oh! Something went wrong.",
+          description:
+            error.serverError ?? "There was an error creating the folder.",
+        });
       },
     });
 
@@ -124,6 +139,12 @@ export function AppSidebar() {
         title: project.name,
         icon: project.icon,
         url: `/app/${workspaceSlug}/${project.id}`,
+      })),
+      folders: teamspace.folders.map((folder) => ({
+        id: folder.id,
+        title: folder.name,
+        icon: folder.icon,
+        url: `/app/${workspaceSlug}/${folder.id}`,
       })),
     })),
   };
@@ -222,9 +243,16 @@ export function AppSidebar() {
                   }}
                   disabled={isCreateProjectPending}
                 >
-                  <BoxIcon /> New project
+                  <EarthIcon /> New project
                 </DropdownMenuItem>
-                <DropdownMenuItem>
+                <DropdownMenuItem
+                  onSelect={() => {
+                    executeCreateFolder({
+                      teamspaceId: space.id,
+                    });
+                  }}
+                  disabled={isCreateFolderPending}
+                >
                   <FolderOpenIcon /> New folder
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -259,7 +287,7 @@ export function AppSidebar() {
                     setIsProjectGuideOpen(true);
                   }}
                 >
-                  <BoxIcon className="size-4" />
+                  <EarthIcon className="size-4" />
                   Projects Overview
                 </DropdownMenuItem>
               </DropdownMenuContent>

@@ -4,7 +4,7 @@ import {
   SidebarMenuItem,
 } from "@mapform/ui/components/sidebar";
 import Link from "next/link";
-import { BoxIcon } from "lucide-react";
+import { EarthIcon, FolderOpenIcon } from "lucide-react";
 import { usePathname } from "next/navigation";
 
 export function Files({
@@ -17,18 +17,47 @@ export function Files({
       url: string;
       icon: string | null;
     }[];
+    folders: {
+      id: string;
+      title: string | null;
+      url: string;
+      icon: string | null;
+    }[];
   };
 }) {
   const pathname = usePathname();
 
+  const files = [
+    ...space.projects.map((project) => ({
+      ...project,
+      type: "project",
+    })),
+    ...space.folders.map((folder) => ({
+      ...folder,
+      type: "folder",
+    })),
+  ];
+
   return (
     <SidebarMenu>
-      {space.projects.map((project) => (
-        <SidebarMenuItem key={project.id}>
-          <SidebarMenuButton asChild isActive={pathname === project.url}>
-            <Link href={project.url}>
-              {project.icon ? <span>{project.icon}</span> : <BoxIcon />}
-              <span>{project.title}</span>
+      {files.map((file) => (
+        <SidebarMenuItem key={file.id}>
+          <SidebarMenuButton asChild isActive={pathname === file.url}>
+            <Link href={file.url}>
+              {file.icon ? (
+                <span>{file.icon}</span>
+              ) : file.type === "project" ? (
+                <EarthIcon />
+              ) : (
+                <FolderOpenIcon />
+              )}
+              <span>
+                {file.title
+                  ? file.title
+                  : file.type === "project"
+                    ? "New project"
+                    : "New folder"}
+              </span>
             </Link>
           </SidebarMenuButton>
         </SidebarMenuItem>

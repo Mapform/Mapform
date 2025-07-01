@@ -12,7 +12,7 @@ export const folders = pgTable(
   "folder",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    name: varchar("name", { length: 256 }).notNull(),
+    name: varchar("name", { length: 256 }),
     icon: varchar("icon", { length: 256 }),
 
     parentId: uuid("parent_id"),

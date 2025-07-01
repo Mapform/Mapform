@@ -1,10 +1,9 @@
 "server-only";
 
 import { db, sql } from "@mapform/db";
-import { mapViews, tableViews, projects, teamspaces } from "@mapform/db/schema";
+import { mapViews, tableViews, projects } from "@mapform/db/schema";
 import { createProjectSchema } from "./schema";
 import type { UserAuthClient } from "../../../lib/types";
-import { eq } from "@mapform/db/utils";
 import { views } from "@mapform/db/schema/views/schema";
 
 export const createProject = (authClient: UserAuthClient) =>
@@ -17,21 +16,6 @@ export const createProject = (authClient: UserAuthClient) =>
       }) => {
         if (!userAccess.teamspace.checkAccessById(teamspaceId)) {
           throw new Error("Unauthorized");
-        }
-
-        const teamspace = await db.query.teamspaces.findFirst({
-          where: eq(teamspaces.id, teamspaceId),
-          with: {
-            workspace: {
-              with: {
-                plan: true,
-              },
-            },
-          },
-        });
-
-        if (!teamspace) {
-          throw new Error("Teamspace not found");
         }
 
         return db.transaction(async (tx) => {

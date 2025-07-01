@@ -40,6 +40,8 @@ import { searchRows } from "@mapform/backend/data/rows/search-rows";
 import { searchPlaces } from "@mapform/backend/data/geoapify/search";
 import { updateRow } from "@mapform/backend/data/rows/update-row";
 import { updateProject } from "@mapform/backend/data/projects/update-project";
+import { createFolder } from "@mapform/backend/data/folders/create-folder";
+import { updateFolder } from "@mapform/backend/data/folders/update-folder";
 
 const ignoredWorkspaceSlugs = ["onboarding"];
 const ignoredTeamspaceSlugs = ["settings"];
@@ -106,6 +108,10 @@ const createUserAuthClient = () => {
     createColumn: createColumn(extendedClient),
     deleteColumn: deleteColumn(extendedClient),
     updateColumn: updateColumn(extendedClient),
+
+    // Folders
+    createFolder: createFolder(extendedClient),
+    updateFolder: updateFolder(extendedClient),
 
     // Images
     uploadImage: uploadImage(extendedClient),
