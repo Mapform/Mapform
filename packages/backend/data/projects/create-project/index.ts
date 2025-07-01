@@ -1,6 +1,6 @@
 "server-only";
 
-import { db } from "@mapform/db";
+import { db, sql } from "@mapform/db";
 import { mapViews, tableViews, projects, teamspaces } from "@mapform/db/schema";
 import { createProjectSchema } from "./schema";
 import type { UserAuthClient } from "../../../lib/types";
@@ -49,6 +49,8 @@ export const createProject = (authClient: UserAuthClient) =>
             throw new Error("Failed to create project");
           }
 
+          console.log("Project created", project);
+
           const [view] = await tx
             .insert(views)
             .values({
@@ -68,6 +70,10 @@ export const createProject = (authClient: UserAuthClient) =>
           } else if (rest.viewType === "map") {
             await tx.insert(mapViews).values({
               viewId: view.id,
+              center: sql.raw(`ST_GeomFromGeoJSON('{
+                "type": "Point",
+                "coordinates": ${JSON.stringify([0, 0])}
+              }')`),
             });
           }
 

@@ -1,13 +1,11 @@
 "use client";
 
-import { Button } from "@mapform/ui/components/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@mapform/ui/components/dropdown-menu";
-import { useRouter } from "next/navigation";
 import { useWorkspace } from "~/app/app/(authenticated)/(onboarded)/[wsSlug]/workspace-context";
 import { createProjectAction } from "~/data/projects/create-project";
 import { useAction } from "next-safe-action/hooks";

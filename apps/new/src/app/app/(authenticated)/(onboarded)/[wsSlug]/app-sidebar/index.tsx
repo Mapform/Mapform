@@ -35,6 +35,8 @@ import {
   BookMarkedIcon,
   HelpCircleIcon,
   CirclePlusIcon,
+  FolderIcon,
+  FolderOpenIcon,
 } from "lucide-react";
 import {
   Collapsible,
@@ -57,6 +59,8 @@ import {
 } from "~/components/tours/welcome-tour";
 import { useState } from "react";
 import { Files } from "./files";
+import { createProjectAction } from "~/data/projects/create-project";
+import { useAction } from "next-safe-action/hooks";
 
 export function AppSidebar() {
   const { user } = useAuth();
@@ -69,6 +73,16 @@ export function AppSidebar() {
   } = useWorkspace();
   const [isProjectGuideOpen, setIsProjectGuideOpen] = useState(false);
   const [isWelcomeGuideOpen, setIsWelcomeGuideOpen] = useState(false);
+
+  const { execute: executeCreateProject, isPending: isCreateProjectPending } =
+    useAction(createProjectAction, {
+      onSuccess: () => {
+        console.log("Project created");
+      },
+      onError: (error) => {
+        console.error(error);
+      },
+    });
 
   if (!user) {
     return null;
@@ -191,9 +205,30 @@ export function AppSidebar() {
         {data.spaces.map((space) => (
           <SidebarGroup key={space.title}>
             <SidebarGroupLabel>{space.title}</SidebarGroupLabel>
-            <SidebarGroupAction title="Add Project">
-              <PlusIcon /> <span className="sr-only">Add Project</span>
-            </SidebarGroupAction>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <SidebarGroupAction title="Add Project">
+                  <PlusIcon />
+                </SidebarGroupAction>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem
+                  onSelect={() => {
+                    console.log("Creating project");
+                    executeCreateProject({
+                      teamspaceId: space.id,
+                      viewType: "map",
+                    });
+                  }}
+                  disabled={isCreateProjectPending}
+                >
+                  <BoxIcon /> New project
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <FolderOpenIcon /> New folder
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             <Files space={space} />
           </SidebarGroup>
         ))}
