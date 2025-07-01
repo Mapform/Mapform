@@ -1,5 +1,6 @@
 import {
   SidebarMenu,
+  SidebarMenuBadge,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarMenuSub,
@@ -182,6 +183,9 @@ export function Files({
                       </span>
                     </div>
                   </SidebarMenuButton>
+                  {file.type === "folder" && (
+                    <SidebarMenuBadge>{file.children.length}</SidebarMenuBadge>
+                  )}
                 </SidebarMenuItem>
                 {file.type === "folder" && file.children.length > 0 && (
                   <SidebarMenuSub>
@@ -190,6 +194,11 @@ export function Files({
                         <SidebarMenuSubButton>
                           {child.title}
                         </SidebarMenuSubButton>
+                        {file.type === "folder" && (
+                          <SidebarMenuBadge>
+                            {file.children.length}
+                          </SidebarMenuBadge>
+                        )}
                       </SidebarMenuSubItem>
                     ))}
                   </SidebarMenuSub>
