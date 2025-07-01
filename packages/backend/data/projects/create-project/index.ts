@@ -1,10 +1,11 @@
 "server-only";
 
 import { db, sql } from "@mapform/db";
-import { mapViews, tableViews, projects } from "@mapform/db/schema";
+import { mapViews, tableViews, projects, folders } from "@mapform/db/schema";
 import { createProjectSchema } from "./schema";
 import type { UserAuthClient } from "../../../lib/types";
 import { views } from "@mapform/db/schema/views/schema";
+import { and, count, eq, isNull } from "@mapform/db/utils";
 
 export const createProject = (authClient: UserAuthClient) =>
   authClient
@@ -17,6 +18,22 @@ export const createProject = (authClient: UserAuthClient) =>
         if (!userAccess.teamspace.checkAccessById(teamspaceId)) {
           throw new Error("Unauthorized");
         }
+
+        const [[folderCount], [projectCount]] = await Promise.all([
+          db
+            .select({ count: count() })
+            .from(folders)
+            .where(
+              and(
+                eq(folders.teamspaceId, teamspaceId),
+                isNull(folders.parentId),
+              ),
+            ),
+          db
+            .select({ count: count() })
+            .from(projects)
+            .where(eq(projects.teamspaceId, teamspaceId)),
+        ]);
 
         return db.transaction(async (tx) => {
           /**
@@ -33,13 +50,13 @@ export const createProject = (authClient: UserAuthClient) =>
             throw new Error("Failed to create project");
           }
 
-          console.log("Project created", project);
-
           const [view] = await tx
             .insert(views)
             .values({
               projectId: project.id,
               type: rest.viewType,
+              position:
+                (projectCount?.count ?? 0) + (folderCount?.count ?? 0) + 1,
             })
             .returning();
 
