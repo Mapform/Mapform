@@ -36,6 +36,8 @@ export const createProject = (authClient: UserAuthClient) =>
             ),
           );
 
+        console.log(1111, fileTreeCount);
+
         return db.transaction(async (tx) => {
           const [fileTreePosition] = await tx
             .insert(fileTreePositions)

@@ -36,6 +36,13 @@
       "when": 1751341440280,
       "tag": "0004_lyrical_iceman",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1751374678597,
+      "tag": "0005_woozy_sprite",
+      "breakpoints": true
     }
   ]
 }

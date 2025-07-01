@@ -45,8 +45,5 @@ export const fileTreePositions = pgTable(
 
     // Ensure unique position within each folder/root context
     unique().on(table.teamspaceId, table.parentId, table.position),
-
-    // Ensure each item can only have one position record
-    unique().on(table.teamspaceId, table.itemType),
   ],
 );
