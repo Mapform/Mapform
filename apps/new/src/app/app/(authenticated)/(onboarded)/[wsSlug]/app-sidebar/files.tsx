@@ -24,7 +24,7 @@ import {
 import { useAction } from "next-safe-action/hooks";
 import { updateFileTreePositionsAction } from "~/data/file-tree-positions/update-positions";
 import { DragItem, DragHandle } from "~/components/draggable";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 export function Files({
   space,
@@ -57,8 +57,9 @@ export function Files({
 }) {
   const router = useRouter();
   const pathname = usePathname();
-  const [optimisticFiles, setOptimisticFiles] = useState(() => {
-    const files = [
+
+  const allFiles = useMemo(() => {
+    return [
       ...space.projects.map((project) => ({
         ...project,
         type: "project" as const,
@@ -67,8 +68,28 @@ export function Files({
         ...folder,
         type: "folder" as const,
       })),
-    ].sort((a, b) => a.fileTreePosition.position - b.fileTreePosition.position);
-    return files;
+    ];
+  }, [space.projects, space.folders]);
+
+  const [optimisticFiles, setOptimisticFiles] = useState(() => {
+    type FileItem = (typeof allFiles)[0] & { children: FileItem[] };
+
+    const buildTree = (
+      items: typeof allFiles,
+      parentId: string | null = null,
+    ): FileItem[] => {
+      return items
+        .filter((item) => item.fileTreePosition.parentId === parentId)
+        .sort(
+          (a, b) => a.fileTreePosition.position - b.fileTreePosition.position,
+        )
+        .map((item) => ({
+          ...item,
+          children: buildTree(items, item.id),
+        }));
+    };
+
+    return buildTree(allFiles);
   });
 
   const { execute: executeUpdatePositions } = useAction(
@@ -162,16 +183,15 @@ export function Files({
                     </div>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
-                {file.type === "folder" && (
+                {file.type === "folder" && file.children.length > 0 && (
                   <SidebarMenuSub>
-                    <SidebarMenuSubItem>
-                      <SidebarMenuSubButton>Test</SidebarMenuSubButton>
-                      <SidebarMenuSub>
-                        <SidebarMenuSubItem>
-                          <SidebarMenuSubButton>Test</SidebarMenuSubButton>
-                        </SidebarMenuSubItem>
-                      </SidebarMenuSub>
-                    </SidebarMenuSubItem>
+                    {file.children.map((child) => (
+                      <SidebarMenuSubItem key={child.id}>
+                        <SidebarMenuSubButton>
+                          {child.title}
+                        </SidebarMenuSubButton>
+                      </SidebarMenuSubItem>
+                    ))}
                   </SidebarMenuSub>
                 )}
               </DragHandle>
