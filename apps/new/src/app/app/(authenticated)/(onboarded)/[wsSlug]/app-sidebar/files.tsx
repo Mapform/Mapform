@@ -2,10 +2,12 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
 } from "@mapform/ui/components/sidebar";
-import Link from "next/link";
-import { EarthIcon, FolderOpenIcon, GripVerticalIcon } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { EarthIcon, FolderOpenIcon, PlusIcon } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
 import {
   DndContext,
   PointerSensor,
@@ -21,10 +23,7 @@ import {
 } from "@dnd-kit/sortable";
 import { useAction } from "next-safe-action/hooks";
 import { updateFileTreePositionsAction } from "~/data/file-tree-positions/update-positions";
-import {
-  DraggableSidebarItem,
-  SidebarDragHandle,
-} from "~/components/draggable";
+import { DragItem, DragHandle } from "~/components/draggable";
 import { useState } from "react";
 
 export function Files({
@@ -56,6 +55,7 @@ export function Files({
     }[];
   };
 }) {
+  const router = useRouter();
   const pathname = usePathname();
   const [optimisticFiles, setOptimisticFiles] = useState(() => {
     const files = [
@@ -131,31 +131,51 @@ export function Files({
       >
         <SidebarMenu>
           {optimisticFiles.map((file) => (
-            <DraggableSidebarItem key={file.id} id={file.id}>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={pathname === file.url}>
-                  <Link href={file.url}>
-                    {file.icon ? (
-                      <span>{file.icon}</span>
-                    ) : file.type === "project" ? (
-                      <EarthIcon />
-                    ) : (
-                      <FolderOpenIcon />
-                    )}
-                    <span>
-                      {file.title
-                        ? file.title
-                        : file.type === "project"
-                          ? "New project"
-                          : "New folder"}
-                    </span>
-                    <SidebarDragHandle id={file.id}>
-                      <GripVerticalIcon className="ml-auto h-4 w-4" />
-                    </SidebarDragHandle>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </DraggableSidebarItem>
+            <DragItem key={file.id} id={file.id}>
+              <DragHandle id={file.id}>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    className="cursor-pointer"
+                    isActive={pathname === file.url}
+                    onClick={() => {
+                      if (file.type === "project") {
+                        router.push(file.url);
+                      }
+                    }}
+                  >
+                    <div>
+                      {file.icon ? (
+                        <span>{file.icon}</span>
+                      ) : file.type === "project" ? (
+                        <EarthIcon />
+                      ) : (
+                        <FolderOpenIcon />
+                      )}
+                      <span>
+                        {file.title
+                          ? file.title
+                          : file.type === "project"
+                            ? "New project"
+                            : "New folder"}
+                      </span>
+                    </div>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                {file.type === "folder" && (
+                  <SidebarMenuSub>
+                    <SidebarMenuSubItem>
+                      <SidebarMenuSubButton>Test</SidebarMenuSubButton>
+                      <SidebarMenuSub>
+                        <SidebarMenuSubItem>
+                          <SidebarMenuSubButton>Test</SidebarMenuSubButton>
+                        </SidebarMenuSubItem>
+                      </SidebarMenuSub>
+                    </SidebarMenuSubItem>
+                  </SidebarMenuSub>
+                )}
+              </DragHandle>
+            </DragItem>
           ))}
         </SidebarMenu>
       </SortableContext>
