@@ -1,7 +1,12 @@
 "server-only";
 
 import { db, sql } from "@mapform/db";
-import { mapViews, tableViews, projects, folders } from "@mapform/db/schema";
+import {
+  mapViews,
+  tableViews,
+  projects,
+  fileTreePositions,
+} from "@mapform/db/schema";
 import { createProjectSchema } from "./schema";
 import type { UserAuthClient } from "../../../lib/types";
 import { views } from "@mapform/db/schema/views/schema";
@@ -12,32 +17,40 @@ export const createProject = (authClient: UserAuthClient) =>
     .schema(createProjectSchema)
     .action(
       async ({
-        parsedInput: { teamspaceId, ...rest },
+        parsedInput: { teamspaceId, parentId, ...rest },
         ctx: { userAccess },
       }) => {
         if (!userAccess.teamspace.checkAccessById(teamspaceId)) {
           throw new Error("Unauthorized");
         }
 
-        const [[folderCount], [projectCount]] = await Promise.all([
-          db
-            .select({ count: count() })
-            .from(folders)
-            .where(
-              and(
-                eq(folders.teamspaceId, teamspaceId),
-                ...(rest.folderId
-                  ? [eq(folders.id, rest.folderId)]
-                  : [isNull(folders.parentId)]),
-              ),
+        const [fileTreeCount] = await db
+          .select({ count: count() })
+          .from(fileTreePositions)
+          .where(
+            and(
+              eq(fileTreePositions.teamspaceId, teamspaceId),
+              ...(parentId
+                ? [eq(fileTreePositions.id, parentId)]
+                : [isNull(fileTreePositions.parentId)]),
             ),
-          db
-            .select({ count: count() })
-            .from(projects)
-            .where(eq(projects.teamspaceId, teamspaceId)),
-        ]);
+          );
 
         return db.transaction(async (tx) => {
+          const [fileTreePosition] = await tx
+            .insert(fileTreePositions)
+            .values({
+              teamspaceId,
+              parentId,
+              itemType: "project",
+              position: fileTreeCount?.count ?? 0,
+            })
+            .returning();
+
+          if (!fileTreePosition) {
+            throw new Error("Failed to create file tree position");
+          }
+
           /**
            * Create project
            */
@@ -45,9 +58,7 @@ export const createProject = (authClient: UserAuthClient) =>
             .insert(projects)
             .values({
               teamspaceId,
-              folderId: rest.folderId,
-              position:
-                (projectCount?.count ?? 0) + (folderCount?.count ?? 0) + 1,
+              fileTreePositionId: fileTreePosition.id,
             })
             .returning();
 

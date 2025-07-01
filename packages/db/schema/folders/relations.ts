@@ -9,5 +9,8 @@ export const foldersRelations = relations(folders, ({ one }) => ({
     references: [teamspaces.id],
   }),
 
-  fileTreePosition: one(fileTreePositions),
+  fileTreePosition: one(fileTreePositions, {
+    fields: [folders.fileTreePositionId],
+    references: [fileTreePositions.id],
+  }),
 }));

@@ -16,14 +16,24 @@ export function Files({
       title: string | null;
       url: string;
       icon: string | null;
-      position: number;
+      fileTreePosition: {
+        position: number;
+        parentId: string | null;
+        itemType: "project";
+        id: string;
+      };
     }[];
     folders: {
       id: string;
       title: string | null;
       url: string;
       icon: string | null;
-      position: number;
+      fileTreePosition: {
+        position: number;
+        parentId: string | null;
+        itemType: "folder";
+        id: string;
+      };
     }[];
   };
 }) {
@@ -38,7 +48,7 @@ export function Files({
       ...folder,
       type: "folder",
     })),
-  ].sort((a, b) => a.position - b.position);
+  ].sort((a, b) => a.fileTreePosition.position - b.fileTreePosition.position);
 
   return (
     <SidebarMenu>

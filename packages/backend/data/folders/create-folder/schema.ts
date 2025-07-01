@@ -1,9 +1,12 @@
 import { z } from "zod";
-import { insertFolderSchema } from "@mapform/db/schema";
+import {
+  insertFolderSchema,
+  selectFileTreePositionSchema,
+} from "@mapform/db/schema";
 
 export const createFolderSchema = z.object({
   teamspaceId: insertFolderSchema.shape.teamspaceId,
-  folderId: insertFolderSchema.shape.parentId,
+  parentId: selectFileTreePositionSchema.shape.parentId.optional(),
 });
 
 export type CreateFolderSchema = z.infer<typeof createFolderSchema>;

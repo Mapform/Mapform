@@ -14,5 +14,8 @@ export const projectsRelations = relations(projects, ({ one, many }) => ({
   rows: many(rows),
   columns: many(columns),
   views: many(views),
-  fileTreePosition: one(fileTreePositions),
+  fileTreePosition: one(fileTreePositions, {
+    fields: [projects.fileTreePositionId],
+    references: [fileTreePositions.id],
+  }),
 }));
