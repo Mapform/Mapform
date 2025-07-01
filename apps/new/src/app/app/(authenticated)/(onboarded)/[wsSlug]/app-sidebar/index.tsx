@@ -139,12 +139,14 @@ export function AppSidebar() {
         title: project.name,
         icon: project.icon,
         url: `/app/${workspaceSlug}/${project.id}`,
+        position: project.position,
       })),
       folders: teamspace.folders.map((folder) => ({
         id: folder.id,
         title: folder.name,
         icon: folder.icon,
         url: `/app/${workspaceSlug}/${folder.id}`,
+        position: folder.position,
       })),
     })),
   };

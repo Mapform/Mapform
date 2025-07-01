@@ -16,12 +16,14 @@ export function Files({
       title: string | null;
       url: string;
       icon: string | null;
+      position: number;
     }[];
     folders: {
       id: string;
       title: string | null;
       url: string;
       icon: string | null;
+      position: number;
     }[];
   };
 }) {
@@ -36,7 +38,7 @@ export function Files({
       ...folder,
       type: "folder",
     })),
-  ];
+  ].sort((a, b) => a.position - b.position);
 
   return (
     <SidebarMenu>

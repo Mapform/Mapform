@@ -26,7 +26,9 @@ export const createProject = (authClient: UserAuthClient) =>
             .where(
               and(
                 eq(folders.teamspaceId, teamspaceId),
-                isNull(folders.parentId),
+                ...(rest.folderId
+                  ? [eq(folders.id, rest.folderId)]
+                  : [isNull(folders.parentId)]),
               ),
             ),
           db
@@ -43,6 +45,9 @@ export const createProject = (authClient: UserAuthClient) =>
             .insert(projects)
             .values({
               teamspaceId,
+              folderId: rest.folderId,
+              position:
+                (projectCount?.count ?? 0) + (folderCount?.count ?? 0) + 1,
             })
             .returning();
 
@@ -55,8 +60,6 @@ export const createProject = (authClient: UserAuthClient) =>
             .values({
               projectId: project.id,
               type: rest.viewType,
-              position:
-                (projectCount?.count ?? 0) + (folderCount?.count ?? 0) + 1,
             })
             .returning();
 

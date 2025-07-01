@@ -1,13 +1,6 @@
-import {
-  timestamp,
-  pgTable,
-  varchar,
-  uuid,
-  pgEnum,
-  smallint,
-} from "drizzle-orm/pg-core";
+import { timestamp, pgTable, varchar, uuid, pgEnum } from "drizzle-orm/pg-core";
 import { teamspaces } from "../teamspaces/schema";
-import { folders } from "../folders/schema";
+import { fileTreePositions } from "../file-tree-positions/schema";
 
 export const visibilityEnum = pgEnum("visibility", ["public", "closed"]);
 
@@ -17,14 +10,11 @@ export const projects = pgTable("project", {
   description: varchar("description", { length: 512 }),
   icon: varchar("icon", { length: 256 }),
 
-  // For sidebar ordering
-  position: smallint("position").notNull().default(0),
-
   visibility: visibilityEnum("visibility").default("closed").notNull(),
 
-  folderId: uuid("folder_id").references(() => folders.id, {
-    onDelete: "cascade",
-  }),
+  fileTreePositionId: uuid("file_tree_position_id")
+    .notNull()
+    .references(() => fileTreePositions.id, { onDelete: "cascade" }),
 
   teamspaceId: uuid("teamspace_id")
     .notNull()
