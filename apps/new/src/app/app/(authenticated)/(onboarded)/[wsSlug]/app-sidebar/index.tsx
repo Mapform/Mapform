@@ -140,10 +140,9 @@ export function AppSidebar() {
         icon: project.icon,
         url: `/app/${workspaceSlug}/${project.id}`,
         fileTreePosition: {
-          position: project.fileTreePosition?.position,
-          parentId: project.fileTreePosition?.parentId,
-          itemType: project.fileTreePosition?.itemType,
-          id: project.fileTreePosition?.id,
+          position: project.fileTreePosition.position,
+          parentId: project.fileTreePosition.parentId,
+          id: project.fileTreePosition.id,
         },
       })),
       folders: teamspace.folders.map((folder) => ({
@@ -152,10 +151,9 @@ export function AppSidebar() {
         icon: folder.icon,
         url: `/app/${workspaceSlug}/${folder.id}`,
         fileTreePosition: {
-          position: folder.fileTreePosition?.position,
-          parentId: folder.fileTreePosition?.parentId,
-          itemType: folder.fileTreePosition?.itemType,
-          id: folder.fileTreePosition?.id,
+          position: folder.fileTreePosition.position,
+          parentId: folder.fileTreePosition.parentId,
+          id: folder.fileTreePosition.id,
         },
       })),
     })),
