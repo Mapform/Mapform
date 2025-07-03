@@ -18,6 +18,7 @@ import {
   SortableContext,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
+import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
 import { DragItem, DragHandle } from "~/components/draggable";
 import { useWorkspace } from "../workspace-context";
 import type { WorkspaceDirectory } from "@mapform/backend/data/workspaces/get-workspace-directory";
@@ -94,6 +95,7 @@ export function Files({
       collisionDetection={closestCenter}
       onDragEnd={handleDragEnd}
       sensors={sensors}
+      modifiers={[restrictToVerticalAxis]}
     >
       <SortableContext
         items={teamspace.projects.map((project) => project.id)}
