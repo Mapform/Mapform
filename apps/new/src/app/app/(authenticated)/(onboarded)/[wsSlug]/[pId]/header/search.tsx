@@ -61,7 +61,6 @@ export function Search() {
   const handleChat = async () => {
     const response = await fetch(`/api/chat?message=${searchQuery}`);
     const data = await response.json();
-    console.log(4444, data);
   };
 
   return (

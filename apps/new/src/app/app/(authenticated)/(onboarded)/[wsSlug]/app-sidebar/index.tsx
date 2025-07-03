@@ -49,7 +49,6 @@ import { usePathname } from "next/navigation";
 import { signOutAction } from "~/data/auth/sign-out";
 import { useAuth } from "~/app/root-providers";
 import { useWorkspace } from "../workspace-context";
-import { CreateProjectDropdown } from "~/components/create-project-dialog";
 import {
   ProjectTour,
   ProjectTourContent,
@@ -63,41 +62,24 @@ import { Files } from "./files";
 import { createProjectAction } from "~/data/projects/create-project";
 import { useAction } from "next-safe-action/hooks";
 import { toast } from "@mapform/ui/components/toaster";
-import { createFolderAction } from "~/data/folders/create-folder";
 
 export function AppSidebar() {
   const { user } = useAuth();
   const pathname = usePathname();
-  const {
-    workspaceMemberships,
-    workspaceDirectory,
-    workspaceSlug,
-    optimisticWorkspace,
-  } = useWorkspace();
+  const { workspaceMemberships, workspaceDirectory, workspaceSlug } =
+    useWorkspace();
   const [isProjectGuideOpen, setIsProjectGuideOpen] = useState(false);
   const [isWelcomeGuideOpen, setIsWelcomeGuideOpen] = useState(false);
 
-  const { execute: executeCreateProject, isPending: isCreateProjectPending } =
-    useAction(createProjectAction, {
-      onError: ({ error }) => {
-        toast({
-          title: "Uh oh! Something went wrong.",
-          description:
-            error.serverError ?? "There was an error creating the project.",
-        });
-      },
-    });
-
-  const { execute: executeCreateFolder, isPending: isCreateFolderPending } =
-    useAction(createFolderAction, {
-      onError: ({ error }) => {
-        toast({
-          title: "Uh oh! Something went wrong.",
-          description:
-            error.serverError ?? "There was an error creating the folder.",
-        });
-      },
-    });
+  const { execute, isPending } = useAction(createProjectAction, {
+    onError: ({ error }) => {
+      toast({
+        title: "Uh oh! Something went wrong.",
+        description:
+          error.serverError ?? "There was an error creating the project.",
+      });
+    },
+  });
 
   if (!user) {
     return null;
@@ -130,33 +112,6 @@ export function AppSidebar() {
         isActive: pathname === `/app/${workspaceSlug}/settings`,
       },
     ],
-    spaces: workspaceDirectory.teamspaces.map((teamspace) => ({
-      id: teamspace.id,
-      slug: teamspace.slug,
-      title: teamspace.name,
-      projects: teamspace.projects.map((project) => ({
-        id: project.id,
-        title: project.name,
-        icon: project.icon,
-        url: `/app/${workspaceSlug}/${project.id}`,
-        fileTreePosition: {
-          position: project.fileTreePosition.position,
-          parentId: project.fileTreePosition.parentId,
-          id: project.fileTreePosition.id,
-        },
-      })),
-      folders: teamspace.folders.map((folder) => ({
-        id: folder.id,
-        title: folder.name,
-        icon: folder.icon,
-        url: `/app/${workspaceSlug}/${folder.id}`,
-        fileTreePosition: {
-          position: folder.fileTreePosition.position,
-          parentId: folder.fileTreePosition.parentId,
-          id: folder.fileTreePosition.id,
-        },
-      })),
-    })),
   };
 
   return (
@@ -175,7 +130,7 @@ export function AppSidebar() {
                   </div>
                   <div className="grid flex-1 text-left text-sm leading-tight">
                     <span className="truncate font-semibold">
-                      {optimisticWorkspace?.name}
+                      {workspaceDirectory.name}
                     </span>
                     <span className="truncate text-xs">Basic</span>
                   </div>
@@ -233,10 +188,22 @@ export function AppSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
-        {data.spaces.map((space) => (
-          <SidebarGroup key={space.title}>
-            <SidebarGroupLabel>{space.title}</SidebarGroupLabel>
-            <DropdownMenu>
+        {workspaceDirectory.teamspaces.map((teamspace) => (
+          <SidebarGroup key={teamspace.id}>
+            <SidebarGroupLabel>{teamspace.name}</SidebarGroupLabel>
+            <SidebarGroupAction
+              title="Add Project"
+              disabled={isPending}
+              onClick={() => {
+                execute({
+                  teamspaceId: teamspace.id,
+                  viewType: "map",
+                });
+              }}
+            >
+              <PlusIcon />
+            </SidebarGroupAction>
+            {/* <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <SidebarGroupAction title="Add Project">
                   <PlusIcon />
@@ -266,8 +233,8 @@ export function AppSidebar() {
                   <FolderOpenIcon /> New folder
                 </DropdownMenuItem>
               </DropdownMenuContent>
-            </DropdownMenu>
-            <Files space={space} />
+            </DropdownMenu> */}
+            <Files teamspace={teamspace} />
           </SidebarGroup>
         ))}
       </SidebarContent>

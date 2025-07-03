@@ -1,21 +1,21 @@
 "use client";
 
-import React, { createContext, useContext, useOptimistic } from "react";
+import React, {
+  createContext,
+  useContext,
+  useOptimistic,
+  startTransition,
+} from "react";
 import type { GetUserWorkspaceMemberships } from "@mapform/backend/data/workspace-memberships/get-user-workspace-memberships";
 import type { WorkspaceDirectory } from "@mapform/backend/data/workspaces/get-workspace-directory";
 import { SidebarProvider } from "@mapform/ui/components/sidebar";
 
 export interface WorkspaceContextInterface {
   workspaceSlug: string;
-  workspaceDirectory: NonNullable<WorkspaceDirectory["data"]>;
   workspaceMemberships: NonNullable<GetUserWorkspaceMemberships["data"]>;
-  optimisticWorkspace:
-    | NonNullable<GetUserWorkspaceMemberships["data"]>[number]["workspace"]
-    | undefined;
-  updateOptimisticWorkspace: (
-    optimisticValue: Partial<
-      NonNullable<GetUserWorkspaceMemberships["data"]>[number]
-    >,
+  workspaceDirectory: NonNullable<WorkspaceDirectory["data"]>;
+  updateWorkspaceDirectory: (
+    optimisticValue: Partial<NonNullable<WorkspaceDirectory["data"]>>,
   ) => void;
 }
 
@@ -32,7 +32,7 @@ export const useWorkspace = () => useContext(WorkspaceContext);
 export function WorkspaceProvider({
   children,
   workspaceSlug,
-  workspaceDirectory,
+  workspaceDirectory: initialWorkspaceDirectory,
   workspaceMemberships,
   defaultLeftOpen,
 }: {
@@ -48,12 +48,12 @@ export function WorkspaceProvider({
     throw new Error("Current workspace not found");
   }
 
-  const [optimisticWorkspace, updateOptimisticWorkspace] = useOptimistic<
-    (typeof currentWorkspace)["workspace"],
-    Partial<typeof currentWorkspace>
-  >(currentWorkspace.workspace, (workspace, optimisticValue) => {
+  const [workspaceDirectory, _updateWorkspaceDirectory] = useOptimistic<
+    typeof initialWorkspaceDirectory,
+    Partial<typeof initialWorkspaceDirectory>
+  >(initialWorkspaceDirectory, (workspaceDirectory, optimisticValue) => {
     return {
-      ...workspace,
+      ...workspaceDirectory,
       ...optimisticValue,
     };
   });
@@ -61,11 +61,14 @@ export function WorkspaceProvider({
   return (
     <WorkspaceContext.Provider
       value={{
-        workspaceDirectory,
         workspaceMemberships,
         workspaceSlug,
-        optimisticWorkspace,
-        updateOptimisticWorkspace,
+        workspaceDirectory,
+        updateWorkspaceDirectory: (optimisticValue) => {
+          startTransition(() => {
+            _updateWorkspaceDirectory(optimisticValue);
+          });
+        },
       }}
     >
       <SidebarProvider defaultOpen={defaultLeftOpen}>

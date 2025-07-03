@@ -1,1 +1,0 @@
-ALTER TABLE "file_tree_position" DROP CONSTRAINT "file_tree_position_teamspace_id_item_type_unique";

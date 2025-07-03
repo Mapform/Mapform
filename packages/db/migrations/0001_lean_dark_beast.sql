@@ -59,9 +59,8 @@ CREATE TABLE IF NOT EXISTS "project" (
 	"name" varchar(256),
 	"description" varchar(512),
 	"icon" varchar(256),
-	"position" smallint DEFAULT 0 NOT NULL,
+	"position" integer NOT NULL,
 	"visibility" "visibility" DEFAULT 'closed' NOT NULL,
-	"folder_id" uuid,
 	"teamspace_id" uuid NOT NULL,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
@@ -117,20 +116,9 @@ CREATE TABLE IF NOT EXISTS "blob" (
 	CONSTRAINT "blob_url_unique" UNIQUE("url")
 );
 --> statement-breakpoint
-CREATE TABLE IF NOT EXISTS "folder" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"name" varchar(256) NOT NULL,
-	"icon" varchar(256),
-	"parent_id" uuid,
-	"teamspace_id" uuid NOT NULL,
-	"position" smallint DEFAULT 0 NOT NULL,
-	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
-	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
-);
---> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "map_view" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"center" geometry(point) NOT NULL,
+	"center" geometry(Point, 4326) NOT NULL,
 	"view_id" uuid NOT NULL,
 	CONSTRAINT "map_view_unq" UNIQUE("view_id")
 );
@@ -219,12 +207,6 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "project" ADD CONSTRAINT "project_folder_id_folder_id_fk" FOREIGN KEY ("folder_id") REFERENCES "public"."folder"("id") ON DELETE cascade ON UPDATE no action;
-EXCEPTION
- WHEN duplicate_object THEN null;
-END $$;
---> statement-breakpoint
-DO $$ BEGIN
  ALTER TABLE "project" ADD CONSTRAINT "project_teamspace_id_teamspace_id_fk" FOREIGN KEY ("teamspace_id") REFERENCES "public"."teamspace"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
@@ -244,18 +226,6 @@ END $$;
 --> statement-breakpoint
 DO $$ BEGIN
  ALTER TABLE "plan" ADD CONSTRAINT "plan_workspace_slug_workspace_slug_fk" FOREIGN KEY ("workspace_slug") REFERENCES "public"."workspace"("slug") ON DELETE cascade ON UPDATE no action;
-EXCEPTION
- WHEN duplicate_object THEN null;
-END $$;
---> statement-breakpoint
-DO $$ BEGIN
- ALTER TABLE "folder" ADD CONSTRAINT "folder_teamspace_id_teamspace_id_fk" FOREIGN KEY ("teamspace_id") REFERENCES "public"."teamspace"("id") ON DELETE cascade ON UPDATE no action;
-EXCEPTION
- WHEN duplicate_object THEN null;
-END $$;
---> statement-breakpoint
-DO $$ BEGIN
- ALTER TABLE "folder" ADD CONSTRAINT "custom_fk" FOREIGN KEY ("parent_id") REFERENCES "public"."folder"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;

@@ -3,7 +3,6 @@ import { teamspaceMemberships } from "../teamspace-memberships/schema";
 import { projects } from "../projects/schema";
 import { workspaces } from "../workspaces/schema";
 import { teamspaces } from "./schema";
-import { folders } from "../folders/schema";
 
 export const teamspacesRelations = relations(teamspaces, ({ one, many }) => ({
   projects: many(projects),
@@ -12,5 +11,4 @@ export const teamspacesRelations = relations(teamspaces, ({ one, many }) => ({
     fields: [teamspaces.workspaceSlug],
     references: [workspaces.slug],
   }),
-  folders: many(folders),
 }));

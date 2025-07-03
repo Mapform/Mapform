@@ -1,6 +1,12 @@
-import { timestamp, pgTable, varchar, uuid, pgEnum } from "drizzle-orm/pg-core";
+import {
+  timestamp,
+  pgTable,
+  varchar,
+  uuid,
+  pgEnum,
+  integer,
+} from "drizzle-orm/pg-core";
 import { teamspaces } from "../teamspaces/schema";
-import { fileTreePositions } from "../file-tree-positions/schema";
 
 export const visibilityEnum = pgEnum("visibility", ["public", "closed"]);
 
@@ -9,12 +15,9 @@ export const projects = pgTable("project", {
   name: varchar("name", { length: 256 }),
   description: varchar("description", { length: 512 }),
   icon: varchar("icon", { length: 256 }),
+  position: integer("position").notNull(),
 
   visibility: visibilityEnum("visibility").default("closed").notNull(),
-
-  fileTreePositionId: uuid("file_tree_position_id")
-    .notNull()
-    .references(() => fileTreePositions.id, { onDelete: "cascade" }),
 
   teamspaceId: uuid("teamspace_id")
     .notNull()

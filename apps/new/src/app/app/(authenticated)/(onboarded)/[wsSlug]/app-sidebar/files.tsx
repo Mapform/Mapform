@@ -1,13 +1,9 @@
 import {
   SidebarMenu,
-  SidebarMenuBadge,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
 } from "@mapform/ui/components/sidebar";
-import { EarthIcon, FolderOpenIcon, PlusIcon } from "lucide-react";
+import { EarthIcon } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import {
   DndContext,
@@ -22,81 +18,24 @@ import {
   SortableContext,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { useAction } from "next-safe-action/hooks";
-import { updateFileTreePositionsAction } from "~/data/file-tree-positions/update-positions";
 import { DragItem, DragHandle } from "~/components/draggable";
-import { useMemo } from "react";
 import { useWorkspace } from "../workspace-context";
+import type { WorkspaceDirectory } from "@mapform/backend/data/workspaces/get-workspace-directory";
+import { updateProjectOrderAction } from "~/data/projects/update-project-order";
+import { useAction } from "next-safe-action/hooks";
 
 export function Files({
-  space,
+  teamspace,
 }: {
-  space: {
-    id: string;
-    projects: {
-      id: string;
-      title: string | null;
-      url: string;
-      icon: string | null;
-      fileTreePosition: {
-        position: number;
-        parentId: string | null;
-        id: string;
-      };
-    }[];
-    folders: {
-      id: string;
-      title: string | null;
-      url: string;
-      icon: string | null;
-      fileTreePosition: {
-        position: number;
-        parentId: string | null;
-        id: string;
-      };
-    }[];
-  };
+  teamspace: NonNullable<WorkspaceDirectory["data"]>["teamspaces"][number];
 }) {
   const router = useRouter();
   const pathname = usePathname();
-  const { updateOptimisticWorkspace } = useWorkspace();
+  const { workspaceSlug, workspaceDirectory, updateWorkspaceDirectory } =
+    useWorkspace();
 
-  const allFiles = useMemo(() => {
-    return [
-      ...space.projects.map((project) => ({
-        ...project,
-        type: "project" as const,
-      })),
-      ...space.folders.map((folder) => ({
-        ...folder,
-        type: "folder" as const,
-      })),
-    ];
-  }, [space.projects, space.folders]);
-
-  const optimisticFiles = useMemo(() => {
-    type FileItem = (typeof allFiles)[0] & { children: FileItem[] };
-
-    const buildTree = (
-      items: typeof allFiles,
-      parentId: string | null = null,
-    ): FileItem[] => {
-      return items
-        .filter((item) => item.fileTreePosition.parentId === parentId)
-        .sort(
-          (a, b) => a.fileTreePosition.position - b.fileTreePosition.position,
-        )
-        .map((item) => ({
-          ...item,
-          children: buildTree(items, item.id),
-        }));
-    };
-
-    return buildTree(allFiles);
-  }, [allFiles]);
-
-  const { execute: executeUpdatePositions } = useAction(
-    updateFileTreePositionsAction,
+  const { executeAsync: updateProjectOrderAsync } = useAction(
+    updateProjectOrderAction,
   );
 
   const sensors = useSensors(
@@ -114,32 +53,39 @@ export function Files({
       return;
     }
 
-    const activeIndex = optimisticFiles.findIndex(
-      (file) => file.id === active.id,
+    const activeProjectIndex = teamspace.projects.findIndex(
+      (project) => project.id === active.id,
     );
-    const overIndex = optimisticFiles.findIndex((file) => file.id === over.id);
+    const overProjectIndex = teamspace.projects.findIndex(
+      (project) => project.id === over.id,
+    );
 
-    if (activeIndex === -1 || overIndex === -1) {
-      return;
-    }
+    const newProjects = arrayMove(
+      teamspace.projects,
+      activeProjectIndex,
+      overProjectIndex,
+    );
 
-    const newFiles = arrayMove(optimisticFiles, activeIndex, overIndex);
-    // setOptimisticFiles(newFiles);
+    // Update optimistic state
+    updateWorkspaceDirectory({
+      ...workspaceDirectory,
+      teamspaces: workspaceDirectory.teamspaces.map((ts) =>
+        ts.id === teamspace.id
+          ? {
+              ...ts,
+              projects: newProjects.map((project, index) => ({
+                ...project,
+                position: index,
+              })),
+            }
+          : ts,
+      ),
+    });
 
     // Update backend
-    const items = newFiles.map((file, index) => ({
-      id: file.fileTreePosition.id,
-      itemType: file.type,
-      position: index,
-    }));
-
-    await executeUpdatePositions({
-      teamspaceId: space.id,
-      parentId:
-        space.projects[0]?.fileTreePosition.parentId ||
-        space.folders[0]?.fileTreePosition.parentId ||
-        null,
-      items,
+    await updateProjectOrderAsync({
+      teamspaceId: teamspace.id,
+      projectOrder: newProjects.map((project) => project.id),
     });
   };
 
@@ -150,61 +96,34 @@ export function Files({
       sensors={sensors}
     >
       <SortableContext
-        items={optimisticFiles.map((file) => file.id)}
+        items={teamspace.projects.map((project) => project.id)}
         strategy={verticalListSortingStrategy}
       >
         <SidebarMenu>
-          {optimisticFiles.map((file) => (
-            <DragItem key={file.id} id={file.id}>
-              <DragHandle id={file.id}>
+          {teamspace.projects.map((project) => (
+            <DragItem key={project.id} id={project.id}>
+              <DragHandle id={project.id}>
                 <SidebarMenuItem>
                   <SidebarMenuButton
                     asChild
                     className="cursor-pointer"
-                    isActive={pathname === file.url}
+                    isActive={
+                      pathname === `/app/${workspaceSlug}/${project.id}`
+                    }
                     onClick={() => {
-                      if (file.type === "project") {
-                        router.push(file.url);
-                      }
+                      router.push(`/app/${workspaceSlug}/${project.id}`);
                     }}
                   >
                     <div>
-                      {file.icon ? (
-                        <span>{file.icon}</span>
-                      ) : file.type === "project" ? (
-                        <EarthIcon />
+                      {project.icon ? (
+                        <span>{project.icon}</span>
                       ) : (
-                        <FolderOpenIcon />
+                        <EarthIcon />
                       )}
-                      <span>
-                        {file.title
-                          ? file.title
-                          : file.type === "project"
-                            ? "New project"
-                            : "New folder"}
-                      </span>
+                      <span>{project.name || "New project"}</span>
                     </div>
                   </SidebarMenuButton>
-                  {file.type === "folder" && (
-                    <SidebarMenuBadge>{file.children.length}</SidebarMenuBadge>
-                  )}
                 </SidebarMenuItem>
-                {file.type === "folder" && file.children.length > 0 && (
-                  <SidebarMenuSub>
-                    {file.children.map((child) => (
-                      <SidebarMenuSubItem key={child.id}>
-                        <SidebarMenuSubButton>
-                          {child.title}
-                        </SidebarMenuSubButton>
-                        {file.type === "folder" && (
-                          <SidebarMenuBadge>
-                            {file.children.length}
-                          </SidebarMenuBadge>
-                        )}
-                      </SidebarMenuSubItem>
-                    ))}
-                  </SidebarMenuSub>
-                )}
               </DragHandle>
             </DragItem>
           ))}

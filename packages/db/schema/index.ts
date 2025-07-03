@@ -9,10 +9,8 @@ export * from "./rows/schema";
 export * from "./columns/schema";
 export * from "./plans/schema";
 export * from "./blobs/schema";
-export * from "./folders/schema";
 export * from "./views/schema";
 export * from "./cells/schema";
-export * from "./file-tree-positions/schema";
 
 // RELATIONS
 export * from "./users/relations";
@@ -25,10 +23,8 @@ export * from "./rows/relations";
 export * from "./columns/relations";
 export * from "./plans/relations";
 export * from "./blobs/relations";
-export * from "./folders/relations";
 export * from "./views/relations";
 export * from "./cells/relations";
-export * from "./file-tree-positions/relations";
 
 // VALIDATIONS
 export * from "./users/validation";
@@ -40,10 +36,5 @@ export * from "./rows/validation";
 export * from "./columns/validation";
 export * from "./plans/validation";
 export * from "./blobs/validation";
-export * from "./folders/validation";
 export * from "./cells/validation";
 export * from "./views/validation";
-export * from "./file-tree-positions/validation";
-
-// UTILS
-// export * from "./file-tree-positions/utils";

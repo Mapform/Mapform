@@ -5,43 +5,15 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1750809010768,
-      "tag": "0000_amused_taskmaster",
+      "when": 1751515165450,
+      "tag": "0000_free_solo",
       "breakpoints": true
     },
     {
       "idx": 1,
       "version": "7",
-      "when": 1750809698751,
-      "tag": "0001_ambiguous_maximus",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1751334427554,
-      "tag": "0002_deep_justin_hammer",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1751335437153,
-      "tag": "0003_bumpy_kat_farrell",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1751341440280,
-      "tag": "0004_lyrical_iceman",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1751374678597,
-      "tag": "0005_woozy_sprite",
+      "when": 1751515179576,
+      "tag": "0001_lean_dark_beast",
       "breakpoints": true
     }
   ]

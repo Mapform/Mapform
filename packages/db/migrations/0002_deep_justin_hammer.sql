@@ -1,1 +1,0 @@
-ALTER TABLE "map_view" ALTER COLUMN "center" SET DATA TYPE geometry(Point, 4326);

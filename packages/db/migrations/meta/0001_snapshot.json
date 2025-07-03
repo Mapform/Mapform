@@ -1,6 +1,6 @@
 {
-  "id": "ec2c4b9b-44cd-4ef4-bc2b-53d4caa9a596",
-  "prevId": "ca55b923-7eb9-4c6b-a469-133526a6b081",
+  "id": "70cf188a-1f0f-4685-8ce1-3f73f703cc5d",
+  "prevId": "2a3e9224-f703-442e-a088-3ff9d2632eab",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -402,10 +402,9 @@
         },
         "position": {
           "name": "position",
-          "type": "smallint",
+          "type": "integer",
           "primaryKey": false,
-          "notNull": true,
-          "default": 0
+          "notNull": true
         },
         "visibility": {
           "name": "visibility",
@@ -414,12 +413,6 @@
           "primaryKey": false,
           "notNull": true,
           "default": "'closed'"
-        },
-        "folder_id": {
-          "name": "folder_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": false
         },
         "teamspace_id": {
           "name": "teamspace_id",
@@ -444,19 +437,6 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "project_folder_id_folder_id_fk": {
-          "name": "project_folder_id_folder_id_fk",
-          "tableFrom": "project",
-          "tableTo": "folder",
-          "columnsFrom": [
-            "folder_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
         "project_teamspace_id_teamspace_id_fk": {
           "name": "project_teamspace_id_teamspace_id_fk",
           "tableFrom": "project",
@@ -836,98 +816,6 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.folder": {
-      "name": "folder",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "uuid",
-          "primaryKey": true,
-          "notNull": true,
-          "default": "gen_random_uuid()"
-        },
-        "name": {
-          "name": "name",
-          "type": "varchar(256)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "icon": {
-          "name": "icon",
-          "type": "varchar(256)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "parent_id": {
-          "name": "parent_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "teamspace_id": {
-          "name": "teamspace_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "position": {
-          "name": "position",
-          "type": "smallint",
-          "primaryKey": false,
-          "notNull": true,
-          "default": 0
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "folder_teamspace_id_teamspace_id_fk": {
-          "name": "folder_teamspace_id_teamspace_id_fk",
-          "tableFrom": "folder",
-          "tableTo": "teamspace",
-          "columnsFrom": [
-            "teamspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "custom_fk": {
-          "name": "custom_fk",
-          "tableFrom": "folder",
-          "tableTo": "folder",
-          "columnsFrom": [
-            "parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
     "public.map_view": {
       "name": "map_view",
       "schema": "",
@@ -941,7 +829,7 @@
         },
         "center": {
           "name": "center",
-          "type": "geometry(point)",
+          "type": "geometry(Point, 4326)",
           "primaryKey": false,
           "notNull": true
         },
