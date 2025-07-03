@@ -2,7 +2,7 @@
 
 import { Layer, Map, MapRoot, Source } from "~/components/map";
 import { rowsToGeoJSON } from "~/lib/rows-to-geojson";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useMediaQuery } from "@mapform/ui/hooks/use-media-query";
 import { useProject } from "../context";
 import { MapDrawer } from "./map-drawer/index";
@@ -63,7 +63,12 @@ function MapViewInner({
 
   const handleClick = (e: mapboxgl.MapMouseEvent) => {
     const features = e.target.queryRenderedFeatures(e.point, {
-      layers: [POINTS_LAYER_ID, LINES_LAYER_ID, POLYGONS_FILL_LAYER_ID],
+      layers: [
+        POINTS_LAYER_ID,
+        `${POINTS_LAYER_ID}-symbols`,
+        LINES_LAYER_ID,
+        POLYGONS_FILL_LAYER_ID,
+      ],
     });
 
     const feature = features[0];
@@ -116,12 +121,6 @@ function MapViewInner({
     [projectService.optimisticState.rows],
   );
 
-  useEffect(() => {
-    return () => {
-      console.log("unmounting!");
-    };
-  }, []);
-
   return (
     <div className="h-full overflow-hidden p-4">
       <div className="relative h-full overflow-hidden" ref={containerRef}>
@@ -132,7 +131,8 @@ function MapViewInner({
         >
           {/* Points Layer */}
           <Source id="points-source" data={rowsToGeoJSON(pointRows)}>
-            <Layer
+            {/* Basic points layer - always show */}
+            {/* <Layer
               id={POINTS_LAYER_ID}
               type="circle"
               paint={{
@@ -140,6 +140,20 @@ function MapViewInner({
                 "circle-color": "#3b82f6",
                 "circle-stroke-width": 2,
                 "circle-stroke-color": "#ffffff",
+              }}
+            /> */}
+            {/* Emoji markers - only show if flat_icon exists */}
+            <Layer
+              id={`${POINTS_LAYER_ID}-symbols`}
+              type="symbol"
+              // filter={["has", "flat_icon"]}
+              layout={{
+                "icon-image": ["get", "flat_icon"],
+                "icon-size": 0.55,
+                "icon-allow-overlap": true,
+                "icon-ignore-placement": true,
+                "icon-anchor": "center",
+                "icon-offset": [0, 3],
               }}
             />
           </Source>

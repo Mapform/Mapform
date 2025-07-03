@@ -1,5 +1,4 @@
 import type { GetProject } from "@mapform/backend/data/projects/get-project";
-import type { GeoJSON } from "geojson";
 
 /**
  * This function is mostly used for drawing to the map. It (currently) omits
@@ -14,8 +13,7 @@ export function rowsToGeoJSON(rows: NonNullable<GetProject["data"]>["rows"]) {
       properties: {
         id: row.id,
         name: row.name,
-        description: row.description,
-        icon: row.icon,
+        flat_icon: row.icon,
       },
     })),
   } satisfies GeoJSON.FeatureCollection;

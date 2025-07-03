@@ -1,6 +1,6 @@
 import { useEffect, createContext, useContext } from "react";
-import type { GeoJSONSourceRaw } from "mapbox-gl";
 import { useMap } from "./index";
+import { loadPointImage } from "~/lib/map/point-image-utils";
 
 interface SourceContextProps {
   sourceId: string;
@@ -13,7 +13,7 @@ export const useSource = () => useContext(SourceContext);
 
 interface SourceProps {
   id: string;
-  data: GeoJSONSourceRaw["data"];
+  data: GeoJSON.FeatureCollection;
   type?: "geojson" | "vector" | "raster" | "image" | "video";
   children?: React.ReactNode;
 }
@@ -26,15 +26,16 @@ export const Source = ({
 }: SourceProps) => {
   const { map } = useMap();
 
+  /**
+   * Configure source when data changes
+   */
   useEffect(() => {
     if (!map) return;
 
     // Check if source already exists
     if (map.getSource(id)) {
       // Update existing source
-      (map.getSource(id) as mapboxgl.GeoJSONSource).setData(
-        data as GeoJSON.FeatureCollection,
-      );
+      (map.getSource(id) as mapboxgl.GeoJSONSource).setData(data);
     } else {
       // Add new source
       map.addSource(id, {
@@ -59,7 +60,35 @@ export const Source = ({
         map.removeSource(id);
       }
     };
-  }, []);
+  }, [data]);
+
+  /**
+   * Handle loading images for points
+   */
+  useEffect(() => {
+    if (!map) return;
+
+    const loadPointImages = async () => {
+      const uniqueIcons = new Set<string>();
+      data.features.forEach((feature) => {
+        const icon = feature.properties?.flat_icon;
+        if (icon) {
+          uniqueIcons.add(icon);
+        }
+      });
+
+      console.log("uniqueIcons", uniqueIcons);
+
+      for (const icon of uniqueIcons) {
+        const imageId = getImageId(icon, "none");
+        if (!map.hasImage(imageId)) {
+          await loadPointImage(map, icon, imageId, null);
+        }
+      }
+    };
+
+    void loadPointImages();
+  }, [data]);
 
   return (
     <SourceContext.Provider value={{ sourceId: id }}>
@@ -67,3 +96,10 @@ export const Source = ({
     </SourceContext.Provider>
   );
 };
+
+export function getImageId(
+  icon: string | undefined,
+  color: string | undefined,
+) {
+  return `image-${icon || "none"}-${color || "none"}`;
+}
