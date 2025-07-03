@@ -12,6 +12,7 @@ import { PanelLeftOpenIcon } from "lucide-react";
 import { Button } from "@mapform/ui/components/button";
 import { cn } from "@mapform/lib/classnames";
 import { MapContextMenu } from "./map-context-menu";
+import { useParamsContext } from "~/lib/params/client";
 
 const POINTS_LAYER_ID = "points-layer";
 const LINES_LAYER_ID = "lines-layer";
@@ -52,7 +53,8 @@ function MapViewInner({
   drawerOpen: boolean;
   setDrawerOpen: (open: boolean) => void;
 }) {
-  const { projectService, setSelectedFeature } = useProject();
+  const { projectService } = useProject();
+  const { setQueryStates } = useParamsContext();
   const [contextMenuOpen, setContextMenuOpen] = useState(false);
   const [contextMenuPosition, setContextMenuPosition] = useState({
     x: 0,
@@ -68,7 +70,7 @@ function MapViewInner({
 
     if (feature?.properties?.id) {
       setDrawerOpen(true);
-      setSelectedFeature(feature.properties.id as string);
+      void setQueryStates({ rowId: feature.properties.id as string });
     }
   };
 
