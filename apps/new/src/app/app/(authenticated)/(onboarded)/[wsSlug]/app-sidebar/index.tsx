@@ -203,37 +203,6 @@ export function AppSidebar() {
             >
               <PlusIcon />
             </SidebarGroupAction>
-            {/* <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <SidebarGroupAction title="Add Project">
-                  <PlusIcon />
-                </SidebarGroupAction>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem
-                  onSelect={() => {
-                    console.log("Creating project");
-                    executeCreateProject({
-                      teamspaceId: space.id,
-                      viewType: "map",
-                    });
-                  }}
-                  disabled={isCreateProjectPending}
-                >
-                  <EarthIcon /> New project
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onSelect={() => {
-                    executeCreateFolder({
-                      teamspaceId: space.id,
-                    });
-                  }}
-                  disabled={isCreateFolderPending}
-                >
-                  <FolderOpenIcon /> New folder
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu> */}
             <Files teamspace={teamspace} />
           </SidebarGroup>
         ))}

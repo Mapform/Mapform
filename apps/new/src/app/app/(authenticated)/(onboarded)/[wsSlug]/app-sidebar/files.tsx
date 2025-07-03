@@ -3,7 +3,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@mapform/ui/components/sidebar";
-import { EarthIcon } from "lucide-react";
+import { EarthIcon, Trash2Icon } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import {
   DndContext,
@@ -24,6 +24,14 @@ import { useWorkspace } from "../workspace-context";
 import type { WorkspaceDirectory } from "@mapform/backend/data/workspaces/get-workspace-directory";
 import { updateProjectOrderAction } from "~/data/projects/update-project-order";
 import { useAction } from "next-safe-action/hooks";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from "@mapform/ui/components/context-menu";
+import { deleteProjectAction } from "~/data/projects/delete-project";
+import { toast } from "@mapform/ui/components/toaster";
 
 export function Files({
   teamspace,
@@ -38,6 +46,16 @@ export function Files({
   const { executeAsync: updateProjectOrderAsync } = useAction(
     updateProjectOrderAction,
   );
+
+  const { executeAsync: deleteProjectAsync, isPending: isDeletingProject } =
+    useAction(deleteProjectAction, {
+      onError: () => {
+        toast({
+          title: "Uh oh! Something went wrong.",
+          description: "There was an error deleting the project.",
+        });
+      },
+    });
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -90,6 +108,21 @@ export function Files({
     });
   };
 
+  const handleDeleteProject = async (projectId: string) => {
+    updateWorkspaceDirectory({
+      ...workspaceDirectory,
+      teamspaces: workspaceDirectory.teamspaces.map((ts) =>
+        ts.id === teamspace.id
+          ? { ...ts, projects: ts.projects.filter((p) => p.id !== projectId) }
+          : ts,
+      ),
+    });
+
+    await deleteProjectAsync({
+      projectId,
+    });
+  };
+
   return (
     <DndContext
       collisionDetection={closestCenter}
@@ -105,27 +138,42 @@ export function Files({
           {teamspace.projects.map((project) => (
             <DragItem key={project.id} id={project.id}>
               <DragHandle id={project.id}>
-                <SidebarMenuItem>
-                  <SidebarMenuButton
-                    asChild
-                    className="cursor-pointer"
-                    isActive={
-                      pathname === `/app/${workspaceSlug}/${project.id}`
-                    }
-                    onClick={() => {
-                      router.push(`/app/${workspaceSlug}/${project.id}`);
-                    }}
-                  >
-                    <div>
-                      {project.icon ? (
-                        <span>{project.icon}</span>
-                      ) : (
-                        <EarthIcon />
-                      )}
-                      <span>{project.name || "New project"}</span>
-                    </div>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
+                <ContextMenu>
+                  <ContextMenuTrigger>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton
+                        asChild
+                        className="cursor-pointer"
+                        isActive={
+                          pathname === `/app/${workspaceSlug}/${project.id}`
+                        }
+                        onClick={() => {
+                          router.push(`/app/${workspaceSlug}/${project.id}`);
+                        }}
+                      >
+                        <div>
+                          {project.icon ? (
+                            <span>{project.icon}</span>
+                          ) : (
+                            <EarthIcon />
+                          )}
+                          <span>{project.name || "New project"}</span>
+                        </div>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  </ContextMenuTrigger>
+                  <ContextMenuContent>
+                    <ContextMenuItem
+                      disabled={isDeletingProject}
+                      onClick={() => {
+                        void handleDeleteProject(project.id);
+                      }}
+                    >
+                      <Trash2Icon className="mr-2 size-4" />
+                      Delete
+                    </ContextMenuItem>
+                  </ContextMenuContent>
+                </ContextMenu>
               </DragHandle>
             </DragItem>
           ))}

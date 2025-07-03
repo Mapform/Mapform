@@ -41,6 +41,7 @@ import { searchPlaces } from "@mapform/backend/data/geoapify/search";
 import { updateRow } from "@mapform/backend/data/rows/update-row";
 import { updateProject } from "@mapform/backend/data/projects/update-project";
 import { updateProjectOrder } from "@mapform/backend/data/projects/update-project-order";
+import { deleteProject } from "@mapform/backend/data/projects/delete-project";
 
 const ignoredWorkspaceSlugs = ["onboarding"];
 const ignoredTeamspaceSlugs = ["settings"];
@@ -117,6 +118,7 @@ const createUserAuthClient = () => {
     createProject: createProject(extendedClient),
     updateProject: updateProject(extendedClient),
     updateProjectOrder: updateProjectOrder(extendedClient),
+    deleteProject: deleteProject(extendedClient),
 
     // Rows
     getRow: getRow(extendedClient),
