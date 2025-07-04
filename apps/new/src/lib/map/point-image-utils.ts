@@ -1,6 +1,8 @@
+import { getImageId } from "~/components/map/source";
+
 export function emojiToDataURL(
-  emoji: string | null | undefined,
-  color: string | null,
+  emoji: string | undefined,
+  color: string | undefined,
 ) {
   const size = emoji ? 48 : 32;
   const totalSize = size * 2.1; // Increase canvas size for more padding
@@ -39,11 +41,18 @@ export function emojiToDataURL(
 
 export async function loadPointImage(
   map: mapboxgl.Map,
-  emoji: string | null | undefined,
-  imageId: string,
-  color: string | null = null,
+  emoji: string | undefined,
+  color: string | undefined,
 ) {
+  const imageId = getImageId(emoji, undefined);
+
   return new Promise<void>((resolve, reject) => {
+    if (map.hasImage(imageId)) {
+      console.log("Image already exists, skipping", imageId);
+      resolve();
+      return;
+    }
+
     const img = new Image();
     img.onload = () => {
       map.addImage(imageId, img, { pixelRatio: 2 }); // Adjust for HiDPI

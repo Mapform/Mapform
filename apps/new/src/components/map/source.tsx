@@ -69,20 +69,24 @@ export const Source = ({
     if (!map) return;
 
     const loadPointImages = async () => {
-      const uniqueIcons = new Set<string>();
+      const uniqueIcons = new Set<{
+        icon: string | undefined;
+        color: string | undefined;
+      }>();
       data.features.forEach((feature) => {
-        const icon = feature.properties?.flat_icon;
-        if (icon) {
-          uniqueIcons.add(icon);
-        }
+        const icon = feature.properties?.icon;
+        const color = undefined;
+
+        uniqueIcons.add({ icon, color });
       });
 
-      console.log("uniqueIcons", uniqueIcons);
+      for (const { icon, color } of uniqueIcons) {
+        const imageId = getImageId(icon, color);
 
-      for (const icon of uniqueIcons) {
-        const imageId = getImageId(icon, "none");
+        console.log("imageId", imageId);
+
         if (!map.hasImage(imageId)) {
-          await loadPointImage(map, icon, imageId, null);
+          await loadPointImage(map, icon, color);
         }
       }
     };

@@ -1,4 +1,5 @@
 import type { GetProject } from "@mapform/backend/data/projects/get-project";
+import { getImageId } from "~/components/map/source";
 
 /**
  * This function is mostly used for drawing to the map. It (currently) omits
@@ -13,8 +14,11 @@ export function rowsToGeoJSON(rows: NonNullable<GetProject["data"]>["rows"]) {
       properties: {
         id: row.id,
         name: row.name,
-        flat_icon: row.icon,
+        icon: row.icon,
+        flat_icon: getImageId(row.icon ?? undefined, undefined),
       },
     })),
   } satisfies GeoJSON.FeatureCollection;
 }
+
+export type RowGeoJSON = ReturnType<typeof rowsToGeoJSON>;
