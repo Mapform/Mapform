@@ -2,7 +2,7 @@
 
 import { Layer, Map, MapRoot, Source } from "~/components/map";
 import { rowsToGeoJSON } from "~/lib/rows-to-geojson";
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import { useMediaQuery } from "@mapform/ui/hooks/use-media-query";
 import { useProject } from "../context";
 import { MapDrawer } from "./map-drawer/index";
@@ -23,7 +23,6 @@ const POLYGONS_OUTLINE_LAYER_ID = "polygons-outline-layer";
 export function MapView() {
   const isDesktop = useMediaQuery("(min-width: 768px)");
   const [drawerOpen, setDrawerOpen] = useState(true);
-  const containerRef = useRef<HTMLDivElement>(null);
 
   const mapPadding = useMemo(() => {
     return {
@@ -36,21 +35,15 @@ export function MapView() {
 
   return (
     <MapRoot padding={mapPadding}>
-      <MapViewInner
-        containerRef={containerRef}
-        drawerOpen={drawerOpen}
-        setDrawerOpen={setDrawerOpen}
-      />
+      <MapViewInner drawerOpen={drawerOpen} setDrawerOpen={setDrawerOpen} />
     </MapRoot>
   );
 }
 
 function MapViewInner({
-  containerRef,
   drawerOpen,
   setDrawerOpen,
 }: {
-  containerRef: React.RefObject<HTMLDivElement | null>;
   drawerOpen: boolean;
   setDrawerOpen: (open: boolean) => void;
 }) {
@@ -82,10 +75,6 @@ function MapViewInner({
 
   const handleContextMenu = (e: mapboxgl.MapMouseEvent) => {
     e.preventDefault();
-
-    // Get the container's bounding rect to calculate relative position
-    const containerRect = containerRef.current?.getBoundingClientRect();
-    if (!containerRect) return;
 
     // Calculate position relative to the container
     const x = e.point.x;
@@ -124,7 +113,7 @@ function MapViewInner({
 
   return (
     <div className="h-full overflow-hidden p-4">
-      <div className="relative h-full overflow-hidden" ref={containerRef}>
+      <div className="relative h-full overflow-hidden">
         <Map
           className="size-full rounded-lg"
           onClick={handleClick}
@@ -218,11 +207,7 @@ function MapViewInner({
         >
           <PanelLeftOpenIcon className="size-4" />
         </Button>
-        <MapDrawer
-          containerRef={containerRef}
-          drawerOpen={drawerOpen}
-          setDrawerOpen={setDrawerOpen}
-        />
+        <MapDrawer drawerOpen={drawerOpen} setDrawerOpen={setDrawerOpen} />
         <MapControls />
       </div>
     </div>

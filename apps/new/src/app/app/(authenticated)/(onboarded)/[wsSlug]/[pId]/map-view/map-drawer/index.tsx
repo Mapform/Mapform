@@ -9,22 +9,18 @@ import { XIcon } from "lucide-react";
 import { useMap } from "~/components/map";
 import { useParamsContext } from "~/lib/params/client";
 import { AnimatePresence, motion } from "motion/react";
+import { DetailsDrawer } from "./details-drawer";
 
 interface MapDrawerProps {
   drawerOpen: boolean;
-  containerRef: React.RefObject<HTMLDivElement | null>;
   setDrawerOpen: (open: boolean) => void;
 }
 
-export function MapDrawer({
-  drawerOpen,
-  containerRef,
-  setDrawerOpen,
-}: MapDrawerProps) {
+export function MapDrawer({ drawerOpen, setDrawerOpen }: MapDrawerProps) {
   const { map } = useMap();
   const { projectService } = useProject();
   const {
-    params: { rowId },
+    params: { rowId, geoapifyPlaceId },
     setQueryStates,
   } = useParamsContext();
   const isDesktop = useMediaQuery("(min-width: 768px)");
@@ -42,7 +38,7 @@ export function MapDrawer({
               initial={{ x: -DRAWER_WIDTH - 16 }}
               animate={{
                 x: 0,
-                scale: rowId ? 0.985 : 1,
+                scale: rowId || geoapifyPlaceId ? 0.985 : 1,
               }}
               exit={{ x: -DRAWER_WIDTH - 16 }}
               transition={{
@@ -61,8 +57,8 @@ export function MapDrawer({
                   className={cn(
                     "pointer-events-none absolute inset-0 z-50 rounded-lg bg-gray-950 transition-opacity duration-200",
                     {
-                      "opacity-50": !!rowId,
-                      "opacity-0": !rowId,
+                      "opacity-50": !!rowId || !!geoapifyPlaceId,
+                      "opacity-0": !rowId && !geoapifyPlaceId,
                     },
                   )}
                 />
@@ -101,7 +97,8 @@ export function MapDrawer({
             </motion.div>
           )}
         </AnimatePresence>
-        <FeatureDrawer containerRef={containerRef} />
+        <FeatureDrawer />
+        <DetailsDrawer />
       </>
     );
   }

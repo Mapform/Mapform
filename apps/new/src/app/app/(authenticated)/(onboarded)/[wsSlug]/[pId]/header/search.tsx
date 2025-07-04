@@ -145,6 +145,21 @@ export function Search() {
                 <CommandItem
                   key={feature.properties?.place_id}
                   value={feature.properties?.place_id}
+                  onSelect={async () => {
+                    await setQueryStates({
+                      geoapifyPlaceId: feature.properties?.place_id,
+                    });
+                    setSearchFocused(false);
+                    if (feature.properties?.lon && feature.properties.lat) {
+                      map?.flyTo({
+                        center: [
+                          feature.properties.lon,
+                          feature.properties.lat,
+                        ],
+                        duration: 500,
+                      });
+                    }
+                  }}
                 >
                   <GlobeIcon className="text-muted-foreground mr-2 size-4" />
                   <span className="truncate">

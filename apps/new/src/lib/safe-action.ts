@@ -42,6 +42,7 @@ import { updateRow } from "@mapform/backend/data/rows/update-row";
 import { updateProject } from "@mapform/backend/data/projects/update-project";
 import { updateProjectOrder } from "@mapform/backend/data/projects/update-project-order";
 import { deleteProject } from "@mapform/backend/data/projects/delete-project";
+import { getPlaceDetails } from "@mapform/backend/data/geoapify/details";
 
 const ignoredWorkspaceSlugs = ["onboarding"];
 const ignoredTeamspaceSlugs = ["settings"];
@@ -172,6 +173,7 @@ const createPublicClient = () => {
 
     // Geoapify
     searchPlaces: searchPlaces(extendedClient),
+    getPlaceDetails: getPlaceDetails(extendedClient),
 
     // Users
     getCurrentSession: getCurrentSession(extendedClient),

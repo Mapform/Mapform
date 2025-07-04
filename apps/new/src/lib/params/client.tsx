@@ -25,14 +25,16 @@ interface ParamsProviderProps {
 
 export const ParamsProvider = ({ children }: ParamsProviderProps) => {
   const [isPending, startTransition] = useTransition();
-  const [{ viewId, perPage, page, rowId, query }, setQueryStates] =
-    useQueryStates(appSearchParams, { ...appSearchOptions, startTransition });
+  const [
+    { viewId, perPage, page, rowId, query, geoapifyPlaceId },
+    setQueryStates,
+  ] = useQueryStates(appSearchParams, { ...appSearchOptions, startTransition });
 
   return (
     <ParamsContext.Provider
       value={{
         isPending,
-        params: { viewId, perPage, page, rowId, query },
+        params: { viewId, perPage, page, rowId, query, geoapifyPlaceId },
         setQueryStates,
       }}
     >

@@ -16,11 +16,7 @@ import { PropertyColumnEditor } from "../../properties/property-column-editor";
 import { useParamsContext } from "~/lib/params/client";
 import { AnimatePresence, motion } from "motion/react";
 
-interface FeatureDrawerProps {
-  containerRef: React.RefObject<HTMLDivElement | null>;
-}
-
-export function FeatureDrawer({ containerRef }: FeatureDrawerProps) {
+export function FeatureDrawer() {
   const { featureService, projectService } = useProject();
   const {
     isPending,

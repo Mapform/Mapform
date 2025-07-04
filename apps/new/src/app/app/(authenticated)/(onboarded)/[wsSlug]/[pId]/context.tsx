@@ -13,12 +13,14 @@ import { updateRowAction } from "~/data/rows/update-row";
 import type { UpdateRowSchema } from "@mapform/backend/data/rows/update-row/schema";
 import { updateProjectAction } from "~/data/projects/update-project";
 import type { UpdateProjectSchema } from "@mapform/backend/data/projects/update-project/schema";
+import type { GetPlaceDetails } from "@mapform/backend/data/geoapify/details";
 
 export interface ProjectContextProps {
   features: NonNullable<GetProject["data"]>["rows"];
   activeView?: NonNullable<GetProject["data"]>["views"][number];
   vectorSearchResults?: SearchRows["data"];
   geoapifySearchResults?: SearchPlaces["data"];
+  geoapifyPlaceDetails?: GetPlaceDetails["data"];
   featureService: StateServiceProps<
     GetRow["data"] | undefined,
     UpdateRowSchema
@@ -41,12 +43,14 @@ export function ProjectProvider({
   activeView,
   vectorSearchResults,
   geoapifySearchResults,
+  geoapifyPlaceDetails,
 }: {
   feature?: GetRow["data"];
   project: NonNullable<GetProject["data"]>;
   activeView?: NonNullable<GetProject["data"]>["views"][number];
   vectorSearchResults?: SearchRows["data"];
   geoapifySearchResults?: SearchPlaces["data"];
+  geoapifyPlaceDetails?: GetPlaceDetails["data"];
   children: React.ReactNode;
 }) {
   const projectService = useStateService<
@@ -95,6 +99,7 @@ export function ProjectProvider({
         geoapifySearchResults,
         featureService,
         projectService,
+        geoapifyPlaceDetails,
       }}
     >
       {children}

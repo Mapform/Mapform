@@ -35,29 +35,43 @@ const getGeoapifySearchResults = cache(
   },
 );
 
+const getGeoapifyPlaceDetails = cache(async (placeId: string) => {
+  const placeDetails = await publicClient.getPlaceDetails({
+    placeId,
+  });
+  return placeDetails;
+});
+
 export default async function ViewPage(props: {
   params: Promise<{ wsSlug: string; pId: string }>;
   searchParams: Promise<SearchParams>;
 }) {
   const params = await props.params;
-  const { viewId, perPage, page, rowId, query } = await loadSearchParams(
-    props.searchParams,
-  );
+  const { viewId, perPage, page, rowId, query, geoapifyPlaceId } =
+    await loadSearchParams(props.searchParams);
 
-  const [project, feature, vectorSearchResults, geoapifySearchResults] =
-    await Promise.all([
-      authClient.getProject({
-        projectId: params.pId,
-        filter: {
-          type: "page",
-          page,
-          perPage,
-        },
-      }),
-      rowId ? authClient.getRow({ rowId }) : null,
-      query ? getVectorSearchResults(query, params.pId) : null,
-      query ? getGeoapifySearchResults(query, undefined) : null,
-    ]);
+  const [
+    project,
+    feature,
+    vectorSearchResults,
+    geoapifySearchResults,
+    geoapifyPlaceDetails,
+  ] = await Promise.all([
+    authClient.getProject({
+      projectId: params.pId,
+      filter: {
+        type: "page",
+        page,
+        perPage,
+      },
+    }),
+    rowId ? authClient.getRow({ rowId }) : null,
+    query ? getVectorSearchResults(query, params.pId) : null,
+    query ? getGeoapifySearchResults(query, undefined) : null,
+    geoapifyPlaceId ? getGeoapifyPlaceDetails(geoapifyPlaceId) : null,
+  ]);
+
+  console.log(1111, geoapifyPlaceDetails);
 
   if (!project) {
     return notFound();
@@ -88,6 +102,7 @@ export default async function ViewPage(props: {
       activeView={activeView}
       vectorSearchResults={vectorSearchResults?.data}
       geoapifySearchResults={geoapifySearchResults?.data}
+      geoapifyPlaceDetails={geoapifyPlaceDetails?.data}
     >
       <div className="relative h-full">
         {activeView.type === "table" && <TableView />}

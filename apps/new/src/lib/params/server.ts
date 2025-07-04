@@ -7,6 +7,7 @@ export const appSearchParams = {
   viewId: parseAsString,
   rowId: parseAsString,
   query: parseAsString.withDefault(""),
+  geoapifyPlaceId: parseAsString,
 };
 
 export const appSearchOptions = {
@@ -18,6 +19,7 @@ export const appSearchOptions = {
     page: "p",
     rowId: "r",
     query: "q",
+    geoapifyPlaceId: "g",
   },
 };
 
