@@ -1,9 +1,9 @@
 "server-only";
 
+import type { Geometry, Point } from "geojson";
 import { db, sql } from "@mapform/db";
 import { eq, and, inArray } from "@mapform/db/utils";
 import { mapViews, projects, rows } from "@mapform/db/schema";
-import type { GeometryType, PointType } from "@mapform/db/schema/rows/schema";
 import type { UnwrapReturn, UserAuthClient } from "../../../lib/types";
 import { getProjectSchema } from "./schema";
 
@@ -39,7 +39,7 @@ export const getProject = (authClient: UserAuthClient) =>
                 mapView: {
                   extras: {
                     center:
-                      sql<PointType>`ST_AsGeoJSON(ST_Centroid(${mapViews.center}))::jsonb`.as(
+                      sql<Point>`ST_AsGeoJSON(ST_Centroid(${mapViews.center}))::jsonb`.as(
                         "center",
                       ),
                   },
@@ -61,12 +61,11 @@ export const getProject = (authClient: UserAuthClient) =>
             geometry: true,
           },
           extras: {
-            geometry:
-              sql<GeometryType>`ST_AsGeoJSON(${rows.geometry})::jsonb`.as(
-                "geometry",
-              ),
+            geometry: sql<Geometry>`ST_AsGeoJSON(${rows.geometry})::jsonb`.as(
+              "geometry",
+            ),
             center:
-              sql<PointType>`ST_AsGeoJSON(ST_Centroid(${rows.geometry}))::jsonb`.as(
+              sql<Point>`ST_AsGeoJSON(ST_Centroid(${rows.geometry}))::jsonb`.as(
                 "center",
               ),
           },

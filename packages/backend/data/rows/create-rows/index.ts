@@ -8,6 +8,7 @@ import { getRowCount } from "../../usage/get-row-count";
 import { eq } from "@mapform/db/utils";
 import { ServerError } from "../../../lib/server-error";
 import { inngest } from "../../../clients/inngest/client";
+import type { Geometry } from "geojson";
 
 export const createRows = (authClient: UserAuthClient) =>
   authClient
@@ -73,7 +74,7 @@ export const createRows = (authClient: UserAuthClient) =>
               projectId,
               name: r.name,
               icon: r.icon,
-              geometry: r.geometry,
+              geometry: r.geometry as Geometry,
             })),
           )
           .returning();
