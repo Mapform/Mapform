@@ -1,9 +1,6 @@
 import { getImageId } from "~/components/map/source";
 
-export function emojiToDataURL(
-  emoji: string | undefined,
-  color: string | undefined,
-) {
+export function emojiToDataURL(emoji: string | null, color: string | null) {
   const size = emoji ? 48 : 32;
   const totalSize = size * 2.1; // Increase canvas size for more padding
   const canvas = document.createElement("canvas");
@@ -41,21 +38,20 @@ export function emojiToDataURL(
 
 export async function loadPointImage(
   map: mapboxgl.Map,
-  emoji: string | undefined,
-  color: string | undefined,
+  emoji: string | null,
+  color: string | null,
 ) {
-  const imageId = getImageId(emoji, undefined);
+  const imageId = getImageId(emoji, color);
 
   return new Promise<void>((resolve, reject) => {
-    if (map.hasImage(imageId)) {
-      console.log("Image already exists, skipping", imageId);
-      resolve();
-      return;
-    }
-
     const img = new Image();
     img.onload = () => {
-      map.addImage(imageId, img, { pixelRatio: 2 }); // Adjust for HiDPI
+      if (map.hasImage(imageId)) {
+        console.log("Image already exists, skipping", imageId);
+      } else {
+        map.addImage(imageId, img, { pixelRatio: 2 }); // Adjust for HiDPI
+      }
+
       resolve();
     };
     img.onerror = reject;

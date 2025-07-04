@@ -1,6 +1,7 @@
 import { useEffect, createContext, useContext } from "react";
 import { useMap } from "./index";
 import { loadPointImage } from "~/lib/map/point-image-utils";
+import type { RowGeoJSON } from "~/lib/rows-to-geojson";
 
 interface SourceContextProps {
   sourceId: string;
@@ -13,7 +14,7 @@ export const useSource = () => useContext(SourceContext);
 
 interface SourceProps {
   id: string;
-  data: GeoJSON.FeatureCollection;
+  data: RowGeoJSON;
   type?: "geojson" | "vector" | "raster" | "image" | "video";
   children?: React.ReactNode;
 }
@@ -70,8 +71,8 @@ export const Source = ({
 
     const loadPointImages = async () => {
       const uniqueIcons = new Set<{
-        icon: string | undefined;
-        color: string | undefined;
+        icon: string | null;
+        color: string | null;
       }>();
       data.features
         .filter(
@@ -79,16 +80,14 @@ export const Source = ({
             f.geometry.type === "Point" || f.geometry.type === "MultiPoint",
         )
         .forEach((feature) => {
-          const icon = feature.properties?.icon;
-          const color = undefined;
+          const icon = feature.properties.icon;
+          const color = null;
 
           uniqueIcons.add({ icon, color });
         });
 
       for (const { icon, color } of uniqueIcons) {
         const imageId = getImageId(icon, color);
-
-        console.log("imageId", imageId);
 
         if (!map.hasImage(imageId)) {
           await loadPointImage(map, icon, color);
@@ -106,9 +105,6 @@ export const Source = ({
   );
 };
 
-export function getImageId(
-  icon: string | undefined,
-  color: string | undefined,
-) {
+export function getImageId(icon: string | null, color: string | null) {
   return `image-${icon || "none"}-${color || "none"}`;
 }

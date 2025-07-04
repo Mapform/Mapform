@@ -15,7 +15,8 @@ export function rowsToGeoJSON(rows: NonNullable<GetProject["data"]>["rows"]) {
         id: row.id,
         name: row.name,
         icon: row.icon,
-        flat_icon: getImageId(row.icon ?? undefined, undefined),
+        // Image id is used to load the image into the map
+        flat_icon: getImageId(row.icon, null),
       },
     })),
   } satisfies GeoJSON.FeatureCollection;

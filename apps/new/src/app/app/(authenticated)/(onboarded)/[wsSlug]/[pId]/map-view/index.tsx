@@ -146,7 +146,7 @@ function MapViewInner({
             <Layer
               id={`${POINTS_LAYER_ID}-symbols`}
               type="symbol"
-              // filter={["has", "flat_icon"]}
+              filter={["has", "flat_icon"]}
               layout={{
                 "icon-image": ["get", "flat_icon"],
                 "icon-size": 0.55,
