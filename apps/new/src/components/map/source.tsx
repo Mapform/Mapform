@@ -1,4 +1,4 @@
-import { useEffect, createContext, useContext } from "react";
+import { useEffect, createContext, useContext, useMemo } from "react";
 import { useMap } from "./index";
 import { loadPointImage } from "~/lib/map/point-image-utils";
 import type { RowGeoJSON } from "~/lib/rows-to-geojson";
@@ -27,6 +27,9 @@ export const Source = ({
 }: SourceProps) => {
   const { map } = useMap();
 
+  // Memoize the data to prevent unnecessary re-renders
+  const memoizedData = useMemo(() => data, [JSON.stringify(data)]);
+
   /**
    * Configure source when data changes
    */
@@ -36,12 +39,12 @@ export const Source = ({
     // Check if source already exists
     if (map.getSource(id)) {
       // Update existing source
-      (map.getSource(id) as mapboxgl.GeoJSONSource).setData(data);
+      (map.getSource(id) as mapboxgl.GeoJSONSource).setData(memoizedData);
     } else {
       // Add new source
       map.addSource(id, {
         type,
-        data,
+        data: memoizedData,
       });
     }
 
@@ -61,7 +64,7 @@ export const Source = ({
         map.removeSource(id);
       }
     };
-  }, [data]);
+  }, [memoizedData]);
 
   /**
    * Handle loading images for points
@@ -74,7 +77,7 @@ export const Source = ({
         icon: string | null;
         color: string | null;
       }>();
-      data.features
+      memoizedData.features
         .filter(
           (f) =>
             f.geometry.type === "Point" || f.geometry.type === "MultiPoint",
@@ -96,7 +99,7 @@ export const Source = ({
     };
 
     void loadPointImages();
-  }, [data]);
+  }, [memoizedData]);
 
   return (
     <SourceContext.Provider value={{ sourceId: id }}>
