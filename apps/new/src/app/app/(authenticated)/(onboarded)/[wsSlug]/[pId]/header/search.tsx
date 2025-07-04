@@ -107,8 +107,10 @@ export function Search() {
               {searchQuery && (
                 <CommandItem onSelect={handleChat}>
                   <MessageCircle className="text-muted-foreground mr-2 size-4" />
-                  {searchQuery}
-                  <span className="text-muted-foreground ml-1"> — Chat</span>
+                  <span className="truncate">{searchQuery}</span>
+                  <span className="text-muted-foreground ml-1 flex-shrink-0">
+                    — Chat
+                  </span>
                 </CommandItem>
               )}
               {vectorSearchResults?.map((result) => (
@@ -126,12 +128,14 @@ export function Search() {
                   }}
                 >
                   {projectService.optimisticState.icon ? (
-                    <span>{projectService.optimisticState.icon}</span>
+                    <span className="text-muted-foreground mr-2">
+                      {projectService.optimisticState.icon}
+                    </span>
                   ) : (
                     <BoxIcon className="text-muted-foreground mr-2 size-4" />
                   )}
-                  {result.name}
-                  <span className="text-muted-foreground ml-1">
+                  <span className="truncate">{result.name}</span>
+                  <span className="text-muted-foreground ml-1 flex-shrink-0">
                     {" "}
                     — From {projectService.optimisticState.name ?? "your map"}
                   </span>
@@ -143,8 +147,13 @@ export function Search() {
                   value={feature.properties?.place_id}
                 >
                   <GlobeIcon className="text-muted-foreground mr-2 size-4" />
-                  {feature.properties?.name ??
-                    feature.properties?.address_line1}
+                  <span className="truncate">
+                    {feature.properties?.name ??
+                      feature.properties?.address_line1}
+                  </span>
+                  {/* <span className="text-muted-foreground ml-1 flex-shrink-0">
+                    — From {feature.properties?.country}
+                  </span> */}
                 </CommandItem>
               ))}
             </CommandGroup>
