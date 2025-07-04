@@ -59,7 +59,7 @@ export function MapDrawer({
                 {/* Overlay when feature is displayed over the drawer */}
                 <div
                   className={cn(
-                    "pointer-events-none absolute inset-0 z-50 bg-gray-950 transition-opacity duration-200",
+                    "pointer-events-none absolute inset-0 z-50 rounded-lg bg-gray-950 transition-opacity duration-200",
                     {
                       "opacity-50": !!rowId,
                       "opacity-0": !rowId,
