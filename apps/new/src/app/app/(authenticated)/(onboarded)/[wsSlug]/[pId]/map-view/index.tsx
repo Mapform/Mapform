@@ -15,6 +15,7 @@ import { MapContextMenu } from "./map-context-menu";
 import { useParamsContext } from "~/lib/params/client";
 
 const POINTS_LAYER_ID = "points-layer";
+const POINTS_SYMBOLS_LAYER_ID = "points-symbols-layer";
 const LINES_LAYER_ID = "lines-layer";
 const POLYGONS_FILL_LAYER_ID = "polygons-fill-layer";
 const POLYGONS_OUTLINE_LAYER_ID = "polygons-outline-layer";
@@ -65,7 +66,7 @@ function MapViewInner({
     const features = e.target.queryRenderedFeatures(e.point, {
       layers: [
         POINTS_LAYER_ID,
-        `${POINTS_LAYER_ID}-symbols`,
+        POINTS_SYMBOLS_LAYER_ID,
         LINES_LAYER_ID,
         POLYGONS_FILL_LAYER_ID,
       ],
@@ -132,19 +133,20 @@ function MapViewInner({
           {/* Points Layer */}
           <Source id="points-source" data={rowsToGeoJSON(pointRows)}>
             {/* Basic points layer - always show */}
-            {/* <Layer
+            <Layer
               id={POINTS_LAYER_ID}
               type="circle"
+              filter={["!", ["has", "flat_icon"]]}
               paint={{
                 "circle-radius": 8,
                 "circle-color": "#3b82f6",
                 "circle-stroke-width": 2,
                 "circle-stroke-color": "#ffffff",
               }}
-            /> */}
+            />
             {/* Emoji markers - only show if flat_icon exists */}
             <Layer
-              id={`${POINTS_LAYER_ID}-symbols`}
+              id={POINTS_SYMBOLS_LAYER_ID}
               type="symbol"
               filter={["has", "flat_icon"]}
               layout={{
