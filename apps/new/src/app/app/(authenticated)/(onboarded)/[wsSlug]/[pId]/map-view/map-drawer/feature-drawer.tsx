@@ -1,6 +1,5 @@
 import { SmilePlusIcon, XIcon } from "lucide-react";
 import { Button } from "@mapform/ui/components/button";
-import { DrawerPrimitive } from "@mapform/ui/components/drawer";
 import { useProject } from "../../context";
 import { DRAWER_WIDTH } from "../constants";
 import { AutoSizeTextArea } from "@mapform/ui/components/autosize-text-area";
@@ -15,6 +14,7 @@ import { Blocknote } from "@mapform/blocknote/editor";
 import { PropertyValueEditor } from "../../properties/property-value-editor";
 import { PropertyColumnEditor } from "../../properties/property-column-editor";
 import { useParamsContext } from "~/lib/params/client";
+import { AnimatePresence, motion } from "motion/react";
 
 interface FeatureDrawerProps {
   containerRef: React.RefObject<HTMLDivElement | null>;
@@ -29,27 +29,22 @@ export function FeatureDrawer({ containerRef }: FeatureDrawerProps) {
   } = useParamsContext();
 
   return (
-    <DrawerPrimitive.NestedRoot
-      container={containerRef.current}
-      open={!!rowId}
-      direction="left"
-      modal={false}
-      dismissible={false}
-      onOpenChange={(open) => {
-        if (!open) {
-          void setQueryStates({ rowId: null });
-        }
-      }}
-    >
-      <DrawerPrimitive.Portal>
-        <DrawerPrimitive.Content
+    <AnimatePresence>
+      {rowId && (
+        <motion.div
           // point-events-auto needed to work around Vaul bug: https://github.com/emilkowalski/vaul/pull/576
           className="!pointer-events-auto absolute bottom-2 left-2 top-2 z-20 flex !select-text outline-none"
-          style={
-            {
-              width: DRAWER_WIDTH - 16,
-            } as React.CSSProperties
-          }
+          style={{
+            width: DRAWER_WIDTH - 16,
+          }}
+          initial={{ x: -DRAWER_WIDTH + 16 }}
+          animate={{ x: 0 }}
+          exit={{ x: -DRAWER_WIDTH + 16 }}
+          transition={{
+            type: "spring",
+            stiffness: 300,
+            damping: 30,
+          }}
         >
           <div className="flex h-full w-full grow flex-col overflow-y-auto rounded-lg border bg-white p-6">
             <Button
@@ -168,8 +163,8 @@ export function FeatureDrawer({ containerRef }: FeatureDrawerProps) {
               </div>
             )}
           </div>
-        </DrawerPrimitive.Content>
-      </DrawerPrimitive.Portal>
-    </DrawerPrimitive.NestedRoot>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
