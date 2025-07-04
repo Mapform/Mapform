@@ -6,6 +6,7 @@ import { searchRowsSchema } from "./schema";
 import type { UnwrapReturn, UserAuthClient } from "../../../lib/types";
 import { cosineDistance, desc, eq } from "@mapform/db/utils";
 import { openai } from "../../../clients/openai";
+import { Geometry, Point } from "geojson";
 
 export const searchRows = (authClient: UserAuthClient) =>
   authClient
@@ -40,6 +41,15 @@ export const searchRows = (authClient: UserAuthClient) =>
         const rowResults = await db.query.rows.findMany({
           where: sql`${similarity} > 0.3`,
           orderBy: [desc(similarity)],
+          extras: {
+            geometry: sql<Geometry>`ST_AsGeoJSON(${rows.geometry})::jsonb`.as(
+              "geometry",
+            ),
+            center:
+              sql<Point>`ST_AsGeoJSON(ST_Centroid(${rows.geometry}))::jsonb`.as(
+                "center",
+              ),
+          },
         });
 
         return rowResults;

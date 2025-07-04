@@ -11,8 +11,10 @@ import {
 } from "@mapform/ui/components/command";
 import { useParamsContext } from "~/lib/params/client";
 import { useProject } from "../context";
+import { useMap } from "~/components/map";
 
 export function Search() {
+  const { map } = useMap();
   const { projectService, vectorSearchResults, geoapifySearchResults } =
     useProject();
   const [searchFocused, setSearchFocused] = useState(false);
@@ -110,7 +112,19 @@ export function Search() {
                 </CommandItem>
               )}
               {vectorSearchResults?.map((result) => (
-                <CommandItem key={result.id} value={result.id}>
+                <CommandItem
+                  key={result.id}
+                  value={result.id}
+                  onSelect={async () => {
+                    console.log("clicked", result.id);
+                    await setQueryStates({ rowId: result.id });
+                    setSearchFocused(false);
+                    map?.flyTo({
+                      center: result.center.coordinates as [number, number],
+                      duration: 500,
+                    });
+                  }}
+                >
                   {projectService.optimisticState.icon ? (
                     <span>{projectService.optimisticState.icon}</span>
                   ) : (
