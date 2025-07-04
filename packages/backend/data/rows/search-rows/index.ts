@@ -25,7 +25,7 @@ export const searchRows = (authClient: UserAuthClient) =>
         }
 
         const response = await openai.embeddings.create({
-          input: [query],
+          input: [query.toLowerCase()],
           model: "text-embedding-3-small",
         });
 
@@ -38,7 +38,7 @@ export const searchRows = (authClient: UserAuthClient) =>
         const similarity = sql<number>`1 - (${cosineDistance(rows.embedding, embedding)})`;
 
         const rowResults = await db.query.rows.findMany({
-          where: sql`${similarity} > 0.5`,
+          where: sql`${similarity} > 0.3`,
           orderBy: [desc(similarity)],
         });
 

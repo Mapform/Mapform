@@ -51,7 +51,7 @@ export function FeatureDrawer({ containerRef }: FeatureDrawerProps) {
             } as React.CSSProperties
           }
         >
-          <div className="flex h-full w-full grow flex-col rounded-lg border bg-white p-6">
+          <div className="flex h-full w-full grow flex-col overflow-y-auto rounded-lg border bg-white p-6">
             <Button
               className="absolute right-4 top-4"
               size="icon-sm"
@@ -149,10 +149,11 @@ export function FeatureDrawer({ containerRef }: FeatureDrawerProps) {
                 </header>
                 <Blocknote
                   content={featureService.optimisticState.description}
-                  onChange={(content) => {
+                  onChange={({ blocks, markdown }) => {
                     featureService.execute({
                       id: featureService.optimisticState!.id,
-                      description: content,
+                      description: blocks,
+                      descriptionAsMarkdown: markdown ?? undefined,
                     });
                   }}
                 />

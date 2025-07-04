@@ -10,6 +10,7 @@
     "@blocknote/core": "catalog:",
     "@blocknote/mantine": "catalog:",
     "@blocknote/react": "catalog:",
+    "@blocknote/server-util": "catalog:",
     "@mapform/lib": "workspace:*",
     "@mapform/ui": "workspace:*",
     "@tanstack/react-query": "catalog:",

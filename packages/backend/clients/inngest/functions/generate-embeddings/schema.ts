@@ -13,8 +13,10 @@ export const generateEmbeddingsEvent = z.object({
     rows: z.array(
       z.object({
         id: selectRowSchema.shape.id,
+        icon: selectRowSchema.shape.icon,
         name: selectRowSchema.shape.name,
         description: selectRowSchema.shape.description,
+        descriptionAsMarkdown: z.string().optional(),
         cells: z.array(
           z.object({
             id: selectCellSchema.shape.id,

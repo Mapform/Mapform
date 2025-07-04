@@ -1,6 +1,7 @@
 import "@blocknote/core/fonts/inter.css";
 import { BlockNoteView } from "@blocknote/mantine";
 import "@blocknote/mantine/style.css";
+
 import {
   DragHandleButton,
   SideMenu,
@@ -12,7 +13,10 @@ import { schema, type CustomBlock } from "./schema";
 
 interface BlocknoteProps {
   content: CustomBlock[] | null;
-  onChange: (content: CustomBlock[] | null) => void;
+  onChange: (content: {
+    blocks: CustomBlock[] | null;
+    markdown: string | null;
+  }) => void;
 }
 
 export function Blocknote({ content, onChange }: BlocknoteProps) {
@@ -29,8 +33,11 @@ export function Blocknote({ content, onChange }: BlocknoteProps) {
       editor={editor}
       sideMenu={false}
       className="h-full"
-      onChange={() => {
-        onChange(editor.document);
+      onChange={async () => {
+        onChange({
+          blocks: editor.document,
+          markdown: await editor.blocksToMarkdownLossy(editor.document),
+        });
       }}
     >
       <SideMenuController

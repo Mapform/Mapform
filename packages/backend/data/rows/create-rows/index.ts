@@ -84,6 +84,7 @@ export const createRows = (authClient: UserAuthClient) =>
           data: {
             rows: newRows.map((r) => ({
               id: r.id,
+              icon: r.icon,
               name: r.name,
               description: r.description,
               cells: [],
