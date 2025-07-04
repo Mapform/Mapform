@@ -73,12 +73,17 @@ export const Source = ({
         icon: string | undefined;
         color: string | undefined;
       }>();
-      data.features.forEach((feature) => {
-        const icon = feature.properties?.icon;
-        const color = undefined;
+      data.features
+        .filter(
+          (f) =>
+            f.geometry.type === "Point" || f.geometry.type === "MultiPoint",
+        )
+        .forEach((feature) => {
+          const icon = feature.properties?.icon;
+          const color = undefined;
 
-        uniqueIcons.add({ icon, color });
-      });
+          uniqueIcons.add({ icon, color });
+        });
 
       for (const { icon, color } of uniqueIcons) {
         const imageId = getImageId(icon, color);
