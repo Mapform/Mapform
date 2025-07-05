@@ -20,6 +20,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { Separator } from "@mapform/ui/components/separator";
 import { Badge } from "@mapform/ui/components/badge";
 import { useWikidataImage } from "~/lib/wikidata-image";
+import Image from "next/image";
 
 export function DetailsDrawer() {
   const { geoapifyPlaceDetails } = useProject();
@@ -28,8 +29,6 @@ export function DetailsDrawer() {
     params: { geoapifyPlaceId },
     setQueryStates,
   } = useParamsContext();
-
-  console.log(1111, geoapifyPlaceDetails);
 
   const place = geoapifyPlaceDetails?.features[0]?.properties;
   const wikidataId = place?.datasource?.raw?.wikidata;
@@ -87,7 +86,7 @@ export function DetailsDrawer() {
     return { fullStars, hasHalfStar };
   };
 
-  const isOSMSource = place?.datasource?.raw?.osm;
+  const isOSMSource = place?.datasource?.sourcename === "openstreetmap";
 
   return (
     <AnimatePresence>
@@ -144,10 +143,11 @@ export function DetailsDrawer() {
                           <Skeleton className="h-full w-full" />
                         </div>
                       ) : wikidataImage ? (
-                        <img
+                        <Image
+                          fill
                           src={wikidataImage}
                           alt={`${place.name || "Place"} cover photo`}
-                          className="h-full w-full object-cover"
+                          className="h-32 w-full object-cover"
                         />
                       ) : null}
                     </div>

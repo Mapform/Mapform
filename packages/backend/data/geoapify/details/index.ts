@@ -81,6 +81,7 @@ interface GeoapifyPlaceDetails {
           };
           wikidata?: string;
         };
+        sourcename?: string;
       };
     };
     geometry?: {
