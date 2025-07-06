@@ -8,6 +8,7 @@ import { useMap } from "~/components/map";
 import { useParamsContext } from "~/lib/params/client";
 import { DetailsDrawer } from "./details-drawer";
 import { MapDrawer, MapDrawerActions } from "~/components/map-drawer";
+import { useRef } from "react";
 import { Search } from "../../search";
 
 interface MapDrawerProps {
@@ -23,13 +24,18 @@ export function Drawers({ drawerOpen, setDrawerOpen }: MapDrawerProps) {
     setQueryStates,
   } = useParamsContext();
   const isDesktop = useMediaQuery("(min-width: 768px)");
+  const mapDrawerRef = useRef<HTMLDivElement>(null);
 
   if (isDesktop) {
     return (
       <>
-        <MapDrawer open={drawerOpen} depth={rowId || geoapifyPlaceId ? 1 : 0}>
+        <MapDrawer
+          ref={mapDrawerRef}
+          open={drawerOpen}
+          depth={rowId || geoapifyPlaceId ? 1 : 0}
+        >
           <MapDrawerActions>
-            <Search />
+            <Search ref={mapDrawerRef} />
             <Button
               className="absolute right-2 top-2 z-30"
               size="icon"

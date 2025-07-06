@@ -15,11 +15,12 @@ interface MapDrawerProps {
   open: boolean;
   depth?: number;
   children: React.ReactNode;
+  ref: React.RefObject<HTMLDivElement | null>;
 }
 
 const DRAWER_WIDTH = 360;
 
-export function MapDrawer({ open, depth = 0, children }: MapDrawerProps) {
+export function MapDrawer({ open, depth = 0, children, ref }: MapDrawerProps) {
   return (
     <AnimatePresence>
       {open && (
@@ -39,6 +40,7 @@ export function MapDrawer({ open, depth = 0, children }: MapDrawerProps) {
             stiffness: 300,
             damping: 30,
           }}
+          ref={ref}
         >
           {/* Copy content with mask when when other drawers open on top */}
           <div
@@ -67,7 +69,12 @@ export function MapDrawerActions({
   className?: string;
 }) {
   return (
-    <div className={cn("relative -mx-6 -mt-6 flex h-[52px] p-2", className)}>
+    <div
+      className={cn(
+        "sticky -top-6 z-30 -mx-6 -mt-6 flex h-[52px] p-2",
+        className,
+      )}
+    >
       {children}
     </div>
   );
