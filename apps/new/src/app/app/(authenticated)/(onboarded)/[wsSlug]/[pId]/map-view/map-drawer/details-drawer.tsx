@@ -44,8 +44,6 @@ export function DetailsDrawer() {
     isLoading: imagesLoading,
   } = useWikidataImages(wikidataId);
 
-  console.log(1111222, images, primaryImage, imagesLoading);
-
   const formatOpeningHours = (hours: string) => {
     if (!hours) return null;
 
@@ -215,7 +213,9 @@ export function DetailsDrawer() {
                 {/* Header */}
                 <div className="space-y-2">
                   <h1 className="text-2xl font-bold text-gray-900">
-                    {place.name_international?.en || "Unnamed Place"}
+                    {place.name_international?.en ||
+                      place.name ||
+                      "Unnamed Place"}
                   </h1>
                   {place.rating && (
                     <div className="flex items-center gap-2">
