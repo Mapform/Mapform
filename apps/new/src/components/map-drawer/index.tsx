@@ -1,5 +1,11 @@
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+} from "@mapform/ui/components/carousel";
 import { AnimatePresence, motion } from "motion/react";
-import { DRAWER_WIDTH } from "~/app/app/(authenticated)/(onboarded)/[wsSlug]/[pId]/map-view/constants";
+import Image from "next/image";
+import type { WikidataImageItem } from "~/lib/wikidata-image";
 
 interface MapDrawerProps {
   // isPending: boolean;
@@ -7,6 +13,8 @@ interface MapDrawerProps {
   depth?: number;
   children: React.ReactNode;
 }
+
+const DRAWER_WIDTH = 360;
 
 export function MapDrawer({ open, depth = 0, children }: MapDrawerProps) {
   return (
@@ -44,4 +52,33 @@ export function MapDrawerActionButton({
   children: React.ReactNode;
 }) {
   return <div className="-mx-6 -mt-6">{children}</div>;
+}
+
+interface MapDrawerImagesProps {
+  images: WikidataImageItem[];
+}
+
+export function MapDrawerImages({ images }: MapDrawerImagesProps) {
+  return (
+    <Carousel color="w-full h-32">
+      <CarouselContent>
+        {images.map((image) => (
+          <CarouselItem
+            className="h-32 w-full basis-4/5 rounded-lg pl-2"
+            key={image.imageUrl}
+          >
+            <Image
+              src={image.imageUrl}
+              alt="Image"
+              fill
+              style={{
+                objectFit: "cover",
+                objectPosition: "top center",
+              }}
+            />
+          </CarouselItem>
+        ))}
+      </CarouselContent>
+    </Carousel>
+  );
 }

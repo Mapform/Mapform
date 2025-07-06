@@ -19,7 +19,7 @@ import { Separator } from "@mapform/ui/components/separator";
 import { Badge } from "@mapform/ui/components/badge";
 import { useWikidataImage, useWikidataImages } from "~/lib/wikidata-image";
 import Image from "next/image";
-import { MapDrawer } from "~/components/map-drawer";
+import { MapDrawer, MapDrawerImages } from "~/components/map-drawer";
 
 export function DetailsDrawer() {
   const { geoapifyPlaceDetails } = useProject();
@@ -117,7 +117,7 @@ export function DetailsDrawer() {
       ) : place ? (
         <div className="space-y-6">
           {/* Cover Photo - Wikidata Image for OSM sources */}
-          {isOSMSource && (wikidataImage || imageLoading) && (
+          {/* {isOSMSource && (wikidataImage || imageLoading) && (
             <div className="space-y-2">
               <div className="flex items-center gap-2">
                 <ImageIcon className="h-4 w-4 text-gray-500" />
@@ -190,13 +190,14 @@ export function DetailsDrawer() {
                 </div>
               )}
             </div>
-          )}
+          )} */}
 
           {/* Header */}
           <div className="space-y-2">
             <h1 className="text-2xl font-bold text-gray-900">
               {place.name_international?.en || place.name || "Unnamed Place"}
             </h1>
+            <MapDrawerImages images={images} />
             {place.rating && (
               <div className="flex items-center gap-2">
                 <div className="flex items-center">
