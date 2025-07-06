@@ -89,16 +89,29 @@ export function Search({
         <div className="relative z-20 flex items-center gap-1" ref={inputRef}>
           <AnimatePresence>
             {searchFocused ? (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setSearchFocused(false)}
-                className="absolute left-3 top-1/2 z-10 size-4 -translate-y-1/2"
-              >
-                <ChevronLeftIcon className="size-4" />
-              </Button>
+              <>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setSearchFocused(false)}
+                  className="absolute left-0 top-0 z-10"
+                >
+                  <ChevronLeftIcon className="size-4" />
+                </Button>
+                <Button
+                  type="button"
+                  disabled={!searchQuery}
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setQueryStates({ query: "" })}
+                  className="bg-muted absolute right-0 top-0 z-50"
+                >
+                  <XIcon className="size-4" />
+                </Button>
+              </>
             ) : (
-              <SearchIcon className="text-muted-foreground pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2" />
+              <SearchIcon className="text-muted-foreground pointer-events-none absolute left-2.5 top-1/2 size-4 -translate-y-1/2" />
             )}
           </AnimatePresence>
           <Input
