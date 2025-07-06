@@ -1,10 +1,13 @@
+import { cn } from "@mapform/lib/classnames";
 import {
   Carousel,
+  CarouselApi,
   CarouselContent,
   CarouselItem,
 } from "@mapform/ui/components/carousel";
 import { AnimatePresence, motion } from "motion/react";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 import type { WikidataImageItem } from "~/lib/wikidata-image";
 
 interface MapDrawerProps {
@@ -59,6 +62,17 @@ interface MapDrawerImagesProps {
 }
 
 export function MapDrawerImages({ images }: MapDrawerImagesProps) {
+  const [api, setApi] = useState<CarouselApi>();
+  const [current, setCurrent] = useState(0);
+
+  useEffect(() => {
+    if (!api) return;
+
+    api.on("select", () => {
+      setCurrent(api.selectedScrollSnap());
+    });
+  }, [api]);
+
   return (
     <Carousel
       className="-mx-6 w-[calc(100%+3rem)]"
@@ -66,11 +80,17 @@ export function MapDrawerImages({ images }: MapDrawerImagesProps) {
         loop: true,
         align: "center",
       }}
+      setApi={setApi}
     >
       <CarouselContent className="ml-0">
-        {images.map((image) => (
+        {images.map((image, index) => (
           <CarouselItem
-            className="relative h-40 basis-4/5 pl-1"
+            className={cn(
+              "relative h-40 basis-[calc(100%-2rem)] pl-1 transition-opacity duration-300",
+              {
+                "opacity-20": current !== index,
+              },
+            )}
             key={image.imageUrl}
           >
             <div className="relative size-full overflow-hidden rounded-lg">
