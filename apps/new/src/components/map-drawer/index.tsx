@@ -60,22 +60,27 @@ interface MapDrawerImagesProps {
 
 export function MapDrawerImages({ images }: MapDrawerImagesProps) {
   return (
-    <Carousel color="w-full h-32">
-      <CarouselContent>
+    <Carousel
+      className="-mx-6 w-[calc(100%+3rem)]"
+      opts={{
+        loop: true,
+        align: "center",
+      }}
+    >
+      <CarouselContent className="ml-0">
         {images.map((image) => (
           <CarouselItem
-            className="h-32 w-full basis-4/5 rounded-lg pl-2"
+            className="relative h-40 basis-4/5 pl-1"
             key={image.imageUrl}
           >
-            <Image
-              src={image.imageUrl}
-              alt="Image"
-              fill
-              style={{
-                objectFit: "cover",
-                objectPosition: "top center",
-              }}
-            />
+            <div className="relative size-full overflow-hidden rounded-lg">
+              <Image
+                src={image.imageUrl}
+                alt="Image"
+                fill
+                className="h-full w-full object-cover object-center"
+              />
+            </div>
           </CarouselItem>
         ))}
       </CarouselContent>
