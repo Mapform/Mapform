@@ -5,7 +5,7 @@ import { rowsToGeoJSON } from "~/lib/rows-to-geojson";
 import { useMemo, useState } from "react";
 import { useMediaQuery } from "@mapform/ui/hooks/use-media-query";
 import { useProject } from "../context";
-import { MapDrawer } from "./map-drawer/index";
+import { Drawers } from "./drawers/index";
 import { DRAWER_WIDTH } from "./constants";
 import { MapControls } from "./map-controls";
 import { PanelLeftOpenIcon } from "lucide-react";
@@ -207,7 +207,7 @@ function MapViewInner({
         >
           <PanelLeftOpenIcon className="size-4" />
         </Button>
-        <MapDrawer drawerOpen={drawerOpen} setDrawerOpen={setDrawerOpen} />
+        <Drawers drawerOpen={drawerOpen} setDrawerOpen={setDrawerOpen} />
         <MapControls />
       </div>
     </div>
