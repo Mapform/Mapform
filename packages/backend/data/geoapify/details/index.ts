@@ -11,6 +11,9 @@ interface GeoapifyPlaceDetails {
     properties: {
       place_id: string;
       name?: string;
+      name_international?: {
+        en: string;
+      };
       country: string;
       country_code: string;
       region: string;

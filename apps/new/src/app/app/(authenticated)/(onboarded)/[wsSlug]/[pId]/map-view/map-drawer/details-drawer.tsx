@@ -19,7 +19,7 @@ import { useParamsContext } from "~/lib/params/client";
 import { AnimatePresence, motion } from "motion/react";
 import { Separator } from "@mapform/ui/components/separator";
 import { Badge } from "@mapform/ui/components/badge";
-import { useWikidataImage } from "~/lib/wikidata-image";
+import { useWikidataImage, useWikidataImages } from "~/lib/wikidata-image";
 import Image from "next/image";
 
 export function DetailsDrawer() {
@@ -32,8 +32,19 @@ export function DetailsDrawer() {
 
   const place = geoapifyPlaceDetails?.features[0]?.properties;
   const wikidataId = place?.datasource?.raw?.wikidata;
-  const { imageUrl: wikidataImage, isLoading: imageLoading } =
-    useWikidataImage(wikidataId);
+  const {
+    imageUrl: wikidataImage,
+    attribution,
+    isLoading: imageLoading,
+  } = useWikidataImage(wikidataId);
+
+  const {
+    images,
+    primaryImage,
+    isLoading: imagesLoading,
+  } = useWikidataImages(wikidataId);
+
+  console.log(1111222, images, primaryImage, imagesLoading);
 
   const formatOpeningHours = (hours: string) => {
     if (!hours) return null;
@@ -146,22 +157,56 @@ export function DetailsDrawer() {
                         <Image
                           fill
                           src={wikidataImage}
-                          alt={`${place.name || "Place"} cover photo`}
+                          alt={`${place.name_international?.en || "Place"} cover photo`}
                           className="h-32 w-full object-cover"
                         />
                       ) : null}
                     </div>
                     {wikidataId && (
-                      <div className="text-xs text-gray-500">
-                        Data from OpenStreetMap •
-                        <a
-                          href={`https://www.wikidata.org/wiki/${wikidataId}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="ml-1 text-blue-600 hover:text-blue-800"
-                        >
-                          View on Wikidata
-                        </a>
+                      <div className="space-y-1 text-xs text-gray-500">
+                        <div>
+                          Data from OpenStreetMap •
+                          <a
+                            href={`https://www.wikidata.org/wiki/${wikidataId}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="ml-1 text-blue-600 hover:text-blue-800"
+                          >
+                            View on Wikidata
+                          </a>
+                        </div>
+                        {attribution && (
+                          <div className="space-y-1">
+                            {attribution.author && (
+                              <div>Photo by: {attribution.author}</div>
+                            )}
+                            {attribution.license && (
+                              <div>
+                                License: {attribution.license}
+                                {attribution.licenseUrl && (
+                                  <a
+                                    href={attribution.licenseUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="ml-1 text-blue-600 hover:text-blue-800"
+                                  >
+                                    (View)
+                                  </a>
+                                )}
+                              </div>
+                            )}
+                            {attribution.sourceUrl && (
+                              <a
+                                href={attribution.sourceUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-600 hover:text-blue-800"
+                              >
+                                View on Wikimedia Commons
+                              </a>
+                            )}
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
@@ -170,7 +215,7 @@ export function DetailsDrawer() {
                 {/* Header */}
                 <div className="space-y-2">
                   <h1 className="text-2xl font-bold text-gray-900">
-                    {place.name || "Unnamed Place"}
+                    {place.name_international?.en || "Unnamed Place"}
                   </h1>
                   {place.rating && (
                     <div className="flex items-center gap-2">
