@@ -77,6 +77,7 @@ export const Map = ({
 
     const instance = new mapboxgl.Map({
       container: mapContainer.current,
+      logoPosition: "bottom-right",
     });
 
     instance.on("load", () => {
