@@ -67,7 +67,7 @@ export function Search() {
 
   return (
     <div
-      className="-mx-6 -mt-6 border-b"
+      className="size-full"
       onClick={(e) => e.stopPropagation()}
       onMouseDown={(e) => e.stopPropagation()}
       onFocus={(e) => e.stopPropagation()}
@@ -75,7 +75,7 @@ export function Search() {
       onKeyDown={(e) => e.stopPropagation()}
     >
       <Command>
-        <div className="relative z-20 m-2 flex items-center gap-1">
+        <div className="relative z-20 flex items-center gap-1">
           <SearchIcon className="text-muted-foreground pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2" />
           <Input
             value={searchQuery}
@@ -83,9 +83,9 @@ export function Search() {
             onFocus={() => setSearchFocused(true)}
             onChange={(e) => setSearchQuery(e.target.value)}
             className={cn(
-              "hover:bg-muted w-full border-none pl-10 shadow-none",
+              "hover:bg-muted w-full border-none pl-10 shadow-none !ring-0",
               {
-                "bg-muted ring-ring ring-1": searchFocused,
+                "bg-muted": searchFocused,
               },
             )}
             placeholder="Search or ask..."

@@ -19,7 +19,11 @@ import { Separator } from "@mapform/ui/components/separator";
 import { Badge } from "@mapform/ui/components/badge";
 import { useWikidataImage, useWikidataImages } from "~/lib/wikidata-image";
 import Image from "next/image";
-import { MapDrawer, MapDrawerImages } from "~/components/map-drawer";
+import {
+  MapDrawer,
+  MapDrawerActions,
+  MapDrawerImages,
+} from "~/components/map-drawer";
 
 export function DetailsDrawer() {
   const { geoapifyPlaceDetails } = useProject();
@@ -98,17 +102,19 @@ export function DetailsDrawer() {
 
   return (
     <MapDrawer open={!!geoapifyPlaceId}>
-      <Button
-        className="absolute right-4 top-4"
-        size="icon-sm"
-        type="button"
-        variant="ghost"
-        onClick={() => {
-          void setQueryStates({ geoapifyPlaceId: null });
-        }}
-      >
-        <XIcon className="size-4" />
-      </Button>
+      <MapDrawerActions>
+        <Button
+          className="ml-auto"
+          size="icon"
+          type="button"
+          variant="ghost"
+          onClick={() => {
+            void setQueryStates({ geoapifyPlaceId: null });
+          }}
+        >
+          <XIcon className="size-4" />
+        </Button>
+      </MapDrawerActions>
       {isPending ? (
         <>
           <Skeleton className="mb-2 size-8 rounded-full" />

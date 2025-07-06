@@ -1,5 +1,4 @@
 import { useMediaQuery } from "@mapform/ui/hooks/use-media-query";
-import { cn } from "@mapform/lib/classnames";
 import { Header } from "../../header";
 import { FeatureDrawer } from "./feature-drawer";
 import { useProject } from "../../context";
@@ -8,7 +7,8 @@ import { XIcon } from "lucide-react";
 import { useMap } from "~/components/map";
 import { useParamsContext } from "~/lib/params/client";
 import { DetailsDrawer } from "./details-drawer";
-import { MapDrawer } from "~/components/map-drawer";
+import { MapDrawer, MapDrawerActions } from "~/components/map-drawer";
+import { Search } from "../../search";
 
 interface MapDrawerProps {
   drawerOpen: boolean;
@@ -28,27 +28,20 @@ export function Drawers({ drawerOpen, setDrawerOpen }: MapDrawerProps) {
     return (
       <>
         <MapDrawer open={drawerOpen} depth={rowId || geoapifyPlaceId ? 1 : 0}>
-          <div
-            className={cn(
-              "pointer-events-none absolute inset-0 z-50 rounded-lg bg-gray-950 transition-opacity duration-200",
-              {
-                "opacity-50": !!rowId || !!geoapifyPlaceId,
-                "opacity-0": !rowId && !geoapifyPlaceId,
-              },
-            )}
-          />
-
-          <Button
-            className="absolute right-2.5 top-2.5 z-10"
-            size="icon-sm"
-            type="button"
-            variant="ghost"
-            onClick={() => {
-              setDrawerOpen(false);
-            }}
-          >
-            <XIcon className="size-4" />
-          </Button>
+          <MapDrawerActions>
+            <Search />
+            <Button
+              className="absolute right-2 top-2 z-30"
+              size="icon"
+              type="button"
+              variant="ghost"
+              onClick={() => {
+                setDrawerOpen(false);
+              }}
+            >
+              <XIcon className="size-4" />
+            </Button>
+          </MapDrawerActions>
           <Header />
           <ul className="flex flex-col gap-2">
             {projectService.optimisticState.rows.map((row) => (

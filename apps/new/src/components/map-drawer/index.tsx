@@ -1,7 +1,7 @@
 import { cn } from "@mapform/lib/classnames";
+import type { CarouselApi } from "@mapform/ui/components/carousel";
 import {
   Carousel,
-  CarouselApi,
   CarouselContent,
   CarouselItem,
 } from "@mapform/ui/components/carousel";
@@ -40,6 +40,16 @@ export function MapDrawer({ open, depth = 0, children }: MapDrawerProps) {
             damping: 30,
           }}
         >
+          {/* Copy content with mask when when other drawers open on top */}
+          <div
+            className={cn(
+              "pointer-events-none absolute inset-0 z-50 rounded-lg bg-gray-950 transition-opacity duration-200",
+              {
+                "opacity-50": depth > 0,
+                "opacity-0": depth === 0,
+              },
+            )}
+          />
           <div className="flex h-full w-full grow flex-col overflow-y-auto rounded-lg border bg-white p-6">
             {children}
           </div>
@@ -49,12 +59,18 @@ export function MapDrawer({ open, depth = 0, children }: MapDrawerProps) {
   );
 }
 
-export function MapDrawerActionButton({
+export function MapDrawerActions({
   children,
+  className,
 }: {
   children: React.ReactNode;
+  className?: string;
 }) {
-  return <div className="-mx-6 -mt-6">{children}</div>;
+  return (
+    <div className={cn("relative -mx-6 -mt-6 flex h-[52px] p-2", className)}>
+      {children}
+    </div>
+  );
 }
 
 interface MapDrawerImagesProps {

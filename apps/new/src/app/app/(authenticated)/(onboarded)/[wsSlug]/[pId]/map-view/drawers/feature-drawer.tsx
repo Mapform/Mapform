@@ -13,7 +13,7 @@ import { Blocknote } from "@mapform/blocknote/editor";
 import { PropertyValueEditor } from "../../properties/property-value-editor";
 import { PropertyColumnEditor } from "../../properties/property-column-editor";
 import { useParamsContext } from "~/lib/params/client";
-import { MapDrawer } from "~/components/map-drawer";
+import { MapDrawer, MapDrawerActions } from "~/components/map-drawer";
 
 export function FeatureDrawer() {
   const { featureService, projectService } = useProject();
@@ -25,17 +25,19 @@ export function FeatureDrawer() {
 
   return (
     <MapDrawer open={!!rowId}>
-      <Button
-        className="absolute right-4 top-4"
-        size="icon-sm"
-        type="button"
-        variant="ghost"
-        onClick={() => {
-          void setQueryStates({ rowId: null });
-        }}
-      >
-        <XIcon className="size-4" />
-      </Button>
+      <MapDrawerActions>
+        <Button
+          className="ml-auto"
+          size="icon"
+          type="button"
+          variant="ghost"
+          onClick={() => {
+            void setQueryStates({ rowId: null });
+          }}
+        >
+          <XIcon className="size-4" />
+        </Button>
+      </MapDrawerActions>
       {isPending ? (
         <>
           <Skeleton className="mb-2 size-8 rounded-full" />
