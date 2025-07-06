@@ -19,15 +19,10 @@ import {
 import { useParamsContext } from "~/lib/params/client";
 import { useProject } from "../context";
 import { useMap } from "~/components/map";
-import { createPortal } from "react-dom";
 import { AnimatePresence } from "motion/react";
 import { Button } from "@mapform/ui/components/button";
 
-export function Search({
-  ref,
-}: {
-  ref: React.RefObject<HTMLDivElement | null>;
-}) {
+export function Search() {
   const { map } = useMap();
   const { projectService, vectorSearchResults, geoapifySearchResults } =
     useProject();
@@ -77,11 +72,9 @@ export function Search({
   const handleChat = async () => {
     const response = await fetch(`/api/chat?message=${searchQuery}`);
     const data = await response.json();
-  };
 
-  if (!ref.current) {
-    return null;
-  }
+    console.log("CHAT: ", data);
+  };
 
   return (
     <div className="size-full">
@@ -99,7 +92,7 @@ export function Search({
                 >
                   <ChevronLeftIcon className="size-4" />
                 </Button>
-                <Button
+                {/* <Button
                   type="button"
                   disabled={!searchQuery}
                   variant="ghost"
@@ -108,7 +101,7 @@ export function Search({
                   className="bg-muted absolute right-0 top-0 z-50"
                 >
                   <XIcon className="size-4" />
-                </Button>
+                </Button> */}
               </>
             ) : (
               <SearchIcon className="text-muted-foreground pointer-events-none absolute left-2.5 top-1/2 size-4 -translate-y-1/2" />
@@ -127,92 +120,89 @@ export function Search({
             placeholder="Search or ask..."
           />
         </div>
-        {createPortal(
-          <div
-            className={cn(
-              "pointer-events-none absolute inset-0 z-10 flex flex-col rounded-lg transition-all duration-300",
-              {
-                "pointer-events-auto visible bg-white/80 opacity-100 backdrop-blur-sm":
-                  searchFocused,
-                "pointer-events-none invisible bg-white/0 opacity-0 backdrop-blur-none":
-                  !searchFocused,
-              },
-            )}
-          >
-            <CommandList className="mt-16 max-h-full px-2" ref={listRef}>
-              <CommandGroup>
-                {searchQuery && (
-                  <CommandItem onSelect={handleChat}>
-                    <MessageCircle className="text-muted-foreground mr-2 size-4" />
-                    <span className="truncate">{searchQuery}</span>
-                    <span className="text-muted-foreground ml-1 flex-shrink-0">
-                      — Chat
+        <div
+          className={cn(
+            "pointer-events-none absolute inset-0 z-10 flex flex-col rounded-lg transition-all duration-300",
+            {
+              "pointer-events-auto visible bg-white/80 opacity-100 backdrop-blur-sm":
+                searchFocused,
+              "pointer-events-none invisible bg-white/0 opacity-0 backdrop-blur-none":
+                !searchFocused,
+            },
+          )}
+        >
+          <CommandList className="mt-16 max-h-full px-2" ref={listRef}>
+            <CommandGroup>
+              {searchQuery && (
+                <CommandItem onSelect={handleChat}>
+                  <MessageCircle className="text-muted-foreground mr-2 size-4" />
+                  <span className="truncate">{searchQuery}</span>
+                  <span className="text-muted-foreground ml-1 flex-shrink-0">
+                    — Chat
+                  </span>
+                </CommandItem>
+              )}
+              {vectorSearchResults?.map((result) => (
+                <CommandItem
+                  key={result.id}
+                  value={result.id}
+                  onSelect={async () => {
+                    console.log("clicked", result.id);
+                    await setQueryStates({ rowId: result.id });
+                    setSearchFocused(false);
+                    map?.flyTo({
+                      center: result.center.coordinates as [number, number],
+                      duration: 500,
+                    });
+                  }}
+                >
+                  {projectService.optimisticState.icon ? (
+                    <span className="text-muted-foreground mr-2">
+                      {projectService.optimisticState.icon}
                     </span>
-                  </CommandItem>
-                )}
-                {vectorSearchResults?.map((result) => (
-                  <CommandItem
-                    key={result.id}
-                    value={result.id}
-                    onSelect={async () => {
-                      console.log("clicked", result.id);
-                      await setQueryStates({ rowId: result.id });
-                      setSearchFocused(false);
+                  ) : (
+                    <BoxIcon className="text-muted-foreground mr-2 size-4" />
+                  )}
+                  <span className="truncate">{result.name}</span>
+                  <span className="text-muted-foreground ml-1 flex-shrink-0">
+                    {" "}
+                    — From {projectService.optimisticState.name ?? "your map"}
+                  </span>
+                </CommandItem>
+              ))}
+              {filteredFeatures.map((feature) => (
+                <CommandItem
+                  key={feature.properties?.place_id}
+                  value={feature.properties?.place_id}
+                  onSelect={async () => {
+                    await setQueryStates({
+                      geoapifyPlaceId: feature.properties?.place_id,
+                    });
+                    setSearchFocused(false);
+                    if (feature.properties?.lon && feature.properties.lat) {
                       map?.flyTo({
-                        center: result.center.coordinates as [number, number],
+                        center: [
+                          feature.properties.lon,
+                          feature.properties.lat,
+                        ],
                         duration: 500,
                       });
-                    }}
-                  >
-                    {projectService.optimisticState.icon ? (
-                      <span className="text-muted-foreground mr-2">
-                        {projectService.optimisticState.icon}
-                      </span>
-                    ) : (
-                      <BoxIcon className="text-muted-foreground mr-2 size-4" />
-                    )}
-                    <span className="truncate">{result.name}</span>
-                    <span className="text-muted-foreground ml-1 flex-shrink-0">
-                      {" "}
-                      — From {projectService.optimisticState.name ?? "your map"}
-                    </span>
-                  </CommandItem>
-                ))}
-                {filteredFeatures.map((feature) => (
-                  <CommandItem
-                    key={feature.properties?.place_id}
-                    value={feature.properties?.place_id}
-                    onSelect={async () => {
-                      await setQueryStates({
-                        geoapifyPlaceId: feature.properties?.place_id,
-                      });
-                      setSearchFocused(false);
-                      if (feature.properties?.lon && feature.properties.lat) {
-                        map?.flyTo({
-                          center: [
-                            feature.properties.lon,
-                            feature.properties.lat,
-                          ],
-                          duration: 500,
-                        });
-                      }
-                    }}
-                  >
-                    <GlobeIcon className="text-muted-foreground mr-2 size-4" />
-                    <span className="truncate">
-                      {feature.properties?.name ??
-                        feature.properties?.address_line1}
-                    </span>
-                    {/* <span className="text-muted-foreground ml-1 flex-shrink-0">
+                    }
+                  }}
+                >
+                  <GlobeIcon className="text-muted-foreground mr-2 size-4" />
+                  <span className="truncate">
+                    {feature.properties?.name ??
+                      feature.properties?.address_line1}
+                  </span>
+                  {/* <span className="text-muted-foreground ml-1 flex-shrink-0">
                     — From {feature.properties?.country}
                   </span> */}
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-            </CommandList>
-          </div>,
-          ref.current,
-        )}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+        </div>
       </Command>
     </div>
   );

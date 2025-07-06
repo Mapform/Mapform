@@ -32,7 +32,7 @@ export function Header({ className }: HeaderProps) {
   return (
     <header className={cn("mb-4", className)}>
       {/* <Search /> */}
-      <div className="-mx-2 mb-0 mt-2">
+      <div>
         <Tooltip>
           <EmojiPopover
             onIconChange={(emoji) => {

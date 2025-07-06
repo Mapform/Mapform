@@ -46,7 +46,7 @@ export function FeatureDrawer() {
       ) : featureService.optimisticState ? (
         <div>
           <header>
-            <div className="-mx-2 mb-0 mt-2">
+            <div>
               <Tooltip>
                 <EmojiPopover
                   onIconChange={(emoji) => {
