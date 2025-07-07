@@ -16,7 +16,7 @@ import {
 } from "@mapform/ui/components/table";
 import { Checkbox } from "@mapform/ui/components/checkbox";
 import { useMemo, useRef } from "react";
-import { useProject } from "../../context";
+import { useProject } from "../../../context";
 import type { GetProject } from "@mapform/backend/data/projects/get-project";
 import {
   CaseSensitiveIcon,
@@ -27,8 +27,8 @@ import {
   Trash2Icon,
 } from "lucide-react";
 import { ColumnAdder } from "./column-adder";
-import { PropertyColumnEditor } from "../../properties/property-column-editor";
-import { PropertyValueEditor } from "../../properties/property-value-editor";
+import { PropertyColumnEditor } from "../../../properties/property-column-editor";
+import { PropertyValueEditor } from "../../../properties/property-value-editor";
 import { TablePagination } from "./table-pagination";
 import {
   TableActionBar,

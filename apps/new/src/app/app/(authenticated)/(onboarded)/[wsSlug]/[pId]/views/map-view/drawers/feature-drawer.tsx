@@ -1,6 +1,6 @@
 import { SmilePlusIcon, XIcon } from "lucide-react";
 import { Button } from "@mapform/ui/components/button";
-import { useProject } from "../../context";
+import { useProject } from "../../../context";
 import { AutoSizeTextArea } from "@mapform/ui/components/autosize-text-area";
 import {
   Tooltip,
@@ -10,8 +10,8 @@ import {
 import { EmojiPopover } from "@mapform/ui/components/emoji-picker";
 import { Skeleton } from "@mapform/ui/components/skeleton";
 import { Blocknote } from "@mapform/blocknote/editor";
-import { PropertyValueEditor } from "../../properties/property-value-editor";
-import { PropertyColumnEditor } from "../../properties/property-column-editor";
+import { PropertyValueEditor } from "../../../properties/property-value-editor";
+import { PropertyColumnEditor } from "../../../properties/property-column-editor";
 import { useParamsContext } from "~/lib/params/client";
 import { MapDrawer, MapDrawerActions } from "~/components/map-drawer";
 

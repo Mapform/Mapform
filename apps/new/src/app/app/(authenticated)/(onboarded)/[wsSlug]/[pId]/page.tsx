@@ -2,8 +2,8 @@ import { notFound, redirect } from "next/navigation";
 import { cache } from "react";
 import { authClient, publicClient } from "~/lib/safe-action";
 import { ProjectProvider } from "./context";
-import { TableView } from "./table-view";
-import { MapView } from "./map-view";
+import { TableView } from "./views/table-view";
+import { MapView } from "./views/map-view";
 import { loadSearchParams } from "~/lib/params/server";
 import type { SearchParams } from "nuqs/server";
 
@@ -70,8 +70,6 @@ export default async function ViewPage(props: {
     query ? getGeoapifySearchResults(query, undefined) : null,
     geoapifyPlaceId ? getGeoapifyPlaceDetails(geoapifyPlaceId) : null,
   ]);
-
-  console.log(1111, geoapifyPlaceDetails);
 
   if (!project) {
     return notFound();

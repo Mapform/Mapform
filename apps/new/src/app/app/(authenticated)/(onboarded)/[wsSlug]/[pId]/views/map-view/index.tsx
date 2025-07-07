@@ -4,7 +4,7 @@ import { Layer, Map, MapRoot, Source } from "~/components/map";
 import { rowsToGeoJSON } from "~/lib/rows-to-geojson";
 import { useMemo, useState } from "react";
 import { useMediaQuery } from "@mapform/ui/hooks/use-media-query";
-import { useProject } from "../context";
+import { useProject } from "../../context";
 import { Drawers } from "./drawers/index";
 import { DRAWER_WIDTH } from "./constants";
 import { MapControls } from "./map-controls";

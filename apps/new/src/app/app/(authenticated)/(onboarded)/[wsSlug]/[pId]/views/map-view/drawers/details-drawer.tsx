@@ -9,16 +9,14 @@ import {
   ExternalLinkIcon,
   BuildingIcon,
   TagIcon,
-  ImageIcon,
 } from "lucide-react";
 import { Button } from "@mapform/ui/components/button";
-import { useProject } from "../../context";
+import { useProject } from "../../../context";
 import { Skeleton } from "@mapform/ui/components/skeleton";
 import { useParamsContext } from "~/lib/params/client";
 import { Separator } from "@mapform/ui/components/separator";
 import { Badge } from "@mapform/ui/components/badge";
 import { useWikidataImage, useWikidataImages } from "~/lib/wikidata-image";
-import Image from "next/image";
 import {
   MapDrawer,
   MapDrawerActions,

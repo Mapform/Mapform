@@ -60,7 +60,6 @@ Remember: Always use tools to provide accurate, up-to-date location information 
       tool_choice: "auto",
     });
 
-    console.log(111111, response);
     console.log("Map Assistant Response:", response.output);
 
     // For now, return the response directly

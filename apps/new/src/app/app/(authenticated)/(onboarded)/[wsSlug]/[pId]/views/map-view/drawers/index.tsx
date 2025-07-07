@@ -1,15 +1,14 @@
 import { useMediaQuery } from "@mapform/ui/hooks/use-media-query";
-import { Header } from "../../header";
+import { Header } from "../../../header";
 import { FeatureDrawer } from "./feature-drawer";
-import { useProject } from "../../context";
+import { useProject } from "../../../context";
 import { Button } from "@mapform/ui/components/button";
 import { XIcon } from "lucide-react";
 import { useMap } from "~/components/map";
 import { useParamsContext } from "~/lib/params/client";
 import { DetailsDrawer } from "./details-drawer";
 import { MapDrawer, MapDrawerActions } from "~/components/map-drawer";
-import { useRef } from "react";
-import { Search, SearchInput, SearchList } from "../../search";
+import { Search, SearchInput, SearchList } from "../../../search";
 
 interface MapDrawerProps {
   drawerOpen: boolean;

@@ -111,16 +111,6 @@ export function SearchInput() {
             >
               <ChevronLeftIcon className="size-4" />
             </Button>
-            {/* <Button
-                  type="button"
-                  disabled={!searchQuery}
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setQueryStates({ query: "" })}
-                  className="bg-muted absolute right-0 top-0 z-50"
-                >
-                  <XIcon className="size-4" />
-                </Button> */}
           </>
         ) : (
           <SearchIcon className="text-muted-foreground pointer-events-none absolute left-2.5 top-1/2 size-4 -translate-y-1/2" />
