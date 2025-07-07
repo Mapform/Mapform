@@ -8,7 +8,7 @@ import { useProject } from "../../context";
 import { Drawers } from "./drawers/index";
 import { DRAWER_WIDTH } from "./constants";
 import { MapControls } from "./map-controls";
-import { PanelLeftOpenIcon } from "lucide-react";
+import { MapPinIcon, PanelLeftOpenIcon } from "lucide-react";
 import { Button } from "@mapform/ui/components/button";
 import { cn } from "@mapform/lib/classnames";
 import { MapContextMenu } from "./map-context-menu";
@@ -50,7 +50,7 @@ function MapViewInner({
   setDrawerOpen: (open: boolean) => void;
 }) {
   const { map } = useMap();
-  const { projectService, featureService } = useProject();
+  const { projectService, geoapifyPlaceDetails } = useProject();
   const { setQueryStates } = useParamsContext();
   const [contextMenuOpen, setContextMenuOpen] = useState(false);
   const [contextMenuPosition, setContextMenuPosition] = useState({
@@ -185,18 +185,18 @@ function MapViewInner({
             />
           </Source>
 
-          {/* {map && featureService.optimisticState && (
+          {map && geoapifyPlaceDetails?.features[0] && (
             <LocationMarker
-              longitude={featureService.optimisticState.center.coordinates[0]!}
-              latitude={featureService.optimisticState.center.coordinates[1]!}
+              longitude={geoapifyPlaceDetails.features[0].properties.lon!}
+              latitude={geoapifyPlaceDetails.features[0].properties.lat!}
               map={map}
             >
-              <span className="relative flex size-3">
+              <span className="relative flex size-6">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#3b82f6] opacity-75"></span>
-                <span className="relative inline-flex size-3 rounded-full bg-[#3b82f6]"></span>
+                <span className="relative inline-flex size-6 rounded-full border-[2.5px] border-white bg-[#3b82f6] shadow-lg"></span>
               </span>
             </LocationMarker>
-          )} */}
+          )}
         </Map>
 
         {/* Context Menu */}
