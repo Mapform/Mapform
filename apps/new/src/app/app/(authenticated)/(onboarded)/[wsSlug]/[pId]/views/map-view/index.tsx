@@ -185,6 +185,7 @@ function MapViewInner({
             />
           </Source>
 
+          {/* Geoapify search result marker */}
           {map && geoapifyPlaceDetails?.features[0] && (
             <LocationMarker
               longitude={geoapifyPlaceDetails.features[0].properties.lon!}

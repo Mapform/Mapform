@@ -8,7 +8,7 @@ import { useMap } from "~/components/map";
 import { useParamsContext } from "~/lib/params/client";
 import { DetailsDrawer } from "./details-drawer";
 import { MapDrawer, MapDrawerActions } from "~/components/map-drawer";
-import { Search, SearchInput, SearchList } from "../../../search";
+import { Search, SearchInput, SearchList, SearchChat } from "../../../search";
 
 interface MapDrawerProps {
   drawerOpen: boolean;
@@ -44,6 +44,7 @@ export function Drawers({ drawerOpen, setDrawerOpen }: MapDrawerProps) {
               </Button>
             </MapDrawerActions>
             <SearchList />
+            <SearchChat />
           </Search>
           <Header />
           <ul className="flex flex-col gap-2">
