@@ -13,6 +13,8 @@ import { Button } from "@mapform/ui/components/button";
 import { cn } from "@mapform/lib/classnames";
 import { MapContextMenu } from "./map-context-menu";
 import { useParamsContext } from "~/lib/params/client";
+import { LocationMarker } from "~/components/map/location-marker";
+import { useMap } from "~/components/map";
 
 const POINTS_LAYER_ID = "points-layer";
 const POINTS_SYMBOLS_LAYER_ID = "points-symbols-layer";
@@ -47,7 +49,8 @@ function MapViewInner({
   drawerOpen: boolean;
   setDrawerOpen: (open: boolean) => void;
 }) {
-  const { projectService } = useProject();
+  const { map } = useMap();
+  const { projectService, featureService } = useProject();
   const { setQueryStates } = useParamsContext();
   const [contextMenuOpen, setContextMenuOpen] = useState(false);
   const [contextMenuPosition, setContextMenuPosition] = useState({
@@ -181,6 +184,19 @@ function MapViewInner({
               }}
             />
           </Source>
+
+          {/* {map && featureService.optimisticState && (
+            <LocationMarker
+              longitude={featureService.optimisticState.center.coordinates[0]!}
+              latitude={featureService.optimisticState.center.coordinates[1]!}
+              map={map}
+            >
+              <span className="relative flex size-3">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#3b82f6] opacity-75"></span>
+                <span className="relative inline-flex size-3 rounded-full bg-[#3b82f6]"></span>
+              </span>
+            </LocationMarker>
+          )} */}
         </Map>
 
         {/* Context Menu */}
