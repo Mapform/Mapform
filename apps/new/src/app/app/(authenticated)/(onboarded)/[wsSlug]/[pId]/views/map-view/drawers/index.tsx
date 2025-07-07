@@ -8,7 +8,8 @@ import { useMap } from "~/components/map";
 import { useParamsContext } from "~/lib/params/client";
 import { DetailsDrawer } from "./details-drawer";
 import { MapDrawer, MapDrawerActions } from "~/components/map-drawer";
-import { Search, SearchInput, SearchList, SearchChat } from "../../../search";
+import { Search, SearchInput, SearchList } from "../../../search";
+import { SearchChat } from "../../../search/chat";
 
 interface MapDrawerProps {
   drawerOpen: boolean;

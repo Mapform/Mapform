@@ -16,6 +16,13 @@ export const mapAssistant = inngest.createFunction(
   async ({ event, db }) => {
     const { message } = event.data;
 
+    // Can use this to get previous messages
+    // const test = await openai.responses.inputItems.list(
+    //   "resp_686b3e92cd3c81a285b719ef465870cc0e00f98042ead4a7",
+    // );
+
+    // return;
+
     const response = await openai.responses.create({
       model: "gpt-4o-mini",
       input: [
@@ -60,6 +67,7 @@ Remember: Always use tools to provide accurate, up-to-date location information 
       tool_choice: "auto",
     });
 
+    console.log("Resoonse ID: ", response.id);
     console.log("Map Assistant Response:", response.output);
 
     // For now, return the response directly

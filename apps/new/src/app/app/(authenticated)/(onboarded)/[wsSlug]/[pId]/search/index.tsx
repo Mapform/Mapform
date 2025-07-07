@@ -158,10 +158,11 @@ export function SearchList() {
     ) ?? [];
 
   const handleChat = async () => {
-    setSearchFocused(false);
-    setChatMode(true);
     const response = await fetch(`/api/chat?message=${searchQuery}`);
     const data = await response.json();
+
+    setSearchFocused(false);
+    setChatMode(true);
 
     console.log("CHAT: ", data);
   };

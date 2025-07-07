@@ -26,7 +26,7 @@ interface ParamsProviderProps {
 export const ParamsProvider = ({ children }: ParamsProviderProps) => {
   const [isPending, startTransition] = useTransition();
   const [
-    { viewId, perPage, page, rowId, query, geoapifyPlaceId },
+    { viewId, perPage, page, rowId, query, geoapifyPlaceId, chatId },
     setQueryStates,
   ] = useQueryStates(appSearchParams, { ...appSearchOptions, startTransition });
 
@@ -34,7 +34,15 @@ export const ParamsProvider = ({ children }: ParamsProviderProps) => {
     <ParamsContext.Provider
       value={{
         isPending,
-        params: { viewId, perPage, page, rowId, query, geoapifyPlaceId },
+        params: {
+          viewId,
+          perPage,
+          page,
+          rowId,
+          query,
+          geoapifyPlaceId,
+          chatId,
+        },
         setQueryStates,
       }}
     >

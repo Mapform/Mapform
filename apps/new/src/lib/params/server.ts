@@ -8,6 +8,7 @@ export const appSearchParams = {
   rowId: parseAsString,
   query: parseAsString.withDefault(""),
   geoapifyPlaceId: parseAsString,
+  chatId: parseAsString,
 };
 
 export const appSearchOptions = {
@@ -20,6 +21,7 @@ export const appSearchOptions = {
     rowId: "r",
     query: "q",
     geoapifyPlaceId: "g",
+    chatId: "c",
   },
 };
 

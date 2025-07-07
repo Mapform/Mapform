@@ -8,7 +8,7 @@ import { useProject } from "../../context";
 import { Drawers } from "./drawers/index";
 import { DRAWER_WIDTH } from "./constants";
 import { MapControls } from "./map-controls";
-import { MapPinIcon, PanelLeftOpenIcon } from "lucide-react";
+import { PanelLeftOpenIcon } from "lucide-react";
 import { Button } from "@mapform/ui/components/button";
 import { cn } from "@mapform/lib/classnames";
 import { MapContextMenu } from "./map-context-menu";
