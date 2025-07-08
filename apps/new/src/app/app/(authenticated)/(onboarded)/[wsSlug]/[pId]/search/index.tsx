@@ -158,13 +158,13 @@ export function SearchList() {
     ) ?? [];
 
   const handleChat = async () => {
-    const response = await fetch(`/api/chat?message=${searchQuery}`);
-    const data = await response.json();
+    // const response = await fetch(`/api/chat?message=${searchQuery}`);
+    // const data = await response.json();
 
     setSearchFocused(false);
     setChatMode(true);
 
-    console.log("CHAT: ", data);
+    // console.log("CHAT: ", data);
   };
 
   return (
@@ -247,37 +247,5 @@ export function SearchList() {
         </CommandGroup>
       </CommandList>
     </Command>
-  );
-}
-
-export function SearchChat() {
-  const { chatMode } = useSearch();
-
-  return (
-    <div
-      className={cn(
-        "absolute inset-0 z-30 flex flex-col rounded-lg transition-all duration-300",
-        {
-          "pointer-events-auto visible bg-white/80 opacity-100 backdrop-blur-sm":
-            chatMode,
-          "pointer-events-none invisible bg-white/0 opacity-0 backdrop-blur-none":
-            !chatMode,
-        },
-      )}
-    >
-      <div className="flex-1">Message</div>
-      <div className="relative flex-shrink-0 border-t p-2">
-        <SearchIcon className="text-muted-foreground pointer-events-none absolute left-[18px] top-1/2 size-4 -translate-y-1/2" />
-        <Input
-          // value={searchQuery}
-          // onFocus={() => setSearchFocused(true)}
-          // onChange={(e) => setSearchQuery(e.target.value)}
-          className={cn(
-            "bg-muted w-full border-none pl-10 shadow-none !ring-0",
-          )}
-          placeholder="Ask anything..."
-        />
-      </div>
-    </div>
   );
 }
