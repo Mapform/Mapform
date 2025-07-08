@@ -1,4 +1,4 @@
-import { SendIcon } from "lucide-react";
+import { SendIcon, XIcon } from "lucide-react";
 import { cn } from "@mapform/lib/classnames";
 import { useChat } from "@ai-sdk/react";
 import { useSearch } from "../../search";
@@ -6,9 +6,10 @@ import { Button } from "@mapform/ui/components/button";
 import { useState } from "react";
 import { AutoSizeTextArea } from "@mapform/ui/components/autosize-text-area";
 import { ChatMessages } from "./messages";
+import { MapDrawerActions } from "~/components/map-drawer";
 
 export function SearchChat() {
-  const { chatMode } = useSearch();
+  const { chatMode, setChatMode } = useSearch();
   const [input, setInput] = useState("");
   const { messages, sendMessage } = useChat({
     maxSteps: 5,
@@ -31,7 +32,20 @@ export function SearchChat() {
         },
       )}
     >
-      <div className="flex-1 overflow-y-auto p-4">
+      <div className="flex flex-1 flex-col gap-4 overflow-y-auto p-6">
+        <MapDrawerActions>
+          <Button
+            className="absolute right-2 top-2 z-30"
+            size="icon"
+            type="button"
+            variant="ghost"
+            onClick={() => {
+              setChatMode(false);
+            }}
+          >
+            <XIcon className="size-4" />
+          </Button>
+        </MapDrawerActions>
         {messages.map((message) => (
           <ChatMessages key={message.id} message={message} />
         ))}
