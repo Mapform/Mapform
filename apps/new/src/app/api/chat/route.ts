@@ -1,6 +1,7 @@
 import { openai } from "@ai-sdk/openai";
 import type { UIMessage } from "ai";
 import { streamText, convertToModelMessages } from "ai";
+import { tools } from "./tools";
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
@@ -11,6 +12,7 @@ export async function POST(req: Request) {
   const result = streamText({
     model: openai("gpt-4o"),
     messages: convertToModelMessages(messages),
+    tools,
   });
 
   return result.toUIMessageStreamResponse();

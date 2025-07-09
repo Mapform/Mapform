@@ -9,6 +9,8 @@ interface ChatMessageProps {
 export function ChatMessages({ message }: ChatMessageProps) {
   const isUser = message.role === "user";
 
+  console.log(111111, message);
+
   return (
     <AnimatePresence>
       <motion.div

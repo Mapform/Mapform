@@ -15,7 +15,8 @@ export function SearchChat() {
     maxSteps: 5,
   });
 
-  const handleSubmit = () => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     void sendMessage({ text: input });
     setInput("");
   };
@@ -57,7 +58,10 @@ export function SearchChat() {
         <AutoSizeTextArea
           value={input}
           onChange={(value) => setInput(value)}
-          onEnter={handleSubmit}
+          onEnter={() => {
+            void sendMessage({ text: input });
+            setInput("");
+          }}
           className={cn(
             "bg-muted w-full border-none pl-10 shadow-none !ring-0",
           )}
