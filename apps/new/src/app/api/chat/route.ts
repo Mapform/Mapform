@@ -1,7 +1,8 @@
 import { openai } from "@ai-sdk/openai";
 import type { UIMessage } from "ai";
 import { streamText, convertToModelMessages } from "ai";
-import { tools } from "./tools";
+import { SYSTEM_PROMPT } from "~/lib/ai/prompts";
+import { autocomplete } from "~/lib/ai/tools/autocomplete";
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
@@ -11,8 +12,11 @@ export async function POST(req: Request) {
 
   const result = streamText({
     model: openai("gpt-4o"),
+    system: SYSTEM_PROMPT,
     messages: convertToModelMessages(messages),
-    tools,
+    tools: {
+      autocomplete,
+    },
   });
 
   return result.toUIMessageStreamResponse();

@@ -1,21 +1,5 @@
 import { env } from "../../../../env.mjs";
 
-export interface LocationResult {
-  place_id: string;
-  name?: string;
-  country: string;
-  country_code: string;
-  region: string;
-  state: string;
-  city: string;
-  lon: number;
-  lat: number;
-  formatted: string;
-  address_line1: string;
-  address_line2: string;
-  category: string;
-}
-
 export interface RouteResult {
   mode: string;
   distance: number;
@@ -37,58 +21,6 @@ export interface RouteResult {
       };
     }[];
   }[];
-}
-
-export async function addressAutocomplete(
-  query: string,
-  bounds?: number[],
-): Promise<LocationResult[]> {
-  try {
-    const searchParams = new URLSearchParams({
-      apiKey: env.GEOAPIFY_API_KEY,
-      text: query,
-      ...(bounds ? { bias: `rect:${bounds.join(",")}` } : {}),
-    }).toString();
-
-    const response = await fetch(
-      `https://api.geoapify.com/v1/geocode/autocomplete?${searchParams}`,
-      {
-        method: "GET",
-        headers: {
-          accept: "application/json",
-        },
-      },
-    );
-
-    if (!response.ok) {
-      throw new Error(`Response status: ${response.status}`);
-    }
-
-    const data = await response.json();
-
-    return data.features
-      .filter((feature: any) => feature.properties)
-      .map((feature: any) => ({
-        place_id: feature.properties.place_id,
-        name: feature.properties.name,
-        country: feature.properties.country,
-        country_code: feature.properties.country_code,
-        region: feature.properties.region,
-        state: feature.properties.state,
-        city: feature.properties.city,
-        lon: feature.properties.lon,
-        lat: feature.properties.lat,
-        formatted: feature.properties.formatted,
-        address_line1: feature.properties.address_line1,
-        address_line2: feature.properties.address_line2,
-        category: feature.properties.category,
-      }));
-  } catch (error) {
-    console.error("Error in address autocomplete:", error);
-    throw new Error(
-      `Failed to search places: ${error instanceof Error ? error.message : "Unknown error"}`,
-    );
-  }
 }
 
 export async function calculateRoute(

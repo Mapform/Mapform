@@ -1,25 +1,38 @@
-import { SendIcon, XIcon } from "lucide-react";
+import { Loader2, SendIcon, XIcon } from "lucide-react";
 import { cn } from "@mapform/lib/classnames";
 import { useChat } from "@ai-sdk/react";
 import { useSearch } from "../../search";
 import { Button } from "@mapform/ui/components/button";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AutoSizeTextArea } from "@mapform/ui/components/autosize-text-area";
-import { ChatMessages } from "./messages";
 import { MapDrawerActions } from "~/components/map-drawer";
+import type { ChatMessage } from "~/lib/types";
+import { Message } from "./message";
 
 export function SearchChat() {
   const { chatMode, setChatMode } = useSearch();
   const [input, setInput] = useState("");
-  const { messages, sendMessage } = useChat({
+  const { messages, sendMessage, status } = useChat<ChatMessage>({
     maxSteps: 5,
   });
+  const chatContainerRef = useRef<HTMLDivElement>(null);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleSubmit = () => {
     void sendMessage({ text: input });
     setInput("");
   };
+
+  useEffect(() => {
+    if (!chatContainerRef.current) return;
+
+    if (status === "submitted") {
+      // Scroll to bottom of chat smoothly after sending a message using a ref
+      chatContainerRef.current.scrollTo({
+        top: chatContainerRef.current.scrollHeight,
+        behavior: "smooth",
+      });
+    }
+  }, [status]);
 
   return (
     <div
@@ -33,7 +46,10 @@ export function SearchChat() {
         },
       )}
     >
-      <div className="flex flex-1 flex-col gap-4 overflow-y-auto p-6">
+      <div
+        ref={chatContainerRef}
+        className="flex flex-1 flex-col gap-4 overflow-y-auto p-6 pb-96"
+      >
         <MapDrawerActions>
           <Button
             className="absolute right-2 top-2 z-30"
@@ -48,20 +64,25 @@ export function SearchChat() {
           </Button>
         </MapDrawerActions>
         {messages.map((message) => (
-          <ChatMessages key={message.id} message={message} />
+          <Message key={message.id} message={message} />
         ))}
+        {status === "submitted" && (
+          <div className="flex items-center">
+            <Loader2 className="size-4 animate-spin" />
+          </div>
+        )}
       </div>
       <form
         className="relative flex flex-shrink-0 flex-col gap-2 border-t p-4"
-        onSubmit={handleSubmit}
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleSubmit();
+        }}
       >
         <AutoSizeTextArea
           value={input}
           onChange={(value) => setInput(value)}
-          onEnter={() => {
-            void sendMessage({ text: input });
-            setInput("");
-          }}
+          onEnter={handleSubmit}
           className={cn(
             "bg-muted w-full border-none pl-10 shadow-none !ring-0",
           )}
