@@ -5,6 +5,7 @@ import { authClient } from "~/lib/safe-action";
 import { WorkspaceProvider } from "./workspace-context";
 import { AppSidebar } from "./app-sidebar";
 import { SidebarProvider } from "@mapform/ui/components/sidebar";
+import { Drawers } from "./drawers";
 
 export default async function WorkspaceLayout(props: {
   params: Promise<{ wsSlug: string }>;
@@ -34,7 +35,10 @@ export default async function WorkspaceLayout(props: {
     >
       <SidebarProvider defaultOpen={defaultLeftOpen}>
         <AppSidebar />
-        <main className="flex flex-1 overflow-hidden p-2">{children}</main>
+        <main className="prose flex flex-1 overflow-hidden p-2 pl-0">
+          {children}
+          <Drawers />
+        </main>
       </SidebarProvider>
     </WorkspaceProvider>
   );

@@ -1,3 +1,5 @@
+"use client";
+
 import { cn } from "@mapform/lib/classnames";
 import type { CarouselApi } from "@mapform/ui/components/carousel";
 import {
@@ -28,12 +30,13 @@ export function MapDrawer({ open, depth = 0, children }: MapDrawerProps) {
           style={{
             width: DRAWER_WIDTH,
           }}
-          initial={{ x: -DRAWER_WIDTH }}
+          initial={{ x: -DRAWER_WIDTH, opacity: 0 }}
           animate={{
-            x: 8 + 16 * depth,
+            x: 16 * depth,
             scale: depth > 0 ? 0.985 : 1,
+            opacity: 1,
           }}
-          exit={{ x: -DRAWER_WIDTH }}
+          exit={{ x: -DRAWER_WIDTH, opacity: 0 }}
           transition={{
             type: "spring",
             stiffness: 300,

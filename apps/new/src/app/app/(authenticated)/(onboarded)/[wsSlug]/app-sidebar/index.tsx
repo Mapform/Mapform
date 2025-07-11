@@ -135,7 +135,7 @@ export function AppSidebar() {
 
   return (
     <Sidebar
-      className="[data-slot='sidebar-inner']:bg-sidebar/90 [data-slot='sidebar-inner']:backdrop-blur-md group-data-[variant=floating]:bg-transparent"
+      className="[data-slot='sidebar-inner']:bg-sidebar/90 [data-slot='sidebar-inner']:backdrop-blur-md z-50 group-data-[variant=floating]:bg-transparent"
       variant="floating"
     >
       <SidebarHeader>
