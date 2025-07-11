@@ -34,9 +34,7 @@ export default async function WorkspaceLayout(props: {
     >
       <SidebarProvider defaultOpen={defaultLeftOpen}>
         <AppSidebar />
-        <main className="flex flex-1 overflow-hidden">
-          <div className="flex flex-1 flex-col overflow-hidden">{children}</div>
-        </main>
+        <main className="flex flex-1 overflow-hidden p-2">{children}</main>
       </SidebarProvider>
     </WorkspaceProvider>
   );

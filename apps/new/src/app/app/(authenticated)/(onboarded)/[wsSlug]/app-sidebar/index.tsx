@@ -38,6 +38,7 @@ import {
   FolderIcon,
   FolderOpenIcon,
   EarthIcon,
+  SearchIcon,
 } from "lucide-react";
 import {
   Collapsible,
@@ -45,7 +46,7 @@ import {
 } from "@mapform/ui/components/collapsible";
 import { Avatar, AvatarFallback } from "@mapform/ui/components/avatar";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { signOutAction } from "~/data/auth/sign-out";
 import { useAuth } from "~/app/root-providers";
 import { useWorkspace } from "../workspace-context";
@@ -63,11 +64,14 @@ import { createProjectAction } from "~/data/projects/create-project";
 import { useAction } from "next-safe-action/hooks";
 import { toast } from "@mapform/ui/components/toaster";
 import { useMap } from "react-map-gl/mapbox";
+import { useParamsContext } from "~/lib/params/client";
 
 export function AppSidebar() {
   const map = useMap();
   const { user } = useAuth();
   const pathname = usePathname();
+  const router = useRouter();
+  const { params, setQueryStates } = useParamsContext();
   const { workspaceMemberships, workspaceDirectory, workspaceSlug } =
     useWorkspace();
   const [isProjectGuideOpen, setIsProjectGuideOpen] = useState(false);
@@ -101,14 +105,26 @@ export function AppSidebar() {
     })),
     navMain: [
       {
+        title: "Search",
+        onClick: () => {
+          void setQueryStates({ query: "" });
+        },
+        icon: SearchIcon,
+        isActive: params.query === "search",
+      },
+      {
         title: "Home",
-        url: `/app/${workspaceSlug}`,
+        onClick: () => {
+          router.push(`/app/${workspaceSlug}`);
+        },
         icon: HomeIcon,
         isActive: pathname === `/app/${workspaceSlug}`,
       },
       {
         title: "Settings",
-        url: `/app/${workspaceSlug}/settings`,
+        onClick: () => {
+          router.push(`/app/${workspaceSlug}/settings`);
+        },
         icon: Settings2Icon,
         isActive: pathname === `/app/${workspaceSlug}/settings`,
       },
@@ -181,11 +197,12 @@ export function AppSidebar() {
             <SidebarMenu>
               {data.navMain.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild isActive={item.isActive}>
-                    <Link href={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </Link>
+                  <SidebarMenuButton
+                    isActive={item.isActive}
+                    onClick={item.onClick}
+                  >
+                    <item.icon />
+                    <span>{item.title}</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
