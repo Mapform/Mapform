@@ -1,9 +1,10 @@
 "server-only";
 
-import { db } from "@mapform/db";
-import { workspaces } from "@mapform/db/schema";
+import { db, sql } from "@mapform/db";
+import { projects, workspaces } from "@mapform/db/schema";
 import { eq } from "@mapform/db/utils";
 import { getWorkspaceDirectorySchema } from "./schema";
+import type { Point } from "geojson";
 import type { UserAuthClient, UnwrapReturn } from "../../../lib/types";
 
 export const getWorkspaceDirectory = (authClient: UserAuthClient) =>
@@ -33,8 +34,15 @@ export const getWorkspaceDirectory = (authClient: UserAuthClient) =>
                   id: true,
                   name: true,
                   icon: true,
+                  center: true,
                   position: true,
                   createdAt: true,
+                },
+                extras: {
+                  center:
+                    sql<Point>`ST_AsGeoJSON(ST_Centroid(${projects.center}))::jsonb`.as(
+                      "center",
+                    ),
                 },
                 orderBy: (projects, { asc }) => [asc(projects.position)],
               },

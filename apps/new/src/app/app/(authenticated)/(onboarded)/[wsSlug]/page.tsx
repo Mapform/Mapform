@@ -1,9 +1,9 @@
 import { notFound } from "next/navigation";
 
-import { authClient } from "~/lib/safe-action";
 import { getWorkspaceDirectory } from "~/data/workspaces/get-workspace-directory";
 
 import { WelcomeTour } from "./welcome-tour";
+import { ProjectMarkers } from "./project-markers";
 
 export default async function HomePage(props: {
   params: Promise<{ wsSlug: string }>;
@@ -23,6 +23,7 @@ export default async function HomePage(props: {
   return (
     <>
       <WelcomeTour />
+      <ProjectMarkers />
     </>
   );
 }

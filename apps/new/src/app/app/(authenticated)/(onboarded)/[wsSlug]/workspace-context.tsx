@@ -88,6 +88,10 @@ export function WorkspaceProvider({
           left: 255,
           right: 0,
         }}
+        initialViewState={{
+          zoom: 2,
+        }}
+        minZoom={2}
       >
         <SidebarProvider defaultOpen={defaultLeftOpen}>
           {children}
