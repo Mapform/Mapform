@@ -22,6 +22,13 @@
       "when": 1752202335068,
       "tag": "0002_sticky_selene",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1752261656381,
+      "tag": "0003_wide_hellcat",
+      "breakpoints": true
     }
   ]
 }

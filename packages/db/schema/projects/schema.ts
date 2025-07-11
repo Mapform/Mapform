@@ -5,10 +5,19 @@ import {
   uuid,
   pgEnum,
   integer,
+  customType,
 } from "drizzle-orm/pg-core";
 import { teamspaces } from "../teamspaces/schema";
 
 export const visibilityEnum = pgEnum("visibility", ["public", "closed"]);
+
+const pointGeometry = customType<{
+  data: { coordinates: [number, number] };
+}>({
+  dataType() {
+    return "geometry(Point, 4326)";
+  },
+});
 
 export const projects = pgTable("project", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -16,6 +25,8 @@ export const projects = pgTable("project", {
   description: varchar("description", { length: 512 }),
   icon: varchar("icon", { length: 256 }),
   position: integer("position").notNull(),
+
+  center: pointGeometry("center").notNull(),
 
   visibility: visibilityEnum("visibility").default("closed").notNull(),
 

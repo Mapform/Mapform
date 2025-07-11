@@ -6,8 +6,6 @@ import {
   text,
   unique,
   smallint,
-  geometry,
-  customType,
 } from "drizzle-orm/pg-core";
 import { projects } from "../projects/schema";
 
@@ -53,14 +51,6 @@ export const tableViews = pgTable(
   (t) => [unique("table_view_unq").on(t.viewId)],
 );
 
-const pointGeometry = customType<{
-  data: { coordinates: [number, number] };
-}>({
-  dataType() {
-    return "geometry(Point, 4326)";
-  },
-});
-
 /**
  * MAP VIEW
  */
@@ -68,7 +58,6 @@ export const mapViews = pgTable(
   "map_view",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    center: pointGeometry("center").notNull(),
 
     viewId: uuid("view_id")
       .notNull()
