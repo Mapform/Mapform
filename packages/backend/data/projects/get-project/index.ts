@@ -3,7 +3,7 @@
 import type { Geometry, Point } from "geojson";
 import { db, sql } from "@mapform/db";
 import { eq, and, inArray } from "@mapform/db/utils";
-import { mapViews, projects, rows } from "@mapform/db/schema";
+import { projects, rows } from "@mapform/db/schema";
 import type { UnwrapReturn, UserAuthClient } from "../../../lib/types";
 import { getProjectSchema } from "./schema";
 
@@ -36,17 +36,16 @@ export const getProject = (authClient: UserAuthClient) =>
             views: {
               with: {
                 tableView: true,
-                mapView: {
-                  extras: {
-                    center:
-                      sql<Point>`ST_AsGeoJSON(ST_Centroid(${mapViews.center}))::jsonb`.as(
-                        "center",
-                      ),
-                  },
-                },
+                mapView: true,
               },
             },
             columns: true,
+          },
+          extras: {
+            center:
+              sql<Point>`ST_AsGeoJSON(ST_Centroid(${projects.center}))::jsonb`.as(
+                "center",
+              ),
           },
         }),
         db.query.rows.findMany({

@@ -2,8 +2,8 @@ import { notFound, redirect } from "next/navigation";
 import { cache } from "react";
 import { authClient, publicClient } from "~/lib/safe-action";
 import { ProjectProvider } from "./context";
-import { TableView } from "./views/table-view";
-import { MapView } from "./views/map-view";
+// import { TableView } from "./views/table-view";
+// import { MapView } from "./views/map-view";
 import { loadSearchParams } from "~/lib/params/server";
 import type { SearchParams } from "nuqs/server";
 
@@ -49,6 +49,8 @@ export default async function ViewPage(props: {
   const params = await props.params;
   const { viewId, perPage, page, rowId, query, geoapifyPlaceId } =
     await loadSearchParams(props.searchParams);
+
+  console.log(2222, params.pId);
 
   const [
     project,
@@ -102,10 +104,9 @@ export default async function ViewPage(props: {
       geoapifySearchResults={geoapifySearchResults?.data}
       geoapifyPlaceDetails={geoapifyPlaceDetails?.data}
     >
-      <div className="relative h-full">
-        {activeView.type === "table" && <TableView />}
-        {activeView.type === "map" && <MapView />}
-      </div>
+      <div></div>
+      {/* {activeView.type === "table" && <TableView />}
+        {activeView.type === "map" && <MapView />} */}
     </ProjectProvider>
   );
 }

@@ -9,7 +9,7 @@ import React, {
 import type { GetUserWorkspaceMemberships } from "@mapform/backend/data/workspace-memberships/get-user-workspace-memberships";
 import type { WorkspaceDirectory } from "@mapform/backend/data/workspaces/get-workspace-directory";
 import { SidebarProvider } from "@mapform/ui/components/sidebar";
-import Map from "react-map-gl/mapbox";
+import Map, { NavigationControl } from "react-map-gl/mapbox";
 import { env } from "~/*";
 import "mapbox-gl/dist/mapbox-gl.css";
 
@@ -96,6 +96,7 @@ export function WorkspaceProvider({
         <SidebarProvider defaultOpen={defaultLeftOpen}>
           {children}
         </SidebarProvider>
+        <NavigationControl position="top-right" />
       </Map>
     </WorkspaceContext.Provider>
   );

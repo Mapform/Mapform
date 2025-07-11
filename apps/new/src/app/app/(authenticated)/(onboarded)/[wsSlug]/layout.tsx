@@ -2,7 +2,6 @@ import { cache } from "react";
 import { notFound } from "next/navigation";
 import { cookies } from "next/headers";
 import { authClient } from "~/lib/safe-action";
-import { TopNav } from "./top-nav";
 import { WorkspaceProvider } from "./workspace-context";
 import { AppSidebar } from "./app-sidebar";
 import { SidebarProvider } from "@mapform/ui/components/sidebar";
@@ -19,7 +18,7 @@ export default async function WorkspaceLayout(props: {
     ? leftSidebarCookie.value === "true"
     : true;
   const params = await props.params;
-  const { children, nav } = props;
+  const { children } = props;
 
   const [workspaceDirectory, workspaceMemberships] = await Promise.all([
     fetchWorkspaceDirectory(params.wsSlug),
@@ -36,10 +35,7 @@ export default async function WorkspaceLayout(props: {
       <SidebarProvider defaultOpen={defaultLeftOpen}>
         <AppSidebar />
         <main className="flex flex-1 overflow-hidden">
-          <div className="flex flex-1 flex-col overflow-hidden">
-            <TopNav navSlot={nav} />
-            {children}
-          </div>
+          <div className="flex flex-1 flex-col overflow-hidden">{children}</div>
         </main>
       </SidebarProvider>
     </WorkspaceProvider>
