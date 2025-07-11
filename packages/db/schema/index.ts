@@ -11,6 +11,9 @@ export * from "./plans/schema";
 export * from "./blobs/schema";
 export * from "./views/schema";
 export * from "./cells/schema";
+export * from "./chats/schema";
+export * from "./messages/schema";
+export * from "./streams/schema";
 
 // RELATIONS
 export * from "./users/relations";
@@ -25,6 +28,9 @@ export * from "./plans/relations";
 export * from "./blobs/relations";
 export * from "./views/relations";
 export * from "./cells/relations";
+export * from "./chats/relations";
+export * from "./messages/relations";
+export * from "./streams/relations";
 
 // VALIDATIONS
 export * from "./users/validation";
@@ -38,3 +44,6 @@ export * from "./plans/validation";
 export * from "./blobs/validation";
 export * from "./cells/validation";
 export * from "./views/validation";
+export * from "./chats/validation";
+export * from "./messages/validation";
+export * from "./streams/validation";

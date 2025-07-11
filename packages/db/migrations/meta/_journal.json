@@ -15,6 +15,13 @@
       "when": 1751515179576,
       "tag": "0001_lean_dark_beast",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1752202335068,
+      "tag": "0002_sticky_selene",
+      "breakpoints": true
     }
   ]
 }

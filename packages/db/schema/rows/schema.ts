@@ -30,6 +30,8 @@ export const rows = pgTable(
     name: varchar("name", { length: 256 }),
     description: jsonb("description").$type<CustomBlock[]>(),
     icon: varchar("icon", { length: 256 }),
+    // Only allow hex colors
+    color: varchar("color", { length: 7 }).$type<`#${string}`>(),
     geometry: geometry("geometry"),
 
     embedding: vector("row_embedding", { dimensions: 1536 }),
