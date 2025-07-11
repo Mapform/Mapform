@@ -107,10 +107,12 @@ export function AppSidebar() {
       {
         title: "Search",
         onClick: () => {
-          void setQueryStates({ query: "" });
+          void setQueryStates({
+            search: params.search === "1" ? undefined : "1",
+          });
         },
         icon: SearchIcon,
-        isActive: params.query === "search",
+        isActive: params.search === "1",
       },
       {
         title: "Home",
