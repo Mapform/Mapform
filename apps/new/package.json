@@ -64,6 +64,7 @@
     "react": "catalog:",
     "react-dom": "catalog:",
     "react-dropzone": "^14.3.8",
+    "react-map-gl": "^8.0.4",
     "slugify": "catalog:",
     "stripe": "catalog:",
     "supercluster": "catalog:",

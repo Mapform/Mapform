@@ -115,7 +115,7 @@ export function AppSidebar() {
   };
 
   return (
-    <Sidebar>
+    <Sidebar className="bg-sidebar opacity-90">
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>

@@ -13,7 +13,6 @@ import { completeOnboarding } from "@mapform/backend/data/workspaces/complete-on
 import { createCheckoutSession } from "@mapform/backend/data/stripe/create-checkout-session";
 import { createBillingSession } from "@mapform/backend/data/stripe/create-billing-session";
 import { getStorageUsage } from "@mapform/backend/data/usage/get-storage-usage";
-import { getRecentProjects } from "@mapform/backend/data/projects/get-recent-projects";
 import { getProject } from "@mapform/backend/data/projects/get-project";
 import { createRow } from "@mapform/backend/data/rows/create-row";
 import { getRow } from "@mapform/backend/data/rows/get-row";
@@ -115,7 +114,6 @@ const createUserAuthClient = () => {
 
     // Projects
     getProject: getProject(extendedClient),
-    getRecentProjects: getRecentProjects(extendedClient),
     createProject: createProject(extendedClient),
     updateProject: updateProject(extendedClient),
     updateProjectOrder: updateProjectOrder(extendedClient),

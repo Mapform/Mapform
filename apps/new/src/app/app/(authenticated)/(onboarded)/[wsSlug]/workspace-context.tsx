@@ -9,6 +9,9 @@ import React, {
 import type { GetUserWorkspaceMemberships } from "@mapform/backend/data/workspace-memberships/get-user-workspace-memberships";
 import type { WorkspaceDirectory } from "@mapform/backend/data/workspaces/get-workspace-directory";
 import { SidebarProvider } from "@mapform/ui/components/sidebar";
+import Map from "react-map-gl/mapbox";
+import { env } from "~/*";
+import "mapbox-gl/dist/mapbox-gl.css";
 
 export interface WorkspaceContextInterface {
   workspaceSlug: string;
@@ -28,6 +31,8 @@ export const WorkspaceContext = createContext<WorkspaceContextInterface>(
   {} as WorkspaceContextInterface,
 );
 export const useWorkspace = () => useContext(WorkspaceContext);
+
+const accessToken = env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
 
 export function WorkspaceProvider({
   children,
@@ -71,9 +76,17 @@ export function WorkspaceProvider({
         },
       }}
     >
-      <SidebarProvider defaultOpen={defaultLeftOpen}>
-        {children}
-      </SidebarProvider>
+      <Map
+        mapboxAccessToken={accessToken}
+        style={{ width: "100vw", height: "100vh" }}
+        mapStyle="mapbox://styles/nichaley/cmcyt7kfs005q01qn6vhrga96"
+        projection="globe"
+        logoPosition="bottom-right"
+      >
+        <SidebarProvider defaultOpen={defaultLeftOpen}>
+          {children}
+        </SidebarProvider>
+      </Map>
     </WorkspaceContext.Provider>
   );
 }
