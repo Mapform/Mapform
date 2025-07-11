@@ -33,6 +33,10 @@ export const createProject = (authClient: UserAuthClient) =>
             .values({
               teamspaceId,
               position: projectCount?.count ?? 0,
+              center: sql.raw(`ST_GeomFromGeoJSON('{
+                "type": "Point",
+                "coordinates": ${JSON.stringify(rest.center)}
+              }')`),
             })
             .returning();
 
@@ -59,10 +63,6 @@ export const createProject = (authClient: UserAuthClient) =>
           } else if (rest.viewType === "map") {
             await tx.insert(mapViews).values({
               viewId: view.id,
-              center: sql.raw(`ST_GeomFromGeoJSON('{
-                "type": "Point",
-                "coordinates": ${JSON.stringify([0, 0])}
-              }')`),
             });
           }
 

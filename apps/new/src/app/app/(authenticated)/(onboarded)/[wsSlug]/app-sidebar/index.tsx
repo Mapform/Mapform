@@ -62,15 +62,16 @@ import { Files } from "./files";
 import { createProjectAction } from "~/data/projects/create-project";
 import { useAction } from "next-safe-action/hooks";
 import { toast } from "@mapform/ui/components/toaster";
+import { useMap } from "react-map-gl/mapbox";
 
 export function AppSidebar() {
+  const map = useMap();
   const { user } = useAuth();
   const pathname = usePathname();
   const { workspaceMemberships, workspaceDirectory, workspaceSlug } =
     useWorkspace();
   const [isProjectGuideOpen, setIsProjectGuideOpen] = useState(false);
   const [isWelcomeGuideOpen, setIsWelcomeGuideOpen] = useState(false);
-
   const { execute, isPending } = useAction(createProjectAction, {
     onError: ({ error }) => {
       toast({
@@ -201,6 +202,10 @@ export function AppSidebar() {
                 execute({
                   teamspaceId: teamspace.id,
                   viewType: "map",
+                  center: map.current?.getCenter().toArray() as [
+                    number,
+                    number,
+                  ],
                 });
               }}
             >
