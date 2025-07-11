@@ -82,6 +82,12 @@ export function WorkspaceProvider({
         mapStyle="mapbox://styles/nichaley/cmcyt7kfs005q01qn6vhrga96"
         projection="globe"
         logoPosition="bottom-right"
+        padding={{
+          top: 0,
+          bottom: 0,
+          left: 255,
+          right: 0,
+        }}
       >
         <SidebarProvider defaultOpen={defaultLeftOpen}>
           {children}

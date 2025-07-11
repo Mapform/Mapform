@@ -115,7 +115,10 @@ export function AppSidebar() {
   };
 
   return (
-    <Sidebar className="bg-sidebar opacity-90">
+    <Sidebar
+      className="[data-slot='sidebar-inner']:bg-sidebar/90 [data-slot='sidebar-inner']:backdrop-blur-md group-data-[variant=floating]:bg-transparent"
+      variant="floating"
+    >
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
