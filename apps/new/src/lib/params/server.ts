@@ -6,8 +6,8 @@ export const appSearchParams = {
   page: parseAsInteger.withDefault(0),
   viewId: parseAsString,
   rowId: parseAsString,
-  query: parseAsString.withDefault(""),
-  search: parseAsString.withDefault(""),
+  query: parseAsString,
+  search: parseAsString,
   geoapifyPlaceId: parseAsString,
   chatId: parseAsString,
 };

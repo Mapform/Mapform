@@ -22,7 +22,7 @@ export function SearchDrawer() {
     <MapDrawer open={params.search === "1"} depth={0}>
       <Input
         className="mb-4"
-        value={params.query}
+        value={params.query ?? ""}
         onChange={(e) => setQueryStates({ query: e.target.value })}
         placeholder="Search or ask..."
       />
@@ -32,7 +32,7 @@ export function SearchDrawer() {
             {params.query && (
               <CommandItem
                 onSelect={() => {
-                  setQueryStates({ chatId: "1" });
+                  void setQueryStates({ chatId: "1", search: null });
                 }}
               >
                 <MessageCircle className="text-muted-foreground mr-2 size-4" />
