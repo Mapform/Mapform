@@ -1,4 +1,9 @@
-import { createLoader, parseAsInteger, parseAsString } from "nuqs/server";
+import {
+  createLoader,
+  parseAsInteger,
+  parseAsString,
+  type SearchParams,
+} from "nuqs/server";
 
 // Describe your search params, and reuse this in useQueryStates / createSerializer:
 export const appSearchParams = {
@@ -28,3 +33,5 @@ export const appSearchOptions = {
 };
 
 export const loadSearchParams = createLoader(appSearchParams, appSearchOptions);
+
+export type { SearchParams };

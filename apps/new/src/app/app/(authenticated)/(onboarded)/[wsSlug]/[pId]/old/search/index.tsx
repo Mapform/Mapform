@@ -48,8 +48,8 @@ export function Search({ children }: SearchProviderProps) {
     setQueryStates,
   } = useParamsContext();
   const [searchQuery, setSearchQuery] = useState(query);
-  const [chatMode, setChatMode] = useState(false);
   const debouncedSearchQuery = useDebounce(searchQuery, 200);
+  const [chatMode, setChatMode] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 

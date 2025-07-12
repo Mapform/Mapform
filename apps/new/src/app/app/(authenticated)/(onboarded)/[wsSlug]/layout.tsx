@@ -5,12 +5,12 @@ import { authClient } from "~/lib/safe-action";
 import { WorkspaceProvider } from "./workspace-context";
 import { AppSidebar } from "./app-sidebar";
 import { SidebarProvider } from "@mapform/ui/components/sidebar";
-import { Drawers } from "./drawers";
 
 export default async function WorkspaceLayout(props: {
   params: Promise<{ wsSlug: string }>;
   children: React.ReactNode;
   nav?: React.ReactNode;
+  drawers?: React.ReactNode;
 }) {
   const cookieStore = await cookies();
   const leftSidebarCookie = cookieStore.get("sidebar-left:state");
@@ -37,7 +37,7 @@ export default async function WorkspaceLayout(props: {
         <AppSidebar />
         <main className="prose flex flex-1 overflow-hidden p-2 pl-0">
           {children}
-          <Drawers />
+          {props.drawers}
         </main>
       </SidebarProvider>
     </WorkspaceProvider>
