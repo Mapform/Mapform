@@ -6,6 +6,7 @@ import {
   CommandList,
   CommandGroup,
   CommandItem,
+  CommandInput,
 } from "@mapform/ui/components/command";
 import { Input } from "@mapform/ui/components/input";
 import { MessageCircle, BoxIcon, GlobeIcon } from "lucide-react";
@@ -20,13 +21,13 @@ export function SearchDrawer() {
 
   return (
     <MapDrawer open={params.search === "1"} depth={0}>
-      <Input
-        className="mb-4"
-        value={params.query ?? ""}
-        onChange={(e) => setQueryStates({ query: e.target.value })}
-        placeholder="Search or ask..."
-      />
       <Command>
+        <CommandInput
+          className="mb-4"
+          value={params.query ?? ""}
+          onValueChange={(value) => setQueryStates({ query: value })}
+          placeholder="Search or ask..."
+        />
         <CommandList>
           <CommandGroup className="p-0">
             {params.query && (
