@@ -41,7 +41,15 @@ export function Search({ geoapifySearchResults }: SearchProps) {
   }, [debouncedSearchQuery, setQueryStates]);
 
   return (
-    <MapDrawer open={!!params.search} depth={0}>
+    <MapDrawer
+      open={!!params.search}
+      depth={0}
+      onClose={() => {
+        void setQueryStates({
+          search: null,
+        });
+      }}
+    >
       <Command shouldFilter={false}>
         <div
           className="flex items-center border-b pl-3 pr-1"

@@ -1,12 +1,14 @@
 "use client";
 
 import { cn } from "@mapform/lib/classnames";
+import { Button } from "@mapform/ui/components/button";
 import type { CarouselApi } from "@mapform/ui/components/carousel";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
 } from "@mapform/ui/components/carousel";
+import { XIcon } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
@@ -16,12 +18,18 @@ interface MapDrawerProps {
   // isPending: boolean;
   open: boolean;
   depth?: number;
+  onClose?: () => void;
   children: React.ReactNode;
 }
 
 const DRAWER_WIDTH = 360;
 
-export function MapDrawer({ open, depth = 0, children }: MapDrawerProps) {
+export function MapDrawer({
+  open,
+  depth = 0,
+  onClose,
+  children,
+}: MapDrawerProps) {
   return (
     <AnimatePresence>
       {open && (
@@ -54,80 +62,20 @@ export function MapDrawer({ open, depth = 0, children }: MapDrawerProps) {
             )}
           />
           <div className="flex h-full w-full grow flex-col overflow-y-auto rounded-lg border bg-white p-4">
+            {onClose ? (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={onClose}
+                className="absolute right-2 top-2"
+              >
+                <XIcon className="size-4" />
+              </Button>
+            ) : null}
             {children}
           </div>
         </motion.div>
       )}
     </AnimatePresence>
-  );
-}
-
-export function MapDrawerActions({
-  children,
-  className,
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) {
-  return (
-    <div
-      className={cn(
-        "sticky -top-6 z-30 -mx-6 -mt-6 flex h-[52px] p-2",
-        className,
-      )}
-    >
-      {children}
-    </div>
-  );
-}
-
-interface MapDrawerImagesProps {
-  images: WikidataImageItem[];
-}
-
-export function MapDrawerImages({ images }: MapDrawerImagesProps) {
-  const [api, setApi] = useState<CarouselApi>();
-  const [current, setCurrent] = useState(0);
-
-  useEffect(() => {
-    if (!api) return;
-
-    api.on("select", () => {
-      setCurrent(api.selectedScrollSnap());
-    });
-  }, [api]);
-
-  return (
-    <Carousel
-      className="-mx-6 w-[calc(100%+3rem)]"
-      opts={{
-        loop: true,
-        align: "center",
-      }}
-      setApi={setApi}
-    >
-      <CarouselContent className="ml-0">
-        {images.map((image, index) => (
-          <CarouselItem
-            className={cn(
-              "relative h-40 basis-[calc(100%-2rem)] pl-1 transition-opacity duration-300",
-              {
-                "opacity-20": current !== index,
-              },
-            )}
-            key={image.imageUrl}
-          >
-            <div className="relative size-full overflow-hidden rounded-lg">
-              <Image
-                src={image.imageUrl}
-                alt="Image"
-                fill
-                className="h-full w-full object-cover object-center"
-              />
-            </div>
-          </CarouselItem>
-        ))}
-      </CarouselContent>
-    </Carousel>
   );
 }
