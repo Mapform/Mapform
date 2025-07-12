@@ -53,7 +53,7 @@ export function MapDrawer({ open, depth = 0, children }: MapDrawerProps) {
               },
             )}
           />
-          <div className="flex h-full w-full grow flex-col overflow-y-auto rounded-lg border bg-white p-6">
+          <div className="flex h-full w-full grow flex-col overflow-y-auto rounded-lg border bg-white p-4">
             {children}
           </div>
         </motion.div>
