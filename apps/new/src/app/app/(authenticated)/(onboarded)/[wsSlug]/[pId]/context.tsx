@@ -3,8 +3,6 @@
 import type { GetProject } from "@mapform/backend/data/projects/get-project";
 import type { GetRow } from "@mapform/backend/data/rows/get-row";
 import { createContext, useContext, useEffect } from "react";
-import type { SearchPlaces } from "@mapform/backend/data/geoapify/search";
-import type { SearchRows } from "@mapform/backend/data/rows/search-rows";
 import {
   type StateServiceProps,
   useStateService,
@@ -19,8 +17,6 @@ import { useMap } from "react-map-gl/mapbox";
 export interface ProjectContextProps {
   features: NonNullable<GetProject["data"]>["rows"];
   activeView?: NonNullable<GetProject["data"]>["views"][number];
-  vectorSearchResults?: SearchRows["data"];
-  geoapifySearchResults?: SearchPlaces["data"];
   geoapifyPlaceDetails?: GetPlaceDetails["data"];
   featureService: StateServiceProps<
     GetRow["data"] | undefined,
@@ -42,15 +38,11 @@ export function ProjectProvider({
   feature,
   project,
   activeView,
-  vectorSearchResults,
-  geoapifySearchResults,
   geoapifyPlaceDetails,
 }: {
   feature?: GetRow["data"];
   project: NonNullable<GetProject["data"]>;
   activeView?: NonNullable<GetProject["data"]>["views"][number];
-  vectorSearchResults?: SearchRows["data"];
-  geoapifySearchResults?: SearchPlaces["data"];
   geoapifyPlaceDetails?: GetPlaceDetails["data"];
   children: React.ReactNode;
 }) {
@@ -108,8 +100,6 @@ export function ProjectProvider({
       value={{
         features,
         activeView,
-        vectorSearchResults,
-        geoapifySearchResults,
         featureService,
         projectService,
         geoapifyPlaceDetails,

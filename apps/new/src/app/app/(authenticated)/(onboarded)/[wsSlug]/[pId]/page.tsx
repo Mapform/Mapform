@@ -6,34 +6,7 @@ import { ProjectProvider } from "./context";
 // import { MapView } from "./views/map-view";
 import { loadSearchParams } from "~/lib/params/server";
 import type { SearchParams } from "nuqs/server";
-
-/**
- * Cached search rows function
- *
- * Note: React cache only works within a single server request.
- * The cache is invalidated on every new request, so this won't
- * provide cross-request caching. It's useful for sharing work
- * between multiple components in the same render tree.
- */
-const getVectorSearchResults = cache(
-  async (query: string, projectId: string) => {
-    const searchResults = await authClient.searchRows({
-      query,
-      projectId,
-    });
-    return searchResults;
-  },
-);
-
-const getGeoapifySearchResults = cache(
-  async (query: string, bounds?: [number, number, number, number]) => {
-    const searchResults = await publicClient.searchPlaces({
-      query,
-      bounds,
-    });
-    return searchResults;
-  },
-);
+import { Source } from "react-map-gl/mapbox";
 
 const getGeoapifyPlaceDetails = cache(async (placeId: string) => {
   const placeDetails = await publicClient.getPlaceDetails({
@@ -47,18 +20,10 @@ export default async function ViewPage(props: {
   searchParams: Promise<SearchParams>;
 }) {
   const params = await props.params;
-  const { viewId, perPage, page, rowId, query, geoapifyPlaceId } =
+  const { viewId, perPage, page, rowId, geoapifyPlaceId } =
     await loadSearchParams(props.searchParams);
 
-  console.log(2222, params.pId);
-
-  const [
-    project,
-    feature,
-    vectorSearchResults,
-    geoapifySearchResults,
-    geoapifyPlaceDetails,
-  ] = await Promise.all([
+  const [project, feature, geoapifyPlaceDetails] = await Promise.all([
     authClient.getProject({
       projectId: params.pId,
       filter: {
@@ -68,8 +33,6 @@ export default async function ViewPage(props: {
       },
     }),
     rowId ? authClient.getRow({ rowId }) : null,
-    query ? getVectorSearchResults(query, params.pId) : null,
-    query ? getGeoapifySearchResults(query, undefined) : null,
     geoapifyPlaceId ? getGeoapifyPlaceDetails(geoapifyPlaceId) : null,
   ]);
 
@@ -100,11 +63,8 @@ export default async function ViewPage(props: {
       feature={feature?.data}
       project={project.data}
       activeView={activeView}
-      vectorSearchResults={vectorSearchResults?.data}
-      geoapifySearchResults={geoapifySearchResults?.data}
       geoapifyPlaceDetails={geoapifyPlaceDetails?.data}
     >
-      <div></div>
       {/* {activeView.type === "table" && <TableView />}
         {activeView.type === "map" && <MapView />} */}
     </ProjectProvider>
