@@ -4,16 +4,20 @@ import { loadSearchParams } from "~/lib/params/server";
 import { Search } from "./search";
 import { cache, Suspense } from "react";
 import { authClient, publicClient } from "~/lib/safe-action";
+import { Chat } from "./chat";
 
 interface DealDrawerProps {
   searchParams: Promise<SearchParams>;
 }
 
-export async function Drawers({ searchParams }: DealDrawerProps) {
+export function Drawers({ searchParams }: DealDrawerProps) {
   return (
     <>
-      <Suspense fallback={<div>Loading...</div>}>
+      <Suspense>
         <SearchDrawer searchParams={searchParams} />
+      </Suspense>
+      <Suspense>
+        <ChatDrawer searchParams={searchParams} />
       </Suspense>
     </>
   );
@@ -47,4 +51,10 @@ async function SearchDrawer({ searchParams }: DealDrawerProps) {
   ]);
 
   return <Search geoapifySearchResults={geoapifySearchResults?.data} />;
+}
+
+async function ChatDrawer({ searchParams }: DealDrawerProps) {
+  // const { chatId } = await loadSearchParams(searchParams);
+
+  return <Chat />;
 }

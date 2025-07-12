@@ -8,7 +8,7 @@ import {
   CommandList,
   CommandPrimitive,
 } from "@mapform/ui/components/command";
-import { GlobeIcon, SearchIcon } from "lucide-react";
+import { GlobeIcon, MessageCircle, SearchIcon } from "lucide-react";
 import { MapDrawer } from "~/components/map-drawer";
 import { useParamsContext } from "~/lib/params/client";
 import { useMap } from "react-map-gl/mapbox";
@@ -57,6 +57,21 @@ export function Search({ geoapifySearchResults }: SearchProps) {
         </div>
         <CommandList className="">
           <CommandGroup>
+            {searchQuery && (
+              <CommandItem
+                onSelect={() => {
+                  void setQueryStates({
+                    chatId: "123",
+                  });
+                }}
+              >
+                <MessageCircle className="text-muted-foreground mr-2 size-4" />
+                <span className="truncate">{searchQuery}</span>
+                <span className="text-muted-foreground ml-1 flex-shrink-0">
+                  — Chat
+                </span>
+              </CommandItem>
+            )}
             {filteredFeatures.map((feature) => (
               <CommandItem
                 key={feature.properties?.place_id}
