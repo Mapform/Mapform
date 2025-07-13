@@ -28,100 +28,98 @@ export function Views() {
   const { execute, isPending } = useAction(createViewAction);
 
   return (
-    <MapDrawer open={true}>
-      <header>
-        <div>
+    <header>
+      <div>
+        <Tooltip>
+          <EmojiPopover
+            onIconChange={(emoji) => {
+              projectService.execute({
+                id: projectService.optimisticState.id,
+                icon: emoji,
+              });
+            }}
+          >
+            <TooltipTrigger asChild>
+              {projectService.optimisticState.icon ? (
+                <button
+                  className="hover:bg-muted rounded-lg text-6xl"
+                  type="button"
+                >
+                  {projectService.optimisticState.icon}
+                </button>
+              ) : (
+                <Button size="icon-sm" type="button" variant="ghost">
+                  <SmilePlusIcon className="size-4" />
+                </Button>
+              )}
+            </TooltipTrigger>
+          </EmojiPopover>
+          <TooltipContent>Add emoji</TooltipContent>
+        </Tooltip>
+      </div>
+      <AutoSizeTextArea
+        className="text-4xl font-bold"
+        placeholder="Untitled"
+        value={projectService.optimisticState.name ?? ""}
+        onChange={(value) => {
+          projectService.execute({
+            id: projectService.optimisticState.id,
+            name: value,
+          });
+        }}
+      />
+      <AutoSizeTextArea
+        placeholder="Description"
+        value={projectService.optimisticState.description ?? ""}
+        onChange={(value) => {
+          projectService.execute({
+            id: projectService.optimisticState.id,
+            description: value,
+          });
+        }}
+      />
+      <div className="mt-2 flex gap-1">
+        {projectService.optimisticState.views.map((view) => (
+          <ViewButton key={view.id} view={view} />
+        ))}
+        <DropdownMenu>
           <Tooltip>
-            <EmojiPopover
-              onIconChange={(emoji) => {
-                projectService.execute({
-                  id: projectService.optimisticState.id,
-                  icon: emoji,
+            <TooltipTrigger asChild>
+              <DropdownMenuTrigger asChild>
+                <Button size="icon-sm" variant="ghost">
+                  <PlusIcon className="size-4" />
+                </Button>
+              </DropdownMenuTrigger>
+            </TooltipTrigger>
+            <TooltipContent>Add View</TooltipContent>
+          </Tooltip>
+          <DropdownMenuContent align="start">
+            <DropdownMenuItem
+              disabled={isPending}
+              onClick={() => {
+                execute({
+                  projectId: projectService.optimisticState.id,
+                  viewType: "map",
                 });
               }}
             >
-              <TooltipTrigger asChild>
-                {projectService.optimisticState.icon ? (
-                  <button
-                    className="hover:bg-muted rounded-lg text-6xl"
-                    type="button"
-                  >
-                    {projectService.optimisticState.icon}
-                  </button>
-                ) : (
-                  <Button size="icon-sm" type="button" variant="ghost">
-                    <SmilePlusIcon className="size-4" />
-                  </Button>
-                )}
-              </TooltipTrigger>
-            </EmojiPopover>
-            <TooltipContent>Add emoji</TooltipContent>
-          </Tooltip>
-        </div>
-        <AutoSizeTextArea
-          className="text-4xl font-bold"
-          placeholder="Untitled"
-          value={projectService.optimisticState.name ?? ""}
-          onChange={(value) => {
-            projectService.execute({
-              id: projectService.optimisticState.id,
-              name: value,
-            });
-          }}
-        />
-        <AutoSizeTextArea
-          placeholder="Description"
-          value={projectService.optimisticState.description ?? ""}
-          onChange={(value) => {
-            projectService.execute({
-              id: projectService.optimisticState.id,
-              description: value,
-            });
-          }}
-        />
-        <div className="mt-2 flex gap-1">
-          {projectService.optimisticState.views.map((view) => (
-            <ViewButton key={view.id} view={view} />
-          ))}
-          <DropdownMenu>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <DropdownMenuTrigger asChild>
-                  <Button size="icon-sm" variant="ghost">
-                    <PlusIcon className="size-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-              </TooltipTrigger>
-              <TooltipContent>Add View</TooltipContent>
-            </Tooltip>
-            <DropdownMenuContent align="start">
-              <DropdownMenuItem
-                disabled={isPending}
-                onClick={() => {
-                  execute({
-                    projectId: projectService.optimisticState.id,
-                    viewType: "map",
-                  });
-                }}
-              >
-                <VIEWS.map.icon className="size-4" />
-                <span>{VIEWS.map.name} View</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => {
-                  execute({
-                    projectId: projectService.optimisticState.id,
-                    viewType: "table",
-                  });
-                }}
-              >
-                <VIEWS.table.icon className="size-4" />
-                <span>{VIEWS.table.name} View</span>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      </header>
-    </MapDrawer>
+              <VIEWS.map.icon className="size-4" />
+              <span>{VIEWS.map.name} View</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => {
+                execute({
+                  projectId: projectService.optimisticState.id,
+                  viewType: "table",
+                });
+              }}
+            >
+              <VIEWS.table.icon className="size-4" />
+              <span>{VIEWS.table.name} View</span>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    </header>
   );
 }

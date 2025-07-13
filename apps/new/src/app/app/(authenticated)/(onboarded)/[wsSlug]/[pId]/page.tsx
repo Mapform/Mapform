@@ -1,6 +1,5 @@
 import { notFound, redirect } from "next/navigation";
-import { cache } from "react";
-import { authClient, publicClient } from "~/lib/safe-action";
+import { authClient } from "~/lib/safe-action";
 import { ProjectProvider } from "./context";
 import { loadSearchParams } from "~/lib/params/server";
 import type { SearchParams } from "nuqs/server";
