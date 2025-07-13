@@ -21,6 +21,8 @@ import { ViewButton } from "./view-button";
 import { useAction } from "next-safe-action/hooks";
 import { createViewAction } from "~/data/views/create-view";
 import { MapDrawer } from "~/components/map-drawer";
+import { MapView } from "./map-view";
+import { TableView } from "./table-view";
 
 export function Views() {
   const { projectService, activeView } = useProject();
@@ -127,6 +129,8 @@ export function Views() {
           </DropdownMenu>
         </div>
       </header>
+      {activeView?.type === "map" && <MapView />}
+      {activeView?.type === "table" && <TableView />}
     </MapDrawer>
   );
 }

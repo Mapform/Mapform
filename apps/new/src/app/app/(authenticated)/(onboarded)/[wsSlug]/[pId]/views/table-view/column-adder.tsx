@@ -8,7 +8,7 @@ import { PlusIcon } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import { createColumnAction } from "~/data/columns/create-column";
 import { useState } from "react";
-import { useProject } from "../../../context";
+import { useProject } from "../../context";
 import {
   DropdownMenu,
   DropdownMenuContent,
