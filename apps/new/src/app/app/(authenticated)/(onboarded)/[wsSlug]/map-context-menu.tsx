@@ -1,10 +1,11 @@
 "use client";
 
-import { PlusIcon } from "lucide-react";
+import { PlusIcon, SparkleIcon } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@mapform/ui/components/dropdown-menu";
 import { useParams } from "next/navigation";
@@ -42,17 +43,17 @@ export function MapContextMenu({
         onEscapeKeyDown={() => onOpenChange(false)}
         onInteractOutside={() => onOpenChange(false)}
       >
-        {/* <DropdownMenuItem
+        <DropdownMenuItem
           onClick={() => {
             onOpenChange(false);
             // Add your action here
-            console.log("Add new feature");
+            console.log("Ask AI");
           }}
         >
-          <ScanIcon className="size-4" />
-          Set default view
+          <SparkleIcon className="size-4" />
+          Ask AI
         </DropdownMenuItem>
-        <DropdownMenuSeparator /> */}
+        <DropdownMenuSeparator />
         <DropdownMenuItem
           onClick={() => {
             onOpenChange(false);
