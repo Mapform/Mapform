@@ -23,6 +23,7 @@ import { createViewAction } from "~/data/views/create-view";
 import { MapDrawer } from "~/components/map-drawer";
 import { MapView } from "./map-view";
 import { TableView } from "./table-view";
+import { Import } from "./import";
 
 export function Views() {
   const { projectService, activeView } = useProject();
@@ -37,6 +38,9 @@ export function Views() {
       width={activeView?.type === "table" ? 800 : undefined}
     >
       <header>
+        <div className="">
+          <Import />
+        </div>
         <div>
           <Tooltip>
             <EmojiPopover
