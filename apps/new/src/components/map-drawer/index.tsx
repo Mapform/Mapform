@@ -8,6 +8,7 @@ import { AnimatePresence, motion } from "motion/react";
 interface MapDrawerProps {
   // isPending: boolean;
   open: boolean;
+  initialOpen?: boolean;
   depth?: number;
   onClose?: () => void;
   children: React.ReactNode;
@@ -17,6 +18,7 @@ const DRAWER_WIDTH = 360;
 
 export function MapDrawer({
   open,
+  initialOpen = false,
   depth = 0,
   onClose,
   children,
@@ -29,7 +31,7 @@ export function MapDrawer({
           style={{
             width: DRAWER_WIDTH,
           }}
-          initial={{ x: -DRAWER_WIDTH, opacity: 0 }}
+          initial={initialOpen ? false : { x: -DRAWER_WIDTH, opacity: 0 }}
           animate={{
             x: 16 * depth,
             scale: depth > 0 ? 0.985 : 1,
