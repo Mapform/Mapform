@@ -19,6 +19,7 @@ import { useAction } from "next-safe-action/hooks";
 import { createRowsAction } from "~/data/rows/create-rows";
 import type { Feature, FeatureCollection } from "geojson";
 import { toast } from "@mapform/ui/components/toaster";
+import { VIEWS } from "~/constants/views";
 import { useProject } from "../context";
 
 interface ParsedData {

@@ -7,7 +7,7 @@ import {
   TooltipTrigger,
 } from "@mapform/ui/components/tooltip";
 import { Button } from "@mapform/ui/components/button";
-import { PlusIcon, SmilePlusIcon } from "lucide-react";
+import { PlusIcon, SmilePlusIcon, TrashIcon } from "lucide-react";
 import { AutoSizeTextArea } from "@mapform/ui/components/autosize-text-area";
 import { useProject } from "../context";
 import {
@@ -17,18 +17,43 @@ import {
   DropdownMenuItem,
 } from "@mapform/ui/components/dropdown-menu";
 import { VIEWS } from "~/constants/views";
-import { ViewButton } from "./view-button";
 import { useAction } from "next-safe-action/hooks";
 import { createViewAction } from "~/data/views/create-view";
 import { MapDrawer } from "~/components/map-drawer";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@mapform/ui/components/tabs";
 import { MapView } from "./map-view";
 import { TableView } from "./table-view";
 import { Import } from "./import";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from "@mapform/ui/components/context-menu";
+import { toast } from "@mapform/ui/components/toaster";
+import { deleteViewAction } from "~/data/views/delete-view";
 
 export function Views() {
   const { projectService, activeView } = useProject();
 
   const { execute, isPending } = useAction(createViewAction);
+  const { execute: executeDeleteView, isPending: isDeletingView } = useAction(
+    deleteViewAction,
+    {
+      onError: ({ error }) => {
+        toast({
+          title: "Uh oh! Something went wrong.",
+          description:
+            error.serverError ?? "There was an error updating the page.",
+        });
+      },
+    },
+  );
 
   return (
     <MapDrawer
@@ -90,51 +115,78 @@ export function Views() {
             });
           }}
         />
-        <div className="mt-2 flex gap-1">
-          {projectService.optimisticState.views.map((view) => (
-            <ViewButton key={view.id} view={view} />
-          ))}
-          <DropdownMenu>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <DropdownMenuTrigger asChild>
-                  <Button size="icon-sm" variant="ghost">
-                    <PlusIcon className="size-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-              </TooltipTrigger>
-              <TooltipContent>Add View</TooltipContent>
-            </Tooltip>
-            <DropdownMenuContent align="start">
-              <DropdownMenuItem
-                disabled={isPending}
-                onClick={() => {
-                  execute({
-                    projectId: projectService.optimisticState.id,
-                    viewType: "map",
-                  });
-                }}
-              >
-                <VIEWS.map.icon className="size-4" />
-                <span>{VIEWS.map.name} View</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => {
-                  execute({
-                    projectId: projectService.optimisticState.id,
-                    viewType: "table",
-                  });
-                }}
-              >
-                <VIEWS.table.icon className="size-4" />
-                <span>{VIEWS.table.name} View</span>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
       </header>
-      {activeView?.type === "map" && <MapView />}
-      {activeView?.type === "table" && <TableView />}
+      <div className="mt-2 flex gap-1">
+        {/* {projectService.optimisticState.views.map((view) => (
+            <ViewButton key={view.id} view={view} />
+          ))} */}
+        <Tabs value={activeView?.id}>
+          <TabsList>
+            {projectService.optimisticState.views.map((view) => (
+              <ContextMenu key={view.id}>
+                <TabsTrigger value={view.id}>
+                  <ContextMenuTrigger>
+                    {view.name ?? VIEWS[view.type].name}
+                  </ContextMenuTrigger>
+                </TabsTrigger>
+                <ContextMenuContent>
+                  <ContextMenuItem
+                    disabled={isDeletingView}
+                    onClick={() => {
+                      executeDeleteView({ viewId: view.id });
+                    }}
+                  >
+                    <TrashIcon className="mr-2 size-4" />
+                    Delete
+                  </ContextMenuItem>
+                </ContextMenuContent>
+              </ContextMenu>
+            ))}
+            <DropdownMenu>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <DropdownMenuTrigger asChild>
+                    <Button size="icon-sm" variant="ghost">
+                      <PlusIcon className="size-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                </TooltipTrigger>
+                <TooltipContent>Add View</TooltipContent>
+              </Tooltip>
+              <DropdownMenuContent align="start">
+                <DropdownMenuItem
+                  disabled={isPending}
+                  onClick={() => {
+                    execute({
+                      projectId: projectService.optimisticState.id,
+                      viewType: "map",
+                    });
+                  }}
+                >
+                  <VIEWS.map.icon className="size-4" />
+                  <span>{VIEWS.map.name} View</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => {
+                    execute({
+                      projectId: projectService.optimisticState.id,
+                      viewType: "table",
+                    });
+                  }}
+                >
+                  <VIEWS.table.icon className="size-4" />
+                  <span>{VIEWS.table.name} View</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </TabsList>
+          {projectService.optimisticState.views.map((view) => (
+            <TabsContent key={view.id} value={view.id}>
+              {view.type === "map" ? <MapView /> : <TableView />}
+            </TabsContent>
+          ))}
+        </Tabs>
+      </div>
     </MapDrawer>
   );
 }

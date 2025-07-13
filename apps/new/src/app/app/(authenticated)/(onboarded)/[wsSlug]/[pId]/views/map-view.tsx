@@ -3,7 +3,7 @@ import { useProject } from "../context";
 import { useMap } from "react-map-gl/mapbox";
 
 export function MapView() {
-  const { map } = useMap();
+  const map = useMap();
   const { projectService } = useProject();
   const { setQueryStates } = useParamsContext();
 
@@ -16,9 +16,9 @@ export function MapView() {
           onClick={() => {
             void setQueryStates({ rowId: row.id });
 
-            map?.flyTo({
+            map.current?.flyTo({
               center: row.center.coordinates as [number, number],
-              duration: 500,
+              duration: 1000,
             });
           }}
         >
