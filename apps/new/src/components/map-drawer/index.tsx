@@ -2,17 +2,8 @@
 
 import { cn } from "@mapform/lib/classnames";
 import { Button } from "@mapform/ui/components/button";
-import type { CarouselApi } from "@mapform/ui/components/carousel";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-} from "@mapform/ui/components/carousel";
 import { XIcon } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
-import Image from "next/image";
-import { useEffect, useState } from "react";
-import type { WikidataImageItem } from "~/lib/wikidata-image";
 
 interface MapDrawerProps {
   // isPending: boolean;
@@ -61,7 +52,7 @@ export function MapDrawer({
               },
             )}
           />
-          <div className="flex h-full w-full grow flex-col overflow-y-auto rounded-lg border bg-white p-4">
+          <div className="flex h-full w-full grow flex-col overflow-y-auto rounded-lg border bg-white/95 p-4 backdrop-blur-sm">
             {onClose ? (
               <Button
                 variant="ghost"
