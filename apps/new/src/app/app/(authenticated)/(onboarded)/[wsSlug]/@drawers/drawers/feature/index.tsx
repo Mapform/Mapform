@@ -19,6 +19,7 @@ import { useStateService } from "~/lib/use-state-service";
 import { updateRowAction } from "~/data/rows/update-row";
 import type { GetRow } from "@mapform/backend/data/rows/get-row";
 import type { UpdateRowSchema } from "@mapform/backend/data/rows/update-row/schema";
+import { Marker } from "react-map-gl/mapbox";
 
 interface FeatureDrawerProps {
   feature: GetRow["data"];
@@ -44,58 +45,59 @@ export function Feature({ feature }: FeatureDrawerProps) {
   console.log(1111, featureService.optimisticState?.description);
 
   return (
-    <MapDrawer
-      open={!!params.rowId}
-      depth={0}
-      onClose={() => {
-        void setQueryStates({
-          rowId: null,
-        });
-      }}
-    >
-      {isPending ? (
-        <div>Loading...</div>
-      ) : featureService.optimisticState ? (
-        <div>
-          <header>
-            <Tooltip>
-              <EmojiPopover
-                onIconChange={(emoji) => {
+    <>
+      <MapDrawer
+        open={!!params.rowId}
+        depth={0}
+        onClose={() => {
+          void setQueryStates({
+            rowId: null,
+          });
+        }}
+      >
+        {isPending ? (
+          <div>Loading...</div>
+        ) : featureService.optimisticState ? (
+          <div>
+            <header>
+              <Tooltip>
+                <EmojiPopover
+                  onIconChange={(emoji) => {
+                    featureService.execute({
+                      id: featureService.optimisticState!.id,
+                      icon: emoji,
+                    });
+                  }}
+                >
+                  <TooltipTrigger asChild>
+                    {featureService.optimisticState.icon ? (
+                      <button
+                        className="hover:bg-muted rounded-lg text-6xl"
+                        type="button"
+                      >
+                        {featureService.optimisticState.icon}
+                      </button>
+                    ) : (
+                      <Button size="icon-sm" type="button" variant="ghost">
+                        <SmilePlusIcon className="size-4" />
+                      </Button>
+                    )}
+                  </TooltipTrigger>
+                </EmojiPopover>
+                <TooltipContent>Add emoji</TooltipContent>
+              </Tooltip>
+              <AutoSizeTextArea
+                className="text-4xl font-bold"
+                placeholder="Untitled"
+                value={featureService.optimisticState.name ?? ""}
+                onChange={(value) => {
                   featureService.execute({
                     id: featureService.optimisticState!.id,
-                    icon: emoji,
+                    name: value,
                   });
                 }}
-              >
-                <TooltipTrigger asChild>
-                  {featureService.optimisticState.icon ? (
-                    <button
-                      className="hover:bg-muted rounded-lg text-6xl"
-                      type="button"
-                    >
-                      {featureService.optimisticState.icon}
-                    </button>
-                  ) : (
-                    <Button size="icon-sm" type="button" variant="ghost">
-                      <SmilePlusIcon className="size-4" />
-                    </Button>
-                  )}
-                </TooltipTrigger>
-              </EmojiPopover>
-              <TooltipContent>Add emoji</TooltipContent>
-            </Tooltip>
-            <AutoSizeTextArea
-              className="text-4xl font-bold"
-              placeholder="Untitled"
-              value={featureService.optimisticState.name ?? ""}
-              onChange={(value) => {
-                featureService.execute({
-                  id: featureService.optimisticState!.id,
-                  name: value,
-                });
-              }}
-            />
-            {/* <div className="mb-4 mt-2 flex flex-col gap-2">
+              />
+              {/* <div className="mb-4 mt-2 flex flex-col gap-2">
               {projectService.optimisticState.columns.map((column) => (
                 <div className="grid grid-cols-2 gap-4" key={column.id}>
                   <PropertyColumnEditor
@@ -127,27 +129,35 @@ export function Feature({ feature }: FeatureDrawerProps) {
                 </div>
               ))}
             </div> */}
-          </header>
-          <Blocknote
-            content={featureService.optimisticState.description}
-            onChange={({ blocks, markdown }) => {
-              featureService.execute({
-                id: featureService.optimisticState!.id,
-                description: blocks,
-                descriptionAsMarkdown: markdown ?? undefined,
-              });
-            }}
-          />
-        </div>
-      ) : (
-        <div className="flex flex-1 flex-col justify-center rounded-lg bg-gray-50 p-8">
-          <div className="text-center">
-            <h3 className="text-foreground mt-2 text-sm font-medium">
-              No feature found
-            </h3>
+            </header>
+            <Blocknote
+              content={featureService.optimisticState.description}
+              onChange={({ blocks, markdown }) => {
+                featureService.execute({
+                  id: featureService.optimisticState!.id,
+                  description: blocks,
+                  descriptionAsMarkdown: markdown ?? undefined,
+                });
+              }}
+            />
           </div>
-        </div>
-      )}
-    </MapDrawer>
+        ) : (
+          <div className="flex flex-1 flex-col justify-center rounded-lg bg-gray-50 p-8">
+            <div className="text-center">
+              <h3 className="text-foreground mt-2 text-sm font-medium">
+                No feature found
+              </h3>
+            </div>
+          </div>
+        )}
+      </MapDrawer>
+
+      {/* Show the feature */}
+      {/* TODO: Make this look nicer */}
+      <Marker
+        longitude={featureService.optimisticState?.center.coordinates[0] ?? 0}
+        latitude={featureService.optimisticState?.center.coordinates[1] ?? 0}
+      />
+    </>
   );
 }
