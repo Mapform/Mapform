@@ -8,11 +8,11 @@ export function MapView() {
   const { setQueryStates } = useParamsContext();
 
   return (
-    <ul className="flex flex-col gap-2">
+    <ul className="flex list-none flex-col gap-2 p-0">
       {projectService.optimisticState.rows.map((row) => (
         <li
           key={row.id}
-          className="cursor-pointer rounded-lg border p-2 transition-colors hover:border-gray-300 hover:bg-gray-50"
+          className="m-0 cursor-pointer rounded-lg border p-2 transition-colors hover:border-gray-300 hover:bg-gray-50"
           onClick={() => {
             void setQueryStates({ rowId: row.id });
 

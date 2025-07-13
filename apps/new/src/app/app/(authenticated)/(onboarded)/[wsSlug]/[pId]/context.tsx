@@ -2,7 +2,7 @@
 
 import type { GetProject } from "@mapform/backend/data/projects/get-project";
 import type { GetRow } from "@mapform/backend/data/rows/get-row";
-import { createContext, useContext, useEffect } from "react";
+import { createContext, useContext } from "react";
 import {
   type StateServiceProps,
   useStateService,
@@ -12,7 +12,6 @@ import type { UpdateRowSchema } from "@mapform/backend/data/rows/update-row/sche
 import { updateProjectAction } from "~/data/projects/update-project";
 import type { UpdateProjectSchema } from "@mapform/backend/data/projects/update-project/schema";
 import type { GetPlaceDetails } from "@mapform/backend/data/geoapify/details";
-import { useMap } from "react-map-gl/mapbox";
 
 export interface ProjectContextProps {
   features: NonNullable<GetProject["data"]>["rows"];
@@ -44,8 +43,6 @@ export function ProjectProvider({
   activeView?: NonNullable<GetProject["data"]>["views"][number];
   children: React.ReactNode;
 }) {
-  const map = useMap();
-
   const projectService = useStateService<
     NonNullable<GetProject["data"]>,
     UpdateProjectSchema
@@ -82,16 +79,6 @@ export function ProjectProvider({
     }
     return row;
   });
-
-  /**
-   * Fly to the project center on mount
-   */
-  useEffect(() => {
-    map.current?.flyTo({
-      center: project.center.coordinates,
-      duration: 1000,
-    });
-  }, [project, map]);
 
   return (
     <ProjectContext.Provider
