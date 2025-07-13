@@ -190,7 +190,7 @@ export function TableView() {
 
   return (
     <div
-      className="relative flex flex-1 flex-col overflow-auto bg-white py-4"
+      className="relative flex flex-1 flex-col overflow-auto py-4"
       ref={tableContainerRef}
     >
       <TableRoot className="border-b">
@@ -264,7 +264,7 @@ export function TableView() {
           )}
         </TableBody>
       </TableRoot>
-      <div className="sticky -bottom-4 left-0 flex items-center bg-white pb-8">
+      <div className="sticky -bottom-4 left-0 flex items-center pb-8">
         <button
           className="hover:bg-muted/50 flex h-10 flex-1 items-center text-left text-sm disabled:pointer-events-none disabled:opacity-50"
           // disabled={statusCreateRow === "executing"}
