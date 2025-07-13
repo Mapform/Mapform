@@ -37,10 +37,11 @@ import {
 } from "@mapform/ui/components/context-menu";
 import { toast } from "@mapform/ui/components/toaster";
 import { deleteViewAction } from "~/data/views/delete-view";
+import { useParamsContext } from "~/lib/params/client";
 
 export function Views() {
   const { projectService, activeView } = useProject();
-
+  const { setQueryStates } = useParamsContext();
   const { execute, isPending } = useAction(createViewAction);
   const { execute: executeDeleteView, isPending: isDeletingView } = useAction(
     deleteViewAction,
@@ -117,10 +118,14 @@ export function Views() {
         />
       </header>
       <div className="mt-2 flex gap-1">
-        {/* {projectService.optimisticState.views.map((view) => (
-            <ViewButton key={view.id} view={view} />
-          ))} */}
-        <Tabs value={activeView?.id}>
+        <Tabs
+          value={activeView?.id}
+          onValueChange={(value) => {
+            void setQueryStates({
+              viewId: value,
+            });
+          }}
+        >
           <TabsList>
             {projectService.optimisticState.views.map((view) => (
               <ContextMenu key={view.id}>
