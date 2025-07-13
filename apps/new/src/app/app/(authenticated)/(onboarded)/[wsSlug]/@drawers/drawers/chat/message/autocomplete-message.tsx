@@ -1,21 +1,26 @@
 import { useEffect } from "react";
-import { useParamsContext } from "~/lib/params/client";
+import { Marker, useMap } from "react-map-gl/mapbox";
+import type { LocationResult } from "~/lib/ai/tools/autocomplete";
 
 interface AutocompleteMessageProps {
-  geoapifyPlaceId?: string;
+  result: LocationResult | undefined;
 }
 
-export function AutocompleteMessage({
-  geoapifyPlaceId,
-}: AutocompleteMessageProps) {
-  const { setQueryStates } = useParamsContext();
+export function AutocompleteMessage({ result }: AutocompleteMessageProps) {
+  const map = useMap();
+
   useEffect(() => {
-    if (geoapifyPlaceId) {
-      void setQueryStates({
-        geoapifyPlaceId,
+    if (map.current && result) {
+      map.current.flyTo({
+        center: [result.lon, result.lat],
+        duration: 1000,
       });
     }
-  }, [geoapifyPlaceId, setQueryStates]);
+  }, [map, result]);
 
-  return null;
+  if (!result) return null;
+
+  return (
+    <Marker longitude={result.lon} latitude={result.lat} anchor="center" />
+  );
 }

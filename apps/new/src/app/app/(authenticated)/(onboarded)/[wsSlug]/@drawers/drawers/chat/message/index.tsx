@@ -46,7 +46,7 @@ export function Message({ message }: ChatMessageProps) {
                 return (
                   <AutocompleteMessage
                     key={part.toolCallId}
-                    geoapifyPlaceId={part.output?.place_id}
+                    result={part.output}
                   />
                 );
               }
