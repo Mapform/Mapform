@@ -119,6 +119,7 @@ export function Views() {
       </header>
       <div className="mt-2 flex gap-1">
         <Tabs
+          className="w-full"
           value={activeView?.id}
           onValueChange={(value) => {
             void setQueryStates({
@@ -126,65 +127,67 @@ export function Views() {
             });
           }}
         >
-          <TabsList>
-            {projectService.optimisticState.views.map((view) => (
-              <ContextMenu key={view.id}>
-                <TabsTrigger value={view.id}>
-                  <ContextMenuTrigger>
-                    {view.name ?? VIEWS[view.type].name}
-                  </ContextMenuTrigger>
-                </TabsTrigger>
-                <ContextMenuContent>
-                  <ContextMenuItem
-                    disabled={isDeletingView}
+          <div className="overflow-x-auto">
+            <TabsList>
+              {projectService.optimisticState.views.map((view) => (
+                <ContextMenu key={view.id}>
+                  <TabsTrigger value={view.id}>
+                    <ContextMenuTrigger>
+                      {view.name ?? VIEWS[view.type].name}
+                    </ContextMenuTrigger>
+                  </TabsTrigger>
+                  <ContextMenuContent>
+                    <ContextMenuItem
+                      disabled={isDeletingView}
+                      onClick={() => {
+                        executeDeleteView({ viewId: view.id });
+                      }}
+                    >
+                      <TrashIcon className="mr-2 size-4" />
+                      Delete
+                    </ContextMenuItem>
+                  </ContextMenuContent>
+                </ContextMenu>
+              ))}
+              <DropdownMenu>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <DropdownMenuTrigger asChild>
+                      <Button size="icon-sm" variant="ghost">
+                        <PlusIcon className="size-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                  </TooltipTrigger>
+                  <TooltipContent>Add View</TooltipContent>
+                </Tooltip>
+                <DropdownMenuContent align="start">
+                  <DropdownMenuItem
+                    disabled={isPending}
                     onClick={() => {
-                      executeDeleteView({ viewId: view.id });
+                      execute({
+                        projectId: projectService.optimisticState.id,
+                        viewType: "map",
+                      });
                     }}
                   >
-                    <TrashIcon className="mr-2 size-4" />
-                    Delete
-                  </ContextMenuItem>
-                </ContextMenuContent>
-              </ContextMenu>
-            ))}
-            <DropdownMenu>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <DropdownMenuTrigger asChild>
-                    <Button size="icon-sm" variant="ghost">
-                      <PlusIcon className="size-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                </TooltipTrigger>
-                <TooltipContent>Add View</TooltipContent>
-              </Tooltip>
-              <DropdownMenuContent align="start">
-                <DropdownMenuItem
-                  disabled={isPending}
-                  onClick={() => {
-                    execute({
-                      projectId: projectService.optimisticState.id,
-                      viewType: "map",
-                    });
-                  }}
-                >
-                  <VIEWS.map.icon className="size-4" />
-                  <span>{VIEWS.map.name} View</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => {
-                    execute({
-                      projectId: projectService.optimisticState.id,
-                      viewType: "table",
-                    });
-                  }}
-                >
-                  <VIEWS.table.icon className="size-4" />
-                  <span>{VIEWS.table.name} View</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </TabsList>
+                    <VIEWS.map.icon className="size-4" />
+                    <span>{VIEWS.map.name} View</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => {
+                      execute({
+                        projectId: projectService.optimisticState.id,
+                        viewType: "table",
+                      });
+                    }}
+                  >
+                    <VIEWS.table.icon className="size-4" />
+                    <span>{VIEWS.table.name} View</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </TabsList>
+          </div>
           {projectService.optimisticState.views.map((view) => (
             <TabsContent key={view.id} value={view.id}>
               {view.type === "map" ? <MapView /> : <TableView />}
