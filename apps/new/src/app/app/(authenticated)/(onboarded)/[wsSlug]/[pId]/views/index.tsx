@@ -6,7 +6,6 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@mapform/ui/components/tooltip";
-import { MapDrawer } from "~/components/map-drawer";
 import { Button } from "@mapform/ui/components/button";
 import { PlusIcon, SmilePlusIcon } from "lucide-react";
 import { AutoSizeTextArea } from "@mapform/ui/components/autosize-text-area";

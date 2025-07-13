@@ -5,8 +5,31 @@ import { loadSearchParams } from "~/lib/params/server";
 import type { SearchParams } from "nuqs/server";
 import { MapData } from "./map-data";
 import { Views } from "./views";
+import { Container } from "./container";
+import { Suspense } from "react";
+import { Skeleton } from "@mapform/ui/components/skeleton";
 
-export default async function ViewPage(props: {
+export default function ViewPage(props: {
+  params: Promise<{ wsSlug: string; pId: string }>;
+  searchParams: Promise<SearchParams>;
+}) {
+  return (
+    <Container>
+      <Suspense
+        fallback={
+          <div className="flex flex-col gap-4">
+            <Skeleton className="size-8 rounded-full" />
+            <Skeleton className="h-6 w-full" />
+          </div>
+        }
+      >
+        <ViewPageInner {...props} />
+      </Suspense>
+    </Container>
+  );
+}
+
+export async function ViewPageInner(props: {
   params: Promise<{ wsSlug: string; pId: string }>;
   searchParams: Promise<SearchParams>;
 }) {
@@ -32,18 +55,6 @@ export default async function ViewPage(props: {
   }
 
   const activeView = project.data?.views.find((view) => view.id === viewId);
-
-  if (!activeView) {
-    const firstView = project.data?.views.find((v) => v.position === 0);
-
-    if (!firstView) {
-      return notFound();
-    }
-
-    redirect(
-      `/app/${params.wsSlug}/${params.pId}?v=${firstView.id}&pp=${perPage}&p=${page}`,
-    );
-  }
 
   if (!project.data) {
     return notFound();
