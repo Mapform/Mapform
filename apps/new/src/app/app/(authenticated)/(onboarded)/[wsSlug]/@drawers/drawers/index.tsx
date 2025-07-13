@@ -6,6 +6,7 @@ import { cache, Suspense } from "react";
 import { authClient, publicClient } from "~/lib/safe-action";
 import { Chat } from "./chat";
 import { SearchDetails } from "./search-details";
+import { Feature } from "./feature";
 
 interface DealDrawerProps {
   searchParams: Promise<SearchParams>;
@@ -78,4 +79,14 @@ async function SearchDetailsDrawer({ searchParams }: DealDrawerProps) {
   const geoapifyPlaceDetails = await getGeoapifyPlaceDetails(geoapifyPlaceId);
 
   return <SearchDetails geoapifyPlaceDetails={geoapifyPlaceDetails?.data} />;
+}
+
+async function FeatureDrawer({ searchParams }: DealDrawerProps) {
+  const { rowId } = await loadSearchParams(searchParams);
+
+  const [row] = await Promise.all([
+    rowId ? authClient.getRow({ rowId }) : null,
+  ]);
+
+  return <Feature />;
 }

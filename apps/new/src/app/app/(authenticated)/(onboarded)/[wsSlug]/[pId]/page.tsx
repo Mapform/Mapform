@@ -15,7 +15,7 @@ export default async function ViewPage(props: {
     props.searchParams,
   );
 
-  const [project, feature] = await Promise.all([
+  const [project] = await Promise.all([
     authClient.getProject({
       projectId: params.pId,
       filter: {
@@ -24,7 +24,6 @@ export default async function ViewPage(props: {
         perPage,
       },
     }),
-    rowId ? authClient.getRow({ rowId }) : null,
   ]);
 
   if (!project) {
@@ -38,11 +37,7 @@ export default async function ViewPage(props: {
   }
 
   return (
-    <ProjectProvider
-      feature={feature?.data}
-      project={project.data}
-      activeView={activeView}
-    >
+    <ProjectProvider project={project.data} activeView={activeView}>
       <Views />
       <MapData />
     </ProjectProvider>
