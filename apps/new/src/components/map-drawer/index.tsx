@@ -12,9 +12,10 @@ interface MapDrawerProps {
   depth?: number;
   onClose?: () => void;
   children: React.ReactNode;
+  width?: number;
 }
 
-const DRAWER_WIDTH = 360;
+const DRAWER_WIDTH_DEFAULT = 360;
 
 export function MapDrawer({
   open,
@@ -22,22 +23,21 @@ export function MapDrawer({
   depth = 0,
   onClose,
   children,
+  width = DRAWER_WIDTH_DEFAULT,
 }: MapDrawerProps) {
   return (
     <AnimatePresence>
       {open && (
         <motion.div
           className="absolute bottom-2 top-2 z-20 flex !select-text outline-none"
-          style={{
-            width: DRAWER_WIDTH,
-          }}
-          initial={initialOpen ? false : { x: -DRAWER_WIDTH, opacity: 0 }}
+          initial={initialOpen ? false : { x: -width, width, opacity: 0 }}
           animate={{
             x: 16 * depth,
+            width,
             scale: depth > 0 ? 0.985 : 1,
             opacity: 1,
           }}
-          exit={{ x: -DRAWER_WIDTH, opacity: 0 }}
+          exit={{ x: -width, width, opacity: 0 }}
           transition={{
             type: "spring",
             stiffness: 300,

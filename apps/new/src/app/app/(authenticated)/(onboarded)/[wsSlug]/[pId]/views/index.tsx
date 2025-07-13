@@ -23,12 +23,17 @@ import { createViewAction } from "~/data/views/create-view";
 import { MapDrawer } from "~/components/map-drawer";
 
 export function Views() {
-  const { projectService } = useProject();
+  const { projectService, activeView } = useProject();
 
   const { execute, isPending } = useAction(createViewAction);
 
   return (
-    <MapDrawer initialOpen open>
+    <MapDrawer
+      initialOpen
+      open
+      // TODO: Need to calculate remaining width of the screen and pass in
+      width={activeView?.type === "table" ? 800 : undefined}
+    >
       <header>
         <div>
           <Tooltip>
