@@ -95,17 +95,6 @@ export function Feature({ feature }: FeatureDrawerProps) {
                 });
               }}
             />
-            <AutoSizeTextArea
-              className="text-4xl font-bold"
-              placeholder="Untitled"
-              value={featureService.optimisticState.name ?? ""}
-              onChange={(value) => {
-                featureService.execute({
-                  id: featureService.optimisticState!.id,
-                  name: value,
-                });
-              }}
-            />
             {/* <div className="mb-4 mt-2 flex flex-col gap-2">
               {projectService.optimisticState.columns.map((column) => (
                 <div className="grid grid-cols-2 gap-4" key={column.id}>
