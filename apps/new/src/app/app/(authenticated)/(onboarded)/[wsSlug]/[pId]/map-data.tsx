@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useMemo } from "react";
 import { Layer, Source, useMap } from "react-map-gl/mapbox";
 import { useParamsContext } from "~/lib/params/client";
@@ -37,17 +39,6 @@ export function MapData() {
     }
   };
 
-  const handleContextMenu = (e: mapboxgl.MapMouseEvent) => {
-    e.preventDefault();
-
-    // Calculate position relative to the container
-    const x = e.point.x;
-    const y = e.point.y;
-
-    setContextMenuPosition({ x, y });
-    setContextMenuOpen(true);
-  };
-
   // Separate rows by geometry type
   const pointRows = useMemo(
     () =>
@@ -77,7 +68,7 @@ export function MapData() {
 
   return (
     <>
-      <Source id="points-source" data={rowsToGeoJSON(pointRows)}>
+      <Source id="points-source" data={rowsToGeoJSON(pointRows)} type="geojson">
         {/* Basic points layer - always show */}
         <Layer
           id={POINTS_LAYER_ID}
@@ -107,7 +98,7 @@ export function MapData() {
       </Source>
 
       {/* Lines Layer */}
-      <Source id="lines-source" data={rowsToGeoJSON(lineRows)}>
+      <Source id="lines-source" data={rowsToGeoJSON(lineRows)} type="geojson">
         <Layer
           id={LINES_LAYER_ID}
           type="line"
@@ -120,7 +111,11 @@ export function MapData() {
       </Source>
 
       {/* Polygons Layer */}
-      <Source id="polygons-source" data={rowsToGeoJSON(polygonRows)}>
+      <Source
+        id="polygons-source"
+        data={rowsToGeoJSON(polygonRows)}
+        type="geojson"
+      >
         <Layer
           id={POLYGONS_FILL_LAYER_ID}
           type="fill"

@@ -7,6 +7,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@mapform/ui/components/dropdown-menu";
+import { useParams } from "next/navigation";
 
 interface MapContextMenuProps {
   open: boolean;
@@ -19,6 +20,8 @@ export function MapContextMenu({
   onOpenChange,
   position,
 }: MapContextMenuProps) {
+  const params = useParams();
+
   return (
     <DropdownMenu open={open} onOpenChange={onOpenChange}>
       <DropdownMenuTrigger asChild>

@@ -38,12 +38,10 @@ export function ProjectProvider({
   feature,
   project,
   activeView,
-  geoapifyPlaceDetails,
 }: {
   feature?: GetRow["data"];
   project: NonNullable<GetProject["data"]>;
   activeView?: NonNullable<GetProject["data"]>["views"][number];
-  geoapifyPlaceDetails?: GetPlaceDetails["data"];
   children: React.ReactNode;
 }) {
   const map = useMap();
@@ -102,7 +100,6 @@ export function ProjectProvider({
         activeView,
         featureService,
         projectService,
-        geoapifyPlaceDetails,
       }}
     >
       {children}
