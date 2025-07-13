@@ -12,10 +12,10 @@ import {
 } from "lucide-react";
 import { Button } from "@mapform/ui/components/button";
 import { useProject } from "../../../context";
-import { Skeleton } from "@mapform/ui/components/skeleton";
 import { useParamsContext } from "~/lib/params/client";
 import { Separator } from "@mapform/ui/components/separator";
 import { Badge } from "@mapform/ui/components/badge";
+import { LoadingSkeleton } from "~/components/loading-skeleton";
 import { useWikidataImage, useWikidataImages } from "~/lib/wikidata-image";
 import {
   MapDrawer,
@@ -114,10 +114,7 @@ export function DetailsDrawer() {
         </Button>
       </MapDrawerActions>
       {isPending ? (
-        <>
-          <Skeleton className="mb-2 size-8 rounded-full" />
-          <Skeleton className="h-6" />
-        </>
+        <LoadingSkeleton />
       ) : place ? (
         <div className="space-y-6">
           {/* Cover Photo - Wikidata Image for OSM sources */}

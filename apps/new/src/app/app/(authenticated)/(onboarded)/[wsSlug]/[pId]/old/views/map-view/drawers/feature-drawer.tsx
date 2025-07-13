@@ -14,6 +14,7 @@ import { PropertyValueEditor } from "../../../properties/property-value-editor";
 import { PropertyColumnEditor } from "../../../properties/property-column-editor";
 import { useParamsContext } from "~/lib/params/client";
 import { MapDrawer, MapDrawerActions } from "~/components/map-drawer";
+import { LoadingSkeleton } from "~/components/loading-skeleton";
 
 export function FeatureDrawer() {
   const { featureService, projectService } = useProject();
@@ -39,10 +40,7 @@ export function FeatureDrawer() {
         </Button>
       </MapDrawerActions>
       {isPending ? (
-        <>
-          <Skeleton className="mb-2 size-8 rounded-full" />
-          <Skeleton className="h-6" />
-        </>
+        <LoadingSkeleton />
       ) : featureService.optimisticState ? (
         <div>
           <header>

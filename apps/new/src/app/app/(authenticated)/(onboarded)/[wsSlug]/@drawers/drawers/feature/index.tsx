@@ -4,7 +4,6 @@ import { Blocknote } from "@mapform/blocknote/editor";
 import { AutoSizeTextArea } from "@mapform/ui/components/autosize-text-area";
 import { Button } from "@mapform/ui/components/button";
 import { EmojiPopover } from "@mapform/ui/components/emoji-picker";
-import { Skeleton } from "@mapform/ui/components/skeleton";
 import {
   Tooltip,
   TooltipTrigger,
@@ -20,6 +19,7 @@ import { updateRowAction } from "~/data/rows/update-row";
 import type { GetRow } from "@mapform/backend/data/rows/get-row";
 import type { UpdateRowSchema } from "@mapform/backend/data/rows/update-row/schema";
 import { Marker } from "react-map-gl/mapbox";
+import { LoadingSkeleton } from "~/components/loading-skeleton";
 
 interface FeatureDrawerProps {
   feature: GetRow["data"];
@@ -42,8 +42,6 @@ export function Feature({ feature }: FeatureDrawerProps) {
     },
   );
 
-  console.log(1111, featureService.optimisticState?.description);
-
   return (
     <>
       <MapDrawer
@@ -56,7 +54,7 @@ export function Feature({ feature }: FeatureDrawerProps) {
         }}
       >
         {isPending ? (
-          <div>Loading...</div>
+          <LoadingSkeleton />
         ) : featureService.optimisticState ? (
           <div>
             <header>
