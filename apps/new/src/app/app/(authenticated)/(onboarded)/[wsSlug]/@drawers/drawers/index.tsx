@@ -24,6 +24,9 @@ export function Drawers({ searchParams }: DealDrawerProps) {
       <Suspense>
         <SearchDetailsDrawer searchParams={searchParams} />
       </Suspense>
+      <Suspense>
+        <FeatureDrawer searchParams={searchParams} />
+      </Suspense>
     </>
   );
 }
@@ -88,5 +91,5 @@ async function FeatureDrawer({ searchParams }: DealDrawerProps) {
     rowId ? authClient.getRow({ rowId }) : null,
   ]);
 
-  return <Feature />;
+  return <Feature feature={row?.data} />;
 }

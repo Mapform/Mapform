@@ -1,6 +1,7 @@
-import "@blocknote/core/fonts/inter.css";
 import { BlockNoteView } from "@blocknote/mantine";
-import "@blocknote/mantine/style.css";
+// Note: CSS imports have been moved to blocknote.css
+// Import this file in your app's main CSS or layout file:
+// import "@mapform/blocknote/blocknote.css";
 
 import {
   DragHandleButton,
@@ -8,7 +9,6 @@ import {
   SideMenuController,
   useCreateBlockNote,
 } from "@blocknote/react";
-import "./style.css";
 import { schema, type CustomBlock } from "./schema";
 
 interface BlocknoteProps {

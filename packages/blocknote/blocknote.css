@@ -1,3 +1,10 @@
+/* BlockNote Core Fonts */
+@import "@blocknote/core/fonts/inter.css";
+
+/* BlockNote Mantine Styles */
+@import "@blocknote/mantine/style.css";
+
+/* Custom BlockNote Styles */
 /* Get rid of blue outline around selected nodes: https://github.com/TypeCellOS/BlockNote/issues/998 */
 .ProseMirror-selectednode > .bn-block-content > *,
 .bn-block-content.ProseMirror-selectednode > * {
@@ -39,4 +46,4 @@ h3.bn-inline-content {
   --bn-color-highlight-colors: #ffffff;
   --bn-border-radius: 4px;
   --bn-font-family: Helvetica Neue, sans-serif; */
-}
+} 

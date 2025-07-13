@@ -1,3 +1,5 @@
+"use client";
+
 import { Blocknote } from "@mapform/blocknote/editor";
 import { AutoSizeTextArea } from "@mapform/ui/components/autosize-text-area";
 import { Button } from "@mapform/ui/components/button";
@@ -13,9 +15,33 @@ import { MapDrawer } from "~/components/map-drawer";
 import { PropertyColumnEditor } from "~/components/properties/property-column-editor";
 import { PropertyValueEditor } from "~/components/properties/property-value-editor";
 import { useParamsContext } from "~/lib/params/client";
+import { useStateService } from "~/lib/use-state-service";
+import { updateRowAction } from "~/data/rows/update-row";
+import type { GetRow } from "@mapform/backend/data/rows/get-row";
+import type { UpdateRowSchema } from "@mapform/backend/data/rows/update-row/schema";
 
-export function Feature() {
-  const { params, setQueryStates } = useParamsContext();
+interface FeatureDrawerProps {
+  feature: GetRow["data"];
+}
+
+export function Feature({ feature }: FeatureDrawerProps) {
+  const { params, setQueryStates, isPending } = useParamsContext();
+
+  const featureService = useStateService<GetRow["data"], UpdateRowSchema>(
+    updateRowAction,
+    {
+      currentState: feature,
+      updateFn: (state, newRow) => {
+        if (!state) return state;
+        return {
+          ...state,
+          ...newRow,
+        };
+      },
+    },
+  );
+
+  console.log(1111, featureService.optimisticState?.description);
 
   return (
     <MapDrawer
@@ -27,43 +53,37 @@ export function Feature() {
         });
       }}
     >
-      Test
-      {/* {isPending ? (
-        <>
-          <Skeleton className="mb-2 size-8 rounded-full" />
-          <Skeleton className="h-6" />
-        </>
+      {isPending ? (
+        <div>Loading...</div>
       ) : featureService.optimisticState ? (
         <div>
           <header>
-            <div>
-              <Tooltip>
-                <EmojiPopover
-                  onIconChange={(emoji) => {
-                    featureService.execute({
-                      id: featureService.optimisticState!.id,
-                      icon: emoji,
-                    });
-                  }}
-                >
-                  <TooltipTrigger asChild>
-                    {featureService.optimisticState.icon ? (
-                      <button
-                        className="hover:bg-muted rounded-lg text-6xl"
-                        type="button"
-                      >
-                        {featureService.optimisticState.icon}
-                      </button>
-                    ) : (
-                      <Button size="icon-sm" type="button" variant="ghost">
-                        <SmilePlusIcon className="size-4" />
-                      </Button>
-                    )}
-                  </TooltipTrigger>
-                </EmojiPopover>
-                <TooltipContent>Add emoji</TooltipContent>
-              </Tooltip>
-            </div>
+            <Tooltip>
+              <EmojiPopover
+                onIconChange={(emoji) => {
+                  featureService.execute({
+                    id: featureService.optimisticState!.id,
+                    icon: emoji,
+                  });
+                }}
+              >
+                <TooltipTrigger asChild>
+                  {featureService.optimisticState.icon ? (
+                    <button
+                      className="hover:bg-muted rounded-lg text-6xl"
+                      type="button"
+                    >
+                      {featureService.optimisticState.icon}
+                    </button>
+                  ) : (
+                    <Button size="icon-sm" type="button" variant="ghost">
+                      <SmilePlusIcon className="size-4" />
+                    </Button>
+                  )}
+                </TooltipTrigger>
+              </EmojiPopover>
+              <TooltipContent>Add emoji</TooltipContent>
+            </Tooltip>
             <AutoSizeTextArea
               className="text-4xl font-bold"
               placeholder="Untitled"
@@ -75,7 +95,18 @@ export function Feature() {
                 });
               }}
             />
-            <div className="mb-4 mt-2 flex flex-col gap-2">
+            <AutoSizeTextArea
+              className="text-4xl font-bold"
+              placeholder="Untitled"
+              value={featureService.optimisticState.name ?? ""}
+              onChange={(value) => {
+                featureService.execute({
+                  id: featureService.optimisticState!.id,
+                  name: value,
+                });
+              }}
+            />
+            {/* <div className="mb-4 mt-2 flex flex-col gap-2">
               {projectService.optimisticState.columns.map((column) => (
                 <div className="grid grid-cols-2 gap-4" key={column.id}>
                   <PropertyColumnEditor
@@ -106,7 +137,7 @@ export function Feature() {
                   />
                 </div>
               ))}
-            </div>
+            </div> */}
           </header>
           <Blocknote
             content={featureService.optimisticState.description}
@@ -127,7 +158,7 @@ export function Feature() {
             </h3>
           </div>
         </div>
-      )} */}
+      )}
     </MapDrawer>
   );
 }

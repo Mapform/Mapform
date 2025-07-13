@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "@mapform/ui/globals.css";
+import "@mapform/blocknote/blocknote.css";
 import { cn } from "@mapform/lib/classnames";
 import { Toaster } from "@mapform/ui/components/toaster";
 import { Analytics } from "@vercel/analytics/react";
