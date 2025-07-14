@@ -18,6 +18,8 @@ export const generateEmbeddings = inngest.createFunction(
   async ({ event, db }) => {
     const { rows } = event.data;
 
+    // TODO: Delete existing embeddings for the rows
+
     const embeddingResults = await Promise.all(
       rows.map(async (row) => {
         const embeddingChunks = generateChunks(row);
@@ -31,15 +33,16 @@ export const generateEmbeddings = inngest.createFunction(
       }),
     );
 
-    await db.insert(embeddings).values(
-      embeddingResults.map((result, i) => {
-        return {
-          rowId: result.rowId,
-          content: result.embeddingChunks[i]!.content!,
-          embedding: result.embeddings[i]!,
-        };
-      }),
-    );
+    // Flatten all embedding results into a single array for database insertion
+    const allEmbeddings = embeddingResults.flatMap((result) => {
+      return result.embeddingChunks.map((chunk, chunkIndex) => ({
+        rowId: result.rowId,
+        content: chunk.content,
+        embedding: result.embeddings[chunkIndex]!,
+      }));
+    });
+
+    await db.insert(embeddings).values(allEmbeddings);
 
     return {
       message: `Successfully generated embeddings for ${rows.length} rows`,
