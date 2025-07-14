@@ -29,3 +29,5 @@ export const generateEmbeddingsEvent = z.object({
     ),
   }),
 }) satisfies LiteralZodEventSchema;
+
+export type GenerateEmbeddingsEvent = z.infer<typeof generateEmbeddingsEvent>;
