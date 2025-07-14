@@ -28,7 +28,6 @@ export function SearchDetails({ geoapifyPlaceDetails }: SearchDetailsProps) {
         });
       }}
     >
-      Test
       <Marker longitude={longitude} latitude={latitude} />
     </MapDrawer>
   );

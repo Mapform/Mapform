@@ -150,12 +150,13 @@ export function Feature({ feature }: FeatureDrawerProps) {
         )}
       </MapDrawer>
 
-      {/* Show the feature */}
-      {/* TODO: Make this look nicer */}
-      <Marker
-        longitude={featureService.optimisticState?.center.coordinates[0] ?? 0}
-        latitude={featureService.optimisticState?.center.coordinates[1] ?? 0}
-      />
+      {featureService.optimisticState?.center.coordinates[0] &&
+        featureService.optimisticState.center.coordinates[1] && (
+          <Marker
+            longitude={featureService.optimisticState.center.coordinates[0]}
+            latitude={featureService.optimisticState.center.coordinates[1]}
+          />
+        )}
     </>
   );
 }
