@@ -1,7 +1,12 @@
-import { rows as rowsSchema } from "@mapform/db/schema";
-import { eq } from "@mapform/db/utils";
+import { embeddings as embeddingsSchema } from "@mapform/db/schema";
 import { inngest } from "../..";
 import { openai } from "../../../openai";
+
+interface EmbeddingChunk {
+  rowId: string;
+  content: string;
+  type: "title" | "description" | "properties";
+}
 
 export const generateEmbeddings = inngest.createFunction(
   { id: "generate-embeddings" },
@@ -9,84 +14,114 @@ export const generateEmbeddings = inngest.createFunction(
   async ({ event, db }) => {
     const { rows } = event.data;
 
-    // Create structured input text for each row
-    const inputs = await Promise.all(
-      rows.map(async (row) => {
-        const sections: string[] = [];
+    // Create multiple chunks per row
+    const embeddingChunks: EmbeddingChunk[] = [];
 
-        // Basic row information
-        if (row.name) {
-          sections.push(`Name: ${row.name.toLowerCase()}`);
-        }
+    rows.forEach((row) => {
+      // Title chunk
+      if (row.name) {
+        embeddingChunks.push({
+          rowId: row.id,
+          content: row.name.toLowerCase(),
+          type: "title",
+        });
+      }
 
-        if (row.icon) {
-          sections.push(`Icon: ${row.icon}`);
-        }
+      // Icon chunk
+      if (row.icon) {
+        embeddingChunks.push({
+          rowId: row.id,
+          content: `Icon: ${row.icon}`,
+          type: "title",
+        });
+      }
 
-        if (row.descriptionAsMarkdown) {
-          // Not a good way to do this, but the blocknote server side util
-          // needed to convert to Markdown is not working:
-          // https://github.com/TypeCellOS/BlockNote/issues/942#issuecomment-2570750560
+      // Description chunks (split by paragraphs)
+      if (row.descriptionAsMarkdown) {
+        // Split description by paragraphs (double newlines)
+        const paragraphs = row.descriptionAsMarkdown
+          .split(/\n\s*\n/)
+          .map((p) => p.trim())
+          .filter((p) => p.length > 0);
 
-          sections.push(
-            `Description: ${row.descriptionAsMarkdown.toLowerCase()}`,
-          );
-        }
-
-        // Process cell data with column context
-        if (row.cells && row.cells.length > 0) {
-          const cellSections: string[] = [];
-
-          row.cells.forEach((cell) => {
-            if (cell.value !== null && cell.value !== undefined) {
-              let formattedValue = "";
-
-              switch (cell.columnType) {
-                case "string":
-                  formattedValue = String(cell.value);
-                  break;
-                case "number":
-                  formattedValue = String(cell.value);
-                  break;
-                case "bool":
-                  formattedValue = cell.value ? "Yes" : "No";
-                  break;
-                case "date":
-                  formattedValue = new Date(cell.value).toLocaleDateString(
-                    "en-US",
-                    {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    },
-                  );
-                  break;
-                default:
-                  formattedValue = String(cell.value);
-              }
-
-              if (formattedValue && cell.columnName) {
-                cellSections.push(`${cell.columnName}: ${formattedValue}`);
-              }
-            }
+        paragraphs.forEach((paragraph) => {
+          embeddingChunks.push({
+            rowId: row.id,
+            content: paragraph.toLowerCase(),
+            type: "description",
           });
+        });
+      }
 
-          if (cellSections.length > 0) {
-            sections.push(
-              `Properties: ${cellSections.join("; ").toLowerCase()}`,
-            );
+      // Properties chunks (group by type or create individual chunks)
+      if (row.cells && row.cells.length > 0) {
+        const propertyGroups: Record<string, string[]> = {};
+
+        row.cells.forEach((cell) => {
+          if (
+            cell.value !== null &&
+            cell.value !== undefined &&
+            cell.columnName &&
+            cell.columnType
+          ) {
+            let formattedValue = "";
+
+            const columnType = cell.columnType;
+            switch (columnType) {
+              case "string":
+                formattedValue = String(cell.value);
+                break;
+              case "number":
+                formattedValue = String(cell.value);
+                break;
+              case "bool":
+                formattedValue = cell.value ? "Yes" : "No";
+                break;
+              case "date":
+                formattedValue = new Date(cell.value).toLocaleDateString(
+                  "en-US",
+                  {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  },
+                );
+                break;
+              default:
+                formattedValue = String(cell.value);
+            }
+
+            if (formattedValue && cell.columnName && columnType) {
+              const propertyText = `${cell.columnName}: ${formattedValue}`;
+
+              // Group by column type for better semantic grouping
+              if (!propertyGroups[columnType]) {
+                propertyGroups[columnType] = [];
+              }
+              propertyGroups[columnType].push(propertyText);
+            }
           }
-        }
+        });
 
-        // Combine all sections with proper spacing
-        return sections.join("\n").trim();
-      }),
+        // Create chunks for each property group
+        Object.entries(propertyGroups).forEach(([columnType, properties]) => {
+          if (properties.length > 0) {
+            embeddingChunks.push({
+              rowId: row.id,
+              content: properties.join("; ").toLowerCase(),
+              type: "properties",
+            });
+          }
+        });
+      }
+    });
+
+    // Filter out empty chunks
+    const validChunks = embeddingChunks.filter(
+      (chunk) => chunk.content.length > 0,
     );
 
-    // Filter out empty inputs
-    const validInputs = inputs.filter((input) => input.length > 0);
-
-    if (validInputs.length === 0) {
+    if (validChunks.length === 0) {
       console.warn("No valid text content found for embedding generation");
       return {
         message: "No valid content to generate embeddings for",
@@ -94,57 +129,57 @@ export const generateEmbeddings = inngest.createFunction(
       };
     }
 
-    // Split inputs into chunks of 100
-    const inputChunks = chunkArray(validInputs, 100);
-    const rowChunks = chunkArray(rows, 100);
+    // Split chunks into batches of 100 for OpenAI API
+    const chunkBatches = chunkArray(validChunks, 100);
 
     let totalProcessed = 0;
 
-    // Process each chunk
-    for (let i = 0; i < inputChunks.length; i++) {
-      const inputChunk = inputChunks[i];
-      const rowChunk = rowChunks[i];
+    // Process each batch
+    for (let i = 0; i < chunkBatches.length; i++) {
+      const chunkBatch = chunkBatches[i];
 
-      if (!inputChunk || !rowChunk) {
-        console.warn(`Missing chunk data for chunk ${i}`);
+      if (!chunkBatch) {
+        console.warn(`Missing batch data for batch ${i}`);
         continue;
       }
 
-      // Generate embeddings for current chunk
+      // Extract content for embedding generation
+      const contentBatch = chunkBatch.map((chunk) => chunk.content);
+
+      // Generate embeddings for current batch
       const response = await openai.embeddings.create({
-        input: inputChunk,
+        input: contentBatch,
         model: "text-embedding-3-small",
       });
 
       if (!response.data || response.data.length === 0) {
-        console.warn(`No embeddings generated for chunk ${i}`);
+        console.warn(`No embeddings generated for batch ${i}`);
         continue;
       }
 
-      // Update each row in the chunk with its corresponding embedding
-      const updatePromises = response.data.map((embeddingData, index) => {
-        const row = rowChunk[index];
-        if (!row || !embeddingData.embedding) {
+      // Insert embeddings into the embeddings table
+      const insertPromises = response.data.map((embeddingData, index) => {
+        const chunk = chunkBatch[index];
+        if (!chunk || !embeddingData.embedding) {
           console.warn(
-            `Missing row or embedding for chunk ${i}, index ${index}`,
+            `Missing chunk or embedding for batch ${i}, index ${index}`,
           );
           return null;
         }
 
-        return db
-          .update(rowsSchema)
-          .set({
-            embedding: embeddingData.embedding,
-          })
-          .where(eq(rowsSchema.id, row.id));
+        return db.insert(embeddingsSchema).values({
+          rowId: chunk.rowId,
+          content: chunk.content,
+          embedding: embeddingData.embedding,
+        });
       });
 
-      // Execute all updates for this chunk
-      await Promise.all(updatePromises.filter(Boolean));
+      // Execute all inserts for this batch
+      await Promise.all(insertPromises.filter(Boolean));
 
       totalProcessed += response.data.length;
       console.log(
-        `Processed chunk ${i + 1}/${inputChunks.length}: ${response.data.length} rows`,
+        `Processed batch ${i + 1}/${chunkBatches.length}: ${response.data.length} chunks`,
       );
     }
 
