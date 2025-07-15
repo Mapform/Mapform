@@ -22,7 +22,7 @@ export function MapView() {
             });
           }}
         >
-          {row.name}
+          {row.name} - {row.id}
         </li>
       ))}
     </ul>
