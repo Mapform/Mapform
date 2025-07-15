@@ -12,21 +12,14 @@ import {
 import { schema, type CustomBlock } from "./schema";
 
 interface BlocknoteProps {
-  content: CustomBlock[] | null;
+  editor: typeof schema.BlockNoteEditor;
   onChange: (content: {
     blocks: CustomBlock[] | null;
     markdown: string | null;
   }) => void;
 }
 
-export function Blocknote({ content, onChange }: BlocknoteProps) {
-  // Creates a new editor instance.
-  const editor = useCreateBlockNote({
-    schema,
-    animations: false,
-    initialContent: content ?? undefined,
-  });
-
+export function Blocknote({ onChange, editor }: BlocknoteProps) {
   // Renders the editor instance using a React component.
   return (
     <BlockNoteView

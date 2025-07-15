@@ -1,6 +1,6 @@
 "use client";
 
-import { Blocknote } from "@mapform/blocknote/editor";
+import { Blocknote, useCreateBlockNote, schema } from "@mapform/blocknote";
 import { AutoSizeTextArea } from "@mapform/ui/components/autosize-text-area";
 import { Button } from "@mapform/ui/components/button";
 import { EmojiPopover } from "@mapform/ui/components/emoji-picker";
@@ -41,6 +41,11 @@ export function Feature({ feature }: FeatureDrawerProps) {
       },
     },
   );
+  const editor = useCreateBlockNote({
+    schema,
+    animations: false,
+    initialContent: featureService.optimisticState?.description ?? undefined,
+  });
 
   return (
     <>
@@ -88,10 +93,14 @@ export function Feature({ feature }: FeatureDrawerProps) {
                 className="text-4xl font-bold"
                 placeholder="Untitled"
                 value={featureService.optimisticState.name ?? ""}
-                onChange={(value) => {
+                onChange={async (value) => {
                   featureService.execute({
                     id: featureService.optimisticState!.id,
                     name: value,
+                    description: editor.document,
+                    descriptionAsMarkdown: await editor.blocksToMarkdownLossy(
+                      editor.document,
+                    ),
                   });
                 }}
               />
@@ -129,7 +138,7 @@ export function Feature({ feature }: FeatureDrawerProps) {
             </div> */}
             </header>
             <Blocknote
-              content={featureService.optimisticState.description}
+              editor={editor}
               onChange={({ blocks, markdown }) => {
                 featureService.execute({
                   id: featureService.optimisticState!.id,
