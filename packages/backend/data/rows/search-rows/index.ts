@@ -71,8 +71,6 @@ export const searchRows = (authClient: UserAuthClient) =>
 
       const similarity = sql<number>`1 - (${cosineDistance(embeddings.embedding, embedding)})`;
 
-      console.log("projectIds", projectIds);
-
       const embeddingResults = await db
         .select({
           id: rows.id,
@@ -92,11 +90,9 @@ export const searchRows = (authClient: UserAuthClient) =>
         .innerJoin(rows, eq(embeddings.rowId, rows.id))
         .innerJoin(projects, eq(rows.projectId, projects.id))
         .where(
-          and(sql`${similarity} > 0.3`, inArray(rows.projectId, projectIds)),
+          and(sql`${similarity} > 0.5`, inArray(rows.projectId, projectIds)),
         )
         .orderBy(desc(similarity));
-
-      console.log("embeddingResults", embeddingResults);
 
       return embeddingResults;
     });

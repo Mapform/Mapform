@@ -53,7 +53,10 @@ export const getProject = (authClient: UserAuthClient) =>
           limit: filter?.type === "page" ? filter.perPage : undefined,
           offset:
             filter?.type === "page" ? filter.page * filter.perPage : undefined,
-          orderBy: (rows, { asc }) => [asc(rows.createdAt)],
+          orderBy: (rows, { desc, asc }) => [
+            desc(rows.createdAt),
+            asc(rows.id),
+          ],
           columns: {
             id: true,
             icon: true,

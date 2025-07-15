@@ -62,12 +62,12 @@ const getVectorSearchResults = cache(
 );
 
 async function SearchDrawer({ searchParams, params }: DealDrawerProps) {
-  const { query } = await loadSearchParams(searchParams);
+  const { query, search } = await loadSearchParams(searchParams);
   const { wsSlug, pId } = await params;
 
   const [geoapifySearchResults, vectorSearchResults] = await Promise.all([
-    query ? getGeoapifySearchResults(query, undefined) : null,
-    query ? getVectorSearchResults(query, wsSlug, pId) : null,
+    query && search ? getGeoapifySearchResults(query, undefined) : null,
+    query && search ? getVectorSearchResults(query, wsSlug, pId) : null,
   ]);
 
   return (

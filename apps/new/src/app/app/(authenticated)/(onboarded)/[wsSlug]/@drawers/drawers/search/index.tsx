@@ -52,6 +52,7 @@ export function Search({
       onClose={() => {
         void setQueryStates({
           search: null,
+          query: null,
         });
       }}
     >
