@@ -15,6 +15,7 @@ export async function POST(request: NextRequest) {
     const searchResults = await authClient.searchRows({
       query,
       projectId,
+      type: "project",
     });
 
     return NextResponse.json(searchResults);

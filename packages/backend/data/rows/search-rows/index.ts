@@ -1,20 +1,23 @@
 "server-only";
 
 import { db, sql } from "@mapform/db";
-import { projects, rows } from "@mapform/db/schema";
+import { projects, rows, workspaces, embeddings } from "@mapform/db/schema";
 import { searchRowsSchema } from "./schema";
 import type { UnwrapReturn, UserAuthClient } from "../../../lib/types";
-import { cosineDistance, desc, eq } from "@mapform/db/utils";
+import { and, cosineDistance, desc, eq, inArray } from "@mapform/db/utils";
 import { openai } from "../../../clients/openai";
-import { Geometry, Point } from "geojson";
+import type { Geometry, Point } from "geojson";
 
 export const searchRows = (authClient: UserAuthClient) =>
   authClient
     .schema(searchRowsSchema)
-    .action(
-      async ({ parsedInput: { query, projectId }, ctx: { userAccess } }) => {
+    .action(async ({ parsedInput, ctx: { userAccess } }) => {
+      const { query, type } = parsedInput;
+      let projectIds: string[] = [];
+
+      if (type === "project") {
         const project = await db.query.projects.findFirst({
-          where: eq(projects.id, projectId),
+          where: eq(projects.id, parsedInput.projectId),
         });
 
         if (!project) {
@@ -25,35 +28,77 @@ export const searchRows = (authClient: UserAuthClient) =>
           throw new Error("You are not a member of this project");
         }
 
-        const response = await openai.embeddings.create({
-          input: [query.toLowerCase()],
-          model: "text-embedding-3-small",
-        });
-
-        const embedding = response.data[0]?.embedding;
-
-        if (!embedding) {
-          throw new Error("No embedding generated");
+        projectIds = [parsedInput.projectId];
+      } else if (type === "workspace") {
+        // Check workspace access
+        if (
+          !userAccess.workspace.checkAccessBySlug(parsedInput.workspaceSlug)
+        ) {
+          throw new Error("You are not a member of this workspace");
         }
 
-        const similarity = sql<number>`1 - (${cosineDistance(rows.embedding, embedding)})`;
-
-        const rowResults = await db.query.rows.findMany({
-          where: sql`${similarity} > 0.3`,
-          orderBy: [desc(similarity)],
-          extras: {
-            geometry: sql<Geometry>`ST_AsGeoJSON(${rows.geometry})::jsonb`.as(
-              "geometry",
-            ),
-            center:
-              sql<Point>`ST_AsGeoJSON(ST_Centroid(${rows.geometry}))::jsonb`.as(
-                "center",
-              ),
+        // Get all projects in the workspace
+        const workspaceProjects = await db.query.workspaces.findFirst({
+          where: eq(workspaces.slug, parsedInput.workspaceSlug),
+          with: {
+            teamspaces: {
+              with: {
+                projects: true,
+              },
+            },
           },
         });
 
-        return rowResults;
-      },
-    );
+        if (!workspaceProjects) {
+          throw new Error("Workspace not found");
+        }
+
+        projectIds = workspaceProjects.teamspaces.flatMap((t) =>
+          t.projects.map((p) => p.id),
+        );
+      }
+
+      const response = await openai.embeddings.create({
+        input: [query.toLowerCase()],
+        model: "text-embedding-3-small",
+      });
+
+      const embedding = response.data[0]?.embedding;
+
+      if (!embedding) {
+        throw new Error("No embedding generated");
+      }
+
+      const similarity = sql<number>`1 - (${cosineDistance(embeddings.embedding, embedding)})`;
+
+      console.log("projectIds", projectIds);
+
+      const embeddingResults = await db
+        .select({
+          id: rows.id,
+          name: rows.name,
+          description: rows.description,
+          icon: rows.icon,
+          geometry: rows.geometry,
+          projectId: rows.projectId,
+          projectName: projects.name,
+          createdAt: rows.createdAt,
+          updatedAt: rows.updatedAt,
+          similarity: similarity,
+          geometryGeoJSON: sql<Geometry>`ST_AsGeoJSON(${rows.geometry})::jsonb`,
+          center: sql<Point>`ST_AsGeoJSON(ST_Centroid(${rows.geometry}))::jsonb`,
+        })
+        .from(embeddings)
+        .innerJoin(rows, eq(embeddings.rowId, rows.id))
+        .innerJoin(projects, eq(rows.projectId, projects.id))
+        .where(
+          and(sql`${similarity} > 0.3`, inArray(rows.projectId, projectIds)),
+        )
+        .orderBy(desc(similarity));
+
+      console.log("embeddingResults", embeddingResults);
+
+      return embeddingResults;
+    });
 
 export type SearchRows = UnwrapReturn<typeof searchRows>;

@@ -1,4 +1,4 @@
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import { authClient } from "~/lib/safe-action";
 import { ProjectProvider } from "./context";
 import { loadSearchParams } from "~/lib/params/server";
@@ -11,9 +11,7 @@ export default async function ViewPage(props: {
   searchParams: Promise<SearchParams>;
 }) {
   const params = await props.params;
-  const { viewId, perPage, page, rowId } = await loadSearchParams(
-    props.searchParams,
-  );
+  const { viewId, perPage, page } = await loadSearchParams(props.searchParams);
 
   const [project] = await Promise.all([
     authClient.getProject({

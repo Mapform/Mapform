@@ -8,18 +8,23 @@ import {
   CommandList,
   CommandPrimitive,
 } from "@mapform/ui/components/command";
-import { GlobeIcon, MessageCircle, SearchIcon } from "lucide-react";
+import { BoxIcon, GlobeIcon, MessageCircle, SearchIcon } from "lucide-react";
 import { MapDrawer } from "~/components/map-drawer";
 import { useParamsContext } from "~/lib/params/client";
 import { useMap } from "react-map-gl/mapbox";
 import { useDebounce } from "@mapform/lib/hooks/use-debounce";
 import { useEffect, useState } from "react";
+import type { SearchRows } from "@mapform/backend/data/rows/search-rows";
 
 interface SearchProps {
   geoapifySearchResults?: SearchPlaces["data"];
+  vectorSearchResults?: SearchRows["data"];
 }
 
-export function Search({ geoapifySearchResults }: SearchProps) {
+export function Search({
+  geoapifySearchResults,
+  vectorSearchResults,
+}: SearchProps) {
   const { map } = useMap();
   const { params, setQueryStates } = useParamsContext();
   const [searchQuery, setSearchQuery] = useState(params.query);
@@ -80,6 +85,35 @@ export function Search({ geoapifySearchResults }: SearchProps) {
                 </span>
               </CommandItem>
             )}
+            {vectorSearchResults?.map((result) => (
+              <CommandItem
+                key={result.id}
+                value={result.id}
+                onSelect={async () => {
+                  console.log("clicked", result.id);
+                  await setQueryStates({ rowId: result.id });
+                  map?.flyTo({
+                    center: result.center.coordinates as [number, number],
+                    duration: 500,
+                  });
+                }}
+              >
+                {result.icon ? (
+                  <span className="text-muted-foreground mr-2">
+                    {result.icon}
+                  </span>
+                ) : (
+                  <BoxIcon className="text-muted-foreground mr-2 size-4" />
+                )}
+                <span className="truncate">
+                  {result.name || "Unnamed feature"}
+                </span>
+                <span className="text-muted-foreground ml-1 flex-shrink-0">
+                  {" "}
+                  — From {result.projectName}
+                </span>
+              </CommandItem>
+            ))}
             {filteredFeatures.map((feature) => (
               <CommandItem
                 key={feature.properties?.place_id}

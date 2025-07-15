@@ -10,22 +10,23 @@ import { Feature } from "./feature";
 
 interface DealDrawerProps {
   searchParams: Promise<SearchParams>;
+  params: Promise<{ wsSlug: string; pId?: string }>;
 }
 
-export function Drawers({ searchParams }: DealDrawerProps) {
+export function Drawers(props: DealDrawerProps) {
   return (
     <>
       <Suspense>
-        <SearchDrawer searchParams={searchParams} />
+        <SearchDrawer {...props} />
       </Suspense>
       <Suspense>
-        <ChatDrawer searchParams={searchParams} />
+        <ChatDrawer {...props} />
       </Suspense>
       <Suspense>
-        <SearchDetailsDrawer searchParams={searchParams} />
+        <SearchDetailsDrawer {...props} />
       </Suspense>
       <Suspense>
-        <FeatureDrawer searchParams={searchParams} />
+        <FeatureDrawer {...props} />
       </Suspense>
     </>
   );
@@ -42,23 +43,39 @@ const getGeoapifySearchResults = cache(
 );
 
 const getVectorSearchResults = cache(
-  async (query: string, projectId: string) => {
-    const searchResults = await authClient.searchRows({
-      query,
-      projectId,
-    });
+  async (query: string, workspaceSlug: string, projectId?: string) => {
+    const searchResults = await authClient.searchRows(
+      projectId
+        ? {
+            query,
+            projectId,
+            type: "project",
+          }
+        : {
+            query,
+            workspaceSlug,
+            type: "workspace",
+          },
+    );
     return searchResults;
   },
 );
 
-async function SearchDrawer({ searchParams }: DealDrawerProps) {
+async function SearchDrawer({ searchParams, params }: DealDrawerProps) {
   const { query } = await loadSearchParams(searchParams);
+  const { wsSlug, pId } = await params;
 
-  const [geoapifySearchResults] = await Promise.all([
+  const [geoapifySearchResults, vectorSearchResults] = await Promise.all([
     query ? getGeoapifySearchResults(query, undefined) : null,
+    query ? getVectorSearchResults(query, wsSlug, pId) : null,
   ]);
 
-  return <Search geoapifySearchResults={geoapifySearchResults?.data} />;
+  return (
+    <Search
+      geoapifySearchResults={geoapifySearchResults?.data}
+      vectorSearchResults={vectorSearchResults?.data}
+    />
+  );
 }
 
 async function ChatDrawer({ searchParams }: DealDrawerProps) {
