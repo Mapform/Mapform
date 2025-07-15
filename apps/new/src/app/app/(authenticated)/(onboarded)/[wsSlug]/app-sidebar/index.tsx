@@ -109,6 +109,7 @@ export function AppSidebar() {
         onClick: () => {
           void setQueryStates({
             search: params.search === "1" ? null : "1",
+            query: null,
           });
         },
         icon: SearchIcon,
