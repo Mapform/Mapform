@@ -54,8 +54,8 @@ export function MapDrawer({
               },
             )}
           />
-          <div className="bg-opacity-96 flex h-full w-full grow flex-col overflow-y-auto rounded-lg border bg-white p-4 backdrop-blur-sm">
-            {onClose ? (
+          <div className="bg-opacity-96 flex h-full w-full grow flex-col overflow-y-auto rounded-lg border bg-white backdrop-blur-sm">
+            {/* {onClose ? (
               <Button
                 variant="ghost"
                 size="icon"
@@ -64,11 +64,25 @@ export function MapDrawer({
               >
                 <XIcon className="size-4" />
               </Button>
-            ) : null}
+            ) : null} */}
             {children}
           </div>
         </motion.div>
       )}
     </AnimatePresence>
+  );
+}
+
+export function MapDrawerToolbar({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <div className={cn("sticky top-0 z-10 w-full p-2", className)}>
+      {children}
+    </div>
   );
 }

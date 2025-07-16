@@ -8,13 +8,21 @@ import {
   CommandList,
   CommandPrimitive,
 } from "@mapform/ui/components/command";
-import { BoxIcon, GlobeIcon, MessageCircle, SearchIcon } from "lucide-react";
-import { MapDrawer } from "~/components/map-drawer";
+import {
+  BoxIcon,
+  GlobeIcon,
+  Loader2,
+  MessageCircle,
+  SearchIcon,
+  XIcon,
+} from "lucide-react";
+import { MapDrawer, MapDrawerToolbar } from "~/components/map-drawer";
 import { useParamsContext } from "~/lib/params/client";
 import { useMap } from "react-map-gl/mapbox";
 import { useDebounce } from "@mapform/lib/hooks/use-debounce";
 import { useEffect, useState } from "react";
 import type { SearchRows } from "@mapform/backend/data/rows/search-rows";
+import { Button } from "@mapform/ui/components/button";
 
 interface SearchProps {
   geoapifySearchResults?: SearchPlaces["data"];
@@ -26,7 +34,7 @@ export function Search({
   vectorSearchResults,
 }: SearchProps) {
   const { map } = useMap();
-  const { params, setQueryStates } = useParamsContext();
+  const { params, setQueryStates, isPending } = useParamsContext();
   const [searchQuery, setSearchQuery] = useState(params.query);
   const debouncedSearchQuery = useDebounce(searchQuery, 200);
 
@@ -46,30 +54,37 @@ export function Search({
   }, [debouncedSearchQuery, setQueryStates]);
 
   return (
-    <MapDrawer
-      open={!!params.search}
-      depth={0}
-      onClose={() => {
-        void setQueryStates({
-          search: null,
-          query: null,
-        });
-      }}
-    >
+    <MapDrawer open={!!params.search} depth={0}>
       <Command className="bg-transparent" shouldFilter={false}>
-        <div
-          className="flex items-center border-b pl-3 pr-1"
-          cmdk-input-wrapper=""
-        >
-          <SearchIcon className="mr-2 h-4 w-4 shrink-0 opacity-50" />
-          <CommandPrimitive.Input
-            className="placeholder:text-muted-foreground flex h-10 w-full rounded-md border-none bg-transparent px-1 py-3 text-base outline-none focus:ring-0 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
-            placeholder="Search or ask..."
-            onValueChange={setSearchQuery}
-            value={searchQuery ?? ""}
-          />
-        </div>
-        <CommandList>
+        <MapDrawerToolbar className="border-b">
+          <div
+            className="hover:bg-muted focus-within:ring-ring focus-within:bg-muted relative flex items-center rounded-md pl-3 pr-1 transition-all"
+            cmdk-input-wrapper=""
+          >
+            {isPending ? (
+              <Loader2 className="mr-2 h-4 w-4 shrink-0 animate-spin opacity-50" />
+            ) : (
+              <SearchIcon className="mr-2 h-4 w-4 shrink-0 opacity-50" />
+            )}
+            <CommandPrimitive.Input
+              className="placeholder:text-muted-foreground flex h-9 w-full rounded-md border-none bg-transparent px-1 py-3 text-base outline-none focus:ring-0 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+              placeholder="Search or ask..."
+              onValueChange={setSearchQuery}
+              value={searchQuery ?? ""}
+            />
+            <Button
+              className="absolute right-0 top-0"
+              variant="ghost"
+              size="icon"
+              onClick={() => {
+                void setQueryStates({ search: null, query: null });
+              }}
+            >
+              <XIcon className="size-4" />
+            </Button>
+          </div>
+        </MapDrawerToolbar>
+        <CommandList className="p-2">
           <CommandGroup>
             {searchQuery && (
               <CommandItem
