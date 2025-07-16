@@ -61,7 +61,7 @@ export function Search({
             className="hover:bg-muted focus-within:ring-ring focus-within:bg-muted relative flex items-center rounded-md pl-3 pr-1 transition-all focus-within:ring-2"
             cmdk-input-wrapper=""
           >
-            {isPending ? (
+            {isPending && searchQuery && searchQuery.length > 0 ? (
               <Loader2 className="mr-2 h-4 w-4 shrink-0 animate-spin opacity-50" />
             ) : (
               <SearchIcon className="mr-2 h-4 w-4 shrink-0 opacity-50" />
