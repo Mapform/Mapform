@@ -67,6 +67,9 @@ const config: Config = {
         md: `calc(var(--radius) - 2px)`,
         sm: "calc(var(--radius) - 4px)",
       },
+      backgroundOpacity: {
+        96: "0.96",
+      },
       fontFamily: {
         sans: ["var(--font-sans)", ...fontFamily.sans],
       },

@@ -54,7 +54,7 @@ export function MapDrawer({
               },
             )}
           />
-          <div className="flex h-full w-full grow flex-col overflow-y-auto rounded-lg border bg-white/95 p-4 backdrop-blur-sm">
+          <div className="bg-opacity-96 flex h-full w-full grow flex-col overflow-y-auto rounded-lg border bg-white p-4 backdrop-blur-sm">
             {onClose ? (
               <Button
                 variant="ghost"

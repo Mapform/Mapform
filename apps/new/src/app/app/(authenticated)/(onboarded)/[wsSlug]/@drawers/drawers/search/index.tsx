@@ -56,7 +56,7 @@ export function Search({
         });
       }}
     >
-      <Command shouldFilter={false}>
+      <Command className="bg-transparent" shouldFilter={false}>
         <div
           className="flex items-center border-b pl-3 pr-1"
           cmdk-input-wrapper=""
@@ -69,7 +69,7 @@ export function Search({
             value={searchQuery ?? ""}
           />
         </div>
-        <CommandList className="">
+        <CommandList>
           <CommandGroup>
             {searchQuery && (
               <CommandItem
