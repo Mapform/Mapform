@@ -1,11 +1,11 @@
 "use client";
 
-import { MapDrawer } from "~/components/map-drawer";
+import { MapDrawer, MapDrawerToolbar } from "~/components/map-drawer";
 import { useParamsContext } from "~/lib/params/client";
 import { cn } from "@mapform/lib/classnames";
 import { AutoSizeTextArea } from "@mapform/ui/components/autosize-text-area";
 import { Button } from "@mapform/ui/components/button";
-import { Loader2, SendIcon } from "lucide-react";
+import { Loader2, SendIcon, XIcon } from "lucide-react";
 import { useChat } from "@ai-sdk/react";
 import { useEffect, useRef, useState } from "react";
 import type { ChatMessage } from "~/lib/types";
@@ -37,18 +37,25 @@ export function Chat() {
   }, [status]);
 
   return (
-    <MapDrawer
-      open={!!params.chatId}
-      depth={0}
-      onClose={() => {
-        void setQueryStates({
-          chatId: null,
-        });
-      }}
-    >
+    <MapDrawer open={!!params.chatId} depth={0}>
+      <MapDrawerToolbar>
+        <div className="flex items-center gap-2">
+          <Button
+            className="ml-auto"
+            size="icon-sm"
+            type="button"
+            variant="ghost"
+            onClick={() => {
+              void setQueryStates({ chatId: null });
+            }}
+          >
+            <XIcon className="size-4" />
+          </Button>
+        </div>
+      </MapDrawerToolbar>
       <div
         ref={chatContainerRef}
-        className="flex flex-1 flex-col gap-4 overflow-y-auto p-6 pb-96"
+        className="flex flex-1 flex-col gap-4 overflow-y-auto px-6 pb-96"
       >
         {messages.map((message) => (
           <Message key={message.id} message={message} />

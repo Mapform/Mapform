@@ -9,8 +9,8 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from "@mapform/ui/components/tooltip";
-import { SmilePlusIcon } from "lucide-react";
-import { MapDrawer } from "~/components/map-drawer";
+import { SmilePlusIcon, XIcon } from "lucide-react";
+import { MapDrawer, MapDrawerToolbar } from "~/components/map-drawer";
 import { PropertyColumnEditor } from "~/components/properties/property-column-editor";
 import { PropertyValueEditor } from "~/components/properties/property-value-editor";
 import { useParamsContext } from "~/lib/params/client";
@@ -29,7 +29,7 @@ interface FeatureDrawerProps {
 }
 
 export function Feature({ feature }: FeatureDrawerProps) {
-  const { params, setQueryStates, isPending } = useParamsContext();
+  const { params, isPending } = useParamsContext();
 
   const featureService = useStateService<GetRow["data"], UpdateRowSchema>(
     updateRowAction,
@@ -47,15 +47,7 @@ export function Feature({ feature }: FeatureDrawerProps) {
 
   return (
     <>
-      <MapDrawer
-        open={!!params.rowId}
-        depth={0}
-        onClose={() => {
-          void setQueryStates({
-            rowId: null,
-          });
-        }}
-      >
+      <MapDrawer open={!!params.rowId} depth={0}>
         {isPending ? (
           <LoadingSkeleton />
         ) : featureService.optimisticState ? (
@@ -90,6 +82,7 @@ const FeatureContent = ({
 }: {
   featureService: StateServiceProps<GetRow["data"], UpdateRowSchema>;
 }) => {
+  const { setQueryStates } = useParamsContext();
   const editor = useCreateBlockNote({
     schema,
     animations: false,
@@ -98,7 +91,22 @@ const FeatureContent = ({
 
   return (
     <div>
-      <header>
+      <MapDrawerToolbar>
+        <div className="flex items-center gap-2">
+          <Button
+            className="ml-auto"
+            size="icon-sm"
+            type="button"
+            variant="ghost"
+            onClick={() => {
+              void setQueryStates({ rowId: null });
+            }}
+          >
+            <XIcon className="size-4" />
+          </Button>
+        </div>
+      </MapDrawerToolbar>
+      <div className="px-6 pb-6">
         <Tooltip>
           <EmojiPopover
             onIconChange={(emoji) => {
@@ -172,17 +180,17 @@ const FeatureContent = ({
                 </div>
               ))}
             </div> */}
-      </header>
-      <Blocknote
-        editor={editor}
-        onChange={({ blocks, markdown }) => {
-          featureService.execute({
-            id: featureService.optimisticState!.id,
-            description: blocks,
-            descriptionAsMarkdown: markdown ?? undefined,
-          });
-        }}
-      />
+        <Blocknote
+          editor={editor}
+          onChange={({ blocks, markdown }) => {
+            featureService.execute({
+              id: featureService.optimisticState!.id,
+              description: blocks,
+              descriptionAsMarkdown: markdown ?? undefined,
+            });
+          }}
+        />
+      </div>
     </div>
   );
 };

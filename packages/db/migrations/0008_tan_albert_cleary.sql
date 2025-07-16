@@ -1,0 +1,1 @@
+ALTER TABLE "chat" ALTER COLUMN "project_id" DROP NOT NULL;

@@ -8,9 +8,7 @@ export const chats = pgTable("chat", {
   userId: uuid("user_id")
     .notNull()
     .references(() => users.id),
-  projectId: uuid("project_id")
-    .notNull()
-    .references(() => projects.id),
+  projectId: uuid("project_id").references(() => projects.id),
 
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()
