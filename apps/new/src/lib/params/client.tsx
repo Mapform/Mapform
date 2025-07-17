@@ -11,7 +11,7 @@ type AppSearchParams = inferParserType<typeof appSearchParams>;
 export interface DefaultContext {
   isPending: boolean;
   params: AppSearchParams;
-  setQueryStates: (obj: Partial<AppSearchParams>) => Promise<URLSearchParams>;
+  setQueryStates: ReturnType<typeof useQueryStates>[1];
 }
 
 export const ParamsContext = createContext<DefaultContext>(

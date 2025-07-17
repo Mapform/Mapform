@@ -23,6 +23,8 @@ import { useDebounce } from "@mapform/lib/hooks/use-debounce";
 import { useEffect, useState } from "react";
 import type { SearchRows } from "@mapform/backend/data/rows/search-rows";
 import { Button } from "@mapform/ui/components/button";
+import { ChatMessage } from "~/lib/types";
+import { useChat } from "@ai-sdk/react";
 
 interface SearchProps {
   geoapifySearchResults?: SearchPlaces["data"];
@@ -104,10 +106,18 @@ export function SearchInner({
           <CommandGroup>
             {searchQuery && (
               <CommandItem
-                onSelect={() => {
-                  void setQueryStates({
-                    chatId: "123",
-                  });
+                onSelect={async () => {
+                  const randomId = Math.random().toString(36).substring(2, 15);
+
+                  await setQueryStates(
+                    {
+                      query: searchQuery,
+                      chatId: randomId,
+                    },
+                    {
+                      shallow: true, // So as to not trigger a refetch
+                    },
+                  );
                 }}
               >
                 <MessageCircle className="text-muted-foreground mr-2 size-4" />

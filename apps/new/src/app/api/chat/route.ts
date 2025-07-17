@@ -19,6 +19,8 @@ export async function POST(req: Request) {
     return NextResponse.json({ msg: "Unauthorized" }, { status: 401 });
   }
 
+  // TODO: Save chat with chat id from request
+
   const result = streamText({
     model: openai("gpt-4o"),
     system: SYSTEM_PROMPT,

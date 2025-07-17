@@ -11,23 +11,29 @@ import { useEffect, useRef, useState } from "react";
 import type { ChatMessage } from "~/lib/types";
 import { Message } from "./message";
 
-export function Chat() {
+interface ChatProps {
+  chat?: any;
+}
+
+export function Chat({ chat }: ChatProps) {
   const { params } = useParamsContext();
 
   return (
     <MapDrawer open={!!params.chatId} depth={0}>
-      <ChatInner />
+      <ChatInner chat={chat} />
     </MapDrawer>
   );
 }
 
-function ChatInner() {
+function ChatInner({ chat }: ChatProps) {
   const [input, setInput] = useState("");
-  const { messages, sendMessage, status } = useChat<ChatMessage>({
-    maxSteps: 5,
-  });
+  const [hasInitiatedNewChat, setHasInitiatedNewChat] = useState(false);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const { params, setQueryStates } = useParamsContext();
+  const { messages, sendMessage, status } = useChat<ChatMessage>({
+    id: params.chatId!,
+    maxSteps: 5,
+  });
 
   const handleSubmit = () => {
     void sendMessage({ text: input });
@@ -45,6 +51,17 @@ function ChatInner() {
       });
     }
   }, [status]);
+
+  useEffect(() => {
+    if (params.query && !chat && !hasInitiatedNewChat && params.chatId) {
+      setHasInitiatedNewChat(true);
+      console.log("sending message", params.chatId, params.query);
+      void sendMessage({
+        id: params.chatId,
+        parts: [{ type: "text", text: params.query }],
+      });
+    }
+  }, [params.query, sendMessage, chat, hasInitiatedNewChat, params.chatId]);
 
   return (
     <>
