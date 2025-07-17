@@ -5,7 +5,7 @@ export const messages = pgTable("message", {
   id: uuid("id").primaryKey().defaultRandom(),
   chatId: uuid("chatId")
     .notNull()
-    .references(() => chats.id),
+    .references(() => chats.id, { onDelete: "cascade" }),
   role: varchar("role").notNull(),
   parts: json("parts").notNull(),
 

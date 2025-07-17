@@ -71,6 +71,13 @@
       "when": 1752785245379,
       "tag": "0009_abandoned_nova",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1752786820300,
+      "tag": "0010_bitter_shiver_man",
+      "breakpoints": true
     }
   ]
 }
