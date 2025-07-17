@@ -12,8 +12,10 @@ import { getInformation } from "~/lib/ai/tools/get-information";
 export const maxDuration = 30;
 
 export async function POST(req: Request) {
-  const { messages, chatId }: { messages: UIMessage[]; chatId: string } =
+  const { messages, id }: { messages: UIMessage[]; id: string } =
     await req.json();
+
+  console.log("chat id", id);
 
   const session = await getCurrentSession();
 
@@ -22,15 +24,17 @@ export async function POST(req: Request) {
   }
 
   let chat = await authClient.getChat({
-    id: chatId,
+    id,
   });
 
   if (!chat?.data) {
     const newChat = await authClient.createChat({
-      id: chatId,
+      id,
       title: "New Chat",
       projectId: null,
     });
+
+    console.log("newChat", newChat?.validationErrors);
 
     if (!newChat?.data) {
       return NextResponse.json(

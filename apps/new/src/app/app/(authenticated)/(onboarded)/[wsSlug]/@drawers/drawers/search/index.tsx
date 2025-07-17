@@ -107,7 +107,7 @@ export function SearchInner({
             {searchQuery && (
               <CommandItem
                 onSelect={async () => {
-                  const randomId = Math.random().toString(36).substring(2, 15);
+                  const randomId = crypto.randomUUID();
 
                   await setQueryStates(
                     {

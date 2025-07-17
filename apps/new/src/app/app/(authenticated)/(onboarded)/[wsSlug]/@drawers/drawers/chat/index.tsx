@@ -30,6 +30,7 @@ function ChatInner({ chat }: ChatProps) {
   const [hasInitiatedNewChat, setHasInitiatedNewChat] = useState(false);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const { params, setQueryStates } = useParamsContext();
+
   const { messages, sendMessage, status } = useChat<ChatMessage>({
     id: params.chatId!,
     maxSteps: 5,
