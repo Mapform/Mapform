@@ -23,8 +23,6 @@ import { useDebounce } from "@mapform/lib/hooks/use-debounce";
 import { useEffect, useState } from "react";
 import type { SearchRows } from "@mapform/backend/data/rows/search-rows";
 import { Button } from "@mapform/ui/components/button";
-import { ChatMessage } from "~/lib/types";
-import { useChat } from "@ai-sdk/react";
 
 interface SearchProps {
   geoapifySearchResults?: SearchPlaces["data"];
@@ -89,6 +87,7 @@ export function SearchInner({
               placeholder="Search or ask..."
               onValueChange={setSearchQuery}
               value={searchQuery ?? ""}
+              autoFocus
             />
             <Button
               className="absolute right-0 top-0"

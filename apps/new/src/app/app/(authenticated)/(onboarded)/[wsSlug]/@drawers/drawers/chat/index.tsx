@@ -109,6 +109,7 @@ function ChatInner({ chat }: ChatProps) {
             "bg-muted w-full border-none pl-10 shadow-none !ring-0",
           )}
           placeholder="Ask anything..."
+          autoFocus
         />
         <Button className="ml-auto" type="submit" size="icon">
           <SendIcon className="size-4" />
