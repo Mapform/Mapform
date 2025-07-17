@@ -12,10 +12,13 @@ interface SearchDetailsProps {
 }
 
 export function SearchDetails({ geoapifyPlaceDetails }: SearchDetailsProps) {
-  const { params } = useParamsContext();
+  const { params, drawerDepth } = useParamsContext();
 
   return (
-    <MapDrawer open={!!params.geoapifyPlaceId && !!geoapifyPlaceDetails}>
+    <MapDrawer
+      open={!!params.geoapifyPlaceId && !!geoapifyPlaceDetails}
+      depth={drawerDepth.get("geoapifyPlaceId") ?? 0}
+    >
       <SearchDetailsInner geoapifyPlaceDetails={geoapifyPlaceDetails} />
     </MapDrawer>
   );

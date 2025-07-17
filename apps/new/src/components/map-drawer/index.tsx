@@ -30,7 +30,7 @@ export function MapDrawer({
           animate={{
             x: 16 * depth,
             width,
-            scale: depth > 0 ? 0.985 : 1,
+            scale: 1 - depth * 0.012,
             opacity: 1,
           }}
           exit={{ x: -width, width, opacity: 0 }}
@@ -44,11 +44,10 @@ export function MapDrawer({
           <div
             className={cn(
               "pointer-events-none absolute inset-0 z-50 rounded-lg bg-gray-950 transition-opacity duration-200",
-              {
-                "opacity-50": depth > 0,
-                "opacity-0": depth === 0,
-              },
             )}
+            style={{
+              opacity: depth ? 0.4 + depth * 0.15 : 0,
+            }}
           />
           <div className="bg-opacity-96 flex h-full w-full grow flex-col overflow-y-auto rounded-lg border bg-white backdrop-blur-sm">
             {children}

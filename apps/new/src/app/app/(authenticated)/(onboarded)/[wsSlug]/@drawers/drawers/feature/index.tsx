@@ -29,7 +29,7 @@ interface FeatureDrawerProps {
 }
 
 export function Feature({ feature }: FeatureDrawerProps) {
-  const { params, isPending } = useParamsContext();
+  const { params, isPending, drawerDepth } = useParamsContext();
 
   const featureService = useStateService<GetRow["data"], UpdateRowSchema>(
     updateRowAction,
@@ -47,7 +47,7 @@ export function Feature({ feature }: FeatureDrawerProps) {
 
   return (
     <>
-      <MapDrawer open={!!params.rowId} depth={0}>
+      <MapDrawer open={!!params.rowId} depth={drawerDepth.get("rowId") ?? 0}>
         {isPending ? (
           <LoadingSkeleton />
         ) : featureService.optimisticState ? (

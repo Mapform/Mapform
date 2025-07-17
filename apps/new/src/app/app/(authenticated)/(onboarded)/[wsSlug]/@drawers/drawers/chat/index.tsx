@@ -16,10 +16,10 @@ interface ChatProps {
 }
 
 export function Chat({ chat }: ChatProps) {
-  const { params } = useParamsContext();
+  const { params, drawerDepth } = useParamsContext();
 
   return (
-    <MapDrawer open={!!params.chatId} depth={0}>
+    <MapDrawer open={!!params.chatId} depth={drawerDepth.get("chatId") ?? 0}>
       <ChatInner chat={chat} />
     </MapDrawer>
   );

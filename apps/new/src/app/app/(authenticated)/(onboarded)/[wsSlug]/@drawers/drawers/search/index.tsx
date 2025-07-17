@@ -35,10 +35,10 @@ export function Search({
   geoapifySearchResults,
   vectorSearchResults,
 }: SearchProps) {
-  const { params } = useParamsContext();
+  const { params, drawerDepth } = useParamsContext();
 
   return (
-    <MapDrawer open={!!params.search} depth={0}>
+    <MapDrawer open={!!params.search} depth={drawerDepth.get("search") ?? 0}>
       <SearchInner
         geoapifySearchResults={geoapifySearchResults}
         vectorSearchResults={vectorSearchResults}

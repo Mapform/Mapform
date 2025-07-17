@@ -48,7 +48,7 @@ import { useParamsContext } from "~/lib/params/client";
 
 export function Views() {
   const { projectService, activeView } = useProject();
-  const { setQueryStates } = useParamsContext();
+  const { setQueryStates, drawerDepth } = useParamsContext();
   const { execute, isPending } = useAction(createViewAction);
   const { execute: executeDeleteView, isPending: isDeletingView } = useAction(
     deleteViewAction,
@@ -69,6 +69,7 @@ export function Views() {
       open
       // TODO: Need to calculate remaining width of the screen and pass in
       width={activeView?.type === "table" ? 800 : undefined}
+      depth={drawerDepth.size}
     >
       <MapDrawerToolbar>
         <DropdownMenu>
