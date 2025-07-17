@@ -12,6 +12,16 @@ import type { ChatMessage } from "~/lib/types";
 import { Message } from "./message";
 
 export function Chat() {
+  const { params } = useParamsContext();
+
+  return (
+    <MapDrawer open={!!params.chatId} depth={0}>
+      <ChatInner />
+    </MapDrawer>
+  );
+}
+
+function ChatInner() {
   const [input, setInput] = useState("");
   const { messages, sendMessage, status } = useChat<ChatMessage>({
     maxSteps: 5,
@@ -37,7 +47,7 @@ export function Chat() {
   }, [status]);
 
   return (
-    <MapDrawer open={!!params.chatId} depth={0}>
+    <>
       <MapDrawerToolbar>
         <div className="flex items-center gap-2">
           <Button
@@ -86,6 +96,6 @@ export function Chat() {
           <SendIcon className="size-4" />
         </Button>
       </form>
-    </MapDrawer>
+    </>
   );
 }

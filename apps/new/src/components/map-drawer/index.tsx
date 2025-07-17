@@ -1,8 +1,6 @@
 "use client";
 
 import { cn } from "@mapform/lib/classnames";
-import { Button } from "@mapform/ui/components/button";
-import { XIcon } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 
 interface MapDrawerProps {
@@ -10,7 +8,6 @@ interface MapDrawerProps {
   open: boolean;
   initialOpen?: boolean;
   depth?: number;
-  onClose?: () => void;
   children: React.ReactNode;
   width?: number;
 }
@@ -21,7 +18,6 @@ export function MapDrawer({
   open,
   initialOpen = false,
   depth = 0,
-  onClose,
   children,
   width = DRAWER_WIDTH_DEFAULT,
 }: MapDrawerProps) {
@@ -55,16 +51,6 @@ export function MapDrawer({
             )}
           />
           <div className="bg-opacity-96 flex h-full w-full grow flex-col overflow-y-auto rounded-lg border bg-white backdrop-blur-sm">
-            {/* {onClose ? (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={onClose}
-                className="absolute right-2 top-2"
-              >
-                <XIcon className="size-4" />
-              </Button>
-            ) : null} */}
             {children}
           </div>
         </motion.div>

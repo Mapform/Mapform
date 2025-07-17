@@ -33,6 +33,22 @@ export function Search({
   geoapifySearchResults,
   vectorSearchResults,
 }: SearchProps) {
+  const { params } = useParamsContext();
+
+  return (
+    <MapDrawer open={!!params.search} depth={0}>
+      <SearchInner
+        geoapifySearchResults={geoapifySearchResults}
+        vectorSearchResults={vectorSearchResults}
+      />
+    </MapDrawer>
+  );
+}
+
+export function SearchInner({
+  geoapifySearchResults,
+  vectorSearchResults,
+}: SearchProps) {
   const { map } = useMap();
   const { params, setQueryStates, isPending } = useParamsContext();
   const [searchQuery, setSearchQuery] = useState(params.query);
@@ -54,7 +70,7 @@ export function Search({
   }, [debouncedSearchQuery, setQueryStates]);
 
   return (
-    <MapDrawer open={!!params.search} depth={0}>
+    <>
       <Command className="bg-transparent" shouldFilter={false}>
         <MapDrawerToolbar className="border-b">
           <div
@@ -159,6 +175,6 @@ export function Search({
           </CommandGroup>
         </CommandList>
       </Command>
-    </MapDrawer>
+    </>
   );
 }
