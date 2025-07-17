@@ -64,6 +64,8 @@ function ChatInner({ chat }: ChatProps) {
     }
   }, [params.query, sendMessage, chat, hasInitiatedNewChat, params.chatId]);
 
+  console.log("messages", messages);
+
   return (
     <>
       <MapDrawerToolbar>

@@ -8,5 +8,8 @@ export const messages = pgTable("message", {
     .references(() => chats.id),
   role: varchar("role").notNull(),
   parts: json("parts").notNull(),
-  createdAt: timestamp("createdAt").notNull(),
+
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
 });

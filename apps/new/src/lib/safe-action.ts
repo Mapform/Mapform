@@ -44,6 +44,8 @@ import { deleteProject } from "@mapform/backend/data/projects/delete-project";
 import { getPlaceDetails } from "@mapform/backend/data/geoapify/details";
 import { createChat } from "@mapform/backend/data/chats/create-chat";
 import { getChat } from "@mapform/backend/data/chats/get-chat";
+import { createMessages } from "@mapform/backend/data/messages/create-messages";
+import { getMessages } from "@mapform/backend/data/messages/get-messages";
 
 const ignoredWorkspaceSlugs = ["onboarding"];
 const ignoredTeamspaceSlugs = ["settings"];
@@ -117,6 +119,10 @@ const createUserAuthClient = () => {
 
     // Images
     uploadImage: uploadImage(extendedClient),
+
+    // Messages
+    createMessages: createMessages(extendedClient),
+    getMessages: getMessages(extendedClient),
 
     // Projects
     getProject: getProject(extendedClient),

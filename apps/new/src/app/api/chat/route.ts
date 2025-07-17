@@ -15,7 +15,7 @@ export async function POST(req: Request) {
   const { messages, id }: { messages: UIMessage[]; id: string } =
     await req.json();
 
-  console.log("chat id", id);
+  console.log("11111 messages", messages);
 
   const session = await getCurrentSession();
 
@@ -46,7 +46,19 @@ export async function POST(req: Request) {
     chat = { data: newChat.data };
   }
 
-  // TODO: Db messages
+  const existingMessages = await authClient.getMessages({
+    chatId: id,
+  });
+
+  const newMessage = await authClient.createMessages({
+    messages: [
+      {
+        role: "user",
+        parts: [{ type: "text", text: messages[0] }],
+      },
+    ],
+    chatId: id,
+  });
 
   const result = streamText({
     model: openai("gpt-4o"),
@@ -55,6 +67,15 @@ export async function POST(req: Request) {
     tools: {
       autocomplete,
       getInformation,
+    },
+    onFinish: async (val) => {
+      await authClient.createMessages({
+        messages: val.response.messages.map((message) => ({
+          parts: message.content,
+          role: message.role,
+        })),
+        chatId: id,
+      });
     },
   });
 
