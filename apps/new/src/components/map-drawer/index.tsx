@@ -25,7 +25,7 @@ export function MapDrawer({
     <AnimatePresence>
       {open && (
         <motion.div
-          className="absolute bottom-2 top-2 z-20 flex !select-text outline-none"
+          className="absolute bottom-2 top-2 flex !select-text outline-none"
           initial={initialOpen ? false : { x: -width, width, opacity: 0 }}
           animate={{
             x: 16 * depth,
@@ -38,6 +38,9 @@ export function MapDrawer({
             type: "spring",
             stiffness: 300,
             damping: 30,
+          }}
+          style={{
+            zIndex: 100 - depth,
           }}
         >
           {/* Copy content with mask when when other drawers open on top */}
