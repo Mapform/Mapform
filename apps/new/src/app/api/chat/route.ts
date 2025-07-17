@@ -1,5 +1,6 @@
 import { openai } from "@ai-sdk/openai";
 import type { UIMessage } from "ai";
+import { authClient } from "~/lib/safe-action";
 import { streamText, convertToModelMessages } from "ai";
 import { NextResponse } from "next/server";
 import { getCurrentSession } from "~/data/auth/get-current-session";
@@ -11,7 +12,8 @@ import { getInformation } from "~/lib/ai/tools/get-information";
 export const maxDuration = 30;
 
 export async function POST(req: Request) {
-  const { messages }: { messages: UIMessage[] } = await req.json();
+  const { messages, chatId }: { messages: UIMessage[]; chatId: string } =
+    await req.json();
 
   const session = await getCurrentSession();
 
@@ -19,7 +21,28 @@ export async function POST(req: Request) {
     return NextResponse.json({ msg: "Unauthorized" }, { status: 401 });
   }
 
-  // TODO: Save chat with chat id from request
+  let chat = await authClient.getChat({
+    id: chatId,
+  });
+
+  if (!chat?.data) {
+    const newChat = await authClient.createChat({
+      id: chatId,
+      title: "New Chat",
+      projectId: null,
+    });
+
+    if (!newChat?.data) {
+      return NextResponse.json(
+        { msg: "Failed to create chat" },
+        { status: 500 },
+      );
+    }
+
+    chat = { data: newChat.data };
+  }
+
+  // TODO: Db messages
 
   const result = streamText({
     model: openai("gpt-4o"),

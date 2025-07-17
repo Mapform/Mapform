@@ -1,10 +1,10 @@
 import { z } from "zod";
-import { selectColumnSchema } from "@mapform/db/schema";
+import { selectChatSchema } from "@mapform/db/schema";
 
 export const createChatSchema = z.object({
-  id: selectColumnSchema.shape.id,
-  name: selectColumnSchema.shape.name,
-  projectId: selectColumnSchema.shape.projectId,
+  id: selectChatSchema.shape.id,
+  title: selectChatSchema.shape.title,
+  projectId: selectChatSchema.shape.projectId,
 });
 
 export type CreateChatSchema = z.infer<typeof createChatSchema>;

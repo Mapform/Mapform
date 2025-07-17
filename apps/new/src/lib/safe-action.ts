@@ -43,6 +43,7 @@ import { updateProjectOrder } from "@mapform/backend/data/projects/update-projec
 import { deleteProject } from "@mapform/backend/data/projects/delete-project";
 import { getPlaceDetails } from "@mapform/backend/data/geoapify/details";
 import { createChat } from "@mapform/backend/data/chats/create-chat";
+import { getChat } from "@mapform/backend/data/chats/get-chat";
 
 const ignoredWorkspaceSlugs = ["onboarding"];
 const ignoredTeamspaceSlugs = ["settings"];
@@ -107,6 +108,7 @@ const createUserAuthClient = () => {
 
     // Chats
     createChat: createChat(extendedClient),
+    getChat: getChat(extendedClient),
 
     // Columns
     createColumn: createColumn(extendedClient),
