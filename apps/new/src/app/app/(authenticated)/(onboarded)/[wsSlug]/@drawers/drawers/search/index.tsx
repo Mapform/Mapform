@@ -124,7 +124,7 @@ export function SearchInner({
                   );
                 }}
               >
-                <MessageCircle className="text-muted-foreground mr-2 size-4" />
+                <MessageCircle className="text-muted-foreground mr-2 size-4 flex-shrink-0" />
                 <span className="truncate">{searchQuery}</span>
                 <span className="text-muted-foreground ml-1 flex-shrink-0">
                   — Chat
@@ -145,11 +145,11 @@ export function SearchInner({
                 }}
               >
                 {result.icon ? (
-                  <span className="text-muted-foreground mr-2">
+                  <span className="text-muted-foreground mr-2 flex-shrink-0">
                     {result.icon}
                   </span>
                 ) : (
-                  <BoxIcon className="text-muted-foreground mr-2 size-4" />
+                  <BoxIcon className="text-muted-foreground mr-2 size-4 flex-shrink-0" />
                 )}
                 <span className="truncate">
                   {result.name || "Unnamed feature"}
@@ -176,7 +176,7 @@ export function SearchInner({
                   }
                 }}
               >
-                <GlobeIcon className="text-muted-foreground mr-2 size-4" />
+                <GlobeIcon className="text-muted-foreground mr-2 size-4 flex-shrink-0" />
                 <span className="truncate">
                   {feature.properties?.name ??
                     feature.properties?.address_line1}
@@ -200,7 +200,7 @@ export function SearchInner({
                     );
                   }}
                 >
-                  <MessageCircle className="text-muted-foreground mr-2 size-4" />
+                  <MessageCircle className="text-muted-foreground mr-2 size-4 flex-shrink-0" />
                   <span className="truncate">{chat.title}</span>
                 </CommandItem>
               ))}
