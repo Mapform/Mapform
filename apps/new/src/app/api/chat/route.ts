@@ -57,6 +57,7 @@ export async function POST(req: Request) {
   return result.toUIMessageStreamResponse({
     originalMessages: messages,
     onFinish: async ({ messages }) => {
+      console.log("create messages", messages);
       await authClient.createMessages({
         messages,
         chatId: id,
