@@ -92,19 +92,17 @@ const FeatureContent = ({
   return (
     <div>
       <MapDrawerToolbar>
-        <div className="flex items-center gap-2">
-          <Button
-            className="ml-auto"
-            size="icon-sm"
-            type="button"
-            variant="ghost"
-            onClick={() => {
-              void setQueryStates({ rowId: null });
-            }}
-          >
-            <XIcon className="size-4" />
-          </Button>
-        </div>
+        <Button
+          className="ml-auto"
+          size="icon-sm"
+          type="button"
+          variant="ghost"
+          onClick={() => {
+            void setQueryStates({ rowId: null });
+          }}
+        >
+          <XIcon className="size-4" />
+        </Button>
       </MapDrawerToolbar>
       <div className="px-6 pb-6">
         <Tooltip>

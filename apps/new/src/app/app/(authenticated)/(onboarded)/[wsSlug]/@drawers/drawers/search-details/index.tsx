@@ -16,7 +16,7 @@ export function SearchDetails({ geoapifyPlaceDetails }: SearchDetailsProps) {
 
   return (
     <MapDrawer
-      open={!!params.geoapifyPlaceId && !!geoapifyPlaceDetails}
+      open={!!params.geoapifyPlaceId}
       depth={drawerDepth.get("geoapifyPlaceId") ?? 0}
     >
       <SearchDetailsInner geoapifyPlaceDetails={geoapifyPlaceDetails} />
@@ -37,19 +37,17 @@ function SearchDetailsInner({ geoapifyPlaceDetails }: SearchDetailsProps) {
   return (
     <>
       <MapDrawerToolbar>
-        <div className="flex items-center gap-2">
-          <Button
-            className="ml-auto"
-            size="icon-sm"
-            type="button"
-            variant="ghost"
-            onClick={() => {
-              void setQueryStates({ geoapifyPlaceId: null });
-            }}
-          >
-            <XIcon className="size-4" />
-          </Button>
-        </div>
+        <Button
+          className="ml-auto"
+          size="icon-sm"
+          type="button"
+          variant="ghost"
+          onClick={() => {
+            void setQueryStates({ geoapifyPlaceId: null });
+          }}
+        >
+          <XIcon className="size-4" />
+        </Button>
       </MapDrawerToolbar>
       <div className="flex flex-1 flex-col gap-4 overflow-y-auto px-6 pb-6">
         Test

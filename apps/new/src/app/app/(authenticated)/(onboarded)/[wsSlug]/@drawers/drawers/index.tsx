@@ -73,8 +73,6 @@ async function SearchDrawer({ searchParams, params }: DealDrawerProps) {
       authClient.listChats({ projectId: pId }),
     ]);
 
-  console.log("previousChats", previousChats);
-
   return (
     <Search
       geoapifySearchResults={geoapifySearchResults?.data}
