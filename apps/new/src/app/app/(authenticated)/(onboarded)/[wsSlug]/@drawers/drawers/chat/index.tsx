@@ -12,20 +12,20 @@ import type { ChatMessage } from "~/lib/types";
 import { Message } from "./message";
 
 interface ChatProps {
-  chat?: any;
+  initialMessages?: ChatMessage[];
 }
 
-export function Chat({ chat }: ChatProps) {
+export function Chat({ initialMessages }: ChatProps) {
   const { params, drawerDepth } = useParamsContext();
 
   return (
     <MapDrawer open={!!params.chatId} depth={drawerDepth.get("chatId") ?? 0}>
-      <ChatInner chat={chat} />
+      <ChatInner initialMessages={initialMessages} />
     </MapDrawer>
   );
 }
 
-function ChatInner({ chat }: ChatProps) {
+function ChatInner({ initialMessages }: ChatProps) {
   const [input, setInput] = useState("");
   const [hasInitiatedNewChat, setHasInitiatedNewChat] = useState(false);
   const chatContainerRef = useRef<HTMLDivElement>(null);
@@ -34,6 +34,7 @@ function ChatInner({ chat }: ChatProps) {
   const { messages, sendMessage, status } = useChat<ChatMessage>({
     id: params.chatId!,
     maxSteps: 5,
+    messages: initialMessages ?? [],
   });
 
   const handleSubmit = () => {
@@ -54,7 +55,7 @@ function ChatInner({ chat }: ChatProps) {
   }, [status]);
 
   useEffect(() => {
-    if (params.query && !chat && !hasInitiatedNewChat && params.chatId) {
+    if (params.query && !hasInitiatedNewChat && params.chatId) {
       setHasInitiatedNewChat(true);
       console.log("sending message", params.chatId, params.query);
       void sendMessage({
@@ -62,9 +63,7 @@ function ChatInner({ chat }: ChatProps) {
         parts: [{ type: "text", text: params.query }],
       });
     }
-  }, [params.query, sendMessage, chat, hasInitiatedNewChat, params.chatId]);
-
-  console.log("messages", messages);
+  }, [params.query, sendMessage, hasInitiatedNewChat, params.chatId]);
 
   return (
     <>

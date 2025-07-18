@@ -7,6 +7,7 @@ import { authClient, publicClient } from "~/lib/safe-action";
 import { Chat } from "./chat";
 import { SearchDetails } from "./search-details";
 import { Feature } from "./feature";
+import { ChatMessage } from "~/lib/types";
 
 interface DealDrawerProps {
   searchParams: Promise<SearchParams>;
@@ -79,9 +80,15 @@ async function SearchDrawer({ searchParams, params }: DealDrawerProps) {
 }
 
 async function ChatDrawer({ searchParams }: DealDrawerProps) {
-  // const { chatId } = await loadSearchParams(searchParams);
+  const { chatId } = await loadSearchParams(searchParams);
 
-  return <Chat />;
+  const messages = chatId
+    ? await authClient.getMessages({
+        chatId,
+      })
+    : null;
+
+  return <Chat initialMessages={messages?.data as ChatMessage[]} />;
 }
 
 const getGeoapifyPlaceDetails = cache(async (placeId: string | null) => {
