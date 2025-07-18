@@ -187,14 +187,16 @@ export function SearchInner({
               </CommandItem>
             ))}
           </CommandGroup>
-          <CommandGroup heading="Chats">
-            {previousChats?.map((chat) => (
-              <CommandItem key={chat.id} value={chat.id}>
-                <MessageCircle className="text-muted-foreground mr-2 size-4" />
-                <span className="truncate">{chat.title}</span>
-              </CommandItem>
-            ))}
-          </CommandGroup>
+          {previousChats && previousChats.length > 0 && (
+            <CommandGroup heading="Chats">
+              {previousChats.map((chat) => (
+                <CommandItem key={chat.id} value={chat.id}>
+                  <MessageCircle className="text-muted-foreground mr-2 size-4" />
+                  <span className="truncate">{chat.title}</span>
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          )}
         </CommandList>
       </Command>
     </>
