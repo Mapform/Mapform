@@ -64,14 +64,16 @@ export async function POST(req: Request) {
 
   const response = result.toUIMessageStreamResponse({
     originalMessages: messages,
+    generateMessageId: () => crypto.randomUUID(),
     onFinish: async ({ messages }) => {
-      console.log("create messages", messages);
       await authClient.createMessages({
-        messages,
+        messages: messages.map((m) => ({
+          id: m.id,
+          role: m.role,
+          parts: m.parts,
+        })),
         chatId: id,
       });
-
-      console.log("finished");
     },
   });
 

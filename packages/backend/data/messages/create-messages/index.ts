@@ -14,16 +14,12 @@ export const createMessages = (authClient: UserAuthClient) =>
         parsedInput: { messages: insertMessages, chatId },
         ctx: { user },
       }) => {
-        console.log("insertMessages", insertMessages);
-
         const chat = await db.query.chats.findFirst({
           where: eq(chats.id, chatId),
           with: {
             messages: true,
           },
         });
-
-        console.log("chat", chat);
 
         if (!chat) {
           throw new Error("Chat not found");
@@ -37,8 +33,6 @@ export const createMessages = (authClient: UserAuthClient) =>
         const newMessages = insertMessages.filter(
           (m) => !chat.messages.some((em) => em.id === m.id),
         );
-
-        console.log("newMessages", newMessages);
 
         return db
           .insert(messages)

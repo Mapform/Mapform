@@ -43,6 +43,7 @@ function ChatInner({ initialMessages }: ChatProps) {
         return { body: { message: messages[messages.length - 1], id } };
       },
     }),
+    generateId: () => crypto.randomUUID(),
   });
 
   const handleSubmit = () => {
