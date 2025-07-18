@@ -46,9 +46,16 @@ export function MapContextMenu({
         onInteractOutside={() => onOpenChange(false)}
       >
         <DropdownMenuItem
-          onClick={() => {
+          onClick={async () => {
             onOpenChange(false);
-            void setQueryStates(
+            await setQueryStates(
+              {
+                query: null,
+                chatId: null,
+              },
+              { shallow: true },
+            );
+            await setQueryStates(
               {
                 query: `What can you tell me about this location: ${position.longitude}, ${position.latitude}`,
                 chatId: crypto.randomUUID(),
