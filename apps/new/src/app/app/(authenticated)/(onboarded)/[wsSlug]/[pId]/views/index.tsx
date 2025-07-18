@@ -91,7 +91,7 @@ export function Views() {
             <ImportContent />
           </DropdownMenu>
         </Import>
-        <Button variant="ghost" size="icon">
+        <Button className="ml-auto" variant="ghost" size="icon">
           <XIcon className="size-4" />
         </Button>
       </MapDrawerToolbar>
