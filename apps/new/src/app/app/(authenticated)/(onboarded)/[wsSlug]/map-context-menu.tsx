@@ -9,11 +9,12 @@ import {
   DropdownMenuTrigger,
 } from "@mapform/ui/components/dropdown-menu";
 import { useParams } from "next/navigation";
+import { useParamsContext } from "~/lib/params/client";
 
 interface MapContextMenuProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  position: { x: number; y: number };
+  position: { x: number; y: number; longitude: number; latitude: number };
 }
 
 export function MapContextMenu({
@@ -22,6 +23,7 @@ export function MapContextMenu({
   position,
 }: MapContextMenuProps) {
   const params = useParams();
+  const { setQueryStates } = useParamsContext();
 
   return (
     <DropdownMenu open={open} onOpenChange={onOpenChange}>
@@ -46,21 +48,20 @@ export function MapContextMenu({
         <DropdownMenuItem
           onClick={() => {
             onOpenChange(false);
-            // Add your action here
-            console.log("Ask AI");
+            void setQueryStates(
+              {
+                query: `What can you tell me about this location: ${position.longitude}, ${position.latitude}`,
+                chatId: crypto.randomUUID(),
+              },
+              { shallow: true },
+            );
           }}
         >
           <SparkleIcon className="size-4" />
           Ask AI
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem
-          onClick={() => {
-            onOpenChange(false);
-            // Add your action here
-            console.log("Add new feature");
-          }}
-        >
+        <DropdownMenuItem onClick={() => {}}>
           <PlusIcon className="size-4" />
           Add location
         </DropdownMenuItem>

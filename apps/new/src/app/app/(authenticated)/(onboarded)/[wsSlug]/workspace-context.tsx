@@ -123,7 +123,7 @@ export function WorkspaceProvider({
         <MapContextMenu
           open={!!contextMenu}
           onOpenChange={handleCloseContextMenu}
-          position={contextMenu ?? { x: 0, y: 0 }}
+          position={contextMenu ?? { x: 0, y: 0, longitude: 0, latitude: 0 }}
         />
       </Map>
     </WorkspaceContext.Provider>
