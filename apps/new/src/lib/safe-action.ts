@@ -46,6 +46,7 @@ import { createChat } from "@mapform/backend/data/chats/create-chat";
 import { getChat } from "@mapform/backend/data/chats/get-chat";
 import { createMessages } from "@mapform/backend/data/messages/create-messages";
 import { getMessages } from "@mapform/backend/data/messages/get-messages";
+import { listChats } from "@mapform/backend/data/chats/list-chats";
 
 const ignoredWorkspaceSlugs = ["onboarding"];
 const ignoredTeamspaceSlugs = ["settings"];
@@ -111,6 +112,7 @@ const createUserAuthClient = () => {
     // Chats
     createChat: createChat(extendedClient),
     getChat: getChat(extendedClient),
+    listChats: listChats(extendedClient),
 
     // Columns
     createColumn: createColumn(extendedClient),

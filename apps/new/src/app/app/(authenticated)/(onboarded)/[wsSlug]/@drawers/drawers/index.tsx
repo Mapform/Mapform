@@ -7,7 +7,7 @@ import { authClient, publicClient } from "~/lib/safe-action";
 import { Chat } from "./chat";
 import { SearchDetails } from "./search-details";
 import { Feature } from "./feature";
-import { ChatMessage } from "~/lib/types";
+import type { ChatMessage } from "~/lib/types";
 
 interface DealDrawerProps {
   searchParams: Promise<SearchParams>;
@@ -66,15 +66,20 @@ async function SearchDrawer({ searchParams, params }: DealDrawerProps) {
   const { query, search } = await loadSearchParams(searchParams);
   const { wsSlug, pId } = await params;
 
-  const [geoapifySearchResults, vectorSearchResults] = await Promise.all([
-    query && search ? getGeoapifySearchResults(query, undefined) : null,
-    query && search ? getVectorSearchResults(query, wsSlug, pId) : null,
-  ]);
+  const [geoapifySearchResults, vectorSearchResults, previousChats] =
+    await Promise.all([
+      query && search ? getGeoapifySearchResults(query, undefined) : null,
+      query && search ? getVectorSearchResults(query, wsSlug, pId) : null,
+      authClient.listChats({ projectId: pId }),
+    ]);
+
+  console.log("previousChats", previousChats);
 
   return (
     <Search
       geoapifySearchResults={geoapifySearchResults?.data}
       vectorSearchResults={vectorSearchResults?.data}
+      previousChats={previousChats?.data}
     />
   );
 }

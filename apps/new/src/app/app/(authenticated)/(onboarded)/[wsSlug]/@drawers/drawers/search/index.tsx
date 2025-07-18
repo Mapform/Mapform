@@ -23,15 +23,18 @@ import { useDebounce } from "@mapform/lib/hooks/use-debounce";
 import { useEffect, useState } from "react";
 import type { SearchRows } from "@mapform/backend/data/rows/search-rows";
 import { Button } from "@mapform/ui/components/button";
+import type { ListChats } from "@mapform/backend/data/chats/list-chats";
 
 interface SearchProps {
   geoapifySearchResults?: SearchPlaces["data"];
   vectorSearchResults?: SearchRows["data"];
+  previousChats?: ListChats["data"];
 }
 
 export function Search({
   geoapifySearchResults,
   vectorSearchResults,
+  previousChats,
 }: SearchProps) {
   const { params, drawerDepth } = useParamsContext();
 
@@ -40,6 +43,7 @@ export function Search({
       <SearchInner
         geoapifySearchResults={geoapifySearchResults}
         vectorSearchResults={vectorSearchResults}
+        previousChats={previousChats}
       />
     </MapDrawer>
   );
@@ -48,6 +52,7 @@ export function Search({
 export function SearchInner({
   geoapifySearchResults,
   vectorSearchResults,
+  previousChats,
 }: SearchProps) {
   const { map } = useMap();
   const { params, setQueryStates, isPending } = useParamsContext();
@@ -179,6 +184,14 @@ export function SearchInner({
                 {/* <span className="text-muted-foreground ml-1 flex-shrink-0">
                     — From {feature.properties?.country}
                   </span> */}
+              </CommandItem>
+            ))}
+          </CommandGroup>
+          <CommandGroup heading="Chats">
+            {previousChats?.map((chat) => (
+              <CommandItem key={chat.id} value={chat.id}>
+                <MessageCircle className="text-muted-foreground mr-2 size-4" />
+                <span className="truncate">{chat.title}</span>
               </CommandItem>
             ))}
           </CommandGroup>
