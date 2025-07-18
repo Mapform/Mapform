@@ -14,6 +14,7 @@ import {
   TrashIcon,
   EllipsisVerticalIcon,
   XIcon,
+  ImportIcon,
 } from "lucide-react";
 import { AutoSizeTextArea } from "@mapform/ui/components/autosize-text-area";
 import { useProject } from "../context";
@@ -35,7 +36,7 @@ import {
 } from "@mapform/ui/components/tabs";
 import { MapView } from "./map-view";
 import { TableView } from "./table-view";
-import { Import } from "./import";
+import { Import, ImportContent, ImportTrigger } from "./import";
 import {
   ContextMenu,
   ContextMenuContent,
@@ -72,19 +73,24 @@ export function Views() {
       depth={drawerDepth.size}
     >
       <MapDrawerToolbar>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon">
-              <EllipsisVerticalIcon className="size-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuItem>
-              {/* <TrashIcon className="size-4" /> */}
-              <Import />
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <Import>
+          <DropdownMenu modal={false}>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <EllipsisVerticalIcon className="size-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <ImportTrigger asChild>
+                <DropdownMenuItem>
+                  <ImportIcon className="size-4" />
+                  Import
+                </DropdownMenuItem>
+              </ImportTrigger>
+            </DropdownMenuContent>
+            <ImportContent />
+          </DropdownMenu>
+        </Import>
         <Button variant="ghost" size="icon">
           <XIcon className="size-4" />
         </Button>
