@@ -190,7 +190,16 @@ export function SearchInner({
           {previousChats && previousChats.length > 0 && (
             <CommandGroup heading="Chats">
               {previousChats.map((chat) => (
-                <CommandItem key={chat.id} value={chat.id}>
+                <CommandItem
+                  key={chat.id}
+                  value={chat.id}
+                  onSelect={async () => {
+                    await setQueryStates(
+                      { chatId: chat.id },
+                      { shallow: false },
+                    );
+                  }}
+                >
                   <MessageCircle className="text-muted-foreground mr-2 size-4" />
                   <span className="truncate">{chat.title}</span>
                 </CommandItem>

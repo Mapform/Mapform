@@ -7,6 +7,7 @@ import { getCurrentSession } from "~/data/auth/get-current-session";
 import { SYSTEM_PROMPT } from "~/lib/ai/prompts";
 import { autocomplete } from "~/lib/ai/tools/autocomplete";
 import { getInformation } from "~/lib/ai/tools/get-information";
+import { calculateRoute } from "@mapform/backend/clients/inngest/functions/map-assistant/tool-functions";
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
@@ -73,6 +74,10 @@ export async function POST(req: Request) {
     tools: {
       autocomplete,
       getInformation,
+      // @ts-expect-error - all good
+      webSearch: openai.tools.webSearchPreview({
+        searchContextSize: "medium",
+      }),
     },
   });
 

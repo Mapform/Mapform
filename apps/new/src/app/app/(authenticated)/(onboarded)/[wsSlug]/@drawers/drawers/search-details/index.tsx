@@ -6,20 +6,25 @@ import { useParamsContext } from "~/lib/params/client";
 import { Marker } from "react-map-gl/mapbox";
 import { Button } from "@mapform/ui/components/button";
 import { XIcon } from "lucide-react";
+import { LoadingSkeleton } from "~/components/loading-skeleton";
 
 interface SearchDetailsProps {
   geoapifyPlaceDetails: GetPlaceDetails["data"];
 }
 
 export function SearchDetails({ geoapifyPlaceDetails }: SearchDetailsProps) {
-  const { params, drawerDepth } = useParamsContext();
+  const { params, drawerDepth, isPending } = useParamsContext();
 
   return (
     <MapDrawer
       open={!!params.geoapifyPlaceId}
       depth={drawerDepth.get("geoapifyPlaceId") ?? 0}
     >
-      <SearchDetailsInner geoapifyPlaceDetails={geoapifyPlaceDetails} />
+      {isPending ? (
+        <LoadingSkeleton />
+      ) : (
+        <SearchDetailsInner geoapifyPlaceDetails={geoapifyPlaceDetails} />
+      )}
     </MapDrawer>
   );
 }

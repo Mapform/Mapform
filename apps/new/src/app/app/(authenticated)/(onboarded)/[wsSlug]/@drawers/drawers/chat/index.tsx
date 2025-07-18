@@ -12,17 +12,22 @@ import type { ChatMessage } from "~/lib/types";
 import { Message } from "./message";
 import { DefaultChatTransport } from "ai";
 import { useParams } from "next/navigation";
+import { LoadingSkeleton } from "~/components/loading-skeleton";
 
 interface ChatProps {
   initialMessages?: ChatMessage[];
 }
 
 export function Chat({ initialMessages }: ChatProps) {
-  const { params, drawerDepth } = useParamsContext();
+  const { params, drawerDepth, isPending } = useParamsContext();
 
   return (
     <MapDrawer open={!!params.chatId} depth={drawerDepth.get("chatId") ?? 0}>
-      <ChatInner initialMessages={initialMessages} />
+      {isPending ? (
+        <LoadingSkeleton />
+      ) : (
+        <ChatInner initialMessages={initialMessages} />
+      )}
     </MapDrawer>
   );
 }
