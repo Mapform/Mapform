@@ -11,6 +11,7 @@ import { useEffect, useRef, useState } from "react";
 import type { ChatMessage } from "~/lib/types";
 import { Message } from "./message";
 import { DefaultChatTransport } from "ai";
+import { useParams } from "next/navigation";
 
 interface ChatProps {
   initialMessages?: ChatMessage[];
@@ -30,6 +31,7 @@ function ChatInner({ initialMessages }: ChatProps) {
   const [input, setInput] = useState("");
   const [hasInitiatedNewChat, setHasInitiatedNewChat] = useState(false);
   const chatContainerRef = useRef<HTMLDivElement>(null);
+  const { pId } = useParams();
   const { params, setQueryStates } = useParamsContext();
 
   const { messages, sendMessage, status } = useChat<ChatMessage>({
@@ -40,7 +42,9 @@ function ChatInner({ initialMessages }: ChatProps) {
       api: "/api/chat",
       // only send the last message to the server:
       prepareSendMessagesRequest({ messages, id }) {
-        return { body: { message: messages[messages.length - 1], id } };
+        return {
+          body: { message: messages[messages.length - 1], id, projectId: pId },
+        };
       },
     }),
     generateId: () => crypto.randomUUID(),

@@ -12,7 +12,11 @@ import { getInformation } from "~/lib/ai/tools/get-information";
 export const maxDuration = 30;
 
 export async function POST(req: Request) {
-  const { message, id }: { message: UIMessage; id: string } = await req.json();
+  const {
+    message,
+    id,
+    projectId,
+  }: { message: UIMessage; id: string; projectId?: string } = await req.json();
 
   const session = await getCurrentSession();
 
@@ -38,7 +42,7 @@ export async function POST(req: Request) {
     const newChat = await authClient.createChat({
       id,
       title,
-      projectId: null,
+      projectId: projectId ?? null,
     });
 
     console.log("newChat", newChat?.validationErrors);
