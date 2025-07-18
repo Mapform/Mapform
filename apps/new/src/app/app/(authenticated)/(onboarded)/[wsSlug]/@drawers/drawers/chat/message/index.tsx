@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { cn } from "@mapform/lib/classnames";
 import { Skeleton } from "@mapform/ui/components/skeleton";
 import { AutocompleteMessage } from "./autocomplete-message";
+import { Markdown } from "~/components/markdown";
 
 interface ChatMessageProps {
   message: ChatMessage;
@@ -23,14 +24,19 @@ export function Message({ message }: ChatMessageProps) {
       >
         <div
           className={cn("text-sm", {
-            "max-w-[80%] rounded-lg bg-gray-900 px-3 py-1.5 text-white": isUser,
+            "max-w-[80%] rounded-lg bg-gray-900 px-3 py-1.5": isUser,
           })}
         >
           {message.parts.map((part, index) => {
             if (part.type === "text") {
               return (
-                <div key={index} className="whitespace-pre-wrap">
-                  {part.text}
+                <div
+                  key={index}
+                  className={cn("prose-sm whitespace-pre-wrap", {
+                    "text-white": isUser,
+                  })}
+                >
+                  <Markdown>{part.text}</Markdown>
                 </div>
               );
             }
