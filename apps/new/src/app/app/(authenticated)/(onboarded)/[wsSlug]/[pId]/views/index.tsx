@@ -76,7 +76,7 @@ export function Views() {
         <Import>
           <DropdownMenu modal={false}>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon">
+              <Button className="ml-auto" variant="ghost" size="icon">
                 <EllipsisVerticalIcon className="size-4" />
               </Button>
             </DropdownMenuTrigger>
@@ -91,9 +91,9 @@ export function Views() {
             <ImportContent />
           </DropdownMenu>
         </Import>
-        <Button className="ml-auto" variant="ghost" size="icon">
+        {/* <Button className="ml-auto" variant="ghost" size="icon">
           <XIcon className="size-4" />
-        </Button>
+        </Button> */}
       </MapDrawerToolbar>
       <div className="px-6 pb-6">
         <div>
