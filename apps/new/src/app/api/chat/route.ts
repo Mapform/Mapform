@@ -12,8 +12,7 @@ import { getInformation } from "~/lib/ai/tools/get-information";
 export const maxDuration = 30;
 
 export async function POST(req: Request) {
-  const { messages, id }: { messages: UIMessage[]; id: string } =
-    await req.json();
+  const { message, id }: { message: UIMessage; id: string } = await req.json();
 
   const session = await getCurrentSession();
 
@@ -44,6 +43,15 @@ export async function POST(req: Request) {
     chat = { data: newChat.data };
   }
 
+  const previousMessages =
+    (
+      await authClient.getMessages({
+        chatId: id,
+      })
+    )?.data ?? [];
+
+  const messages = [...previousMessages, message] as UIMessage[];
+
   const result = streamText({
     model: openai("gpt-4o"),
     system: SYSTEM_PROMPT,
@@ -54,7 +62,7 @@ export async function POST(req: Request) {
     },
   });
 
-  return result.toUIMessageStreamResponse({
+  const response = result.toUIMessageStreamResponse({
     originalMessages: messages,
     onFinish: async ({ messages }) => {
       console.log("create messages", messages);
@@ -62,6 +70,10 @@ export async function POST(req: Request) {
         messages,
         chatId: id,
       });
+
+      console.log("finished");
     },
   });
+
+  return response;
 }

@@ -10,6 +10,7 @@ import { useChat } from "@ai-sdk/react";
 import { useEffect, useRef, useState } from "react";
 import type { ChatMessage } from "~/lib/types";
 import { Message } from "./message";
+import { DefaultChatTransport } from "ai";
 
 interface ChatProps {
   initialMessages?: ChatMessage[];
@@ -35,6 +36,13 @@ function ChatInner({ initialMessages }: ChatProps) {
     id: params.chatId!,
     maxSteps: 5,
     messages: initialMessages ?? [],
+    transport: new DefaultChatTransport({
+      api: "/api/chat",
+      // only send the last message to the server:
+      prepareSendMessagesRequest({ messages, id }) {
+        return { body: { message: messages[messages.length - 1], id } };
+      },
+    }),
   });
 
   const handleSubmit = () => {
@@ -55,15 +63,19 @@ function ChatInner({ initialMessages }: ChatProps) {
   }, [status]);
 
   useEffect(() => {
-    if (params.query && !hasInitiatedNewChat && params.chatId) {
+    if (
+      params.query &&
+      !hasInitiatedNewChat &&
+      params.chatId &&
+      !messages.length
+    ) {
       setHasInitiatedNewChat(true);
-      console.log("sending message", params.chatId, params.query);
       void sendMessage({
         id: params.chatId,
         parts: [{ type: "text", text: params.query }],
       });
     }
-  }, [params.query, sendMessage, hasInitiatedNewChat, params.chatId]);
+  }, [params.query, sendMessage, hasInitiatedNewChat, params.chatId, messages]);
 
   return (
     <>
