@@ -6,17 +6,20 @@ import { getWorkspaceDirectory } from "~/data/workspaces/get-workspace-directory
 import { Billing } from "./billing";
 import { getStripePrices, getStripeProducts } from "@mapform/lib/stripe";
 import { env } from "~/*";
+import { MapDrawer, MapDrawerToolbar } from "~/components/map-drawer";
+import { Button } from "@mapform/ui/components/button";
+import { XIcon } from "lucide-react";
+import { Tabs, TabsList, TabsTrigger } from "@mapform/ui/components/tabs";
 
 async function fetchRowAndPageCount(workspaceSlug: string) {
-  const response = await authClient.getRowAndPageCount({ workspaceSlug });
-  const rowCount = response?.data?.rowCount;
-  const pageCount = response?.data?.pageCount;
+  const response = await authClient.getRowCount({ workspaceSlug });
+  const rowCount = response?.data;
 
-  if (rowCount === undefined || pageCount === undefined) {
+  if (rowCount === undefined) {
     return notFound();
   }
 
-  return rowCount + pageCount;
+  return rowCount;
 }
 
 async function fetchWorkspacePlan(workspaceSlug: string) {
@@ -67,8 +70,24 @@ export default async function Settings(props: {
   }
 
   return (
-    <div className="@container overflow-y-auto p-4">
-      <div className="mx-auto max-w-screen-md gap-y-12 divide-y">
+    <MapDrawer initialOpen open>
+      <div className="p-2">
+        <Tabs className="w-full">
+          <TabsList className="w-full">
+            <TabsTrigger className="w-full" value="workspace">
+              Workspace
+            </TabsTrigger>
+            <TabsTrigger className="w-full" value="usage">
+              Usage
+            </TabsTrigger>
+            <TabsTrigger className="w-full" value="billing">
+              Billing
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
+      </div>
+      <div className="px-6 pb-6"></div>
+      {/* <div className="mx-auto max-w-screen-md gap-y-12 divide-y">
         <Billing
           plan={workspacePlan}
           proPrice={proPrice}
@@ -81,7 +100,7 @@ export default async function Settings(props: {
           storageUsed={storageUsed}
         />
         <WorkspaceSettings />
-      </div>
-    </div>
+      </div> */}
+    </MapDrawer>
   );
 }
