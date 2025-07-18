@@ -40,7 +40,7 @@ export function MapDrawer({
             damping: 30,
           }}
           style={{
-            zIndex: 100 - depth,
+            zIndex: 30 - depth,
           }}
         >
           {/* Copy content with mask when when other drawers open on top */}
