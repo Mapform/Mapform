@@ -55,7 +55,11 @@ function SearchDetailsInner({ geoapifyPlaceDetails }: SearchDetailsProps) {
         </Button>
       </MapDrawerToolbar>
       <div className="flex flex-1 flex-col gap-4 overflow-y-auto px-6 pb-6">
-        Test
+        <div className="flex flex-col gap-2">
+          <h1 className="text-2xl font-bold">
+            {geoapifyPlaceDetails.features[0]?.properties.name}
+          </h1>
+        </div>
       </div>
       <Marker longitude={longitude} latitude={latitude} />
     </>

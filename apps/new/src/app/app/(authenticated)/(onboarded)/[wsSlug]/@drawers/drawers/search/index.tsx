@@ -106,7 +106,7 @@ export function SearchInner({
             </Button>
           </div>
         </MapDrawerToolbar>
-        <CommandList className="p-2">
+        <CommandList className="max-h-full p-2">
           <CommandGroup>
             {searchQuery && (
               <CommandItem
