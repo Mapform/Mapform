@@ -1,5 +1,5 @@
 import type { GetProject } from "@mapform/backend/data/projects/get-project";
-import { getImageId } from "~/components/map/source";
+import { getImageId } from "~/lib/map/get-image-id";
 
 /**
  * This function is mostly used for drawing to the map. It (currently) omits

@@ -2,6 +2,7 @@
 
 import { cn } from "@mapform/lib/classnames";
 import { AnimatePresence, motion } from "motion/react";
+import { DRAWER_WIDTH } from "~/constants/sidebars";
 
 interface MapDrawerProps {
   // isPending: boolean;
@@ -12,14 +13,12 @@ interface MapDrawerProps {
   width?: number;
 }
 
-const DRAWER_WIDTH_DEFAULT = 360;
-
 export function MapDrawer({
   open,
   initialOpen = false,
   depth = 0,
   children,
-  width = DRAWER_WIDTH_DEFAULT,
+  width = DRAWER_WIDTH,
 }: MapDrawerProps) {
   return (
     <AnimatePresence>

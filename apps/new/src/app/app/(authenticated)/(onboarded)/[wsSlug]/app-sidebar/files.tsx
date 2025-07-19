@@ -33,6 +33,7 @@ import {
 import { deleteProjectAction } from "~/data/projects/delete-project";
 import { toast } from "@mapform/ui/components/toaster";
 import { useMap } from "react-map-gl/mapbox";
+import { useMapPadding } from "~/lib/map/use-map-padding";
 
 export function Files({
   teamspace,
@@ -42,6 +43,7 @@ export function Files({
   const map = useMap();
   const router = useRouter();
   const pathname = usePathname();
+  const padding = useMapPadding(true);
   const { workspaceSlug, workspaceDirectory, updateWorkspaceDirectory } =
     useWorkspace();
 
@@ -150,8 +152,9 @@ export function Files({
                           pathname === `/app/${workspaceSlug}/${project.id}`
                         }
                         onClick={() => {
-                          map.current?.flyTo({
+                          map.current?.easeTo({
                             center: project.center.coordinates,
+                            padding,
                             duration: 1000,
                           });
 

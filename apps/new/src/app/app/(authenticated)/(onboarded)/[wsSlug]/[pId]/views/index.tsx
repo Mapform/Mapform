@@ -8,12 +8,10 @@ import {
 } from "@mapform/ui/components/tooltip";
 import { Button } from "@mapform/ui/components/button";
 import {
-  ArrowLeftIcon,
   PlusIcon,
   SmilePlusIcon,
   TrashIcon,
   EllipsisVerticalIcon,
-  XIcon,
   ImportIcon,
 } from "lucide-react";
 import { AutoSizeTextArea } from "@mapform/ui/components/autosize-text-area";
