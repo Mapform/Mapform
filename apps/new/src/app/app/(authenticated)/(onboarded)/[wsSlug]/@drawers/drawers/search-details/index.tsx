@@ -8,6 +8,8 @@ import { Button } from "@mapform/ui/components/button";
 import { XIcon } from "lucide-react";
 import { LoadingSkeleton } from "~/components/loading-skeleton";
 import { Feature } from "~/components/feature";
+import { PropertyColumnEditor } from "~/components/properties/property-column-editor";
+import { PropertyValueEditor } from "~/components/properties/property-value-editor";
 
 interface SearchDetailsProps {
   geoapifyPlaceDetails: GetPlaceDetails["data"];

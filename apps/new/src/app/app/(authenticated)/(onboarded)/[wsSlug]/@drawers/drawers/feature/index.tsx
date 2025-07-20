@@ -11,8 +11,6 @@ import {
 } from "@mapform/ui/components/tooltip";
 import { SmilePlusIcon, XIcon } from "lucide-react";
 import { MapDrawer, MapDrawerToolbar } from "~/components/map-drawer";
-import { PropertyColumnEditor } from "~/components/properties/property-column-editor";
-import { PropertyValueEditor } from "~/components/properties/property-value-editor";
 import { useParamsContext } from "~/lib/params/client";
 import {
   type StateServiceProps,
@@ -23,6 +21,7 @@ import type { GetRow } from "@mapform/backend/data/rows/get-row";
 import type { UpdateRowSchema } from "@mapform/backend/data/rows/update-row/schema";
 import { Marker } from "react-map-gl/mapbox";
 import { LoadingSkeleton } from "~/components/loading-skeleton";
+import { Feature as FeatureComponent } from "~/components/feature";
 
 interface FeatureDrawerProps {
   feature: GetRow["data"];
@@ -104,7 +103,31 @@ const FeatureContent = ({
           <XIcon className="size-4" />
         </Button>
       </MapDrawerToolbar>
-      <div className="px-6 pb-6">
+      <FeatureComponent
+        title={featureService.optimisticState!.name ?? ""}
+        description={featureService.optimisticState!.description ?? undefined}
+        icon={featureService.optimisticState!.icon ?? undefined}
+        onTitleChange={(value) => {
+          featureService.execute({
+            id: featureService.optimisticState!.id,
+            name: value,
+          });
+        }}
+        onIconChange={(value) => {
+          featureService.execute({
+            id: featureService.optimisticState!.id,
+            icon: value,
+          });
+        }}
+        onDescriptionChange={(value) => {
+          featureService.execute({
+            id: featureService.optimisticState!.id,
+            description: value.blocks,
+            descriptionAsMarkdown: value.markdown ?? undefined,
+          });
+        }}
+      />
+      {/* <div className="px-6 pb-6">
         <Tooltip>
           <EmojiPopover
             onIconChange={(emoji) => {
@@ -146,38 +169,7 @@ const FeatureContent = ({
             });
           }}
         />
-        {/* <div className="mb-4 mt-2 flex flex-col gap-2">
-              {projectService.optimisticState.columns.map((column) => (
-                <div className="grid grid-cols-2 gap-4" key={column.id}>
-                  <PropertyColumnEditor
-                    columnId={column.id}
-                    columnName={column.name}
-                    columnType={column.type}
-                  />
-                  <PropertyValueEditor
-                    columnId={column.id}
-                    rowId={featureService.optimisticState!.id}
-                    type={column.type}
-                    value={
-                      featureService.optimisticState?.cells.find(
-                        (cell) => cell.columnId === column.id,
-                      )?.stringCell?.value ??
-                      featureService.optimisticState?.cells.find(
-                        (cell) => cell.columnId === column.id,
-                      )?.numberCell?.value ??
-                      featureService.optimisticState?.cells.find(
-                        (cell) => cell.columnId === column.id,
-                      )?.booleanCell?.value ??
-                      featureService.optimisticState?.cells.find(
-                        (cell) => cell.columnId === column.id,
-                      )?.dateCell?.value ??
-                      null
-                    }
-                    key={column.id}
-                  />
-                </div>
-              ))}
-            </div> */}
+
         <Blocknote
           editor={editor}
           onChange={({ blocks, markdown }) => {
@@ -188,7 +180,7 @@ const FeatureContent = ({
             });
           }}
         />
-      </div>
+      </div> */}
     </div>
   );
 };

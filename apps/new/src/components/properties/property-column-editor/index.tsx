@@ -37,7 +37,7 @@ import { deleteColumnAction } from "~/data/columns/delete-column";
 import { COLUMNS } from "~/constants/columns";
 
 interface PropertyColumnEditorProps {
-  columnId: string;
+  columnId?: string;
   columnName: string;
   columnType: Column["type"];
 }
@@ -67,6 +67,15 @@ export function PropertyColumnEditor({
   };
 
   usePreventPageUnload(isPendingDeleteColumn || isPendingEditColumn);
+
+  if (!columnId) {
+    return (
+      <span className="flex items-center gap-1.5">
+        <Icon className="size-4" />{" "}
+        <span className="truncate">{columnName}</span>
+      </span>
+    );
+  }
 
   return (
     <Popover

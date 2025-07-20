@@ -14,6 +14,24 @@ import {
   schema,
 } from "node_modules/@mapform/blocknote/schema";
 import { useEffect } from "react";
+import { PropertyColumnEditor } from "./properties/property-column-editor";
+import { PropertyValueEditor } from "./properties/property-value-editor";
+
+type Property =
+  | {
+      columnId: string;
+      rowId: string;
+      columnName: string;
+      columnType: Column["type"];
+      value: string | number | boolean | null;
+      type: "existing";
+    }
+  | {
+      columnType: Column["type"];
+      columnName: string;
+      value: string | number | boolean | null;
+      type: "new";
+    };
 
 interface FeatureProps {
   title: string;
@@ -23,12 +41,7 @@ interface FeatureProps {
     url: string;
     attribution: string;
   }[];
-  properties?: {
-    id?: string;
-    type: Column["type"];
-    name: string;
-    value: string | number | boolean | null;
-  }[];
+  properties?: Property[];
   onTitleChange?: (title: string) => void;
   onIconChange?: (icon: string | null) => void;
   onDescriptionChange?: (content: {
@@ -101,38 +114,36 @@ export function Feature({
       ) : (
         <h1 className="text-4xl font-bold">{title ?? "Untitled"}</h1>
       )}
-      {/* <div className="mb-4 mt-2 flex flex-col gap-2">
-              {projectService.optimisticState.columns.map((column) => (
-                <div className="grid grid-cols-2 gap-4" key={column.id}>
-                  <PropertyColumnEditor
-                    columnId={column.id}
-                    columnName={column.name}
-                    columnType={column.type}
-                  />
-                  <PropertyValueEditor
-                    columnId={column.id}
-                    rowId={featureService.optimisticState!.id}
-                    type={column.type}
-                    value={
-                      featureService.optimisticState?.cells.find(
-                        (cell) => cell.columnId === column.id,
-                      )?.stringCell?.value ??
-                      featureService.optimisticState?.cells.find(
-                        (cell) => cell.columnId === column.id,
-                      )?.numberCell?.value ??
-                      featureService.optimisticState?.cells.find(
-                        (cell) => cell.columnId === column.id,
-                      )?.booleanCell?.value ??
-                      featureService.optimisticState?.cells.find(
-                        (cell) => cell.columnId === column.id,
-                      )?.dateCell?.value ??
-                      null
-                    }
-                    key={column.id}
-                  />
-                </div>
-              ))}
-            </div> */}
+      <div className="mb-4 mt-2 flex flex-col gap-2">
+        {properties?.map((property) =>
+          property.type === "existing" ? (
+            <div className="grid grid-cols-2 gap-4" key={property.columnId}>
+              <PropertyColumnEditor
+                columnId={property.columnId}
+                columnName={property.columnName}
+                columnType={property.columnType}
+              />
+              <PropertyValueEditor
+                columnId={property.columnId}
+                rowId={property.rowId}
+                type={property.columnType}
+                value={property.value}
+              />
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-4" key={property.columnName}>
+              <PropertyColumnEditor
+                columnName={property.columnName}
+                columnType={property.columnType}
+              />
+              <PropertyValueEditor
+                type={property.columnType}
+                value={property.value}
+              />
+            </div>
+          ),
+        )}
+      </div>
       <Blocknote editor={editor} onChange={onDescriptionChange} />
     </div>
   );
