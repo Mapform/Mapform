@@ -13,7 +13,7 @@ import { schema, type CustomBlock } from "./schema";
 
 interface BlocknoteProps {
   editor: typeof schema.BlockNoteEditor;
-  onChange: (content: {
+  onChange?: (content: {
     blocks: CustomBlock[] | null;
     markdown: string | null;
   }) => void;
@@ -24,10 +24,11 @@ export function Blocknote({ onChange, editor }: BlocknoteProps) {
   return (
     <BlockNoteView
       editor={editor}
+      editable={!!onChange}
       sideMenu={false}
       className="h-full"
       onChange={async () => {
-        onChange({
+        onChange?.({
           blocks: editor.document,
           markdown: await editor.blocksToMarkdownLossy(editor.document),
         });

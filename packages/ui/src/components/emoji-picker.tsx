@@ -32,6 +32,10 @@ export function EmojiPopover({
   children: React.ReactNode;
   onIconChange?: (icon: string | null) => void;
 }) {
+  if (!onIconChange) {
+    return children;
+  }
+
   return (
     <Popover>
       <PopoverTrigger asChild>{children}</PopoverTrigger>
@@ -39,7 +43,7 @@ export function EmojiPopover({
         <Picker
           data={data}
           onEmojiSelect={(e: { native: string }) => {
-            onIconChange && onIconChange(e.native);
+            onIconChange(e.native);
           }}
           skinTonePosition="search"
           theme="light"
@@ -48,7 +52,7 @@ export function EmojiPopover({
           aria-label="Remove"
           className="absolute bottom-[19px] right-4 z-10"
           onClick={() => {
-            onIconChange && onIconChange(null);
+            onIconChange(null);
           }}
           size="icon-sm"
           variant="secondary"
