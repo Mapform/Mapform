@@ -1,15 +1,7 @@
 "use client";
 
-import { Blocknote, useCreateBlockNote, schema } from "@mapform/blocknote";
-import { AutoSizeTextArea } from "@mapform/ui/components/autosize-text-area";
 import { Button } from "@mapform/ui/components/button";
-import { EmojiPopover } from "@mapform/ui/components/emoji-picker";
-import {
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
-} from "@mapform/ui/components/tooltip";
-import { SmilePlusIcon, XIcon } from "lucide-react";
+import { XIcon } from "lucide-react";
 import { MapDrawer, MapDrawerToolbar } from "~/components/map-drawer";
 import { useParamsContext } from "~/lib/params/client";
 import {
@@ -82,11 +74,6 @@ const FeatureContent = ({
   featureService: StateServiceProps<GetRow["data"], UpdateRowSchema>;
 }) => {
   const { setQueryStates } = useParamsContext();
-  const editor = useCreateBlockNote({
-    schema,
-    animations: false,
-    initialContent: featureService.optimisticState!.description ?? undefined,
-  });
 
   return (
     <div>

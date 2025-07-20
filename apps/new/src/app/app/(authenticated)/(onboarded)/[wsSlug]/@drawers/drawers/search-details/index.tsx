@@ -40,7 +40,11 @@ function SearchDetailsInner({ geoapifyPlaceDetails }: SearchDetailsProps) {
   const longitude = geoapifyPlaceDetails.features[0]?.properties.lon;
   const latitude = geoapifyPlaceDetails.features[0]?.properties.lat;
 
-  if (!longitude || !latitude) return null;
+  const place = geoapifyPlaceDetails.features[0]?.properties;
+
+  if (!longitude || !latitude || !place) return null;
+
+  console.log(2222, place);
 
   return (
     <>
@@ -58,9 +62,34 @@ function SearchDetailsInner({ geoapifyPlaceDetails }: SearchDetailsProps) {
         </Button>
       </MapDrawerToolbar>
       <Feature
-        title={geoapifyPlaceDetails.features[0]?.properties.name ?? ""}
+        title={place.name_international?.en ?? place.name ?? ""}
         // description={geoapifyPlaceDetails.features[0]?.properties.description}
         // icon={geoapifyPlaceDetails.features[0]?.properties.icon}
+        properties={[
+          {
+            columnName: "Address",
+            columnType: "string",
+            value: place.address_line2,
+          },
+          ...(place.phone
+            ? ([
+                {
+                  columnName: "Phone",
+                  columnType: "string",
+                  value: place.phone,
+                },
+              ] as const)
+            : []),
+          ...(place.website
+            ? ([
+                {
+                  columnName: "Website",
+                  columnType: "string",
+                  value: place.website,
+                },
+              ] as const)
+            : []),
+        ]}
       />
 
       <Marker longitude={longitude} latitude={latitude} />

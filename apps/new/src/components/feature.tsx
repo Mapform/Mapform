@@ -24,13 +24,11 @@ type Property =
       columnName: string;
       columnType: Column["type"];
       value: string | number | boolean | null;
-      type: "existing";
     }
   | {
       columnType: Column["type"];
       columnName: string;
       value: string | number | boolean | null;
-      type: "new";
     };
 
 interface FeatureProps {
@@ -83,6 +81,8 @@ export function Feature({
     })();
   }, [description, editor]);
 
+  console.log(111, properties);
+
   return (
     <div className="px-6 pb-6">
       <Tooltip>
@@ -116,7 +116,7 @@ export function Feature({
       )}
       <div className="mb-4 mt-2 flex flex-col gap-2">
         {properties?.map((property) =>
-          property.type === "existing" ? (
+          "columnId" in property ? (
             <div className="grid grid-cols-2 gap-4" key={property.columnId}>
               <PropertyColumnEditor
                 columnId={property.columnId}
@@ -136,10 +136,7 @@ export function Feature({
                 columnName={property.columnName}
                 columnType={property.columnType}
               />
-              <PropertyValueEditor
-                type={property.columnType}
-                value={property.value}
-              />
+              {property.value}
             </div>
           ),
         )}

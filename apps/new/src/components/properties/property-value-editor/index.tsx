@@ -153,10 +153,6 @@ export function PropertyValueEditor({
                     checked={Boolean(field.value)}
                     name={field.name}
                     onCheckedChange={(e) => {
-                      if (!rowId || !columnId) {
-                        return;
-                      }
-
                       field.onChange(e);
                       const formVal = form.getValues();
                       executeUpsertCell(formVal);
@@ -170,10 +166,6 @@ export function PropertyValueEditor({
         </form>
       </Form>
     );
-  }
-
-  if (!rowId || !columnId) {
-    return renderCellContent();
   }
 
   return (
