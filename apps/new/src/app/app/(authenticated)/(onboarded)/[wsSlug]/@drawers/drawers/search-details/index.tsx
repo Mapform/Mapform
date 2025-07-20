@@ -7,6 +7,7 @@ import { Marker } from "react-map-gl/mapbox";
 import { Button } from "@mapform/ui/components/button";
 import { XIcon } from "lucide-react";
 import { LoadingSkeleton } from "~/components/loading-skeleton";
+import { Feature } from "~/components/feature";
 
 interface SearchDetailsProps {
   geoapifyPlaceDetails: GetPlaceDetails["data"];
@@ -54,13 +55,12 @@ function SearchDetailsInner({ geoapifyPlaceDetails }: SearchDetailsProps) {
           <XIcon className="size-4" />
         </Button>
       </MapDrawerToolbar>
-      <div className="flex flex-1 flex-col gap-4 overflow-y-auto px-6 pb-6">
-        <div className="flex flex-col gap-2">
-          <h1 className="text-2xl font-bold">
-            {geoapifyPlaceDetails.features[0]?.properties.name}
-          </h1>
-        </div>
-      </div>
+      <Feature
+        title={geoapifyPlaceDetails.features[0]?.properties.name ?? ""}
+        // description={geoapifyPlaceDetails.features[0]?.properties.description}
+        // icon={geoapifyPlaceDetails.features[0]?.properties.icon}
+      />
+
       <Marker longitude={longitude} latitude={latitude} />
     </>
   );

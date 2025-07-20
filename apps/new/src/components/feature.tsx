@@ -16,14 +16,14 @@ import {
 import { useEffect } from "react";
 
 interface FeatureProps {
-  title: string | null;
-  description: string | CustomBlock[] | null;
-  icon: string | null;
-  images: {
+  title: string;
+  description?: string | CustomBlock[];
+  icon?: string;
+  images?: {
     url: string;
     attribution: string;
   }[];
-  properties: {
+  properties?: {
     id?: string;
     type: Column["type"];
     name: string;
