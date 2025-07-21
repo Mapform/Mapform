@@ -5,7 +5,7 @@ import type { GetPlaceDetails } from "@mapform/backend/data/geoapify/details";
 import { useParamsContext } from "~/lib/params/client";
 import { Marker } from "react-map-gl/mapbox";
 import { Button } from "@mapform/ui/components/button";
-import { XIcon } from "lucide-react";
+import { PlusIcon, XIcon } from "lucide-react";
 import { LoadingSkeleton } from "~/components/loading-skeleton";
 import { Feature } from "~/components/feature";
 import { PropertyColumnEditor } from "~/components/properties/property-column-editor";
@@ -52,13 +52,21 @@ function SearchDetailsInner({ geoapifyPlaceDetails }: SearchDetailsProps) {
 
   if (!longitude || !latitude || !place) return null;
 
-  console.log(2222, place);
-
   return (
     <>
       <MapDrawerToolbar>
         <Button
           className="ml-auto"
+          size="icon-sm"
+          type="button"
+          variant="ghost"
+          onClick={() => {
+            void setQueryStates({ geoapifyPlaceId: null });
+          }}
+        >
+          <PlusIcon className="size-4" />
+        </Button>
+        <Button
           size="icon-sm"
           type="button"
           variant="ghost"

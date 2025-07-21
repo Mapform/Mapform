@@ -90,20 +90,22 @@ export function Feature({
 
   return (
     <>
-      <Carousel className="m-0">
-        <CarouselContent>
-          {images?.map((image) => (
-            <CarouselItem className="h-[200px] w-full" key={image.imageUrl}>
-              <Image
-                className="m-0 size-full"
-                src={image.imageUrl}
-                alt={image.attribution ?? ""}
-                fill
-              />
-            </CarouselItem>
-          ))}
-        </CarouselContent>
-      </Carousel>
+      {images?.length ? (
+        <Carousel className="m-0 mb-4">
+          <CarouselContent>
+            {images.map((image) => (
+              <CarouselItem className="h-[200px] w-full" key={image.imageUrl}>
+                <Image
+                  className="m-0 size-full"
+                  src={image.imageUrl}
+                  alt={image.attribution ?? ""}
+                  fill
+                />
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+        </Carousel>
+      ) : null}
       <div className="px-6 pb-6">
         <Tooltip>
           <EmojiPopover onIconChange={onIconChange}>
