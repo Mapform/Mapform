@@ -16,6 +16,12 @@ import {
 import { useEffect } from "react";
 import { PropertyColumnEditor } from "./properties/property-column-editor";
 import { PropertyValueEditor } from "./properties/property-value-editor";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+} from "@mapform/ui/components/carousel";
+import Image from "next/image";
 
 type Property =
   | {
@@ -36,8 +42,9 @@ interface FeatureProps {
   description?: string | CustomBlock[];
   icon?: string;
   images?: {
-    url: string;
-    attribution: string;
+    imageUrl: string;
+    caption?: string;
+    attribution?: string;
   }[];
   properties?: Property[];
   onTitleChange?: (title: string) => void;
@@ -81,67 +88,89 @@ export function Feature({
     })();
   }, [description, editor]);
 
-  console.log(111, properties);
-
   return (
-    <div className="px-6 pb-6">
-      <Tooltip>
-        <EmojiPopover onIconChange={onIconChange}>
-          <TooltipTrigger asChild>
-            {icon ? (
-              <button
-                className="hover:bg-muted rounded-lg text-6xl"
-                type="button"
-              >
-                {icon}
-              </button>
-            ) : onIconChange ? (
-              <Button size="icon-sm" type="button" variant="ghost">
-                <SmilePlusIcon className="size-4" />
-              </Button>
-            ) : null}
-          </TooltipTrigger>
-        </EmojiPopover>
-        <TooltipContent>Add emoji</TooltipContent>
-      </Tooltip>
-      {onTitleChange ? (
-        <AutoSizeTextArea
-          className="text-4xl font-bold"
-          placeholder="Untitled"
-          value={title ?? ""}
-          onChange={onTitleChange}
-        />
-      ) : (
-        <h1 className="text-4xl font-bold">{title ?? "Untitled"}</h1>
-      )}
-      <div className="mb-4 mt-2 flex flex-col gap-2">
-        {properties?.map((property) =>
-          "columnId" in property ? (
-            <div className="grid grid-cols-2 gap-4" key={property.columnId}>
-              <PropertyColumnEditor
-                columnId={property.columnId}
-                columnName={property.columnName}
-                columnType={property.columnType}
+    <>
+      <Carousel className="m-0">
+        <CarouselContent>
+          {images?.map((image) => (
+            <CarouselItem className="h-[200px] w-full" key={image.imageUrl}>
+              <Image
+                className="m-0 size-full"
+                src={image.imageUrl}
+                alt={image.attribution ?? ""}
+                fill
               />
-              <PropertyValueEditor
-                columnId={property.columnId}
-                rowId={property.rowId}
-                type={property.columnType}
-                value={property.value}
-              />
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 gap-4" key={property.columnName}>
-              <PropertyColumnEditor
-                columnName={property.columnName}
-                columnType={property.columnType}
-              />
-              {property.value}
-            </div>
-          ),
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+      </Carousel>
+      <div className="px-6 pb-6">
+        <Tooltip>
+          <EmojiPopover onIconChange={onIconChange}>
+            <TooltipTrigger asChild>
+              {icon ? (
+                <button
+                  className="hover:bg-muted rounded-lg text-6xl"
+                  type="button"
+                >
+                  {icon}
+                </button>
+              ) : onIconChange ? (
+                <Button size="icon-sm" type="button" variant="ghost">
+                  <SmilePlusIcon className="size-4" />
+                </Button>
+              ) : null}
+            </TooltipTrigger>
+          </EmojiPopover>
+          <TooltipContent>Add emoji</TooltipContent>
+        </Tooltip>
+        {onTitleChange ? (
+          <AutoSizeTextArea
+            className="text-4xl font-bold"
+            placeholder="Untitled"
+            value={title ?? ""}
+            onChange={onTitleChange}
+          />
+        ) : (
+          <h1 className="text-4xl font-bold">{title ?? "Untitled"}</h1>
         )}
+        <div className="mb-4 mt-2 flex flex-col gap-2">
+          {properties?.map((property) =>
+            "columnId" in property ? (
+              <div className="grid grid-cols-3 gap-4" key={property.columnId}>
+                <div className="col-span-1">
+                  <PropertyColumnEditor
+                    columnId={property.columnId}
+                    columnName={property.columnName}
+                    columnType={property.columnType}
+                  />
+                </div>
+                <div className="col-span-2">
+                  <PropertyValueEditor
+                    columnId={property.columnId}
+                    rowId={property.rowId}
+                    type={property.columnType}
+                    value={property.value}
+                  />
+                </div>
+              </div>
+            ) : (
+              <div className="grid grid-cols-3 gap-4" key={property.columnName}>
+                <div className="col-span-1">
+                  <PropertyColumnEditor
+                    columnName={property.columnName}
+                    columnType={property.columnType}
+                  />
+                </div>
+                <div className="col-span-2 text-wrap break-words">
+                  {property.value}
+                </div>
+              </div>
+            ),
+          )}
+        </div>
+        <Blocknote editor={editor} onChange={onDescriptionChange} />
       </div>
-      <Blocknote editor={editor} onChange={onDescriptionChange} />
-    </div>
+    </>
   );
 }

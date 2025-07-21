@@ -10,6 +10,7 @@ import { LoadingSkeleton } from "~/components/loading-skeleton";
 import { Feature } from "~/components/feature";
 import { PropertyColumnEditor } from "~/components/properties/property-column-editor";
 import { PropertyValueEditor } from "~/components/properties/property-value-editor";
+import { useWikidataImages } from "~/lib/wikidata-image";
 
 interface SearchDetailsProps {
   geoapifyPlaceDetails: GetPlaceDetails["data"];
@@ -34,6 +35,13 @@ export function SearchDetails({ geoapifyPlaceDetails }: SearchDetailsProps) {
 
 function SearchDetailsInner({ geoapifyPlaceDetails }: SearchDetailsProps) {
   const { params, setQueryStates } = useParamsContext();
+  const {
+    images,
+    primaryImage,
+    isLoading: imagesLoading,
+  } = useWikidataImages(
+    geoapifyPlaceDetails?.features[0]?.properties.datasource?.raw?.wikidata,
+  );
 
   if (!geoapifyPlaceDetails) return null;
 
@@ -62,6 +70,11 @@ function SearchDetailsInner({ geoapifyPlaceDetails }: SearchDetailsProps) {
         </Button>
       </MapDrawerToolbar>
       <Feature
+        images={images.map((image) => ({
+          imageUrl: image.imageUrl,
+          caption: image.attribution?.description ?? "",
+          attribution: image.attribution?.license ?? "",
+        }))}
         title={place.name_international?.en ?? place.name ?? ""}
         // description={geoapifyPlaceDetails.features[0]?.properties.description}
         // icon={geoapifyPlaceDetails.features[0]?.properties.icon}
@@ -86,6 +99,15 @@ function SearchDetailsInner({ geoapifyPlaceDetails }: SearchDetailsProps) {
                   columnName: "Website",
                   columnType: "string",
                   value: place.website,
+                },
+              ] as const)
+            : []),
+          ...(place.population
+            ? ([
+                {
+                  columnName: "Population",
+                  columnType: "number",
+                  value: place.population,
                 },
               ] as const)
             : []),
