@@ -237,7 +237,8 @@ export function AppSidebar() {
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>
-          <SidebarMenuItem>
+          {/* TODO: Add guides back in when it makes sense */}
+          {/* <SidebarMenuItem>
             <DropdownMenu modal={false}>
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton>
@@ -275,7 +276,7 @@ export function AppSidebar() {
             >
               <ProjectTourContent />
             </ProjectTour>
-          </SidebarMenuItem>
+          </SidebarMenuItem> */}
           <SidebarMenuItem>
             <Link href="mailto:support@mapform.co">
               <SidebarMenuButton>
