@@ -36,10 +36,10 @@ export function Search({
   vectorSearchResults,
   previousChats,
 }: SearchProps) {
-  const { params, drawerDepth } = useParamsContext();
+  const { drawerDepth } = useParamsContext();
 
   return (
-    <MapDrawer open={!!params.search} depth={drawerDepth.get("search") ?? 0}>
+    <MapDrawer depth={drawerDepth.get("search") ?? 0}>
       <SearchInner
         geoapifySearchResults={geoapifySearchResults}
         vectorSearchResults={vectorSearchResults}

@@ -5,24 +5,19 @@ import { cn } from "@mapform/lib/classnames";
 import { DRAWER_WIDTH } from "~/constants/sidebars";
 
 interface MapDrawerProps {
-  // isPending: boolean;
-  open: boolean;
-  initialOpen?: boolean;
   depth?: number;
   children: React.ReactNode;
   width?: number;
 }
 
 export function MapDrawer({
-  open,
-  initialOpen = false,
   depth = 0,
   children,
   width = DRAWER_WIDTH,
 }: MapDrawerProps) {
-  if (!open) {
-    return null;
-  }
+  // if (!open) {
+  //   return null;
+  // }
 
   return (
     // <AnimatePresence>
@@ -49,11 +44,13 @@ export function MapDrawer({
     <ViewTransition enter="slide-forward" exit="slide-back">
       <div
         className={cn(
-          "absolute bottom-2 top-2 flex !select-text outline-none",
-          depth > 0 && "z-10",
+          "absolute bottom-2 top-2 flex !select-text outline-none transition-transform",
         )}
         style={{
           width,
+          zIndex: 30 - depth,
+          scale: 1 - depth * 0.012,
+          transform: `translateX(${16 * depth}px)`,
         }}
       >
         <div

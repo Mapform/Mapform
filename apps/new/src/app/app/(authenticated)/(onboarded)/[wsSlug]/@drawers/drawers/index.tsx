@@ -73,6 +73,8 @@ async function SearchDrawer({ searchParams, params }: DealDrawerProps) {
       authClient.listChats({ projectId: pId }),
     ]);
 
+  if (!search) return null;
+
   return (
     <Search
       geoapifySearchResults={geoapifySearchResults?.data}
@@ -91,6 +93,8 @@ async function ChatDrawer({ searchParams }: DealDrawerProps) {
       })
     : null;
 
+  if (!chatId) return null;
+
   return <Chat initialMessages={messages?.data as ChatMessage[]} />;
 }
 
@@ -108,6 +112,8 @@ async function SearchDetailsDrawer({ searchParams }: DealDrawerProps) {
 
   const geoapifyPlaceDetails = await getGeoapifyPlaceDetails(geoapifyPlaceId);
 
+  if (!geoapifyPlaceId) return null;
+
   return <SearchDetails geoapifyPlaceDetails={geoapifyPlaceDetails?.data} />;
 }
 
@@ -117,6 +123,8 @@ async function FeatureDrawer({ searchParams }: DealDrawerProps) {
   const [row] = await Promise.all([
     rowId ? authClient.getRow({ rowId }) : null,
   ]);
+
+  if (!rowId) return null;
 
   return <Feature feature={row?.data} />;
 }
