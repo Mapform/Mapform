@@ -1,7 +1,7 @@
 "use client";
 
+import { unstable_ViewTransition as ViewTransition } from "react";
 import { cn } from "@mapform/lib/classnames";
-import { AnimatePresence, motion } from "motion/react";
 import { DRAWER_WIDTH } from "~/constants/sidebars";
 
 interface MapDrawerProps {
@@ -20,43 +20,58 @@ export function MapDrawer({
   children,
   width = DRAWER_WIDTH,
 }: MapDrawerProps) {
+  if (!open) {
+    return null;
+  }
+
   return (
-    <AnimatePresence>
-      {open && (
-        <motion.div
-          className="absolute bottom-2 top-2 flex !select-text outline-none"
-          initial={initialOpen ? false : { x: -width, width, opacity: 0 }}
-          animate={{
-            x: 16 * depth,
-            width,
-            scale: 1 - depth * 0.012,
-            opacity: 1,
-          }}
-          exit={{ x: -width, width, opacity: 0 }}
-          transition={{
-            type: "spring",
-            stiffness: 300,
-            damping: 30,
-          }}
+    // <AnimatePresence>
+    //   {open && (
+    //     <motion.div
+    //       className="absolute bottom-2 top-2 flex !select-text outline-none"
+    //       initial={initialOpen ? false : { x: -width, width, opacity: 0 }}
+    //       animate={{
+    //         x: 16 * depth,
+    //         width,
+    //         scale: 1 - depth * 0.012,
+    //         opacity: 1,
+    //       }}
+    //       exit={{ x: -width, width, opacity: 0 }}
+    //       transition={{
+    //         type: "spring",
+    //         stiffness: 300,
+    //         damping: 30,
+    //       }}
+    //       style={{
+    //         zIndex: 30 - depth,
+    //       }}
+    //     >
+    <ViewTransition enter="slide-forward" exit="slide-back">
+      <div
+        className={cn(
+          "absolute bottom-2 top-2 flex !select-text outline-none",
+          depth > 0 && "z-10",
+        )}
+        style={{
+          width,
+        }}
+      >
+        <div
+          className={cn(
+            "pointer-events-none absolute inset-0 z-50 rounded-lg bg-gray-950 transition-opacity duration-200",
+          )}
           style={{
-            zIndex: 30 - depth,
+            opacity: depth ? 0.4 + depth * 0.15 : 0,
           }}
-        >
-          {/* Copy content with mask when when other drawers open on top */}
-          <div
-            className={cn(
-              "pointer-events-none absolute inset-0 z-50 rounded-lg bg-gray-950 transition-opacity duration-200",
-            )}
-            style={{
-              opacity: depth ? 0.4 + depth * 0.15 : 0,
-            }}
-          />
-          <div className="bg-opacity-96 flex h-full w-full grow flex-col overflow-y-auto rounded-lg border bg-white backdrop-blur-sm">
-            {children}
-          </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+        />
+        <div className="bg-opacity-96 flex h-full w-full grow flex-col overflow-y-auto rounded-lg border bg-white backdrop-blur-sm">
+          {children}
+        </div>
+      </div>
+    </ViewTransition>
+    //     </motion.div>
+    //   )}
+    // </AnimatePresence>
   );
 }
 
