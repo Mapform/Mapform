@@ -8,17 +8,17 @@ interface MapDrawerProps {
   depth?: number;
   children: React.ReactNode;
   width?: number;
+  animateIn?: boolean;
+  animateOut?: boolean;
 }
 
 export function MapDrawer({
   depth = 0,
   children,
   width = DRAWER_WIDTH,
+  animateIn = true,
+  animateOut = true,
 }: MapDrawerProps) {
-  // if (!open) {
-  //   return null;
-  // }
-
   return (
     // <AnimatePresence>
     //   {open && (
@@ -41,7 +41,10 @@ export function MapDrawer({
     //         zIndex: 30 - depth,
     //       }}
     //     >
-    <ViewTransition enter="slide-forward" exit="slide-back">
+    <ViewTransition
+      enter={animateIn ? "slide-forward" : "none"}
+      exit={animateOut ? "slide-back" : "none"}
+    >
       <div
         className={cn(
           "absolute bottom-2 top-2 flex !select-text outline-none transition-transform",

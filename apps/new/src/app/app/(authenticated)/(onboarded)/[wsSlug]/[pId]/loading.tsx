@@ -4,5 +4,9 @@ import { LoadingSkeleton } from "~/components/loading-skeleton";
 import { MapDrawer } from "~/components/map-drawer";
 
 export default function Loading() {
-  return null;
+  return (
+    <MapDrawer animateOut={false}>
+      <LoadingSkeleton />
+    </MapDrawer>
+  );
 }

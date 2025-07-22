@@ -64,10 +64,8 @@ export function Views() {
 
   return (
     <MapDrawer
-      initialOpen
-      open
-      // TODO: Need to calculate remaining width of the screen and pass in
       width={activeView?.type === "table" ? 800 : undefined}
+      animateIn={false}
       depth={drawerDepth.size}
     >
       <MapDrawerToolbar>
