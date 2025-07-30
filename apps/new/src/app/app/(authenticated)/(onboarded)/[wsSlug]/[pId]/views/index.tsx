@@ -13,6 +13,7 @@ import {
   TrashIcon,
   EllipsisVerticalIcon,
   ImportIcon,
+  ImagePlusIcon,
 } from "lucide-react";
 import { AutoSizeTextArea } from "@mapform/ui/components/autosize-text-area";
 import { useProject } from "../context";
@@ -120,6 +121,14 @@ export function Views() {
               </TooltipTrigger>
             </EmojiPopover>
             <TooltipContent>Add emoji</TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="ghost" size="icon-sm">
+                <ImagePlusIcon className="size-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Add cover photo</TooltipContent>
           </Tooltip>
         </div>
         <AutoSizeTextArea
