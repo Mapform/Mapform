@@ -6,7 +6,6 @@ import {
   pgEnum,
   integer,
   customType,
-  jsonb,
 } from "drizzle-orm/pg-core";
 import { teamspaces } from "../teamspaces/schema";
 
@@ -20,21 +19,11 @@ const pointGeometry = customType<{
   },
 });
 
-// Type for cover photo with TASL metadata
-export type CoverPhoto = {
-  url: string;
-  title?: string;
-  author?: string;
-  source?: string;
-  license?: string;
-};
-
 export const projects = pgTable("project", {
   id: uuid("id").primaryKey().defaultRandom(),
   name: varchar("name", { length: 256 }),
   description: varchar("description", { length: 512 }),
   icon: varchar("icon", { length: 256 }),
-  coverPhotos: jsonb("cover_photos").$type<CoverPhoto[]>(),
   position: integer("position").notNull(),
 
   center: pointGeometry("center").notNull(),

@@ -8,6 +8,9 @@ import {
 
 export const blobs = pgTable("blob", {
   id: uuid("id").primaryKey().defaultRandom(),
+  // Note: We do not cascade delete blobs when a workspace is deleted. This is
+  // because blob deletion is handled via cron job, and involves deleting the
+  // Vercel blob and db record.
   workspaceId: uuid("workspace_id").notNull(),
   url: varchar("url", { length: 2048 }).unique().notNull(),
   // Size in bytes

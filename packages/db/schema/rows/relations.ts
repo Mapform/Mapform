@@ -3,6 +3,7 @@ import { rows } from "./schema";
 import { projects } from "../projects/schema";
 import { cells } from "../cells/schema";
 import { embeddings } from "../embeddings/schema";
+import { coverPhotos } from "../cover-photos/schema";
 
 export const rowsRelations = relations(rows, ({ one, many }) => ({
   project: one(projects, {
@@ -11,4 +12,5 @@ export const rowsRelations = relations(rows, ({ one, many }) => ({
   }),
   cells: many(cells),
   embeddings: many(embeddings),
+  coverPhotos: many(coverPhotos),
 }));
