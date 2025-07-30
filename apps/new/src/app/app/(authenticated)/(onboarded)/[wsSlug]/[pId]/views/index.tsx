@@ -45,6 +45,17 @@ import {
 import { toast } from "@mapform/ui/components/toaster";
 import { deleteViewAction } from "~/data/views/delete-view";
 import { useParamsContext } from "~/lib/params/client";
+import {
+  ImageUploaderPopover,
+  ImageUploaderTrigger,
+  ImageUploaderContent,
+} from "~/components/image-uploder";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+} from "@mapform/ui/components/carousel";
+import Image from "next/image";
 
 export function Views() {
   const { projectService, activeView } = useProject();
@@ -94,6 +105,26 @@ export function Views() {
           <XIcon className="size-4" />
         </Button> */}
       </MapDrawerToolbar>
+      {projectService.optimisticState.coverPhotos?.length ? (
+        <Carousel className="m-0 mb-4">
+          <CarouselContent className="m-0">
+            {projectService.optimisticState.coverPhotos.map((image) => (
+              <CarouselItem
+                className="relative h-[200px] w-full flex-shrink-0 p-0"
+                key={image.url}
+              >
+                <Image
+                  className="m-0 size-full"
+                  src={image.url}
+                  alt={image.title ?? ""}
+                  fill
+                  objectFit="cover"
+                />
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+        </Carousel>
+      ) : null}
       <div className="px-6 pb-6">
         <div>
           <Tooltip>
@@ -123,12 +154,16 @@ export function Views() {
             <TooltipContent>Add emoji</TooltipContent>
           </Tooltip>
           <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon-sm">
-                <ImagePlusIcon className="size-4" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Add cover photo</TooltipContent>
+            <ImageUploaderPopover>
+              <ImageUploaderTrigger asChild>
+                <TooltipTrigger asChild>
+                  <Button variant="ghost" size="icon-sm">
+                    <ImagePlusIcon className="size-4" />
+                  </Button>
+                </TooltipTrigger>
+              </ImageUploaderTrigger>
+              <ImageUploaderContent />
+            </ImageUploaderPopover>
           </Tooltip>
         </div>
         <AutoSizeTextArea

@@ -12,6 +12,7 @@ const ACCEPTED_IMAGE_TYPES = [
 
 export const uploadImageSchema = zfd.formData({
   workspaceId: zfd.text(),
+  projectId: zfd.text().optional(),
   image: zfd.file().superRefine((file, ctx) => {
     console.log("Image size: ", file.size);
     if (file.size > MAX_FILE_SIZE) {
