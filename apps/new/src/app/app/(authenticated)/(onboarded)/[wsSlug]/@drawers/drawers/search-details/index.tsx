@@ -35,11 +35,7 @@ export function SearchDetails({ geoapifyPlaceDetails }: SearchDetailsProps) {
 
 function SearchDetailsInner({ geoapifyPlaceDetails }: SearchDetailsProps) {
   const { params, setQueryStates } = useParamsContext();
-  const {
-    images,
-    primaryImage,
-    isLoading: imagesLoading,
-  } = useWikidataImages(
+  const wikiData = useWikidataImages(
     geoapifyPlaceDetails?.features[0]?.properties.datasource?.raw?.wikidata,
   );
 
@@ -78,11 +74,7 @@ function SearchDetailsInner({ geoapifyPlaceDetails }: SearchDetailsProps) {
         </Button>
       </MapDrawerToolbar>
       <Feature
-        images={images.map((image) => ({
-          imageUrl: image.imageUrl,
-          caption: image.attribution?.description ?? "",
-          attribution: image.attribution?.license ?? "",
-        }))}
+        wikiData={wikiData}
         title={place.name_international?.en ?? place.name ?? ""}
         // description={geoapifyPlaceDetails.features[0]?.properties.description}
         // icon={geoapifyPlaceDetails.features[0]?.properties.icon}

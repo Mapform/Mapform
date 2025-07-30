@@ -22,6 +22,8 @@ import {
   CarouselItem,
 } from "@mapform/ui/components/carousel";
 import Image from "next/image";
+import { WikidataImageItem } from "~/lib/wikidata-image";
+import { Skeleton } from "@mapform/ui/components/skeleton";
 
 type Property =
   | {
@@ -41,11 +43,12 @@ interface FeatureProps {
   title: string;
   description?: string | CustomBlock[];
   icon?: string;
-  images?: {
-    imageUrl: string;
-    caption?: string;
-    attribution?: string;
-  }[];
+  wikiData?: {
+    images: WikidataImageItem[];
+    primaryImage: WikidataImageItem | null;
+    isLoading: boolean;
+    error: string | null;
+  };
   properties?: Property[];
   onTitleChange?: (title: string) => void;
   onIconChange?: (icon: string | null) => void;
@@ -59,7 +62,7 @@ export function Feature({
   title,
   description,
   icon,
-  images,
+  wikiData,
   properties,
   onTitleChange,
   onIconChange,
@@ -71,6 +74,8 @@ export function Feature({
     initialContent:
       typeof description === "string" ? [] : (description as CustomBlock[]),
   });
+
+  const images = wikiData?.images;
 
   // As per https://www.blocknotejs.org/docs/editor-api/converting-blocks#parsing-markdown-to-blocks
   useEffect(() => {
@@ -90,16 +95,23 @@ export function Feature({
 
   return (
     <>
+      {wikiData?.isLoading ? (
+        <Skeleton className="mb-4 h-[200px] w-full" />
+      ) : null}
       {images?.length ? (
         <Carousel className="m-0 mb-4">
-          <CarouselContent>
+          <CarouselContent className="m-0">
             {images.map((image) => (
-              <CarouselItem className="h-[200px] w-full" key={image.imageUrl}>
+              <CarouselItem
+                className="relative h-[200px] w-full flex-shrink-0 p-0"
+                key={image.imageUrl}
+              >
                 <Image
                   className="m-0 size-full"
                   src={image.imageUrl}
-                  alt={image.attribution ?? ""}
+                  alt={image.attribution?.description ?? ""}
                   fill
+                  objectFit="cover"
                 />
               </CarouselItem>
             ))}
