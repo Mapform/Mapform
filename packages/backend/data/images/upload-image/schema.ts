@@ -10,25 +10,31 @@ const ACCEPTED_IMAGE_TYPES = [
   "image/gif",
 ];
 
-export const uploadImageSchema = zfd.formData({
-  workspaceId: zfd.text(),
-  projectId: zfd.text().optional(),
-  image: zfd.file().superRefine((file, ctx) => {
-    console.log("Image size: ", file.size);
-    if (file.size > MAX_FILE_SIZE) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "File size must be less than 2MB.",
-      });
-    }
+export const uploadImageSchema = zfd
+  .formData({
+    workspaceId: zfd.text(),
+    projectId: zfd.text().optional(),
+    rowId: zfd.text().optional(),
+    image: zfd.file().superRefine((file, ctx) => {
+      console.log("Image size: ", file.size);
+      if (file.size > MAX_FILE_SIZE) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "File size must be less than 2MB.",
+        });
+      }
 
-    if (!ACCEPTED_IMAGE_TYPES.includes(file.type)) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "Only .jpg, .jpeg, .png and .webp formats are supported.",
-      });
-    }
-  }),
-});
+      if (!ACCEPTED_IMAGE_TYPES.includes(file.type)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Only .jpg, .jpeg, .png and .webp formats are supported.",
+        });
+      }
+    }),
+  })
+  .refine((data) => data.projectId && data.rowId, {
+    message: "Cannot provide both projectId and rowId",
+    path: ["projectId", "rowId"],
+  });
 
 export type UploadImageSchema = z.infer<typeof uploadImageSchema>;

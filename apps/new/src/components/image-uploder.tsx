@@ -60,6 +60,7 @@ export function ImageUploaderContent() {
     const formData = new FormData();
     formData.append("workspaceId", workspaceDirectory.id);
     formData.append("image", file);
+    formData.append("projectId", "5b0e285f-93d4-48e7-968e-4955b754c825");
 
     execute(formData);
   };

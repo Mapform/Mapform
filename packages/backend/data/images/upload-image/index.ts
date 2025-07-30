@@ -4,7 +4,7 @@ import { db } from "@mapform/db";
 import type { UserAuthClient } from "../../../lib/types";
 import { uploadImageSchema } from "./schema";
 import { put } from "@vercel/blob";
-import { blobs, workspaces } from "@mapform/db/schema";
+import { blobs, coverPhotos, workspaces } from "@mapform/db/schema";
 import { eq } from "@mapform/db/utils";
 import { ServerError } from "../../../lib/server-error";
 import { getStorageUsage } from "../../usage/get-storage-usage";
@@ -13,7 +13,12 @@ export const uploadImage = (authClient: UserAuthClient) =>
   authClient
     .schema(uploadImageSchema)
     .action(
-      async ({ parsedInput: { image, workspaceId }, ctx: { userAccess } }) => {
+      async ({
+        parsedInput: { image, workspaceId, projectId, rowId },
+        ctx: { userAccess },
+      }) => {
+        console.log("uploadImage", { image, workspaceId, projectId, rowId });
+
         if (!userAccess.workspace.checkAccessById(workspaceId)) {
           throw new Error("Unauthorized");
         }
@@ -53,11 +58,34 @@ export const uploadImage = (authClient: UserAuthClient) =>
             addRandomSuffix: true,
           });
 
-          await tx.insert(blobs).values({
-            size: image.size,
-            url: putResponse.url,
-            workspaceId,
-          });
+          const [blob] = await tx
+            .insert(blobs)
+            .values({
+              size: image.size,
+              url: putResponse.url,
+              workspaceId,
+            })
+            .returning();
+
+          if (!blob) {
+            throw new Error("Failed to upload image");
+          }
+
+          if (projectId) {
+            await tx.insert(coverPhotos).values({
+              blobId: blob.id,
+              projectId,
+              position: 0,
+            });
+          }
+
+          if (rowId) {
+            await tx.insert(coverPhotos).values({
+              blobId: blob.id,
+              rowId,
+              position: 0,
+            });
+          }
 
           return putResponse;
         });

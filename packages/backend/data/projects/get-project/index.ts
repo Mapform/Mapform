@@ -40,6 +40,11 @@ export const getProject = (authClient: UserAuthClient) =>
               },
             },
             columns: true,
+            coverPhotos: {
+              with: {
+                blob: true,
+              },
+            },
           },
           extras: {
             center:
@@ -62,7 +67,6 @@ export const getProject = (authClient: UserAuthClient) =>
             icon: true,
             name: true,
             geometry: true,
-            coverPhotos: true,
           },
           extras: {
             geometry: sql<Geometry>`ST_AsGeoJSON(${rows.geometry})::jsonb`.as(

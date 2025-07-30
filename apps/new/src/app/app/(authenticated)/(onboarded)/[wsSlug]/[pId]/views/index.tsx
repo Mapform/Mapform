@@ -105,18 +105,18 @@ export function Views() {
           <XIcon className="size-4" />
         </Button> */}
       </MapDrawerToolbar>
-      {projectService.optimisticState.coverPhotos?.length ? (
+      {projectService.optimisticState.coverPhotos.length ? (
         <Carousel className="m-0 mb-4">
           <CarouselContent className="m-0">
-            {projectService.optimisticState.coverPhotos.map((image) => (
+            {projectService.optimisticState.coverPhotos.map((coverPhoto) => (
               <CarouselItem
                 className="relative h-[200px] w-full flex-shrink-0 p-0"
-                key={image.url}
+                key={coverPhoto.blob.url}
               >
                 <Image
                   className="m-0 size-full"
-                  src={image.url}
-                  alt={image.title ?? ""}
+                  src={coverPhoto.blob.url}
+                  alt={coverPhoto.title ?? ""}
                   fill
                   objectFit="cover"
                 />
