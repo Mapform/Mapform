@@ -1,7 +1,7 @@
 "server-only";
 
 import { db, sql } from "@mapform/db";
-import { projects, workspaces } from "@mapform/db/schema";
+import { projects, workspaces, views } from "@mapform/db/schema";
 import { eq } from "@mapform/db/utils";
 import { getWorkspaceDirectorySchema } from "./schema";
 import type { Point } from "geojson";
@@ -45,6 +45,15 @@ export const getWorkspaceDirectory = (authClient: UserAuthClient) =>
                     ),
                 },
                 orderBy: (projects, { asc }) => [asc(projects.position)],
+                with: {
+                  views: {
+                    columns: {
+                      id: true,
+                    },
+                    orderBy: (views, { asc }) => [asc(views.position)],
+                    limit: 1,
+                  },
+                },
               },
             },
           },

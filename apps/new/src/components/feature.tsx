@@ -43,9 +43,8 @@ interface FeatureProps {
   title: string;
   description?: string | CustomBlock[];
   icon?: string;
-  wikiData?: {
+  imageData?: {
     images: WikidataImageItem[];
-    primaryImage: WikidataImageItem | null;
     isLoading: boolean;
     error: string | null;
   };
@@ -62,7 +61,7 @@ export function Feature({
   title,
   description,
   icon,
-  wikiData,
+  imageData,
   properties,
   onTitleChange,
   onIconChange,
@@ -75,7 +74,7 @@ export function Feature({
       typeof description === "string" ? [] : (description as CustomBlock[]),
   });
 
-  const images = wikiData?.images;
+  const images = imageData?.images;
 
   // As per https://www.blocknotejs.org/docs/editor-api/converting-blocks#parsing-markdown-to-blocks
   useEffect(() => {
@@ -95,7 +94,7 @@ export function Feature({
 
   return (
     <>
-      {wikiData?.isLoading ? (
+      {imageData?.isLoading ? (
         <Skeleton className="mb-4 h-[200px] w-full" />
       ) : null}
       {images?.length ? (

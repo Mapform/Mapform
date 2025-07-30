@@ -158,7 +158,9 @@ export function Files({
                             duration: 1000,
                           });
 
-                          router.push(`/app/${workspaceSlug}/${project.id}`);
+                          router.push(
+                            `/app/${workspaceSlug}/${project.id}?v=${project.views[0]!.id}`,
+                          );
                         }}
                       >
                         <div>

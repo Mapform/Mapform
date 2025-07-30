@@ -74,7 +74,7 @@ function SearchDetailsInner({ geoapifyPlaceDetails }: SearchDetailsProps) {
         </Button>
       </MapDrawerToolbar>
       <Feature
-        wikiData={wikiData}
+        imageData={wikiData}
         title={place.name_international?.en ?? place.name ?? ""}
         // description={geoapifyPlaceDetails.features[0]?.properties.description}
         // icon={geoapifyPlaceDetails.features[0]?.properties.icon}

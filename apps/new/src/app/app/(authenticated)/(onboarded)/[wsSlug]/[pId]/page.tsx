@@ -34,6 +34,10 @@ export default async function ViewPage(props: {
     return notFound();
   }
 
+  if (!activeView) {
+    return notFound();
+  }
+
   return (
     <ProjectProvider project={project.data} activeView={activeView}>
       <Views />
