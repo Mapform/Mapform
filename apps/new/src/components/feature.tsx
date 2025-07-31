@@ -22,7 +22,7 @@ import {
   CarouselItem,
 } from "@mapform/ui/components/carousel";
 import Image from "next/image";
-import { WikidataImageItem } from "~/lib/wikidata-image";
+import type { WikidataImageItem } from "~/lib/wikidata-image";
 import { Skeleton } from "@mapform/ui/components/skeleton";
 
 type Property =

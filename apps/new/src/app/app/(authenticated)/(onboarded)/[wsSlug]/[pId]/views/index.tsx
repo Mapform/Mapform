@@ -153,20 +153,23 @@ export function Views() {
             </EmojiPopover>
             <TooltipContent>Add emoji</TooltipContent>
           </Tooltip>
-          <Tooltip>
-            <ImageUploaderPopover>
-              <ImageUploaderTrigger asChild>
-                <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon-sm">
-                    <ImagePlusIcon className="size-4" />
-                  </Button>
-                </TooltipTrigger>
-              </ImageUploaderTrigger>
-              <ImageUploaderContent
-                projectId={projectService.optimisticState.id}
-              />
-            </ImageUploaderPopover>
-          </Tooltip>
+          {!projectService.optimisticState.blobs.length ? (
+            <Tooltip>
+              <ImageUploaderPopover>
+                <ImageUploaderTrigger asChild>
+                  <TooltipTrigger asChild>
+                    <Button variant="ghost" size="icon-sm">
+                      <ImagePlusIcon className="size-4" />
+                    </Button>
+                  </TooltipTrigger>
+                </ImageUploaderTrigger>
+                <ImageUploaderContent
+                  projectId={projectService.optimisticState.id}
+                />
+              </ImageUploaderPopover>
+              <TooltipContent>Add cover photo</TooltipContent>
+            </Tooltip>
+          ) : null}
         </div>
         <AutoSizeTextArea
           className="text-4xl font-bold"
