@@ -9,15 +9,10 @@ import { useAction } from "next-safe-action/hooks";
 import { useWorkspace } from "~/app/app/(authenticated)/(onboarded)/[wsSlug]/workspace-context";
 import { toast } from "@mapform/ui/components/toaster";
 import { cn } from "@mapform/lib/classnames";
-
-const MAX_FILE_SIZE = 2000000; // 2MB
-const ACCEPTED_IMAGE_TYPES = [
-  "image/jpeg",
-  "image/jpg",
-  "image/png",
-  "image/webp",
-  "image/gif",
-];
+import {
+  MAX_FILE_SIZE,
+  ACCEPTED_IMAGE_TYPES,
+} from "@mapform/backend/data/images/upload-image/schema";
 
 interface ImageUploaderContentProps {
   projectId?: string;
@@ -60,37 +55,41 @@ export function ImageUploaderContent({
     return null;
   };
 
-  const handleUpload = async (file: File) => {
-    if (!workspaceDirectory) return;
-
-    execute({
-      workspaceId: workspaceDirectory.id,
-      image: file,
-      projectId,
-      rowId,
-    });
-  };
-
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    if (acceptedFiles.length === 0) return;
-
-    const file = acceptedFiles[0];
-    if (!file) return;
-
-    // Validate file first
-    const validationError = validateFile(file);
-    if (validationError) {
-      toast({
-        title: "Invalid file",
-        description: validationError,
-        variant: "destructive",
+  const handleUpload = useCallback(
+    (file: File) => {
+      execute({
+        workspaceId: workspaceDirectory.id,
+        image: file,
+        projectId,
+        rowId,
       });
-      return;
-    }
+    },
+    [execute, workspaceDirectory.id, projectId, rowId],
+  );
 
-    // Upload immediately
-    handleUpload(file);
-  }, []);
+  const onDrop = useCallback(
+    (acceptedFiles: File[]) => {
+      if (acceptedFiles.length === 0) return;
+
+      const file = acceptedFiles[0];
+      if (!file) return;
+
+      // Validate file first
+      const validationError = validateFile(file);
+      if (validationError) {
+        toast({
+          title: "Invalid file",
+          description: validationError,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Upload immediately
+      handleUpload(file);
+    },
+    [handleUpload],
+  );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,

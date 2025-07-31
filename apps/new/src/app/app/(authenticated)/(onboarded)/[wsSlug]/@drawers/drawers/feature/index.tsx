@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@mapform/ui/components/button";
-import { XIcon } from "lucide-react";
+import { EllipsisVerticalIcon, XIcon } from "lucide-react";
 import { MapDrawer, MapDrawerToolbar } from "~/components/map-drawer";
 import { useParamsContext } from "~/lib/params/client";
 import {
@@ -80,6 +80,13 @@ const FeatureContent = ({
       <MapDrawerToolbar>
         <Button
           className="ml-auto"
+          size="icon-sm"
+          type="button"
+          variant="ghost"
+        >
+          <EllipsisVerticalIcon className="size-4" />
+        </Button>
+        <Button
           size="icon-sm"
           type="button"
           variant="ghost"
