@@ -40,6 +40,9 @@ export const rows = pgTable("row", {
   color: varchar("color", { length: 7 }).$type<`#${string}`>(),
   geometry: geometry("geometry"),
 
+  // Optional geoapify place id. Used when storing places from geoapify.
+  geoapifyPlaceId: varchar("geoapify_place_id", { length: 256 }),
+
   projectId: uuid("project_id")
     .notNull()
     .references(() => projects.id, { onDelete: "cascade" }),

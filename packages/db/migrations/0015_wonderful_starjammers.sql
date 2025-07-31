@@ -1,0 +1,1 @@
+ALTER TABLE "row" ADD COLUMN "geoapify_place_id" varchar(256);

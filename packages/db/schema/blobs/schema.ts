@@ -24,6 +24,7 @@ export const blobs = pgTable(
     // Used for row cover photos
     rowId: uuid("row_id").references(() => rows.id),
 
+    // Optional attribution fields, mostly used when storing photos from wikidata
     title: varchar("title", { length: 512 }),
     author: varchar("author", { length: 256 }),
     // source: varchar("source", { length: 512 }),
