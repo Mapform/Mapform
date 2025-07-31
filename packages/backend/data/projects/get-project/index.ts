@@ -40,11 +40,7 @@ export const getProject = (authClient: UserAuthClient) =>
               },
             },
             columns: true,
-            coverPhotos: {
-              with: {
-                blob: true,
-              },
-            },
+            blobs: true,
           },
           extras: {
             center:
