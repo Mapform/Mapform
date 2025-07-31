@@ -40,7 +40,6 @@ export const uploadImageSchema = z
     title: insertBlobSchema.shape.title,
     author: insertBlobSchema.shape.author,
     license: insertBlobSchema.shape.license,
-    order: insertBlobSchema.shape.order,
     image: fileSchema,
   })
   .refine(

@@ -22,7 +22,6 @@ export const uploadImage = (authClient: UserAuthClient) =>
           title,
           author,
           license,
-          order,
         },
         ctx: { userAccess },
       }) => {
@@ -38,6 +37,8 @@ export const uploadImage = (authClient: UserAuthClient) =>
           },
         });
 
+        let blobCount = 0;
+
         if (projectId) {
           const project = await db.query.projects.findFirst({
             where: eq(projects.id, projectId),
@@ -51,6 +52,7 @@ export const uploadImage = (authClient: UserAuthClient) =>
                   },
                 },
               },
+              blobs: true,
             },
           });
 
@@ -61,6 +63,8 @@ export const uploadImage = (authClient: UserAuthClient) =>
           if (project.teamspace.workspace.id !== workspaceId) {
             throw new Error("Project does not belong to this workspace");
           }
+
+          blobCount = project.blobs.length + 1;
         }
 
         if (rowId) {
@@ -80,6 +84,7 @@ export const uploadImage = (authClient: UserAuthClient) =>
                   },
                 },
               },
+              blobs: true,
             },
           });
 
@@ -90,6 +95,8 @@ export const uploadImage = (authClient: UserAuthClient) =>
           if (row.project.teamspace.workspace.id !== workspaceId) {
             throw new Error("Row does not belong to this workspace");
           }
+
+          blobCount = row.blobs.length + 1;
         }
 
         if (!workspace || !workspace.plan) {
@@ -130,7 +137,7 @@ export const uploadImage = (authClient: UserAuthClient) =>
               title,
               author,
               license,
-              order,
+              order: blobCount + 1,
             })
             .returning();
 

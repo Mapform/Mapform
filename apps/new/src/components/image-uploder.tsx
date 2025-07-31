@@ -22,6 +22,7 @@ const ACCEPTED_IMAGE_TYPES = [
 interface ImageUploaderContentProps {
   projectId?: string;
   rowId?: string;
+  order?: number;
 }
 
 export function ImageUploaderContent({
