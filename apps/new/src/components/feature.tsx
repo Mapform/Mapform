@@ -28,6 +28,7 @@ import {
   ImageUploaderPopover,
   ImageUploaderTrigger,
 } from "./image-uploder";
+import { cn } from "@mapform/lib/classnames";
 
 type Property =
   | {
@@ -129,20 +130,28 @@ export function Feature({
         <div>
           <Tooltip>
             <EmojiPopover onIconChange={onIconChange}>
-              <TooltipTrigger asChild>
-                {icon ? (
-                  <button
-                    className="hover:bg-muted rounded-lg text-6xl"
-                    type="button"
-                  >
-                    {icon}
-                  </button>
-                ) : onIconChange ? (
+              {icon ? (
+                <div
+                  className={cn("relative z-10 mb-2", {
+                    "-mt-12": images?.length,
+                  })}
+                >
+                  <TooltipTrigger asChild>
+                    <button
+                      className="rounded-lg text-6xl hover:bg-gray-200/50"
+                      type="button"
+                    >
+                      {icon}
+                    </button>
+                  </TooltipTrigger>
+                </div>
+              ) : onIconChange ? (
+                <TooltipTrigger asChild>
                   <Button size="icon-sm" type="button" variant="ghost">
                     <SmilePlusIcon className="size-4" />
                   </Button>
-                ) : null}
-              </TooltipTrigger>
+                </TooltipTrigger>
+              ) : null}
             </EmojiPopover>
             <TooltipContent>Add emoji</TooltipContent>
           </Tooltip>

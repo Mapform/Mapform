@@ -139,7 +139,7 @@ export function Views() {
             >
               {projectService.optimisticState.icon ? (
                 <div
-                  className={cn("z-10 mb-2", {
+                  className={cn("relative z-10 mb-2", {
                     "-mt-12": projectService.optimisticState.blobs.length,
                   })}
                 >
