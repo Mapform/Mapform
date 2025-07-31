@@ -56,6 +56,7 @@ import {
   CarouselItem,
 } from "@mapform/ui/components/carousel";
 import Image from "next/image";
+import { cn } from "@mapform/lib/classnames";
 
 export function Views() {
   const { projectService, activeView } = useProject();
@@ -125,7 +126,7 @@ export function Views() {
           </CarouselContent>
         </Carousel>
       ) : null}
-      <div className="px-6 pb-6">
+      <div className="z-10 px-6 pb-6">
         <div>
           <Tooltip>
             <EmojiPopover
@@ -136,20 +137,28 @@ export function Views() {
                 });
               }}
             >
-              <TooltipTrigger asChild>
-                {projectService.optimisticState.icon ? (
-                  <button
-                    className="hover:bg-muted rounded-lg text-6xl"
-                    type="button"
-                  >
-                    {projectService.optimisticState.icon}
-                  </button>
-                ) : (
+              {projectService.optimisticState.icon ? (
+                <div
+                  className={cn("z-10 mb-2", {
+                    "-mt-12": projectService.optimisticState.blobs.length,
+                  })}
+                >
+                  <TooltipTrigger asChild>
+                    <button
+                      className="rounded-lg text-6xl hover:bg-gray-200/50"
+                      type="button"
+                    >
+                      {projectService.optimisticState.icon}
+                    </button>
+                  </TooltipTrigger>
+                </div>
+              ) : (
+                <TooltipTrigger asChild>
                   <Button size="icon-sm" type="button" variant="ghost">
                     <SmilePlusIcon className="size-4" />
                   </Button>
-                )}
-              </TooltipTrigger>
+                </TooltipTrigger>
+              )}
             </EmojiPopover>
             <TooltipContent>Add emoji</TooltipContent>
           </Tooltip>
