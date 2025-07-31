@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { insertBlobSchema } from "@mapform/db/schema";
 
 export const MAX_FILE_SIZE = 2000000;
 export const ACCEPTED_IMAGE_TYPES = [
@@ -31,21 +32,27 @@ const fileSchema = z
   });
 
 // Schema for the parsed data
-const parsedSchema = z.object({
-  workspaceId: z.string(),
-  image: fileSchema,
-});
-
-// Custom schema that can handle FormData input
 export const uploadImageSchema = z
-  .custom<FormData>((val) => val instanceof FormData, {
-    message: "Input must be FormData",
+  .object({
+    workspaceId: insertBlobSchema.shape.workspaceId,
+    projectId: insertBlobSchema.shape.projectId,
+    rowId: insertBlobSchema.shape.rowId,
+    title: insertBlobSchema.shape.title,
+    author: insertBlobSchema.shape.author,
+    license: insertBlobSchema.shape.license,
+    order: insertBlobSchema.shape.order,
+    image: fileSchema,
   })
-  .transform((formData) => {
-    const workspaceId = formData.get("workspaceId");
-    const image = formData.get("image");
+  .refine(
+    (data) => {
+      if (data.projectId && data.rowId) {
+        return false;
+      }
+      return true;
+    },
+    {
+      message: "You can only upload an image to a project or a row, not both.",
+    },
+  );
 
-    return parsedSchema.parse({ workspaceId, image });
-  });
-
-export type UploadImageSchema = z.infer<typeof parsedSchema>;
+export type UploadImageSchema = z.infer<typeof uploadImageSchema>;

@@ -4,7 +4,7 @@ import { db } from "@mapform/db";
 import type { UserAuthClient } from "../../../lib/types";
 import { uploadImageSchema } from "./schema";
 import { put } from "@vercel/blob";
-import { blobs, workspaces } from "@mapform/db/schema";
+import { blobs, projects, rows, workspaces } from "@mapform/db/schema";
 import { eq } from "@mapform/db/utils";
 import { ServerError } from "../../../lib/server-error";
 import { getStorageUsage } from "../../usage/get-storage-usage";
@@ -13,7 +13,19 @@ export const uploadImage = (authClient: UserAuthClient) =>
   authClient
     .schema(uploadImageSchema)
     .action(
-      async ({ parsedInput: { image, workspaceId }, ctx: { userAccess } }) => {
+      async ({
+        parsedInput: {
+          image,
+          workspaceId,
+          projectId,
+          rowId,
+          title,
+          author,
+          license,
+          order,
+        },
+        ctx: { userAccess },
+      }) => {
         if (!userAccess.workspace.checkAccessById(workspaceId)) {
           throw new Error("Unauthorized");
         }
@@ -25,6 +37,60 @@ export const uploadImage = (authClient: UserAuthClient) =>
             plan: true,
           },
         });
+
+        if (projectId) {
+          const project = await db.query.projects.findFirst({
+            where: eq(projects.id, projectId),
+            with: {
+              teamspace: {
+                with: {
+                  workspace: {
+                    columns: {
+                      id: true,
+                    },
+                  },
+                },
+              },
+            },
+          });
+
+          if (!project) {
+            throw new Error("Project not found");
+          }
+
+          if (project.teamspace.workspace.id !== workspaceId) {
+            throw new Error("Project does not belong to this workspace");
+          }
+        }
+
+        if (rowId) {
+          const row = await db.query.rows.findFirst({
+            where: eq(rows.id, rowId),
+            with: {
+              project: {
+                with: {
+                  teamspace: {
+                    with: {
+                      workspace: {
+                        columns: {
+                          id: true,
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          });
+
+          if (!row) {
+            throw new Error("Row not found");
+          }
+
+          if (row.project.teamspace.workspace.id !== workspaceId) {
+            throw new Error("Row does not belong to this workspace");
+          }
+        }
 
         if (!workspace || !workspace.plan) {
           throw new Error("Workspace or plan not found");
@@ -53,11 +119,24 @@ export const uploadImage = (authClient: UserAuthClient) =>
             addRandomSuffix: true,
           });
 
-          await tx.insert(blobs).values({
-            size: image.size,
-            url: putResponse.url,
-            workspaceId,
-          });
+          const [blob] = await tx
+            .insert(blobs)
+            .values({
+              size: image.size,
+              url: putResponse.url,
+              workspaceId,
+              projectId,
+              rowId,
+              title,
+              author,
+              license,
+              order,
+            })
+            .returning();
+
+          if (!blob) {
+            throw new Error("Failed to insert blob");
+          }
 
           return putResponse;
         });

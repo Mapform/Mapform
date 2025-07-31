@@ -4,9 +4,6 @@ import { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import { ImageUpIcon } from "lucide-react";
 import { PopoverContent } from "@mapform/ui/components/popover";
-import { Input } from "@mapform/ui/components/input";
-import { Label } from "@mapform/ui/components/label";
-import { Separator } from "@mapform/ui/components/separator";
 import { uploadImageAction } from "~/data/images/upload-image";
 import { useAction } from "next-safe-action/hooks";
 import { useWorkspace } from "~/app/app/(authenticated)/(onboarded)/[wsSlug]/workspace-context";
@@ -22,7 +19,15 @@ const ACCEPTED_IMAGE_TYPES = [
   "image/gif",
 ];
 
-export function ImageUploaderContent() {
+interface ImageUploaderContentProps {
+  projectId?: string;
+  rowId?: string;
+}
+
+export function ImageUploaderContent({
+  projectId,
+  rowId,
+}: ImageUploaderContentProps) {
   const { workspaceDirectory } = useWorkspace();
 
   const { execute, isExecuting } = useAction(uploadImageAction, {
@@ -57,11 +62,14 @@ export function ImageUploaderContent() {
   const handleUpload = async (file: File) => {
     if (!workspaceDirectory) return;
 
-    const formData = new FormData();
-    formData.append("workspaceId", workspaceDirectory.id);
-    formData.append("image", file);
+    console.log(1111);
 
-    execute(formData);
+    execute({
+      workspaceId: workspaceDirectory.id,
+      image: file,
+      projectId,
+      rowId,
+    });
   };
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
