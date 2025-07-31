@@ -1,8 +1,7 @@
 import { z } from "zod";
-import { zfd } from "zod-form-data";
 
-const MAX_FILE_SIZE = 2000000;
-const ACCEPTED_IMAGE_TYPES = [
+export const MAX_FILE_SIZE = 2000000;
+export const ACCEPTED_IMAGE_TYPES = [
   "image/jpeg",
   "image/jpg",
   "image/png",
@@ -10,9 +9,12 @@ const ACCEPTED_IMAGE_TYPES = [
   "image/gif",
 ];
 
-export const uploadImageSchema = zfd.formData({
-  workspaceId: zfd.text(),
-  image: zfd.file().superRefine((file, ctx) => {
+// Custom file validation schema
+const fileSchema = z
+  .custom<File>((val) => val instanceof File, {
+    message: "Invalid file",
+  })
+  .superRefine((file, ctx) => {
     if (file.size > MAX_FILE_SIZE) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
@@ -26,7 +28,24 @@ export const uploadImageSchema = zfd.formData({
         message: "Only .jpg, .jpeg, .png and .webp formats are supported.",
       });
     }
-  }),
+  });
+
+// Schema for the parsed data
+const parsedSchema = z.object({
+  workspaceId: z.string(),
+  image: fileSchema,
 });
 
-export type UploadImageSchema = z.infer<typeof uploadImageSchema>;
+// Custom schema that can handle FormData input
+export const uploadImageSchema = z
+  .custom<FormData>((val) => val instanceof FormData, {
+    message: "Input must be FormData",
+  })
+  .transform((formData) => {
+    const workspaceId = formData.get("workspaceId");
+    const image = formData.get("image");
+
+    return parsedSchema.parse({ workspaceId, image });
+  });
+
+export type UploadImageSchema = z.infer<typeof parsedSchema>;

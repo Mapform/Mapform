@@ -114,68 +114,38 @@ export function ImageUploaderContent() {
   };
 
   return (
-    <PopoverContent className="w-96 p-6">
-      <div className="space-y-4">
-        <div className="text-center">
-          <h3 className="text-lg font-semibold">Upload Image</h3>
-          <p className="text-muted-foreground text-sm">
-            Upload an image to your workspace
-          </p>
-        </div>
-
-        <Separator />
-
-        <div
-          {...getRootProps()}
-          className={cn(
-            "cursor-pointer rounded-lg border-2 border-dashed p-8 text-center transition-colors",
-            isDragActive
-              ? "border-primary bg-primary/5"
-              : "border-muted-foreground/25 hover:border-primary/50",
-          )}
-        >
-          <input {...getInputProps()} />
-          <ImageUpIcon className="text-muted-foreground mx-auto size-6" />
-          <p className="mt-2 text-sm">
-            {isDragActive ? (
-              "Drop your image here"
-            ) : (
-              <>
-                Drag and drop an image here, or{" "}
-                <span className="underline">browse</span>
-              </>
-            )}
-          </p>
-          <p className="text-muted-foreground mt-1 text-xs">
-            JPG, PNG, WebP, GIF up to 2MB
-          </p>
-        </div>
-
-        <div className="flex items-center space-x-2">
-          <Separator className="flex-1" />
-          <span className="text-muted-foreground text-xs">or</span>
-          <Separator className="flex-1" />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="file-input" className="text-sm font-medium">
-            Choose file
-          </Label>
-          <Input
-            id="file-input"
-            type="file"
-            accept="image/*"
-            onChange={handleFileSelect}
-            className="cursor-pointer"
-          />
-        </div>
-
-        {isExecuting && (
-          <div className="text-muted-foreground text-center text-sm">
-            Uploading image...
-          </div>
+    <PopoverContent className="w-96 p-2">
+      <div
+        {...getRootProps()}
+        className={cn(
+          "cursor-pointer rounded-lg border-2 border-dashed p-8 text-center transition-colors",
+          isDragActive
+            ? "border-primary bg-primary/5"
+            : "border-muted-foreground/25 hover:border-primary/50",
         )}
+      >
+        <input {...getInputProps()} />
+        <ImageUpIcon className="text-muted-foreground mx-auto size-6" />
+        <p className="mt-2 text-sm">
+          {isDragActive ? (
+            "Drop your image here"
+          ) : (
+            <>
+              Drag and drop an image here, or{" "}
+              <span className="underline">browse</span>
+            </>
+          )}
+        </p>
+        <p className="text-muted-foreground mt-1 text-xs">
+          JPG, PNG, WebP, GIF up to 2MB
+        </p>
       </div>
+
+      {isExecuting && (
+        <div className="text-muted-foreground text-center text-sm">
+          Uploading image...
+        </div>
+      )}
     </PopoverContent>
   );
 }

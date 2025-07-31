@@ -19,8 +19,7 @@
     "stripe": "catalog:",
     "uuid": "catalog:",
     "wellknown": "^0.5.0",
-    "zod": "catalog:",
-    "zod-form-data": "catalog:"
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@mapform/eslint-config": "workspace:*",
