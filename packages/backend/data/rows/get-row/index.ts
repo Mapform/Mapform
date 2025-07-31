@@ -2,7 +2,8 @@
 
 import { db, sql } from "@mapform/db";
 import { rows } from "@mapform/db/schema";
-import type { GeometryType, PointType } from "@mapform/db/schema/rows/schema";
+import type { Geometry } from "geojson";
+import type { PointType } from "@mapform/db/schema/rows/schema";
 import { getRowSchema } from "./schema";
 import type { UnwrapReturn, UserAuthClient } from "../../../lib/types";
 import { eq } from "@mapform/db/utils";
@@ -22,7 +23,7 @@ export const getRow = (authClient: UserAuthClient) =>
           geometry: true,
         },
         extras: {
-          geometry: sql<GeometryType>`ST_AsGeoJSON(${rows.geometry})::jsonb`.as(
+          geometry: sql<Geometry>`ST_AsGeoJSON(${rows.geometry})::jsonb`.as(
             "geometry",
           ),
           center:
@@ -41,6 +42,7 @@ export const getRow = (authClient: UserAuthClient) =>
               column: true,
             },
           },
+          blobs: true,
         },
       });
 

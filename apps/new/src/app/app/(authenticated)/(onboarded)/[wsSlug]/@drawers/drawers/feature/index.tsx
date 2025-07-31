@@ -98,6 +98,7 @@ const FeatureContent = ({
         </Button>
       </MapDrawerToolbar>
       <FeatureComponent
+        rowId={featureService.optimisticState!.id}
         title={featureService.optimisticState!.name ?? ""}
         description={featureService.optimisticState!.description ?? undefined}
         icon={featureService.optimisticState!.icon ?? undefined}
@@ -119,6 +120,11 @@ const FeatureContent = ({
             description: value.blocks,
             descriptionAsMarkdown: value.markdown ?? undefined,
           });
+        }}
+        imageData={{
+          images: featureService.optimisticState!.blobs.map((blob) => ({
+            imageUrl: blob.url,
+          })),
         }}
       />
       {/* <div className="px-6 pb-6">

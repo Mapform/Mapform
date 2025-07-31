@@ -8,7 +8,7 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from "@mapform/ui/components/tooltip";
-import { SmilePlusIcon } from "lucide-react";
+import { ImagePlusIcon, SmilePlusIcon } from "lucide-react";
 import {
   type CustomBlock,
   schema,
@@ -22,8 +22,12 @@ import {
   CarouselItem,
 } from "@mapform/ui/components/carousel";
 import Image from "next/image";
-import type { WikidataImageItem } from "~/lib/wikidata-image";
 import { Skeleton } from "@mapform/ui/components/skeleton";
+import {
+  ImageUploaderContent,
+  ImageUploaderPopover,
+  ImageUploaderTrigger,
+} from "./image-uploder";
 
 type Property =
   | {
@@ -44,9 +48,11 @@ interface FeatureProps {
   description?: string | CustomBlock[];
   icon?: string;
   imageData?: {
-    images: WikidataImageItem[];
-    isLoading: boolean;
-    error: string | null;
+    images: {
+      imageUrl: string;
+    }[];
+    isLoading?: boolean;
+    error?: string | null;
   };
   properties?: Property[];
   onTitleChange?: (title: string) => void;
@@ -55,6 +61,7 @@ interface FeatureProps {
     blocks: CustomBlock[] | null;
     markdown: string | null;
   }) => void;
+  rowId?: string;
 }
 
 export function Feature({
@@ -66,6 +73,7 @@ export function Feature({
   onTitleChange,
   onIconChange,
   onDescriptionChange,
+  rowId,
 }: FeatureProps) {
   const editor = useCreateBlockNote({
     schema,
@@ -108,7 +116,7 @@ export function Feature({
                 <Image
                   className="m-0 size-full"
                   src={image.imageUrl}
-                  alt={image.attribution?.description ?? ""}
+                  alt={""}
                   fill
                   objectFit="cover"
                 />
@@ -117,26 +125,43 @@ export function Feature({
           </CarouselContent>
         </Carousel>
       ) : null}
-      <div className="px-6 pb-6">
-        <Tooltip>
-          <EmojiPopover onIconChange={onIconChange}>
-            <TooltipTrigger asChild>
-              {icon ? (
-                <button
-                  className="hover:bg-muted rounded-lg text-6xl"
-                  type="button"
-                >
-                  {icon}
-                </button>
-              ) : onIconChange ? (
-                <Button size="icon-sm" type="button" variant="ghost">
-                  <SmilePlusIcon className="size-4" />
-                </Button>
-              ) : null}
-            </TooltipTrigger>
-          </EmojiPopover>
-          <TooltipContent>Add emoji</TooltipContent>
-        </Tooltip>
+      <div className="z-10 px-6 pb-6">
+        <div>
+          <Tooltip>
+            <EmojiPopover onIconChange={onIconChange}>
+              <TooltipTrigger asChild>
+                {icon ? (
+                  <button
+                    className="hover:bg-muted rounded-lg text-6xl"
+                    type="button"
+                  >
+                    {icon}
+                  </button>
+                ) : onIconChange ? (
+                  <Button size="icon-sm" type="button" variant="ghost">
+                    <SmilePlusIcon className="size-4" />
+                  </Button>
+                ) : null}
+              </TooltipTrigger>
+            </EmojiPopover>
+            <TooltipContent>Add emoji</TooltipContent>
+          </Tooltip>
+          {!images?.length && rowId ? (
+            <Tooltip>
+              <ImageUploaderPopover>
+                <ImageUploaderTrigger asChild>
+                  <TooltipTrigger asChild>
+                    <Button variant="ghost" size="icon-sm">
+                      <ImagePlusIcon className="size-4" />
+                    </Button>
+                  </TooltipTrigger>
+                </ImageUploaderTrigger>
+                <ImageUploaderContent rowId={rowId} />
+              </ImageUploaderPopover>
+              <TooltipContent>Add cover photo</TooltipContent>
+            </Tooltip>
+          ) : null}
+        </div>
         {onTitleChange ? (
           <AutoSizeTextArea
             className="text-4xl font-bold"
