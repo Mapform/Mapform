@@ -2,7 +2,7 @@
 
 import { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
-import { ImageUpIcon } from "lucide-react";
+import { ImageUpIcon, Loader2Icon } from "lucide-react";
 import { PopoverContent } from "@mapform/ui/components/popover";
 import { uploadImageAction } from "~/data/images/upload-image";
 import { useAction } from "next-safe-action/hooks";
@@ -101,56 +101,40 @@ export function ImageUploaderContent({
     maxSize: MAX_FILE_SIZE,
   });
 
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      // Validate file first
-      const validationError = validateFile(file);
-      if (validationError) {
-        toast({
-          title: "Invalid file",
-          description: validationError,
-          variant: "destructive",
-        });
-        return;
-      }
-
-      // Upload immediately
-      handleUpload(file);
-    }
-  };
-
   return (
-    <PopoverContent className="w-96 p-2">
-      <div
-        {...getRootProps()}
-        className={cn(
-          "cursor-pointer rounded-lg border-2 border-dashed p-8 text-center transition-colors",
-          isDragActive
-            ? "border-primary bg-primary/5"
-            : "border-muted-foreground/25 hover:border-primary/50",
-        )}
-      >
-        <input {...getInputProps()} />
-        <ImageUpIcon className="text-muted-foreground mx-auto size-6" />
-        <p className="mt-2 text-sm">
-          {isDragActive ? (
-            "Drop your image here"
-          ) : (
-            <>
-              Drag and drop an image here, or{" "}
-              <span className="underline">browse</span>
-            </>
+    <PopoverContent className="flex h-40 w-96 flex-col items-center justify-center p-2">
+      {isExecuting ? (
+        <div className="flex size-full flex-col items-center justify-center">
+          <Loader2Icon className="size-4 animate-spin" />
+          <p className="text-muted-foreground mt-2 text-sm">
+            Uploading image...
+          </p>
+        </div>
+      ) : (
+        <div
+          {...getRootProps()}
+          className={cn(
+            "size-full cursor-pointer rounded-lg border-2 border-dashed p-8 text-center transition-colors",
+            isDragActive
+              ? "border-primary bg-primary/5"
+              : "border-muted-foreground/25 hover:border-primary/50",
           )}
-        </p>
-        <p className="text-muted-foreground mt-1 text-xs">
-          JPG, PNG, WebP, GIF up to 2MB
-        </p>
-      </div>
-
-      {isExecuting && (
-        <div className="text-muted-foreground text-center text-sm">
-          Uploading image...
+        >
+          <input {...getInputProps()} />
+          <ImageUpIcon className="text-muted-foreground mx-auto size-6" />
+          <p className="mt-2 text-sm">
+            {isDragActive ? (
+              "Drop your image here"
+            ) : (
+              <>
+                Drag and drop an image here, or{" "}
+                <span className="underline">browse</span>
+              </>
+            )}
+          </p>
+          <p className="text-muted-foreground mt-1 text-xs">
+            JPG, PNG, WebP, GIF up to 2MB
+          </p>
         </div>
       )}
     </PopoverContent>
