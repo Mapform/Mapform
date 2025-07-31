@@ -31,7 +31,7 @@ export function ImageUploaderContent({
   const { workspaceDirectory } = useWorkspace();
 
   const { execute, isExecuting } = useAction(uploadImageAction, {
-    onSuccess: (data) => {
+    onSuccess: () => {
       toast({
         title: "Image uploaded successfully",
         description: "Your image has been uploaded and is ready to use.",
@@ -61,8 +61,6 @@ export function ImageUploaderContent({
 
   const handleUpload = async (file: File) => {
     if (!workspaceDirectory) return;
-
-    console.log(1111);
 
     execute({
       workspaceId: workspaceDirectory.id,

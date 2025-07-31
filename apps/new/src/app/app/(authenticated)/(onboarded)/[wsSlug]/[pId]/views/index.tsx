@@ -162,7 +162,9 @@ export function Views() {
                   </Button>
                 </TooltipTrigger>
               </ImageUploaderTrigger>
-              <ImageUploaderContent />
+              <ImageUploaderContent
+                projectId={projectService.optimisticState.id}
+              />
             </ImageUploaderPopover>
           </Tooltip>
         </div>
