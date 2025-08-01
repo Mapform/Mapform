@@ -10,7 +10,7 @@ import { Button } from "@mapform/ui/components/button";
 import {
   PlusIcon,
   SmilePlusIcon,
-  TrashIcon,
+  Trash2Icon,
   EllipsisVerticalIcon,
   ImportIcon,
   ImagePlusIcon,
@@ -236,7 +236,7 @@ export function Views() {
                           executeDeleteView({ viewId: view.id });
                         }}
                       >
-                        <TrashIcon className="mr-2 size-4" />
+                        <Trash2Icon className="mr-2 size-4" />
                         Delete
                       </ContextMenuItem>
                     </ContextMenuContent>

@@ -1,7 +1,14 @@
 "use client";
 
 import { Button } from "@mapform/ui/components/button";
-import { EllipsisVerticalIcon, XIcon } from "lucide-react";
+import {
+  EllipsisVerticalIcon,
+  Trash2Icon,
+  XIcon,
+  MapIcon,
+  CornerUpRightIcon,
+  ExternalLinkIcon,
+} from "lucide-react";
 import { MapDrawer, MapDrawerToolbar } from "~/components/map-drawer";
 import { useParamsContext } from "~/lib/params/client";
 import {
@@ -14,6 +21,15 @@ import type { UpdateRowSchema } from "@mapform/backend/data/rows/update-row/sche
 import { Marker } from "react-map-gl/mapbox";
 import { LoadingSkeleton } from "~/components/loading-skeleton";
 import { Feature as FeatureComponent } from "~/components/feature";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from "@mapform/ui/components/dropdown-menu";
 
 interface FeatureDrawerProps {
   feature: GetRow["data"];
@@ -78,14 +94,159 @@ const FeatureContent = ({
   return (
     <div>
       <MapDrawerToolbar>
-        <Button
-          className="ml-auto"
-          size="icon-sm"
-          type="button"
-          variant="ghost"
-        >
-          <EllipsisVerticalIcon className="size-4" />
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              className="ml-auto"
+              size="icon-sm"
+              type="button"
+              variant="ghost"
+            >
+              <EllipsisVerticalIcon className="size-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger>
+                <ExternalLinkIcon className="size-4" /> Open In
+              </DropdownMenuSubTrigger>
+              <DropdownMenuSubContent>
+                <DropdownMenuItem
+                  onClick={() => {
+                    const { center } = featureService.optimisticState!;
+                    const [longitude, latitude] = center.coordinates;
+                    const query = encodeURIComponent(
+                      featureService.optimisticState!.name || "Location",
+                    );
+
+                    // Try Google Maps app first, fallback to web
+                    const isAndroid = /Android/.test(navigator.userAgent);
+                    if (isAndroid) {
+                      const appUrl = `googlemaps://maps.google.com/maps?q=${latitude},${longitude}`;
+                      const webUrl = `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`;
+
+                      const appWindow = window.open(appUrl, "_blank");
+                      setTimeout(() => {
+                        if (appWindow && appWindow.closed) {
+                          window.open(webUrl, "_blank");
+                        }
+                      }, 1000);
+                    } else {
+                      window.open(
+                        `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`,
+                        "_blank",
+                      );
+                    }
+                  }}
+                >
+                  Google Maps
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => {
+                    const { center } = featureService.optimisticState!;
+                    const [longitude, latitude] = center.coordinates;
+                    const query = encodeURIComponent(
+                      featureService.optimisticState!.name || "Location",
+                    );
+
+                    const isMac = /Mac/.test(navigator.userAgent);
+                    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+
+                    if (isMac) {
+                      window.open(
+                        `maps://maps.apple.com/?q=${query}&ll=${latitude},${longitude}`,
+                        "_blank",
+                      );
+                    } else if (isIOS) {
+                      window.open(
+                        `https://maps.apple.com/?q=${query}&ll=${latitude},${longitude}`,
+                        "_blank",
+                      );
+                    } else {
+                      window.open(
+                        `https://maps.apple.com/?q=${query}&ll=${latitude},${longitude}`,
+                        "_blank",
+                      );
+                    }
+                  }}
+                >
+                  Apple Maps
+                </DropdownMenuItem>
+              </DropdownMenuSubContent>
+            </DropdownMenuSub>
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger>
+                <CornerUpRightIcon className="size-4" /> Directions
+              </DropdownMenuSubTrigger>
+              <DropdownMenuSubContent>
+                <DropdownMenuItem
+                  onClick={() => {
+                    const { center } = featureService.optimisticState!;
+                    const [longitude, latitude] = center.coordinates;
+                    const query = encodeURIComponent(
+                      featureService.optimisticState!.name || "Location",
+                    );
+
+                    // Try Google Maps app first, fallback to web
+                    const isAndroid = /Android/.test(navigator.userAgent);
+                    if (isAndroid) {
+                      const appUrl = `googlemaps://maps.google.com/maps?daddr=${latitude},${longitude}`;
+                      const webUrl = `https://www.google.com/maps/dir/?api=1&destination=${latitude},${longitude}`;
+
+                      const appWindow = window.open(appUrl, "_blank");
+                      setTimeout(() => {
+                        if (appWindow && appWindow.closed) {
+                          window.open(webUrl, "_blank");
+                        }
+                      }, 1000);
+                    } else {
+                      window.open(
+                        `https://www.google.com/maps/dir/?api=1&destination=${latitude},${longitude}`,
+                        "_blank",
+                      );
+                    }
+                  }}
+                >
+                  Google Maps
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => {
+                    const { center } = featureService.optimisticState!;
+                    const [longitude, latitude] = center.coordinates;
+                    const query = encodeURIComponent(
+                      featureService.optimisticState!.name || "Location",
+                    );
+
+                    const isMac = /Mac/.test(navigator.userAgent);
+                    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+
+                    if (isMac) {
+                      window.open(
+                        `maps://maps.apple.com/?daddr=${latitude},${longitude}`,
+                        "_blank",
+                      );
+                    } else if (isIOS) {
+                      window.open(
+                        `https://maps.apple.com/?daddr=${latitude},${longitude}`,
+                        "_blank",
+                      );
+                    } else {
+                      window.open(
+                        `https://maps.apple.com/?daddr=${latitude},${longitude}`,
+                        "_blank",
+                      );
+                    }
+                  }}
+                >
+                  Apple Maps
+                </DropdownMenuItem>
+              </DropdownMenuSubContent>
+            </DropdownMenuSub>
+            <DropdownMenuItem>
+              <Trash2Icon className="size-4" /> Delete
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
         <Button
           size="icon-sm"
           type="button"
@@ -127,60 +288,6 @@ const FeatureContent = ({
           })),
         }}
       />
-      {/* <div className="px-6 pb-6">
-        <Tooltip>
-          <EmojiPopover
-            onIconChange={(emoji) => {
-              featureService.execute({
-                id: featureService.optimisticState!.id,
-                icon: emoji,
-              });
-            }}
-          >
-            <TooltipTrigger asChild>
-              {featureService.optimisticState!.icon ? (
-                <button
-                  className="hover:bg-muted rounded-lg text-6xl"
-                  type="button"
-                >
-                  {featureService.optimisticState!.icon}
-                </button>
-              ) : (
-                <Button size="icon-sm" type="button" variant="ghost">
-                  <SmilePlusIcon className="size-4" />
-                </Button>
-              )}
-            </TooltipTrigger>
-          </EmojiPopover>
-          <TooltipContent>Add emoji</TooltipContent>
-        </Tooltip>
-        <AutoSizeTextArea
-          className="text-4xl font-bold"
-          placeholder="Untitled"
-          value={featureService.optimisticState!.name ?? ""}
-          onChange={async (value) => {
-            featureService.execute({
-              id: featureService.optimisticState!.id,
-              name: value,
-              description: editor.document,
-              descriptionAsMarkdown: await editor.blocksToMarkdownLossy(
-                editor.document,
-              ),
-            });
-          }}
-        />
-
-        <Blocknote
-          editor={editor}
-          onChange={({ blocks, markdown }) => {
-            featureService.execute({
-              id: featureService.optimisticState!.id,
-              description: blocks,
-              descriptionAsMarkdown: markdown ?? undefined,
-            });
-          }}
-        />
-      </div> */}
     </div>
   );
 };
