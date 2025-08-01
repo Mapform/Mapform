@@ -8,6 +8,7 @@ import { Button } from "@mapform/ui/components/button";
 import {
   EllipsisVerticalIcon,
   ExternalLinkIcon,
+  Loader2Icon,
   PlusIcon,
   XIcon,
 } from "lucide-react";
@@ -27,6 +28,9 @@ import {
 } from "@mapform/ui/components/dropdown-menu";
 import { openInGoogleMaps } from "~/lib/external-links/google";
 import { openInAppleMaps } from "~/lib/external-links/apple";
+import { useAction } from "next-safe-action/hooks";
+import { createRowAction } from "~/data/rows/create-row";
+import { useParams } from "next/navigation";
 
 interface SearchDetailsProps {
   geoapifyPlaceDetails: GetPlaceDetails["data"];
@@ -50,7 +54,14 @@ export function SearchDetails({ geoapifyPlaceDetails }: SearchDetailsProps) {
 }
 
 function SearchDetailsInner({ geoapifyPlaceDetails }: SearchDetailsProps) {
-  const { params, setQueryStates } = useParamsContext();
+  const { setQueryStates } = useParamsContext();
+  const { pId } = useParams<{ pId: string }>();
+  const { execute, isPending } = useAction(createRowAction, {
+    onSuccess: ({ data }) => {
+      void setQueryStates({ geoapifyPlaceId: null, rowId: data?.id });
+    },
+  });
+
   const wikiData = useWikidataImages(
     geoapifyPlaceDetails?.features[0]?.properties.datasource?.raw?.wikidata,
   );
@@ -62,7 +73,7 @@ function SearchDetailsInner({ geoapifyPlaceDetails }: SearchDetailsProps) {
 
   const place = geoapifyPlaceDetails.features[0]?.properties;
 
-  if (!longitude || !latitude || !place) return null;
+  if (!longitude || !latitude || !place || !pId) return null;
 
   return (
     <>
@@ -72,11 +83,23 @@ function SearchDetailsInner({ geoapifyPlaceDetails }: SearchDetailsProps) {
           size="icon-sm"
           type="button"
           variant="ghost"
+          disabled={isPending}
           onClick={() => {
-            void setQueryStates({ geoapifyPlaceId: null });
+            execute({
+              projectId: pId,
+              name: place.name_international?.en,
+              geometry: {
+                type: "Point",
+                coordinates: [longitude, latitude],
+              },
+            });
           }}
         >
-          <PlusIcon className="size-4" />
+          {isPending ? (
+            <Loader2Icon className="size-4 animate-spin" />
+          ) : (
+            <PlusIcon className="size-4" />
+          )}
         </Button>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

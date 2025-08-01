@@ -35,7 +35,6 @@ export const rows = pgTable("row", {
   name: varchar("name", { length: 256 }),
   description: jsonb("description").$type<CustomBlock[]>(),
   icon: varchar("icon", { length: 256 }),
-  coverPhotos: jsonb("cover_photos").$type<CoverPhoto[]>(),
   // Only allow hex colors
   color: varchar("color", { length: 7 }).$type<`#${string}`>(),
   geometry: geometry("geometry"),
