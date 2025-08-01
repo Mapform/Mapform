@@ -11,6 +11,8 @@ import {
   Loader2Icon,
   PlusIcon,
   XIcon,
+  CheckIcon,
+  ChevronsUpDownIcon,
 } from "lucide-react";
 import { LoadingSkeleton } from "~/components/loading-skeleton";
 import { Feature } from "~/components/feature";
@@ -26,11 +28,27 @@ import {
   DropdownMenuTrigger,
   DropdownMenuItem,
 } from "@mapform/ui/components/dropdown-menu";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@mapform/ui/components/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@mapform/ui/components/popover";
 import { openInGoogleMaps } from "~/lib/external-links/google";
 import { openInAppleMaps } from "~/lib/external-links/apple";
 import { useAction } from "next-safe-action/hooks";
 import { createRowAction } from "~/data/rows/create-row";
 import { useParams } from "next/navigation";
+import { useWorkspace } from "../../../workspace-context";
+import { cn } from "@mapform/lib/classnames";
+import { useState } from "react";
 
 interface SearchDetailsProps {
   geoapifyPlaceDetails: GetPlaceDetails["data"];
@@ -56,11 +74,14 @@ export function SearchDetails({ geoapifyPlaceDetails }: SearchDetailsProps) {
 function SearchDetailsInner({ geoapifyPlaceDetails }: SearchDetailsProps) {
   const { setQueryStates } = useParamsContext();
   const { pId } = useParams<{ pId: string }>();
+  const { workspaceDirectory } = useWorkspace();
   const { execute, isPending } = useAction(createRowAction, {
     onSuccess: ({ data }) => {
       void setQueryStates({ geoapifyPlaceId: null, rowId: data?.id });
     },
   });
+
+  const [projectComboboxOpen, setProjectComboboxOpen] = useState(false);
 
   const wikiData = useWikidataImages(
     geoapifyPlaceDetails?.features[0]?.properties.datasource?.raw?.wikidata,
@@ -73,34 +94,99 @@ function SearchDetailsInner({ geoapifyPlaceDetails }: SearchDetailsProps) {
 
   const place = geoapifyPlaceDetails.features[0]?.properties;
 
-  if (!longitude || !latitude || !place || !pId) return null;
+  if (!longitude || !latitude || !place) return null;
+
+  // Flatten all projects from all teamspaces
+  const allProjects = workspaceDirectory.teamspaces
+    .flatMap((teamspace) =>
+      teamspace.projects.map((project) => ({
+        ...project,
+        teamspaceName: teamspace.name,
+      })),
+    )
+    .sort((a, b) => a.position - b.position);
+
+  const handleAddToProject = (projectId: string) => {
+    execute({
+      projectId,
+      name: place.name_international?.en,
+
+      geometry: {
+        type: "Point",
+        coordinates: [longitude, latitude],
+      },
+    });
+  };
 
   return (
     <>
       <MapDrawerToolbar>
-        <Button
-          className="ml-auto"
-          size="icon-sm"
-          type="button"
-          variant="ghost"
-          disabled={isPending}
-          onClick={() => {
-            execute({
-              projectId: pId,
-              name: place.name_international?.en,
-              geometry: {
-                type: "Point",
-                coordinates: [longitude, latitude],
-              },
-            });
-          }}
-        >
-          {isPending ? (
-            <Loader2Icon className="size-4 animate-spin" />
-          ) : (
-            <PlusIcon className="size-4" />
-          )}
-        </Button>
+        {pId ? (
+          <Button
+            className="ml-auto"
+            size="icon-sm"
+            type="button"
+            variant="ghost"
+            disabled={isPending}
+            onClick={() => {
+              execute({
+                projectId: pId,
+                name: place.name_international?.en,
+                geometry: {
+                  type: "Point",
+                  coordinates: [longitude, latitude],
+                },
+              });
+            }}
+          >
+            {isPending ? (
+              <Loader2Icon className="size-4 animate-spin" />
+            ) : (
+              <PlusIcon className="size-4" />
+            )}
+          </Button>
+        ) : (
+          <Popover
+            open={projectComboboxOpen}
+            onOpenChange={setProjectComboboxOpen}
+          >
+            <PopoverTrigger asChild>
+              <Button
+                variant="ghost"
+                role="combobox"
+                size="icon-sm"
+                aria-expanded={projectComboboxOpen}
+                className="ml-auto"
+                disabled={isPending}
+              >
+                <PlusIcon className="size-4" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="p-0">
+              <Command>
+                <CommandInput placeholder="Search projects..." />
+                <CommandList>
+                  <CommandEmpty>No projects found.</CommandEmpty>
+                  <CommandGroup>
+                    {allProjects.map((project) => (
+                      <CommandItem
+                        key={project.id}
+                        value={`${project.id}`}
+                        onSelect={() => {
+                          setProjectComboboxOpen(false);
+                          handleAddToProject(project.id);
+                        }}
+                        keywords={[project.name ?? "New project"]}
+                      >
+                        {project.name ?? "New project"}
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                </CommandList>
+              </Command>
+            </PopoverContent>
+          </Popover>
+        )}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button size="icon-sm" type="button" variant="ghost">
