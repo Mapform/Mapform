@@ -5,8 +5,6 @@ import {
   EllipsisVerticalIcon,
   Trash2Icon,
   XIcon,
-  MapIcon,
-  CornerUpRightIcon,
   ExternalLinkIcon,
 } from "lucide-react";
 import { MapDrawer, MapDrawerToolbar } from "~/components/map-drawer";
@@ -165,74 +163,6 @@ const FeatureContent = ({
                     } else {
                       window.open(
                         `https://maps.apple.com/?q=${query}&ll=${latitude},${longitude}`,
-                        "_blank",
-                      );
-                    }
-                  }}
-                >
-                  Apple Maps
-                </DropdownMenuItem>
-              </DropdownMenuSubContent>
-            </DropdownMenuSub>
-            <DropdownMenuSub>
-              <DropdownMenuSubTrigger>
-                <CornerUpRightIcon className="size-4" /> Directions
-              </DropdownMenuSubTrigger>
-              <DropdownMenuSubContent>
-                <DropdownMenuItem
-                  onClick={() => {
-                    const { center } = featureService.optimisticState!;
-                    const [longitude, latitude] = center.coordinates;
-                    const query = encodeURIComponent(
-                      featureService.optimisticState!.name || "Location",
-                    );
-
-                    // Try Google Maps app first, fallback to web
-                    const isAndroid = /Android/.test(navigator.userAgent);
-                    if (isAndroid) {
-                      const appUrl = `googlemaps://maps.google.com/maps?daddr=${latitude},${longitude}`;
-                      const webUrl = `https://www.google.com/maps/dir/?api=1&destination=${latitude},${longitude}`;
-
-                      const appWindow = window.open(appUrl, "_blank");
-                      setTimeout(() => {
-                        if (appWindow && appWindow.closed) {
-                          window.open(webUrl, "_blank");
-                        }
-                      }, 1000);
-                    } else {
-                      window.open(
-                        `https://www.google.com/maps/dir/?api=1&destination=${latitude},${longitude}`,
-                        "_blank",
-                      );
-                    }
-                  }}
-                >
-                  Google Maps
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => {
-                    const { center } = featureService.optimisticState!;
-                    const [longitude, latitude] = center.coordinates;
-                    const query = encodeURIComponent(
-                      featureService.optimisticState!.name || "Location",
-                    );
-
-                    const isMac = /Mac/.test(navigator.userAgent);
-                    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-
-                    if (isMac) {
-                      window.open(
-                        `maps://maps.apple.com/?daddr=${latitude},${longitude}`,
-                        "_blank",
-                      );
-                    } else if (isIOS) {
-                      window.open(
-                        `https://maps.apple.com/?daddr=${latitude},${longitude}`,
-                        "_blank",
-                      );
-                    } else {
-                      window.open(
-                        `https://maps.apple.com/?daddr=${latitude},${longitude}`,
                         "_blank",
                       );
                     }
