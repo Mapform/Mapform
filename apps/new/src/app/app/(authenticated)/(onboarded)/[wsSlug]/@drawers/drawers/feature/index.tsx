@@ -113,28 +113,12 @@ const FeatureContent = ({
                   onClick={() => {
                     const { center } = featureService.optimisticState!;
                     const [longitude, latitude] = center.coordinates;
-                    const query = encodeURIComponent(
-                      featureService.optimisticState!.name || "Location",
+
+                    window.open(
+                      // Universal link: https://developers.google.com/maps/documentation/urls/get-started
+                      `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`,
+                      "_blank",
                     );
-
-                    // Try Google Maps app first, fallback to web
-                    const isAndroid = /Android/.test(navigator.userAgent);
-                    if (isAndroid) {
-                      const appUrl = `googlemaps://maps.google.com/maps?q=${latitude},${longitude}`;
-                      const webUrl = `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`;
-
-                      const appWindow = window.open(appUrl, "_blank");
-                      setTimeout(() => {
-                        if (appWindow && appWindow.closed) {
-                          window.open(webUrl, "_blank");
-                        }
-                      }, 1000);
-                    } else {
-                      window.open(
-                        `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`,
-                        "_blank",
-                      );
-                    }
                   }}
                 >
                   Google Maps
