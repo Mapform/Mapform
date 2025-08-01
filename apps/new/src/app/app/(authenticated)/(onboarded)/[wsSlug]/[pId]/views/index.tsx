@@ -129,19 +129,19 @@ export function Views() {
       <div className="z-10 px-6 pb-6">
         <div>
           <Tooltip>
-            <EmojiPopover
-              onIconChange={(emoji) => {
-                projectService.execute({
-                  id: projectService.optimisticState.id,
-                  icon: emoji,
-                });
-              }}
-            >
-              {projectService.optimisticState.icon ? (
-                <div
-                  className={cn("relative z-10 mb-2", {
-                    "-mt-12": projectService.optimisticState.blobs.length,
-                  })}
+            {projectService.optimisticState.icon ? (
+              <div
+                className={cn("relative z-10 mb-2", {
+                  "-mt-12": projectService.optimisticState.blobs.length,
+                })}
+              >
+                <EmojiPopover
+                  onIconChange={(emoji) => {
+                    projectService.execute({
+                      id: projectService.optimisticState.id,
+                      icon: emoji,
+                    });
+                  }}
                 >
                   <TooltipTrigger asChild>
                     <button
@@ -151,15 +151,24 @@ export function Views() {
                       {projectService.optimisticState.icon}
                     </button>
                   </TooltipTrigger>
-                </div>
-              ) : (
+                </EmojiPopover>
+              </div>
+            ) : (
+              <EmojiPopover
+                onIconChange={(emoji) => {
+                  projectService.execute({
+                    id: projectService.optimisticState.id,
+                    icon: emoji,
+                  });
+                }}
+              >
                 <TooltipTrigger asChild>
                   <Button size="icon-sm" type="button" variant="ghost">
                     <SmilePlusIcon className="size-4" />
                   </Button>
                 </TooltipTrigger>
-              )}
-            </EmojiPopover>
+              </EmojiPopover>
+            )}
             <TooltipContent>Add emoji</TooltipContent>
           </Tooltip>
           {!projectService.optimisticState.blobs.length ? (

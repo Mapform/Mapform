@@ -129,13 +129,13 @@ export function Feature({
       <div className="z-10 px-6 pb-6">
         <div>
           <Tooltip>
-            <EmojiPopover onIconChange={onIconChange}>
-              {icon ? (
-                <div
-                  className={cn("relative z-10 mb-2", {
-                    "-mt-12": images?.length,
-                  })}
-                >
+            {icon ? (
+              <div
+                className={cn("relative z-10 mb-2", {
+                  "-mt-12": images?.length,
+                })}
+              >
+                <EmojiPopover onIconChange={onIconChange}>
                   <TooltipTrigger asChild>
                     <button
                       className="rounded-lg text-6xl hover:bg-gray-200/50"
@@ -144,15 +144,17 @@ export function Feature({
                       {icon}
                     </button>
                   </TooltipTrigger>
-                </div>
-              ) : onIconChange ? (
+                </EmojiPopover>
+              </div>
+            ) : onIconChange ? (
+              <EmojiPopover onIconChange={onIconChange}>
                 <TooltipTrigger asChild>
                   <Button size="icon-sm" type="button" variant="ghost">
                     <SmilePlusIcon className="size-4" />
                   </Button>
                 </TooltipTrigger>
-              ) : null}
-            </EmojiPopover>
+              </EmojiPopover>
+            ) : null}
             <TooltipContent>Add emoji</TooltipContent>
           </Tooltip>
           {!images?.length && rowId ? (
