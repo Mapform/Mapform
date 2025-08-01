@@ -28,6 +28,8 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@mapform/ui/components/dropdown-menu";
+import { openInAppleMaps } from "~/lib/external-links/apple";
+import { openInGoogleMaps } from "~/lib/external-links/google";
 
 interface FeatureDrawerProps {
   feature: GetRow["data"];
@@ -114,11 +116,7 @@ const FeatureContent = ({
                     const { center } = featureService.optimisticState!;
                     const [longitude, latitude] = center.coordinates;
 
-                    window.open(
-                      // Universal link: https://developers.google.com/maps/documentation/urls/get-started
-                      `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`,
-                      "_blank",
-                    );
+                    openInGoogleMaps(latitude, longitude);
                   }}
                 >
                   Google Maps
@@ -127,29 +125,12 @@ const FeatureContent = ({
                   onClick={() => {
                     const { center } = featureService.optimisticState!;
                     const [longitude, latitude] = center.coordinates;
-                    const query = encodeURIComponent(
-                      featureService.optimisticState!.name || "Location",
+
+                    openInAppleMaps(
+                      latitude,
+                      longitude,
+                      featureService.optimisticState?.name ?? "Location",
                     );
-
-                    const isMac = /Mac/.test(navigator.userAgent);
-                    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-
-                    if (isMac) {
-                      window.open(
-                        `maps://maps.apple.com/?q=${query}&ll=${latitude},${longitude}`,
-                        "_blank",
-                      );
-                    } else if (isIOS) {
-                      window.open(
-                        `https://maps.apple.com/?q=${query}&ll=${latitude},${longitude}`,
-                        "_blank",
-                      );
-                    } else {
-                      window.open(
-                        `https://maps.apple.com/?q=${query}&ll=${latitude},${longitude}`,
-                        "_blank",
-                      );
-                    }
                   }}
                 >
                   Apple Maps
