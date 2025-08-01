@@ -5,12 +5,28 @@ import type { GetPlaceDetails } from "@mapform/backend/data/geoapify/details";
 import { useParamsContext } from "~/lib/params/client";
 import { Marker } from "react-map-gl/mapbox";
 import { Button } from "@mapform/ui/components/button";
-import { PlusIcon, XIcon } from "lucide-react";
+import {
+  EllipsisVerticalIcon,
+  ExternalLinkIcon,
+  PlusIcon,
+  XIcon,
+} from "lucide-react";
 import { LoadingSkeleton } from "~/components/loading-skeleton";
 import { Feature } from "~/components/feature";
 import { PropertyColumnEditor } from "~/components/properties/property-column-editor";
 import { PropertyValueEditor } from "~/components/properties/property-value-editor";
 import { useWikidataImages } from "~/lib/wikidata-image";
+import {
+  DropdownMenu,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuSub,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+  DropdownMenuItem,
+} from "@mapform/ui/components/dropdown-menu";
+import { openInGoogleMaps } from "~/lib/external-links/google";
+import { openInAppleMaps } from "~/lib/external-links/apple";
 
 interface SearchDetailsProps {
   geoapifyPlaceDetails: GetPlaceDetails["data"];
@@ -62,6 +78,40 @@ function SearchDetailsInner({ geoapifyPlaceDetails }: SearchDetailsProps) {
         >
           <PlusIcon className="size-4" />
         </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button size="icon-sm" type="button" variant="ghost">
+              <EllipsisVerticalIcon className="size-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger>
+                <ExternalLinkIcon className="size-4" /> Open In
+              </DropdownMenuSubTrigger>
+              <DropdownMenuSubContent>
+                <DropdownMenuItem
+                  onClick={() => {
+                    openInGoogleMaps(latitude, longitude);
+                  }}
+                >
+                  Google Maps
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => {
+                    openInAppleMaps(
+                      latitude,
+                      longitude,
+                      place.name_international?.en ?? place.name ?? "Location",
+                    );
+                  }}
+                >
+                  Apple Maps
+                </DropdownMenuItem>
+              </DropdownMenuSubContent>
+            </DropdownMenuSub>
+          </DropdownMenuContent>
+        </DropdownMenu>
         <Button
           size="icon-sm"
           type="button"
