@@ -32,14 +32,18 @@ import {
 } from "@mapform/ui/components/context-menu";
 import { deleteProjectAction } from "~/data/projects/delete-project";
 import { toast } from "@mapform/ui/components/toaster";
+import { useMap } from "react-map-gl/mapbox";
+import { useMapPadding } from "~/lib/map/use-map-padding";
 
 export function Files({
   teamspace,
 }: {
   teamspace: NonNullable<WorkspaceDirectory["data"]>["teamspaces"][number];
 }) {
+  const map = useMap();
   const router = useRouter();
   const pathname = usePathname();
+  const padding = useMapPadding(true);
   const { workspaceSlug, workspaceDirectory, updateWorkspaceDirectory } =
     useWorkspace();
 
@@ -148,6 +152,11 @@ export function Files({
                           pathname === `/app/${workspaceSlug}/${project.id}`
                         }
                         onClick={() => {
+                          map.current?.easeTo({
+                            center: project.center.coordinates,
+                            padding,
+                          });
+
                           router.push(
                             `/app/${workspaceSlug}/${project.id}?v=${project.views[0]!.id}`,
                           );
