@@ -5,6 +5,7 @@ import { loadSearchParams } from "~/lib/params/server";
 import type { SearchParams } from "nuqs/server";
 import { MapData } from "./map-data";
 import { Views } from "./views";
+import { MapPositioner } from "~/components/map-positioner";
 
 export default async function ViewPage(props: {
   params: Promise<{ wsSlug: string; pId: string }>;
@@ -40,8 +41,10 @@ export default async function ViewPage(props: {
 
   return (
     <ProjectProvider project={project.data} activeView={activeView}>
-      <Views />
-      <MapData />
+      <MapPositioner center={project.data.center.coordinates}>
+        <Views />
+        <MapData />
+      </MapPositioner>
     </ProjectProvider>
   );
 }

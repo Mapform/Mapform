@@ -6,16 +6,14 @@ import React, {
   useOptimistic,
   startTransition,
   useState,
-  useEffect,
 } from "react";
 import type { GetUserWorkspaceMemberships } from "@mapform/backend/data/workspace-memberships/get-user-workspace-memberships";
 import type { WorkspaceDirectory } from "@mapform/backend/data/workspaces/get-workspace-directory";
 import { SidebarProvider } from "@mapform/ui/components/sidebar";
-import Map, { NavigationControl, useMap } from "react-map-gl/mapbox";
+import Map, { NavigationControl } from "react-map-gl/mapbox";
 import { env } from "~/*";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { MapContextMenu } from "./map-context-menu";
-import { useMapPadding } from "~/lib/map/use-map-padding";
 
 export interface WorkspaceContextInterface {
   workspaceSlug: string;
@@ -49,7 +47,6 @@ export function WorkspaceProvider({
   workspaceMemberships: NonNullable<GetUserWorkspaceMemberships["data"]>;
   workspaceDirectory: NonNullable<WorkspaceDirectory["data"]>;
 } & WorkspaceProviderProps) {
-  const padding = useMapPadding(true);
   const [contextMenu, setContextMenu] = useState<{
     longitude: number;
     latitude: number;
@@ -113,33 +110,16 @@ export function WorkspaceProvider({
         minZoom={2}
         onContextMenu={handleContextMenu}
       >
-        <PaddingPositioner>
-          <SidebarProvider defaultOpen={defaultLeftOpen}>
-            {children}
-          </SidebarProvider>
-          <NavigationControl position="top-right" />
-          <MapContextMenu
-            open={!!contextMenu}
-            onOpenChange={handleCloseContextMenu}
-            position={contextMenu ?? { x: 0, y: 0, longitude: 0, latitude: 0 }}
-          />
-        </PaddingPositioner>
+        <SidebarProvider defaultOpen={defaultLeftOpen}>
+          {children}
+        </SidebarProvider>
+        <NavigationControl position="top-right" />
+        <MapContextMenu
+          open={!!contextMenu}
+          onOpenChange={handleCloseContextMenu}
+          position={contextMenu ?? { x: 0, y: 0, longitude: 0, latitude: 0 }}
+        />
       </Map>
     </WorkspaceContext.Provider>
   );
-}
-
-function PaddingPositioner({ children }: { children: React.ReactNode }) {
-  const map = useMap();
-  const padding = useMapPadding();
-
-  useEffect(() => {
-    if (!map.current) return;
-
-    map.current.easeTo({
-      padding,
-    });
-  }, [padding]);
-
-  return <>{children}</>;
 }
