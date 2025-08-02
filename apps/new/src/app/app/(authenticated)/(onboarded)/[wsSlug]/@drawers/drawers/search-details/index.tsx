@@ -41,13 +41,14 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@mapform/ui/components/popover";
+import { useMap } from "react-map-gl/mapbox";
 import { openInGoogleMaps } from "~/lib/external-links/google";
 import { openInAppleMaps } from "~/lib/external-links/apple";
 import { useAction } from "next-safe-action/hooks";
 import { createRowAction } from "~/data/rows/create-row";
 import { useParams } from "next/navigation";
 import { useWorkspace } from "../../../workspace-context";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface SearchDetailsProps {
   geoapifyPlaceDetails: GetPlaceDetails["data"];
@@ -71,6 +72,7 @@ export function SearchDetails({ geoapifyPlaceDetails }: SearchDetailsProps) {
 }
 
 function SearchDetailsInner({ geoapifyPlaceDetails }: SearchDetailsProps) {
+  const map = useMap();
   const { setQueryStates } = useParamsContext();
   const { pId } = useParams<{ pId: string }>();
   const { workspaceDirectory } = useWorkspace();
@@ -87,12 +89,18 @@ function SearchDetailsInner({ geoapifyPlaceDetails }: SearchDetailsProps) {
     geoapifyPlaceDetails?.features[0]?.properties.datasource?.raw?.wikidata,
   );
 
-  if (!geoapifyPlaceDetails) return null;
+  const longitude = geoapifyPlaceDetails?.features[0]?.properties.lon;
+  const latitude = geoapifyPlaceDetails?.features[0]?.properties.lat;
 
-  const longitude = geoapifyPlaceDetails.features[0]?.properties.lon;
-  const latitude = geoapifyPlaceDetails.features[0]?.properties.lat;
+  useEffect(() => {
+    if (!longitude || !latitude) return;
 
-  const place = geoapifyPlaceDetails.features[0]?.properties;
+    map.current?.easeTo({
+      center: [longitude, latitude],
+    });
+  }, [longitude, latitude]);
+
+  const place = geoapifyPlaceDetails?.features[0]?.properties;
 
   if (!longitude || !latitude || !place) return null;
 

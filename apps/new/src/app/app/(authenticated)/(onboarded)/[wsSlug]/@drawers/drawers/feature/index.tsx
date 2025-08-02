@@ -16,7 +16,7 @@ import {
 import { updateRowAction } from "~/data/rows/update-row";
 import type { GetRow } from "@mapform/backend/data/rows/get-row";
 import type { UpdateRowSchema } from "@mapform/backend/data/rows/update-row/schema";
-import { Marker } from "react-map-gl/mapbox";
+import { Marker, useMap } from "react-map-gl/mapbox";
 import { LoadingSkeleton } from "~/components/loading-skeleton";
 import { Feature as FeatureComponent } from "~/components/feature";
 import {
@@ -30,12 +30,14 @@ import {
 } from "@mapform/ui/components/dropdown-menu";
 import { openInAppleMaps } from "~/lib/external-links/apple";
 import { openInGoogleMaps } from "~/lib/external-links/google";
+import { useEffect } from "react";
 
 interface FeatureDrawerProps {
   feature: GetRow["data"];
 }
 
 export function Feature({ feature }: FeatureDrawerProps) {
+  const map = useMap();
   const { params, isPending, drawerDepth } = useParamsContext();
 
   const featureService = useStateService<GetRow["data"], UpdateRowSchema>(
@@ -51,6 +53,17 @@ export function Feature({ feature }: FeatureDrawerProps) {
       },
     },
   );
+
+  const longitude = featureService.optimisticState?.center.coordinates[0];
+  const latitude = featureService.optimisticState?.center.coordinates[1];
+
+  useEffect(() => {
+    if (!longitude || !latitude) return;
+
+    map.current?.easeTo({
+      center: [longitude, latitude],
+    });
+  }, [longitude, latitude]);
 
   return (
     <>
@@ -73,13 +86,9 @@ export function Feature({ feature }: FeatureDrawerProps) {
         )}
       </MapDrawer>
 
-      {featureService.optimisticState?.center.coordinates[0] &&
-        featureService.optimisticState.center.coordinates[1] && (
-          <Marker
-            longitude={featureService.optimisticState.center.coordinates[0]}
-            latitude={featureService.optimisticState.center.coordinates[1]}
-          />
-        )}
+      {longitude && latitude && (
+        <Marker longitude={longitude} latitude={latitude} />
+      )}
     </>
   );
 }
