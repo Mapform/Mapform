@@ -47,7 +47,6 @@ import { useAction } from "next-safe-action/hooks";
 import { createRowAction } from "~/data/rows/create-row";
 import { useParams } from "next/navigation";
 import { useWorkspace } from "../../../workspace-context";
-import { cn } from "@mapform/lib/classnames";
 import { useState } from "react";
 
 interface SearchDetailsProps {
@@ -76,8 +75,9 @@ function SearchDetailsInner({ geoapifyPlaceDetails }: SearchDetailsProps) {
   const { pId } = useParams<{ pId: string }>();
   const { workspaceDirectory } = useWorkspace();
   const { execute, isPending } = useAction(createRowAction, {
-    onSuccess: ({ data }) => {
-      void setQueryStates({ geoapifyPlaceId: null, rowId: data?.id });
+    onSuccess: async ({ data }) => {
+      await setQueryStates({ geoapifyPlaceId: null });
+      await setQueryStates({ rowId: data?.id });
     },
   });
 
@@ -131,7 +131,8 @@ function SearchDetailsInner({ geoapifyPlaceDetails }: SearchDetailsProps) {
             onClick={() => {
               execute({
                 projectId: pId,
-                name: place.name_international?.en,
+                name: place.name_international?.en ?? place.name,
+                geoapifyPlaceId: place.place_id,
                 geometry: {
                   type: "Point",
                   coordinates: [longitude, latitude],
