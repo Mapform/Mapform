@@ -1,9 +1,16 @@
+import { useParams, usePathname } from "next/navigation";
 import { useMemo } from "react";
 import { DRAWER_WIDTH, SIDEBAR_WIDTH } from "~/constants/sidebars";
 import { useParamsContext } from "~/lib/params/client";
 
 export function useMapPadding(forceOpen?: boolean) {
   const { params } = useParamsContext();
+  const pathParams = useParams<{
+    pId?: string;
+  }>();
+  const pathname = usePathname();
+
+  const isSettings = pathname.includes("/settings");
 
   const paddingSegments = useMemo(
     () => [
@@ -12,7 +19,9 @@ export function useMapPadding(forceOpen?: boolean) {
       params.chatId ||
       params.search ||
       params.rowId ||
-      params.geoapifyPlaceId
+      params.geoapifyPlaceId ||
+      pathParams.pId ||
+      isSettings
         ? [DRAWER_WIDTH]
         : []),
     ],
@@ -22,6 +31,8 @@ export function useMapPadding(forceOpen?: boolean) {
       params.search,
       params.rowId,
       params.geoapifyPlaceId,
+      pathParams.pId,
+      isSettings,
     ],
   );
 

@@ -1,6 +1,5 @@
 import type { SearchParams } from "~/lib/params/server";
 import { Drawers } from "../drawers";
-import { MapPadding } from "../map-padding";
 
 interface ProjectPage {
   searchParams: Promise<SearchParams>;
@@ -8,11 +7,6 @@ interface ProjectPage {
 }
 
 const SettingsPage = (props: ProjectPage) => {
-  return (
-    <>
-      <Drawers {...props} />
-      <MapPadding forceOpen />
-    </>
-  );
+  return <Drawers {...props} />;
 };
 export default SettingsPage;
