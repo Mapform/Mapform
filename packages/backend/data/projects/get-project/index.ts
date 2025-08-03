@@ -83,6 +83,7 @@ export const getProject = (authClient: UserAuthClient) =>
                 column: true,
               },
             },
+            blobs: true,
           },
         }),
         db.$count(rows, rowWhereOptions),
