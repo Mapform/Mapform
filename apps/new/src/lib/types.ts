@@ -7,7 +7,7 @@ export const messageMetadataSchema = z.object({});
 
 export type ChatTools = {
   autocomplete: InferUITool<typeof autocomplete>;
-  reverse_geocode: InferUITool<typeof reverseGeocode>;
+  reverseGeocode: InferUITool<typeof reverseGeocode>;
 };
 
 export type MessageMetadata = z.infer<typeof messageMetadataSchema>;

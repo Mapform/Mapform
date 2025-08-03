@@ -13,6 +13,8 @@ interface ChatMessageProps {
 export function Message({ message }: ChatMessageProps) {
   const isUser = message.role === "user";
 
+  console.log(1111, message);
+
   return (
     <AnimatePresence>
       <motion.div
@@ -59,7 +61,7 @@ export function Message({ message }: ChatMessageProps) {
               }
             }
 
-            if (part.type === "tool-reverse_geocode") {
+            if (part.type === "tool-reverseGeocode") {
               if (part.state === "input-available") {
                 return (
                   <Skeleton className="h-4 w-full" key={part.toolCallId} />

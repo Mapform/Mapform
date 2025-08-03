@@ -9,6 +9,8 @@ interface ReverseGeocodeMessageProps {
 export function ReverseGeocodeMessage({ result }: ReverseGeocodeMessageProps) {
   const map = useMap();
 
+  console.log(2222, result);
+
   useEffect(() => {
     if (map.current && result) {
       map.current.flyTo({
