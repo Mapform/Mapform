@@ -1,11 +1,13 @@
 import type { InferUITool, UIMessage } from "ai";
 import type { autocomplete } from "~/lib/ai/tools/autocomplete";
+import type { reverseGeocode } from "~/lib/ai/tools/reverse-geocode";
 import { z } from "zod";
 
 export const messageMetadataSchema = z.object({});
 
 export type ChatTools = {
   autocomplete: InferUITool<typeof autocomplete>;
+  reverse_geocode: InferUITool<typeof reverseGeocode>;
 };
 
 export type MessageMetadata = z.infer<typeof messageMetadataSchema>;

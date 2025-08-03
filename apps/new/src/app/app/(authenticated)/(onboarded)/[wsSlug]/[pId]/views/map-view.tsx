@@ -37,7 +37,7 @@ export function MapView() {
               <ImageIcon className="size-4 text-gray-400" />
             )}
           </div>
-          <div className="flex flex-1 items-center p-2">
+          <div className="flex flex-1 items-center truncate p-2">
             <div className="mr-1">{row.icon}</div>
             <h6 className="m-0 font-medium">{row.name}</h6>
           </div>

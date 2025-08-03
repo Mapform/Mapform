@@ -4,6 +4,7 @@ import { cn } from "@mapform/lib/classnames";
 import { Skeleton } from "@mapform/ui/components/skeleton";
 import { AutocompleteMessage } from "./autocomplete-message";
 import { Markdown } from "~/components/markdown";
+import { ReverseGeocodeMessage } from "./reverse-geocode-message";
 
 interface ChatMessageProps {
   message: ChatMessage;
@@ -51,6 +52,23 @@ export function Message({ message }: ChatMessageProps) {
               if (part.state === "output-available") {
                 return (
                   <AutocompleteMessage
+                    key={part.toolCallId}
+                    result={part.output}
+                  />
+                );
+              }
+            }
+
+            if (part.type === "tool-reverse_geocode") {
+              if (part.state === "input-available") {
+                return (
+                  <Skeleton className="h-4 w-full" key={part.toolCallId} />
+                );
+              }
+
+              if (part.state === "output-available") {
+                return (
+                  <ReverseGeocodeMessage
                     key={part.toolCallId}
                     result={part.output}
                   />

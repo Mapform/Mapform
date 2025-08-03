@@ -20,7 +20,7 @@ export const autocomplete = tool({
   }),
   execute: async ({ query, bounds }) => {
     console.log("query", query);
-    const results = await addressAutocomplete(query, bounds);
+    const results = await autocompleteFunc(query, bounds);
     console.log("results", results);
     return results[0];
   },
@@ -42,7 +42,7 @@ export interface LocationResult {
   category: string;
 }
 
-export async function addressAutocomplete(
+export async function autocompleteFunc(
   query: string,
   bounds?: number[],
 ): Promise<LocationResult[]> {
