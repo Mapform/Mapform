@@ -26,7 +26,7 @@ export function Message({ message }: ChatMessageProps) {
         )}
       >
         <div
-          className={cn("text-sm", {
+          className={cn("w-full text-sm", {
             "max-w-[80%] rounded-lg bg-gray-900 px-3 py-1.5": isUser,
           })}
         >

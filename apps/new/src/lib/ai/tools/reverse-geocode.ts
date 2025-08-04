@@ -16,7 +16,6 @@ export const reverseGeocode = tool({
 
 export interface LocationResult {
   place_id: string;
-  name?: string;
   country: string;
   country_code: string;
   region: string;
@@ -27,7 +26,6 @@ export interface LocationResult {
   formatted: string;
   address_line1: string;
   address_line2: string;
-  category: string;
 }
 
 export async function reverseGeocodeFunc(
