@@ -75,10 +75,10 @@ function ChatInner({ initialMessages }: ChatProps) {
     }
   }, [status]);
 
-  // Scroll to bottom on page load and when messages change
+  // Scroll to bottom on page load
   useEffect(() => {
     scrollToBottom("auto");
-  }, [messages]);
+  }, []);
 
   useEffect(() => {
     if (

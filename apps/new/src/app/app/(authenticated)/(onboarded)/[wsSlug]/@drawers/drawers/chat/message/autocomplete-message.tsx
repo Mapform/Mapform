@@ -1,6 +1,8 @@
 import { useEffect, useRef } from "react";
 import { Marker, useMap } from "react-map-gl/mapbox";
 import type { LocationResult } from "~/lib/ai/tools/autocomplete";
+import { FeatureList } from "~/components/feature-list";
+import { useParamsContext } from "~/lib/params/client";
 
 interface AutocompleteMessageProps {
   result: LocationResult | undefined;
@@ -8,6 +10,7 @@ interface AutocompleteMessageProps {
 
 export function AutocompleteMessage({ result }: AutocompleteMessageProps) {
   const map = useMap();
+  const { setQueryStates } = useParamsContext();
   const hasFlownToRef = useRef<string | null>(null);
 
   useEffect(() => {
@@ -28,7 +31,34 @@ export function AutocompleteMessage({ result }: AutocompleteMessageProps) {
 
   if (!result) return null;
 
+  const features = [
+    {
+      id: result.place_id,
+      name: result.address_line1,
+      description: result.address_line2,
+      icon: null,
+      coordinates: [result.lon, result.lat] as [number, number],
+    },
+  ];
+
+  const handleFeatureClick = (feature: {
+    id: string;
+    coordinates: [number, number];
+  }) => {
+    if (map.current) {
+      map.current.flyTo({
+        center: feature.coordinates,
+        duration: 1000,
+      });
+    }
+
+    void setQueryStates({ geoapifyPlaceId: feature.id });
+  };
+
   return (
-    <Marker longitude={result.lon} latitude={result.lat} anchor="center" />
+    <>
+      <Marker longitude={result.lon} latitude={result.lat} anchor="center" />
+      <FeatureList features={features} onClick={handleFeatureClick} />
+    </>
   );
 }
