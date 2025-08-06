@@ -53,7 +53,7 @@ export function MapContextMenu({
                 query: null,
                 chatId: null,
               },
-              { shallow: true },
+              { shallow: false },
             );
             await setQueryStates(
               {
