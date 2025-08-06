@@ -1,6 +1,6 @@
 "server-only";
 
-import { db } from "@mapform/db";
+import { db, sql } from "@mapform/db";
 import { chats, messages } from "@mapform/db/schema";
 import { createMessagesSchema } from "./schema";
 import type { UserAuthClient } from "../../../lib/types";
@@ -29,20 +29,22 @@ export const createMessages = (authClient: UserAuthClient) =>
           throw new Error("User cannot create messages for this chat");
         }
 
-        // Filter out messages that already exist
-        const newMessages = insertMessages.filter(
-          (m) => !chat.messages.some((em) => em.id === m.id),
-        );
+        const values = insertMessages.map((m) => ({
+          ...m,
+          chatId,
+          userId: user.id,
+        }));
 
         return db
           .insert(messages)
-          .values(
-            newMessages.map((m) => ({
-              ...m,
-              chatId,
-              userId: user.id,
-            })),
-          )
+          .values(values)
+          .onConflictDoUpdate({
+            target: [messages.id],
+            set: {
+              // upsert many: https://github.com/drizzle-team/drizzle-orm/issues/1728#issuecomment-1880198186
+              parts: sql`excluded.parts`,
+            },
+          })
           .returning();
       },
     );

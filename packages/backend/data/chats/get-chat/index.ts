@@ -14,10 +14,6 @@ export const getChat = (authClient: UserAuthClient) =>
         where: and(eq(chats.id, id), eq(chats.userId, user.id)),
       });
 
-      if (!chat) {
-        throw new Error("Chat not found");
-      }
-
       return chat;
     });
 

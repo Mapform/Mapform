@@ -14,10 +14,11 @@ export const maxDuration = 30;
 
 export async function POST(req: Request) {
   const {
-    message,
+    messages,
     id,
     projectId,
-  }: { message: UIMessage; id: string; projectId?: string } = await req.json();
+  }: { messages: UIMessage[]; id: string; projectId?: string } =
+    await req.json();
 
   const session = await getCurrentSession();
 
@@ -37,7 +38,7 @@ export async function POST(req: Request) {
       - ensure it is not more than 80 characters long
       - the title should be a summary of the user's message
       - do not use quotes or colons`,
-      prompt: JSON.stringify(message),
+      prompt: JSON.stringify(messages),
     });
 
     const newChat = await authClient.createChat({
@@ -45,8 +46,6 @@ export async function POST(req: Request) {
       title,
       projectId: projectId ?? null,
     });
-
-    console.log("newChat", newChat?.validationErrors);
 
     if (!newChat?.data) {
       return NextResponse.json(
@@ -58,14 +57,14 @@ export async function POST(req: Request) {
     chat = { data: newChat.data };
   }
 
-  const previousMessages =
-    (
-      await authClient.getMessages({
-        chatId: id,
-      })
-    )?.data ?? [];
+  // const previousMessages =
+  //   (
+  //     await authClient.getMessages({
+  //       chatId: id,
+  //     })
+  //   )?.data ?? [];
 
-  const messages = [...previousMessages, message] as UIMessage[];
+  // const messages = [...previousMessages, message] as UIMessage[];
 
   const result = streamText({
     model: openai("gpt-4o"),
