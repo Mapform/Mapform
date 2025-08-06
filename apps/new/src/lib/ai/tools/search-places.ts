@@ -14,13 +14,13 @@ export const searchPlaces = tool({
       .array(z.nativeEnum(PlaceCategory))
       .optional()
       .describe(
-        "Categories of places to search for. Examples: CATERING_RESTAURANT, CATERING_CAFE, ACCOMMODATION_HOTEL, COMMERCIAL_SUPERMARKET, etc.",
+        `Categories of places to search for. Available categories: ${Object.values(PlaceCategory).join(", ")}`,
       ),
     conditions: z
       .array(z.nativeEnum(PlaceCondition))
       .optional()
       .describe(
-        "Conditions to filter places by. Available conditions: wheelchair (wheelchair accessible), internet_access.free (free WiFi), vegetarian (serves vegetarian food), vegan (serves vegan food), halal (serves halal food), kosher (serves kosher food), organic (serves organic food), gluten_free (gluten-free options), dogs (dog-friendly), no_fee (free entry), access.yes (public access), access_limited.private (private access only)",
+        `Conditions to filter places by. Available conditions: ${Object.values(PlaceCondition).join(", ")}`,
       ),
     location: z
       .object({
