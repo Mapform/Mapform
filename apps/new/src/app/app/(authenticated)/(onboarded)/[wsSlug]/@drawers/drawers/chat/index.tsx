@@ -108,11 +108,13 @@ function ChatInner({ initialMessages }: ChatProps) {
         {messages.map((message) => (
           <Message key={message.id} message={message} />
         ))}
-        {status === "submitted" && (
-          <div className="flex items-center">
-            <Loader2 className="size-4 animate-spin" />
-          </div>
-        )}
+        {status === "submitted" &&
+          messages.length > 0 &&
+          messages[messages.length - 1]?.role === "user" && (
+            <div className="flex items-center">
+              <Loader2 className="size-4 animate-spin" />
+            </div>
+          )}
       </div>
       <form
         className="relative flex flex-shrink-0 flex-col gap-2 border-t p-4"

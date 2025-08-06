@@ -13,8 +13,6 @@ interface ChatMessageProps {
 export function Message({ message }: ChatMessageProps) {
   const isUser = message.role === "user";
 
-  console.log(1111, message);
-
   return (
     <AnimatePresence>
       <motion.div
@@ -31,6 +29,10 @@ export function Message({ message }: ChatMessageProps) {
           })}
         >
           {message.parts.map((part, index) => {
+            if (part.type === "reasoning") {
+              console.log("REASONING", part);
+            }
+
             if (part.type === "text") {
               return (
                 <div
@@ -77,6 +79,8 @@ export function Message({ message }: ChatMessageProps) {
                 );
               }
             }
+
+            console.debug("UNHANDLED MESSAGE PART", part);
 
             return null;
           })}
