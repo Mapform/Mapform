@@ -14,7 +14,12 @@ export function AutocompleteMessage({ result }: AutocompleteMessageProps) {
   const hasFlownToRef = useRef<string | null>(null);
 
   useEffect(() => {
-    if (map.current && result) {
+    if (
+      map.current &&
+      result &&
+      typeof result.lat === "number" &&
+      typeof result.lon === "number"
+    ) {
       // Create a unique key for this location
       const locationKey = `${result.lon},${result.lat}`;
 
@@ -30,6 +35,14 @@ export function AutocompleteMessage({ result }: AutocompleteMessageProps) {
   }, [map, result]);
 
   if (!result) return null;
+  if (
+    typeof result.lat !== "number" ||
+    typeof result.lon !== "number" ||
+    isNaN(result.lat) ||
+    isNaN(result.lon)
+  ) {
+    return null;
+  }
 
   const features = [
     {
