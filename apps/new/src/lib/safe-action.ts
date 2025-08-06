@@ -36,7 +36,7 @@ import { deleteColumn } from "@mapform/backend/data/columns/delete-column";
 import { updateColumn } from "@mapform/backend/data/columns/update-column";
 import { upsertCell } from "@mapform/backend/data/cells/upsert-cell";
 import { searchRows } from "@mapform/backend/data/rows/search-rows";
-import { searchPlaces } from "@mapform/backend/data/geoapify/search";
+import { searchPlaces } from "@mapform/backend/data/geoapify/places";
 import { updateRow } from "@mapform/backend/data/rows/update-row";
 import { updateProject } from "@mapform/backend/data/projects/update-project";
 import { updateProjectOrder } from "@mapform/backend/data/projects/update-project-order";
