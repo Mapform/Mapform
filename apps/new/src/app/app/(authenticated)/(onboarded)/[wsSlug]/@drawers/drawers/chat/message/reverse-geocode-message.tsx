@@ -1,11 +1,12 @@
 import { useEffect } from "react";
 import { Marker, useMap } from "react-map-gl/mapbox";
-import type { LocationResult } from "~/lib/ai/tools/reverse-geocode";
+import type { GetPlaceDetails } from "@mapform/backend/data/geoapify/details";
 import { FeatureList } from "~/components/feature-list";
 import { useParamsContext } from "~/lib/params/client";
+import { useWikidataImages } from "~/lib/wikidata-image";
 
 interface ReverseGeocodeMessageProps {
-  result: LocationResult | undefined;
+  result: NonNullable<GetPlaceDetails["data"]>["features"][number] | undefined;
 }
 
 export function ReverseGeocodeMessage({ result }: ReverseGeocodeMessageProps) {
@@ -15,21 +16,31 @@ export function ReverseGeocodeMessage({ result }: ReverseGeocodeMessageProps) {
   useEffect(() => {
     if (map.current && result) {
       map.current.flyTo({
-        center: [result.lon, result.lat],
+        center: [result.properties.lon, result.properties.lat],
         duration: 1000,
       });
     }
   }, [map, result]);
 
+  const wikiData = useWikidataImages(
+    result?.properties.datasource?.raw?.wikidata,
+  );
+
   if (!result) return null;
 
   const features = [
     {
-      id: result.place_id,
-      name: result.address_line1,
-      description: result.address_line2,
+      id: result.properties.place_id,
+      name: result.properties.name ?? "",
+      description: result.properties.address_line1,
       icon: null,
-      coordinates: [result.lon, result.lat] as [number, number],
+      coordinates: [result.properties.lon, result.properties.lat] as [
+        number,
+        number,
+      ],
+      image: {
+        url: wikiData.primaryImage?.imageUrl ?? "",
+      },
     },
   ];
 
@@ -49,7 +60,11 @@ export function ReverseGeocodeMessage({ result }: ReverseGeocodeMessageProps) {
 
   return (
     <>
-      <Marker longitude={result.lon} latitude={result.lat} anchor="center" />
+      <Marker
+        longitude={result.properties.lon}
+        latitude={result.properties.lat}
+        anchor="center"
+      />
       <FeatureList features={features} onClick={handleFeatureClick} />
     </>
   );

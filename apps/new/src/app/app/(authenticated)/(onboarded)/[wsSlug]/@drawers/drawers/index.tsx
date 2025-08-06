@@ -91,6 +91,8 @@ async function ChatDrawer({ searchParams }: DealDrawerProps) {
       })
     : null;
 
+  console.log(messages?.data);
+
   return <Chat initialMessages={messages?.data as ChatMessage[]} />;
 }
 
@@ -98,6 +100,7 @@ const getGeoapifyPlaceDetails = cache(async (placeId: string | null) => {
   if (!placeId) return null;
 
   const placeDetails = await publicClient.getPlaceDetails({
+    type: "placeId",
     placeId,
   });
   return placeDetails;

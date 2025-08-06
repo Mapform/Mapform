@@ -1,6 +1,6 @@
 import { tool } from "ai";
 import { z } from "zod";
-import { env } from "~/*";
+import { publicClient } from "~/lib/safe-action";
 
 export const reverseGeocode = tool({
   description: "Look up a location by its latitude and longitude.",
@@ -14,28 +14,22 @@ export const reverseGeocode = tool({
   },
 });
 
-export interface LocationResult {
-  place_id: string;
-  country: string;
-  country_code: string;
-  region: string;
-  state: string;
-  city: string;
-  lon: number;
-  lat: number;
-  formatted: string;
-  address_line1: string;
-  address_line2: string;
-}
+export async function reverseGeocodeFunc(lat: number, lng: number) {
+  const placeDetails = await publicClient.getPlaceDetails({
+    type: "coordinates",
+    lat,
+    lng,
+  });
 
-export async function reverseGeocodeFunc(
-  lat: number,
-  lng: number,
-): Promise<LocationResult> {
-  const response = await fetch(
-    `https://api.geoapify.com/v1/geocode/reverse?lat=${lat}&lon=${lng}&apiKey=${env.GEOAPIFY_API_KEY}`,
-  );
-  const data = await response.json();
+  if (!placeDetails?.data) {
+    throw new Error("Failed to get place details");
+  }
 
-  return data.features[0].properties as LocationResult;
+  // Extract the first feature's properties
+  const feature = placeDetails.data.features[0];
+  if (!feature) {
+    throw new Error("No place details found for the given coordinates");
+  }
+
+  return feature;
 }

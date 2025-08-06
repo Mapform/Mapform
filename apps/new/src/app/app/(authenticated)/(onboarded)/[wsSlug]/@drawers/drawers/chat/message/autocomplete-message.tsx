@@ -3,6 +3,7 @@ import { Marker, useMap } from "react-map-gl/mapbox";
 import type { LocationResult } from "~/lib/ai/tools/autocomplete";
 import { FeatureList } from "~/components/feature-list";
 import { useParamsContext } from "~/lib/params/client";
+import { useWikidataImages } from "~/lib/wikidata-image";
 
 interface AutocompleteMessageProps {
   result: LocationResult | undefined;
@@ -34,7 +35,14 @@ export function AutocompleteMessage({ result }: AutocompleteMessageProps) {
     }
   }, [map, result]);
 
+  // const wikiData = useWikidataImages(
+  //   result?.datasource?.raw?.wikidata,
+  // );
+
+  console.log(11111, result);
+
   if (!result) return null;
+
   if (
     typeof result.lat !== "number" ||
     typeof result.lon !== "number" ||
@@ -51,6 +59,9 @@ export function AutocompleteMessage({ result }: AutocompleteMessageProps) {
       description: result.address_line2,
       icon: null,
       coordinates: [result.lon, result.lat] as [number, number],
+      // image: {
+      //   url: wikiData.primaryImage?.imageUrl ?? "",
+      // },
     },
   ];
 
