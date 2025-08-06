@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { Marker, useMap } from "react-map-gl/mapbox";
 import type { LocationResult } from "~/lib/ai/tools/autocomplete";
 
@@ -8,13 +8,21 @@ interface AutocompleteMessageProps {
 
 export function AutocompleteMessage({ result }: AutocompleteMessageProps) {
   const map = useMap();
+  const hasFlownToRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (map.current && result) {
-      map.current.flyTo({
-        center: [result.lon, result.lat],
-        duration: 1000,
-      });
+      // Create a unique key for this location
+      const locationKey = `${result.lon},${result.lat}`;
+
+      // Only fly to if we haven't flown to this exact location before
+      if (hasFlownToRef.current !== locationKey) {
+        map.current.flyTo({
+          center: [result.lon, result.lat],
+          duration: 1000,
+        });
+        hasFlownToRef.current = locationKey;
+      }
     }
   }, [map, result]);
 

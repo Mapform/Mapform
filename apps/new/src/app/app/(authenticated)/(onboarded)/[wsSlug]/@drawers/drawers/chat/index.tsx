@@ -59,17 +59,26 @@ function ChatInner({ initialMessages }: ChatProps) {
     setInput("");
   };
 
-  useEffect(() => {
+  const scrollToBottom = (behavior: ScrollBehavior = "auto") => {
     if (!chatContainerRef.current) return;
 
+    chatContainerRef.current.scrollTo({
+      top: chatContainerRef.current.scrollHeight,
+      behavior,
+    });
+  };
+
+  useEffect(() => {
     if (status === "submitted") {
-      // Scroll to bottom of chat smoothly after sending a message using a ref
-      chatContainerRef.current.scrollTo({
-        top: chatContainerRef.current.scrollHeight,
-        behavior: "smooth",
-      });
+      // Scroll to bottom of chat smoothly after sending a message
+      scrollToBottom("smooth");
     }
   }, [status]);
+
+  // Scroll to bottom on page load and when messages change
+  useEffect(() => {
+    scrollToBottom("auto");
+  }, [messages]);
 
   useEffect(() => {
     if (

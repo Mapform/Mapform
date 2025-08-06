@@ -57,17 +57,8 @@ export async function POST(req: Request) {
     chat = { data: newChat.data };
   }
 
-  // const previousMessages =
-  //   (
-  //     await authClient.getMessages({
-  //       chatId: id,
-  //     })
-  //   )?.data ?? [];
-
-  // const messages = [...previousMessages, message] as UIMessage[];
-
   const result = streamText({
-    model: openai("gpt-4o"),
+    model: openai("gpt-4.1"),
     system: SYSTEM_PROMPT,
     messages: convertToModelMessages(messages),
     tools: {
