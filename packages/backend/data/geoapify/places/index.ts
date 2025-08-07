@@ -100,6 +100,7 @@ export interface GeoapifyPlacesResponse {
 
 export const searchPlaces = (authClient: PublicClient) =>
   authClient.schema(placesSchema).action(async ({ parsedInput }) => {
+    console.log(11111, parsedInput);
     try {
       const searchParams = new URLSearchParams({
         apiKey: env.GEOAPIFY_API_KEY,
@@ -172,6 +173,7 @@ export const searchPlaces = (authClient: PublicClient) =>
       );
 
       if (!response.ok) {
+        console.error(2222, response);
         throw new Error(`Response status: ${response.status}`);
       }
 
