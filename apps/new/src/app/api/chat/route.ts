@@ -5,7 +5,6 @@ import { streamText, convertToModelMessages, generateText } from "ai";
 import { NextResponse } from "next/server";
 import { getCurrentSession } from "~/data/auth/get-current-session";
 import { SYSTEM_PROMPT } from "~/lib/ai/prompts";
-import { autocomplete } from "~/lib/ai/tools/autocomplete";
 import { reverseGeocode } from "~/lib/ai/tools/reverse-geocode";
 import { getInformation } from "~/lib/ai/tools/get-information";
 import { searchPlaces } from "~/lib/ai/tools/search-places";
@@ -63,7 +62,6 @@ export async function POST(req: Request) {
     system: SYSTEM_PROMPT,
     messages: convertToModelMessages(messages),
     tools: {
-      autocomplete,
       getInformation,
       reverseGeocode,
       searchPlaces,

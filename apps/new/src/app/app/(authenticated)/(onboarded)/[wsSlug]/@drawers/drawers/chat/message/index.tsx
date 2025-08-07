@@ -5,6 +5,7 @@ import { Skeleton } from "@mapform/ui/components/skeleton";
 import { AutocompleteMessage } from "./autocomplete-message";
 import { Markdown } from "~/components/markdown";
 import { ReverseGeocodeMessage } from "./reverse-geocode-message";
+import { SearchPlacesMessage } from "./search-places-message";
 
 interface ChatMessageProps {
   message: ChatMessage;
@@ -46,7 +47,7 @@ export function Message({ message }: ChatMessageProps) {
               );
             }
 
-            if (part.type === "tool-autocomplete") {
+            if (part.type === "tool-searchPlaces") {
               if (part.state === "input-available") {
                 return (
                   <Skeleton className="h-4 w-full" key={part.toolCallId} />
@@ -55,7 +56,7 @@ export function Message({ message }: ChatMessageProps) {
 
               if (part.state === "output-available") {
                 return (
-                  <AutocompleteMessage
+                  <SearchPlacesMessage
                     key={part.toolCallId}
                     result={part.output}
                   />

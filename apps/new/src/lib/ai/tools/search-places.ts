@@ -8,7 +8,7 @@ import {
 
 export const searchPlaces = tool({
   description:
-    "Search for places and points of interest by category, location, and other criteria. Use this to find restaurants, cafes, museums, hotels, shops, and other amenities.",
+    "Search for places and points of interest by category, location, and other criteria. Use this to find restaurants, cafes, museums, hotels, shops, and other amenities. When searching for a single place, use limit 1.",
   inputSchema: z.object({
     categories: z
       .array(z.nativeEnum(PlaceCategory))
@@ -38,6 +38,10 @@ export const searchPlaces = tool({
       .optional()
       .describe("Bounding box to search within [lon1, lat1, lon2, lat2]"),
     name: z.string().optional().describe("Filter places by name"),
+    userQuery: z
+      .string()
+      .optional()
+      .describe("The original user query to help with selection"),
     limit: z
       .number()
       .min(1)
@@ -62,6 +66,7 @@ export const searchPlaces = tool({
       name,
       limit,
     });
+
     return results;
   },
 });

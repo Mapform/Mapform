@@ -93,7 +93,7 @@ interface GeoapifyPlace {
   bbox?: [number, number, number, number];
 }
 
-interface GeoapifyPlacesResponse {
+export interface GeoapifyPlacesResponse {
   type: "FeatureCollection";
   features: GeoapifyPlace[];
 }
