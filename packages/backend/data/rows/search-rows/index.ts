@@ -71,8 +71,6 @@ export const searchRows = (authClient: UserAuthClient) =>
 
       const similarity = sql<number>`1 - (${cosineDistance(embeddings.embedding, embedding)})`;
 
-      console.log("projectIds", projectIds);
-
       const embeddingResults = await db
         .selectDistinctOn([rows.id], {
           id: rows.id,

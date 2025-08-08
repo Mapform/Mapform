@@ -22,7 +22,6 @@ export function ColumnAdder() {
   const { projectService } = useProject();
   const { execute, isPending } = useAction(createColumnAction, {
     onSuccess: () => {
-      console.log("success");
       setPopoverOpen(false);
       form.reset();
     },
@@ -40,7 +39,6 @@ export function ColumnAdder() {
   });
 
   const onSubmit = (values: CreateColumnSchema) => {
-    console.log("onSubmit", values);
     execute(values);
   };
 

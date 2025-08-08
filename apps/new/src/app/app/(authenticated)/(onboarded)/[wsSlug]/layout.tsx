@@ -13,7 +13,6 @@ export default async function WorkspaceLayout(props: {
   nav?: React.ReactNode;
   drawers?: React.ReactNode;
 }) {
-  console.log("params", await props.params);
   // const { params } = useParamsContext();
   const cookieStore = await cookies();
   const leftSidebarCookie = cookieStore.get("sidebar-left:state");

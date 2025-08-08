@@ -31,7 +31,6 @@ export function Message({ message }: ChatMessageProps) {
         >
           {message.parts.map((part, index) => {
             if (part.type === "reasoning") {
-              console.log("REASONING", part);
             }
 
             if (part.type === "text") {

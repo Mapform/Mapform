@@ -83,8 +83,6 @@ export const updateRow = (authClient: UserAuthClient) =>
           };
         });
 
-        console.log(99999, descriptionAsMarkdown);
-
         await inngest.send({
           name: "app/generate.embeddings",
           data: {

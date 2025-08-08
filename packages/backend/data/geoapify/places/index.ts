@@ -100,7 +100,6 @@ export interface GeoapifyPlacesResponse {
 
 export const searchPlaces = (authClient: PublicClient) =>
   authClient.schema(placesSchema).action(async ({ parsedInput }) => {
-    console.log(11111, parsedInput);
     try {
       const searchParams = new URLSearchParams({
         apiKey: env.GEOAPIFY_API_KEY,
@@ -117,8 +116,8 @@ export const searchPlaces = (authClient: PublicClient) =>
       }
 
       // Add filter if provided
+      let filterValue: string;
       if (parsedInput.filter) {
-        let filterValue: string;
         switch (parsedInput.filter.type) {
           case "circle":
             filterValue = `circle:${parsedInput.filter.lon},${parsedInput.filter.lat},${parsedInput.filter.radiusMeters}`;
@@ -133,8 +132,10 @@ export const searchPlaces = (authClient: PublicClient) =>
             filterValue = `place:${parsedInput.filter.placeId}`;
             break;
         }
-        searchParams.append("filter", filterValue);
+      } else {
+        filterValue = "rect:-180,-90,180,90";
       }
+      searchParams.append("filter", filterValue);
 
       // Add bias if provided
       if (parsedInput.bias) {
@@ -173,7 +174,6 @@ export const searchPlaces = (authClient: PublicClient) =>
       );
 
       if (!response.ok) {
-        console.error(2222, response);
         throw new Error(`Response status: ${response.status}`);
       }
 

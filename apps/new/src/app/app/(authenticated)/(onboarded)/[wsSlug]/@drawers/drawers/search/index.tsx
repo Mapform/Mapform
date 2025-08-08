@@ -136,7 +136,6 @@ export function SearchInner({
                 key={result.id}
                 value={result.id}
                 onSelect={async () => {
-                  console.log("clicked", result.id);
                   await setQueryStates({ rowId: result.id });
                   map?.flyTo({
                     center: result.center.coordinates as [number, number],

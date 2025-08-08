@@ -39,8 +39,6 @@ export function AutocompleteMessage({ result }: AutocompleteMessageProps) {
   //   result?.datasource?.raw?.wikidata,
   // );
 
-  console.log(11111, result);
-
   if (!result) return null;
 
   if (

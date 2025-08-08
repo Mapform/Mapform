@@ -91,8 +91,6 @@ async function ChatDrawer({ searchParams }: DealDrawerProps) {
       })
     : null;
 
-  console.log(messages?.data);
-
   return <Chat initialMessages={messages?.data as ChatMessage[]} />;
 }
 

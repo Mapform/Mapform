@@ -19,9 +19,7 @@ export const autocomplete = tool({
       ),
   }),
   execute: async ({ query, bounds }) => {
-    console.log("query", query);
     const results = await autocompleteFunc(query, bounds);
-    console.log("results", results);
     return results[0];
   },
 });

@@ -14,8 +14,6 @@ export function SearchPlacesMessage({ result }: SearchPlacesMessageProps) {
   const { setQueryStates } = useParamsContext();
   const hasFlownToRef = useRef<string | null>(null);
 
-  console.log(11111, result);
-
   return null;
 
   // useEffect(() => {
