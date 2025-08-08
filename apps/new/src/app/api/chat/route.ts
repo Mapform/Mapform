@@ -7,7 +7,7 @@ import { getCurrentSession } from "~/data/auth/get-current-session";
 import { SYSTEM_PROMPT } from "~/lib/ai/prompts";
 import { reverseGeocode } from "~/lib/ai/tools/reverse-geocode";
 import { getInformation } from "~/lib/ai/tools/get-information";
-import { searchPlaces } from "~/lib/ai/tools/search-places";
+import { autocomplete } from "~/lib/ai/tools/autocomplete";
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
@@ -64,7 +64,7 @@ export async function POST(req: Request) {
     tools: {
       getInformation,
       reverseGeocode,
-      searchPlaces,
+      autocomplete,
       // @ts-expect-error - all good
       webSearch: openai.tools.webSearchPreview({
         searchContextSize: "medium",
