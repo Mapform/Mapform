@@ -98,6 +98,12 @@ export interface GeoapifyPlacesResponse {
   features: GeoapifyPlace[];
 }
 
+/**
+ * NOTE: This tool is somewhat difficult to use. It CANNOT be used directly by
+ * the API since it can easily be misused. However, it can be configured to
+ * create toolsfor discrete use cases, for example searching for restaurants in
+ * an area.
+ */
 export const searchPlaces = (authClient: PublicClient) =>
   authClient.schema(placesSchema).action(async ({ parsedInput }) => {
     try {

@@ -34,7 +34,7 @@ const biasSchema = z.object({
 });
 
 export const placesSchema = z.object({
-  categories: z.array(z.nativeEnum(PlaceCategory)).optional(),
+  categories: z.array(z.nativeEnum(PlaceCategory)),
   conditions: z.array(z.nativeEnum(PlaceCondition)).optional(),
   filter: filterSchema.optional(),
   bias: biasSchema.optional(),
