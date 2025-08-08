@@ -48,6 +48,7 @@ import { createMessages } from "@mapform/backend/data/messages/create-messages";
 import { getMessages } from "@mapform/backend/data/messages/get-messages";
 import { listChats } from "@mapform/backend/data/chats/list-chats";
 import { getRowCount } from "@mapform/backend/data/usage/get-row-count";
+import { autocomplete } from "@mapform/backend/data/geoapify/autocomplete";
 
 const ignoredWorkspaceSlugs = ["onboarding"];
 const ignoredTeamspaceSlugs = ["settings"];
@@ -186,6 +187,7 @@ const createPublicClient = () => {
     validateMagicLink: validateMagicLink(extendedClient),
 
     // Geoapify
+    autocomplete: autocomplete(extendedClient),
     searchPlaces: searchPlaces(extendedClient),
     getPlaceDetails: getPlaceDetails(extendedClient),
 

@@ -56,7 +56,7 @@ export function Message({ message }: ChatMessageProps) {
                 return (
                   <AutocompleteMessage
                     key={part.toolCallId}
-                    result={part.output}
+                    result={part.output!}
                   />
                 );
               }

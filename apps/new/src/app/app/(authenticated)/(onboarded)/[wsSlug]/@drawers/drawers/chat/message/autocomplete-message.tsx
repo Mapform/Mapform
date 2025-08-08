@@ -1,12 +1,12 @@
 import { useEffect, useRef } from "react";
 import { Marker, useMap } from "react-map-gl/mapbox";
-import type { LocationResult } from "~/lib/ai/tools/autocomplete";
 import { FeatureList } from "~/components/feature-list";
+import type { AutocompleteResponse } from "~/lib/ai/tools/autocomplete";
 import { useParamsContext } from "~/lib/params/client";
 import { useWikidataImages } from "~/lib/wikidata-image";
 
 interface AutocompleteMessageProps {
-  result: LocationResult | undefined;
+  result: AutocompleteResponse | undefined;
 }
 
 export function AutocompleteMessage({ result }: AutocompleteMessageProps) {
@@ -14,52 +14,52 @@ export function AutocompleteMessage({ result }: AutocompleteMessageProps) {
   const { setQueryStates } = useParamsContext();
   const hasFlownToRef = useRef<string | null>(null);
 
+  const placeDetails = result?.data?.features[0]?.properties;
+
   useEffect(() => {
     if (
       map.current &&
-      result &&
-      typeof result.lat === "number" &&
-      typeof result.lon === "number"
+      placeDetails &&
+      typeof placeDetails.lat === "number" &&
+      typeof placeDetails.lon === "number"
     ) {
       // Create a unique key for this location
-      const locationKey = `${result.lon},${result.lat}`;
+      const locationKey = `${placeDetails.lon},${placeDetails.lat}`;
 
       // Only fly to if we haven't flown to this exact location before
       if (hasFlownToRef.current !== locationKey) {
         map.current.flyTo({
-          center: [result.lon, result.lat],
+          center: [placeDetails.lon, placeDetails.lat],
           duration: 1000,
         });
         hasFlownToRef.current = locationKey;
       }
     }
-  }, [map, result]);
+  }, [map, placeDetails]);
 
-  // const wikiData = useWikidataImages(
-  //   result?.datasource?.raw?.wikidata,
-  // );
+  const wikiData = useWikidataImages(placeDetails?.datasource?.raw?.wikidata);
 
-  if (!result) return null;
+  if (!placeDetails) return null;
 
   if (
-    typeof result.lat !== "number" ||
-    typeof result.lon !== "number" ||
-    isNaN(result.lat) ||
-    isNaN(result.lon)
+    typeof placeDetails.lat !== "number" ||
+    typeof placeDetails.lon !== "number" ||
+    isNaN(placeDetails.lat) ||
+    isNaN(placeDetails.lon)
   ) {
     return null;
   }
 
   const features = [
     {
-      id: result.place_id,
-      name: result.address_line1,
-      description: result.address_line2,
+      id: placeDetails.place_id,
+      name: placeDetails.address_line1,
+      description: placeDetails.address_line2,
       icon: null,
-      coordinates: [result.lon, result.lat] as [number, number],
-      // image: {
-      //   url: wikiData.primaryImage?.imageUrl ?? "",
-      // },
+      coordinates: [placeDetails.lon, placeDetails.lat] as [number, number],
+      image: {
+        url: wikiData.primaryImage?.imageUrl ?? "",
+      },
     },
   ];
 
@@ -79,7 +79,11 @@ export function AutocompleteMessage({ result }: AutocompleteMessageProps) {
 
   return (
     <>
-      <Marker longitude={result.lon} latitude={result.lat} anchor="center" />
+      <Marker
+        longitude={placeDetails.lon}
+        latitude={placeDetails.lat}
+        anchor="center"
+      />
       <FeatureList features={features} onClick={handleFeatureClick} />
     </>
   );
