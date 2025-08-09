@@ -27,7 +27,8 @@ export async function reverseGeocodeFunc(lat: number, lng: number) {
 
   // Extract the first feature's properties
   const feature = placeDetails.data.features[0];
-  if (!feature) {
+  // TODO: Handle other geometry types
+  if (!feature || (!feature.properties.lat && !feature.properties.lon)) {
     throw new Error("No place details found for the given coordinates");
   }
 

@@ -29,9 +29,6 @@ export function Message({ message }: ChatMessageProps) {
           })}
         >
           {message.parts.map((part, index) => {
-            if (part.type === "reasoning") {
-            }
-
             if (part.type === "text") {
               return (
                 <div
@@ -46,7 +43,10 @@ export function Message({ message }: ChatMessageProps) {
             }
 
             if (part.type === "tool-autocomplete") {
-              if (part.state === "input-available") {
+              if (
+                part.state === "input-available" ||
+                part.state === "input-streaming"
+              ) {
                 return (
                   <Skeleton className="h-4 w-full" key={part.toolCallId} />
                 );
