@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { ImageIcon } from "lucide-react";
+import { cn } from "@mapform/lib/classnames";
 
 interface Feature {
   id: string;
@@ -12,6 +13,7 @@ interface Feature {
   image?: {
     url: string;
     alt?: string;
+    isLoading?: boolean;
   };
 }
 
@@ -31,7 +33,14 @@ export function FeatureList({ features, onClick }: FeatureListProps) {
             onClick(feature);
           }}
         >
-          <div className="bg-muted relative flex size-16 flex-shrink-0 items-center justify-center">
+          <div
+            className={cn(
+              "bg-muted relative flex size-16 flex-shrink-0 items-center justify-center",
+              {
+                "animate-pulse": feature.image?.isLoading,
+              },
+            )}
+          >
             {feature.image?.url ? (
               <Image
                 src={feature.image.url}

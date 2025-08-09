@@ -53,12 +53,13 @@ export function AutocompleteMessage({ result }: AutocompleteMessageProps) {
   const features = [
     {
       id: placeDetails.place_id,
-      name: placeDetails.name_international?.en ?? placeDetails.name,
+      name: placeDetails.name_international?.en ?? placeDetails.name ?? "",
       description: placeDetails.address_line2,
       icon: null,
       coordinates: [placeDetails.lon, placeDetails.lat] as [number, number],
       image: {
         url: wikiData.primaryImage?.imageUrl ?? "",
+        isLoading: wikiData.isLoading,
       },
     },
   ];
