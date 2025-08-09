@@ -24,7 +24,7 @@ interface FeatureListProps {
 
 export function FeatureList({ features, onClick }: FeatureListProps) {
   return (
-    <ul className="flex w-full list-none flex-col gap-2 p-0">
+    <ul className="m-0 flex w-full list-none flex-col gap-2 p-0">
       {features.map((feature) => (
         <li
           key={feature.id}

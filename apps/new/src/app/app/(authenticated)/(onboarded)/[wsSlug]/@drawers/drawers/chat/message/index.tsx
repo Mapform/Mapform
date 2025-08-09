@@ -48,7 +48,10 @@ export function Message({ message }: ChatMessageProps) {
                 part.state === "input-streaming"
               ) {
                 return (
-                  <Skeleton className="h-4 w-full" key={part.toolCallId} />
+                  <Skeleton
+                    className="h-16 w-full border"
+                    key={part.toolCallId}
+                  />
                 );
               }
 
@@ -65,7 +68,10 @@ export function Message({ message }: ChatMessageProps) {
             if (part.type === "tool-reverseGeocode") {
               if (part.state === "input-available") {
                 return (
-                  <Skeleton className="h-4 w-full" key={part.toolCallId} />
+                  <Skeleton
+                    className="h-16 w-full border"
+                    key={part.toolCallId}
+                  />
                 );
               }
 
