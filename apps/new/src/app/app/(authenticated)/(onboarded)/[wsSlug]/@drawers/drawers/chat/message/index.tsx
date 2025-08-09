@@ -5,7 +5,7 @@ import { Skeleton } from "@mapform/ui/components/skeleton";
 import { AutocompleteMessage } from "./autocomplete-message";
 import { Markdown } from "~/components/markdown";
 import { ReverseGeocodeMessage } from "./reverse-geocode-message";
-import { BrainIcon } from "lucide-react";
+import { GlobeIcon } from "lucide-react";
 
 interface ChatMessageProps {
   message: ChatMessage;
@@ -62,6 +62,23 @@ export function Message({ message }: ChatMessageProps) {
                     key={part.toolCallId}
                     result={part.output!}
                   />
+                );
+              }
+            }
+
+            if (part.type === "tool-webSearch") {
+              if (
+                part.state === "input-available" ||
+                part.state === "input-streaming"
+              ) {
+                return (
+                  <div
+                    className="flex animate-pulse items-center gap-2"
+                    key={part.toolCallId}
+                  >
+                    <GlobeIcon className="mr-2 size-4" />
+                    <span className="text-sm">Searching the web...</span>
+                  </div>
                 );
               }
             }

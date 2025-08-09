@@ -1,4 +1,4 @@
-import type { InferUITool, UIMessage } from "ai";
+import type { InferUITool, UIMessage, UITool } from "ai";
 import type { autocomplete } from "~/lib/ai/tools/autocomplete";
 import type { getInformation } from "~/lib/ai/tools/get-information";
 import type { reverseGeocode } from "~/lib/ai/tools/reverse-geocode";
@@ -10,6 +10,7 @@ export type ChatTools = {
   autocomplete: InferUITool<typeof autocomplete>;
   reverseGeocode: InferUITool<typeof reverseGeocode>;
   getInformation: InferUITool<typeof getInformation>;
+  webSearch: UITool;
 };
 
 export type MessageMetadata = z.infer<typeof messageMetadataSchema>;
