@@ -6,6 +6,7 @@ import { AutocompleteMessage } from "./autocomplete-message";
 import { Markdown } from "~/components/markdown";
 import { ReverseGeocodeMessage } from "./reverse-geocode-message";
 import { GlobeIcon } from "lucide-react";
+import { GetInformationMessage } from "./get-information-message";
 
 interface ChatMessageProps {
   message: ChatMessage;
@@ -61,6 +62,26 @@ export function Message({ message }: ChatMessageProps) {
                   <AutocompleteMessage
                     key={part.toolCallId}
                     result={part.output!}
+                  />
+                );
+              }
+            }
+
+            if (part.type === "tool-getInformation") {
+              if (part.state === "input-available") {
+                return (
+                  <Skeleton
+                    className="h-16 w-full border"
+                    key={part.toolCallId}
+                  />
+                );
+              }
+
+              if (part.state === "output-available") {
+                return (
+                  <GetInformationMessage
+                    key={part.toolCallId}
+                    result={part.output}
                   />
                 );
               }
