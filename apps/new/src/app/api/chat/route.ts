@@ -58,7 +58,7 @@ export async function POST(req: Request) {
   }
 
   const result = streamText({
-    model: openai("gpt-4o-mini"),
+    model: openai("gpt-4.1"),
     system: SYSTEM_PROMPT,
     messages: convertToModelMessages(messages),
     tools: {
@@ -70,6 +70,7 @@ export async function POST(req: Request) {
         searchContextSize: "medium",
       }),
     },
+    maxSteps: 10,
   });
 
   const response = result.toUIMessageStreamResponse({

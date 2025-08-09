@@ -77,6 +77,14 @@ export function Message({ message }: ChatMessageProps) {
                   />
                 );
               }
+
+              if (part.state === "output-error") {
+                return (
+                  <div key={index} className="prose-sm whitespace-pre-wrap">
+                    <Markdown>{`${part.errorText}.`}</Markdown>
+                  </div>
+                );
+              }
             }
 
             console.debug("UNHANDLED MESSAGE PART", part);
