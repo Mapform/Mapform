@@ -5,6 +5,7 @@ import { Skeleton } from "@mapform/ui/components/skeleton";
 import { AutocompleteMessage } from "./autocomplete-message";
 import { Markdown } from "~/components/markdown";
 import { ReverseGeocodeMessage } from "./reverse-geocode-message";
+import { BrainIcon } from "lucide-react";
 
 interface ChatMessageProps {
   message: ChatMessage;
@@ -24,7 +25,7 @@ export function Message({ message }: ChatMessageProps) {
         )}
       >
         <div
-          className={cn("w-full text-sm", {
+          className={cn("flex w-full flex-col gap-2 text-sm", {
             "max-w-[80%] rounded-lg bg-gray-900 px-3 py-1.5": isUser,
           })}
         >

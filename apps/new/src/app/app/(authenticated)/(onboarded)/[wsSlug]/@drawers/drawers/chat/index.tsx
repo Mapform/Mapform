@@ -5,7 +5,7 @@ import { useParamsContext } from "~/lib/params/client";
 import { cn } from "@mapform/lib/classnames";
 import { AutoSizeTextArea } from "@mapform/ui/components/autosize-text-area";
 import { Button } from "@mapform/ui/components/button";
-import { Loader2, SendIcon, XIcon } from "lucide-react";
+import { BrainIcon, Loader2, SendIcon, XIcon } from "lucide-react";
 import { useChat } from "@ai-sdk/react";
 import { useEffect, useRef, useState } from "react";
 import type { ChatMessage } from "~/lib/types";
@@ -41,7 +41,7 @@ function ChatInner({ initialMessages }: ChatProps) {
 
   const { messages, sendMessage, status } = useChat<ChatMessage>({
     id: params.chatId!,
-    maxSteps: 5,
+    maxSteps: 10,
     messages: initialMessages ?? [],
     transport: new DefaultChatTransport({
       api: "/api/chat",
@@ -124,6 +124,16 @@ function ChatInner({ initialMessages }: ChatProps) {
               <Loader2 className="size-4 animate-spin" />
             </div>
           )}
+
+        {messages.some((m) =>
+          m.parts.some(
+            (p) => p.type === "reasoning" && p.state === "streaming",
+          ),
+        ) && (
+          <div className="flex animate-pulse items-center text-sm">
+            <BrainIcon className="mr-2 size-4" /> Thinking...
+          </div>
+        )}
       </div>
       <form
         className="relative flex flex-shrink-0 flex-col gap-2 border-t p-4"

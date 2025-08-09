@@ -1,7 +1,12 @@
 import { openai } from "@ai-sdk/openai";
 import type { UIMessage } from "ai";
 import { authClient } from "~/lib/safe-action";
-import { streamText, convertToModelMessages, generateText } from "ai";
+import {
+  streamText,
+  convertToModelMessages,
+  generateText,
+  stepCountIs,
+} from "ai";
 import { NextResponse } from "next/server";
 import { getCurrentSession } from "~/data/auth/get-current-session";
 import { SYSTEM_PROMPT } from "~/lib/ai/prompts";
@@ -58,9 +63,10 @@ export async function POST(req: Request) {
   }
 
   const result = streamText({
-    model: openai("gpt-4.1"),
+    model: openai("gpt-5-mini"),
     system: SYSTEM_PROMPT,
     messages: convertToModelMessages(messages),
+    stopWhen: stepCountIs(5),
     tools: {
       getInformation,
       reverseGeocode,
@@ -70,7 +76,6 @@ export async function POST(req: Request) {
         searchContextSize: "medium",
       }),
     },
-    maxSteps: 10,
   });
 
   const response = result.toUIMessageStreamResponse({
