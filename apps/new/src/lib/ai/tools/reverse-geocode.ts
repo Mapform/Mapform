@@ -32,5 +32,16 @@ export async function reverseGeocodeFunc(lat: number, lng: number) {
     throw new Error("No place details found for the given coordinates");
   }
 
-  return feature;
+  return [
+    {
+      id: feature.properties.place_id,
+      name: feature.properties.name,
+      description: feature.properties.address_line1,
+      wikidata: feature.properties.datasource?.raw?.wikidata,
+    },
+  ];
 }
+
+export type ReverseGeocodeResponse = Awaited<
+  ReturnType<typeof reverseGeocodeFunc>
+>;

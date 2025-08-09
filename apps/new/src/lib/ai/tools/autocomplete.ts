@@ -26,21 +26,36 @@ export const autocomplete = tool({
 
 export async function autocompleteFunc(query: string, bounds?: number[]) {
   try {
-    const placeDetails = await publicClient.autocomplete({
+    const autocompleteResults = await publicClient.autocomplete({
       query,
       bounds,
     });
 
-    const topResult = placeDetails?.data?.features[0];
+    const topResult = autocompleteResults?.data?.features[0];
 
     if (!topResult?.properties?.place_id) {
       return null;
     }
 
-    return publicClient.getPlaceDetails({
+    const placeDetails = await publicClient.getPlaceDetails({
       type: "placeId",
       placeId: topResult.properties.place_id,
     });
+
+    const placeDetailProperties = placeDetails?.data?.features[0]?.properties;
+
+    if (!placeDetailProperties) {
+      return [];
+    }
+
+    return [
+      {
+        id: placeDetailProperties.place_id,
+        name: topResult.properties.name,
+        description: placeDetailProperties.address_line1 ?? "",
+        wikidata: placeDetailProperties.datasource?.raw?.wikidata ?? "",
+      },
+    ];
   } catch (error) {
     console.error("Error in address autocomplete:", error);
     throw new Error(

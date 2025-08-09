@@ -41,7 +41,6 @@ function ChatInner({ initialMessages }: ChatProps) {
 
   const { messages, sendMessage, status } = useChat<ChatMessage>({
     id: params.chatId!,
-    maxSteps: 10,
     messages: initialMessages ?? [],
     transport: new DefaultChatTransport({
       api: "/api/chat",

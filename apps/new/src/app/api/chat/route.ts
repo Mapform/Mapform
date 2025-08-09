@@ -13,6 +13,7 @@ import { SYSTEM_PROMPT } from "~/lib/ai/prompts";
 import { reverseGeocode } from "~/lib/ai/tools/reverse-geocode";
 import { getInformation } from "~/lib/ai/tools/get-information";
 import { autocomplete } from "~/lib/ai/tools/autocomplete";
+import { pickLocations } from "~/lib/ai/tools/pick-locations";
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
@@ -66,11 +67,13 @@ export async function POST(req: Request) {
     model: openai("gpt-5-mini"),
     system: SYSTEM_PROMPT,
     messages: convertToModelMessages(messages),
-    stopWhen: stepCountIs(5),
+    // Need to keep this low, 5 at the highest
+    stopWhen: stepCountIs(3),
     tools: {
       getInformation,
       reverseGeocode,
       autocomplete,
+      pickLocations,
       // @ts-expect-error - all good
       webSearch: openai.tools.webSearchPreview({
         searchContextSize: "medium",

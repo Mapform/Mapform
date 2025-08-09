@@ -10,12 +10,18 @@ export const getInformation = tool({
   execute: async ({ question }) => _getInformation(question),
 });
 
-function _getInformation(question: string) {
-  return authClient.searchRows({
+async function _getInformation(question: string) {
+  const results = await authClient.searchRows({
     query: question,
     type: "workspace",
     workspaceSlug: "acme",
   });
+
+  return results?.data?.map((row) => ({
+    id: row.id,
+    name: row.name,
+    // description: row.description,
+  }));
 }
 
 export type GetInformationResponse = Awaited<
