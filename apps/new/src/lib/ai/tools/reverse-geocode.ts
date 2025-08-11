@@ -1,6 +1,7 @@
 import { tool } from "ai";
 import { z } from "zod";
 import { publicClient } from "~/lib/safe-action";
+import type { AIResultLocation } from "~/lib/types";
 
 export const reverseGeocode = tool({
   description: "Look up a location by its latitude and longitude.",
@@ -38,8 +39,12 @@ export async function reverseGeocodeFunc(lat: number, lng: number) {
       name: feature.properties.name,
       description: feature.properties.address_line1,
       wikidata: feature.properties.datasource?.raw?.wikidata,
+      coordinates: [feature.properties.lon, feature.properties.lat] as [
+        number,
+        number,
+      ],
     },
-  ];
+  ] satisfies AIResultLocation[];
 }
 
 export type ReverseGeocodeResponse = Awaited<

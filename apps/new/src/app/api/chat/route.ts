@@ -6,6 +6,7 @@ import {
   convertToModelMessages,
   generateText,
   stepCountIs,
+  hasToolCall,
 } from "ai";
 import { NextResponse } from "next/server";
 import { getCurrentSession } from "~/data/auth/get-current-session";
@@ -13,7 +14,7 @@ import { SYSTEM_PROMPT } from "~/lib/ai/prompts";
 import { reverseGeocode } from "~/lib/ai/tools/reverse-geocode";
 import { getInformation } from "~/lib/ai/tools/get-information";
 import { autocomplete } from "~/lib/ai/tools/autocomplete";
-import { pickLocations } from "~/lib/ai/tools/pick-locations";
+import { returnBestResults } from "~/lib/ai/tools/return-best-results";
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
@@ -64,21 +65,24 @@ export async function POST(req: Request) {
   }
 
   const result = streamText({
-    model: openai("gpt-5-mini"),
+    model: openai("gpt-5"),
     system: SYSTEM_PROMPT,
     messages: convertToModelMessages(messages),
-    // Need to keep this low, 5 at the highest
-    stopWhen: stepCountIs(3),
     tools: {
       getInformation,
       reverseGeocode,
       autocomplete,
-      pickLocations,
+      returnBestResults,
       // @ts-expect-error - all good
       webSearch: openai.tools.webSearchPreview({
         searchContextSize: "medium",
       }),
     },
+    stopWhen: [
+      // Need to keep this low, 5 at the highest
+      // stepCountIs(5),
+      hasToolCall("returnBestResults"),
+    ],
   });
 
   const response = result.toUIMessageStreamResponse({

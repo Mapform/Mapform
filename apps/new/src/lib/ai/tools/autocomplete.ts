@@ -1,6 +1,7 @@
 import { tool } from "ai";
 import { z } from "zod";
 import { publicClient } from "~/lib/safe-action";
+import type { AIResultLocation } from "~/lib/types";
 
 export const autocomplete = tool({
   description:
@@ -54,8 +55,12 @@ export async function autocompleteFunc(query: string, bounds?: number[]) {
         name: topResult.properties.name,
         description: placeDetailProperties.address_line1 ?? "",
         wikidata: placeDetailProperties.datasource?.raw?.wikidata ?? "",
+        coordinates: [placeDetailProperties.lon, placeDetailProperties.lat] as [
+          number,
+          number,
+        ],
       },
-    ];
+    ] satisfies AIResultLocation[];
   } catch (error) {
     console.error("Error in address autocomplete:", error);
     throw new Error(

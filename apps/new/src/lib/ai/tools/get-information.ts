@@ -1,6 +1,7 @@
 import { tool } from "ai";
 import { z } from "zod";
 import { authClient } from "~/lib/safe-action";
+import type { AIResultLocation } from "~/lib/types";
 
 export const getInformation = tool({
   description: "Get information from your knowledge base to answer questions.",
@@ -17,11 +18,11 @@ async function _getInformation(question: string) {
     workspaceSlug: "acme",
   });
 
-  return results?.data?.map((row) => ({
+  return (results?.data?.map((row) => ({
     id: row.id,
-    name: row.name,
-    // description: row.description,
-  }));
+    name: row.name || undefined,
+    coordinates: row.center.coordinates as [number, number],
+  })) || []) satisfies AIResultLocation[];
 }
 
 export type GetInformationResponse = Awaited<

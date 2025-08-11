@@ -8,7 +8,7 @@ interface Feature {
   id: string;
   name: string;
   description?: string;
-  icon: string | null;
+  icon?: string;
   coordinates: [number, number];
   image?: {
     url: string;
