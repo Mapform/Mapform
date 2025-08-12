@@ -107,7 +107,7 @@ export function SearchInner({
               <SearchIcon className="mr-2 h-4 w-4 shrink-0 opacity-50" />
             )}
             <CommandPrimitive.Input
-              className="placeholder:text-muted-foreground flex h-9 w-full rounded-md border-none bg-transparent px-1 py-3 text-base outline-none focus:ring-0 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+              className="placeholder:text-muted-foreground flex h-9 w-full rounded-md border-none bg-transparent px-1 py-3 pr-8 text-base outline-none focus:ring-0 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
               placeholder="Search or ask..."
               onValueChange={setSearchQuery}
               value={searchQuery ?? ""}
