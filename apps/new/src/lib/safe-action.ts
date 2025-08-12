@@ -49,6 +49,7 @@ import { getMessages } from "@mapform/backend/data/messages/get-messages";
 import { listChats } from "@mapform/backend/data/chats/list-chats";
 import { getRowCount } from "@mapform/backend/data/usage/get-row-count";
 import { autocomplete } from "@mapform/backend/data/geoapify/autocomplete";
+import { deleteChat } from "@mapform/backend/data/chats/delete-chat";
 
 const ignoredWorkspaceSlugs = ["onboarding"];
 const ignoredTeamspaceSlugs = ["settings"];
@@ -113,6 +114,7 @@ const createUserAuthClient = () => {
 
     // Chats
     createChat: createChat(extendedClient),
+    deleteChat: deleteChat(extendedClient),
     getChat: getChat(extendedClient),
     listChats: listChats(extendedClient),
 

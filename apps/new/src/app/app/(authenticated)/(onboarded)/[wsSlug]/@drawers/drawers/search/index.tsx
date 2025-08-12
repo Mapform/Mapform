@@ -1,6 +1,6 @@
 "use client";
 
-import type { SearchPlaces } from "@mapform/backend/data/geoapify/search";
+import type { Autocomplete } from "@mapform/backend/data/geoapify/autocomplete";
 import {
   Command,
   CommandGroup,
@@ -14,6 +14,7 @@ import {
   Loader2,
   MessageCircle,
   SearchIcon,
+  TrashIcon,
   XIcon,
 } from "lucide-react";
 import { MapDrawer, MapDrawerToolbar } from "~/components/map-drawer";
@@ -24,9 +25,18 @@ import { useEffect, useState } from "react";
 import type { SearchRows } from "@mapform/backend/data/rows/search-rows";
 import { Button } from "@mapform/ui/components/button";
 import type { ListChats } from "@mapform/backend/data/chats/list-chats";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from "@mapform/ui/components/context-menu";
+import { useAction } from "next-safe-action/hooks";
+import { deleteChatAction } from "~/data/chats/delete-chat";
+import { toast } from "@mapform/ui/components/toaster";
 
 interface SearchProps {
-  geoapifySearchResults?: SearchPlaces["data"];
+  geoapifySearchResults?: Autocomplete["data"];
   vectorSearchResults?: SearchRows["data"];
   previousChats?: ListChats["data"];
 }
@@ -58,6 +68,15 @@ export function SearchInner({
   const { params, setQueryStates, isPending } = useParamsContext();
   const [searchQuery, setSearchQuery] = useState(params.query);
   const debouncedSearchQuery = useDebounce(searchQuery, 200);
+  const { execute: deleteChat } = useAction(deleteChatAction, {
+    onError: ({ error }) => {
+      toast({
+        title: "Uh oh! Something went wrong.",
+        description:
+          error.serverError ?? "There was an error deleting the chat.",
+      });
+    },
+  });
 
   const filteredFeatures =
     geoapifySearchResults?.features.filter(
@@ -189,19 +208,32 @@ export function SearchInner({
           {previousChats && previousChats.length > 0 && (
             <CommandGroup heading="Chats">
               {previousChats.map((chat) => (
-                <CommandItem
-                  key={chat.id}
-                  value={chat.id}
-                  onSelect={async () => {
-                    await setQueryStates(
-                      { chatId: chat.id },
-                      { shallow: false },
-                    );
-                  }}
-                >
-                  <MessageCircle className="text-muted-foreground mr-2 size-4 flex-shrink-0" />
-                  <span className="truncate">{chat.title}</span>
-                </CommandItem>
+                <ContextMenu key={chat.id}>
+                  <ContextMenuTrigger asChild>
+                    <CommandItem
+                      value={chat.id}
+                      onSelect={async () => {
+                        await setQueryStates(
+                          { chatId: chat.id },
+                          { shallow: false },
+                        );
+                      }}
+                    >
+                      <MessageCircle className="text-muted-foreground mr-2 size-4 flex-shrink-0" />
+                      <span className="truncate">{chat.title}</span>
+                    </CommandItem>
+                  </ContextMenuTrigger>
+                  <ContextMenuContent>
+                    <ContextMenuItem
+                      onClick={() => {
+                        void deleteChat({ id: chat.id });
+                      }}
+                    >
+                      <TrashIcon className="text-muted-foreground mr-2 size-4 flex-shrink-0" />
+                      Delete
+                    </ContextMenuItem>
+                  </ContextMenuContent>
+                </ContextMenu>
               ))}
             </CommandGroup>
           )}
