@@ -5,9 +5,11 @@ import { useParamsContext } from "~/lib/params/client";
 import { cn } from "@mapform/lib/classnames";
 import { AutoSizeTextArea } from "@mapform/ui/components/autosize-text-area";
 import { Button } from "@mapform/ui/components/button";
-import { BrainIcon, Loader2, SendIcon, XIcon } from "lucide-react";
+import { BrainIcon, Loader2, SendIcon, SquareIcon, XIcon } from "lucide-react";
 import { useChat } from "@ai-sdk/react";
 import { useEffect, useRef, useState } from "react";
+import { AnimatePresence } from "motion/react";
+import * as motion from "motion/react-client";
 import type { ChatMessage } from "~/lib/types";
 import { Message } from "./message";
 import { DefaultChatTransport } from "ai";
@@ -39,7 +41,7 @@ function ChatInner({ initialMessages }: ChatProps) {
   const { pId } = useParams();
   const { params, setQueryStates } = useParamsContext();
 
-  const { messages, sendMessage, status } = useChat<ChatMessage>({
+  const { messages, sendMessage, status, stop } = useChat<ChatMessage>({
     id: params.chatId!,
     messages: initialMessages ?? [],
     transport: new DefaultChatTransport({
@@ -54,6 +56,10 @@ function ChatInner({ initialMessages }: ChatProps) {
   });
 
   const handleSubmit = () => {
+    if (status === "streaming" || status === "submitted" || !input) {
+      return;
+    }
+
     void sendMessage({ text: input });
     setInput("");
   };
@@ -124,15 +130,16 @@ function ChatInner({ initialMessages }: ChatProps) {
             </div>
           )}
 
-        {messages.some((m) =>
-          m.parts.some(
-            (p) => p.type === "reasoning" && p.state === "streaming",
-          ),
-        ) && (
-          <div className="flex animate-pulse items-center text-sm">
-            <BrainIcon className="mr-2 size-4" /> Thinking...
-          </div>
-        )}
+        {status === "streaming" &&
+          messages.some((m) =>
+            m.parts.some(
+              (p) => p.type === "reasoning" && p.state === "streaming",
+            ),
+          ) && (
+            <div className="flex animate-pulse items-center text-sm">
+              <BrainIcon className="mr-2 size-4" /> Thinking...
+            </div>
+          )}
       </div>
       <form
         className="relative flex flex-shrink-0 flex-col gap-2 border-t p-4"
@@ -151,9 +158,33 @@ function ChatInner({ initialMessages }: ChatProps) {
           placeholder="Ask anything..."
           autoFocus
         />
-        <Button className="ml-auto" type="submit" size="icon">
-          <SendIcon className="size-4" />
-        </Button>
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.div
+            key={
+              status === "streaming" || status === "submitted" ? "stop" : "send"
+            }
+            className="ml-auto"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.1, ease: "easeOut" }}
+          >
+            {status === "streaming" || status === "submitted" ? (
+              <Button type="button" size="icon" onClick={stop}>
+                <SquareIcon className="size-4" fill="currentColor" />
+              </Button>
+            ) : (
+              <Button
+                className="ml-auto"
+                type="submit"
+                size="icon"
+                disabled={!input}
+              >
+                <SendIcon className="size-4" />
+              </Button>
+            )}
+          </motion.div>
+        </AnimatePresence>
       </form>
     </>
   );
