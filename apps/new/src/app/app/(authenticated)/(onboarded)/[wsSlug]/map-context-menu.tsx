@@ -48,20 +48,10 @@ export function MapContextMenu({
         <DropdownMenuItem
           onClick={async () => {
             onOpenChange(false);
-            await setQueryStates(
-              {
-                query: null,
-                chatId: null,
-              },
-              { shallow: false },
-            );
-            await setQueryStates(
-              {
-                query: `What can you tell me about this location: ${position.longitude}, ${position.latitude}`,
-                chatId: crypto.randomUUID(),
-              },
-              { shallow: true },
-            );
+            await setQueryStates({
+              query: `What can you tell me about this location: ${position.longitude}, ${position.latitude}`,
+              chatId: crypto.randomUUID(),
+            });
           }}
         >
           <SparkleIcon className="size-4" />
