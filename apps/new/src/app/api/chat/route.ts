@@ -65,7 +65,7 @@ export async function POST(req: Request) {
   }
 
   const result = streamText({
-    model: openai("gpt-4o"),
+    model: openai("gpt-5"),
     system: SYSTEM_PROMPT,
     messages: convertToModelMessages(messages),
     tools: {
@@ -79,7 +79,7 @@ export async function POST(req: Request) {
     },
     stopWhen: [
       // Need to keep this low, 5 at the highest
-      // stepCountIs(5),
+      stepCountIs(5),
       hasToolCall("returnBestResults"),
     ],
   });
