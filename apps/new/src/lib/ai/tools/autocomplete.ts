@@ -59,6 +59,7 @@ export async function autocompleteFunc(query: string, bounds?: number[]) {
           number,
           number,
         ],
+        source: "geoapify",
       },
     ] satisfies AIResultLocation[];
   } catch (error) {

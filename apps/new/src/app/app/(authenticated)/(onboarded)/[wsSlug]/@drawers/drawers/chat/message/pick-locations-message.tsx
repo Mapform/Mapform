@@ -25,6 +25,7 @@ function FeatureWithImage({ result }: { result: AIResultLocation }) {
           isLoading: wikidataData.isLoading,
         }
       : undefined,
+    source: result.source,
   };
 }
 
@@ -51,7 +52,17 @@ export function PickLocationsMessage({ results }: PickLocationsMessageProps) {
     hasFlownToRef.current = "flown";
   }, [map, results]);
 
-  const handleFeatureClick = (feature: AIResultLocation) => {};
+  const handleFeatureClick = async (feature: AIResultLocation) => {
+    if (feature.source === "geoapify") {
+      await setQueryStates({
+        geoapifyPlaceId: feature.id,
+      });
+    } else if (feature.source === "mapform") {
+      await setQueryStates({
+        rowId: feature.id,
+      });
+    }
+  };
 
   const handleFeatureHover = (feature: AIResultLocation) => {
     if (!map) return;
@@ -60,7 +71,6 @@ export function PickLocationsMessage({ results }: PickLocationsMessageProps) {
       center: feature.coordinates,
       zoom: 14,
       duration: 1000,
-      // easing: (t) => t * (2 - t), // ease-out
     });
   };
 
@@ -76,8 +86,8 @@ export function PickLocationsMessage({ results }: PickLocationsMessageProps) {
       ))}
       <FeatureList
         features={results.map((r) => FeatureWithImage({ result: r }))}
-        onClick={() => {}}
         onHover={handleFeatureHover}
+        onClick={handleFeatureClick}
       />
     </div>
   );

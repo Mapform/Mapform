@@ -21,6 +21,9 @@ export const returnBestResults = tool({
         coordinates: z
           .array(z.number())
           .describe("The coordinates of the place."),
+        source: z
+          .enum(["geoapify", "mapform"])
+          .describe("The source of the place."),
       }),
     ),
     userQuery: z.string().describe("The user's query."),

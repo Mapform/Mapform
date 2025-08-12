@@ -18,13 +18,10 @@ export function Message({ message }: ChatMessageProps) {
       <motion.div
         initial={{ y: 5, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className={cn(
-          "min- flex w-full",
-          isUser ? "justify-end" : "justify-start",
-        )}
+        className={cn("flex w-full", isUser ? "justify-end" : "justify-start")}
       >
         <div
-          className={cn("flex w-full flex-col gap-2 text-sm", {
+          className={cn("flex w-full flex-col gap-2 text-sm empty:hidden", {
             "max-w-[80%] rounded-lg bg-gray-900 px-3 py-1.5": isUser,
           })}
         >

@@ -43,4 +43,5 @@ export type AIResultLocation = {
   description?: string;
   wikidata?: string;
   coordinates: [number, number];
+  source: "geoapify" | "mapform";
 };

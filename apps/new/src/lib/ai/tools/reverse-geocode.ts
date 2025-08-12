@@ -43,6 +43,7 @@ export async function reverseGeocodeFunc(lat: number, lng: number) {
         number,
         number,
       ],
+      source: "geoapify",
     },
   ] satisfies AIResultLocation[];
 }

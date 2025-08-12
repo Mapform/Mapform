@@ -22,6 +22,7 @@ async function _getInformation(question: string) {
     id: row.id,
     name: row.name || undefined,
     coordinates: row.center.coordinates as [number, number],
+    source: "mapform",
   })) || []) satisfies AIResultLocation[];
 }
 

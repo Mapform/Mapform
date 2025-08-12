@@ -15,6 +15,7 @@ interface Feature {
     alt?: string;
     isLoading?: boolean;
   };
+  source: "geoapify" | "mapform";
 }
 
 interface FeatureListProps {
