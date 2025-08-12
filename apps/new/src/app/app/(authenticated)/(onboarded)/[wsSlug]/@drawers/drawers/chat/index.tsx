@@ -32,7 +32,7 @@ export function Chat({ initialMessages }: ChatProps) {
 
   return (
     <MapDrawer open={!!params.chatId} depth={drawerDepth.get("chatId") ?? 0}>
-      {isPending && !initialMessages ? (
+      {isPending ? (
         <>
           <MapDrawerToolbar>
             <Button
@@ -50,7 +50,7 @@ export function Chat({ initialMessages }: ChatProps) {
           <LoadingSkeleton />
         </>
       ) : (
-        <ChatInner initialMessages={initialMessages} />
+        <ChatInner key={params.chatId} initialMessages={initialMessages} />
       )}
     </MapDrawer>
   );
@@ -162,7 +162,6 @@ function ChatInner({ initialMessages }: ChatProps) {
               <Loader2 className="size-4 animate-spin" />
             </div>
           )}
-
         {status === "streaming" &&
           messages.some((m) =>
             m.parts.some(
