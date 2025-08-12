@@ -23,7 +23,7 @@ export function Chat({ initialMessages }: ChatProps) {
 
   return (
     <MapDrawer open={!!params.chatId} depth={drawerDepth.get("chatId") ?? 0}>
-      {isPending ? (
+      {isPending && !initialMessages ? (
         <LoadingSkeleton />
       ) : (
         <ChatInner initialMessages={initialMessages} />

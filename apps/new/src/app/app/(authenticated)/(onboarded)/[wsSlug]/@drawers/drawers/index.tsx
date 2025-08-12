@@ -35,7 +35,7 @@ export function Drawers(props: DealDrawerProps) {
 
 const getGeoapifySearchResults = cache(
   async (query: string, bounds?: [number, number, number, number]) => {
-    const searchResults = await publicClient.searchPlaces({
+    const searchResults = await publicClient.autocomplete({
       query,
       bounds,
     });

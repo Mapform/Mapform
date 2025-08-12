@@ -65,13 +65,12 @@ export function PickLocationsMessage({ results }: PickLocationsMessageProps) {
   };
 
   const handleFeatureHover = (feature: AIResultLocation) => {
-    if (!map) return;
-
-    map.easeTo({
-      center: feature.coordinates,
-      zoom: 14,
-      duration: 1000,
-    });
+    // if (!map) return;
+    // map.easeTo({
+    //   center: feature.coordinates,
+    //   zoom: 14,
+    //   duration: 1000,
+    // });
   };
 
   return (
