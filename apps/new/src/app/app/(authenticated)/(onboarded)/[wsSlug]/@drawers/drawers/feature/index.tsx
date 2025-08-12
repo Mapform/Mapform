@@ -38,7 +38,7 @@ interface FeatureDrawerProps {
 
 export function Feature({ feature }: FeatureDrawerProps) {
   const map = useMap();
-  const { params, isPending, drawerDepth } = useParamsContext();
+  const { params, isPending, drawerDepth, setQueryStates } = useParamsContext();
 
   const featureService = useStateService<GetRow["data"], UpdateRowSchema>(
     updateRowAction,
@@ -69,20 +69,50 @@ export function Feature({ feature }: FeatureDrawerProps) {
     <>
       <MapDrawer open={!!params.rowId} depth={drawerDepth.get("rowId") ?? 0}>
         {isPending ? (
-          <LoadingSkeleton />
+          <>
+            <MapDrawerToolbar>
+              <Button
+                className="ml-auto"
+                size="icon-sm"
+                type="button"
+                variant="ghost"
+                onClick={() => {
+                  void setQueryStates({ rowId: null });
+                }}
+              >
+                <XIcon className="size-4" />
+              </Button>
+            </MapDrawerToolbar>
+            <LoadingSkeleton />
+          </>
         ) : featureService.optimisticState ? (
           <FeatureContent
             featureService={featureService}
             key={featureService.optimisticState.id}
           />
         ) : (
-          <div className="flex flex-1 flex-col justify-center rounded-lg bg-gray-50 p-8">
-            <div className="text-center">
-              <h3 className="text-foreground mt-2 text-sm font-medium">
-                No feature found
-              </h3>
+          <>
+            <MapDrawerToolbar>
+              <Button
+                className="ml-auto"
+                size="icon-sm"
+                type="button"
+                variant="ghost"
+                onClick={() => {
+                  void setQueryStates({ rowId: null });
+                }}
+              >
+                <XIcon className="size-4" />
+              </Button>
+            </MapDrawerToolbar>
+            <div className="flex flex-1 flex-col justify-center rounded-lg bg-gray-50 p-8">
+              <div className="text-center">
+                <h3 className="text-foreground mt-2 text-sm font-medium">
+                  No feature found
+                </h3>
+              </div>
             </div>
-          </div>
+          </>
         )}
       </MapDrawer>
 

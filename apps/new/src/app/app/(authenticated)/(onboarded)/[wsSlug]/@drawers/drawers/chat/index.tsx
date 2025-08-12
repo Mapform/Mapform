@@ -21,12 +21,27 @@ interface ChatProps {
 }
 
 export function Chat({ initialMessages }: ChatProps) {
-  const { params, drawerDepth, isPending } = useParamsContext();
+  const { params, drawerDepth, isPending, setQueryStates } = useParamsContext();
 
   return (
     <MapDrawer open={!!params.chatId} depth={drawerDepth.get("chatId") ?? 0}>
       {isPending && !initialMessages ? (
-        <LoadingSkeleton />
+        <>
+          <MapDrawerToolbar>
+            <Button
+              className="ml-auto"
+              size="icon-sm"
+              type="button"
+              variant="ghost"
+              onClick={() => {
+                void setQueryStates({ chatId: null });
+              }}
+            >
+              <XIcon className="size-4" />
+            </Button>
+          </MapDrawerToolbar>
+          <LoadingSkeleton />
+        </>
       ) : (
         <ChatInner initialMessages={initialMessages} />
       )}

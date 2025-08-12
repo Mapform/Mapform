@@ -55,7 +55,7 @@ interface SearchDetailsProps {
 }
 
 export function SearchDetails({ geoapifyPlaceDetails }: SearchDetailsProps) {
-  const { params, drawerDepth, isPending } = useParamsContext();
+  const { params, drawerDepth, isPending, setQueryStates } = useParamsContext();
 
   return (
     <MapDrawer
@@ -63,7 +63,22 @@ export function SearchDetails({ geoapifyPlaceDetails }: SearchDetailsProps) {
       depth={drawerDepth.get("geoapifyPlaceId") ?? 0}
     >
       {isPending ? (
-        <LoadingSkeleton />
+        <>
+          <MapDrawerToolbar>
+            <Button
+              className="ml-auto"
+              size="icon-sm"
+              type="button"
+              variant="ghost"
+              onClick={() => {
+                void setQueryStates({ geoapifyPlaceId: null });
+              }}
+            >
+              <XIcon className="size-4" />
+            </Button>
+          </MapDrawerToolbar>
+          <LoadingSkeleton />
+        </>
       ) : (
         <SearchDetailsInner geoapifyPlaceDetails={geoapifyPlaceDetails} />
       )}
