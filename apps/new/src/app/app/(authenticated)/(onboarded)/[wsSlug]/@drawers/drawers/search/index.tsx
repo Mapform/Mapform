@@ -132,15 +132,10 @@ export function SearchInner({
                 onSelect={async () => {
                   const randomId = crypto.randomUUID();
 
-                  await setQueryStates(
-                    {
-                      query: searchQuery,
-                      chatId: randomId,
-                    },
-                    {
-                      shallow: true, // So as to not trigger a refetch
-                    },
-                  );
+                  await setQueryStates({
+                    query: searchQuery,
+                    chatId: randomId,
+                  });
                 }}
               >
                 <MessageCircle className="text-muted-foreground mr-2 size-4 flex-shrink-0" />

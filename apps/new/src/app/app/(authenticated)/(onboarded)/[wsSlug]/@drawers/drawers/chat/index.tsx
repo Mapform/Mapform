@@ -5,7 +5,14 @@ import { useParamsContext } from "~/lib/params/client";
 import { cn } from "@mapform/lib/classnames";
 import { AutoSizeTextArea } from "@mapform/ui/components/autosize-text-area";
 import { Button } from "@mapform/ui/components/button";
-import { BrainIcon, Loader2, SendIcon, SquareIcon, XIcon } from "lucide-react";
+import {
+  BrainIcon,
+  Loader2,
+  SendIcon,
+  SquareIcon,
+  SquarePenIcon,
+  XIcon,
+} from "lucide-react";
 import { useChat } from "@ai-sdk/react";
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence } from "motion/react";
@@ -120,6 +127,17 @@ function ChatInner({ initialMessages }: ChatProps) {
       <MapDrawerToolbar>
         <Button
           className="ml-auto"
+          size="icon-sm"
+          type="button"
+          variant="ghost"
+          onClick={async () => {
+            const randomId = crypto.randomUUID();
+            await setQueryStates({ chatId: randomId, query: null });
+          }}
+        >
+          <SquarePenIcon className="size-4" />
+        </Button>
+        <Button
           size="icon-sm"
           type="button"
           variant="ghost"
