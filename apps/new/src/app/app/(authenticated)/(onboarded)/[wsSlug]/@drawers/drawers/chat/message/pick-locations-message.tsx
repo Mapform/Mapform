@@ -1,5 +1,6 @@
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import { Marker, useMap } from "react-map-gl/mapbox";
+import mapboxgl from "mapbox-gl";
 import { FeatureList } from "~/components/feature-list";
 import type { AIResultLocation } from "~/lib/types";
 import { useParamsContext } from "~/lib/params/client";
@@ -28,10 +29,40 @@ function FeatureWithImage({ result }: { result: AIResultLocation }) {
 }
 
 export function PickLocationsMessage({ results }: PickLocationsMessageProps) {
-  // const map = useMap();
-  // const { setQueryStates } = useParamsContext();
-  // const hasFlownToRef = useRef<string | null>(null);
-  console.log(22222, results);
+  const { current: map } = useMap();
+  const { setQueryStates } = useParamsContext();
+  const hasFlownToRef = useRef<string | null>(null);
+
+  // Fit map to results bounds when component mounts
+  useEffect(() => {
+    if (!map || !results.length || hasFlownToRef.current) return;
+
+    const bounds = new mapboxgl.LngLatBounds();
+
+    results.forEach((result) => {
+      bounds.extend(result.coordinates);
+    });
+
+    map.fitBounds(bounds, {
+      padding: 50,
+      duration: 1000,
+    });
+
+    hasFlownToRef.current = "flown";
+  }, [map, results]);
+
+  const handleFeatureClick = (feature: AIResultLocation) => {};
+
+  const handleFeatureHover = (feature: AIResultLocation) => {
+    if (!map) return;
+
+    map.easeTo({
+      center: feature.coordinates,
+      zoom: 14,
+      duration: 1000,
+      // easing: (t) => t * (2 - t), // ease-out
+    });
+  };
 
   return (
     <div>
@@ -46,6 +77,7 @@ export function PickLocationsMessage({ results }: PickLocationsMessageProps) {
       <FeatureList
         features={results.map((r) => FeatureWithImage({ result: r }))}
         onClick={() => {}}
+        onHover={handleFeatureHover}
       />
     </div>
   );

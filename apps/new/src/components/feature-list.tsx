@@ -20,9 +20,10 @@ interface Feature {
 interface FeatureListProps {
   features: Feature[];
   onClick: (feature: Feature) => void;
+  onHover?: (feature: Feature) => void;
 }
 
-export function FeatureList({ features, onClick }: FeatureListProps) {
+export function FeatureList({ features, onClick, onHover }: FeatureListProps) {
   return (
     <ul className="m-0 flex w-full list-none flex-col gap-2 p-0">
       {features.map((feature) => (
@@ -32,6 +33,7 @@ export function FeatureList({ features, onClick }: FeatureListProps) {
           onClick={() => {
             onClick(feature);
           }}
+          onMouseEnter={() => onHover?.(feature)}
         >
           <div
             className={cn(
