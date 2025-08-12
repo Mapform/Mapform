@@ -73,7 +73,6 @@ export async function POST(req: Request) {
       reverseGeocode,
       autocomplete,
       returnBestResults,
-      // @ts-expect-error - all good
       webSearch: openai.tools.webSearchPreview({
         searchContextSize: "medium",
       }),

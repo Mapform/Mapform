@@ -193,6 +193,7 @@ const fetchWikidataAttribution = async (
     const pageIds = Object.keys(pages);
     if (pageIds.length === 0) return null;
     const pageId = pageIds[0];
+    if (!pageId) return null;
     const page = pages[pageId];
 
     if (!page || page.missing) return null;

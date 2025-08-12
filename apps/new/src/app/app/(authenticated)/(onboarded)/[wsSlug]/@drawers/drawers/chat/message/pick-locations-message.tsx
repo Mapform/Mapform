@@ -3,9 +3,28 @@ import { Marker, useMap } from "react-map-gl/mapbox";
 import { FeatureList } from "~/components/feature-list";
 import type { AIResultLocation } from "~/lib/types";
 import { useParamsContext } from "~/lib/params/client";
+import { useWikidataImages } from "~/lib/wikidata-image";
 
 interface PickLocationsMessageProps {
   results: AIResultLocation[];
+}
+
+// Component to handle a single feature with Wikidata image
+function FeatureWithImage({ result }: { result: AIResultLocation }) {
+  const wikidataData = useWikidataImages(result.wikidata);
+
+  return {
+    id: result.id,
+    name: result.name ?? "",
+    description: result.description ?? "",
+    coordinates: result.coordinates,
+    image: result.wikidata
+      ? {
+          url: wikidataData.primaryImage?.imageUrl ?? "",
+          isLoading: wikidataData.isLoading,
+        }
+      : undefined,
+  };
 }
 
 export function PickLocationsMessage({ results }: PickLocationsMessageProps) {
@@ -25,14 +44,7 @@ export function PickLocationsMessage({ results }: PickLocationsMessageProps) {
         />
       ))}
       <FeatureList
-        features={[
-          ...results.map((r) => ({
-            id: r.id,
-            name: r.name ?? "",
-            description: r.description ?? "",
-            coordinates: r.coordinates,
-          })),
-        ]}
+        features={results.map((r) => FeatureWithImage({ result: r }))}
         onClick={() => {}}
       />
     </div>

@@ -4,7 +4,7 @@ import type { AIResultLocation } from "~/lib/types";
 
 export const returnBestResults = tool({
   description:
-    "Return only the best evaluated location results after reviewing all tool outputs.",
+    "Return evaluated location results (from getInformation, autocomplete, reverseGeocode) to present to the user. You can call this tool multiple times throughout the conversation to support your answers. After calling this tool, describe the results in your response, including details about each location found.",
   inputSchema: z.object({
     finalResults: z.array(
       z.object({
@@ -27,7 +27,8 @@ export const returnBestResults = tool({
   }),
   /**
    * Execute is empty because the ai performs the filtering when assigning the
-   * input parameters.
+   * input parameters. After calling this tool, the AI should describe the results
+   * in its response to the user.
    */
   execute: async ({ finalResults }) => {
     return finalResults as AIResultLocation[];
