@@ -68,15 +68,6 @@ export function SearchInner({
   const { params, setQueryStates, isPending } = useParamsContext();
   const [searchQuery, setSearchQuery] = useState(params.query);
   const debouncedSearchQuery = useDebounce(searchQuery, 200);
-  const { execute: deleteChat } = useAction(deleteChatAction, {
-    onError: ({ error }) => {
-      toast({
-        title: "Uh oh! Something went wrong.",
-        description:
-          error.serverError ?? "There was an error deleting the chat.",
-      });
-    },
-  });
 
   const filteredFeatures =
     geoapifySearchResults?.features.filter(
@@ -203,37 +194,55 @@ export function SearchInner({
           {previousChats && previousChats.length > 0 && (
             <CommandGroup heading="Chats">
               {previousChats.map((chat) => (
-                <ContextMenu key={chat.id}>
-                  <ContextMenuTrigger asChild>
-                    <CommandItem
-                      value={chat.id}
-                      onSelect={async () => {
-                        await setQueryStates(
-                          { chatId: chat.id },
-                          { shallow: false },
-                        );
-                      }}
-                    >
-                      <MessageCircle className="text-muted-foreground mr-2 size-4 flex-shrink-0" />
-                      <span className="truncate">{chat.title}</span>
-                    </CommandItem>
-                  </ContextMenuTrigger>
-                  <ContextMenuContent>
-                    <ContextMenuItem
-                      onClick={() => {
-                        void deleteChat({ id: chat.id });
-                      }}
-                    >
-                      <TrashIcon className="text-muted-foreground mr-2 size-4 flex-shrink-0" />
-                      Delete
-                    </ContextMenuItem>
-                  </ContextMenuContent>
-                </ContextMenu>
+                <ChatItem key={chat.id} chat={chat} />
               ))}
             </CommandGroup>
           )}
         </CommandList>
       </Command>
     </>
+  );
+}
+
+function ChatItem({ chat }: { chat: NonNullable<ListChats["data"]>[number] }) {
+  const { setQueryStates } = useParamsContext();
+  const { execute: deleteChat, isPending: isDeletingChat } = useAction(
+    deleteChatAction,
+    {
+      onError: ({ error }) => {
+        toast({
+          title: "Uh oh! Something went wrong.",
+          description:
+            error.serverError ?? "There was an error deleting the chat.",
+        });
+      },
+    },
+  );
+
+  return (
+    <ContextMenu key={chat.id}>
+      <ContextMenuTrigger asChild>
+        <CommandItem
+          value={chat.id}
+          disabled={isDeletingChat}
+          onSelect={async () => {
+            await setQueryStates({ chatId: chat.id }, { shallow: false });
+          }}
+        >
+          <MessageCircle className="text-muted-foreground mr-2 size-4 flex-shrink-0" />
+          <span className="truncate">{chat.title}</span>
+        </CommandItem>
+      </ContextMenuTrigger>
+      <ContextMenuContent>
+        <ContextMenuItem
+          onClick={() => {
+            void deleteChat({ id: chat.id });
+          }}
+        >
+          <TrashIcon className="text-muted-foreground mr-2 size-4 flex-shrink-0" />
+          Delete
+        </ContextMenuItem>
+      </ContextMenuContent>
+    </ContextMenu>
   );
 }
