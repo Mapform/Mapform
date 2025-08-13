@@ -14,6 +14,7 @@ export function MapView() {
     icon: row.icon ?? undefined,
     coordinates: row.center.coordinates as [number, number],
     image: row.blobs[0]?.url ? { url: row.blobs[0].url } : undefined,
+    source: "mapform" as const,
   }));
 
   const handleFeatureClick = (feature: {
