@@ -61,7 +61,7 @@ export function WorkspaceSettings() {
       <Form {...form}>
         <form className="flex flex-col" onSubmit={form.handleSubmit(onSubmit)}>
           <div className="@4xl:grid-cols-3 grid grid-cols-1 gap-x-8 pb-4">
-            <h3 className="text-md mt-0 font-semibold">Workspace Settings</h3>
+            {/* <h3 className="text-md mt-0 font-semibold">Workspace Settings</h3> */}
             <div className="@4xl:col-span-2 grid-cols-1 space-y-6">
               <FormField
                 control={form.control}
