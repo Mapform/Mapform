@@ -111,7 +111,7 @@ export function WorkspaceProvider({
   };
 
   const onMouseEnter = useCallback(() => setCursor("pointer"), []);
-  const onMouseLeave = useCallback(() => setCursor("auto"), []);
+  const onMouseLeave = useCallback(() => setCursor("grab"), []);
 
   return (
     <WorkspaceContext.Provider
