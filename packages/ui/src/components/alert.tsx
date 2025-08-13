@@ -38,7 +38,7 @@ const AlertIcon = React.forwardRef<
   return (
     <Icon
       aria-hidden="true"
-      className={cn("size-5 text-inherit", className)}
+      className={cn("size-5 flex-shrink-0 text-inherit", className)}
       ref={ref}
       {...props}
     />
@@ -52,7 +52,7 @@ const AlertDescription = React.forwardRef<
     VariantProps<typeof alertVariants>
 >(({ className, ...props }, ref) => (
   <p
-    className={cn("ml-3 text-sm font-medium text-inherit", className)}
+    className={cn("my-0 ml-3 text-sm font-medium text-inherit", className)}
     ref={ref}
     {...props}
   />

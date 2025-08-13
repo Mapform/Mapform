@@ -17,7 +17,7 @@ export default async function SettingsLayout({
         <div className="p-2">
           <SettingsTabs wsSlug={wsSlug} />
         </div>
-        <div className="px-6 pb-6">{children}</div>
+        <div className="px-6 pb-6 pt-2">{children}</div>
       </MapDrawer>
     </MapPositioner>
   );

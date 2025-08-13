@@ -8,7 +8,6 @@ export function SettingsTabs({ wsSlug }: { wsSlug: string }) {
   const pathname = usePathname();
 
   const currentTab = pathname.split("/").pop();
-  console.log(11111, currentTab);
 
   return (
     <Tabs className="w-full" value={currentTab}>

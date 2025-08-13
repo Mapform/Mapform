@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { getWorkspaceDirectory } from "~/data/workspaces/get-workspace-directory";
 import { getStripePrices, getStripeProducts } from "@mapform/lib/stripe";
 import { env } from "~/*";
+import { WorkspaceSettings } from "./workspace-settings";
 
 async function fetchWorkspacePlan(workspaceSlug: string) {
   const response = await getWorkspaceDirectory({ slug: workspaceSlug });
@@ -36,7 +37,7 @@ export default async function Settings(props: {
     throw new Error("Pro price not found");
   }
 
-  return <div className="p-2"></div>;
+  return <WorkspaceSettings />;
 }
 
 {
