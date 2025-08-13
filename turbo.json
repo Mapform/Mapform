@@ -25,7 +25,10 @@
     "NEXT_PUBLIC_STRIPE_PRO_PRICE_ID_MONTHLY",
     "NEXT_PUBLIC_STRIPE_PRO_PRICE_ID_YEARLY",
 
-    "CRON_SECRET"
+    "CRON_SECRET",
+
+    "OPENAI_API_KEY",
+    "GROQ_API_KEY"
   ],
   "globalDependencies": ["**/.env.*local"],
   "tasks": {

@@ -63,7 +63,7 @@ function ChatInner({ initialMessages }: ChatProps) {
   const { pId } = useParams();
   const { params, setQueryStates } = useParamsContext();
 
-  const { messages, sendMessage, status, stop } = useChat<ChatMessage>({
+  const { messages, sendMessage, status, stop, error } = useChat<ChatMessage>({
     id: params.chatId!,
     messages: initialMessages ?? [],
     transport: new DefaultChatTransport({
@@ -122,6 +122,9 @@ function ChatInner({ initialMessages }: ChatProps) {
     }
   }, [params.query, sendMessage, hasInitiatedNewChat, params.chatId, messages]);
 
+  console.log(messages);
+  console.log(status, error);
+
   return (
     <>
       <MapDrawerToolbar>
@@ -172,6 +175,9 @@ function ChatInner({ initialMessages }: ChatProps) {
               <BrainIcon className="mr-2 size-4" /> Thinking...
             </div>
           )}
+        {status === "error" && (
+          <div className="flex animate-pulse items-center text-sm">Error</div>
+        )}
       </div>
       <form
         className="relative flex flex-shrink-0 flex-col gap-2 border-t p-4"

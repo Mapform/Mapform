@@ -65,7 +65,7 @@ export async function POST(req: Request) {
   }
 
   const result = streamText({
-    model: openai("gpt-5-mini"),
+    model: openai("gpt-5"),
     system: SYSTEM_PROMPT,
     messages: convertToModelMessages(messages),
     tools: {
@@ -77,11 +77,13 @@ export async function POST(req: Request) {
         searchContextSize: "medium",
       }),
     },
-    stopWhen: [
-      // Need to keep this low, 5 at the highest
-      stepCountIs(5),
-      hasToolCall("returnBestResults"),
-    ],
+    stopWhen: [stepCountIs(5), hasToolCall("returnBestResults")],
+    // stopWhen: hasToolCall("returnBestResults"),
+    providerOptions: {
+      openai: {
+        reasoningEffort: "low",
+      },
+    },
   });
 
   const response = result.toUIMessageStreamResponse({
