@@ -6,6 +6,7 @@ import React, {
   useOptimistic,
   startTransition,
   useState,
+  useCallback,
 } from "react";
 import type { GetUserWorkspaceMemberships } from "@mapform/backend/data/workspace-memberships/get-user-workspace-memberships";
 import type { WorkspaceDirectory } from "@mapform/backend/data/workspaces/get-workspace-directory";
@@ -13,7 +14,15 @@ import { SidebarProvider } from "@mapform/ui/components/sidebar";
 import Map, { NavigationControl } from "react-map-gl/mapbox";
 import { env } from "~/*";
 import "mapbox-gl/dist/mapbox-gl.css";
+import {
+  POINTS_LAYER_ID,
+  POINTS_SYMBOLS_LAYER_ID,
+  LINES_LAYER_ID,
+  POLYGONS_FILL_LAYER_ID,
+  POLYGONS_OUTLINE_LAYER_ID,
+} from "~/lib/map/constants";
 import { MapContextMenu } from "./map-context-menu";
+import { useParamsContext } from "~/lib/params/client";
 
 export interface WorkspaceContextInterface {
   workspaceSlug: string;
@@ -53,6 +62,8 @@ export function WorkspaceProvider({
     x: number;
     y: number;
   } | null>(null);
+  const { setQueryStates } = useParamsContext();
+  const [cursor, setCursor] = useState<string>("grab");
   const currentWorkspace = workspaceMemberships.find(
     (membership) => membership.workspace.slug === workspaceSlug,
   );
@@ -85,6 +96,23 @@ export function WorkspaceProvider({
     setContextMenu(null);
   };
 
+  const handleClick = (
+    event: mapboxgl.MapMouseEvent & {
+      features?: { properties: { id: string } }[];
+    },
+  ) => {
+    // Access clicked features from event.features
+    if (event.features && event.features.length > 0) {
+      const clickedFeature = event.features[0]; // Or iterate through all features
+      if (clickedFeature?.properties.id) {
+        void setQueryStates({ rowId: clickedFeature.properties.id });
+      }
+    }
+  };
+
+  const onMouseEnter = useCallback(() => setCursor("pointer"), []);
+  const onMouseLeave = useCallback(() => setCursor("auto"), []);
+
   return (
     <WorkspaceContext.Provider
       value={{
@@ -107,8 +135,19 @@ export function WorkspaceProvider({
         initialViewState={{
           zoom: 2,
         }}
+        cursor={cursor}
         minZoom={2}
         onContextMenu={handleContextMenu}
+        onClick={handleClick}
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
+        interactiveLayerIds={[
+          POINTS_LAYER_ID,
+          POINTS_SYMBOLS_LAYER_ID,
+          LINES_LAYER_ID,
+          POLYGONS_FILL_LAYER_ID,
+          POLYGONS_OUTLINE_LAYER_ID,
+        ]}
       >
         <SidebarProvider defaultOpen={defaultLeftOpen}>
           {children}

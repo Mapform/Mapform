@@ -5,12 +5,13 @@ import { Layer, Source, useMap } from "react-map-gl/mapbox";
 import { useParamsContext } from "~/lib/params/client";
 import { useProject } from "./context";
 import { rowsToGeoJSON } from "~/lib/rows-to-geojson";
-
-const POINTS_LAYER_ID = "points-layer";
-const POINTS_SYMBOLS_LAYER_ID = "points-symbols-layer";
-const LINES_LAYER_ID = "lines-layer";
-const POLYGONS_FILL_LAYER_ID = "polygons-fill-layer";
-const POLYGONS_OUTLINE_LAYER_ID = "polygons-outline-layer";
+import {
+  POINTS_LAYER_ID,
+  POINTS_SYMBOLS_LAYER_ID,
+  LINES_LAYER_ID,
+  POLYGONS_FILL_LAYER_ID,
+  POLYGONS_OUTLINE_LAYER_ID,
+} from "~/lib/map/constants";
 
 export function MapData() {
   const { map } = useMap();
