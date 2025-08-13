@@ -1,8 +1,7 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import { Layer, Source, useMap } from "react-map-gl/mapbox";
-import { useParamsContext } from "~/lib/params/client";
+import { useMemo } from "react";
+import { Layer, Source } from "react-map-gl/mapbox";
 import { useProject } from "./context";
 import { rowsToGeoJSON } from "~/lib/rows-to-geojson";
 import {
@@ -14,31 +13,7 @@ import {
 } from "~/lib/map/constants";
 
 export function MapData() {
-  const { map } = useMap();
-  const { projectService, geoapifyPlaceDetails } = useProject();
-  const { setQueryStates } = useParamsContext();
-  const [contextMenuOpen, setContextMenuOpen] = useState(false);
-  const [contextMenuPosition, setContextMenuPosition] = useState({
-    x: 0,
-    y: 0,
-  });
-
-  const handleClick = (e: mapboxgl.MapMouseEvent) => {
-    const features = e.target.queryRenderedFeatures(e.point, {
-      layers: [
-        POINTS_LAYER_ID,
-        POINTS_SYMBOLS_LAYER_ID,
-        LINES_LAYER_ID,
-        POLYGONS_FILL_LAYER_ID,
-      ],
-    });
-
-    const feature = features[0];
-
-    if (feature?.properties?.id) {
-      // void setQueryStates({ rowId: feature.properties.id as string });
-    }
-  };
+  const { projectService } = useProject();
 
   // Separate rows by geometry type
   const pointRows = useMemo(

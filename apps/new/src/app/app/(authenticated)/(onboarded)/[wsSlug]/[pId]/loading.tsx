@@ -5,7 +5,7 @@ import { MapDrawer } from "~/components/map-drawer";
 
 export default function Loading() {
   return (
-    <MapDrawer open={true}>
+    <MapDrawer open>
       <LoadingSkeleton />
     </MapDrawer>
   );

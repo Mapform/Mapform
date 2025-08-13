@@ -1,9 +1,8 @@
+import { notFound } from "next/navigation";
+import { getWorkspaceDirectory } from "~/data/workspaces/get-workspace-directory";
+import { getStripePrices, getStripeProducts } from "@mapform/lib/stripe";
+import { env } from "~/*";
 import { Badge } from "@mapform/ui/components/badge";
-import { ProButtons } from "./pro-buttons";
-import { PLANS } from "@mapform/lib/constants/plans";
-import type { WorkspaceDirectory } from "@mapform/backend/data/workspaces/get-workspace-directory";
-import { BasicButtons } from "./basic-buttons";
-import type { getStripePrices } from "@mapform/lib/stripe";
 
 const BASIC_FEATURES = [
   "Unlimited projects",
@@ -19,28 +18,53 @@ const PRO_FEATURES = [
   "100 MB storage",
 ];
 
-export function Billing({
-  plan,
-  workspaceSlug,
-}: {
-  plan: NonNullable<NonNullable<WorkspaceDirectory["data"]>["plan"]>;
-  workspaceSlug: string;
-  proPrice: Awaited<ReturnType<typeof getStripePrices>>[number];
+async function fetchWorkspacePlan(workspaceSlug: string) {
+  const response = await getWorkspaceDirectory({ slug: workspaceSlug });
+  const workspacePlan = response?.data?.plan;
+
+  if (!workspacePlan) {
+    return notFound();
+  }
+
+  return workspacePlan;
+}
+
+export default async function BillingPage(props: {
+  params: Promise<{ wsSlug: string }>;
 }) {
+  const params = await props.params;
+  const [stripePrices, stripeProducts, workspacePlan] = await Promise.all([
+    getStripePrices(),
+    getStripeProducts(),
+    fetchWorkspacePlan(params.wsSlug),
+  ]);
+
+  const proPlan = stripeProducts.find(
+    (product: { id: string }) =>
+      product.id === env.NEXT_PUBLIC_STRIPE_PRO_PRODUCT_ID,
+  );
+  const proPrice = stripePrices.find(
+    (price: { productId: string }) => price.productId === proPlan?.id,
+  );
+
+  if (!proPrice) {
+    throw new Error("Pro price not found");
+  }
+
   return (
     <div className="flex flex-col pb-12">
       <div className="@4xl:grid-cols-3 grid grid-cols-1 gap-x-8">
         <div className="pb-8">
           <h2 className="text-md font-semibold">Active Plan</h2>
           <div className="text-muted-foreground mt-1 text-sm">
-            Your current plan is <Badge>{plan.name}</Badge>
+            Your current plan is <Badge>{workspacePlan.name}</Badge>
           </div>
           <div className="text-muted-foreground mt-1 text-sm">
             Prices in USD.
           </div>
         </div>
         <div className="@4xl:col-span-2 grid-cols-1 space-y-6">
-          <div className="grid grid-cols-2">
+          {/* <div className="grid grid-cols-2">
             <div className="">
               <div className="text-sm font-semibold">{PLANS.basic.name}</div>
               <div className="mb-2 text-2xl font-medium">$0</div>
@@ -61,8 +85,6 @@ export function Billing({
               <div className="mb-2 flex">
                 <div className="text-2xl font-medium">$6</div>
                 <div className="text-muted-foreground mb-[3px] ml-1 self-end text-sm">
-                  {/* TODO: Add this back once introducing seats. Also need to allow seat modifications in Stripe Billing > Customer Portal: https://dashboard.stripe.com/test/settings/billing/portal */}
-                  {/* per seat/month */}
                   per month
                 </div>
               </div>
@@ -78,7 +100,7 @@ export function Billing({
                 ))}
               </ul>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>
