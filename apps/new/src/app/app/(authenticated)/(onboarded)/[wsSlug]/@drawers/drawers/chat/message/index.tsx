@@ -31,7 +31,7 @@ export function Message({ message }: ChatMessageProps) {
               return (
                 <div
                   key={index}
-                  className={cn("prose-sm whitespace-pre-wrap", {
+                  className={cn("prose-sm whitespace-pre-wrap break-words", {
                     "text-white": isUser,
                   })}
                 >

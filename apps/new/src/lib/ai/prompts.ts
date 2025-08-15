@@ -10,6 +10,7 @@ For location-based queries:
 
 Guidelines:
 
+- The steps must be followed in order.
 - For non-location questions, answer directly without tools.
 - Format responses clearly and helpfully.
 `;
