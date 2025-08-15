@@ -52,19 +52,14 @@ export default async function BillingPage(props: {
   }
 
   return (
-    <div className="flex flex-col pb-12">
-      <div className="@4xl:grid-cols-3 grid grid-cols-1 gap-x-8">
-        <div className="pb-8">
-          <h2 className="text-md font-semibold">Active Plan</h2>
-          <div className="text-muted-foreground mt-1 text-sm">
-            Your current plan is <Badge>{workspacePlan.name}</Badge>
-          </div>
-          <div className="text-muted-foreground mt-1 text-sm">
-            Prices in USD.
-          </div>
+    <div className="flex flex-col space-y-8">
+      <div className="pb-8">
+        <div className="text-muted-foreground text-sm">
+          Your current plan is <Badge>{workspacePlan.name}</Badge>
         </div>
-        <div className="@4xl:col-span-2 grid-cols-1 space-y-6">
-          {/* <div className="grid grid-cols-2">
+      </div>
+      <div className="@4xl:col-span-2 grid-cols-1 space-y-6">
+        {/* <div className="grid grid-cols-2">
             <div className="">
               <div className="text-sm font-semibold">{PLANS.basic.name}</div>
               <div className="mb-2 text-2xl font-medium">$0</div>
@@ -101,7 +96,6 @@ export default async function BillingPage(props: {
               </ul>
             </div>
           </div> */}
-        </div>
       </div>
     </div>
   );
