@@ -199,18 +199,21 @@ const FeatureContent = ({
         icon={featureService.optimisticState!.icon ?? undefined}
         onTitleChange={(value) => {
           featureService.execute({
+            ...featureService.optimisticState,
             id: featureService.optimisticState!.id,
             name: value,
           });
         }}
         onIconChange={(value) => {
           featureService.execute({
+            ...featureService.optimisticState,
             id: featureService.optimisticState!.id,
             icon: value,
           });
         }}
         onDescriptionChange={(value) => {
           featureService.execute({
+            ...featureService.optimisticState,
             id: featureService.optimisticState!.id,
             description: value.blocks,
             descriptionAsMarkdown: value.markdown ?? undefined,

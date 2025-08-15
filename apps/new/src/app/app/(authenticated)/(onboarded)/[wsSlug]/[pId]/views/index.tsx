@@ -138,6 +138,7 @@ export function Views() {
                 <EmojiPopover
                   onIconChange={(emoji) => {
                     projectService.execute({
+                      ...projectService.optimisticState,
                       id: projectService.optimisticState.id,
                       icon: emoji,
                     });
@@ -157,6 +158,7 @@ export function Views() {
               <EmojiPopover
                 onIconChange={(emoji) => {
                   projectService.execute({
+                    ...projectService.optimisticState,
                     id: projectService.optimisticState.id,
                     icon: emoji,
                   });
@@ -195,6 +197,7 @@ export function Views() {
           value={projectService.optimisticState.name ?? ""}
           onChange={(value) => {
             projectService.execute({
+              ...projectService.optimisticState,
               id: projectService.optimisticState.id,
               name: value,
             });
@@ -205,6 +208,7 @@ export function Views() {
           value={projectService.optimisticState.description ?? ""}
           onChange={(value) => {
             projectService.execute({
+              ...projectService.optimisticState,
               id: projectService.optimisticState.id,
               description: value,
             });
