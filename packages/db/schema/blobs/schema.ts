@@ -19,10 +19,14 @@ export const blobs = pgTable(
     workspaceId: uuid("workspace_id").notNull(),
 
     // Used for project cover photos
-    projectId: uuid("project_id").references(() => projects.id),
+    projectId: uuid("project_id").references(() => projects.id, {
+      onDelete: "set null",
+    }),
 
     // Used for row cover photos
-    rowId: uuid("row_id").references(() => rows.id),
+    rowId: uuid("row_id").references(() => rows.id, {
+      onDelete: "set null",
+    }),
 
     // Optional attribution fields, mostly used when storing photos from wikidata
     title: varchar("title", { length: 512 }),

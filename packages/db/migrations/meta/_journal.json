@@ -120,6 +120,13 @@
       "when": 1754080591234,
       "tag": "0016_slim_black_crow",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1755227220898,
+      "tag": "0017_fuzzy_shadowcat",
+      "breakpoints": true
     }
   ]
 }
