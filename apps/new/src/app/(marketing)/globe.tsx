@@ -4,6 +4,35 @@ import createGlobe from "@mapform/globe";
 import { useEffect, useRef } from "react";
 import { useSpring } from "motion/react";
 
+const animateLoop = [
+  {
+    query: "Show me the world",
+    coordinates: [37.7749, -122.4194],
+    markers: [
+      { location: [37.7749, -122.4194], size: 0.05 }, // San Francisco, USA
+      { location: [40.7128, -74.006], size: 0.05 }, // New York City, USA
+      { location: [48.8566, 2.3522], size: 0.05 }, // Paris, France
+      { location: [35.6895, 139.6917], size: 0.05 }, // Tokyo, Japan
+      { location: [51.5074, -0.1278], size: 0.05 }, // London, UK
+      { location: [-33.8688, 151.2093], size: 0.05 }, // Sydney, Australia
+      { location: [55.7558, 37.6173], size: 0.05 }, // Moscow, Russia
+      { location: [-23.5505, -46.6333], size: 0.05 }, // São Paulo, Brazil
+      { location: [1.3521, 103.8198], size: 0.05 }, // Singapore
+      { location: [19.4326, -99.1332], size: 0.05 }, // Mexico City, Mexico
+      { location: [52.52, 13.405], size: 0.05 }, // Berlin, Germany
+      { location: [34.0522, -118.2437], size: 0.05 }, // Los Angeles, USA
+      { location: [28.6139, 77.209], size: 0.05 }, // Delhi, India
+      { location: [31.2304, 121.4737], size: 0.05 }, // Shanghai, China
+      { location: [6.5244, 3.3792], size: 0.05 }, // Lagos, Nigeria
+    ],
+  },
+  {
+    query: "What are the best restaurants in Tokyo?",
+    coordinates: [35.6895, 139.6917],
+    markers: [{ location: [35.6895, 139.6917], size: 0.05 }],
+  },
+];
+
 export function Globe() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const pointerInteracting = useRef<number | null>(null);
@@ -76,9 +105,19 @@ export function Globe() {
       },
     });
 
-    setTimeout(() => {
-      globe.flyTo(37.7749, -122.4194, { duration: 1000 });
-    }, 3000);
+    // setTimeout(() => {
+    //   globe.flyTo(37.7749, -122.4194, { duration: 1000 });
+    // }, 3000);
+    let i = 0;
+    function loopFlyTo() {
+      const item = animateLoop[i % animateLoop.length];
+      globe.flyTo(item!.coordinates[0]!, item!.coordinates[1]!, {
+        duration: 1000,
+      });
+      i++;
+      setTimeout(loopFlyTo, 2000);
+    }
+    loopFlyTo();
 
     setTimeout(
       () => canvasRef.current && (canvasRef.current.style.opacity = "1"),

@@ -7,7 +7,13 @@ import { Demos } from "./demos";
 import { Globe } from "./globe";
 
 export default function Page() {
-  return <Globe />;
+  return (
+    <div className="absolute inset-0 h-screen w-screen overflow-hidden">
+      <div className="absolute top-1/3 size-full">
+        <Globe />;
+      </div>
+    </div>
+  );
 }
 
 // TOLD PAGE
