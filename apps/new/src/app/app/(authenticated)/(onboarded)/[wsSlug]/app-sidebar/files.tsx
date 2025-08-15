@@ -124,6 +124,7 @@ export function Files({
 
     await deleteProjectAsync({
       projectId,
+      redirect: `/app/${workspaceSlug}`,
     });
   };
 
