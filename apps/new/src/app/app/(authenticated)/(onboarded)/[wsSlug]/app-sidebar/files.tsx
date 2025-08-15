@@ -168,7 +168,7 @@ export function Files({
                           ) : (
                             <EarthIcon />
                           )}
-                          <span>{project.name || "New project"}</span>
+                          <span>{project.name || "New Map"}</span>
                         </div>
                       </SidebarMenuButton>
                     </SidebarMenuItem>

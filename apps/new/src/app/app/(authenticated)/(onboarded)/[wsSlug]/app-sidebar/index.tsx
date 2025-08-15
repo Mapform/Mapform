@@ -217,7 +217,7 @@ export function AppSidebar() {
           <SidebarGroup key={teamspace.id}>
             <SidebarGroupLabel>{teamspace.name}</SidebarGroupLabel>
             <SidebarGroupAction
-              title="Add Project"
+              title="Add Map"
               disabled={isPending}
               onClick={() => {
                 execute({

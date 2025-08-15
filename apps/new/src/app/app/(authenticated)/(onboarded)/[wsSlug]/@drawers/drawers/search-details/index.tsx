@@ -200,9 +200,9 @@ function SearchDetailsInner({ geoapifyPlaceDetails }: SearchDetailsProps) {
                           setProjectComboboxOpen(false);
                           handleAddToProject(project.id);
                         }}
-                        keywords={[project.name ?? "New project"]}
+                        keywords={[project.name ?? "New Map"]}
                       >
-                        {project.name ?? "New project"}
+                        {project.name ?? "New Map"}
                       </CommandItem>
                     ))}
                   </CommandGroup>
