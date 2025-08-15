@@ -39,20 +39,12 @@ export function ProjectProvider({
   >(updateProjectAction, {
     currentState: project,
     updateFn: (state, newProject) => {
-      console.log("state", state);
-      console.log("newProject", newProject);
-      console.log("merged", {
-        ...state,
-        ...newProject,
-      });
       return {
         ...state,
         ...newProject,
       };
     },
   });
-
-  console.log("projectService", projectService.optimisticState);
 
   // const featureService = useStateService<GetRow["data"], UpdateRowSchema>(
   //   updateRowAction,
