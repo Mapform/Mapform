@@ -33,7 +33,6 @@
     "@mapform/backend": "workspace:*",
     "@mapform/blocknote": "workspace:*",
     "@mapform/db": "workspace:*",
-    "@mapform/globe": "workspace:*",
     "@mapform/lib": "workspace:*",
     "@mapform/map-utils": "workspace:*",
     "@mapform/ui": "workspace:*",
