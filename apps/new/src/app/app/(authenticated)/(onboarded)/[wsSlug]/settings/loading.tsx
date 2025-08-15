@@ -1,7 +1,7 @@
 "use client";
 
-import { LoadingSkeleton } from "~/components/loading-skeleton";
+import { BasicSkeleton } from "~/components/skeletons/basic";
 
 export default function Loading() {
-  return <LoadingSkeleton />;
+  return <BasicSkeleton className="p-6" />;
 }

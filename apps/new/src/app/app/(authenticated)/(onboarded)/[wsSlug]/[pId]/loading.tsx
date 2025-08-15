@@ -1,12 +1,12 @@
 "use client";
 
-import { LoadingSkeleton } from "~/components/loading-skeleton";
+import { BasicSkeleton } from "~/components/skeletons/basic";
 import { MapDrawer } from "~/components/map-drawer";
 
 export default function Loading() {
   return (
     <MapDrawer open>
-      <LoadingSkeleton />
+      <BasicSkeleton className="p-6" />
     </MapDrawer>
   );
 }

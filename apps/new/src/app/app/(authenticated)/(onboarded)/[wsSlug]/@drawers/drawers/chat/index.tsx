@@ -21,7 +21,7 @@ import type { ChatMessage } from "~/lib/types";
 import { Message } from "./message";
 import { DefaultChatTransport } from "ai";
 import { useParams } from "next/navigation";
-import { LoadingSkeleton } from "~/components/loading-skeleton";
+import { BasicSkeleton } from "~/components/skeletons/basic";
 
 interface ChatProps {
   initialMessages?: ChatMessage[];
@@ -47,7 +47,7 @@ export function Chat({ initialMessages }: ChatProps) {
               <XIcon className="size-4" />
             </Button>
           </MapDrawerToolbar>
-          <LoadingSkeleton />
+          <BasicSkeleton className="p-6" />
         </>
       ) : (
         <ChatInner key={params.chatId} initialMessages={initialMessages} />

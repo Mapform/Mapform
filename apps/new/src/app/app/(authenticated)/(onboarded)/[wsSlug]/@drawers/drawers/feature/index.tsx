@@ -17,7 +17,7 @@ import { updateRowAction } from "~/data/rows/update-row";
 import type { GetRow } from "@mapform/backend/data/rows/get-row";
 import type { UpdateRowSchema } from "@mapform/backend/data/rows/update-row/schema";
 import { Marker, useMap } from "react-map-gl/mapbox";
-import { LoadingSkeleton } from "~/components/loading-skeleton";
+import { BasicSkeleton } from "~/components/skeletons/basic";
 import { Feature as FeatureComponent } from "~/components/feature";
 import {
   DropdownMenu,
@@ -83,7 +83,7 @@ export function Feature({ feature }: FeatureDrawerProps) {
                 <XIcon className="size-4" />
               </Button>
             </MapDrawerToolbar>
-            <LoadingSkeleton />
+            <BasicSkeleton className="p-6" />
           </>
         ) : featureService.optimisticState ? (
           <FeatureContent

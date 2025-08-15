@@ -14,7 +14,7 @@ import {
   CheckIcon,
   ChevronsUpDownIcon,
 } from "lucide-react";
-import { LoadingSkeleton } from "~/components/loading-skeleton";
+import { BasicSkeleton } from "~/components/skeletons/basic";
 import { Feature } from "~/components/feature";
 import { PropertyColumnEditor } from "~/components/properties/property-column-editor";
 import { PropertyValueEditor } from "~/components/properties/property-value-editor";
@@ -77,7 +77,7 @@ export function SearchDetails({ geoapifyPlaceDetails }: SearchDetailsProps) {
               <XIcon className="size-4" />
             </Button>
           </MapDrawerToolbar>
-          <LoadingSkeleton />
+          <BasicSkeleton className="p-6" />
         </>
       ) : (
         <SearchDetailsInner geoapifyPlaceDetails={geoapifyPlaceDetails} />
