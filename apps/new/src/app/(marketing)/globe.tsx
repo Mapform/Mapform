@@ -67,14 +67,19 @@ export function Globe() {
         if (!pointerInteracting.current) {
           // Called on every animation frame.
           // `state` will be an empty object, return updated params.
-          phi += 0.001;
+          // phi += 0.001;
         }
-        state.phi = phi + spring.get();
+        // state.phi = phi + spring.get();
         // Keep internal resolution synced with CSS size * DPR
         state.width = width * dpr;
         state.height = width * dpr;
       },
     });
+
+    setTimeout(() => {
+      globe.flyTo(37.7749, -122.4194, { duration: 1000 });
+    }, 3000);
+
     setTimeout(
       () => canvasRef.current && (canvasRef.current.style.opacity = "1"),
     );
@@ -92,33 +97,33 @@ export function Globe() {
       }}
     >
       <canvas
-        onMouseMove={(e) => {
-          if (pointerInteracting.current !== null) {
-            const delta = e.clientX - pointerInteracting.current;
-            pointerInteractionMovement.current = delta;
-            spring.set(delta / 200);
-          }
-        }}
-        onPointerDown={(e) => {
-          pointerInteracting.current =
-            e.clientX - pointerInteractionMovement.current;
-          canvasRef.current && (canvasRef.current.style.cursor = "grabbing");
-        }}
-        onPointerOut={() => {
-          pointerInteracting.current = null;
-          canvasRef.current && (canvasRef.current.style.cursor = "grab");
-        }}
-        onPointerUp={() => {
-          pointerInteracting.current = null;
-          canvasRef.current && (canvasRef.current.style.cursor = "grab");
-        }}
-        onTouchMove={(e) => {
-          if (pointerInteracting.current !== null && e.touches[0]) {
-            const delta = e.touches[0].clientX - pointerInteracting.current;
-            pointerInteractionMovement.current = delta;
-            spring.set(delta / 200);
-          }
-        }}
+        // onMouseMove={(e) => {
+        //   if (pointerInteracting.current !== null) {
+        //     const delta = e.clientX - pointerInteracting.current;
+        //     pointerInteractionMovement.current = delta;
+        //     spring.set(delta / 200);
+        //   }
+        // }}
+        // onPointerDown={(e) => {
+        //   pointerInteracting.current =
+        //     e.clientX - pointerInteractionMovement.current;
+        //   canvasRef.current && (canvasRef.current.style.cursor = "grabbing");
+        // }}
+        // onPointerOut={() => {
+        //   pointerInteracting.current = null;
+        //   canvasRef.current && (canvasRef.current.style.cursor = "grab");
+        // }}
+        // onPointerUp={() => {
+        //   pointerInteracting.current = null;
+        //   canvasRef.current && (canvasRef.current.style.cursor = "grab");
+        // }}
+        // onTouchMove={(e) => {
+        //   if (pointerInteracting.current !== null && e.touches[0]) {
+        //     const delta = e.touches[0].clientX - pointerInteracting.current;
+        //     pointerInteractionMovement.current = delta;
+        //     spring.set(delta / 200);
+        //   }
+        // }}
         ref={canvasRef}
         style={{
           width: "100%",
