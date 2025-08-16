@@ -59,8 +59,24 @@ export function Hero() {
           <div className="mx-auto flex max-w-2xl flex-col items-center text-center sm:items-baseline sm:text-left lg:mx-0 lg:flex-auto">
             <Image alt="Logo" className="h-5 w-fit" src={mapform} />
             <div className="lg:max-w-[512px]">
-              <h1 className="text-foreground my-8 text-5xl font-medium lg:text-7xl">
+              {/* <h1 className="text-foreground my-8 text-5xl font-medium lg:text-7xl">
                 Chat With Your Map.
+              </h1> */}
+              <h1 className="text-foreground my-8 flex items-center gap-5 text-6xl font-medium lg:text-8xl">
+                <div className="relative inline-block self-start">
+                  <span className="text-primary relative -ml-6 inline-block rounded-3xl bg-gray-100 px-6 py-4">
+                    Hello
+                    <span
+                      aria-hidden
+                      className="absolute -left-[7px] bottom-0 z-0 h-5 w-5 rounded-br-[15px] bg-gray-100"
+                    />
+                    <span
+                      aria-hidden
+                      className="absolute -left-[10px] bottom-0 z-[1] h-5 w-[10px] rounded-br-[10px] bg-white"
+                    />
+                  </span>
+                </div>
+                World.
               </h1>
               <p className="text-muted-foreground mb-10 text-xl leading-8 sm:mb-10 sm:mt-6 sm:text-2xl">
                 {/* Mapform helps you track, manage, and share the places that
