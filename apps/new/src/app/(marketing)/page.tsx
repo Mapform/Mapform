@@ -1,18 +1,28 @@
+import Link from "next/link";
 import { Hero } from "./hero";
-import { ShowcaseTabs } from "./showcase-tabs";
-import { Pricing } from "./pricing";
-import { Storytelling } from "./storytelling";
-import { Forms } from "./forms";
-import { Demos } from "./demos";
-import { Globe } from "./globe";
 
 export default function Page() {
   return (
-    <div className="absolute inset-0 h-screen w-screen overflow-hidden">
-      <div className="absolute top-1/3 size-full">
-        <Globe />;
-      </div>
-    </div>
+    <>
+      <Hero />
+      <footer className="text-muted-foreground flex w-full items-center justify-center gap-1 bg-gray-50 p-4 text-sm">
+        Made by{" "}
+        <span>
+          <Link
+            className="underline"
+            href="https://nichaley.com"
+            target="_blank"
+          >
+            Nic
+          </Link>{" "}
+          in Montreal 🥯
+        </span>
+        {/* <span className="mx-2">•</span>
+        <p className="text-center text-sm/6 text-gray-600">
+          &copy; 2025 Mapform Inc. All rights reserved.
+        </p> */}
+      </footer>
+    </>
   );
 }
 
