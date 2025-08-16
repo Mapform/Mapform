@@ -86,10 +86,15 @@ const config: Config = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        "rainbow-shimmer": {
+          from: { backgroundPosition: "0% 50%" },
+          to: { backgroundPosition: "200% 50%" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        rainbow: "rainbow-shimmer 1.75s linear infinite reverse",
       },
     },
   },
@@ -108,6 +113,17 @@ const config: Config = {
           /* Hide scrollbar for IE, Edge and Firefox */
           "-ms-overflow-style": "none",
           "scrollbar-width": "none",
+        },
+        ".animate-rainbow": {
+          backgroundImage:
+            "linear-gradient(90deg, #1b1917, #1b1917, #1b1917, #1b1917, #1b1917, #1b1917, #1b1917, #1b1917, #ff0080, #ff8c00, #ffd500, #32cd32, #1e90ff, #8a2be2, #ff0080, #1b1917, #1b1917, #1b1917, #1b1917, #1b1917, #1b1917, #1b1917, #1b1917)",
+          backgroundSize: "200% 100%",
+          backgroundRepeat: "repeat",
+          "-webkit-background-clip": "text",
+          backgroundClip: "text",
+          color: "transparent",
+          willChange: "background-position",
+          /* Do not set 'animation' here; it comes from theme.animation 'animate-rainbow' */
         },
       });
     }),

@@ -67,7 +67,7 @@ export function Hero() {
               <h1 className="text-foreground my-8 flex flex-col gap-5 text-6xl font-medium lg:text-7xl">
                 <div className="relative inline-block self-start">
                   <span className="text-primary relative -ml-6 inline-block rounded-3xl bg-gray-100 px-6 py-4">
-                    <span className="rainbow-text">Hello, World.</span>
+                    <span className="animate-rainbow">Hello, World.</span>
                     <span
                       aria-hidden
                       className="absolute -left-[7px] bottom-0 z-0 h-5 w-5 rounded-br-[15px] bg-gray-100"
@@ -115,52 +115,6 @@ export function Hero() {
           </div>
         </section>
       </div>
-      <style jsx>{`
-        .rainbow-text {
-          background: linear-gradient(
-            90deg,
-            #1b1917,
-            #1b1917,
-            #1b1917,
-            #1b1917,
-            #1b1917,
-            #1b1917,
-            #1b1917,
-            #1b1917,
-            #ff0080,
-            #ff8c00,
-            #ffd500,
-            #32cd32,
-            #1e90ff,
-            #8a2be2,
-            #ff0080,
-            #1b1917,
-            #1b1917,
-            #1b1917,
-            #1b1917,
-            #1b1917,
-            #1b1917,
-            #1b1917,
-            #1b1917
-          );
-          background-size: 200% 100%;
-          background-repeat: repeat;
-          -webkit-background-clip: text;
-          background-clip: text;
-          color: transparent;
-          animation: rainbow-shimmer 1.75s linear infinite reverse;
-          will-change: background-position;
-        }
-
-        @keyframes rainbow-shimmer {
-          0% {
-            background-position: 0% 50%;
-          }
-          100% {
-            background-position: 200% 50%;
-          }
-        }
-      `}</style>
     </div>
   );
 }
