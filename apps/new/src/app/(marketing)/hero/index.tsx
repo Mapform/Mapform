@@ -5,7 +5,6 @@ import Link from "next/link";
 // import { Tooltip, TooltipContent, TooltipTrigger } from "@mapform/ui/components/tooltip";
 import { Globe } from "./globe";
 import { ArrowUpRightIcon } from "lucide-react";
-import mapform from "public/static/images/mapform-full.svg";
 import Image, { type StaticImageData } from "next/image";
 import { useEffect, useMemo, useState } from "react";
 import fairmount from "public/static/images/fairmount.jpg";
@@ -179,10 +178,18 @@ export function Hero() {
 
   return (
     <div className="flex h-screen w-screen flex-col justify-center">
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+      <div className="mx-auto w-full max-w-7xl px-6 lg:px-8">
         <section className="lg:flex lg:items-center lg:gap-x-12">
-          <div className="mx-auto flex max-w-2xl flex-col items-center text-center sm:items-baseline sm:text-left lg:mx-0 lg:flex-auto">
-            <Image alt="Logo" className="h-5 w-fit" src={mapform} />
+          {/* LEFT SIDE CONTENT */}
+          <div className="mx-auto flex max-w-2xl flex-col items-center text-center sm:items-baseline sm:text-left lg:mx-0 lg:max-w-none lg:flex-1">
+            <Image
+              alt="Logo"
+              className="h-5 w-fit"
+              src="/static/images/mapform-full.svg"
+              width={200}
+              height={20}
+              priority
+            />
             <div className="flex flex-col lg:max-w-[512px]">
               {/* <h1 className="text-foreground my-8 text-5xl font-medium lg:text-7xl">
                 Chat With Your Map.
@@ -228,7 +235,8 @@ export function Hero() {
               </Link>
             </div>
           </div>
-          <div className="pointer-events-none absolute inset-0 -z-10 opacity-15 max-lg:h-screen max-lg:w-screen lg:relative lg:z-0 lg:mt-0 lg:size-[550px] lg:flex-shrink-0 lg:flex-grow lg:opacity-100">
+          {/* RIGHT SIDE CONTENT */}
+          <div className="pointer-events-none absolute inset-0 -z-10 opacity-15 max-lg:h-screen max-lg:w-screen lg:relative lg:z-0 lg:mt-0 lg:max-w-none lg:flex-1 lg:opacity-100">
             <div className="flex h-full w-full items-center justify-center overflow-hidden">
               <Globe target={target} />
             </div>
