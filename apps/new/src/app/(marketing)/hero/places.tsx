@@ -10,12 +10,18 @@ interface PlacesProps {
     description: string;
     image: StaticImageData;
   }[];
+  className?: string;
 }
 
-export default function Places({ results }: PlacesProps) {
+export default function Places({ results, className }: PlacesProps) {
   return (
     <AnimatePresence>
-      <div className="absolute left-0 right-0 top-16 flex flex-col gap-8">
+      <div
+        className={cn(
+          "absolute left-0 right-0 top-16 flex flex-col gap-8",
+          className,
+        )}
+      >
         {results.map((result, i) => (
           <motion.div
             className={cn(

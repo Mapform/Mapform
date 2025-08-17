@@ -183,13 +183,13 @@ export function Hero() {
         <section className="lg:flex lg:items-center lg:gap-x-12">
           <div className="mx-auto flex max-w-2xl flex-col items-center text-center sm:items-baseline sm:text-left lg:mx-0 lg:flex-auto">
             <Image alt="Logo" className="h-5 w-fit" src={mapform} />
-            <div className="lg:max-w-[512px]">
+            <div className="flex flex-col lg:max-w-[512px]">
               {/* <h1 className="text-foreground my-8 text-5xl font-medium lg:text-7xl">
                 Chat With Your Map.
               </h1> */}
-              <h1 className="text-foreground my-8 flex flex-col gap-5 text-6xl font-medium lg:text-7xl">
+              <h1 className="text-foreground my-8 flex flex-col gap-5 text-4xl font-medium max-sm:mx-auto md:text-6xl lg:text-7xl">
                 <div className="relative inline-block self-start">
-                  <span className="text-primary relative -ml-6 inline-block rounded-3xl bg-gray-100 px-6 py-4">
+                  <span className="text-primary relative inline-block rounded-3xl bg-gray-100 px-6 py-4 sm:-ml-6">
                     <span className="animate-rainbow">Hello, World.</span>
                     <span
                       aria-hidden
@@ -202,7 +202,7 @@ export function Hero() {
                   </span>
                 </div>
               </h1>
-              <p className="text-muted-foreground mb-10 text-xl leading-8 sm:mb-10 sm:mt-6 sm:text-2xl">
+              <p className="text-muted-foreground mb-10 text-xl leading-8 sm:mb-10 sm:text-2xl">
                 Mapform combines data, content, forms, and more to create maps
                 for almost anything.
               </p>
@@ -232,8 +232,8 @@ export function Hero() {
             <div className="flex h-full w-full items-center justify-center overflow-hidden">
               <Globe target={target} />
             </div>
-            <TextBox text={current.query} />
-            <Places results={current.results} />
+            <TextBox className="max-lg:hidden" text={current.query} />
+            <Places className="max-lg:hidden" results={current.results} />
           </div>
         </section>
       </div>
