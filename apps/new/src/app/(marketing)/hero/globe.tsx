@@ -14,11 +14,17 @@ interface GlobeProps {
   };
 }
 
+const locationToAngles = (lat: number, lon: number) => {
+  return [
+    Math.PI - ((lon * Math.PI) / 180 - Math.PI / 2),
+    (lat * Math.PI) / 180,
+  ];
+};
+
 export function Globe({ target }: GlobeProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const focusRef = useRef<[number, number]>([0, 0]);
   const markersRef = useRef<Marker[]>([]);
-  const revealTimersRef = useRef<number[]>([]);
   // Helpers are kept outside of effects to avoid extra dependencies
   const twoPi = Math.PI * 2;
 
@@ -94,36 +100,13 @@ export function Globe({ target }: GlobeProps) {
   // Update focus and markers whenever the target changes
   useEffect(() => {
     const [lat, lon] = target.coordinates;
-    const latRad = (lat * Math.PI) / 180;
-    const lonRad = (lon * Math.PI) / 180;
-    const phi =
-      (((Math.PI - lonRad) % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
-    const theta = Math.PI / 2 - latRad;
-    focusRef.current = [phi, theta];
+    focusRef.current = locationToAngles(lat, lon) as [number, number];
 
-    // Clear any existing reveal timers
-    revealTimersRef.current.forEach((id) => clearTimeout(id));
-    revealTimersRef.current = [];
-
-    // Start with no markers, then reveal one-by-one with 100ms spacing
-    markersRef.current = [];
-    target.markers.forEach((marker, index) => {
-      const timerId = window.setTimeout(() => {
-        markersRef.current = [
-          ...markersRef.current,
-          {
-            location: marker.location,
-            size: marker.size ?? 0.05,
-          },
-        ];
-      }, index * 100);
-      revealTimersRef.current.push(timerId);
-    });
-
-    return () => {
-      revealTimersRef.current.forEach((id) => clearTimeout(id));
-      revealTimersRef.current = [];
-    };
+    // Immediately set all markers (no delayed reveal)
+    markersRef.current = target.markers.map((marker) => ({
+      location: marker.location,
+      size: marker.size ?? 0.1,
+    }));
   }, [target]);
 
   return (

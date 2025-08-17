@@ -17,6 +17,9 @@ import machuPicchu from "public/static/images/machupicchu.jpg";
 import petra from "public/static/images/petra.jpg";
 import statueOfLiberty from "public/static/images/statueofliberty.jpg";
 import met from "public/static/images/met.jpg";
+import tokyo1 from "public/static/images/tokyo1.jpg";
+import tokyo2 from "public/static/images/tokyo2.jpg";
+import tokyo3 from "public/static/images/tokyo3.jpg";
 import Places from "./places";
 import { TextBox } from "./text-box";
 
@@ -35,7 +38,7 @@ const locationLoop: {
 }[] = [
   {
     query: "Where can I find the best bagels in Montreal?",
-    coordinates: [37.7749, -122.4194],
+    coordinates: [45.50169, -73.567253],
     results: [
       {
         title: "St-Viateur Bagel",
@@ -65,7 +68,7 @@ const locationLoop: {
   },
   {
     query: "What are the New Seven Wonders of the World?",
-    coordinates: [35.6895, 139.6917],
+    coordinates: [25.183816, 13.396412],
     results: [
       {
         title: "Machu Picchu",
@@ -80,7 +83,7 @@ const locationLoop: {
         description: "Ma'an, Jordan",
         image: petra,
         location: {
-          location: [30.3286, 35.4483],
+          location: [30.328453, 35.444363],
         },
       },
       {
@@ -95,7 +98,7 @@ const locationLoop: {
   },
   {
     query: "Help me plan a 3 day trip to New York City",
-    coordinates: [40.7128, -74.006],
+    coordinates: [40.624767, -74.07727],
     results: [
       {
         title: "The Metropolitan Museum of Art",
@@ -119,6 +122,36 @@ const locationLoop: {
         image: statueOfLiberty,
         location: {
           location: [40.6892, -74.0445],
+        },
+      },
+    ],
+  },
+  {
+    query: "Give me some authentic restaurants in Tokyo",
+    coordinates: [35.6895, 139.6917],
+    results: [
+      {
+        title: "Ishikawa restaurant",
+        description: "〒162-0825 Tokyo, Shinjuku City",
+        image: tokyo1,
+        location: {
+          location: [35.6895, 139.6917],
+        },
+      },
+      {
+        title: "Sukiyabashi Jiro",
+        description: "〒104-0061 Tokyo, Chuo City",
+        image: tokyo2,
+        location: {
+          location: [35.6895, 139.6917],
+        },
+      },
+      {
+        title: "Ichiran Ramen",
+        description: "〒150-0041 Tokyo, Shibuya",
+        image: tokyo3,
+        location: {
+          location: [35.6895, 139.6917],
         },
       },
     ],
@@ -170,8 +203,6 @@ export function Hero() {
                 </div>
               </h1>
               <p className="text-muted-foreground mb-10 text-xl leading-8 sm:mb-10 sm:mt-6 sm:text-2xl">
-                {/* Mapform helps you track, manage, and share the places that
-                matter to you. */}
                 Mapform combines data, content, forms, and more to create maps
                 for almost anything.
               </p>
