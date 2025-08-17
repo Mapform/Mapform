@@ -4,7 +4,7 @@ import { db } from "@mapform/db";
 import { chats, projects } from "@mapform/db/schema";
 import { createChatSchema } from "./schema";
 import type { UserAuthClient } from "../../../lib/types";
-import { eq } from "@mapform/db/utils";
+import { and, eq } from "@mapform/db/utils";
 
 export const createChat = (authClient: UserAuthClient) =>
   authClient
@@ -31,7 +31,21 @@ export const createChat = (authClient: UserAuthClient) =>
         const [chat] = await db
           .insert(chats)
           .values({ id, title, userId: user.id, projectId })
+          .onConflictDoNothing()
           .returning();
+
+        // If a concurrent request created the chat first, return the existing one
+        if (!chat) {
+          const existingChat = await db.query.chats.findFirst({
+            where: and(eq(chats.id, id), eq(chats.userId, user.id)),
+          });
+
+          if (!existingChat) {
+            throw new Error("Failed to create chat");
+          }
+
+          return existingChat;
+        }
 
         return chat;
       },
