@@ -12,16 +12,31 @@ export default function StreamingText({
   const [displayed, setDisplayed] = useState("");
 
   useEffect(() => {
-    let i = 0;
-    const interval = setInterval(() => {
-      setDisplayed((prev) => prev + text[i]);
-      i++;
-      if (i >= text.length) {
-        clearInterval(interval);
-      }
-    }, speed);
+    setDisplayed("");
 
-    return () => clearInterval(interval);
+    if (!text || text.length === 0) {
+      return;
+    }
+
+    let cancelled = false;
+
+    const typeNext = (index: number) => {
+      if (cancelled) return;
+      if (index >= text.length) return;
+      setDisplayed((prev) => prev + text[index]);
+      if (index + 1 < text.length) {
+        const id = setTimeout(() => typeNext(index + 1), speed);
+        // Ensure timeout is cleared if unmounted before it fires
+        // by relying on the cancelled flag in cleanup
+        void id; // prevent unused var lint in some configs
+      }
+    };
+
+    typeNext(0);
+
+    return () => {
+      cancelled = true;
+    };
   }, [text, speed]);
 
   return <span>{displayed}</span>;
