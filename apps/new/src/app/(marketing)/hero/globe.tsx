@@ -33,16 +33,11 @@ export function Globe({ target }: GlobeProps) {
     let currentPhi = 0;
     let currentTheta = 0.3;
     let width = 0;
-    let dpr = 2;
 
-    const measure = () => {
-      if (!canvasRef.current) return;
-      width = canvasRef.current.offsetWidth;
-      dpr = Math.min(3, window.devicePixelRatio || 1);
-    };
-    const onResize = () => measure();
+    const onResize = () =>
+      canvasRef.current && (width = canvasRef.current.offsetWidth);
     window.addEventListener("resize", onResize);
-    measure();
+    onResize();
 
     if (!canvasRef.current) {
       return;
@@ -50,8 +45,8 @@ export function Globe({ target }: GlobeProps) {
 
     const globe = createGlobe(canvasRef.current, {
       devicePixelRatio: 2,
-      width: width * dpr,
-      height: width * dpr,
+      width: width * 2,
+      height: width * 2,
       scale: 1.2,
       phi: currentPhi,
       theta: currentTheta,
@@ -83,8 +78,8 @@ export function Globe({ target }: GlobeProps) {
         state.markers = markersRef.current;
 
         // Keep internal resolution synced with CSS size * DPR
-        state.width = width * dpr;
-        state.height = width * dpr;
+        state.width = width * 2;
+        state.height = width * 2;
       },
     });
 
