@@ -14,6 +14,7 @@ import { ArrowUpRightIcon } from "lucide-react";
 import mapform from "public/static/images/mapform-full.svg";
 import Image from "next/image";
 import StreamingText from "./streaming-text";
+import { TextBox } from "./text-box";
 
 const locationLoop: {
   query: string;
@@ -109,9 +110,7 @@ export function Hero() {
             <div className="flex h-full w-full items-center justify-center overflow-hidden">
               <Globe locationLoop={locationLoop} />
             </div>
-            <div className="">
-              {/* <StreamingText text="Mapform is a platform for creating and sharing maps." /> */}
-            </div>
+            <TextBox />
           </div>
         </section>
       </div>
