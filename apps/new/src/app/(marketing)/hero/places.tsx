@@ -2,6 +2,8 @@
 
 import { cn } from "@mapform/lib/classnames";
 import { AnimatePresence, motion } from "motion/react";
+import Image from "next/image";
+import nyc from "public/static/images/nyc.jpg";
 
 interface PlacesProps {
   results: {
@@ -31,7 +33,16 @@ export default function Places({ results }: PlacesProps) {
               ease: "easeInOut",
             }}
           >
-            <div className="size-16 border-r bg-gray-100" />
+            {/* <div className="size-16 border-r bg-gray-100" /> */}
+            <div className="relative size-16 overflow-hidden">
+              <Image
+                className="absolute inset-0 opacity-60 blur-sm"
+                src={nyc}
+                alt={result.title}
+                width={64}
+                height={64}
+              />
+            </div>
             <div className="flex flex-col justify-center gap-1 truncate px-4 py-2">
               <div className="truncate">{result.title}</div>
             </div>
