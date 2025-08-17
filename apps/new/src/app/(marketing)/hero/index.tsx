@@ -1,20 +1,15 @@
 "use client";
 
 import { Button } from "@mapform/ui/components/button";
-import { Badge } from "@mapform/ui/components/badge";
 import type { Marker } from "cobe";
 import Link from "next/link";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@mapform/ui/components/tooltip";
+// import { Tooltip, TooltipContent, TooltipTrigger } from "@mapform/ui/components/tooltip";
 import { Globe } from "./globe";
 import { ArrowUpRightIcon } from "lucide-react";
 import mapform from "public/static/images/mapform-full.svg";
 import Image from "next/image";
-import StreamingText from "./streaming-text";
 import { TextBox } from "./text-box";
+import { useEffect, useMemo, useState } from "react";
 
 const locationLoop: {
   query: string;
@@ -55,6 +50,21 @@ const locationLoop: {
 ];
 
 export function Hero() {
+  const [index, setIndex] = useState(0);
+  const current = locationLoop[index] ?? locationLoop[0]!;
+  const target = useMemo(
+    () => ({ coordinates: current.coordinates, markers: current.markers }),
+    [current],
+  );
+
+  useEffect(() => {
+    if (locationLoop.length === 0) return;
+    const id = window.setInterval(() => {
+      setIndex((i) => (i + 1) % locationLoop.length);
+    }, 5000);
+    return () => window.clearInterval(id);
+  }, []);
+
   return (
     <div className="flex h-screen w-screen flex-col justify-center">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
@@ -108,9 +118,9 @@ export function Hero() {
           </div>
           <div className="pointer-events-none absolute inset-0 -z-10 opacity-15 max-lg:h-screen max-lg:w-screen lg:relative lg:z-0 lg:mt-0 lg:size-[550px] lg:flex-shrink-0 lg:flex-grow lg:opacity-100">
             <div className="flex h-full w-full items-center justify-center overflow-hidden">
-              <Globe locationLoop={locationLoop} />
+              <Globe target={target} />
             </div>
-            <TextBox />
+            <TextBox text={current.query} />
           </div>
         </section>
       </div>

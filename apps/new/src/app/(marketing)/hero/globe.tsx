@@ -5,17 +5,26 @@ import type { Marker } from "cobe";
 import { useEffect, useRef } from "react";
 
 interface GlobeProps {
-  locationLoop: {
-    query: string;
+  target: {
     coordinates: [number, number];
     markers: Marker[];
-  }[];
+  };
 }
 
-export function Globe({ locationLoop }: GlobeProps) {
+export function Globe({ target }: GlobeProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const focusRef = useRef<[number, number]>([0, 0]);
   const markersRef = useRef<Marker[]>([]);
+  // Helpers are kept outside of effects to avoid extra dependencies
+  const twoPi = Math.PI * 2;
+  const normalizeAngle = (a: number) => ((a % twoPi) + twoPi) % twoPi;
+  const locationToAngles = (lat: number, lon: number): [number, number] => {
+    const latRad = (lat * Math.PI) / 180;
+    const lonRad = (lon * Math.PI) / 180;
+    const phi = normalizeAngle(Math.PI - lonRad);
+    const theta = Math.PI / 2 - latRad;
+    return [phi, theta];
+  };
 
   useEffect(() => {
     // Current angles for globe orientation
@@ -23,17 +32,6 @@ export function Globe({ locationLoop }: GlobeProps) {
     let currentTheta = 0.3;
     let width = 0;
     let dpr = 2;
-
-    const twoPi = Math.PI * 2;
-    const normalizeAngle = (a: number) => ((a % twoPi) + twoPi) % twoPi;
-
-    const locationToAngles = (lat: number, lon: number): [number, number] => {
-      const latRad = (lat * Math.PI) / 180;
-      const lonRad = (lon * Math.PI) / 180;
-      const phi = normalizeAngle(Math.PI - lonRad);
-      const theta = Math.PI / 2 - latRad;
-      return [phi, theta];
-    };
 
     const measure = () => {
       if (!canvasRef.current) return;
@@ -88,35 +86,21 @@ export function Globe({ locationLoop }: GlobeProps) {
       },
     });
 
-    // Initialize focus/markers to first item so we start moving immediately
-    const first = locationLoop[0];
-    if (first) {
-      const [lat, lon] = first.coordinates;
-      focusRef.current = locationToAngles(lat, lon);
-      markersRef.current = first.markers;
-    }
-
-    // Advance focus over time instead of using globe.flyTo
-    let index = 0;
-    const intervalId = window.setInterval(() => {
-      if (locationLoop.length === 0) return;
-      index = (index + 1) % locationLoop.length;
-      const item = locationLoop[index];
-      if (!item) return;
-      const [lat, lon] = item.coordinates;
-      focusRef.current = locationToAngles(lat, lon);
-      markersRef.current = item.markers;
-    }, 5000);
-
     setTimeout(
       () => canvasRef.current && (canvasRef.current.style.opacity = "1"),
     );
     return () => {
       globe.destroy();
-      window.clearInterval(intervalId);
       window.removeEventListener("resize", onResize);
     };
   }, []);
+
+  // Update focus and markers whenever the target changes
+  useEffect(() => {
+    const [lat, lon] = target.coordinates;
+    focusRef.current = locationToAngles(lat, lon);
+    markersRef.current = target.markers;
+  }, [target]);
 
   return (
     <div
@@ -130,38 +114,10 @@ export function Globe({ locationLoop }: GlobeProps) {
       }}
     >
       <canvas
-        // onMouseMove={(e) => {
-        //   if (pointerInteracting.current !== null) {
-        //     const delta = e.clientX - pointerInteracting.current;
-        //     pointerInteractionMovement.current = delta;
-        //     spring.set(delta / 200);
-        //   }
-        // }}
-        // onPointerDown={(e) => {
-        //   pointerInteracting.current =
-        //     e.clientX - pointerInteractionMovement.current;
-        //   canvasRef.current && (canvasRef.current.style.cursor = "grabbing");
-        // }}
-        // onPointerOut={() => {
-        //   pointerInteracting.current = null;
-        //   canvasRef.current && (canvasRef.current.style.cursor = "grab");
-        // }}
-        // onPointerUp={() => {
-        //   pointerInteracting.current = null;
-        //   canvasRef.current && (canvasRef.current.style.cursor = "grab");
-        // }}
-        // onTouchMove={(e) => {
-        //   if (pointerInteracting.current !== null && e.touches[0]) {
-        //     const delta = e.touches[0].clientX - pointerInteracting.current;
-        //     pointerInteractionMovement.current = delta;
-        //     spring.set(delta / 200);
-        //   }
-        // }}
         ref={canvasRef}
         style={{
           width: "100%",
           height: "100%",
-          cursor: "grab",
           contain: "layout paint size",
           opacity: 0,
           transition: "opacity 1s ease",
