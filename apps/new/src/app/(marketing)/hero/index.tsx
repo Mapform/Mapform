@@ -7,10 +7,11 @@ import Link from "next/link";
 import { Globe } from "./globe";
 import { ArrowUpRightIcon } from "lucide-react";
 import mapform from "public/static/images/mapform-full.svg";
-import Image from "next/image";
-import { TextBox } from "./text-box";
+import Image, { type StaticImageData } from "next/image";
 import { useEffect, useMemo, useState } from "react";
+import nyc from "public/static/images/nyc.jpg";
 import Places from "./places";
+import { TextBox } from "./text-box";
 
 const locationLoop: {
   query: string;
@@ -18,6 +19,8 @@ const locationLoop: {
   markers: Marker[];
   results: {
     title: string;
+    description: string;
+    image: StaticImageData;
   }[];
 }[] = [
   {
@@ -43,12 +46,18 @@ const locationLoop: {
     results: [
       {
         title: "Tokyo",
+        description: "Japan",
+        image: nyc,
       },
       {
         title: "New York",
+        description: "USA",
+        image: nyc,
       },
       {
         title: "Paris",
+        description: "France",
+        image: nyc,
       },
     ],
   },
@@ -59,12 +68,18 @@ const locationLoop: {
     results: [
       {
         title: "Tokyo 2",
+        description: "Japan",
+        image: nyc,
       },
       {
         title: "New York 2",
+        description: "USA",
+        image: nyc,
       },
       {
         title: "Paris 2",
+        description: "France",
+        image: nyc,
       },
     ],
   },
@@ -75,12 +90,18 @@ const locationLoop: {
     results: [
       {
         title: "Tokyo 3",
+        description: "Japan",
+        image: nyc,
       },
       {
         title: "New York 3",
+        description: "USA",
+        image: nyc,
       },
       {
         title: "Paris 3",
+        description: "France",
+        image: nyc,
       },
     ],
   },
