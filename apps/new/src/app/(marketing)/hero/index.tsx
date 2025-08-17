@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "@mapform/ui/components/button";
-import type { Marker } from "cobe";
 import Link from "next/link";
 // import { Tooltip, TooltipContent, TooltipTrigger } from "@mapform/ui/components/tooltip";
 import { Globe } from "./globe";
@@ -9,99 +8,118 @@ import { ArrowUpRightIcon } from "lucide-react";
 import mapform from "public/static/images/mapform-full.svg";
 import Image, { type StaticImageData } from "next/image";
 import { useEffect, useMemo, useState } from "react";
-import nyc from "public/static/images/nyc.jpg";
+import fairmount from "public/static/images/fairmount.jpg";
+import leTrou from "public/static/images/letrou.jpg";
+import stViateur from "public/static/images/stviateur.jpg";
+import highLine from "public/static/images/highline.jpg";
+import tajMahal from "public/static/images/tajmahal.jpg";
+import machuPicchu from "public/static/images/machupicchu.jpg";
+import petra from "public/static/images/petra.jpg";
+import statueOfLiberty from "public/static/images/statueofliberty.jpg";
+import met from "public/static/images/met.jpg";
 import Places from "./places";
 import { TextBox } from "./text-box";
 
 const locationLoop: {
   query: string;
   coordinates: [number, number];
-  markers: Marker[];
   results: {
     title: string;
     description: string;
     image: StaticImageData;
+    location: {
+      location: [number, number];
+      size?: number;
+    };
   }[];
 }[] = [
   {
-    query: "Show me the world",
+    query: "Where can I find the best bagels in Montreal?",
     coordinates: [37.7749, -122.4194],
-    markers: [
-      { location: [37.7749, -122.4194], size: 0.05 }, // San Francisco, USA
-      { location: [40.7128, -74.006], size: 0.05 }, // New York City, USA
-      { location: [48.8566, 2.3522], size: 0.05 }, // Paris, France
-      { location: [35.6895, 139.6917], size: 0.05 }, // Tokyo, Japan
-      { location: [51.5074, -0.1278], size: 0.05 }, // London, UK
-      { location: [-33.8688, 151.2093], size: 0.05 }, // Sydney, Australia
-      { location: [55.7558, 37.6173], size: 0.05 }, // Moscow, Russia
-      { location: [-23.5505, -46.6333], size: 0.05 }, // São Paulo, Brazil
-      { location: [1.3521, 103.8198], size: 0.05 }, // Singapore
-      { location: [19.4326, -99.1332], size: 0.05 }, // Mexico City, Mexico
-      { location: [52.52, 13.405], size: 0.05 }, // Berlin, Germany
-      { location: [34.0522, -118.2437], size: 0.05 }, // Los Angeles, USA
-      { location: [28.6139, 77.209], size: 0.05 }, // Delhi, India
-      { location: [31.2304, 121.4737], size: 0.05 }, // Shanghai, China
-      { location: [6.5244, 3.3792], size: 0.05 }, // Lagos, Nigeria
-    ],
     results: [
       {
-        title: "Tokyo",
-        description: "Japan",
-        image: nyc,
+        title: "St-Viateur Bagel",
+        description: "263 Saint Viateur St. West, Montreal",
+        image: stViateur,
+        location: {
+          location: [45.5017, -73.5673],
+        },
       },
       {
-        title: "New York",
-        description: "USA",
-        image: nyc,
+        title: "Fairmount Bagel",
+        description: "74 Av. Fairmount O, Montréal",
+        image: fairmount,
+        location: {
+          location: [45.5017, -73.5673],
+        },
       },
       {
-        title: "Paris",
-        description: "France",
-        image: nyc,
+        title: "Bagels Le Trou",
+        description: "1845 William St, Montreal",
+        image: leTrou,
+        location: {
+          location: [45.5017, -73.5673],
+        },
       },
     ],
   },
   {
-    query: "What are the best restaurants in Tokyo?",
+    query: "What are the New Seven Wonders of the World?",
     coordinates: [35.6895, 139.6917],
-    markers: [{ location: [35.6895, 139.6917], size: 0.05 }],
     results: [
       {
-        title: "Tokyo 2",
-        description: "Japan",
-        image: nyc,
+        title: "Machu Picchu",
+        description: "Cuzco, Peru",
+        image: machuPicchu,
+        location: {
+          location: [-13.1631, -72.545],
+        },
       },
       {
-        title: "New York 2",
-        description: "USA",
-        image: nyc,
+        title: "Petra",
+        description: "Ma'an, Jordan",
+        image: petra,
+        location: {
+          location: [30.3286, 35.4483],
+        },
       },
       {
-        title: "Paris 2",
-        description: "France",
-        image: nyc,
+        title: "The Taj Mahal",
+        description: "Agra, India",
+        image: tajMahal,
+        location: {
+          location: [27.175, 78.0098],
+        },
       },
     ],
   },
   {
-    query: "What are the best restaurants in Tokyo?",
-    coordinates: [-279.529737, 35.174931],
-    markers: [{ location: [-29.814434, -214.265064], size: 0.05 }],
+    query: "Help me plan a 3 day trip to New York City",
+    coordinates: [40.7128, -74.006],
     results: [
       {
-        title: "Tokyo 3",
-        description: "Japan",
-        image: nyc,
+        title: "The Metropolitan Museum of Art",
+        description: "1000 5th Ave, New York, NY 10028",
+        image: met,
+        location: {
+          location: [40.7794, -73.9632],
+        },
       },
       {
-        title: "New York 3",
-        description: "USA",
-        image: nyc,
+        title: "The High Line",
+        description: "New York, NY",
+        image: highLine,
+        location: {
+          location: [40.7488, -73.9692],
+        },
       },
       {
-        title: "Paris 3",
-        description: "France",
-        image: nyc,
+        title: "The Statue of Liberty",
+        description: "New York, NY",
+        image: statueOfLiberty,
+        location: {
+          location: [40.6892, -74.0445],
+        },
       },
     ],
   },
@@ -111,7 +129,10 @@ export function Hero() {
   const [index, setIndex] = useState(0);
   const current = locationLoop[index] ?? locationLoop[0]!;
   const target = useMemo(
-    () => ({ coordinates: current.coordinates, markers: current.markers }),
+    () => ({
+      coordinates: current.coordinates,
+      markers: current.results.map((result) => result.location),
+    }),
     [current],
   );
 

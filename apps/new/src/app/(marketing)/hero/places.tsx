@@ -37,7 +37,7 @@ export default function Places({ results }: PlacesProps) {
             {/* <div className="size-16 border-r bg-gray-100" /> */}
             <div className="relative size-16 overflow-hidden">
               <Image
-                className="absolute inset-0 opacity-60 blur-sm"
+                className="absolute inset-0 opacity-70 blur-sm"
                 src={result.image}
                 alt={result.title}
                 width={64}

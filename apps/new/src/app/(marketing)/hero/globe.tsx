@@ -7,7 +7,10 @@ import { useEffect, useRef } from "react";
 interface GlobeProps {
   target: {
     coordinates: [number, number];
-    markers: Marker[];
+    markers: {
+      location: [number, number];
+      size?: number;
+    }[];
   };
 }
 
@@ -106,7 +109,13 @@ export function Globe({ target }: GlobeProps) {
     markersRef.current = [];
     target.markers.forEach((marker, index) => {
       const timerId = window.setTimeout(() => {
-        markersRef.current = [...markersRef.current, marker];
+        markersRef.current = [
+          ...markersRef.current,
+          {
+            location: marker.location,
+            size: marker.size ?? 0.05,
+          },
+        ];
       }, index * 100);
       revealTimersRef.current.push(timerId);
     });
