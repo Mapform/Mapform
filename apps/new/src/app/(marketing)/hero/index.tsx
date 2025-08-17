@@ -106,7 +106,7 @@ export function Hero() {
               </Link>
             </div>
           </div>
-          <div className="absolute inset-0 -z-10 opacity-15 max-lg:h-screen max-lg:w-screen lg:relative lg:z-0 lg:mt-0 lg:size-[550px] lg:flex-shrink-0 lg:flex-grow lg:opacity-100">
+          <div className="pointer-events-none absolute inset-0 -z-10 opacity-15 max-lg:h-screen max-lg:w-screen lg:relative lg:z-0 lg:mt-0 lg:size-[550px] lg:flex-shrink-0 lg:flex-grow lg:opacity-100">
             <div className="flex h-full w-full items-center justify-center overflow-hidden">
               <Globe locationLoop={locationLoop} />
             </div>
