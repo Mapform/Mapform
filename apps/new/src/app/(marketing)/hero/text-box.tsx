@@ -13,7 +13,7 @@ export function TextBox({ text }: TextBoxProps) {
         <SearchIcon className="text-muted-foreground size-5" />
         <StreamingText text={text} />
       </div>
-      <Button className="ml-auto" type="submit" size="icon">
+      <Button className="ml-auto" type="submit" size="icon" tabIndex={-1}>
         <SendIcon className="size-4" />
       </Button>
     </div>

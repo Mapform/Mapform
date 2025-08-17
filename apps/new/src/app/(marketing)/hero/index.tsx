@@ -89,7 +89,6 @@ export function Hero() {
                     />
                   </span>
                 </div>
-                {/* <span className="ml-auto">World.</span> */}
               </h1>
               <p className="text-muted-foreground mb-10 text-xl leading-8 sm:mb-10 sm:mt-6 sm:text-2xl">
                 {/* Mapform helps you track, manage, and share the places that
@@ -100,7 +99,9 @@ export function Hero() {
             </div>
             <div className="flex flex-col justify-center gap-2 sm:flex-row sm:justify-start">
               <Link className="max-lg:shadow-sm" href="/app" target="_blank">
-                <Button size="xl">Try the beta</Button>
+                <Button size="xl" tabIndex={-1}>
+                  Try the beta
+                </Button>
               </Link>
               <Link
                 href="mailto:contact@mapform.co?subject=I'd like to learn more about Mapform"
@@ -110,6 +111,7 @@ export function Hero() {
                   className="max-lg:shadow-sm"
                   size="xl"
                   variant="secondary"
+                  tabIndex={-1}
                 >
                   Contact <ArrowUpRightIcon className="ml-1 size-5" />
                 </Button>
