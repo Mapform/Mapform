@@ -15,16 +15,9 @@ export function Globe({ target }: GlobeProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const focusRef = useRef<[number, number]>([0, 0]);
   const markersRef = useRef<Marker[]>([]);
+  const revealTimersRef = useRef<number[]>([]);
   // Helpers are kept outside of effects to avoid extra dependencies
   const twoPi = Math.PI * 2;
-  const normalizeAngle = (a: number) => ((a % twoPi) + twoPi) % twoPi;
-  const locationToAngles = (lat: number, lon: number): [number, number] => {
-    const latRad = (lat * Math.PI) / 180;
-    const lonRad = (lon * Math.PI) / 180;
-    const phi = normalizeAngle(Math.PI - lonRad);
-    const theta = Math.PI / 2 - latRad;
-    return [phi, theta];
-  };
 
   useEffect(() => {
     // Current angles for globe orientation
@@ -93,13 +86,35 @@ export function Globe({ target }: GlobeProps) {
       globe.destroy();
       window.removeEventListener("resize", onResize);
     };
-  }, []);
+  }, [twoPi]);
 
   // Update focus and markers whenever the target changes
   useEffect(() => {
     const [lat, lon] = target.coordinates;
-    focusRef.current = locationToAngles(lat, lon);
-    markersRef.current = target.markers;
+    const latRad = (lat * Math.PI) / 180;
+    const lonRad = (lon * Math.PI) / 180;
+    const phi =
+      (((Math.PI - lonRad) % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
+    const theta = Math.PI / 2 - latRad;
+    focusRef.current = [phi, theta];
+
+    // Clear any existing reveal timers
+    revealTimersRef.current.forEach((id) => clearTimeout(id));
+    revealTimersRef.current = [];
+
+    // Start with no markers, then reveal one-by-one with 100ms spacing
+    markersRef.current = [];
+    target.markers.forEach((marker, index) => {
+      const timerId = window.setTimeout(() => {
+        markersRef.current = [...markersRef.current, marker];
+      }, index * 100);
+      revealTimersRef.current.push(timerId);
+    });
+
+    return () => {
+      revealTimersRef.current.forEach((id) => clearTimeout(id));
+      revealTimersRef.current = [];
+    };
   }, [target]);
 
   return (
