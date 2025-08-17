@@ -43,7 +43,7 @@ export function Globe({ target }: GlobeProps) {
       devicePixelRatio: 2,
       width: width * dpr,
       height: width * dpr,
-      // scale: 1.2,
+      scale: 1.2,
       phi: currentPhi,
       theta: currentTheta,
       dark: 0,

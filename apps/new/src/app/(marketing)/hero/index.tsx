@@ -10,11 +10,15 @@ import mapform from "public/static/images/mapform-full.svg";
 import Image from "next/image";
 import { TextBox } from "./text-box";
 import { useEffect, useMemo, useState } from "react";
+import Places from "./places";
 
 const locationLoop: {
   query: string;
   coordinates: [number, number];
   markers: Marker[];
+  results: {
+    title: string;
+  }[];
 }[] = [
   {
     query: "Show me the world",
@@ -36,16 +40,49 @@ const locationLoop: {
       { location: [31.2304, 121.4737], size: 0.05 }, // Shanghai, China
       { location: [6.5244, 3.3792], size: 0.05 }, // Lagos, Nigeria
     ],
+    results: [
+      {
+        title: "Tokyo",
+      },
+      {
+        title: "New York",
+      },
+      {
+        title: "Paris",
+      },
+    ],
   },
   {
     query: "What are the best restaurants in Tokyo?",
     coordinates: [35.6895, 139.6917],
     markers: [{ location: [35.6895, 139.6917], size: 0.05 }],
+    results: [
+      {
+        title: "Tokyo 2",
+      },
+      {
+        title: "New York 2",
+      },
+      {
+        title: "Paris 2",
+      },
+    ],
   },
   {
     query: "What are the best restaurants in Tokyo?",
     coordinates: [-279.529737, 35.174931],
     markers: [{ location: [-29.814434, -214.265064], size: 0.05 }],
+    results: [
+      {
+        title: "Tokyo 3",
+      },
+      {
+        title: "New York 3",
+      },
+      {
+        title: "Paris 3",
+      },
+    ],
   },
 ];
 
@@ -123,6 +160,7 @@ export function Hero() {
               <Globe target={target} />
             </div>
             <TextBox text={current.query} />
+            <Places results={current.results} />
           </div>
         </section>
       </div>
