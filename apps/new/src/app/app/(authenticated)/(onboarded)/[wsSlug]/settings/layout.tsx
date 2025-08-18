@@ -1,4 +1,4 @@
-import { MapDrawer } from "~/components/map-drawer";
+import { SettingsDrawer } from "./drawer";
 import { MapPositioner } from "~/components/map-positioner";
 import { SettingsTabs } from "./settings-tabs";
 
@@ -13,12 +13,12 @@ export default async function SettingsLayout({
 
   return (
     <MapPositioner>
-      <MapDrawer open>
+      <SettingsDrawer>
         <div className="p-2">
           <SettingsTabs wsSlug={wsSlug} />
         </div>
         <div className="p-6">{children}</div>
-      </MapDrawer>
+      </SettingsDrawer>
     </MapPositioner>
   );
 }
