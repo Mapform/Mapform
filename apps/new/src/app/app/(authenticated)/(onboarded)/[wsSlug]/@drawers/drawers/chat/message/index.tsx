@@ -110,17 +110,35 @@ export function Message({ message }: ChatMessageProps) {
             part.type === "tool-getInformation" ||
             part.type === "tool-reverseGeocode"
           ) {
-            if (part.state === "input-streaming") {
-              return (
-                <div
-                  className="flex animate-pulse items-center gap-2"
-                  key={part.toolCallId}
-                >
-                  <MapPinIcon className="size-4 animate-pulse" />
-                  <span className="text-sm">Mapping locations...</span>
+            // if (part.state === "input-streaming") {
+            //   return (
+            //     <div
+            //       className="flex animate-pulse items-center gap-2"
+            //       key={part.toolCallId}
+            //     >
+            //       <MapPinIcon className="size-4 animate-pulse" />
+            //       <span className="text-sm">Mapping locations...</span>
+            //     </div>
+            //   );
+            // }
+            return (
+              <div
+                key={`${message.id}-${index}`}
+                className="text-muted-foreground mb-4 flex w-full items-center gap-2 text-sm"
+              >
+                <div className="flex items-center gap-2">
+                  <MapPinIcon className="size-4" />
                 </div>
-              );
-            }
+                <p className="my-0">
+                  {part.state === "input-streaming" ||
+                  part.state === "input-available"
+                    ? "Mapping locations..."
+                    : part.state === "output-available"
+                      ? "Location found"
+                      : "Location not found"}
+                </p>
+              </div>
+            );
           }
 
           if (part.type === "tool-web_search_preview") {
