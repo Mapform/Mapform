@@ -1,29 +1,31 @@
 import type { ChatMessage } from "~/lib/types";
 import { Skeleton } from "@mapform/ui/components/skeleton";
-import { GlobeIcon, MapPinIcon } from "lucide-react";
+import {
+  BrainIcon,
+  ChevronDownIcon,
+  GlobeIcon,
+  MapPinIcon,
+} from "lucide-react";
 import {
   Message as AIMessage,
   MessageContent as AIMessageContent,
 } from "@mapform/ui/components/ai-elements/message";
-import {
-  Reasoning,
-  ReasoningContent,
-  ReasoningTrigger,
-} from "@mapform/ui/components/ai-elements/reasoning";
 import { Response } from "@mapform/ui/components/ai-elements/response";
 import { PickLocationsMessage } from "./pick-locations-message";
 import { cn } from "@mapform/lib/classnames";
 import { type ChatStatus } from "ai";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@mapform/ui/components/collapsible";
 
 interface ChatMessageProps {
   message: ChatMessage;
   status: ChatStatus;
 }
 
-export function Message({ message, status }: ChatMessageProps) {
-  const isUser = message.role === "user";
-  console.log(111, status);
-
+export function Message({ message }: ChatMessageProps) {
   return (
     <AIMessage
       className={cn({
@@ -47,14 +49,32 @@ export function Message({ message, status }: ChatMessageProps) {
             );
           }
 
-          // if (part.type === "reasoning") {
-          //   return (
-          //     <Reasoning key={`${message.id}-${index}`}>
-          //       <ReasoningContent>{part.text}</ReasoningContent>
-          //       <ReasoningTrigger />
-          //     </Reasoning>
-          //   );
-          // }
+          if (part.type === "reasoning") {
+            const expandable = part.state === "done" && part.text.length > 0;
+
+            return (
+              <Collapsible
+                className="transition-all duration-200 [&[data-state=closed]>button>svg]:-rotate-90"
+                disabled={!expandable}
+                key={`${message.id}-${index}`}
+              >
+                <CollapsibleTrigger className="text-muted-foreground mb-4 flex w-full items-center gap-2 text-sm">
+                  <div className="flex items-center gap-2">
+                    <BrainIcon className="size-4" />
+                  </div>
+                  <p className="my-0">
+                    {part.state === "streaming" ? "Thinking..." : "Thought"}
+                  </p>
+                  {expandable && (
+                    <ChevronDownIcon className="ml-auto size-4 transition-transform" />
+                  )}
+                </CollapsibleTrigger>
+                <CollapsibleContent className="ml-3 border-l-2">
+                  <p className="text-muted-foreground mt-0 pl-4">{part.text}</p>
+                </CollapsibleContent>
+              </Collapsible>
+            );
+          }
 
           if (part.type === "tool-returnBestResults") {
             if (
