@@ -13,7 +13,6 @@
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf .next"
   },
   "dependencies": {
-    "@ai-sdk/openai": "catalog:",
     "@ai-sdk/react": "catalog:",
     "@dnd-kit/core": "catalog:",
     "@dnd-kit/modifiers": "^9.0.0",
@@ -51,7 +50,6 @@
     "cobe": "catalog:",
     "compressorjs": "catalog:",
     "date-fns": "catalog:",
-    "dotenv": "^17.2.1",
     "geojson": "catalog:",
     "lucide-react": "catalog:",
     "mapbox-gl": "catalog:",

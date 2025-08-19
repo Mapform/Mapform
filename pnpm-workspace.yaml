@@ -2,7 +2,6 @@ packages:
   - apps/*
   - packages/*
 catalog:
-  "@ai-sdk/openai": ^2.0.15
   "@ai-sdk/react": ^2.0.15
   "@blocknote/core": "^0.33.0"
   "@blocknote/mantine": "^0.33.0"
