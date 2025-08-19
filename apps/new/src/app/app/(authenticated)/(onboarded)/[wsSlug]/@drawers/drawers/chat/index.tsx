@@ -27,12 +27,6 @@ import { Message } from "./message";
 import { DefaultChatTransport } from "ai";
 import { useParams } from "next/navigation";
 import { BasicSkeleton } from "~/components/skeletons/basic";
-import {
-  PromptInput,
-  PromptInputTextarea,
-  PromptInputToolbar,
-  PromptInputSubmit,
-} from "@mapform/ui/components/ai-elements/prompt-input";
 
 interface ChatProps {
   initialMessages?: ChatMessage[];

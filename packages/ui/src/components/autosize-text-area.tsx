@@ -32,7 +32,7 @@ export function AutoSizeTextArea({
 
   useEffect(() => {
     updateHeight();
-  }, [updateHeight, bounds]);
+  }, [updateHeight, bounds, value]);
 
   return (
     <textarea
