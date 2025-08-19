@@ -6,6 +6,11 @@ import { cn } from "@mapform/lib/classnames";
 import { AutoSizeTextArea } from "@mapform/ui/components/autosize-text-area";
 import { Button } from "@mapform/ui/components/button";
 import {
+  Conversation,
+  ConversationContent,
+  ConversationScrollButton,
+} from "@mapform/ui/components/ai-elements/conversation";
+import {
   BrainIcon,
   Loader2,
   SendIcon,
@@ -14,7 +19,7 @@ import {
   XIcon,
 } from "lucide-react";
 import { useChat } from "@ai-sdk/react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { AnimatePresence } from "motion/react";
 import * as motion from "motion/react-client";
 import type { ChatMessage } from "~/lib/types";
@@ -59,7 +64,6 @@ export function Chat({ initialMessages }: ChatProps) {
 function ChatInner({ initialMessages }: ChatProps) {
   const [input, setInput] = useState("");
   const [hasInitiatedNewChat, setHasInitiatedNewChat] = useState(false);
-  const chatContainerRef = useRef<HTMLDivElement>(null);
   const { pId } = useParams();
   const { params, setQueryStates } = useParamsContext();
 
@@ -85,27 +89,6 @@ function ChatInner({ initialMessages }: ChatProps) {
     void sendMessage({ text: input });
     setInput("");
   };
-
-  const scrollToBottom = (behavior: ScrollBehavior = "auto") => {
-    if (!chatContainerRef.current) return;
-
-    chatContainerRef.current.scrollTo({
-      top: chatContainerRef.current.scrollHeight,
-      behavior,
-    });
-  };
-
-  useEffect(() => {
-    if (status === "submitted") {
-      // Scroll to bottom of chat smoothly after sending a message
-      scrollToBottom("smooth");
-    }
-  }, [status]);
-
-  // Scroll to bottom on page load
-  useEffect(() => {
-    scrollToBottom("auto");
-  }, []);
 
   useEffect(() => {
     if (
@@ -151,34 +134,39 @@ function ChatInner({ initialMessages }: ChatProps) {
           <XIcon className="size-4" />
         </Button>
       </MapDrawerToolbar>
-      <div
+      <Conversation>
+        <ConversationContent className="px-6 pb-6">
+          {/* <div
         ref={chatContainerRef}
         className="flex flex-1 flex-col gap-4 overflow-y-auto px-6 pb-96"
-      >
-        {messages.map((message) => (
-          <Message key={message.id} message={message} />
-        ))}
-        {status === "submitted" &&
-          messages.length > 0 &&
-          messages[messages.length - 1]?.role === "user" && (
-            <div className="flex items-center">
-              <Loader2 className="size-4 animate-spin" />
-            </div>
+      > */}
+          {messages.map((message) => (
+            <Message key={message.id} message={message} />
+          ))}
+          {status === "submitted" &&
+            messages.length > 0 &&
+            messages[messages.length - 1]?.role === "user" && (
+              <div className="flex items-center">
+                <Loader2 className="size-4 animate-spin" />
+              </div>
+            )}
+          {status === "streaming" &&
+            messages.some((m) =>
+              m.parts.some(
+                (p) => p.type === "reasoning" && p.state === "streaming",
+              ),
+            ) && (
+              <div className="flex animate-pulse items-center text-sm">
+                <BrainIcon className="mr-2 size-4" /> Thinking...
+              </div>
+            )}
+          {status === "error" && (
+            <div className="flex animate-pulse items-center text-sm">Error</div>
           )}
-        {status === "streaming" &&
-          messages.some((m) =>
-            m.parts.some(
-              (p) => p.type === "reasoning" && p.state === "streaming",
-            ),
-          ) && (
-            <div className="flex animate-pulse items-center text-sm">
-              <BrainIcon className="mr-2 size-4" /> Thinking...
-            </div>
-          )}
-        {status === "error" && (
-          <div className="flex animate-pulse items-center text-sm">Error</div>
-        )}
-      </div>
+        </ConversationContent>
+        <ConversationScrollButton />
+      </Conversation>
+      {/* </div> */}
       <form
         className="relative flex flex-shrink-0 flex-col gap-2 border-t p-4"
         onSubmit={(e) => {
