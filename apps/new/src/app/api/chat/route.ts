@@ -81,6 +81,7 @@ export async function POST(req: Request) {
     providerOptions: {
       openai: {
         reasoningEffort: "low",
+        reasoningSummary: "detailed",
       },
     },
   });

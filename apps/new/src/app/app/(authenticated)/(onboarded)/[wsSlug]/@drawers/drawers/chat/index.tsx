@@ -11,13 +11,13 @@ import {
   ConversationScrollButton,
 } from "@mapform/ui/components/ai-elements/conversation";
 import {
-  BrainIcon,
   Loader2,
   SendIcon,
   SquareIcon,
   SquarePenIcon,
   XIcon,
 } from "lucide-react";
+
 import { useChat } from "@ai-sdk/react";
 import { useEffect, useState } from "react";
 import { AnimatePresence } from "motion/react";
@@ -27,6 +27,12 @@ import { Message } from "./message";
 import { DefaultChatTransport } from "ai";
 import { useParams } from "next/navigation";
 import { BasicSkeleton } from "~/components/skeletons/basic";
+import {
+  PromptInput,
+  PromptInputTextarea,
+  PromptInputToolbar,
+  PromptInputSubmit,
+} from "@mapform/ui/components/ai-elements/prompt-input";
 
 interface ChatProps {
   initialMessages?: ChatMessage[];
@@ -141,32 +147,20 @@ function ChatInner({ initialMessages }: ChatProps) {
         className="flex flex-1 flex-col gap-4 overflow-y-auto px-6 pb-96"
       > */}
           {messages.map((message) => (
-            <Message key={message.id} message={message} />
+            <Message key={message.id} message={message} status={status} />
           ))}
-          {status === "submitted" &&
-            messages.length > 0 &&
-            messages[messages.length - 1]?.role === "user" && (
-              <div className="flex items-center">
-                <Loader2 className="size-4 animate-spin" />
-              </div>
-            )}
-          {status === "streaming" &&
-            messages.some((m) =>
-              m.parts.some(
-                (p) => p.type === "reasoning" && p.state === "streaming",
-              ),
-            ) && (
-              <div className="flex animate-pulse items-center text-sm">
-                <BrainIcon className="mr-2 size-4" /> Thinking...
-              </div>
-            )}
+          {status === "submitted" && (
+            <div className="flex items-center">
+              <Loader2 className="size-4 animate-spin" />
+            </div>
+          )}
           {status === "error" && (
             <div className="flex animate-pulse items-center text-sm">Error</div>
           )}
         </ConversationContent>
         <ConversationScrollButton />
       </Conversation>
-      {/* </div> */}
+
       <form
         className="relative flex flex-shrink-0 flex-col gap-2 border-t p-4"
         onSubmit={(e) => {

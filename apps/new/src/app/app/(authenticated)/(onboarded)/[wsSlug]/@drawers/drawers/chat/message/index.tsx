@@ -5,16 +5,24 @@ import {
   Message as AIMessage,
   MessageContent as AIMessageContent,
 } from "@mapform/ui/components/ai-elements/message";
+import {
+  Reasoning,
+  ReasoningContent,
+  ReasoningTrigger,
+} from "@mapform/ui/components/ai-elements/reasoning";
 import { Response } from "@mapform/ui/components/ai-elements/response";
 import { PickLocationsMessage } from "./pick-locations-message";
 import { cn } from "@mapform/lib/classnames";
+import { type ChatStatus } from "ai";
 
 interface ChatMessageProps {
   message: ChatMessage;
+  status: ChatStatus;
 }
 
-export function Message({ message }: ChatMessageProps) {
+export function Message({ message, status }: ChatMessageProps) {
   const isUser = message.role === "user";
+  console.log(111, status);
 
   return (
     <AIMessage
@@ -26,14 +34,27 @@ export function Message({ message }: ChatMessageProps) {
       <AIMessageContent
         className={cn({
           "w-full max-w-full !bg-transparent p-0": message.role !== "user",
+          "py-2.5": message.role === "user",
         })}
       >
         {message.parts.map((part, index) => {
+          /**
+           * TEXT MESSAGES
+           */
           if (part.type === "text") {
             return (
               <Response key={`${message.id}-${index}`}>{part.text}</Response>
             );
           }
+
+          // if (part.type === "reasoning") {
+          //   return (
+          //     <Reasoning key={`${message.id}-${index}`}>
+          //       <ReasoningContent>{part.text}</ReasoningContent>
+          //       <ReasoningTrigger />
+          //     </Reasoning>
+          //   );
+          // }
 
           if (part.type === "tool-returnBestResults") {
             if (
