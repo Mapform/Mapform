@@ -1,4 +1,3 @@
-import { openai } from "@ai-sdk/openai";
 import type { UIMessage } from "ai";
 import { authClient } from "~/lib/safe-action";
 import {
@@ -39,7 +38,7 @@ export async function POST(req: Request) {
 
   if (!chat?.data) {
     const { text: title } = await generateText({
-      model: openai("gpt-4o-mini"),
+      model: "gpt-4o-mini",
       system: `\n
       - you will generate a short title based on the first message a user begins a conversation with
       - ensure it is not more than 80 characters long
@@ -65,7 +64,7 @@ export async function POST(req: Request) {
   }
 
   const result = streamText({
-    model: openai("gpt-5-mini"),
+    model: "gpt-5-mini",
     system: SYSTEM_PROMPT,
     messages: convertToModelMessages(messages),
     tools: {
@@ -73,9 +72,9 @@ export async function POST(req: Request) {
       reverseGeocode,
       autocomplete,
       returnBestResults,
-      webSearch: openai.tools.webSearchPreview({
-        searchContextSize: "medium",
-      }),
+      // webSearch: openai.tools.webSearchPreview({
+      //   searchContextSize: "medium",
+      // }),
     },
     stopWhen: [stepCountIs(5), hasToolCall("returnBestResults")],
     // stopWhen: hasToolCall("returnBestResults"),

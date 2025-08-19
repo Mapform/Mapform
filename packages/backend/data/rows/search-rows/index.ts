@@ -1,11 +1,11 @@
 "server-only";
 
 import { db, sql } from "@mapform/db";
+import { embed } from "ai";
 import { projects, rows, workspaces, embeddings } from "@mapform/db/schema";
 import { searchRowsSchema } from "./schema";
 import type { UnwrapReturn, UserAuthClient } from "../../../lib/types";
 import { and, cosineDistance, desc, eq, inArray } from "@mapform/db/utils";
-import { openai } from "../../../clients/openai";
 import type { Geometry, Point } from "geojson";
 
 export const searchRows = (authClient: UserAuthClient) =>
@@ -58,16 +58,10 @@ export const searchRows = (authClient: UserAuthClient) =>
         );
       }
 
-      const response = await openai.embeddings.create({
-        input: [query.toLowerCase()],
+      const { embedding } = await embed({
         model: "text-embedding-3-small",
+        value: query.toLowerCase(),
       });
-
-      const embedding = response.data[0]?.embedding;
-
-      if (!embedding) {
-        throw new Error("No embedding generated");
-      }
 
       const similarity = sql<number>`1 - (${cosineDistance(embeddings.embedding, embedding)})`;
 

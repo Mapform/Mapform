@@ -27,8 +27,7 @@
 
     "CRON_SECRET",
 
-    "OPENAI_API_KEY",
-    "GROQ_API_KEY"
+    "AI_GATEWAY_API_KEY"
   ],
   "globalDependencies": ["**/.env.*local"],
   "tasks": {

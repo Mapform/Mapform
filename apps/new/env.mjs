@@ -11,8 +11,7 @@ export const env = createEnv({
     VERCEL_URL: z.string().min(1).optional(),
     NODE_ENV: z.enum(["development", "preview", "production"]),
     STRIPE_WEBHOOK_SECRET: z.string().min(1),
-    OPENAI_API_KEY: z.string().min(1),
-    GROK_API_KEY: z.string().min(1),
+    AI_GATEWAY_API_KEY: z.string().min(1),
   },
   client: {
     NEXT_PUBLIC_STRIPE_PRO_PRODUCT_ID: z.string().min(1),
@@ -39,7 +38,6 @@ export const env = createEnv({
     NEXT_PUBLIC_STRIPE_PRO_PRICE_ID_YEARLY: process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID_YEARLY,
     NEXT_PUBLIC_VERCEL_URL: process.env.NEXT_PUBLIC_VERCEL_URL,
     NEXT_PUBLIC_BASE_URL: process.env.NODE_ENV === "development" ? "http://localhost:3000" : process.env.NEXT_PUBLIC_VERCEL_ENV === "preview" ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}` : "https://mapform.co",
-    OPENAI_API_KEY: process.env.OPENAI_API_KEY,
-    GROK_API_KEY: process.env.GROK_API_KEY,
+    AI_GATEWAY_API_KEY: process.env.AI_GATEWAY_API_KEY,
   },
 });

@@ -1,5 +1,4 @@
 import { embedMany } from "ai";
-import { openai } from "@ai-sdk/openai";
 import { embeddings } from "@mapform/db/schema";
 import type { GenerateEmbeddingsEvent } from "./schema";
 import { inngest } from "../..";
@@ -11,8 +10,6 @@ interface EmbeddingChunk {
   content: string;
   type: "title" | "description" | "properties";
 }
-
-const embeddingModel = openai.embedding("text-embedding-3-small");
 
 export const generateEmbeddings = inngest.createFunction(
   { id: "generate-embeddings" },
@@ -67,7 +64,7 @@ export const generateEmbeddings = inngest.createFunction(
       if (newChunks.length > 0) {
         // Generate embeddings only for new chunks
         const { embeddings: generatedEmbeddings } = await embedMany({
-          model: embeddingModel,
+          model: "text-embedding-3-small",
           values: newChunks.map((chunk) => chunk.content),
         });
         newEmbeddings = generatedEmbeddings;
