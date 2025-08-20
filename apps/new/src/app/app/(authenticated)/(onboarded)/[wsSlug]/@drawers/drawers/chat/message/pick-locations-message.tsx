@@ -83,6 +83,10 @@ export function PickLocationsMessage({ results }: PickLocationsMessageProps) {
             latitude={r.coordinates[1]}
             anchor="center"
             scale={isHovered ? 1.5 : 1}
+            onClick={() => handleFeatureClick(r)}
+            style={{
+              cursor: "pointer",
+            }}
           />
         );
       })}
