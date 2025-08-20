@@ -74,12 +74,8 @@ export async function POST(req: Request) {
       autocomplete,
       returnBestResults,
       webSearch,
-      // webSearch: openai.tools.webSearchPreview({
-      //   searchContextSize: "medium",
-      // }),
     },
     stopWhen: [stepCountIs(7), hasToolCall("returnBestResults")],
-    // stopWhen: hasToolCall("returnBestResults"),
     providerOptions: {
       openai: {
         reasoningEffort: "low",

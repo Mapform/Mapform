@@ -21,7 +21,7 @@ interface Feature {
 interface FeatureListProps {
   features: Feature[];
   onClick: (feature: Feature) => void;
-  onHover?: (feature: Feature) => void;
+  onHover?: (feature: Feature | null) => void;
 }
 
 export function FeatureList({ features, onClick, onHover }: FeatureListProps) {
@@ -35,6 +35,7 @@ export function FeatureList({ features, onClick, onHover }: FeatureListProps) {
             onClick(feature);
           }}
           onMouseEnter={() => onHover?.(feature)}
+          onMouseLeave={() => onHover?.(null)}
         >
           <div
             className={cn(

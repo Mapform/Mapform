@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import { Marker, useMap } from "react-map-gl/mapbox";
 import mapboxgl from "mapbox-gl";
 import { FeatureList } from "~/components/feature-list";
@@ -33,6 +33,9 @@ export function PickLocationsMessage({ results }: PickLocationsMessageProps) {
   const { current: map } = useMap();
   const { setQueryStates } = useParamsContext();
   const hasFlownToRef = useRef<string | null>(null);
+  const [hoveredFeature, setHoveredFeature] = useState<AIResultLocation | null>(
+    null,
+  );
 
   // Fit map to results bounds when component mounts
   useEffect(() => {
@@ -64,25 +67,25 @@ export function PickLocationsMessage({ results }: PickLocationsMessageProps) {
     }
   };
 
-  const handleFeatureHover = (feature: AIResultLocation) => {
-    // if (!map) return;
-    // map.easeTo({
-    //   center: feature.coordinates,
-    //   zoom: 14,
-    //   duration: 1000,
-    // });
+  const handleFeatureHover = (feature: AIResultLocation | null) => {
+    setHoveredFeature(feature);
   };
 
   return (
     <div>
-      {results.map((r) => (
-        <Marker
-          key={r.id}
-          longitude={r.coordinates[0]}
-          latitude={r.coordinates[1]}
-          anchor="center"
-        />
-      ))}
+      {results.map((r) => {
+        const isHovered = hoveredFeature?.id === r.id;
+
+        return (
+          <Marker
+            key={`${r.id}-${isHovered ? "hover" : "rest"}`}
+            longitude={r.coordinates[0]}
+            latitude={r.coordinates[1]}
+            anchor="center"
+            scale={isHovered ? 1.5 : 1}
+          />
+        );
+      })}
       <FeatureList
         features={results.map((r) => FeatureWithImage({ result: r }))}
         onHover={handleFeatureHover}

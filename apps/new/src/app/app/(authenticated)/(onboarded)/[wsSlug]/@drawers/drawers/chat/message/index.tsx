@@ -69,7 +69,7 @@ export function Message({ message }: ChatMessageProps) {
                     <ChevronDownIcon className="ml-auto size-4 transition-transform" />
                   )}
                 </CollapsibleTrigger>
-                <CollapsibleContent className="ml-3 border-l-2">
+                <CollapsibleContent className="ml-2 border-l">
                   <p className="text-muted-foreground mt-0 pl-4">{part.text}</p>
                 </CollapsibleContent>
               </Collapsible>
