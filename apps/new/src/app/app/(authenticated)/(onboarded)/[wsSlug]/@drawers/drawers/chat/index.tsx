@@ -136,10 +136,6 @@ function ChatInner({ initialMessages }: ChatProps) {
       </MapDrawerToolbar>
       <Conversation>
         <ConversationContent className="px-6 pb-6">
-          {/* <div
-        ref={chatContainerRef}
-        className="flex flex-1 flex-col gap-4 overflow-y-auto px-6 pb-96"
-      > */}
           {messages.map((message) => (
             <Message key={message.id} message={message} status={status} />
           ))}

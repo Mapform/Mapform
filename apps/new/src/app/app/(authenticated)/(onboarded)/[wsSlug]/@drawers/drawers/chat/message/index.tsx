@@ -4,6 +4,7 @@ import {
   BrainIcon,
   ChevronDownIcon,
   GlobeIcon,
+  LucideIcon,
   MapPinIcon,
 } from "lucide-react";
 import {
@@ -13,7 +14,7 @@ import {
 import { Response } from "@mapform/ui/components/ai-elements/response";
 import { PickLocationsMessage } from "./pick-locations-message";
 import { cn } from "@mapform/lib/classnames";
-import { type ChatStatus } from "ai";
+import { ToolUIPart, type ChatStatus } from "ai";
 import {
   Collapsible,
   CollapsibleContent,
@@ -111,47 +112,63 @@ export function Message({ message }: ChatMessageProps) {
             part.type === "tool-reverseGeocode"
           ) {
             return (
-              <div
+              <ToolMessage
                 key={`${message.id}-${index}`}
-                className="text-muted-foreground mb-4 flex w-full items-center gap-2 text-sm"
-              >
-                <div className="flex items-center gap-2">
-                  <MapPinIcon className="size-4" />
-                </div>
-                <p className="my-0">
-                  {part.state === "input-streaming" ||
-                  part.state === "input-available"
-                    ? "Mapping locations..."
-                    : part.state === "output-available"
-                      ? "Location found"
-                      : "Location not found"}
-                </p>
-              </div>
+                part={part}
+                icon={MapPinIcon}
+                streamingText="Mapping locations..."
+                doneText="Location found"
+                errorText="Location not found"
+              />
             );
           }
 
           if (part.type === "tool-webSearch") {
-            <div
-              key={`${message.id}-${index}`}
-              className="text-muted-foreground mb-4 flex w-full items-center gap-2 text-sm"
-            >
-              <div className="flex items-center gap-2">
-                <GlobeIcon className="size-4" />
-              </div>
-              <p className="my-0">
-                {part.state === "input-streaming" ||
-                part.state === "input-available"
-                  ? "Searching the web..."
-                  : part.state === "output-available"
-                    ? "Web search complete"
-                    : "Web search failed"}
-              </p>
-            </div>;
+            return (
+              <ToolMessage
+                key={`${message.id}-${index}`}
+                part={part}
+                icon={GlobeIcon}
+                streamingText="Searching the web..."
+                doneText="Web search complete"
+                errorText="Web search failed"
+              />
+            );
           }
 
           return null;
         })}
       </AIMessageContent>
     </AIMessage>
+  );
+}
+
+function ToolMessage({
+  part,
+  icon,
+  streamingText,
+  doneText,
+  errorText,
+}: {
+  part: ToolUIPart;
+  icon: LucideIcon;
+  streamingText: string;
+  doneText: string;
+  errorText: string;
+}) {
+  const Icon = icon;
+  return (
+    <div className="text-muted-foreground mb-4 flex w-full items-center gap-2 text-sm">
+      <div className="flex items-center gap-2">
+        <Icon className="size-4" />
+      </div>
+      <p className="my-0">
+        {part.state === "input-streaming" || part.state === "input-available"
+          ? streamingText
+          : part.state === "output-available"
+            ? doneText
+            : errorText}
+      </p>
+    </div>
   );
 }
