@@ -14,7 +14,7 @@ import { reverseGeocode } from "~/lib/ai/tools/reverse-geocode";
 import { getInformation } from "~/lib/ai/tools/get-information";
 import { autocomplete } from "~/lib/ai/tools/autocomplete";
 import { returnBestResults } from "~/lib/ai/tools/return-best-results";
-import { openai } from "@ai-sdk/openai";
+import { webSearch } from "~/lib/ai/tools/web-search";
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 60;
@@ -73,11 +73,12 @@ export async function POST(req: Request) {
       reverseGeocode,
       autocomplete,
       returnBestResults,
+      webSearch,
       // webSearch: openai.tools.webSearchPreview({
       //   searchContextSize: "medium",
       // }),
     },
-    stopWhen: [stepCountIs(5), hasToolCall("returnBestResults")],
+    stopWhen: [stepCountIs(7), hasToolCall("returnBestResults")],
     // stopWhen: hasToolCall("returnBestResults"),
     providerOptions: {
       openai: {

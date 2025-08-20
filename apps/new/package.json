@@ -52,6 +52,7 @@
     "compressorjs": "catalog:",
     "date-fns": "catalog:",
     "geojson": "catalog:",
+    "linkup-sdk": "^1.1.0",
     "lucide-react": "catalog:",
     "mapbox-gl": "catalog:",
     "motion": "catalog:",

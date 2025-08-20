@@ -33,7 +33,7 @@ export const returnBestResults = tool({
    * input parameters. After calling this tool, the AI should describe the results
    * in its response to the user.
    */
-  execute: async ({ finalResults }) => {
+  execute: ({ finalResults }) => {
     return finalResults as AIResultLocation[];
   },
 });

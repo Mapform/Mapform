@@ -1,8 +1,9 @@
-import type { InferUITool, UIMessage, UITool } from "ai";
+import type { InferUITool, UIMessage } from "ai";
 import type { returnBestResults } from "~/lib/ai/tools/return-best-results";
 import type { autocomplete } from "~/lib/ai/tools/autocomplete";
 import type { getInformation } from "~/lib/ai/tools/get-information";
 import type { reverseGeocode } from "~/lib/ai/tools/reverse-geocode";
+import type { webSearch } from "~/lib/ai/tools/web-search";
 import { z } from "zod";
 
 export const messageMetadataSchema = z.object({});
@@ -12,7 +13,7 @@ export type ChatTools = {
   reverseGeocode: InferUITool<typeof reverseGeocode>;
   getInformation: InferUITool<typeof getInformation>;
   returnBestResults: InferUITool<typeof returnBestResults>;
-  web_search_preview: UITool;
+  webSearch: InferUITool<typeof webSearch>;
 };
 
 export type MessageMetadata = z.infer<typeof messageMetadataSchema>;

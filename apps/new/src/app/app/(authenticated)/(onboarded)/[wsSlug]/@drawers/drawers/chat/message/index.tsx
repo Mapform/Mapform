@@ -130,7 +130,7 @@ export function Message({ message }: ChatMessageProps) {
             );
           }
 
-          if (part.type === "tool-web_search_preview") {
+          if (part.type === "tool-webSearch") {
             <div
               key={`${message.id}-${index}`}
               className="text-muted-foreground mb-4 flex w-full items-center gap-2 text-sm"

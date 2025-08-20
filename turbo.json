@@ -27,7 +27,9 @@
 
     "CRON_SECRET",
 
-    "AI_GATEWAY_API_KEY"
+    "AI_GATEWAY_API_KEY",
+
+    "LINKUP_API_KEY"
   ],
   "globalDependencies": ["**/.env.*local"],
   "tasks": {
