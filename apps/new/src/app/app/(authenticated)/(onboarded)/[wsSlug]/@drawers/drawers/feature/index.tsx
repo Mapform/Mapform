@@ -117,7 +117,7 @@ export function Feature({ feature }: FeatureDrawerProps) {
       </MapDrawer>
 
       {longitude && latitude && (
-        <Marker longitude={longitude} latitude={latitude} />
+        <Marker longitude={longitude} latitude={latitude} scale={1.5} />
       )}
     </>
   );

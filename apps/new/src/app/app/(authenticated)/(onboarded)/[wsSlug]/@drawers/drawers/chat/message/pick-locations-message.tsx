@@ -31,11 +31,12 @@ function FeatureWithImage({ result }: { result: AIResultLocation }) {
 
 export function PickLocationsMessage({ results }: PickLocationsMessageProps) {
   const { current: map } = useMap();
-  const { setQueryStates } = useParamsContext();
+  const { setQueryStates, params } = useParamsContext();
   const hasFlownToRef = useRef<string | null>(null);
   const [hoveredFeature, setHoveredFeature] = useState<AIResultLocation | null>(
     null,
   );
+  const activeFeatureId = params.geoapifyPlaceId ?? params.rowId;
 
   // Fit map to results bounds when component mounts
   useEffect(() => {
@@ -76,13 +77,15 @@ export function PickLocationsMessage({ results }: PickLocationsMessageProps) {
       {results.map((r) => {
         const isHovered = hoveredFeature?.id === r.id;
 
+        // The marker will be display by the Drawer component
+        if (r.id === activeFeatureId) return null;
+
         return (
           <Marker
             key={`${r.id}-${isHovered ? "hover" : "rest"}`}
             longitude={r.coordinates[0]}
             latitude={r.coordinates[1]}
             anchor="center"
-            scale={isHovered ? 1.5 : 1}
             onClick={() => handleFeatureClick(r)}
             style={{
               cursor: "pointer",

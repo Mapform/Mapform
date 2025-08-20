@@ -297,7 +297,7 @@ function SearchDetailsInner({ geoapifyPlaceDetails }: SearchDetailsProps) {
         ]}
       />
 
-      <Marker longitude={longitude} latitude={latitude} />
+      <Marker longitude={longitude} latitude={latitude} scale={1.5} />
     </>
   );
 }
