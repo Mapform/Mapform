@@ -85,6 +85,7 @@ export function PickLocationsMessage({ results }: PickLocationsMessageProps) {
             key={`${r.id}-${isHovered ? "hover" : "rest"}`}
             longitude={r.coordinates[0]}
             latitude={r.coordinates[1]}
+            scale={isHovered ? 1.5 : 1}
             anchor="center"
             onClick={() => handleFeatureClick(r)}
             style={{
