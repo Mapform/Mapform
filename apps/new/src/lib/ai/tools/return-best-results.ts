@@ -4,7 +4,7 @@ import type { AIResultLocation } from "~/lib/types";
 
 export const returnBestResults = tool({
   description:
-    "Return the final evaluated location results (from getInformation, autocomplete, reverseGeocode) to present to the user. Call this tool exactly once before finishing your response to display the selected location data.",
+    "Return the final evaluated location results to present to the user. ONLY results from the reverseGeocode and autocomplete tools can be passed to this tool. Call this tool exactly once before finishing your response to display the selected location data.",
   inputSchema: z.object({
     finalResults: z.array(
       z.object({

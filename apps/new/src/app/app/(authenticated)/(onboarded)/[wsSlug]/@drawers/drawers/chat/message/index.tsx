@@ -110,17 +110,6 @@ export function Message({ message }: ChatMessageProps) {
             part.type === "tool-getInformation" ||
             part.type === "tool-reverseGeocode"
           ) {
-            // if (part.state === "input-streaming") {
-            //   return (
-            //     <div
-            //       className="flex animate-pulse items-center gap-2"
-            //       key={part.toolCallId}
-            //     >
-            //       <MapPinIcon className="size-4 animate-pulse" />
-            //       <span className="text-sm">Mapping locations...</span>
-            //     </div>
-            //   );
-            // }
             return (
               <div
                 key={`${message.id}-${index}`}
@@ -142,20 +131,22 @@ export function Message({ message }: ChatMessageProps) {
           }
 
           if (part.type === "tool-web_search_preview") {
-            if (
-              part.state === "input-available" ||
-              part.state === "input-streaming"
-            ) {
-              return (
-                <div
-                  className="flex animate-pulse items-center gap-2"
-                  key={part.toolCallId}
-                >
-                  <GlobeIcon className="mr-2 size-4" />
-                  <span className="text-sm">Searching the web...</span>
-                </div>
-              );
-            }
+            <div
+              key={`${message.id}-${index}`}
+              className="text-muted-foreground mb-4 flex w-full items-center gap-2 text-sm"
+            >
+              <div className="flex items-center gap-2">
+                <GlobeIcon className="size-4" />
+              </div>
+              <p className="my-0">
+                {part.state === "input-streaming" ||
+                part.state === "input-available"
+                  ? "Searching the web..."
+                  : part.state === "output-available"
+                    ? "Web search complete"
+                    : "Web search failed"}
+              </p>
+            </div>;
           }
 
           return null;

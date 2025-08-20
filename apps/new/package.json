@@ -13,6 +13,7 @@
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf .next"
   },
   "dependencies": {
+    "@ai-sdk/openai": "^2.0.16",
     "@ai-sdk/react": "catalog:",
     "@dnd-kit/core": "catalog:",
     "@dnd-kit/modifiers": "^9.0.0",

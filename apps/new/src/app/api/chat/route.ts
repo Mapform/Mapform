@@ -14,9 +14,10 @@ import { reverseGeocode } from "~/lib/ai/tools/reverse-geocode";
 import { getInformation } from "~/lib/ai/tools/get-information";
 import { autocomplete } from "~/lib/ai/tools/autocomplete";
 import { returnBestResults } from "~/lib/ai/tools/return-best-results";
+import { openai } from "@ai-sdk/openai";
 
 // Allow streaming responses up to 30 seconds
-export const maxDuration = 30;
+export const maxDuration = 60;
 
 export async function POST(req: Request) {
   const {

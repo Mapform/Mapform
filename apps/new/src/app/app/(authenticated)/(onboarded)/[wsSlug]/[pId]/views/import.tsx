@@ -113,7 +113,7 @@ export function ImportContent() {
       <DialogHeader>
         <DialogTitle>Import Data</DialogTitle>
       </DialogHeader>
-      <div className="py-6">
+      <div className="pt-6">
         <div
           {...getRootProps()}
           className={cn(
