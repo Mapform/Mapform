@@ -75,7 +75,8 @@ export async function POST(req: Request) {
       returnBestResults,
       webSearch,
     },
-    stopWhen: [stepCountIs(7), hasToolCall("returnBestResults")],
+    // stopWhen: [stepCountIs(7), hasToolCall("returnBestResults")],
+    stopWhen: hasToolCall("returnBestResults"),
     providerOptions: {
       openai: {
         reasoningEffort: "low",

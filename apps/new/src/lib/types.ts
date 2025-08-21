@@ -45,4 +45,5 @@ export type AIResultLocation = {
   wikidata?: string;
   coordinates: [number, number];
   source: "geoapify" | "mapform";
+  reasoning?: string;
 };

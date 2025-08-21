@@ -92,10 +92,15 @@ export function Message({ message }: ChatMessageProps) {
 
             if (part.state === "output-available") {
               return (
-                <PickLocationsMessage
-                  key={part.toolCallId}
-                  results={part.output}
-                />
+                <>
+                  <PickLocationsMessage
+                    key={part.toolCallId}
+                    results={part.output.results}
+                  />
+                  <Response className="mt-4">
+                    {part.output.description}
+                  </Response>
+                </>
               );
             }
 

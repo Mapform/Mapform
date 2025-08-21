@@ -39,6 +39,8 @@ import {
   FolderOpenIcon,
   EarthIcon,
   SearchIcon,
+  SparkleIcon,
+  SparklesIcon,
 } from "lucide-react";
 import {
   Collapsible,
