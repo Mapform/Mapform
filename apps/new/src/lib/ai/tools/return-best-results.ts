@@ -24,12 +24,6 @@ export const returnBestResults = tool({
         source: z
           .enum(["geoapify", "mapform"])
           .describe("The source of the place."),
-        reasoning: z
-          .string()
-          .optional()
-          .describe(
-            "The reasoning for why this place was selected. Keep this between 1 and 2 sentences.",
-          ),
       }),
     ),
     description: z
