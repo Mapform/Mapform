@@ -1,5 +1,4 @@
 import { Text, Heading, Link } from "@react-email/components";
-import * as React from "react";
 import { Root } from "../../components/root";
 
 export interface EmailProps {

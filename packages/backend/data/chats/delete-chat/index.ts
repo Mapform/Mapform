@@ -25,5 +25,7 @@ export const deleteChat = (authClient: UserAuthClient) =>
         throw new Error("User cannot delete this chat");
       }
 
-      return db.delete(chats).where(eq(chats.id, id));
+      await db.delete(chats).where(eq(chats.id, id));
+
+      return id;
     });

@@ -119,7 +119,7 @@ catalog:
   react-email: 3.0.2
   react-hook-form: ^7.51.3
   react-resizable-panels: ^2.1.4
-  resend: 4.0.1-alpha.0
+  resend: 6.0.1
   slugify: ^1.6.6
   sonner: ^1.4.41
   stripe: "^17.5.0"
