@@ -3,7 +3,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@mapform/ui/components/sidebar";
-import { EarthIcon, Trash2Icon } from "lucide-react";
+import { MapIcon, Trash2Icon } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import {
   DndContext,
@@ -167,7 +167,7 @@ export function Files({
                           {project.icon ? (
                             <span>{project.icon}</span>
                           ) : (
-                            <EarthIcon />
+                            <MapIcon />
                           )}
                           <span>{project.name || "New Map"}</span>
                         </div>

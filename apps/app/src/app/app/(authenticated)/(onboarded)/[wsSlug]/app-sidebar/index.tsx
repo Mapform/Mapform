@@ -41,6 +41,7 @@ import {
   SearchIcon,
   SparkleIcon,
   SparklesIcon,
+  MapPlusIcon,
 } from "lucide-react";
 import {
   Collapsible,
@@ -67,6 +68,7 @@ import { useAction } from "next-safe-action/hooks";
 import { toast } from "@mapform/ui/components/toaster";
 import { useMap } from "react-map-gl/mapbox";
 import { useParamsContext } from "~/lib/params/client";
+import { Button } from "@mapform/ui/components/button";
 
 export function AppSidebar() {
   const map = useMap();
@@ -106,18 +108,18 @@ export function AppSidebar() {
       plan: "Basic",
     })),
     navMain: [
-      {
-        title: "Search",
-        onClick: () => {
-          void setQueryStates({
-            search: params.search === "1" ? null : "1",
-            chatId: null,
-            query: null,
-          });
-        },
-        icon: SearchIcon,
-        isActive: params.search === "1",
-      },
+      // {
+      //   title: "Search",
+      //   onClick: () => {
+      //     void setQueryStates({
+      //       search: params.search === "1" ? null : "1",
+      //       chatId: null,
+      //       query: null,
+      //     });
+      //   },
+      //   icon: SearchIcon,
+      //   isActive: params.search === "1",
+      // },
       {
         title: "Home",
         onClick: () => {
@@ -199,7 +201,43 @@ export function AppSidebar() {
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupContent>
+          <SidebarGroupContent className="flex flex-col gap-2">
+            <SidebarMenu>
+              <SidebarMenuItem className="flex items-center gap-1">
+                <SidebarMenuButton
+                  className="bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground min-w-8 duration-200 ease-linear"
+                  onClick={() => {
+                    void setQueryStates({
+                      search: params.search === "1" ? null : "1",
+                      chatId: null,
+                      query: null,
+                    });
+                  }}
+                >
+                  <SparklesIcon className="size-4" />
+                  Search or ask...
+                </SidebarMenuButton>
+                <Button
+                  size="icon"
+                  className="size-8 group-data-[collapsible=icon]:opacity-0"
+                  variant="outline"
+                  disabled={isPending}
+                  onClick={() => {
+                    execute({
+                      teamspaceId: teamspace.id,
+                      viewType: "map",
+                      center: map.current?.getCenter().toArray() as [
+                        number,
+                        number,
+                      ],
+                    });
+                  }}
+                >
+                  <MapPlusIcon />
+                  <span className="sr-only">Create Map</span>
+                </Button>
+              </SidebarMenuItem>
+            </SidebarMenu>
             <SidebarMenu>
               {data.navMain.map((item) => (
                 <SidebarMenuItem key={item.title}>

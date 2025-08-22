@@ -127,6 +127,20 @@
       "when": 1755227220898,
       "tag": "0017_fuzzy_shadowcat",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1755893170057,
+      "tag": "0018_broad_blue_marvel",
+      "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1755893763954,
+      "tag": "0019_sour_red_shift",
+      "breakpoints": true
     }
   ]
 }

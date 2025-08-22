@@ -1,4 +1,11 @@
-import { timestamp, pgTable, varchar, uuid, unique } from "drizzle-orm/pg-core";
+import {
+  timestamp,
+  pgTable,
+  varchar,
+  uuid,
+  unique,
+  boolean,
+} from "drizzle-orm/pg-core";
 import { workspaces } from "../workspaces/schema";
 
 export const teamspaces = pgTable(
@@ -7,6 +14,7 @@ export const teamspaces = pgTable(
     id: uuid("id").primaryKey().defaultRandom(),
     slug: varchar("slug", { length: 256 }).notNull(),
     name: varchar("name", { length: 256 }).notNull(),
+    isPrivate: boolean("is_private").notNull().default(false),
     workspaceSlug: varchar("workspace_slug")
       .notNull()
       .references(() => workspaces.slug, {
