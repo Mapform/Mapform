@@ -42,33 +42,12 @@ export function ProjectProvider({
       return {
         ...state,
         ...newProject,
+        center: newProject.center
+          ? { type: "Point", coordinates: newProject.center.coordinates }
+          : state.center,
       };
     },
   });
-
-  // const featureService = useStateService<GetRow["data"], UpdateRowSchema>(
-  //   updateRowAction,
-  //   {
-  //     currentState: feature,
-  //     updateFn: (state, newRow) => {
-  //       if (!state) return state;
-  //       return {
-  //         ...state,
-  //         ...newRow,
-  //       };
-  //     },
-  //   },
-  // );
-
-  // const features = project.rows.map((row) => {
-  //   if (row.id === feature?.id) {
-  //     return {
-  //       ...row,
-  //       ...featureService.optimisticState,
-  //     };
-  //   }
-  //   return row;
-  // });
 
   return (
     <ProjectContext.Provider

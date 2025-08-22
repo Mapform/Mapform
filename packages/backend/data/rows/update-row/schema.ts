@@ -2,7 +2,7 @@ import { z } from "zod";
 import { updateRowSchema as dbUpdateRowSchema } from "@mapform/db/schema";
 
 export const updateRowSchema = z.object({
-  id: dbUpdateRowSchema.shape.id,
+  id: z.string().uuid(),
   name: dbUpdateRowSchema.shape.name,
   description: dbUpdateRowSchema.shape.description,
   // This is a temporary workaround for sending description content as MD to the

@@ -7,7 +7,7 @@ import {
   jsonb,
 } from "drizzle-orm/pg-core";
 import { projects } from "../projects/schema";
-import type { Geometry } from "geojson";
+import type { Geometry, GeometryCollection } from "geojson";
 import type { CustomBlock } from "@mapform/blocknote";
 
 // Also export Point type for convenience
@@ -22,8 +22,17 @@ export type CoverPhoto = {
   license?: string;
 };
 
+// Define a non-recursive geometry type for DB-level Zod generation
+type GeometryCollectionShallow = Omit<GeometryCollection, "geometries"> & {
+  geometries: unknown[];
+};
+
+type NonRecursiveGeometry =
+  | Exclude<Geometry, GeometryCollection>
+  | GeometryCollectionShallow;
+
 const geometry = customType<{
-  data: Geometry;
+  data: NonRecursiveGeometry;
 }>({
   dataType() {
     return "geometry";
@@ -37,7 +46,7 @@ export const rows = pgTable("row", {
   icon: varchar("icon", { length: 256 }),
   // Only allow hex colors
   color: varchar("color", { length: 7 }).$type<`#${string}`>(),
-  geometry: geometry("geometry"),
+  geometry: geometry("geometry").$type<NonRecursiveGeometry>(),
 
   // Optional geoapify place id. Used when storing places from geoapify.
   geoapifyPlaceId: varchar("geoapify_place_id", { length: 256 }),
