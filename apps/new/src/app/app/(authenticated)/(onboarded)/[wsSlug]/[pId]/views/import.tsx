@@ -24,7 +24,7 @@ import { useProject } from "../context";
 
 interface ParsedData {
   [key: string]: any;
-  geom?: string;
+  geom?: Feature["geometry"];
 }
 
 async function parseUploadedFile(file: File): Promise<ParsedData[]> {
@@ -36,14 +36,14 @@ async function parseUploadedFile(file: File): Promise<ParsedData[]> {
     const kmlData = (await parse(file.text(), KMLLoader)) as FeatureCollection;
     return kmlData.features.map((f: Feature) => ({
       ...f.properties,
-      geom: JSON.stringify(f.geometry),
+      geom: f.geometry,
     }));
   } else if (isGeoJson) {
     const geojson = (await parse(file, JSONLoader)) as FeatureCollection;
     // Convert each GeoJSON feature to a flat row with geometry
     return geojson.features.map((f: Feature) => ({
       ...f.properties,
-      geom: JSON.stringify(f.geometry), // Store geometry separately
+      geom: f.geometry,
     }));
   } else {
     throw new Error("Unsupported file type");
@@ -56,7 +56,7 @@ export function ImportContent() {
   const [parsedData, setParsedData] = useState<ParsedData[] | null>(null);
   const { projectService } = useProject();
 
-  const { execute, isPending } = useAction(createRowsAction, {
+  const { execute } = useAction(createRowsAction, {
     onSuccess: () => {
       toast({
         title: "Rows created successfully",
@@ -87,10 +87,12 @@ export function ImportContent() {
 
       execute({
         projectId: projectService.optimisticState.id,
-        rows: data.map((d) => ({
-          name: "test",
-          geometry: d.geom,
-        })),
+        rows: data
+          .filter((d) => !!d.geom)
+          .map((d) => ({
+            name: "test",
+            geometry: d.geom!,
+          })),
       });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to parse file");
