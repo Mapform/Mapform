@@ -20,6 +20,8 @@ export function useMapPadding(forceOpen?: boolean) {
       params.search ||
       params.rowId ||
       params.geoapifyPlaceId ||
+      params.latitude ||
+      params.longitude ||
       pathParams.pId ||
       isSettings
         ? [DRAWER_WIDTH]
@@ -31,6 +33,8 @@ export function useMapPadding(forceOpen?: boolean) {
       params.search,
       params.rowId,
       params.geoapifyPlaceId,
+      params.latitude,
+      params.longitude,
       pathParams.pId,
       isSettings,
     ],

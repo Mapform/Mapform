@@ -36,11 +36,20 @@ export function Coordinates({ coordinates }: CoordinatesProps) {
   const map = useMap();
   const { isPending, drawerDepth, setQueryStates } = useParamsContext();
 
-  // useEffect(() => {
-  //   map.current?.easeTo({
-  //     center: coordinates,
-  //   });
-  // }, [coordinates, map]);
+  const latitude = coordinates?.[0];
+  const longitude = coordinates?.[1];
+
+  useEffect(() => {
+    if (!latitude || !longitude) return;
+
+    try {
+      map.current?.easeTo({
+        center: [longitude, latitude],
+      });
+    } catch (error) {
+      console.error("Error while easing to coordinates:", error);
+    }
+  }, [latitude, longitude, map]);
 
   return (
     <>
@@ -54,7 +63,7 @@ export function Coordinates({ coordinates }: CoordinatesProps) {
                 type="button"
                 variant="ghost"
                 onClick={() => {
-                  void setQueryStates({ rowId: null });
+                  void setQueryStates({ latitude: null, longitude: null });
                 }}
               >
                 <XIcon className="size-4" />
@@ -71,7 +80,7 @@ export function Coordinates({ coordinates }: CoordinatesProps) {
                 type="button"
                 variant="ghost"
                 onClick={() => {
-                  void setQueryStates({ rowId: null });
+                  void setQueryStates({ latitude: null, longitude: null });
                 }}
               >
                 <XIcon className="size-4" />
