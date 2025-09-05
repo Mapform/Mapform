@@ -6,7 +6,9 @@ import {
   unique,
   boolean,
 } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
 import { workspaces } from "../workspaces/schema";
+import { users } from "../users/schema";
 
 export const teamspaces = pgTable(
   "teamspace",
@@ -15,6 +17,9 @@ export const teamspaces = pgTable(
     slug: varchar("slug", { length: 256 }).notNull(),
     name: varchar("name", { length: 256 }).notNull(),
     isPrivate: boolean("is_private").notNull().default(false),
+    ownerUserId: uuid("owner_user_id").references(() => users.id, {
+      onDelete: "set null",
+    }),
     workspaceSlug: varchar("workspace_slug")
       .notNull()
       .references(() => workspaces.slug, {
@@ -30,5 +35,9 @@ export const teamspaces = pgTable(
       .$onUpdate(() => new Date())
       .notNull(),
   },
-  (t) => [unique().on(t.workspaceSlug, t.slug)],
+  (t) => [
+    unique().on(t.workspaceSlug, t.slug),
+    // Each user gets one private teamspace per workspace
+    sql`unique (workspace_slug, owner_user_id) where is_private = true`,
+  ],
 );

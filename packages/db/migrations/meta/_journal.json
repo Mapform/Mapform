@@ -141,6 +141,13 @@
       "when": 1755893763954,
       "tag": "0019_sour_red_shift",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1755899294134,
+      "tag": "0020_giant_firebird",
+      "breakpoints": true
     }
   ]
 }
