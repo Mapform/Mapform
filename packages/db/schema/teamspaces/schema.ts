@@ -17,9 +17,11 @@ export const teamspaces = pgTable(
     slug: varchar("slug", { length: 256 }).notNull(),
     name: varchar("name", { length: 256 }).notNull(),
     isPrivate: boolean("is_private").notNull().default(false),
-    ownerUserId: uuid("owner_user_id").references(() => users.id, {
-      onDelete: "set null",
-    }),
+    ownerUserId: uuid("owner_user_id")
+      .references(() => users.id, {
+        onDelete: "set null",
+      })
+      .notNull(),
     workspaceSlug: varchar("workspace_slug")
       .notNull()
       .references(() => workspaces.slug, {

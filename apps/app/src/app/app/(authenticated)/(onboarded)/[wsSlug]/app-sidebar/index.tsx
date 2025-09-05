@@ -89,6 +89,9 @@ export function AppSidebar() {
       });
     },
   });
+  const usersPrivateTeamspace = workspaceDirectory.teamspaces.find(
+    (teamspace) => teamspace.isPrivate && teamspace.ownerUserId === user?.id,
+  );
 
   if (!user) {
     return null;
@@ -223,8 +226,13 @@ export function AppSidebar() {
                   variant="outline"
                   disabled={isPending}
                   onClick={() => {
+                    if (!usersPrivateTeamspace) {
+                      console.error("User is not part of a private teamspace");
+                      return;
+                    }
+
                     execute({
-                      teamspaceId: teamspace.id,
+                      teamspaceId: usersPrivateTeamspace.id,
                       viewType: "map",
                       center: map.current?.getCenter().toArray() as [
                         number,

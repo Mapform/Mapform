@@ -26,6 +26,8 @@ export const getWorkspaceDirectory = (authClient: UserAuthClient) =>
               id: true,
               name: true,
               slug: true,
+              isPrivate: true,
+              ownerUserId: true,
               createdAt: true,
             },
             with: {

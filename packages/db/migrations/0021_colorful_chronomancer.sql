@@ -1,0 +1,1 @@
+ALTER TABLE "teamspace" ALTER COLUMN "owner_user_id" SET NOT NULL;
