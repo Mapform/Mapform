@@ -1,5 +1,6 @@
 import {
   createLoader,
+  parseAsFloat,
   parseAsInteger,
   parseAsString,
   type SearchParams,
@@ -15,6 +16,8 @@ export const appSearchParams = {
   search: parseAsString,
   geoapifyPlaceId: parseAsString,
   chatId: parseAsString,
+  latitude: parseAsFloat,
+  longitude: parseAsFloat,
 };
 
 export const appSearchOptions = {
@@ -29,6 +32,8 @@ export const appSearchOptions = {
     search: "s",
     geoapifyPlaceId: "g",
     chatId: "c",
+    latitude: "lat",
+    longitude: "lng",
   },
 };
 

@@ -1,20 +1,14 @@
 "use client";
 
-import { PlusIcon, SparkleIcon } from "lucide-react";
+import { MapPinIcon, SparkleIcon } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-  DropdownMenuSub,
-  DropdownMenuPortal,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
 } from "@mapform/ui/components/dropdown-menu";
-import { useParams } from "next/navigation";
 import { useParamsContext } from "~/lib/params/client";
-import { useWorkspace } from "./workspace-context";
 
 interface MapContextMenuProps {
   open: boolean;
@@ -27,9 +21,11 @@ export function MapContextMenu({
   onOpenChange,
   position,
 }: MapContextMenuProps) {
-  const params = useParams();
   const { setQueryStates } = useParamsContext();
-  const { workspaceDirectory } = useWorkspace();
+
+  if (!position.x || !position.y) {
+    return null;
+  }
 
   return (
     <DropdownMenu open={open} onOpenChange={onOpenChange}>
@@ -64,30 +60,18 @@ export function MapContextMenu({
           Ask AI
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        {params.pId ? (
-          <DropdownMenuItem onClick={() => {}}>
-            <PlusIcon className="size-4" />
-            Add Location
-          </DropdownMenuItem>
-        ) : (
-          <DropdownMenuSub>
-            <DropdownMenuSubTrigger>
-              <PlusIcon className="size-4" />
-              Add Location To
-            </DropdownMenuSubTrigger>
-            <DropdownMenuPortal>
-              <DropdownMenuSubContent>
-                {workspaceDirectory.teamspaces.flatMap((teamspace) =>
-                  teamspace.projects.flatMap((project) => (
-                    <DropdownMenuItem key={`${teamspace.id}-${project.id}`}>
-                      {project.name ?? "New Map"}
-                    </DropdownMenuItem>
-                  )),
-                )}
-              </DropdownMenuSubContent>
-            </DropdownMenuPortal>
-          </DropdownMenuSub>
-        )}
+        <DropdownMenuItem
+          onClick={async () => {
+            onOpenChange(false);
+            await setQueryStates({
+              latitude: position.latitude,
+              longitude: position.longitude,
+            });
+          }}
+        >
+          <MapPinIcon className="size-4" />
+          Mark Location
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

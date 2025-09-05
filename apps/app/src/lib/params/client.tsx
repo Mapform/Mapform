@@ -102,7 +102,18 @@ interface ParamsProviderProps {
 export const ParamsProvider = ({ children }: ParamsProviderProps) => {
   const [isPending, startTransition] = useTransition();
   const [
-    { viewId, perPage, page, rowId, query, search, geoapifyPlaceId, chatId },
+    {
+      viewId,
+      perPage,
+      page,
+      rowId,
+      query,
+      search,
+      geoapifyPlaceId,
+      chatId,
+      latitude,
+      longitude,
+    },
     setQueryStates,
   ] = useQueryStates(appSearchParams, { ...appSearchOptions, startTransition });
   const drawerOrder = getQueryParamsMapInOrder();
@@ -127,6 +138,8 @@ export const ParamsProvider = ({ children }: ParamsProviderProps) => {
           search,
           geoapifyPlaceId,
           chatId,
+          latitude,
+          longitude,
         },
         setQueryStates,
         drawerDepth,

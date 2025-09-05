@@ -2,12 +2,13 @@ import type { SearchParams } from "nuqs/server";
 
 import { loadSearchParams } from "~/lib/params/server";
 import { Search } from "./search";
-import { cache, Suspense } from "react";
+import { cache } from "react";
 import { authClient, publicClient } from "~/lib/safe-action";
 import { Chat } from "./chat";
 import { SearchDetails } from "./search-details";
 import { Feature } from "./feature";
 import type { ChatMessage } from "~/lib/types";
+import { Coordinates } from "./coordinates";
 
 interface DealDrawerProps {
   searchParams: Promise<SearchParams>;
@@ -17,18 +18,10 @@ interface DealDrawerProps {
 export function Drawers(props: DealDrawerProps) {
   return (
     <>
-      <Suspense>
-        <SearchDrawer {...props} />
-      </Suspense>
-      <Suspense>
-        <ChatDrawer {...props} />
-      </Suspense>
-      <Suspense>
-        <SearchDetailsDrawer {...props} />
-      </Suspense>
-      <Suspense>
-        <FeatureDrawer {...props} />
-      </Suspense>
+      <SearchDrawer {...props} />
+      <ChatDrawer {...props} />
+      <SearchDetailsDrawer {...props} />
+      <FeatureDrawer {...props} />
     </>
   );
 }
@@ -120,4 +113,18 @@ async function FeatureDrawer({ searchParams }: DealDrawerProps) {
   ]);
 
   return <Feature feature={row?.data} />;
+}
+
+async function CoordinationDrawer({ searchParams }: DealDrawerProps) {
+  const { latitude, longitude } = await loadSearchParams(searchParams);
+
+  // const [row] = await Promise.all([
+  //   rowId ? authClient.getRow({ rowId }) : null,
+  // ]);
+
+  return (
+    <Coordinates
+      coordinates={latitude && longitude ? [latitude, longitude] : null}
+    />
+  );
 }
