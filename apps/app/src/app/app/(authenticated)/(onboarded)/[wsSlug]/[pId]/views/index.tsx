@@ -26,7 +26,7 @@ import {
 import { VIEWS } from "~/constants/views";
 import { useAction } from "next-safe-action/hooks";
 import { createViewAction } from "~/data/views/create-view";
-import { MapDrawer, MapDrawerToolbar } from "~/components/map-drawer";
+import { MapDrawerToolbar } from "~/components/map-drawer";
 import {
   Tabs,
   TabsContent,
@@ -76,13 +76,7 @@ export function Views() {
   );
 
   return (
-    <MapDrawer
-      initialOpen
-      open
-      // TODO: Need to calculate remaining width of the screen and pass in
-      width={activeView?.type === "table" ? 800 : undefined}
-      depth={drawerDepth.size}
-    >
+    <>
       <MapDrawerToolbar>
         <Import>
           <DropdownMenu modal={false}>
@@ -293,6 +287,6 @@ export function Views() {
           </Tabs>
         </div>
       </div>
-    </MapDrawer>
+    </>
   );
 }
