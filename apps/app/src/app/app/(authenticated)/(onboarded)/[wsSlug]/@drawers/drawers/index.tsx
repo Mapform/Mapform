@@ -22,6 +22,7 @@ export function Drawers(props: DealDrawerProps) {
       <ChatDrawer {...props} />
       <SearchDetailsDrawer {...props} />
       <FeatureDrawer {...props} />
+      <CoordinatesDrawer {...props} />
     </>
   );
 }
@@ -115,7 +116,7 @@ async function FeatureDrawer({ searchParams }: DealDrawerProps) {
   return <Feature feature={row?.data} />;
 }
 
-async function CoordinationDrawer({ searchParams }: DealDrawerProps) {
+async function CoordinatesDrawer({ searchParams }: DealDrawerProps) {
   const { latitude, longitude } = await loadSearchParams(searchParams);
 
   // const [row] = await Promise.all([

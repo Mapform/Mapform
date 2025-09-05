@@ -65,7 +65,13 @@ export function getQueryParamsMapInOrder(
   }
 
   // Define the allowed keys
-  const allowedKeys = new Set(["search", "geoapifyPlaceId", "chatId", "rowId"]);
+  const allowedKeys = new Set([
+    "search",
+    "geoapifyPlaceId",
+    "chatId",
+    "rowId",
+    "latitude",
+  ]);
 
   let sequentialOrder = 0;
   for (const param of params) {
