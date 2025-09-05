@@ -6,6 +6,7 @@ import { WorkspaceProvider } from "./workspace-context";
 import { AppSidebar } from "./app-sidebar";
 import { SidebarProvider } from "@mapform/ui/components/sidebar";
 import { SIDEBAR_WIDTH } from "~/constants/sidebars";
+import { Drawers } from "./drawers";
 
 export default async function WorkspaceLayout(props: {
   params: Promise<{ wsSlug: string; pId: string }>;
@@ -13,7 +14,6 @@ export default async function WorkspaceLayout(props: {
   nav?: React.ReactNode;
   drawers?: React.ReactNode;
 }) {
-  // const { params } = useParamsContext();
   const cookieStore = await cookies();
   const leftSidebarCookie = cookieStore.get("sidebar-left:state");
 
@@ -41,7 +41,7 @@ export default async function WorkspaceLayout(props: {
       >
         <AppSidebar />
         <main className="prose flex flex-1 overflow-hidden p-2 pl-0">
-          {children}
+          <Drawers>{children}</Drawers>
           {props.drawers}
         </main>
       </SidebarProvider>
