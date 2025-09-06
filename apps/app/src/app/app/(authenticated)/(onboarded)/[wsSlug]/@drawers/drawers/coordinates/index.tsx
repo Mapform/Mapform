@@ -1,124 +1,230 @@
 "use client";
 
+import { MapDrawer, MapDrawerToolbar } from "~/components/map-drawer";
+import type { GetPlaceDetails } from "@mapform/backend/data/geoapify/details";
+import { useParamsContext } from "~/lib/params/client";
+import { Marker } from "react-map-gl/mapbox";
 import { Button } from "@mapform/ui/components/button";
 import {
   EllipsisVerticalIcon,
-  Trash2Icon,
-  XIcon,
   ExternalLinkIcon,
+  Loader2Icon,
+  PlusIcon,
+  XIcon,
 } from "lucide-react";
-import { MapDrawer, MapDrawerToolbar } from "~/components/map-drawer";
-import { useParamsContext } from "~/lib/params/client";
-import { type StateServiceProps } from "~/lib/use-state-service";
-import type { GetRow } from "@mapform/backend/data/rows/get-row";
-import type { UpdateRowSchema } from "@mapform/backend/data/rows/update-row/schema";
-import { Marker, useMap } from "react-map-gl/mapbox";
 import { BasicSkeleton } from "~/components/skeletons/basic";
-import { Feature as FeatureComponent } from "~/components/feature";
+import { Feature } from "~/components/feature";
+import { useWikidataImages } from "~/lib/wikidata-image";
 import {
   DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
+  DropdownMenuSub,
+  DropdownMenuContent,
   DropdownMenuTrigger,
+  DropdownMenuItem,
 } from "@mapform/ui/components/dropdown-menu";
-import { openInAppleMaps } from "~/lib/external-links/apple";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@mapform/ui/components/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@mapform/ui/components/popover";
+import { useMap } from "react-map-gl/mapbox";
 import { openInGoogleMaps } from "~/lib/external-links/google";
-import { useEffect } from "react";
+import { openInAppleMaps } from "~/lib/external-links/apple";
+import { useAction } from "next-safe-action/hooks";
+import { createRowAction } from "~/data/rows/create-row";
+import { useParams } from "next/navigation";
+import { useWorkspace } from "../../../workspace-context";
+import { useEffect, useState } from "react";
 
 interface CoordinatesProps {
   coordinates: [number, number] | null;
+  geoapifyPlaceDetails: GetPlaceDetails["data"];
 }
 
-export function Coordinates({ coordinates }: CoordinatesProps) {
-  const map = useMap();
-  const { isPending, drawerDepth, setQueryStates } = useParamsContext();
+export function Coordinates({
+  coordinates,
+  geoapifyPlaceDetails,
+}: CoordinatesProps) {
+  const { drawerDepth, isPending, setQueryStates } = useParamsContext();
 
-  const latitude = coordinates?.[0];
+  return (
+    <MapDrawer
+      open={!!coordinates}
+      depth={drawerDepth.get("geoapifyPlaceId") ?? 0}
+    >
+      {isPending ? (
+        <>
+          <MapDrawerToolbar>
+            <Button
+              className="ml-auto"
+              size="icon-sm"
+              type="button"
+              variant="ghost"
+              onClick={() => {
+                console.log("clicked");
+                void setQueryStates({ latitude: null, longitude: null });
+              }}
+            >
+              <XIcon className="size-4" />
+            </Button>
+          </MapDrawerToolbar>
+          <BasicSkeleton className="p-6" />
+        </>
+      ) : (
+        <SearchDetailsInner
+          coordinates={coordinates}
+          geoapifyPlaceDetails={geoapifyPlaceDetails}
+        />
+      )}
+    </MapDrawer>
+  );
+}
+
+function SearchDetailsInner({
+  coordinates,
+  geoapifyPlaceDetails,
+}: CoordinatesProps) {
+  const map = useMap();
+  const { setQueryStates } = useParamsContext();
+  const { pId } = useParams<{ pId: string }>();
+  const { workspaceDirectory } = useWorkspace();
+  const { execute, isPending } = useAction(createRowAction, {
+    onSuccess: async ({ data }) => {
+      await setQueryStates({ latitude: null, longitude: null });
+      await setQueryStates({ rowId: data?.id });
+    },
+  });
+
+  const [projectComboboxOpen, setProjectComboboxOpen] = useState(false);
+
+  const wikiData = useWikidataImages(
+    geoapifyPlaceDetails?.features[0]?.properties.datasource?.raw?.wikidata,
+  );
+
   const longitude = coordinates?.[1];
+  const latitude = coordinates?.[0];
 
   useEffect(() => {
-    if (!latitude || !longitude) return;
+    if (!longitude || !latitude) return;
 
     try {
       map.current?.easeTo({
         center: [longitude, latitude],
       });
     } catch (error) {
-      console.error("Error while easing to coordinates:", error);
+      console.error(error);
     }
-  }, [latitude, longitude, map]);
+  }, [longitude, latitude, map]);
+
+  const place = geoapifyPlaceDetails?.features[0]?.properties;
+
+  if (!longitude || !latitude || !place) return null;
+
+  // Flatten all projects from all teamspaces
+  const allProjects = workspaceDirectory.teamspaces
+    .flatMap((teamspace) =>
+      teamspace.projects.map((project) => ({
+        ...project,
+        teamspaceName: teamspace.name,
+      })),
+    )
+    .sort((a, b) => a.position - b.position);
+
+  const handleAddToProject = (projectId: string) => {
+    execute({
+      projectId,
+      name: place.name_international?.en,
+
+      geometry: {
+        type: "Point",
+        coordinates: [longitude, latitude],
+      },
+    });
+  };
 
   return (
     <>
-      <MapDrawer open={!!coordinates} depth={drawerDepth.get("latitude") ?? 0}>
-        {isPending ? (
-          <>
-            <MapDrawerToolbar>
-              <Button
-                className="ml-auto"
-                size="icon-sm"
-                type="button"
-                variant="ghost"
-                onClick={() => {
-                  void setQueryStates({ latitude: null, longitude: null });
-                }}
-              >
-                <XIcon className="size-4" />
-              </Button>
-            </MapDrawerToolbar>
-            <BasicSkeleton className="p-6" />
-          </>
-        ) : (
-          <>
-            <MapDrawerToolbar>
-              <Button
-                className="ml-auto"
-                size="icon-sm"
-                type="button"
-                variant="ghost"
-                onClick={() => {
-                  void setQueryStates({ latitude: null, longitude: null });
-                }}
-              >
-                <XIcon className="size-4" />
-              </Button>
-            </MapDrawerToolbar>
-          </>
-        )}
-      </MapDrawer>
-
-      {coordinates && (
-        <Marker
-          longitude={coordinates[1]}
-          latitude={coordinates[0]}
-          scale={1.5}
-        />
-      )}
-    </>
-  );
-}
-
-const FeatureContent = ({
-  featureService,
-}: {
-  featureService: StateServiceProps<GetRow["data"], UpdateRowSchema>;
-}) => {
-  const { setQueryStates } = useParamsContext();
-
-  return (
-    <div>
       <MapDrawerToolbar>
+        {pId ? (
+          <Button
+            className="ml-auto"
+            size="icon-sm"
+            type="button"
+            variant="ghost"
+            disabled={isPending}
+            onClick={() => {
+              execute({
+                projectId: pId,
+                name: place.name_international?.en ?? place.name,
+                geoapifyPlaceId: place.place_id,
+                geometry: {
+                  type: "Point",
+                  coordinates: [longitude, latitude],
+                },
+              });
+            }}
+          >
+            {isPending ? (
+              <Loader2Icon className="size-4 animate-spin" />
+            ) : (
+              <PlusIcon className="size-4" />
+            )}
+          </Button>
+        ) : (
+          <Popover
+            open={projectComboboxOpen}
+            onOpenChange={setProjectComboboxOpen}
+          >
+            <PopoverTrigger asChild>
+              <Button
+                variant="ghost"
+                role="combobox"
+                size="icon-sm"
+                aria-expanded={projectComboboxOpen}
+                className="ml-auto"
+                disabled={isPending}
+              >
+                <PlusIcon className="size-4" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="p-0">
+              <Command>
+                <CommandInput placeholder="Search projects..." />
+                <CommandList>
+                  <CommandEmpty>No projects found.</CommandEmpty>
+                  <CommandGroup>
+                    {allProjects.map((project) => (
+                      <CommandItem
+                        key={project.id}
+                        value={`${project.id}`}
+                        onSelect={() => {
+                          setProjectComboboxOpen(false);
+                          handleAddToProject(project.id);
+                        }}
+                        keywords={[project.name ?? "New Map"]}
+                      >
+                        {project.name ?? "New Map"}
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                </CommandList>
+              </Command>
+            </PopoverContent>
+          </Popover>
+        )}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button
-              className="ml-auto"
-              size="icon-sm"
-              type="button"
-              variant="ghost"
-            >
+            <Button size="icon-sm" type="button" variant="ghost">
               <EllipsisVerticalIcon className="size-4" />
             </Button>
           </DropdownMenuTrigger>
@@ -130,9 +236,6 @@ const FeatureContent = ({
               <DropdownMenuSubContent>
                 <DropdownMenuItem
                   onClick={() => {
-                    const { center } = featureService.optimisticState!;
-                    const [longitude, latitude] = center.coordinates;
-
                     openInGoogleMaps(latitude, longitude);
                   }}
                 >
@@ -140,13 +243,10 @@ const FeatureContent = ({
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() => {
-                    const { center } = featureService.optimisticState!;
-                    const [longitude, latitude] = center.coordinates;
-
                     openInAppleMaps(
                       latitude,
                       longitude,
-                      featureService.optimisticState?.name ?? "Location",
+                      place.name_international?.en ?? place.name ?? "Location",
                     );
                   }}
                 >
@@ -154,9 +254,6 @@ const FeatureContent = ({
                 </DropdownMenuItem>
               </DropdownMenuSubContent>
             </DropdownMenuSub>
-            <DropdownMenuItem>
-              <Trash2Icon className="size-4" /> Delete
-            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
         <Button
@@ -164,45 +261,54 @@ const FeatureContent = ({
           type="button"
           variant="ghost"
           onClick={() => {
-            void setQueryStates({ rowId: null });
+            void setQueryStates({ latitude: null, longitude: null });
           }}
         >
           <XIcon className="size-4" />
         </Button>
       </MapDrawerToolbar>
-      <FeatureComponent
-        rowId={featureService.optimisticState!.id}
-        title={featureService.optimisticState!.name ?? ""}
-        description={featureService.optimisticState!.description ?? undefined}
-        icon={featureService.optimisticState!.icon ?? undefined}
-        onTitleChange={(value) => {
-          featureService.execute({
-            ...featureService.optimisticState,
-            id: featureService.optimisticState!.id,
-            name: value,
-          });
-        }}
-        onIconChange={(value) => {
-          featureService.execute({
-            ...featureService.optimisticState,
-            id: featureService.optimisticState!.id,
-            icon: value,
-          });
-        }}
-        onDescriptionChange={(value) => {
-          featureService.execute({
-            ...featureService.optimisticState,
-            id: featureService.optimisticState!.id,
-            description: value.blocks,
-            descriptionAsMarkdown: value.markdown ?? undefined,
-          });
-        }}
-        imageData={{
-          images: featureService.optimisticState!.blobs.map((blob) => ({
-            imageUrl: blob.url,
-          })),
-        }}
+      <Feature
+        imageData={wikiData}
+        title={place.name_international?.en ?? place.name ?? ""}
+        // description={geoapifyPlaceDetails.features[0]?.properties.description}
+        // icon={geoapifyPlaceDetails.features[0]?.properties.icon}
+        properties={[
+          {
+            columnName: "Address",
+            columnType: "string",
+            value: place.address_line2,
+          },
+          ...(place.phone
+            ? ([
+                {
+                  columnName: "Phone",
+                  columnType: "string",
+                  value: place.phone,
+                },
+              ] as const)
+            : []),
+          ...(place.website
+            ? ([
+                {
+                  columnName: "Website",
+                  columnType: "string",
+                  value: place.website,
+                },
+              ] as const)
+            : []),
+          ...(place.population
+            ? ([
+                {
+                  columnName: "Population",
+                  columnType: "number",
+                  value: place.population,
+                },
+              ] as const)
+            : []),
+        ]}
       />
-    </div>
+
+      <Marker longitude={longitude} latitude={latitude} scale={1.5} />
+    </>
   );
-};
+}

@@ -119,13 +119,19 @@ async function FeatureDrawer({ searchParams }: DealDrawerProps) {
 async function CoordinatesDrawer({ searchParams }: DealDrawerProps) {
   const { latitude, longitude } = await loadSearchParams(searchParams);
 
-  // const [row] = await Promise.all([
-  //   rowId ? authClient.getRow({ rowId }) : null,
-  // ]);
+  const placeDetails =
+    latitude && longitude
+      ? await publicClient.getPlaceDetails({
+          type: "coordinates",
+          lat: latitude,
+          lng: longitude,
+        })
+      : null;
 
   return (
     <Coordinates
       coordinates={latitude && longitude ? [latitude, longitude] : null}
+      geoapifyPlaceDetails={placeDetails?.data}
     />
   );
 }
