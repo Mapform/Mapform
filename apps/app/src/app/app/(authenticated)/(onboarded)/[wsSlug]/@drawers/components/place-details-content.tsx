@@ -34,7 +34,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@mapform/ui/components/popover";
-import { Marker, useMap } from "react-map-gl/mapbox";
+import { useMap } from "react-map-gl/mapbox";
 import { openInGoogleMaps } from "~/lib/external-links/google";
 import { openInAppleMaps } from "~/lib/external-links/apple";
 import { useAction } from "next-safe-action/hooks";
@@ -44,8 +44,9 @@ import type { GetPlaceDetails } from "@mapform/backend/data/geoapify/details";
 import { useWorkspace } from "../../workspace-context";
 import { useParamsContext } from "~/lib/params/client";
 
-type PlaceProperties =
-  GetPlaceDetails["data"]["features"][number]["properties"];
+type PlaceProperties = NonNullable<
+  GetPlaceDetails["data"]
+>["features"][number]["properties"];
 
 interface PlaceDetailsContentProps {
   latitude: number;
@@ -261,8 +262,6 @@ export function PlaceDetailsContent({
             : []),
         ]}
       />
-
-      <Marker longitude={longitude} latitude={latitude} scale={1.5} />
     </>
   );
 }

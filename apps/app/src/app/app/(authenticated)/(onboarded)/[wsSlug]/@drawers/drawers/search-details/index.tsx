@@ -8,6 +8,7 @@ import { XIcon } from "lucide-react";
 import { BasicSkeleton } from "~/components/skeletons/basic";
 import { PlaceDetailsContent } from "../../components/place-details-content";
 import { useEffect } from "react";
+import { Marker } from "react-map-gl/mapbox";
 
 interface SearchDetailsProps {
   geoapifyPlaceDetails: GetPlaceDetails["data"];
@@ -59,13 +60,16 @@ function SearchDetailsInner({ geoapifyPlaceDetails }: SearchDetailsProps) {
   if (!longitude || !latitude || !place) return null;
 
   return (
-    <PlaceDetailsContent
-      latitude={latitude}
-      longitude={longitude}
-      place={place}
-      onClose={() => {
-        void setQueryStates({ geoapifyPlaceId: null });
-      }}
-    />
+    <>
+      <PlaceDetailsContent
+        latitude={latitude}
+        longitude={longitude}
+        place={place}
+        onClose={() => {
+          void setQueryStates({ geoapifyPlaceId: null });
+        }}
+      />
+      <Marker longitude={longitude} latitude={latitude} scale={1.5} />
+    </>
   );
 }

@@ -8,6 +8,7 @@ import { XIcon } from "lucide-react";
 import { BasicSkeleton } from "~/components/skeletons/basic";
 import { PlaceDetailsContent } from "../../components/place-details-content";
 import { useEffect } from "react";
+import { Marker } from "react-map-gl/mapbox";
 
 interface CoordinatesProps {
   coordinates: [number, number] | null;
@@ -19,6 +20,9 @@ export function Coordinates({
   geoapifyPlaceDetails,
 }: CoordinatesProps) {
   const { drawerDepth, isPending, setQueryStates } = useParamsContext();
+
+  const longitude = coordinates?.[1];
+  const latitude = coordinates?.[0];
 
   return (
     <MapDrawer
@@ -48,6 +52,9 @@ export function Coordinates({
           coordinates={coordinates}
           geoapifyPlaceDetails={geoapifyPlaceDetails}
         />
+      )}
+      {longitude && latitude && (
+        <Marker longitude={longitude} latitude={latitude} scale={1.5} />
       )}
     </MapDrawer>
   );
