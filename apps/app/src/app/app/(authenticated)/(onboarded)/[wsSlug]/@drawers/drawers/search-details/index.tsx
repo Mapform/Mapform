@@ -57,7 +57,31 @@ function SearchDetailsInner({ geoapifyPlaceDetails }: SearchDetailsProps) {
     // no-op here; map centering is handled inside PlaceDetailsContent
   }, []);
 
-  if (!longitude || !latitude || !place) return null;
+  if (!longitude || !latitude || !place)
+    return (
+      <>
+        <MapDrawerToolbar>
+          <Button
+            className="ml-auto"
+            size="icon-sm"
+            type="button"
+            variant="ghost"
+            onClick={() => {
+              void setQueryStates({ geoapifyPlaceId: null });
+            }}
+          >
+            <XIcon className="size-4" />
+          </Button>
+        </MapDrawerToolbar>
+        <div className="flex flex-1 flex-col justify-center rounded-lg bg-gray-50 p-8">
+          <div className="text-center">
+            <h3 className="text-foreground mt-2 text-sm font-medium">
+              No feature found
+            </h3>
+          </div>
+        </div>
+      </>
+    );
 
   return (
     <>

@@ -66,15 +66,13 @@ function SearchDetailsInner({
 }: CoordinatesProps) {
   const { setQueryStates } = useParamsContext();
 
-  const longitude = coordinates?.[1];
-  const latitude = coordinates?.[0];
+  const longitude = coordinates?.[1]!;
+  const latitude = coordinates?.[0]!;
   const place = geoapifyPlaceDetails?.features[0]?.properties;
 
   useEffect(() => {
     // no-op here; map centering is handled inside PlaceDetailsContent
   }, []);
-
-  if (!longitude || !latitude || !place) return null;
 
   return (
     <PlaceDetailsContent

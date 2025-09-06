@@ -51,7 +51,7 @@ type PlaceProperties = NonNullable<
 interface PlaceDetailsContentProps {
   latitude: number;
   longitude: number;
-  place: PlaceProperties;
+  place?: PlaceProperties;
   onClose: () => void | Promise<void>;
 }
 
@@ -101,7 +101,7 @@ export function PlaceDetailsContent({
   const handleAddToProject = (projectId: string) => {
     execute({
       projectId,
-      name: place.name_international?.en,
+      name: place?.name_international?.en ?? place?.name ?? "Marked Location",
       geometry: {
         type: "Point",
         coordinates: [longitude, latitude],
@@ -122,8 +122,11 @@ export function PlaceDetailsContent({
             onClick={() => {
               execute({
                 projectId: pId,
-                name: place.name_international?.en ?? place.name,
-                geoapifyPlaceId: place.place_id,
+                name:
+                  place?.name_international?.en ??
+                  place?.name ??
+                  "Marked Location",
+                geoapifyPlaceId: place?.place_id,
                 geometry: {
                   type: "Point",
                   coordinates: [longitude, latitude],
@@ -203,7 +206,9 @@ export function PlaceDetailsContent({
                     openInAppleMaps(
                       latitude,
                       longitude,
-                      place.name_international?.en ?? place.name ?? "Location",
+                      place?.name_international?.en ??
+                        place?.name ??
+                        "Location",
                     );
                   }}
                 >
@@ -224,44 +229,46 @@ export function PlaceDetailsContent({
           <XIcon className="size-4" />
         </Button>
       </MapDrawerToolbar>
-      <Feature
-        imageData={wikiData}
-        title={place.name_international?.en ?? place.name ?? ""}
-        properties={[
-          {
-            columnName: "Address",
-            columnType: "string",
-            value: place.address_line2,
-          },
-          ...(place.phone
-            ? ([
-                {
-                  columnName: "Phone",
-                  columnType: "string",
-                  value: place.phone,
-                },
-              ] as const)
-            : []),
-          ...(place.website
-            ? ([
-                {
-                  columnName: "Website",
-                  columnType: "string",
-                  value: place.website,
-                },
-              ] as const)
-            : []),
-          ...(place.population
-            ? ([
-                {
-                  columnName: "Population",
-                  columnType: "number",
-                  value: place.population,
-                },
-              ] as const)
-            : []),
-        ]}
-      />
+      {place && (
+        <Feature
+          imageData={wikiData}
+          title={place.name_international?.en ?? place.name ?? ""}
+          properties={[
+            {
+              columnName: "Address",
+              columnType: "string",
+              value: place.address_line2,
+            },
+            ...(place.phone
+              ? ([
+                  {
+                    columnName: "Phone",
+                    columnType: "string",
+                    value: place.phone,
+                  },
+                ] as const)
+              : []),
+            ...(place.website
+              ? ([
+                  {
+                    columnName: "Website",
+                    columnType: "string",
+                    value: place.website,
+                  },
+                ] as const)
+              : []),
+            ...(place.population
+              ? ([
+                  {
+                    columnName: "Population",
+                    columnType: "number",
+                    value: place.population,
+                  },
+                ] as const)
+              : []),
+          ]}
+        />
+      )}
     </>
   );
 }
