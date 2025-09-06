@@ -101,13 +101,16 @@ export function PlaceDetailsContent({
   const handleAddToProject = (projectId: string) => {
     execute({
       projectId,
-      name: place?.name_international?.en ?? place?.name ?? "Marked Location",
+      name: placeName,
       geometry: {
         type: "Point",
         coordinates: [longitude, latitude],
       },
     });
   };
+
+  const placeName =
+    place?.name_international?.en ?? place?.name ?? "Marked Location";
 
   return (
     <>
@@ -122,10 +125,7 @@ export function PlaceDetailsContent({
             onClick={() => {
               execute({
                 projectId: pId,
-                name:
-                  place?.name_international?.en ??
-                  place?.name ??
-                  "Marked Location",
+                name: placeName,
                 geoapifyPlaceId: place?.place_id,
                 geometry: {
                   type: "Point",
@@ -203,13 +203,7 @@ export function PlaceDetailsContent({
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() => {
-                    openInAppleMaps(
-                      latitude,
-                      longitude,
-                      place?.name_international?.en ??
-                        place?.name ??
-                        "Location",
-                    );
+                    openInAppleMaps(latitude, longitude, placeName);
                   }}
                 >
                   Apple Maps
@@ -229,46 +223,48 @@ export function PlaceDetailsContent({
           <XIcon className="size-4" />
         </Button>
       </MapDrawerToolbar>
-      {place && (
-        <Feature
-          imageData={wikiData}
-          title={place.name_international?.en ?? place.name ?? ""}
-          properties={[
-            {
-              columnName: "Address",
-              columnType: "string",
-              value: place.address_line2,
-            },
-            ...(place.phone
-              ? ([
-                  {
-                    columnName: "Phone",
-                    columnType: "string",
-                    value: place.phone,
-                  },
-                ] as const)
-              : []),
-            ...(place.website
-              ? ([
-                  {
-                    columnName: "Website",
-                    columnType: "string",
-                    value: place.website,
-                  },
-                ] as const)
-              : []),
-            ...(place.population
-              ? ([
-                  {
-                    columnName: "Population",
-                    columnType: "number",
-                    value: place.population,
-                  },
-                ] as const)
-              : []),
-          ]}
-        />
-      )}
+      <Feature
+        imageData={wikiData}
+        title={placeName}
+        properties={[
+          ...(place?.address_line2
+            ? ([
+                {
+                  columnName: "Address",
+                  columnType: "string",
+                  value: place.address_line2,
+                },
+              ] as const)
+            : []),
+          ...(place?.phone
+            ? ([
+                {
+                  columnName: "Phone",
+                  columnType: "string",
+                  value: place.phone,
+                },
+              ] as const)
+            : []),
+          ...(place?.website
+            ? ([
+                {
+                  columnName: "Website",
+                  columnType: "string",
+                  value: place.website,
+                },
+              ] as const)
+            : []),
+          ...(place?.population
+            ? ([
+                {
+                  columnName: "Population",
+                  columnType: "number",
+                  value: place.population,
+                },
+              ] as const)
+            : []),
+        ]}
+      />
     </>
   );
 }
