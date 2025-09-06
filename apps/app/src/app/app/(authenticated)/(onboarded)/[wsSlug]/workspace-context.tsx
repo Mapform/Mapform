@@ -7,6 +7,7 @@ import React, {
   startTransition,
   useState,
   useCallback,
+  useRef,
 } from "react";
 import type { GetUserWorkspaceMemberships } from "@mapform/backend/data/workspace-memberships/get-user-workspace-memberships";
 import type { WorkspaceDirectory } from "@mapform/backend/data/workspaces/get-workspace-directory";
@@ -82,6 +83,34 @@ export function WorkspaceProvider({
     };
   });
 
+  const longPressTimerRef = useRef<number | null>(null);
+  const longPressTriggeredRef = useRef(false);
+
+  const cancelLongPress = () => {
+    if (longPressTimerRef.current !== null) {
+      clearTimeout(longPressTimerRef.current);
+      longPressTimerRef.current = null;
+    }
+  };
+
+  const startLongPress = (
+    event: mapboxgl.MapMouseEvent | mapboxgl.MapTouchEvent,
+    timeoutMs = 500,
+  ) => {
+    cancelLongPress();
+    const { lngLat } = event;
+    const longitude = lngLat.lng;
+    const latitude = lngLat.lat;
+
+    longPressTimerRef.current = window.setTimeout(async () => {
+      await setQueryStates({
+        latitude,
+        longitude,
+      });
+      longPressTriggeredRef.current = true;
+    }, timeoutMs);
+  };
+
   const handleContextMenu = (event: mapboxgl.MapMouseEvent) => {
     event.preventDefault(); // Prevent the browser's default context menu
     setContextMenu({
@@ -101,6 +130,10 @@ export function WorkspaceProvider({
       features?: { properties: { id: string } }[];
     },
   ) => {
+    if (longPressTriggeredRef.current) {
+      longPressTriggeredRef.current = false;
+      return;
+    }
     // Access clicked features from event.features
     if (event.features && event.features.length > 0) {
       const clickedFeature = event.features[0]; // Or iterate through all features
@@ -108,6 +141,26 @@ export function WorkspaceProvider({
         void setQueryStates({ rowId: clickedFeature.properties.id });
       }
     }
+  };
+
+  const handleTouchStart = (event: mapboxgl.MapTouchEvent) => {
+    startLongPress(event);
+  };
+  const handleTouchMove = () => {
+    cancelLongPress();
+  };
+  const handleTouchEnd = () => {
+    cancelLongPress();
+  };
+  const handleTouchCancel = () => {
+    cancelLongPress();
+  };
+
+  const handleMouseDown = (event: mapboxgl.MapMouseEvent) => {
+    startLongPress(event);
+  };
+  const handleMouseUp = () => {
+    cancelLongPress();
   };
 
   const onMouseEnter = useCallback(() => setCursor("pointer"), []);
@@ -138,6 +191,12 @@ export function WorkspaceProvider({
         cursor={cursor}
         minZoom={2}
         onContextMenu={handleContextMenu}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        onTouchCancel={handleTouchCancel}
+        onMouseDown={handleMouseDown}
+        onMouseUp={handleMouseUp}
         onClick={handleClick}
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
