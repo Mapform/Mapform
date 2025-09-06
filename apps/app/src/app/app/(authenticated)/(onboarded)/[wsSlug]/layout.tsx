@@ -41,7 +41,10 @@ export default async function WorkspaceLayout(props: {
       >
         <AppSidebar />
         <main className="prose flex flex-1 overflow-hidden p-2 pl-0">
+          {/* Page-Based Drawers */}
           <Drawers>{children}</Drawers>
+
+          {/* Query Param-Based Drawers */}
           {props.drawers}
         </main>
       </SidebarProvider>
