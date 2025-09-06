@@ -146,21 +146,9 @@ export function WorkspaceProvider({
   const handleTouchStart = (event: mapboxgl.MapTouchEvent) => {
     startLongPress(event);
   };
-  const handleTouchMove = () => {
-    cancelLongPress();
-  };
-  const handleTouchEnd = () => {
-    cancelLongPress();
-  };
-  const handleTouchCancel = () => {
-    cancelLongPress();
-  };
 
   const handleMouseDown = (event: mapboxgl.MapMouseEvent) => {
     startLongPress(event);
-  };
-  const handleMouseUp = () => {
-    cancelLongPress();
   };
 
   const onMouseEnter = useCallback(() => setCursor("pointer"), []);
@@ -192,11 +180,12 @@ export function WorkspaceProvider({
         minZoom={2}
         onContextMenu={handleContextMenu}
         onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-        onTouchCancel={handleTouchCancel}
+        onMove={cancelLongPress}
+        onTouchMove={cancelLongPress}
+        onTouchEnd={cancelLongPress}
+        onTouchCancel={cancelLongPress}
         onMouseDown={handleMouseDown}
-        onMouseUp={handleMouseUp}
+        onMouseUp={cancelLongPress}
         onClick={handleClick}
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
