@@ -14,11 +14,16 @@ export function Drawers({ children }: DrawersProps) {
   const { drawerDepth } = useParamsContext();
   const workspace = useWorkspace();
 
-  const open = pathname !== `/app/${workspace.workspaceSlug}`;
+  const openDrawer = pathname !== `/app/${workspace.workspaceSlug}`;
 
   return (
-    <MapDrawer open={open} depth={drawerDepth.size}>
-      {children}
-    </MapDrawer>
+    <>
+      <MapDrawer open={openDrawer} depth={drawerDepth.size}>
+        {children}
+      </MapDrawer>
+
+      {/* This is used to render the HomePage content  */}
+      {!openDrawer && children}
+    </>
   );
 }

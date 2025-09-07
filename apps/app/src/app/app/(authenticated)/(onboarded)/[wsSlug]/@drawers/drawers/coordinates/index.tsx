@@ -28,7 +28,6 @@ export function Coordinates({
     <MapDrawer
       open={!!coordinates}
       depth={drawerDepth.get("geoapifyPlaceId") ?? 0}
-      unmountOnClose
     >
       {isPending ? (
         <>

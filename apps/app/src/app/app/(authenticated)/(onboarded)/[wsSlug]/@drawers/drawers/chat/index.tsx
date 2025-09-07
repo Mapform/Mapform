@@ -36,11 +36,7 @@ export function Chat({ initialMessages }: ChatProps) {
   const { params, drawerDepth, isPending, setQueryStates } = useParamsContext();
 
   return (
-    <MapDrawer
-      open={!!params.chatId}
-      depth={drawerDepth.get("chatId") ?? 0}
-      unmountOnClose
-    >
+    <MapDrawer open={!!params.chatId} depth={drawerDepth.get("chatId") ?? 0}>
       {isPending ? (
         <>
           <MapDrawerToolbar>
