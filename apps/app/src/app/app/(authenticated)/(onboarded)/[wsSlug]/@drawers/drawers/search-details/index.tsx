@@ -21,6 +21,7 @@ export function SearchDetails({ geoapifyPlaceDetails }: SearchDetailsProps) {
     <MapDrawer
       open={!!params.geoapifyPlaceId}
       depth={drawerDepth.get("geoapifyPlaceId") ?? 0}
+      unmountOnClose
     >
       {isPending ? (
         <>

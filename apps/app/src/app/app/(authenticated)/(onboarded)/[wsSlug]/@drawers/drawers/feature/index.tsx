@@ -67,7 +67,11 @@ export function Feature({ feature }: FeatureDrawerProps) {
 
   return (
     <>
-      <MapDrawer open={!!params.rowId} depth={drawerDepth.get("rowId") ?? 0}>
+      <MapDrawer
+        open={!!params.rowId}
+        depth={drawerDepth.get("rowId") ?? 0}
+        unmountOnClose
+      >
         {isPending ? (
           <>
             <MapDrawerToolbar>
