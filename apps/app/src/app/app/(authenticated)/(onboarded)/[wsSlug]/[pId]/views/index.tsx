@@ -14,6 +14,7 @@ import {
   EllipsisVerticalIcon,
   ImportIcon,
   ImagePlusIcon,
+  ScanIcon,
 } from "lucide-react";
 import { AutoSizeTextArea } from "@mapform/ui/components/autosize-text-area";
 import { useProject } from "../context";
@@ -57,11 +58,14 @@ import {
 } from "@mapform/ui/components/carousel";
 import Image from "next/image";
 import { cn } from "@mapform/lib/classnames";
+import { useMap } from "react-map-gl/mapbox";
 
 export function Views() {
+  const map = useMap();
   const { projectService, activeView } = useProject();
-  const { setQueryStates, drawerDepth } = useParamsContext();
+  const { setQueryStates } = useParamsContext();
   const { execute, isPending } = useAction(createViewAction);
+
   const { execute: executeDeleteView, isPending: isDeletingView } = useAction(
     deleteViewAction,
     {
@@ -92,6 +96,23 @@ export function Views() {
                   Import
                 </DropdownMenuItem>
               </ImportTrigger>
+              <DropdownMenuItem
+                onClick={() => {
+                  projectService.execute({
+                    ...projectService.optimisticState,
+                    id: projectService.optimisticState.id,
+                    center: {
+                      coordinates: map.current?.getCenter().toArray() as [
+                        number,
+                        number,
+                      ],
+                    },
+                  });
+                }}
+              >
+                <ScanIcon className="size-4" />
+                Set Default View
+              </DropdownMenuItem>
             </DropdownMenuContent>
             <ImportContent />
           </DropdownMenu>
