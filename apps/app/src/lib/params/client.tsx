@@ -16,7 +16,18 @@ export function getQueryParamsInOrder(
 ): Array<{ key: string; value: string; order: number }> {
   const urlToParse =
     url || (typeof window !== "undefined" ? window.location.href : "");
-  const urlObj = new URL(urlToParse);
+  // If we don't have a valid URL (e.g., during SSR), return empty params
+  if (!urlToParse) {
+    return [];
+  }
+
+  let urlObj: URL;
+  try {
+    urlObj = new URL(urlToParse);
+  } catch {
+    // If parsing fails for any reason, return empty params rather than throwing
+    return [];
+  }
 
   const params: Array<{ key: string; value: string; order: number }> = [];
   let order = 0;
