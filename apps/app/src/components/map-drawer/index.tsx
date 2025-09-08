@@ -26,7 +26,7 @@ export function MapDrawer({
     <AnimatePresence>
       {open && (
         <motion.div
-          className="absolute bottom-2 top-2 flex !select-text outline-none"
+          className="pointer-events-auto absolute bottom-2 top-2 flex !select-text outline-none"
           initial={initialOpen ? false : { x: -width, width, opacity: 0 }}
           animate={{
             x: 16 * depth,
