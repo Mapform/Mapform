@@ -57,7 +57,7 @@ export function MapContextMenu({
           }}
         >
           <SparkleIcon className="size-4" />
-          Ask AI
+          What&apos;s Here?
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem

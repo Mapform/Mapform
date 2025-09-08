@@ -263,8 +263,10 @@ export function AppSidebar() {
         </SidebarGroup>
         {workspaceDirectory.teamspaces.map((teamspace) => (
           <SidebarGroup key={teamspace.id}>
-            <SidebarGroupLabel>{teamspace.name}</SidebarGroupLabel>
-            <SidebarGroupAction
+            <SidebarGroupLabel>My Maps</SidebarGroupLabel>
+            {/* TODO: Add back when Teamspace support added */}
+            {/* <SidebarGroupLabel>{teamspace.name}</SidebarGroupLabel> */}
+            {/* <SidebarGroupAction
               title="Add Map"
               disabled={isPending}
               onClick={() => {
@@ -279,7 +281,7 @@ export function AppSidebar() {
               }}
             >
               <PlusIcon />
-            </SidebarGroupAction>
+            </SidebarGroupAction> */}
             <Files teamspace={teamspace} />
           </SidebarGroup>
         ))}
