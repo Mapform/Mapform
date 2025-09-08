@@ -6,6 +6,7 @@ import {
   pgEnum,
   integer,
   customType,
+  doublePrecision,
 } from "drizzle-orm/pg-core";
 import { teamspaces } from "../teamspaces/schema";
 
@@ -27,6 +28,9 @@ export const projects = pgTable("project", {
   position: integer("position").notNull(),
 
   center: pointGeometry("center").notNull(),
+  pitch: doublePrecision("pitch").notNull().default(0),
+  bearing: doublePrecision("bearing").notNull().default(0),
+  zoom: doublePrecision("zoom").notNull().default(2),
 
   visibility: visibilityEnum("visibility").default("closed").notNull(),
 

@@ -180,7 +180,10 @@ export function WorkspaceProvider({
         minZoom={2}
         onContextMenu={handleContextMenu}
         onTouchStart={handleTouchStart}
-        onMove={cancelLongPress}
+        onMove={(event) => {
+          cancelLongPress();
+          console.log(event);
+        }}
         onTouchMove={cancelLongPress}
         onTouchEnd={cancelLongPress}
         onTouchCancel={cancelLongPress}
