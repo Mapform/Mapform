@@ -11,23 +11,20 @@ export function WelcomeTourContent({ className }: WelcomeTourProps) {
       steps={[
         {
           id: "welcome",
-          title: "Founder's Note",
+          title: "Welcome!",
           description: (
             <>
-              <p>How do you describe a place?</p>
               <p>
-                For most of us, it&apos;s not by sending a Google Maps link or a
-                spreadsheet — it&apos;s by telling a story.
+                You&apos;re about to try an early version of Mapform. After
+                running an initial beta earlier this summer, I decided to
+                simplify the tool and explore how AI might be used the enhance
+                the mapping experience. I&apos;ve also temporarily disabled
+                features like forms, sharing, and mobile-support in an effort to
+                get something out sooner. (I&apos;ll add them back in later.)
               </p>
               <p>
-                But most mapping tools miss that. The story gets lost amongst
-                maps that are too simple or purely data-driven. Mapform is my
-                attempt to bridge that gap: to bring maps and data together with
-                rich content and user input.
-              </p>
-              <p>
-                The project is still young, but I hope you find it useful. Happy
-                mapping!
+                Hope you enjoy the change in direction and as always I would
+                love to hear your feedback.
               </p>
               <p>— Nic</p>
             </>
