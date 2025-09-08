@@ -90,12 +90,13 @@ export function Views() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              <ImportTrigger asChild>
+              {/* TODO: Renable when imports working again */}
+              {/* <ImportTrigger asChild>
                 <DropdownMenuItem>
                   <ImportIcon className="size-4" />
                   Import
                 </DropdownMenuItem>
-              </ImportTrigger>
+              </ImportTrigger> */}
               <DropdownMenuItem
                 onClick={() => {
                   projectService.execute({

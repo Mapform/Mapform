@@ -19,7 +19,7 @@ export function WelcomeTourContent({ className }: WelcomeTourProps) {
                 running an initial beta earlier this summer, I decided to
                 simplify the tool and explore how AI might be used the enhance
                 the mapping experience. I&apos;ve also temporarily disabled
-                features like forms, sharing, and mobile-support in an effort to
+                features like forms, sharing, and data imports in an effort to
                 get something out sooner. (I&apos;ll add them back in later.)
               </p>
               <p>
