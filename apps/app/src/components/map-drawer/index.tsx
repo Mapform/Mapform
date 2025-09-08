@@ -20,7 +20,7 @@ export function MapDrawer({
   children,
   isFullWidth = false,
 }: MapDrawerProps) {
-  const width = isFullWidth ? `calc(100% - 8px)` : DRAWER_WIDTH;
+  const width = isFullWidth ? "calc(100% - 8px)" : DRAWER_WIDTH;
 
   return (
     <AnimatePresence>
