@@ -238,6 +238,9 @@ export function AppSidebar() {
                         number,
                         number,
                       ],
+                      pitch: map.current?.getPitch(),
+                      bearing: map.current?.getBearing(),
+                      zoom: map.current?.getZoom(),
                     });
                   }}
                 >

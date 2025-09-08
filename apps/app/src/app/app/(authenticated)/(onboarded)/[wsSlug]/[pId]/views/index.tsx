@@ -107,6 +107,9 @@ export function Views() {
                         number,
                       ],
                     },
+                    pitch: map.current?.getPitch(),
+                    bearing: map.current?.getBearing(),
+                    zoom: map.current?.getZoom(),
                   });
                 }}
               >

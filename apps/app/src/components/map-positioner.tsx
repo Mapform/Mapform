@@ -7,10 +7,16 @@ import { useEffect } from "react";
 export function MapPositioner({
   children,
   center,
+  pitch,
+  bearing,
+  zoom,
   listenToChanges = false,
 }: {
   children: React.ReactNode;
   center?: [number, number];
+  pitch?: number;
+  bearing?: number;
+  zoom?: number;
   listenToChanges?: boolean;
 }) {
   const map = useMap();
@@ -23,9 +29,12 @@ export function MapPositioner({
       map.current.easeTo({
         center,
         padding,
+        pitch,
+        bearing,
+        zoom,
       });
     },
-    listenToChanges ? [center, padding] : [],
+    listenToChanges ? [center, padding, pitch, bearing, zoom] : [],
   );
 
   return <>{children}</>;

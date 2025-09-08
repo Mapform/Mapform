@@ -41,7 +41,12 @@ export default async function ViewPage(props: {
 
   return (
     <ProjectProvider project={project.data} activeView={activeView}>
-      <MapPositioner center={project.data.center.coordinates}>
+      <MapPositioner
+        center={project.data.center.coordinates}
+        pitch={project.data.pitch}
+        bearing={project.data.bearing}
+        zoom={project.data.zoom}
+      >
         <Views />
         <MapData />
       </MapPositioner>

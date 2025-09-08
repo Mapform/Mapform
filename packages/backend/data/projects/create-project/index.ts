@@ -12,7 +12,7 @@ export const createProject = (authClient: UserAuthClient) =>
     .schema(createProjectSchema)
     .action(
       async ({
-        parsedInput: { teamspaceId, ...rest },
+        parsedInput: { teamspaceId, center, viewType, ...rest },
         ctx: { userAccess },
       }) => {
         if (!userAccess.teamspace.checkAccessById(teamspaceId)) {
@@ -31,11 +31,12 @@ export const createProject = (authClient: UserAuthClient) =>
           const [project] = await tx
             .insert(projects)
             .values({
+              ...rest,
               teamspaceId,
               position: projectCount?.count ?? 0,
               center: sql.raw(`ST_GeomFromGeoJSON('{
                 "type": "Point",
-                "coordinates": ${JSON.stringify(rest.center)}
+                "coordinates": ${JSON.stringify(center)}
               }')`),
             })
             .returning();
@@ -48,7 +49,7 @@ export const createProject = (authClient: UserAuthClient) =>
             .insert(views)
             .values({
               projectId: project.id,
-              type: rest.viewType,
+              type: viewType,
             })
             .returning();
 
@@ -56,11 +57,11 @@ export const createProject = (authClient: UserAuthClient) =>
             throw new Error("Failed to create view");
           }
 
-          if (rest.viewType === "table") {
+          if (viewType === "table") {
             await tx.insert(tableViews).values({
               viewId: view.id,
             });
-          } else if (rest.viewType === "map") {
+          } else if (viewType === "map") {
             await tx.insert(mapViews).values({
               viewId: view.id,
             });
