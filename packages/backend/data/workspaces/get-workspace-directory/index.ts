@@ -51,9 +51,11 @@ export const getWorkspaceDirectory = (authClient: UserAuthClient) =>
                   views: {
                     columns: {
                       id: true,
+                      type: true,
+                      name: true,
+                      position: true,
                     },
                     orderBy: (views, { asc }) => [asc(views.position)],
-                    limit: 1,
                   },
                 },
               },

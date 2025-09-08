@@ -10,7 +10,7 @@ interface MapDrawerProps {
   initialOpen?: boolean;
   depth?: number;
   children: React.ReactNode;
-  width?: number;
+  isFullWidth?: boolean;
 }
 
 export function MapDrawer({
@@ -18,8 +18,10 @@ export function MapDrawer({
   initialOpen = false,
   depth = 0,
   children,
-  width = DRAWER_WIDTH,
+  isFullWidth = false,
 }: MapDrawerProps) {
+  const width = isFullWidth ? `calc(100% - 8px)` : DRAWER_WIDTH;
+
   return (
     <AnimatePresence>
       {open && (

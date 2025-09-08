@@ -11,14 +11,24 @@ interface DrawersProps {
 
 export function Drawers({ children }: DrawersProps) {
   const pathname = usePathname();
-  const { drawerDepth } = useParamsContext();
+  const { drawerDepth, params } = useParamsContext();
   const workspace = useWorkspace();
 
   const openDrawer = pathname !== `/app/${workspace.workspaceSlug}`;
 
+  const isFullWidth = Boolean(
+    workspace.workspaceDirectory.teamspaces
+      .flatMap((ts) => ts.projects.flatMap((p) => p.views))
+      .find((v) => v.id === params.viewId)?.type === "table",
+  );
+
   return (
     <>
-      <MapDrawer open={openDrawer} depth={drawerDepth.size}>
+      <MapDrawer
+        open={openDrawer}
+        depth={drawerDepth.size}
+        isFullWidth={isFullWidth}
+      >
         {children}
       </MapDrawer>
 
