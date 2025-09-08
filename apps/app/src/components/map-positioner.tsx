@@ -29,9 +29,9 @@ export function MapPositioner({
       map.current.easeTo({
         center,
         padding,
-        ...(pitch && { pitch }),
-        ...(bearing && { bearing }),
-        ...(zoom && { zoom }),
+        ...(pitch !== undefined && { pitch }),
+        ...(bearing !== undefined && { bearing }),
+        ...(zoom !== undefined && { zoom }),
       });
     },
     listenToChanges ? [center, padding, pitch, bearing, zoom] : [],
