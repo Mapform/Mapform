@@ -16,11 +16,18 @@ export function Drawers({ children }: DrawersProps) {
 
   const openDrawer = pathname !== `/app/${workspace.workspaceSlug}`;
 
-  const isFullWidth = Boolean(
-    workspace.workspaceDirectory.teamspaces
-      .flatMap((ts) => ts.projects.flatMap((p) => p.views))
-      .find((v) => v.id === params.viewId)?.type === "table",
-  );
+  const isFullWidth =
+    Boolean(
+      workspace.workspaceDirectory.teamspaces
+        .flatMap((ts) => ts.projects.flatMap((p) => p.views))
+        .find((v) => v.id === params.viewId)?.type === "table",
+    ) &&
+    !params.chatId &&
+    !params.search &&
+    !params.rowId &&
+    !params.geoapifyPlaceId &&
+    !params.latitude &&
+    !params.longitude;
 
   return (
     <>
