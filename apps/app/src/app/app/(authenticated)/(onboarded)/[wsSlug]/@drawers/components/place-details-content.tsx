@@ -102,6 +102,7 @@ export function PlaceDetailsContent({
     execute({
       projectId,
       name: placeName,
+      geoapifyPlaceId: place?.place_id,
       geometry: {
         type: "Point",
         coordinates: [longitude, latitude],
