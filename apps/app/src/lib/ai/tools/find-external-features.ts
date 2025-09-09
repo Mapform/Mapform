@@ -3,9 +3,9 @@ import { z } from "zod";
 import { publicClient } from "~/lib/safe-action";
 import type { AIResultLocation } from "~/lib/types";
 
-export const autocomplete = tool({
+export const findExternalFeatures = tool({
   description:
-    "Look up places by name, including cities, landmarks, restaurants, hotels, and points of interest. Use this for general location questions and trip planning.",
+    "Searches by name for external features (cities, landmarks, restaurants, etc.) using the Geoapify autocomplete API.",
   inputSchema: z.object({
     query: z
       .string()
@@ -20,19 +20,22 @@ export const autocomplete = tool({
       ),
   }),
   execute: async ({ query, bounds }) => {
-    const results = await autocompleteFunc(query, bounds);
+    const results = await findExternalFeaturesFunc(query, bounds);
     return results;
   },
 });
 
-export async function autocompleteFunc(query: string, bounds?: number[]) {
+export async function findExternalFeaturesFunc(
+  query: string,
+  bounds?: number[],
+) {
   try {
-    const autocompleteResults = await publicClient.autocomplete({
+    const findExternalFeaturesResults = await publicClient.autocomplete({
       query,
       bounds,
     });
 
-    const topResult = autocompleteResults?.data?.features[0];
+    const topResult = findExternalFeaturesResults?.data?.features[0];
 
     if (!topResult?.properties?.place_id) {
       return null;
@@ -63,13 +66,13 @@ export async function autocompleteFunc(query: string, bounds?: number[]) {
       },
     ] satisfies AIResultLocation[];
   } catch (error) {
-    console.error("Error in address autocomplete:", error);
+    console.error("Error in address findExternalFeatures:", error);
     throw new Error(
       `Failed to search places: ${error instanceof Error ? error.message : "Unknown error"}`,
     );
   }
 }
 
-export type AutocompleteResponse = NonNullable<
-  Awaited<ReturnType<typeof autocompleteFunc>>
+export type findExternalFeaturesResponse = NonNullable<
+  Awaited<ReturnType<typeof findExternalFeaturesFunc>>
 >;

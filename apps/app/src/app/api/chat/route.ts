@@ -11,8 +11,8 @@ import { NextResponse } from "next/server";
 import { getCurrentSession } from "~/data/auth/get-current-session";
 import { SYSTEM_PROMPT } from "~/lib/ai/prompts";
 import { reverseGeocode } from "~/lib/ai/tools/reverse-geocode";
-import { getInformation } from "~/lib/ai/tools/get-information";
-import { autocomplete } from "~/lib/ai/tools/autocomplete";
+import { findInternalFeatures } from "~/lib/ai/tools/find-internal-features";
+import { findExternalFeatures } from "~/lib/ai/tools/find-external-features";
 import { returnBestResults } from "~/lib/ai/tools/return-best-results";
 import { webSearch } from "~/lib/ai/tools/web-search";
 
@@ -69,9 +69,9 @@ export async function POST(req: Request) {
     system: SYSTEM_PROMPT,
     messages: convertToModelMessages(messages),
     tools: {
-      getInformation,
+      findInternalFeatures,
       reverseGeocode,
-      autocomplete,
+      findExternalFeatures,
       returnBestResults,
       webSearch,
     },

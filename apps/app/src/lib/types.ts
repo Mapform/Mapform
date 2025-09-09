@@ -1,7 +1,7 @@
 import type { InferUITool, UIMessage } from "ai";
 import type { returnBestResults } from "~/lib/ai/tools/return-best-results";
-import type { autocomplete } from "~/lib/ai/tools/autocomplete";
-import type { getInformation } from "~/lib/ai/tools/get-information";
+import type { findExternalFeatures } from "~/lib/ai/tools/find-external-features";
+import type { findInternalFeatures } from "~/lib/ai/tools/find-internal-features";
 import type { reverseGeocode } from "~/lib/ai/tools/reverse-geocode";
 import type { webSearch } from "~/lib/ai/tools/web-search";
 import { z } from "zod";
@@ -9,9 +9,9 @@ import { z } from "zod";
 export const messageMetadataSchema = z.object({});
 
 export type ChatTools = {
-  autocomplete: InferUITool<typeof autocomplete>;
+  findExternalFeatures: InferUITool<typeof findExternalFeatures>;
   reverseGeocode: InferUITool<typeof reverseGeocode>;
-  getInformation: InferUITool<typeof getInformation>;
+  findInternalFeatures: InferUITool<typeof findInternalFeatures>;
   returnBestResults: InferUITool<typeof returnBestResults>;
   webSearch: InferUITool<typeof webSearch>;
 };

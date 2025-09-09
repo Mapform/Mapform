@@ -1,10 +1,10 @@
 import type { ChatMessage } from "~/lib/types";
 import { Skeleton } from "@mapform/ui/components/skeleton";
+import type { LucideIcon } from "lucide-react";
 import {
   BrainIcon,
   ChevronDownIcon,
   GlobeIcon,
-  LucideIcon,
   MapPinIcon,
 } from "lucide-react";
 import {
@@ -14,7 +14,8 @@ import {
 import { Response } from "@mapform/ui/components/ai-elements/response";
 import { PickLocationsMessage } from "./pick-locations-message";
 import { cn } from "@mapform/lib/classnames";
-import { ToolUIPart, type ChatStatus } from "ai";
+import type { ToolUIPart } from "ai";
+import { type ChatStatus } from "ai";
 import {
   Collapsible,
   CollapsibleContent,
@@ -112,8 +113,8 @@ export function Message({ message }: ChatMessageProps) {
           }
 
           if (
-            part.type === "tool-autocomplete" ||
-            part.type === "tool-getInformation" ||
+            part.type === "tool-findExternalFeatures" ||
+            part.type === "tool-findInternalFeatures" ||
             part.type === "tool-reverseGeocode"
           ) {
             return (
