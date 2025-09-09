@@ -1,9 +1,11 @@
 "use client";
 
-import { useMemo } from "react";
-import { Layer, Source } from "react-map-gl/mapbox";
+import { useEffect, useMemo } from "react";
+import { Layer, Source, useMap } from "react-map-gl/mapbox";
 import { useProject } from "./context";
 import { rowsToGeoJSON } from "~/lib/rows-to-geojson";
+import type { Geometry } from "geojson";
+import { loadPointImage } from "~/lib/map/point-image-utils";
 import {
   POINTS_LAYER_ID,
   POINTS_SYMBOLS_LAYER_ID,
@@ -14,12 +16,13 @@ import {
 
 export function MapData() {
   const { projectService } = useProject();
+  const map = useMap();
 
   // Separate rows by geometry type
   const pointRows = useMemo(
     () =>
       projectService.optimisticState.rows.filter(
-        (row) => row.geometry.type === "Point",
+        (row) => (row.geometry as Geometry).type === "Point",
       ),
     [projectService.optimisticState.rows],
   );
@@ -27,8 +30,8 @@ export function MapData() {
     () =>
       projectService.optimisticState.rows.filter(
         (row) =>
-          row.geometry.type === "LineString" ||
-          row.geometry.type === "MultiLineString",
+          (row.geometry as Geometry).type === "LineString" ||
+          (row.geometry as Geometry).type === "MultiLineString",
       ),
     [projectService.optimisticState.rows],
   );
@@ -36,16 +39,52 @@ export function MapData() {
     () =>
       projectService.optimisticState.rows.filter(
         (row) =>
-          row.geometry.type === "Polygon" ||
-          row.geometry.type === "MultiPolygon",
+          (row.geometry as Geometry).type === "Polygon" ||
+          (row.geometry as Geometry).type === "MultiPolygon",
       ),
     [projectService.optimisticState.rows],
   );
 
+  const iconsToLoad = useMemo(
+    () =>
+      Array.from(
+        new Set(
+          pointRows
+            .map((row) => (typeof row.icon === "string" ? row.icon : null))
+            .filter((v): v is string => Boolean(v)),
+        ),
+      ),
+    [pointRows],
+  );
+
+  useEffect(() => {
+    const m = map.current;
+    if (!m || iconsToLoad.length === 0) return;
+
+    let cancelled = false;
+    const run = async () => {
+      for (const emoji of iconsToLoad) {
+        if (cancelled) return;
+        await loadPointImage(m as unknown as mapboxgl.Map, emoji, null);
+      }
+    };
+
+    if (m.isStyleLoaded()) {
+      void run();
+    } else {
+      const onLoad = () => void run();
+      m.once("load", onLoad);
+      return () => {
+        cancelled = true;
+        m.off("load", onLoad);
+      };
+    }
+  }, [iconsToLoad, map]);
+
   return (
     <>
       <Source id="points-source" data={rowsToGeoJSON(pointRows)} type="geojson">
-        {/* Basic points layer - always show */}
+        {/* Basic points layer - show when no icon is set */}
         <Layer
           id={POINTS_LAYER_ID}
           type="circle"
@@ -57,7 +96,7 @@ export function MapData() {
             "circle-stroke-color": "#ffffff",
           }}
         />
-        {/* Emoji markers - only show if flat_icon exists */}
+        {/* Emoji markers - use preloaded images when flat_icon exists */}
         <Layer
           id={POINTS_SYMBOLS_LAYER_ID}
           type="symbol"
