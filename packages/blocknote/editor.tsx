@@ -7,7 +7,6 @@ import {
   DragHandleButton,
   SideMenu,
   SideMenuController,
-  useCreateBlockNote,
 } from "@blocknote/react";
 import { schema, type CustomBlock } from "./schema";
 
@@ -27,6 +26,7 @@ export function Blocknote({ onChange, editor }: BlocknoteProps) {
       editable={!!onChange}
       sideMenu={false}
       className="h-full"
+      theme="light"
       onChange={async () => {
         onChange?.({
           blocks: editor.document,
