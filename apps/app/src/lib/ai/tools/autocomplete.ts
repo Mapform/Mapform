@@ -53,8 +53,8 @@ export async function autocompleteFunc(query: string, bounds?: number[]) {
       {
         id: placeDetailProperties.place_id,
         name: topResult.properties.name,
-        description: placeDetailProperties.address_line1 ?? "",
-        wikidata: placeDetailProperties.datasource?.raw?.wikidata ?? "",
+        address: placeDetailProperties.address_line1 ?? "",
+        wikidataId: placeDetailProperties.datasource?.raw?.wikidata ?? "",
         coordinates: [placeDetailProperties.lon, placeDetailProperties.lat] as [
           number,
           number,

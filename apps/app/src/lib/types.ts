@@ -41,8 +41,8 @@ export type ChatMessage = UIMessage<
 export type AIResultLocation = {
   id: string;
   name?: string;
-  description?: string;
-  wikidata?: string;
+  address?: string;
+  wikidataId?: string;
   coordinates: [number, number];
   source: "geoapify" | "mapform";
 };

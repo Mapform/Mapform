@@ -12,14 +12,14 @@ interface PickLocationsMessageProps {
 
 // Component to handle a single feature with Wikidata image
 function FeatureWithImage({ result }: { result: AIResultLocation }) {
-  const wikidataData = useWikidataImages(result.wikidata);
+  const wikidataData = useWikidataImages(result.wikidataId);
 
   return {
     id: result.id,
     name: result.name ?? "",
-    description: result.description ?? "",
+    description: result.address ?? "",
     coordinates: result.coordinates,
-    image: result.wikidata
+    image: result.wikidataId
       ? {
           url: wikidataData.primaryImage?.imageUrl ?? "",
           isLoading: wikidataData.isLoading,
