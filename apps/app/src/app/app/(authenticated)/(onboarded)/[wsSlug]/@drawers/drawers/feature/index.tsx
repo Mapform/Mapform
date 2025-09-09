@@ -31,6 +31,8 @@ import {
 import { openInAppleMaps } from "~/lib/external-links/apple";
 import { openInGoogleMaps } from "~/lib/external-links/google";
 import { useEffect } from "react";
+import { useAction } from "next-safe-action/hooks";
+import { deleteRowsAction } from "~/data/rows/delete-rows";
 
 interface FeatureDrawerProps {
   feature: GetRow["data"];
@@ -129,6 +131,11 @@ const FeatureContent = ({
   featureService: StateServiceProps<GetRow["data"], UpdateRowSchema>;
 }) => {
   const { setQueryStates } = useParamsContext();
+  const { executeAsync } = useAction(deleteRowsAction, {
+    onSuccess: () => {
+      void setQueryStates({ rowId: null });
+    },
+  });
 
   return (
     <div>
@@ -176,7 +183,13 @@ const FeatureContent = ({
                 </DropdownMenuItem>
               </DropdownMenuSubContent>
             </DropdownMenuSub>
-            <DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={async () => {
+                await executeAsync({
+                  rowIds: [featureService.optimisticState!.id],
+                });
+              }}
+            >
               <Trash2Icon className="size-4" /> Delete
             </DropdownMenuItem>
           </DropdownMenuContent>
