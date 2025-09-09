@@ -53,8 +53,8 @@ export function MapDrawer({
               opacity: depth ? 0.4 + depth * 0.15 : 0,
             }}
           />
-          <div className="bg-opacity-98 flex h-full w-full grow flex-col overflow-y-auto rounded-lg border bg-white backdrop-blur-sm">
-            {children}
+          <div className="bg-opacity-98 flex size-full grow flex-col rounded-lg border bg-white backdrop-blur-sm">
+            <div className="overflow-y-auto">{children}</div>
           </div>
         </motion.div>
       )}
