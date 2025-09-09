@@ -22,7 +22,13 @@ export default async function HomePage(props: {
   }
 
   return (
-    <MapPositioner listenToChanges>
+    <MapPositioner
+      center={[0, 0]}
+      zoom={2}
+      pitch={0}
+      bearing={0}
+      listenToChanges
+    >
       <WelcomeTour />
       <ProjectMarkers />
     </MapPositioner>
