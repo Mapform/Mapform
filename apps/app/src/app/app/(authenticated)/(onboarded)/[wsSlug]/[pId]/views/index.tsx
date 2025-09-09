@@ -306,7 +306,7 @@ export function Views() {
             </div>
             {projectService.optimisticState.views.map((view) => (
               <TabsContent
-                className="flex flex-1 flex-col"
+                className="flex flex-1 flex-col empty:hidden"
                 key={view.id}
                 value={view.id}
               >

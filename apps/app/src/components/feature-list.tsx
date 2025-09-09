@@ -31,7 +31,7 @@ export function FeatureList({ features, onClick, onHover }: FeatureListProps) {
 
   if (!features.length) {
     return (
-      <div className="flex flex-1 flex-col items-center gap-2 p-6 text-center">
+      <div className="flex flex-1 flex-col items-center gap-2 p-8 text-center">
         <PackageOpenIcon className="mx-auto size-6 text-gray-500" />
         <span className="text-foreground text-base font-medium">
           Map is empty

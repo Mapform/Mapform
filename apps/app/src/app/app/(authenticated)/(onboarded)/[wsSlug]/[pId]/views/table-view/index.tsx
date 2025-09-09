@@ -22,6 +22,7 @@ import {
   CaseSensitiveIcon,
   CopyIcon,
   Loader2Icon,
+  PackageOpenIcon,
   PlusIcon,
   SmileIcon,
   Trash2Icon,
@@ -258,7 +259,24 @@ export function TableView() {
           ) : (
             <TableRow>
               <TableCell className="h-24 text-center" colSpan={columns.length}>
-                No results.
+                <div className="flex flex-1 flex-col items-center gap-2 p-8 text-center">
+                  <PackageOpenIcon className="mx-auto size-6 text-gray-500" />
+                  <span className="text-foreground text-base font-medium">
+                    Map is empty
+                  </span>
+                  {/* <Button
+                      onClick={() => {
+                        void setQueryStates({
+                          search: "1",
+                        });
+                      }}
+                      size="sm"
+                      variant="secondary"
+                    >
+                      <SparklesIcon className="size-4" />
+                      Search or ask...
+                    </Button> */}
+                </div>
               </TableCell>
             </TableRow>
           )}
