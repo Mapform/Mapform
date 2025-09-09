@@ -1,0 +1,1 @@
+ALTER TABLE "row" ADD COLUMN "osm_id" varchar(256);

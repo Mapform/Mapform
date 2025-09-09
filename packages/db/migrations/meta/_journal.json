@@ -190,6 +190,13 @@
       "when": 1757341928733,
       "tag": "0026_normal_living_lightning",
       "breakpoints": true
+    },
+    {
+      "idx": 27,
+      "version": "7",
+      "when": 1757380641096,
+      "tag": "0027_tricky_inhumans",
+      "breakpoints": true
     }
   ]
 }

@@ -8,6 +8,7 @@ export const createRowSchema = insertRowSchema.pick({
   icon: true,
   geometry: true,
   geoapifyPlaceId: true,
+  osmId: true,
 });
 
 export type CreateRowSchema = z.infer<typeof createRowSchema>;

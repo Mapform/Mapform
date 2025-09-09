@@ -50,6 +50,8 @@ export const rows = pgTable("row", {
 
   // Optional geoapify place id. Used when storing places from geoapify.
   geoapifyPlaceId: varchar("geoapify_place_id", { length: 256 }),
+  // Optional OSM id. Comes from geoapify.
+  osmId: varchar("osm_id", { length: 256 }),
 
   projectId: uuid("project_id")
     .notNull()

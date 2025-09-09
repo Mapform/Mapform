@@ -103,6 +103,7 @@ export function PlaceDetailsContent({
       projectId,
       name: placeName,
       geoapifyPlaceId: place?.place_id,
+      osmId: place?.datasource?.raw?.osm?.id,
       geometry: {
         type: "Point",
         coordinates: [longitude, latitude],
