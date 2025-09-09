@@ -95,6 +95,7 @@ const getGeoapifyPlaceDetails = cache(async (placeId: string | null) => {
     type: "placeId",
     placeId,
   });
+
   return placeDetails;
 });
 
