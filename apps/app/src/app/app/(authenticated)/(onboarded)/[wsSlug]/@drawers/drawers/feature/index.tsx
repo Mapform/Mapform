@@ -33,6 +33,7 @@ import { openInGoogleMaps } from "~/lib/external-links/google";
 import { useEffect } from "react";
 import { useAction } from "next-safe-action/hooks";
 import { deleteRowsAction } from "~/data/rows/delete-rows";
+import { useMapPadding } from "~/lib/map/use-map-padding";
 
 interface FeatureDrawerProps {
   feature: GetRow["data"];
@@ -40,6 +41,7 @@ interface FeatureDrawerProps {
 
 export function Feature({ feature }: FeatureDrawerProps) {
   const map = useMap();
+  const padding = useMapPadding(true);
   const { params, isPending, drawerDepth, setQueryStates } = useParamsContext();
 
   const featureService = useStateService<GetRow["data"], UpdateRowSchema>(
@@ -64,8 +66,9 @@ export function Feature({ feature }: FeatureDrawerProps) {
 
     map.current?.easeTo({
       center: [longitude, latitude],
+      padding,
     });
-  }, [longitude, latitude]);
+  }, [longitude, latitude, map, padding]);
 
   return (
     <>

@@ -43,6 +43,7 @@ import { useParams } from "next/navigation";
 import type { GetPlaceDetails } from "@mapform/backend/data/geoapify/details";
 import { useWorkspace } from "../../workspace-context";
 import { useParamsContext } from "~/lib/params/client";
+import { useMapPadding } from "~/lib/map/use-map-padding";
 
 type PlaceProperties = NonNullable<
   GetPlaceDetails["data"]
@@ -62,6 +63,7 @@ export function PlaceDetailsContent({
   onClose,
 }: PlaceDetailsContentProps) {
   const map = useMap();
+  const padding = useMapPadding(true);
   const { setQueryStates } = useParamsContext();
   const { pId } = useParams<{ pId: string }>();
   const { workspaceDirectory } = useWorkspace();
@@ -82,11 +84,12 @@ export function PlaceDetailsContent({
     try {
       map.current?.easeTo({
         center: [longitude, latitude],
+        padding,
       });
     } catch (error) {
       console.error(error);
     }
-  }, [longitude, latitude, map]);
+  }, [longitude, latitude, map, padding]);
 
   // Flatten all projects from all teamspaces
   const allProjects = workspaceDirectory.teamspaces
