@@ -1,8 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import { ImageIcon } from "lucide-react";
+import { ImageIcon, PackageOpenIcon, SparklesIcon } from "lucide-react";
 import { cn } from "@mapform/lib/classnames";
+import { Button } from "@mapform/ui/components/button";
+import { useParamsContext } from "~/lib/params/client";
 
 interface Feature {
   id: string;
@@ -25,6 +27,31 @@ interface FeatureListProps {
 }
 
 export function FeatureList({ features, onClick, onHover }: FeatureListProps) {
+  const { setQueryStates } = useParamsContext();
+
+  if (!features.length) {
+    return (
+      <div className="flex flex-1 flex-col items-center gap-2 p-6 text-center">
+        <PackageOpenIcon className="mx-auto size-6 text-gray-500" />
+        <span className="text-foreground text-base font-medium">
+          Map is empty
+        </span>
+        <Button
+          onClick={() => {
+            void setQueryStates({
+              search: "1",
+            });
+          }}
+          size="sm"
+          variant="secondary"
+        >
+          <SparklesIcon className="size-4" />
+          Search or ask...
+        </Button>
+      </div>
+    );
+  }
+
   return (
     <ul className="m-0 flex w-full list-none flex-col gap-2 p-0">
       {features.map((feature) => (

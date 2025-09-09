@@ -54,7 +54,7 @@ export function MapDrawer({
             }}
           />
           <div className="bg-opacity-98 flex size-full grow flex-col rounded-lg border bg-white backdrop-blur-sm">
-            <div className="overflow-y-auto">{children}</div>
+            <div className="min-h-full overflow-y-auto">{children}</div>
           </div>
         </motion.div>
       )}

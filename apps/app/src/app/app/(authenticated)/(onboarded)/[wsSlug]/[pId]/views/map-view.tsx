@@ -29,9 +29,5 @@ export function MapView() {
     });
   };
 
-  if (!features.length) {
-    return null;
-  }
-
   return <FeatureList features={features} onClick={handleFeatureClick} />;
 }

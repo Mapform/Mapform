@@ -80,7 +80,7 @@ export function Views() {
   );
 
   return (
-    <>
+    <div className="flex h-full flex-col">
       <MapDrawerToolbar>
         <Import>
           <DropdownMenu modal={false}>
@@ -145,7 +145,7 @@ export function Views() {
           </CarouselContent>
         </Carousel>
       ) : null}
-      <div className="z-10 px-6 pb-6">
+      <div className="z-10 flex flex-1 flex-col px-6 pb-6">
         <div>
           <Tooltip>
             {projectService.optimisticState.icon ? (
@@ -233,9 +233,9 @@ export function Views() {
             });
           }}
         />
-        <div className="mt-2 flex gap-1">
+        <div className="mt-2 flex flex-1 flex-col gap-1">
           <Tabs
-            className="w-full"
+            className="flex w-full flex-1 flex-col"
             value={activeView?.id}
             onValueChange={(value) => {
               void setQueryStates({
@@ -305,13 +305,17 @@ export function Views() {
               </TabsList>
             </div>
             {projectService.optimisticState.views.map((view) => (
-              <TabsContent key={view.id} value={view.id}>
+              <TabsContent
+                className="flex flex-1 flex-col"
+                key={view.id}
+                value={view.id}
+              >
                 {view.type === "map" ? <MapView /> : <TableView />}
               </TabsContent>
             ))}
           </Tabs>
         </div>
       </div>
-    </>
+    </div>
   );
 }
