@@ -64,6 +64,8 @@ export const completeOnboarding = (authClient: UserAuthClient) =>
                 slug: teamspaceSlug,
                 name: teamspaceName,
                 workspaceSlug,
+                ownerUserId: user.id,
+                isPrivate: true,
               })
               .returning();
 
