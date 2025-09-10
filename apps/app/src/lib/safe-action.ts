@@ -50,6 +50,7 @@ import { listChats } from "@mapform/backend/data/chats/list-chats";
 import { getRowCount } from "@mapform/backend/data/usage/get-row-count";
 import { autocomplete } from "@mapform/backend/data/geoapify/autocomplete";
 import { deleteChat } from "@mapform/backend/data/chats/delete-chat";
+import { search } from "@mapform/backend/data/stadia/search";
 
 const ignoredWorkspaceSlugs = ["onboarding"];
 const ignoredTeamspaceSlugs = ["settings"];
@@ -191,6 +192,7 @@ const createPublicClient = () => {
     // Geoapify
     autocomplete: autocomplete(extendedClient),
     searchPlaces: searchPlaces(extendedClient),
+    search: search(extendedClient),
     getPlaceDetails: getPlaceDetails(extendedClient),
 
     // Users

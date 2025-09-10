@@ -10,6 +10,7 @@
     "@mapform/transactional": "workspace:*",
     "@oslojs/crypto": "catalog:",
     "@oslojs/encoding": "catalog:",
+    "@stadiamaps/api": "^8.0.1",
     "@t3-oss/env-nextjs": "catalog:",
     "@vercel/blob": "catalog:",
     "ai": "catalog:",

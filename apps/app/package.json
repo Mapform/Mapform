@@ -37,6 +37,7 @@
     "@mapform/ui": "workspace:*",
     "@radix-ui/react-portal": "catalog:",
     "@radix-ui/react-tabs": "catalog:",
+    "@stadiamaps/api": "^8.0.1",
     "@t3-oss/env-nextjs": "catalog:",
     "@tanstack/react-query": "catalog:",
     "@tanstack/react-query-devtools": "catalog:",

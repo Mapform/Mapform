@@ -27,9 +27,9 @@ export function Drawers(props: DealDrawerProps) {
   );
 }
 
-const getGeoapifySearchResults = cache(
+const getSearchResults = cache(
   async (query: string, bounds?: [number, number, number, number]) => {
-    const searchResults = await publicClient.autocomplete({
+    const searchResults = await publicClient.search({
       query,
       bounds,
     });
@@ -60,16 +60,17 @@ async function SearchDrawer({ searchParams, params }: DealDrawerProps) {
   const { query, search } = await loadSearchParams(searchParams);
   const { wsSlug, pId } = await params;
 
-  const [geoapifySearchResults, vectorSearchResults, previousChats] =
-    await Promise.all([
-      query && search ? getGeoapifySearchResults(query, undefined) : null,
+  const [searchResults, vectorSearchResults, previousChats] = await Promise.all(
+    [
+      query && search ? getSearchResults(query, undefined) : null,
       query && search ? getVectorSearchResults(query, wsSlug, pId) : null,
       authClient.listChats({ projectId: pId }),
-    ]);
+    ],
+  );
 
   return (
     <Search
-      geoapifySearchResults={geoapifySearchResults?.data}
+      searchResults={searchResults?.data}
       vectorSearchResults={vectorSearchResults?.data}
       previousChats={previousChats?.data}
     />

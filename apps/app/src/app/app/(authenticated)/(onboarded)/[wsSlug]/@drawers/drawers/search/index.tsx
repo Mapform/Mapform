@@ -1,6 +1,5 @@
 "use client";
 
-import type { Autocomplete } from "@mapform/backend/data/geoapify/autocomplete";
 import {
   Command,
   CommandGroup,
@@ -23,6 +22,7 @@ import { useMap } from "react-map-gl/mapbox";
 import { useDebounce } from "@mapform/lib/hooks/use-debounce";
 import { useEffect, useState } from "react";
 import type { SearchRows } from "@mapform/backend/data/rows/search-rows";
+import type { Search } from "@mapform/backend/data/stadia/search";
 import { Button } from "@mapform/ui/components/button";
 import type { ListChats } from "@mapform/backend/data/chats/list-chats";
 import {
@@ -36,13 +36,13 @@ import { deleteChatAction } from "~/data/chats/delete-chat";
 import { toast } from "@mapform/ui/components/toaster";
 
 interface SearchProps {
-  geoapifySearchResults?: Autocomplete["data"];
+  searchResults?: Search["data"];
   vectorSearchResults?: SearchRows["data"];
   previousChats?: ListChats["data"];
 }
 
 export function Search({
-  geoapifySearchResults,
+  searchResults,
   vectorSearchResults,
   previousChats,
 }: SearchProps) {
@@ -51,7 +51,7 @@ export function Search({
   return (
     <MapDrawer open={!!params.search} depth={drawerDepth.get("search") ?? 0}>
       <SearchInner
-        geoapifySearchResults={geoapifySearchResults}
+        searchResults={searchResults}
         vectorSearchResults={vectorSearchResults}
         previousChats={previousChats}
       />
@@ -60,7 +60,7 @@ export function Search({
 }
 
 export function SearchInner({
-  geoapifySearchResults,
+  searchResults,
   vectorSearchResults,
   previousChats,
 }: SearchProps) {
@@ -69,16 +69,9 @@ export function SearchInner({
   const [searchQuery, setSearchQuery] = useState(params.query);
   const debouncedSearchQuery = useDebounce(searchQuery, 200);
 
-  const filteredFeatures =
-    geoapifySearchResults?.features.filter(
-      (f, i, self) =>
-        f.properties &&
-        f.bbox &&
-        i ===
-          self.findIndex(
-            (t) => t.properties?.place_id === f.properties?.place_id,
-          ),
-    ) ?? [];
+  console.log(1111, searchResults);
+
+  const filteredFeatures = searchResults?.features;
 
   useEffect(() => {
     void setQueryStates({ query: debouncedSearchQuery });
@@ -164,30 +157,36 @@ export function SearchInner({
                 </span>
               </CommandItem>
             ))}
-            {filteredFeatures.map((feature) => (
+            {filteredFeatures?.map((feature) => (
               <CommandItem
-                key={feature.properties?.place_id}
-                value={feature.properties?.place_id}
+                key={feature.properties.gid}
+                value={feature.properties.gid}
                 onSelect={async () => {
                   await setQueryStates({
-                    geoapifyPlaceId: feature.properties?.place_id,
+                    geoapifyPlaceId: feature.properties.gid,
                   });
-                  if (feature.properties?.lon && feature.properties.lat) {
-                    map?.flyTo({
-                      center: [feature.properties.lon, feature.properties.lat],
-                      duration: 500,
-                    });
+                  if (feature.bbox) {
+                    map?.fitBounds(
+                      feature.bbox as [number, number, number, number],
+                      {
+                        padding: 50,
+                        duration: 1000,
+                      },
+                    );
+                    // map?.flyTo({
+                    //   center: [feature.properties.lon, feature.properties.lat],
+                    //   duration: 500,
+                    // });
                   }
                 }}
               >
                 <GlobeIcon className="text-muted-foreground mr-2 size-4 flex-shrink-0" />
-                <span className="truncate">
-                  {feature.properties?.name ??
-                    feature.properties?.address_line1}
-                </span>
-                {/* <span className="text-muted-foreground ml-1 flex-shrink-0">
-                    — From {feature.properties?.country}
-                  </span> */}
+                <span className="truncate">{feature.properties.name}</span>
+                {feature.properties.formattedAddressLine && (
+                  <span className="text-muted-foreground ml-1 flex-shrink-0">
+                    — From {feature.properties.formattedAddressLine}
+                  </span>
+                )}
               </CommandItem>
             ))}
           </CommandGroup>
