@@ -36,21 +36,21 @@ import { deleteColumn } from "@mapform/backend/data/columns/delete-column";
 import { updateColumn } from "@mapform/backend/data/columns/update-column";
 import { upsertCell } from "@mapform/backend/data/cells/upsert-cell";
 import { searchRows } from "@mapform/backend/data/rows/search-rows";
-import { searchPlaces } from "@mapform/backend/data/geoapify/places";
 import { updateRow } from "@mapform/backend/data/rows/update-row";
 import { updateProject } from "@mapform/backend/data/projects/update-project";
 import { updateProjectOrder } from "@mapform/backend/data/projects/update-project-order";
 import { deleteProject } from "@mapform/backend/data/projects/delete-project";
-import { getPlaceDetails } from "@mapform/backend/data/geoapify/details";
 import { createChat } from "@mapform/backend/data/chats/create-chat";
 import { getChat } from "@mapform/backend/data/chats/get-chat";
 import { createMessages } from "@mapform/backend/data/messages/create-messages";
 import { getMessages } from "@mapform/backend/data/messages/get-messages";
 import { listChats } from "@mapform/backend/data/chats/list-chats";
 import { getRowCount } from "@mapform/backend/data/usage/get-row-count";
-import { autocomplete } from "@mapform/backend/data/geoapify/autocomplete";
 import { deleteChat } from "@mapform/backend/data/chats/delete-chat";
 import { search } from "@mapform/backend/data/stadia/search";
+import { details } from "@mapform/backend/data/stadia/details";
+import { reverseGeocode } from "@mapform/backend/data/stadia/reverse";
+import { forwardGeocode } from "@mapform/backend/data/stadia/forward";
 
 const ignoredWorkspaceSlugs = ["onboarding"];
 const ignoredTeamspaceSlugs = ["settings"];
@@ -189,11 +189,11 @@ const createPublicClient = () => {
     requestMagicLink: requestMagicLink(extendedClient),
     validateMagicLink: validateMagicLink(extendedClient),
 
-    // Geoapify
-    autocomplete: autocomplete(extendedClient),
-    searchPlaces: searchPlaces(extendedClient),
+    // Stadia
     search: search(extendedClient),
-    getPlaceDetails: getPlaceDetails(extendedClient),
+    details: details(extendedClient),
+    reverseGeocode: reverseGeocode(extendedClient),
+    forwardGeocode: forwardGeocode(extendedClient),
 
     // Users
     getCurrentSession: getCurrentSession(extendedClient),

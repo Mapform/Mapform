@@ -1,7 +1,6 @@
 "use client";
 
 import { MapDrawer, MapDrawerToolbar } from "~/components/map-drawer";
-import type { GetPlaceDetails } from "@mapform/backend/data/geoapify/details";
 import { useParamsContext } from "~/lib/params/client";
 import { Button } from "@mapform/ui/components/button";
 import { XIcon } from "lucide-react";
@@ -9,18 +8,19 @@ import { BasicSkeleton } from "~/components/skeletons/basic";
 import { PlaceDetailsContent } from "../../components/place-details-content";
 import { useEffect } from "react";
 import { Marker } from "react-map-gl/mapbox";
+import type { Details } from "@mapform/backend/data/stadia/details";
 
 interface SearchDetailsProps {
-  geoapifyPlaceDetails: GetPlaceDetails["data"];
+  details: Details["data"];
 }
 
-export function SearchDetails({ geoapifyPlaceDetails }: SearchDetailsProps) {
+export function SearchDetails({ details }: SearchDetailsProps) {
   const { params, drawerDepth, isPending, setQueryStates } = useParamsContext();
 
   return (
     <MapDrawer
-      open={!!params.geoapifyPlaceId}
-      depth={drawerDepth.get("geoapifyPlaceId") ?? 0}
+      open={!!params.stadiaId}
+      depth={drawerDepth.get("stadiaId") ?? 0}
     >
       {isPending ? (
         <>
@@ -31,7 +31,7 @@ export function SearchDetails({ geoapifyPlaceDetails }: SearchDetailsProps) {
               type="button"
               variant="ghost"
               onClick={() => {
-                void setQueryStates({ geoapifyPlaceId: null });
+                void setQueryStates({ stadiaId: null });
               }}
             >
               <XIcon className="size-4" />
@@ -40,18 +40,18 @@ export function SearchDetails({ geoapifyPlaceDetails }: SearchDetailsProps) {
           <BasicSkeleton className="p-6" />
         </>
       ) : (
-        <SearchDetailsInner geoapifyPlaceDetails={geoapifyPlaceDetails} />
+        <SearchDetailsInner details={details} />
       )}
     </MapDrawer>
   );
 }
 
-function SearchDetailsInner({ geoapifyPlaceDetails }: SearchDetailsProps) {
+function SearchDetailsInner({ details }: SearchDetailsProps) {
   const { setQueryStates } = useParamsContext();
 
-  const longitude = geoapifyPlaceDetails?.features[0]?.properties.lon;
-  const latitude = geoapifyPlaceDetails?.features[0]?.properties.lat;
-  const place = geoapifyPlaceDetails?.features[0]?.properties;
+  const longitude = details?.features[0]?.geometry?.coordinates[0];
+  const latitude = details?.features[0]?.geometry?.coordinates[1];
+  const place = details?.features[0]?.properties;
 
   useEffect(() => {
     // no-op here; map centering is handled inside PlaceDetailsContent
@@ -67,7 +67,7 @@ function SearchDetailsInner({ geoapifyPlaceDetails }: SearchDetailsProps) {
             type="button"
             variant="ghost"
             onClick={() => {
-              void setQueryStates({ geoapifyPlaceId: null });
+              void setQueryStates({ stadiaId: null });
             }}
           >
             <XIcon className="size-4" />
@@ -90,7 +90,7 @@ function SearchDetailsInner({ geoapifyPlaceDetails }: SearchDetailsProps) {
         longitude={longitude}
         place={place}
         onClose={() => {
-          void setQueryStates({ geoapifyPlaceId: null });
+          void setQueryStates({ stadiaId: null });
         }}
       />
       <Marker longitude={longitude} latitude={latitude} scale={1.5} />

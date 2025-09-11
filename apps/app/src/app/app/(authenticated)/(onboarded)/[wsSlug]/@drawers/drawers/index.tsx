@@ -89,23 +89,22 @@ async function ChatDrawer({ searchParams }: DealDrawerProps) {
   return <Chat initialMessages={messages?.data as ChatMessage[]} />;
 }
 
-const getGeoapifyPlaceDetails = cache(async (placeId: string | null) => {
-  if (!placeId) return null;
+const getDetails = cache(async (id: string | null) => {
+  if (!id) return null;
 
-  const placeDetails = await publicClient.getPlaceDetails({
-    type: "placeId",
-    placeId,
+  const placeDetails = await publicClient.details({
+    id,
   });
 
   return placeDetails;
 });
 
 async function SearchDetailsDrawer({ searchParams }: DealDrawerProps) {
-  const { geoapifyPlaceId } = await loadSearchParams(searchParams);
+  const { stadiaId } = await loadSearchParams(searchParams);
 
-  const geoapifyPlaceDetails = await getGeoapifyPlaceDetails(geoapifyPlaceId);
+  const details = await getDetails(stadiaId);
 
-  return <SearchDetails geoapifyPlaceDetails={geoapifyPlaceDetails?.data} />;
+  return <SearchDetails details={details?.data} />;
 }
 
 async function FeatureDrawer({ searchParams }: DealDrawerProps) {
@@ -123,8 +122,7 @@ async function CoordinatesDrawer({ searchParams }: DealDrawerProps) {
 
   const placeDetails =
     latitude && longitude
-      ? await publicClient.getPlaceDetails({
-          type: "coordinates",
+      ? await publicClient.reverseGeocode({
           lat: latitude,
           lng: longitude,
         })

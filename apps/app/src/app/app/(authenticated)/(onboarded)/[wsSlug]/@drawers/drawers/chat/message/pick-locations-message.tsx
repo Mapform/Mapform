@@ -36,7 +36,7 @@ export function PickLocationsMessage({ results }: PickLocationsMessageProps) {
   const [hoveredFeature, setHoveredFeature] = useState<AIResultLocation | null>(
     null,
   );
-  const activeFeatureId = params.geoapifyPlaceId ?? params.rowId;
+  const activeFeatureId = params.stadiaId ?? params.rowId;
 
   // Fit map to results bounds when component mounts
   useEffect(() => {
@@ -59,7 +59,7 @@ export function PickLocationsMessage({ results }: PickLocationsMessageProps) {
   const handleFeatureClick = async (feature: AIResultLocation) => {
     if (feature.source === "geoapify") {
       await setQueryStates({
-        geoapifyPlaceId: feature.id,
+        stadiaId: feature.id,
       });
     } else if (feature.source === "mapform") {
       await setQueryStates({

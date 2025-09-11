@@ -25,10 +25,7 @@ export function Coordinates({
   const latitude = coordinates?.[0];
 
   return (
-    <MapDrawer
-      open={!!coordinates}
-      depth={drawerDepth.get("geoapifyPlaceId") ?? 0}
-    >
+    <MapDrawer open={!!coordinates} depth={drawerDepth.get("stadiaId") ?? 0}>
       {isPending ? (
         <>
           <MapDrawerToolbar>

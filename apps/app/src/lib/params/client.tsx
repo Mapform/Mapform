@@ -59,7 +59,7 @@ export function getQueryParamsInOrder(
 
 /**
  * Gets query parameters as a Map where the key is the parameter name and the value is the order
- * Only includes: search, geoapifyPlaceId, chatId, rowId
+ * Only includes: search, stadiaId, chatId, rowId
  * @param url - The URL to parse (defaults to current window.location.href)
  * @returns Map with parameter keys and their order values
  */
@@ -78,7 +78,7 @@ export function getQueryParamsMapInOrder(
   // Define the allowed keys
   const allowedKeys = new Set([
     "search",
-    "geoapifyPlaceId",
+    "stadiaId",
     "chatId",
     "rowId",
     "latitude",
@@ -126,7 +126,7 @@ export const ParamsProvider = ({ children }: ParamsProviderProps) => {
       rowId,
       query,
       search,
-      geoapifyPlaceId,
+      stadiaId,
       chatId,
       latitude,
       longitude,
@@ -153,7 +153,7 @@ export const ParamsProvider = ({ children }: ParamsProviderProps) => {
           rowId,
           query,
           search,
-          geoapifyPlaceId,
+          stadiaId,
           chatId,
           latitude,
           longitude,

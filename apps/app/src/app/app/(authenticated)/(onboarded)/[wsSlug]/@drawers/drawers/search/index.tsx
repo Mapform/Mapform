@@ -69,8 +69,6 @@ export function SearchInner({
   const [searchQuery, setSearchQuery] = useState(params.query);
   const debouncedSearchQuery = useDebounce(searchQuery, 200);
 
-  console.log(1111, searchResults);
-
   const filteredFeatures = searchResults?.features;
 
   useEffect(() => {
@@ -163,7 +161,7 @@ export function SearchInner({
                 value={feature.properties.gid}
                 onSelect={async () => {
                   await setQueryStates({
-                    geoapifyPlaceId: feature.properties.gid,
+                    stadiaId: feature.properties.gid,
                   });
                   if (feature.bbox) {
                     map?.fitBounds(
@@ -173,20 +171,18 @@ export function SearchInner({
                         duration: 1000,
                       },
                     );
-                    // map?.flyTo({
-                    //   center: [feature.properties.lon, feature.properties.lat],
-                    //   duration: 500,
-                    // });
                   }
                 }}
               >
                 <GlobeIcon className="text-muted-foreground mr-2 size-4 flex-shrink-0" />
-                <span className="truncate">{feature.properties.name}</span>
-                {feature.properties.formattedAddressLine && (
-                  <span className="text-muted-foreground ml-1 flex-shrink-0">
-                    — From {feature.properties.formattedAddressLine}
-                  </span>
-                )}
+                <span className="truncate">
+                  {feature.properties.name}
+                  {feature.properties.coarseLocation && (
+                    <span className="text-muted-foreground ml-1 flex-shrink-0">
+                      {feature.properties.coarseLocation}
+                    </span>
+                  )}
+                </span>
               </CommandItem>
             ))}
           </CommandGroup>

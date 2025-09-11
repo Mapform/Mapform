@@ -25,7 +25,7 @@ export function Drawers({ children }: DrawersProps) {
     !params.chatId &&
     !params.search &&
     !params.rowId &&
-    !params.geoapifyPlaceId &&
+    !params.stadiaId &&
     !params.latitude &&
     !params.longitude;
 

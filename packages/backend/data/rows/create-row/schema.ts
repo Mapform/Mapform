@@ -7,7 +7,7 @@ export const createRowSchema = insertRowSchema.pick({
   description: true,
   icon: true,
   geometry: true,
-  geoapifyPlaceId: true,
+  stadiaId: true,
   osmId: true,
 });
 

@@ -40,13 +40,13 @@ import { openInAppleMaps } from "~/lib/external-links/apple";
 import { useAction } from "next-safe-action/hooks";
 import { createRowAction } from "~/data/rows/create-row";
 import { useParams } from "next/navigation";
-import type { GetPlaceDetails } from "@mapform/backend/data/geoapify/details";
+import type { Details } from "@mapform/backend/data/stadia/details";
 import { useWorkspace } from "../../workspace-context";
 import { useParamsContext } from "~/lib/params/client";
 import { useMapPadding } from "~/lib/map/use-map-padding";
 
 type PlaceProperties = NonNullable<
-  GetPlaceDetails["data"]
+  Details["data"]
 >["features"][number]["properties"];
 
 interface PlaceDetailsContentProps {
@@ -76,7 +76,18 @@ export function PlaceDetailsContent({
 
   const [projectComboboxOpen, setProjectComboboxOpen] = useState(false);
 
-  const wikiData = useWikidataImages(place?.datasource?.raw?.wikidata);
+  console.log(11111, place);
+
+  const wikidataId =
+    place?.addendum?.osm?.wikidata ??
+    place?.addendum?.whosonfirstConcordances?.wikidataId ??
+    undefined;
+
+  const website =
+    place?.addendum?.osm?.website ?? place?.addendum?.foursquare?.website;
+  const phone = place?.addendum?.osm?.phone ?? place?.addendum?.foursquare?.tel;
+  const address = place?.formattedAddressLine ?? place?.coarseLocation;
+  const wikiData = useWikidataImages(wikidataId);
 
   useEffect(() => {
     if (!longitude || !latitude) return;
@@ -105,8 +116,8 @@ export function PlaceDetailsContent({
     execute({
       projectId,
       name: placeName,
-      geoapifyPlaceId: place?.place_id,
-      osmId: place?.datasource?.raw?.osm?.id,
+      geoapifyPlaceId: place?.gid,
+      osmId: wikidataId,
       geometry: {
         type: "Point",
         coordinates: [longitude, latitude],
@@ -114,8 +125,7 @@ export function PlaceDetailsContent({
     });
   };
 
-  const placeName =
-    place?.name_international?.en ?? place?.name ?? "Marked Location";
+  const placeName = place?.name ?? "Marked Location";
 
   return (
     <>
@@ -131,7 +141,7 @@ export function PlaceDetailsContent({
               execute({
                 projectId: pId,
                 name: placeName,
-                geoapifyPlaceId: place?.place_id,
+                geoapifyPlaceId: place?.gid,
                 geometry: {
                   type: "Point",
                   coordinates: [longitude, latitude],
@@ -232,39 +242,30 @@ export function PlaceDetailsContent({
         imageData={wikiData}
         title={placeName}
         properties={[
-          ...(place?.address_line2
+          ...(address
             ? ([
                 {
                   columnName: "Address",
                   columnType: "string",
-                  value: place.address_line2,
+                  value: address,
                 },
               ] as const)
             : []),
-          ...(place?.phone
+          ...(phone
             ? ([
                 {
                   columnName: "Phone",
                   columnType: "string",
-                  value: place.phone,
+                  value: phone,
                 },
               ] as const)
             : []),
-          ...(place?.website
+          ...(website
             ? ([
                 {
                   columnName: "Website",
                   columnType: "string",
-                  value: place.website,
-                },
-              ] as const)
-            : []),
-          ...(place?.population
-            ? ([
-                {
-                  columnName: "Population",
-                  columnType: "number",
-                  value: place.population,
+                  value: website,
                 },
               ] as const)
             : []),
