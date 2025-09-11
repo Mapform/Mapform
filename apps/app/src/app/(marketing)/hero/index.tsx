@@ -210,8 +210,8 @@ export function Hero() {
                 </div>
               </h1>
               <p className="text-muted-foreground mb-10 text-xl leading-8 sm:mb-10 sm:text-2xl">
-                Mapform combines data, content, forms, and more to create maps
-                for almost anything.
+                Mapform is the next-generation mapping platform for trips,
+                places, and more.
               </p>
             </div>
             <div className="flex flex-col justify-center gap-2 sm:flex-row sm:justify-start">
