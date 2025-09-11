@@ -123,7 +123,7 @@ export function SearchInner({
                 <MessageCircle className="text-muted-foreground mr-2 size-4 flex-shrink-0" />
                 <span className="truncate">{searchQuery}</span>
                 <span className="text-muted-foreground ml-1 flex-shrink-0">
-                  — Chat
+                  — New Chat
                 </span>
               </CommandItem>
             )}
