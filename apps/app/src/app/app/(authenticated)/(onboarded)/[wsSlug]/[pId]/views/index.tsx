@@ -243,7 +243,8 @@ export function Views() {
               });
             }}
           >
-            <div className="overflow-x-auto">
+            {/* TODO: Re-enable when Table view is ready */}
+            {/* <div className="overflow-x-auto">
               <TabsList>
                 {projectService.optimisticState.views.map((view) => (
                   <ContextMenu key={view.id}>
@@ -303,7 +304,7 @@ export function Views() {
                   </DropdownMenuContent>
                 </DropdownMenu>
               </TabsList>
-            </div>
+            </div> */}
             {projectService.optimisticState.views.map((view) => (
               <TabsContent
                 className="flex flex-1 flex-col empty:hidden"
