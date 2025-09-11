@@ -1,7 +1,6 @@
 "use client";
 
 import { MapDrawer, MapDrawerToolbar } from "~/components/map-drawer";
-import type { GetPlaceDetails } from "@mapform/backend/data/geoapify/details";
 import { useParamsContext } from "~/lib/params/client";
 import { Button } from "@mapform/ui/components/button";
 import { XIcon } from "lucide-react";
@@ -9,16 +8,14 @@ import { BasicSkeleton } from "~/components/skeletons/basic";
 import { PlaceDetailsContent } from "../../components/place-details-content";
 import { useEffect } from "react";
 import { Marker } from "react-map-gl/mapbox";
+import type { Details } from "@mapform/backend/data/stadia/details";
 
 interface CoordinatesProps {
   coordinates: [number, number] | null;
-  geoapifyPlaceDetails: GetPlaceDetails["data"];
+  details: Details["data"];
 }
 
-export function Coordinates({
-  coordinates,
-  geoapifyPlaceDetails,
-}: CoordinatesProps) {
+export function Coordinates({ coordinates, details }: CoordinatesProps) {
   const { drawerDepth, isPending, setQueryStates } = useParamsContext();
 
   const longitude = coordinates?.[1];
@@ -45,10 +42,7 @@ export function Coordinates({
           <BasicSkeleton className="p-6" />
         </>
       ) : (
-        <SearchDetailsInner
-          coordinates={coordinates}
-          geoapifyPlaceDetails={geoapifyPlaceDetails}
-        />
+        <SearchDetailsInner coordinates={coordinates} details={details} />
       )}
       {longitude && latitude && (
         <Marker longitude={longitude} latitude={latitude} scale={1.5} />
@@ -57,15 +51,12 @@ export function Coordinates({
   );
 }
 
-function SearchDetailsInner({
-  coordinates,
-  geoapifyPlaceDetails,
-}: CoordinatesProps) {
+function SearchDetailsInner({ coordinates, details }: CoordinatesProps) {
   const { setQueryStates } = useParamsContext();
 
   const longitude = coordinates?.[1]!;
   const latitude = coordinates?.[0]!;
-  const place = geoapifyPlaceDetails?.features[0]?.properties;
+  const place = details?.features[0]?.properties;
 
   useEffect(() => {
     // no-op here; map centering is handled inside PlaceDetailsContent

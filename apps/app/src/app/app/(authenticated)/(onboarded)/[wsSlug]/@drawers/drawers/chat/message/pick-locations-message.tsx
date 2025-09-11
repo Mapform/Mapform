@@ -57,7 +57,7 @@ export function PickLocationsMessage({ results }: PickLocationsMessageProps) {
   }, [map, results]);
 
   const handleFeatureClick = async (feature: AIResultLocation) => {
-    if (feature.source === "geoapify") {
+    if (feature.source === "stadia") {
       await setQueryStates({
         stadiaId: feature.id,
       });

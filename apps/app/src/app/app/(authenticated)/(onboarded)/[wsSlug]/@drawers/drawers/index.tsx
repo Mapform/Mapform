@@ -120,7 +120,7 @@ async function FeatureDrawer({ searchParams }: DealDrawerProps) {
 async function CoordinatesDrawer({ searchParams }: DealDrawerProps) {
   const { latitude, longitude } = await loadSearchParams(searchParams);
 
-  const placeDetails =
+  const details =
     latitude && longitude
       ? await publicClient.reverseGeocode({
           lat: latitude,
@@ -131,7 +131,7 @@ async function CoordinatesDrawer({ searchParams }: DealDrawerProps) {
   return (
     <Coordinates
       coordinates={latitude && longitude ? [latitude, longitude] : null}
-      geoapifyPlaceDetails={placeDetails?.data}
+      details={details?.data}
     />
   );
 }

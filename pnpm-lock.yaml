@@ -36,9 +36,6 @@ catalogs:
     '@emoji-mart/react':
       specifier: ^1.1.1
       version: 1.1.1
-    '@geoapify/geocoder-autocomplete':
-      specifier: ^2.0.1
-      version: 2.0.1
     '@headlessui/react':
       specifier: ^1.7.18
       version: 1.7.18
@@ -413,9 +410,6 @@ importers:
       '@dnd-kit/utilities':
         specifier: 'catalog:'
         version: 3.2.2(react@19.0.0)
-      '@geoapify/geocoder-autocomplete':
-        specifier: 'catalog:'
-        version: 2.0.1
       '@headlessui/react':
         specifier: 'catalog:'
         version: 1.7.18(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -2402,9 +2396,6 @@ packages:
 
   '@floating-ui/utils@0.2.1':
     resolution: {integrity: sha512-9TANp6GPoMtYzQdt54kfAyMmz1+osLlXdg2ENroU7zzrtflTLrrC/lgrIfaSe+Wu0b89GKccT7vxXA0MoAIO+Q==}
-
-  '@geoapify/geocoder-autocomplete@2.0.1':
-    resolution: {integrity: sha512-uylT+V33dcYsCdTfmzx6kH6wgQLaGWeGYY4S1ko54W6wTYfua2VfMV6rOvaxqYg3J8WFCtWoUozWG8Xm3p3h+w==}
 
   '@grpc/grpc-js@1.13.4':
     resolution: {integrity: sha512-GsFaMXCkMqkKIvwCQjCrwH+GHbPKBjhwo/8ZuUkWHqbI73Kky9I+pQltrlT0+MWpedCoosda53lgjYfyEPgxBg==}
@@ -11855,8 +11846,6 @@ snapshots:
       tabbable: 6.2.0
 
   '@floating-ui/utils@0.2.1': {}
-
-  '@geoapify/geocoder-autocomplete@2.0.1': {}
 
   '@grpc/grpc-js@1.13.4':
     dependencies:

@@ -30,39 +30,44 @@ export async function findExternalFeaturesFunc(
   bounds?: number[],
 ) {
   try {
-    const findExternalFeaturesResults = await publicClient.autocomplete({
+    const findExternalFeaturesResults = await publicClient.search({
       query,
       bounds,
     });
 
     const topResult = findExternalFeaturesResults?.data?.features[0];
 
-    if (!topResult?.properties?.place_id) {
+    if (!topResult?.properties.gid) {
       return null;
     }
 
-    const placeDetails = await publicClient.getPlaceDetails({
-      type: "placeId",
-      placeId: topResult.properties.place_id,
+    const placeDetails = await publicClient.details({
+      id: topResult.properties.gid,
     });
 
-    const placeDetailProperties = placeDetails?.data?.features[0]?.properties;
+    const place = placeDetails?.data?.features[0];
+    const placeDetailProperties = place?.properties;
 
     if (!placeDetailProperties) {
       return [];
     }
 
+    const wikidataId =
+      placeDetailProperties.addendum?.osm?.wikidata ??
+      placeDetailProperties.addendum?.whosonfirstConcordances?.wikidataId ??
+      "";
+
     return [
       {
-        id: placeDetailProperties.place_id,
+        id: placeDetailProperties.gid,
         name: topResult.properties.name,
-        address: placeDetailProperties.address_line1 ?? "",
-        wikidataId: placeDetailProperties.datasource?.raw?.wikidata ?? "",
-        coordinates: [placeDetailProperties.lon, placeDetailProperties.lat] as [
-          number,
-          number,
-        ],
-        source: "geoapify",
+        address: placeDetailProperties.formattedAddressLine ?? "",
+        wikidataId: wikidataId,
+        coordinates: [
+          place.geometry?.coordinates[0],
+          place.geometry?.coordinates[1],
+        ] as [number, number],
+        source: "stadia",
       },
     ] satisfies AIResultLocation[];
   } catch (error) {

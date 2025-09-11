@@ -16,8 +16,7 @@ export const reverseGeocode = tool({
 });
 
 export async function reverseGeocodeFunc(lat: number, lng: number) {
-  const placeDetails = await publicClient.getPlaceDetails({
-    type: "coordinates",
+  const placeDetails = await publicClient.reverseGeocode({
     lat,
     lng,
   });
@@ -28,22 +27,29 @@ export async function reverseGeocodeFunc(lat: number, lng: number) {
 
   // Extract the first feature's properties
   const feature = placeDetails.data.features[0];
+  const wikidataId =
+    feature?.properties.addendum?.osm?.wikidata ??
+    feature?.properties.addendum?.whosonfirstConcordances?.wikidataId ??
+    "";
   // TODO: Handle other geometry types
-  if (!feature || (!feature.properties.lat && !feature.properties.lon)) {
+  if (
+    !feature ||
+    (!feature.geometry?.coordinates[0] && !feature.geometry?.coordinates[1])
+  ) {
     throw new Error("No place details found for the given coordinates");
   }
 
   return [
     {
-      id: feature.properties.place_id,
+      id: feature.properties.gid,
       name: feature.properties.name,
-      address: feature.properties.address_line1,
-      wikidataId: feature.properties.datasource?.raw?.wikidata,
-      coordinates: [feature.properties.lon, feature.properties.lat] as [
-        number,
-        number,
-      ],
-      source: "geoapify",
+      address: feature.properties.formattedAddressLine,
+      wikidataId,
+      coordinates: [
+        feature.geometry.coordinates[0],
+        feature.geometry.coordinates[1],
+      ] as [number, number],
+      source: "stadia",
     },
   ] satisfies AIResultLocation[];
 }

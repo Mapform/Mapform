@@ -17,7 +17,7 @@ export const returnBestResults = tool({
           .describe("The Wikidata ID of the place."),
         coordinates: z.array(z.number()).describe("The location coordinates."),
         source: z
-          .enum(["geoapify", "mapform"])
+          .enum(["stadia", "mapform"])
           .describe("The source of the location."),
       }),
     ),

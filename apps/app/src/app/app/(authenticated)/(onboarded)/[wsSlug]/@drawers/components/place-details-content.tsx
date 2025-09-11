@@ -76,8 +76,6 @@ export function PlaceDetailsContent({
 
   const [projectComboboxOpen, setProjectComboboxOpen] = useState(false);
 
-  console.log(11111, place);
-
   const wikidataId =
     place?.addendum?.osm?.wikidata ??
     place?.addendum?.whosonfirstConcordances?.wikidataId ??
@@ -116,7 +114,7 @@ export function PlaceDetailsContent({
     execute({
       projectId,
       name: placeName,
-      geoapifyPlaceId: place?.gid,
+      stadiaId: place?.gid,
       osmId: wikidataId,
       geometry: {
         type: "Point",
@@ -141,7 +139,7 @@ export function PlaceDetailsContent({
               execute({
                 projectId: pId,
                 name: placeName,
-                geoapifyPlaceId: place?.gid,
+                stadiaId: place?.gid,
                 geometry: {
                   type: "Point",
                   coordinates: [longitude, latitude],

@@ -44,5 +44,5 @@ export type AIResultLocation = {
   address?: string;
   wikidataId?: string;
   coordinates: [number, number];
-  source: "geoapify" | "mapform";
+  source: "stadia" | "mapform";
 };

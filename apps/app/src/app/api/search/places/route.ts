@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
       ? (bounds.split(",").map(Number) as [number, number, number, number])
       : undefined;
 
-    const searchResults = await publicClient.autocomplete({
+    const searchResults = await publicClient.search({
       query,
       bounds: boundsArray,
     });

@@ -8,11 +8,11 @@ import {
 } from "~/lib/use-state-service";
 import { updateProjectAction } from "~/data/projects/update-project";
 import type { UpdateProjectSchema } from "@mapform/backend/data/projects/update-project/schema";
-import type { GetPlaceDetails } from "@mapform/backend/data/geoapify/details";
+import type { Details } from "@mapform/backend/data/stadia/details";
 
 export interface ProjectContextProps {
   activeView?: NonNullable<GetProject["data"]>["views"][number];
-  geoapifyPlaceDetails?: GetPlaceDetails["data"];
+  details?: Details["data"];
   projectService: StateServiceProps<
     NonNullable<GetProject["data"]>,
     UpdateProjectSchema
