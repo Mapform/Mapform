@@ -3,31 +3,40 @@ import {
   pgTable,
   varchar,
   uuid,
-  boolean,
   pgEnum,
+  integer,
+  customType,
+  doublePrecision,
 } from "drizzle-orm/pg-core";
 import { teamspaces } from "../teamspaces/schema";
-import { datasets } from "../datasets/schema";
 
 export const visibilityEnum = pgEnum("visibility", ["public", "closed"]);
 
+const pointGeometry = customType<{
+  data: { coordinates: [number, number] };
+}>({
+  dataType() {
+    return "geometry(Point, 4326)";
+  },
+});
+
 export const projects = pgTable("project", {
   id: uuid("id").primaryKey().defaultRandom(),
-  name: varchar("name", { length: 256 }).notNull(),
+  name: varchar("name", { length: 256 }),
   description: varchar("description", { length: 512 }),
   icon: varchar("icon", { length: 256 }),
+  position: integer("position").notNull(),
 
-  visibility: visibilityEnum("visibility").default("public").notNull(),
+  center: pointGeometry("center").notNull(),
+  pitch: doublePrecision("pitch").notNull().default(0),
+  bearing: doublePrecision("bearing").notNull().default(0),
+  zoom: doublePrecision("zoom").notNull().default(2),
 
-  formsEnabled: boolean("forms_enabled").default(false).notNull(),
+  visibility: visibilityEnum("visibility").default("closed").notNull(),
 
   teamspaceId: uuid("teamspace_id")
     .notNull()
     .references(() => teamspaces.id, { onDelete: "cascade" }),
-
-  datasetId: uuid("dataset_id").references(() => datasets.id, {
-    onDelete: "set null",
-  }),
 
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()

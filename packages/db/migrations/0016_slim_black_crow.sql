@@ -1,0 +1,1 @@
+ALTER TABLE "row" DROP COLUMN IF EXISTS "cover_photos";

@@ -1,1 +1,0 @@
-ALTER TYPE "public"."column_type" ADD VALUE 'icon';

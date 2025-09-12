@@ -1,14 +1,16 @@
 import { relations } from "drizzle-orm";
-import { cells } from "../cells/schema";
-import { datasets } from "../datasets/schema";
 import { rows } from "./schema";
-import { formSubmissions } from "../form-submissions/schema";
+import { projects } from "../projects/schema";
+import { cells } from "../cells/schema";
+import { embeddings } from "../embeddings/schema";
+import { blobs } from "../blobs/schema";
 
 export const rowsRelations = relations(rows, ({ one, many }) => ({
-  dataset: one(datasets, {
-    fields: [rows.datasetId],
-    references: [datasets.id],
+  project: one(projects, {
+    fields: [rows.projectId],
+    references: [projects.id],
   }),
   cells: many(cells),
-  formSubmission: one(formSubmissions),
+  embeddings: many(embeddings),
+  blobs: many(blobs),
 }));

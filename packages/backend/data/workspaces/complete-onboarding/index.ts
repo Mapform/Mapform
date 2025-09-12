@@ -45,8 +45,8 @@ export const completeOnboarding = (authClient: UserAuthClient) =>
               })
               .returning();
 
-            const teamspaceName = "Personal";
-            const teamspaceSlug = "personal";
+            const teamspaceName = "My Maps";
+            const teamspaceSlug = "my-maps";
 
             if (!workspace) {
               throw new Error("Failed to create workspace");
@@ -64,6 +64,8 @@ export const completeOnboarding = (authClient: UserAuthClient) =>
                 slug: teamspaceSlug,
                 name: teamspaceName,
                 workspaceSlug,
+                ownerUserId: user.id,
+                isPrivate: true,
               })
               .returning();
 

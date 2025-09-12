@@ -1,0 +1,62 @@
+import { tool } from "ai";
+import { z } from "zod";
+import { publicClient } from "~/lib/safe-action";
+import type { AIResultLocation } from "~/lib/types";
+
+export const reverseGeocode = tool({
+  description: "Look up a location by its latitude and longitude.",
+  inputSchema: z.object({
+    lat: z.number().describe("The latitude of the location to look up."),
+    lng: z.number().describe("The longitude of the location to look up."),
+  }),
+  execute: async ({ lat, lng }) => {
+    const results = await reverseGeocodeFunc(lat, lng);
+    return results;
+  },
+});
+
+export async function reverseGeocodeFunc(lat: number, lng: number) {
+  const placeDetails = await publicClient.reverseGeocode({
+    lat,
+    lng,
+  });
+
+  if (!placeDetails?.data) {
+    throw new Error("Failed to get place details");
+  }
+
+  // Extract the first feature's properties
+  const feature = placeDetails.data.features[0];
+  const wikidataId =
+    feature?.properties.addendum?.osm?.wikidata ??
+    feature?.properties.addendum?.whosonfirstConcordances?.wikidataId ??
+    "";
+  // TODO: Handle other geometry types
+  if (
+    !feature ||
+    (!feature.geometry?.coordinates[0] && !feature.geometry?.coordinates[1])
+  ) {
+    throw new Error("No place details found for the given coordinates");
+  }
+
+  return [
+    {
+      id: feature.properties.gid,
+      name: feature.properties.name,
+      address:
+        feature.properties.formattedAddressLine ??
+        feature.properties.coarseLocation ??
+        undefined,
+      wikidataId,
+      coordinates: [
+        feature.geometry.coordinates[0],
+        feature.geometry.coordinates[1],
+      ] as [number, number],
+      source: "stadia",
+    },
+  ] satisfies AIResultLocation[];
+}
+
+export type ReverseGeocodeResponse = Awaited<
+  ReturnType<typeof reverseGeocodeFunc>
+>;

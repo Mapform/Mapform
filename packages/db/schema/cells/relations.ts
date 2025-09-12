@@ -6,12 +6,7 @@ import {
   stringCells,
   numberCells,
   booleanCells,
-  pointCells,
   dateCells,
-  richtextCells,
-  iconsCells,
-  lineCells,
-  polygonCells,
 } from "./schema";
 
 /**
@@ -29,12 +24,7 @@ export const cellsRelations = relations(cells, ({ one }) => ({
   stringCell: one(stringCells),
   numberCell: one(numberCells),
   booleanCell: one(booleanCells),
-  pointCell: one(pointCells),
-  lineCell: one(lineCells),
-  polygonCell: one(polygonCells),
   dateCell: one(dateCells),
-  richtextCell: one(richtextCells),
-  iconCell: one(iconsCells),
 }));
 
 /**
@@ -68,61 +58,11 @@ export const booleanCellsRelations = relations(booleanCells, ({ one }) => ({
 }));
 
 /**
- * POINT CELL
- */
-export const pointCellsRelations = relations(pointCells, ({ one }) => ({
-  cell: one(cells, {
-    fields: [pointCells.cellId],
-    references: [cells.id],
-  }),
-}));
-
-/**
- * LINE CELL
- */
-export const lineCellsRelations = relations(lineCells, ({ one }) => ({
-  cell: one(cells, {
-    fields: [lineCells.cellId],
-    references: [cells.id],
-  }),
-}));
-
-/**
- * POLYGON CELL
- */
-export const polygonCellsRelations = relations(polygonCells, ({ one }) => ({
-  cell: one(cells, {
-    fields: [polygonCells.cellId],
-    references: [cells.id],
-  }),
-}));
-
-/**
  * DATE CELL
  */
 export const dateCellsRelations = relations(dateCells, ({ one }) => ({
   cell: one(cells, {
     fields: [dateCells.cellId],
-    references: [cells.id],
-  }),
-}));
-
-/**
- * RICHTEXT CELL
- */
-export const richtextCellsRelations = relations(richtextCells, ({ one }) => ({
-  cell: one(cells, {
-    fields: [richtextCells.cellId],
-    references: [cells.id],
-  }),
-}));
-
-/**
- * ICON CELL
- */
-export const iconCellsRelations = relations(iconsCells, ({ one }) => ({
-  cell: one(cells, {
-    fields: [iconsCells.cellId],
     references: [cells.id],
   }),
 }));

@@ -1,6 +1,6 @@
 {
-  "id": "a9b9559d-0d70-44a9-8cc8-8ffbc8bec391",
-  "prevId": "9aad0c1c-7aba-4037-94b6-78df06a4e645",
+  "id": "4fca59ef-6356-4c80-9e8e-a7024d5d8384",
+  "prevId": "d0210f5e-1887-44c6-af16-13908ed6a7b0",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -29,51 +29,6 @@
       },
       "indexes": {},
       "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.session": {
-      "name": "session",
-      "schema": "",
-      "columns": {
-        "sessionToken": {
-          "name": "sessionToken",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "userId": {
-          "name": "userId",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "expires": {
-          "name": "expires",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "session_userId_user_id_fk": {
-          "name": "session_userId_user_id_fk",
-          "tableFrom": "session",
-          "tableTo": "user",
-          "columnsFrom": [
-            "userId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
@@ -115,6 +70,20 @@
           "primaryKey": false,
           "notNull": true,
           "default": false
+        },
+        "workspaceGuideCompleted": {
+          "name": "workspaceGuideCompleted",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "projectGuideCompleted": {
+          "name": "projectGuideCompleted",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
         }
       },
       "indexes": {},
@@ -143,6 +112,12 @@
           "primaryKey": true,
           "notNull": true,
           "default": "gen_random_uuid()"
+        },
+        "icon": {
+          "name": "icon",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": false
         },
         "slug": {
           "name": "slug",
@@ -277,6 +252,19 @@
           "primaryKey": false,
           "notNull": true
         },
+        "is_private": {
+          "name": "is_private",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "owner_user_id": {
+          "name": "owner_user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
         "workspace_slug": {
           "name": "workspace_slug",
           "type": "varchar",
@@ -300,6 +288,19 @@
       },
       "indexes": {},
       "foreignKeys": {
+        "teamspace_owner_user_id_user_id_fk": {
+          "name": "teamspace_owner_user_id_user_id_fk",
+          "tableFrom": "teamspace",
+          "tableTo": "user",
+          "columnsFrom": [
+            "owner_user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
         "teamspace_workspace_slug_workspace_slug_fk": {
           "name": "teamspace_workspace_slug_workspace_slug_fk",
           "tableFrom": "teamspace",
@@ -411,7 +412,13 @@
           "name": "name",
           "type": "varchar(256)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
+        },
+        "description": {
+          "name": "description",
+          "type": "varchar(512)",
+          "primaryKey": false,
+          "notNull": false
         },
         "icon": {
           "name": "icon",
@@ -419,30 +426,52 @@
           "primaryKey": false,
           "notNull": false
         },
+        "position": {
+          "name": "position",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "center": {
+          "name": "center",
+          "type": "geometry(Point, 4326)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "pitch": {
+          "name": "pitch",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "bearing": {
+          "name": "bearing",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "zoom": {
+          "name": "zoom",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 2
+        },
+        "visibility": {
+          "name": "visibility",
+          "type": "visibility",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'closed'"
+        },
         "teamspace_id": {
           "name": "teamspace_id",
           "type": "uuid",
           "primaryKey": false,
           "notNull": true
-        },
-        "is_dirty": {
-          "name": "is_dirty",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": true,
-          "default": false
-        },
-        "root_project_id": {
-          "name": "root_project_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "dataset_id": {
-          "name": "dataset_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": false
         },
         "created_at": {
           "name": "created_at",
@@ -473,681 +502,6 @@
           ],
           "onDelete": "cascade",
           "onUpdate": "no action"
-        },
-        "project_root_project_id_project_id_fk": {
-          "name": "project_root_project_id_project_id_fk",
-          "tableFrom": "project",
-          "tableTo": "project",
-          "columnsFrom": [
-            "root_project_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "project_dataset_id_dataset_id_fk": {
-          "name": "project_dataset_id_dataset_id_fk",
-          "tableFrom": "project",
-          "tableTo": "dataset",
-          "columnsFrom": [
-            "dataset_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.page": {
-      "name": "page",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "uuid",
-          "primaryKey": true,
-          "notNull": true,
-          "default": "gen_random_uuid()"
-        },
-        "project_id": {
-          "name": "project_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "banner_image": {
-          "name": "banner_image",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "icon": {
-          "name": "icon",
-          "type": "varchar(256)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "title": {
-          "name": "title",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "content": {
-          "name": "content",
-          "type": "jsonb",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "zoom": {
-          "name": "zoom",
-          "type": "double precision",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "pitch": {
-          "name": "pitch",
-          "type": "real",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "bearing": {
-          "name": "bearing",
-          "type": "real",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "center": {
-          "name": "center",
-          "type": "geometry(point)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "position": {
-          "name": "position",
-          "type": "smallint",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "content_view_type": {
-          "name": "content_view_type",
-          "type": "content_view_type",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "'split'"
-        },
-        "content_side": {
-          "name": "content_side",
-          "type": "content_side",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "'left'"
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {
-        "page_spatial_index": {
-          "name": "page_spatial_index",
-          "columns": [
-            {
-              "expression": "center",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "gist",
-          "with": {}
-        }
-      },
-      "foreignKeys": {
-        "page_project_id_project_id_fk": {
-          "name": "page_project_id_project_id_fk",
-          "tableFrom": "page",
-          "tableTo": "project",
-          "columnsFrom": [
-            "project_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.layer": {
-      "name": "layer",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "uuid",
-          "primaryKey": true,
-          "notNull": true,
-          "default": "gen_random_uuid()"
-        },
-        "name": {
-          "name": "name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "type": {
-          "name": "type",
-          "type": "layer_type",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "dataset_id": {
-          "name": "dataset_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "layer_dataset_id_dataset_id_fk": {
-          "name": "layer_dataset_id_dataset_id_fk",
-          "tableFrom": "layer",
-          "tableTo": "dataset",
-          "columnsFrom": [
-            "dataset_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.marker_layer": {
-      "name": "marker_layer",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "uuid",
-          "primaryKey": true,
-          "notNull": true,
-          "default": "gen_random_uuid()"
-        },
-        "layer_id": {
-          "name": "layer_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "point_column_id": {
-          "name": "point_column_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "title_column_id": {
-          "name": "title_column_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "description_column_id": {
-          "name": "description_column_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "icon_column_id": {
-          "name": "icon_column_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "color": {
-          "name": "color",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "marker_layer_layer_id_layer_id_fk": {
-          "name": "marker_layer_layer_id_layer_id_fk",
-          "tableFrom": "marker_layer",
-          "tableTo": "layer",
-          "columnsFrom": [
-            "layer_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "marker_layer_point_column_id_column_id_fk": {
-          "name": "marker_layer_point_column_id_column_id_fk",
-          "tableFrom": "marker_layer",
-          "tableTo": "column",
-          "columnsFrom": [
-            "point_column_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        },
-        "marker_layer_title_column_id_column_id_fk": {
-          "name": "marker_layer_title_column_id_column_id_fk",
-          "tableFrom": "marker_layer",
-          "tableTo": "column",
-          "columnsFrom": [
-            "title_column_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        },
-        "marker_layer_description_column_id_column_id_fk": {
-          "name": "marker_layer_description_column_id_column_id_fk",
-          "tableFrom": "marker_layer",
-          "tableTo": "column",
-          "columnsFrom": [
-            "description_column_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        },
-        "marker_layer_icon_column_id_column_id_fk": {
-          "name": "marker_layer_icon_column_id_column_id_fk",
-          "tableFrom": "marker_layer",
-          "tableTo": "column",
-          "columnsFrom": [
-            "icon_column_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "marker_layer_layer_id_unique": {
-          "name": "marker_layer_layer_id_unique",
-          "nullsNotDistinct": false,
-          "columns": [
-            "layer_id"
-          ]
-        }
-      },
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.point_layer": {
-      "name": "point_layer",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "uuid",
-          "primaryKey": true,
-          "notNull": true,
-          "default": "gen_random_uuid()"
-        },
-        "layer_id": {
-          "name": "layer_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "point_column_id": {
-          "name": "point_column_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "title_column_id": {
-          "name": "title_column_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "description_column_id": {
-          "name": "description_column_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "icon_column_id": {
-          "name": "icon_column_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "color": {
-          "name": "color",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "point_layer_layer_id_layer_id_fk": {
-          "name": "point_layer_layer_id_layer_id_fk",
-          "tableFrom": "point_layer",
-          "tableTo": "layer",
-          "columnsFrom": [
-            "layer_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "point_layer_point_column_id_column_id_fk": {
-          "name": "point_layer_point_column_id_column_id_fk",
-          "tableFrom": "point_layer",
-          "tableTo": "column",
-          "columnsFrom": [
-            "point_column_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        },
-        "point_layer_title_column_id_column_id_fk": {
-          "name": "point_layer_title_column_id_column_id_fk",
-          "tableFrom": "point_layer",
-          "tableTo": "column",
-          "columnsFrom": [
-            "title_column_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        },
-        "point_layer_description_column_id_column_id_fk": {
-          "name": "point_layer_description_column_id_column_id_fk",
-          "tableFrom": "point_layer",
-          "tableTo": "column",
-          "columnsFrom": [
-            "description_column_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        },
-        "point_layer_icon_column_id_column_id_fk": {
-          "name": "point_layer_icon_column_id_column_id_fk",
-          "tableFrom": "point_layer",
-          "tableTo": "column",
-          "columnsFrom": [
-            "icon_column_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "point_layer_layer_id_unique": {
-          "name": "point_layer_layer_id_unique",
-          "nullsNotDistinct": false,
-          "columns": [
-            "layer_id"
-          ]
-        }
-      },
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.layers_to_pages": {
-      "name": "layers_to_pages",
-      "schema": "",
-      "columns": {
-        "layer_id": {
-          "name": "layer_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "page_id": {
-          "name": "page_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "position": {
-          "name": "position",
-          "type": "smallint",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "layers_to_pages_layer_id_layer_id_fk": {
-          "name": "layers_to_pages_layer_id_layer_id_fk",
-          "tableFrom": "layers_to_pages",
-          "tableTo": "layer",
-          "columnsFrom": [
-            "layer_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "layers_to_pages_page_id_page_id_fk": {
-          "name": "layers_to_pages_page_id_page_id_fk",
-          "tableFrom": "layers_to_pages",
-          "tableTo": "page",
-          "columnsFrom": [
-            "page_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {
-        "layers_to_pages_layer_id_page_id_pk": {
-          "name": "layers_to_pages_layer_id_page_id_pk",
-          "columns": [
-            "layer_id",
-            "page_id"
-          ]
-        }
-      },
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.dataset": {
-      "name": "dataset",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "uuid",
-          "primaryKey": true,
-          "notNull": true,
-          "default": "gen_random_uuid()"
-        },
-        "name": {
-          "name": "name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "icon": {
-          "name": "icon",
-          "type": "varchar(256)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "type": {
-          "name": "type",
-          "type": "dataset_type",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "'default'"
-        },
-        "teamspace_id": {
-          "name": "teamspace_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "dataset_teamspace_id_teamspace_id_fk": {
-          "name": "dataset_teamspace_id_teamspace_id_fk",
-          "tableFrom": "dataset",
-          "tableTo": "teamspace",
-          "columnsFrom": [
-            "teamspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -1167,8 +521,44 @@
           "notNull": true,
           "default": "gen_random_uuid()"
         },
-        "dataset_id": {
-          "name": "dataset_id",
+        "name": {
+          "name": "name",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "description": {
+          "name": "description",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "icon": {
+          "name": "icon",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "color": {
+          "name": "color",
+          "type": "varchar(7)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "geometry": {
+          "name": "geometry",
+          "type": "geometry",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "geoapify_place_id": {
+          "name": "geoapify_place_id",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "project_id": {
+          "name": "project_id",
           "type": "uuid",
           "primaryKey": false,
           "notNull": true
@@ -1190,12 +580,12 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "row_dataset_id_dataset_id_fk": {
-          "name": "row_dataset_id_dataset_id_fk",
+        "row_project_id_project_id_fk": {
+          "name": "row_project_id_project_id_fk",
           "tableFrom": "row",
-          "tableTo": "dataset",
+          "tableTo": "project",
           "columnsFrom": [
-            "dataset_id"
+            "project_id"
           ],
           "columnsTo": [
             "id"
@@ -1234,23 +624,11 @@
           "primaryKey": false,
           "notNull": true
         },
-        "dataset_id": {
-          "name": "dataset_id",
+        "project_id": {
+          "name": "project_id",
           "type": "uuid",
           "primaryKey": false,
           "notNull": true
-        },
-        "block_note_id": {
-          "name": "block_note_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "page_id": {
-          "name": "page_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": false
         },
         "created_at": {
           "name": "created_at",
@@ -1269,25 +647,349 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "column_dataset_id_dataset_id_fk": {
-          "name": "column_dataset_id_dataset_id_fk",
+        "column_project_id_project_id_fk": {
+          "name": "column_project_id_project_id_fk",
           "tableFrom": "column",
-          "tableTo": "dataset",
+          "tableTo": "project",
           "columnsFrom": [
-            "dataset_id"
+            "project_id"
           ],
           "columnsTo": [
             "id"
           ],
           "onDelete": "cascade",
           "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.plan": {
+      "name": "plan",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
         },
-        "column_page_id_page_id_fk": {
-          "name": "column_page_id_page_id_fk",
-          "tableFrom": "column",
-          "tableTo": "page",
+        "name": {
+          "name": "name",
+          "type": "varchar(64)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "stripe_customer_id": {
+          "name": "stripe_customer_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "stripe_subscription_id": {
+          "name": "stripe_subscription_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "stripe_product_id": {
+          "name": "stripe_product_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "stripe_price_id": {
+          "name": "stripe_price_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "subscription_status": {
+          "name": "subscription_status",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "row_limit": {
+          "name": "row_limit",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "storage_limit": {
+          "name": "storage_limit",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 10000000
+        },
+        "workspace_slug": {
+          "name": "workspace_slug",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "plan_workspace_slug_workspace_slug_fk": {
+          "name": "plan_workspace_slug_workspace_slug_fk",
+          "tableFrom": "plan",
+          "tableTo": "workspace",
           "columnsFrom": [
-            "page_id"
+            "workspace_slug"
+          ],
+          "columnsTo": [
+            "slug"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "plan_stripe_customer_id_unique": {
+          "name": "plan_stripe_customer_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "stripe_customer_id"
+          ]
+        },
+        "plan_stripe_subscription_id_unique": {
+          "name": "plan_stripe_subscription_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "stripe_subscription_id"
+          ]
+        },
+        "plan_workspace_slug_unique": {
+          "name": "plan_workspace_slug_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "workspace_slug"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.blob": {
+      "name": "blob",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "workspace_id": {
+          "name": "workspace_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "project_id": {
+          "name": "project_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "row_id": {
+          "name": "row_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "title": {
+          "name": "title",
+          "type": "varchar(512)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "author": {
+          "name": "author",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "license": {
+          "name": "license",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "url": {
+          "name": "url",
+          "type": "varchar(2048)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "size": {
+          "name": "size",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "queued_for_deletion_date": {
+          "name": "queued_for_deletion_date",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "order": {
+          "name": "order",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "project_order_unique": {
+          "name": "project_order_unique",
+          "columns": [
+            {
+              "expression": "project_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "order",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "row_order_unique": {
+          "name": "row_order_unique",
+          "columns": [
+            {
+              "expression": "row_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "order",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "blob_project_id_project_id_fk": {
+          "name": "blob_project_id_project_id_fk",
+          "tableFrom": "blob",
+          "tableTo": "project",
+          "columnsFrom": [
+            "project_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "blob_row_id_row_id_fk": {
+          "name": "blob_row_id_row_id_fk",
+          "tableFrom": "blob",
+          "tableTo": "row",
+          "columnsFrom": [
+            "row_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "blob_url_unique": {
+          "name": "blob_url_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "url"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.map_view": {
+      "name": "map_view",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "view_id": {
+          "name": "view_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "map_view_view_id_view_id_fk": {
+          "name": "map_view_view_id_view_id_fk",
+          "tableFrom": "map_view",
+          "tableTo": "view",
+          "columnsFrom": [
+            "view_id"
           ],
           "columnsTo": [
             "id"
@@ -1298,22 +1000,136 @@
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "column_block_note_id_unique": {
-          "name": "column_block_note_id_unique",
+        "map_view_unq": {
+          "name": "map_view_unq",
           "nullsNotDistinct": false,
           "columns": [
-            "block_note_id"
-          ]
-        },
-        "column_dataset_id_name_unique": {
-          "name": "column_dataset_id_name_unique",
-          "nullsNotDistinct": false,
-          "columns": [
-            "dataset_id",
-            "name"
+            "view_id"
           ]
         }
       },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.table_view": {
+      "name": "table_view",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "view_id": {
+          "name": "view_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "table_view_view_id_view_id_fk": {
+          "name": "table_view_view_id_view_id_fk",
+          "tableFrom": "table_view",
+          "tableTo": "view",
+          "columnsFrom": [
+            "view_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "table_view_unq": {
+          "name": "table_view_unq",
+          "nullsNotDistinct": false,
+          "columns": [
+            "view_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.view": {
+      "name": "view",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "project_id": {
+          "name": "project_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "type": {
+          "name": "type",
+          "type": "view_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "position": {
+          "name": "position",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "view_project_id_project_id_fk": {
+          "name": "view_project_id_project_id_fk",
+          "tableFrom": "view",
+          "tableTo": "project",
+          "columnsFrom": [
+            "project_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
@@ -1508,60 +1324,6 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.icon_cell": {
-      "name": "icon_cell",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "uuid",
-          "primaryKey": true,
-          "notNull": true,
-          "default": "gen_random_uuid()"
-        },
-        "icon": {
-          "name": "icon",
-          "type": "varchar(256)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "cell_id": {
-          "name": "cell_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "icon_cell_cell_id_cell_id_fk": {
-          "name": "icon_cell_cell_id_cell_id_fk",
-          "tableFrom": "icon_cell",
-          "tableTo": "cell",
-          "columnsFrom": [
-            "cell_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "icon_cell_unq": {
-          "name": "icon_cell_unq",
-          "nullsNotDistinct": false,
-          "columns": [
-            "cell_id"
-          ]
-        }
-      },
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
     "public.number_cell": {
       "name": "number_cell",
       "schema": "",
@@ -1606,130 +1368,6 @@
       "uniqueConstraints": {
         "number_cell_unq": {
           "name": "number_cell_unq",
-          "nullsNotDistinct": false,
-          "columns": [
-            "cell_id"
-          ]
-        }
-      },
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.point_cell": {
-      "name": "point_cell",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "uuid",
-          "primaryKey": true,
-          "notNull": true,
-          "default": "gen_random_uuid()"
-        },
-        "value": {
-          "name": "value",
-          "type": "geometry(point)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "cell_id": {
-          "name": "cell_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        }
-      },
-      "indexes": {
-        "point_spatial_index": {
-          "name": "point_spatial_index",
-          "columns": [
-            {
-              "expression": "value",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "gist",
-          "with": {}
-        }
-      },
-      "foreignKeys": {
-        "point_cell_cell_id_cell_id_fk": {
-          "name": "point_cell_cell_id_cell_id_fk",
-          "tableFrom": "point_cell",
-          "tableTo": "cell",
-          "columnsFrom": [
-            "cell_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "point_cell_unq": {
-          "name": "point_cell_unq",
-          "nullsNotDistinct": false,
-          "columns": [
-            "cell_id"
-          ]
-        }
-      },
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.richtext_cell": {
-      "name": "richtext_cell",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "uuid",
-          "primaryKey": true,
-          "notNull": true,
-          "default": "gen_random_uuid()"
-        },
-        "value": {
-          "name": "value",
-          "type": "jsonb",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "cell_id": {
-          "name": "cell_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "richtext_cell_cell_id_cell_id_fk": {
-          "name": "richtext_cell_cell_id_cell_id_fk",
-          "tableFrom": "richtext_cell",
-          "tableTo": "cell",
-          "columnsFrom": [
-            "cell_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "richtext_cell_unq": {
-          "name": "richtext_cell_unq",
           "nullsNotDistinct": false,
           "columns": [
             "cell_id"
@@ -1794,8 +1432,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.plan": {
-      "name": "plan",
+    "public.chat": {
+      "name": "chat",
       "schema": "",
       "columns": {
         "id": {
@@ -1805,51 +1443,211 @@
           "notNull": true,
           "default": "gen_random_uuid()"
         },
-        "name": {
-          "name": "name",
-          "type": "varchar(64)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "stripe_customer_id": {
-          "name": "stripe_customer_id",
+        "title": {
+          "name": "title",
           "type": "text",
           "primaryKey": false,
           "notNull": true
         },
-        "stripe_subscription_id": {
-          "name": "stripe_subscription_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "stripe_product_id": {
-          "name": "stripe_product_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "stripe_price_id": {
-          "name": "stripe_price_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "subscription_status": {
-          "name": "subscription_status",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "position": {
-          "name": "position",
-          "type": "integer",
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": true
         },
-        "workspace_slug": {
-          "name": "workspace_slug",
+        "project_id": {
+          "name": "project_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "chat_user_id_user_id_fk": {
+          "name": "chat_user_id_user_id_fk",
+          "tableFrom": "chat",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "chat_project_id_project_id_fk": {
+          "name": "chat_project_id_project_id_fk",
+          "tableFrom": "chat",
+          "tableTo": "project",
+          "columnsFrom": [
+            "project_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.message": {
+      "name": "message",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "chatId": {
+          "name": "chatId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "role": {
+          "name": "role",
           "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "parts": {
+          "name": "parts",
+          "type": "json",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "message_chatId_chat_id_fk": {
+          "name": "message_chatId_chat_id_fk",
+          "tableFrom": "message",
+          "tableTo": "chat",
+          "columnsFrom": [
+            "chatId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.stream": {
+      "name": "stream",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "chatId": {
+          "name": "chatId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "stream_chatId_chat_id_fk": {
+          "name": "stream_chatId_chat_id_fk",
+          "tableFrom": "stream",
+          "tableTo": "chat",
+          "columnsFrom": [
+            "chatId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "stream_id_pk": {
+          "name": "stream_id_pk",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.embedding": {
+      "name": "embedding",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "row_id": {
+          "name": "row_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "content": {
+          "name": "content",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "content_hash": {
+          "name": "content_hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "embedding": {
+          "name": "embedding",
+          "type": "vector(1536)",
           "primaryKey": false,
           "notNull": true
         },
@@ -1868,46 +1666,56 @@
           "default": "now()"
         }
       },
-      "indexes": {},
+      "indexes": {
+        "embeddingIndex": {
+          "name": "embeddingIndex",
+          "columns": [
+            {
+              "expression": "embedding",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last",
+              "opclass": "vector_cosine_ops"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "hnsw",
+          "with": {}
+        },
+        "content_hash_index": {
+          "name": "content_hash_index",
+          "columns": [
+            {
+              "expression": "content_hash",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
       "foreignKeys": {
-        "plan_workspace_slug_workspace_slug_fk": {
-          "name": "plan_workspace_slug_workspace_slug_fk",
-          "tableFrom": "plan",
-          "tableTo": "workspace",
+        "embedding_row_id_row_id_fk": {
+          "name": "embedding_row_id_row_id_fk",
+          "tableFrom": "embedding",
+          "tableTo": "row",
           "columnsFrom": [
-            "workspace_slug"
+            "row_id"
           ],
           "columnsTo": [
-            "slug"
+            "id"
           ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "plan_stripe_customer_id_unique": {
-          "name": "plan_stripe_customer_id_unique",
-          "nullsNotDistinct": false,
-          "columns": [
-            "stripe_customer_id"
-          ]
-        },
-        "plan_stripe_subscription_id_unique": {
-          "name": "plan_stripe_subscription_id_unique",
-          "nullsNotDistinct": false,
-          "columns": [
-            "stripe_subscription_id"
-          ]
-        },
-        "plan_workspace_slug_unique": {
-          "name": "plan_workspace_slug_unique",
-          "nullsNotDistinct": false,
-          "columns": [
-            "workspace_slug"
-          ]
-        }
-      },
+      "uniqueConstraints": {},
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
@@ -1930,46 +1738,12 @@
         "member"
       ]
     },
-    "public.content_side": {
-      "name": "content_side",
+    "public.visibility": {
+      "name": "visibility",
       "schema": "public",
       "values": [
-        "left",
-        "right"
-      ]
-    },
-    "public.content_view_type": {
-      "name": "content_view_type",
-      "schema": "public",
-      "values": [
-        "map",
-        "split",
-        "text"
-      ]
-    },
-    "public.color": {
-      "name": "color",
-      "schema": "public",
-      "values": [
-        "black",
-        "gray",
-        ""
-      ]
-    },
-    "public.layer_type": {
-      "name": "layer_type",
-      "schema": "public",
-      "values": [
-        "point",
-        "marker"
-      ]
-    },
-    "public.dataset_type": {
-      "name": "dataset_type",
-      "schema": "public",
-      "values": [
-        "default",
-        "submissions"
+        "public",
+        "closed"
       ]
     },
     "public.column_type": {
@@ -1979,10 +1753,15 @@
         "string",
         "bool",
         "number",
-        "date",
-        "point",
-        "richtext",
-        "icon"
+        "date"
+      ]
+    },
+    "public.view_type": {
+      "name": "view_type",
+      "schema": "public",
+      "values": [
+        "table",
+        "map"
       ]
     }
   },

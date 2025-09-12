@@ -20,7 +20,7 @@ export function Nav() {
 
   return (
     <header
-      className={`sticky inset-x-0 top-0 z-50 transition-all duration-200 ${
+      className={`fixed inset-x-0 top-0 z-50 transition-all duration-200 ${
         isScrolled ? "bg-white bg-opacity-80 backdrop-blur-sm" : ""
       }`}
     >

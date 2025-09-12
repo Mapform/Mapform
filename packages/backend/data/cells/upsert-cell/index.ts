@@ -1,26 +1,20 @@
 "server-only";
 
-import { db, sql } from "@mapform/db";
+import { db } from "@mapform/db";
 import {
   cells,
   numberCells,
-  pointCells,
   stringCells,
   booleanCells,
-  richtextCells,
   dateCells,
-  iconsCells,
   rows,
-  datasets,
   teamspaces,
   columns,
-  lineCells,
-  polygonCells,
+  projects,
 } from "@mapform/db/schema";
 import { and, eq, inArray } from "@mapform/db/utils";
 import { upsertCellSchema } from "./schema";
 import type { UserAuthClient } from "../../../lib/types";
-import type { DocumentContent } from "@mapform/blocknote";
 
 export const upsertCell = (authClient: UserAuthClient) =>
   authClient
@@ -34,21 +28,21 @@ export const upsertCell = (authClient: UserAuthClient) =>
           .map((m) => m.workspace.teamspaces.map((t) => t.id))
           .flat();
 
-        // Check to make sure the cell is part of a dataset the user has access to
+        // Check to make sure the cell is part of a project the user has access to
         const [rowResult, columnResult] = await Promise.all([
           db
             .select()
             .from(rows)
-            .leftJoin(datasets, eq(datasets.id, rows.datasetId))
-            .leftJoin(teamspaces, eq(teamspaces.id, datasets.teamspaceId))
+            .leftJoin(projects, eq(projects.id, rows.projectId))
+            .leftJoin(teamspaces, eq(teamspaces.id, projects.teamspaceId))
             .where(
               and(eq(rows.id, rowId), inArray(teamspaces.id, teamspaceIds)),
             ),
           db
             .select()
             .from(columns)
-            .leftJoin(datasets, eq(datasets.id, columns.datasetId))
-            .leftJoin(teamspaces, eq(teamspaces.id, datasets.teamspaceId))
+            .leftJoin(projects, eq(projects.id, columns.projectId))
+            .leftJoin(teamspaces, eq(teamspaces.id, projects.teamspaceId))
             .where(
               and(
                 eq(columns.id, columnId),
@@ -117,34 +111,6 @@ export const upsertCell = (authClient: UserAuthClient) =>
               });
           }
 
-          if (type === "point") {
-            await tx
-              .insert(pointCells)
-              .values({
-                cellId: cell.id,
-                value,
-              })
-              .onConflictDoUpdate({
-                target: pointCells.cellId,
-                set: { value },
-              });
-          }
-
-          if (type === "richtext") {
-            await tx
-              .insert(richtextCells)
-              .values({
-                cellId: cell.id,
-                value: value as unknown as { content: DocumentContent },
-              })
-              .onConflictDoUpdate({
-                target: richtextCells.cellId,
-                set: {
-                  value: value as unknown as { content: DocumentContent },
-                },
-              });
-          }
-
           if (type === "date") {
             await tx
               .insert(dateCells)
@@ -155,65 +121,6 @@ export const upsertCell = (authClient: UserAuthClient) =>
               .onConflictDoUpdate({
                 target: dateCells.cellId,
                 set: { value },
-              });
-          }
-
-          if (type === "icon") {
-            await tx
-              .insert(iconsCells)
-              .values({
-                cellId: cell.id,
-                value,
-              })
-              .onConflictDoUpdate({
-                target: iconsCells.cellId,
-                set: { value },
-              });
-          }
-
-          if (type === "line") {
-            await tx
-              .insert(lineCells)
-              .values({
-                cellId: cell.id,
-                value: sql.raw(`ST_GeomFromGeoJSON('{
-                  "type": "LineString",
-                  "coordinates": ${JSON.stringify(value?.coordinates ?? [])}
-                }')`),
-              })
-              .onConflictDoUpdate({
-                target: lineCells.cellId,
-                set: {
-                  value: sql.raw(`ST_GeomFromGeoJSON('{
-                  "type": "LineString",
-                  "coordinates": ${JSON.stringify(value?.coordinates ?? [])}
-                }')`),
-                },
-              });
-          }
-
-          if (type === "polygon") {
-            await tx
-              .insert(polygonCells)
-              .values({
-                cellId: cell.id,
-                value: sql.raw(
-                  `ST_GeomFromGeoJSON('{
-                    "type": "Polygon",
-                    "coordinates": ${JSON.stringify(value?.coordinates ?? [])}
-                  }')`,
-                ),
-              })
-              .onConflictDoUpdate({
-                target: polygonCells.cellId,
-                set: {
-                  value: sql.raw(
-                    `ST_GeomFromGeoJSON('{
-                    "type": "Polygon",
-                    "coordinates": ${JSON.stringify(value?.coordinates ?? [])}
-                  }')`,
-                  ),
-                },
               });
           }
         });

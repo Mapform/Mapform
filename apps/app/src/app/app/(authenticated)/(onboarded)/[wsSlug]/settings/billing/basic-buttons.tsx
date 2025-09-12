@@ -1,6 +1,6 @@
 "use client";
 
-import { WorkspaceDirectory } from "@mapform/backend/data/workspaces/get-workspace-directory";
+import type { WorkspaceDirectory } from "@mapform/backend/data/workspaces/get-workspace-directory";
 import { Button } from "@mapform/ui/components/button";
 import { env } from "~/*";
 import { createCheckoutSessionAction } from "~/data/stripe/create-checkout-session";

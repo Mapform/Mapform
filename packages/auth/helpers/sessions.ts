@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import type { User } from "@mapform/db/schema";
 import { env } from "../env.mjs";
 
+// Based on Lucia Auth
 const key = new TextEncoder().encode(env.AUTH_SECRET);
 const SALT_ROUNDS = 10;
 

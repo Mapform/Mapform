@@ -2,7 +2,7 @@ import projectPagesVideo from "videos/project-pages.mp4.json";
 import projectIntroVideo from "videos/project-intro.mp4.json";
 import projectLayersVideo from "videos/project-layers.mp4.json";
 import projectShareVideo from "videos/project-share.mp4.json";
-import { Tour, TourTrigger, TourContent } from "../tour-guide";
+import { Tour, TourTrigger, TourContent } from "~/components/tour-guide";
 import type { Asset } from "next-video/dist/assets.js";
 
 interface ProjectTourProps {

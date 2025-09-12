@@ -8,7 +8,7 @@ export const deleteRowsAction = async (
 ) => {
   const result = await authClient.deleteRows(params);
 
-  revalidatePath("/app/[wsSlug]/[tsSlug]/datasets/[dId]", "page");
+  revalidatePath("/app/[wsSlug]/[pId]", "page");
 
   return result;
 };

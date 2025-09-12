@@ -3,7 +3,7 @@ import forms from "@tailwindcss/forms";
 import typography from "@tailwindcss/typography";
 import animate from "tailwindcss-animate";
 import container from "@tailwindcss/container-queries";
-import { Config } from "tailwindcss/types/config";
+import type { Config } from "tailwindcss/types/config";
 import plugin from "tailwindcss/plugin";
 
 const config: Config = {
@@ -67,6 +67,13 @@ const config: Config = {
         md: `calc(var(--radius) - 2px)`,
         sm: "calc(var(--radius) - 4px)",
       },
+      backgroundOpacity: {
+        95: "0.95",
+        96: "0.96",
+        97: "0.97",
+        98: "0.98",
+        99: "0.99",
+      },
       fontFamily: {
         sans: ["var(--font-sans)", ...fontFamily.sans],
       },
@@ -79,10 +86,15 @@ const config: Config = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        "rainbow-shimmer": {
+          from: { backgroundPosition: "0% 50%" },
+          to: { backgroundPosition: "200% 50%" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        rainbow: "rainbow-shimmer 1.75s linear infinite reverse",
       },
     },
   },
@@ -102,10 +114,21 @@ const config: Config = {
           "-ms-overflow-style": "none",
           "scrollbar-width": "none",
         },
+        ".animate-rainbow": {
+          backgroundImage:
+            "linear-gradient(90deg, #1b1917, #1b1917, #1b1917, #1b1917, #1b1917, #1b1917, #1b1917, #1b1917, #ff0080, #ff8c00, #ffd500, #32cd32, #1e90ff, #8a2be2, #ff0080, #1b1917, #1b1917, #1b1917, #1b1917, #1b1917, #1b1917, #1b1917, #1b1917)",
+          backgroundSize: "200% 100%",
+          backgroundRepeat: "repeat",
+          "-webkit-background-clip": "text",
+          backgroundClip: "text",
+          color: "transparent",
+          willChange: "background-position",
+          /* Do not set 'animation' here; it comes from theme.animation 'animate-rainbow' */
+        },
       });
     }),
   ],
 };
 
 export default config;
-export { forms, typography, animate, container };
+export { forms, typography, animate, container, type Config };

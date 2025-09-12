@@ -4,52 +4,18 @@ import { getWorkspaceDirectory } from "@mapform/backend/data/workspaces/get-work
 import { requestMagicLink } from "@mapform/backend/data/auth/request-magic-link";
 import { validateMagicLink } from "@mapform/backend/data/auth/validate-magic-link";
 import { signOut } from "@mapform/backend/data/auth/sign-out";
-import { createEmptyDataset } from "@mapform/backend/data/datasets/create-empty-dataset";
-import { deleteDataset } from "@mapform/backend/data/datasets/delete-dataset";
-import { updateDataset } from "@mapform/backend/data/datasets/update-dataset";
-import { createProject } from "@mapform/backend/data/projects/create-project";
-import { deleteProject } from "@mapform/backend/data/projects/delete-project";
-import { getRecentProjects } from "@mapform/backend/data/projects/get-recent-projects";
-import { updateProject } from "@mapform/backend/data/projects/update-project";
 import { getUserWorkspaceMemberships } from "@mapform/backend/data/workspace-memberships/get-user-workspace-memberships";
-import { getRowAndPageCount } from "@mapform/backend/data/usage/get-row-and-page-count";
 import { updateWorkspace } from "@mapform/backend/data/workspaces/update-workspace";
-import { upsertCell } from "@mapform/backend/data/cells/upsert-cell";
-import { createColumn } from "@mapform/backend/data/columns/create-column";
-import { getFeature } from "@mapform/backend/data/features/get-feature";
-import { getFeatures } from "@mapform/backend/data/features/get-features";
-import { createPoint } from "@mapform/backend/data/datasets/create-point";
-import { createLine } from "@mapform/backend/data/datasets/create-line";
-import { createPolygon } from "@mapform/backend/data/datasets/create-polygon";
-import { listTeamspaceDatasets } from "@mapform/backend/data/datasets/list-teamspace-datasets";
 import { uploadImage } from "@mapform/backend/data/images/upload-image";
-import { createPageLayer } from "@mapform/backend/data/layers-to-pages/create-page-layer";
-import { deletePageLayer } from "@mapform/backend/data/layers-to-pages/delete-page-layer";
-import { upsertLayer } from "@mapform/backend/data/layers/upsert-layer";
-import { deleteLayer } from "@mapform/backend/data/layers/delete-layer";
-import { updateLayerOrder } from "@mapform/backend/data/layers/update-layer-order";
-import { createPage } from "@mapform/backend/data/pages/create-page";
-import { deletePage } from "@mapform/backend/data/pages/delete-page";
-import { getPageWithLayers } from "@mapform/backend/data/pages/get-page-with-layers";
-import { updatePage } from "@mapform/backend/data/pages/update-page";
-import { updatePageOrder } from "@mapform/backend/data/pages/update-page-order";
-import { getProjectWithPages } from "@mapform/backend/data/projects/get-project-with-pages";
 import { getTeamspaceWithProjects } from "@mapform/backend/data/teamspaces/get-teamspace-with-projects";
-import { deleteColumn } from "@mapform/backend/data/columns/delete-column";
-import { editColumn } from "@mapform/backend/data/columns/edit-column";
-import { getDataset } from "@mapform/backend/data/datasets/get-dataset";
-import { createRow } from "@mapform/backend/data/rows/create-row";
-import { deleteRows } from "@mapform/backend/data/rows/delete-rows";
-import { duplicateRows } from "@mapform/backend/data/rows/duplicate-rows";
-import { createSubmission } from "@mapform/backend/data/form-submissions/create-submission";
-import { submitPage } from "@mapform/backend/data/cells/submit-page";
-import { getSubmission } from "@mapform/backend/data/form-submissions/get-submission";
 import { getCurrentSession } from "@mapform/backend/data/auth/get-current-session";
-import { createDatasetFromGeojson } from "@mapform/backend/data/datasets/create-from-geojson";
 import { completeOnboarding } from "@mapform/backend/data/workspaces/complete-onboarding";
 import { createCheckoutSession } from "@mapform/backend/data/stripe/create-checkout-session";
 import { createBillingSession } from "@mapform/backend/data/stripe/create-billing-session";
 import { getStorageUsage } from "@mapform/backend/data/usage/get-storage-usage";
+import { getProject } from "@mapform/backend/data/projects/get-project";
+import { createRow } from "@mapform/backend/data/rows/create-row";
+import { getRow } from "@mapform/backend/data/rows/get-row";
 import {
   baseClient,
   UserAccess,
@@ -58,6 +24,34 @@ import {
 } from "@mapform/backend";
 import { headers } from "next/headers";
 import { updateCurrentUser } from "@mapform/backend/data/users/update-current-user";
+import { createProject } from "@mapform/backend/data/projects/create-project";
+import { createView } from "@mapform/backend/data/views/create-view";
+import { createRows } from "@mapform/backend/data/rows/create-rows";
+import { deleteRows } from "@mapform/backend/data/rows/delete-rows";
+import { duplicateRows } from "@mapform/backend/data/rows/duplicate-rows";
+import { deleteView } from "@mapform/backend/data/views/delete-view";
+import { updateView } from "@mapform/backend/data/views/update-view";
+import { createColumn } from "@mapform/backend/data/columns/create-column";
+import { deleteColumn } from "@mapform/backend/data/columns/delete-column";
+import { updateColumn } from "@mapform/backend/data/columns/update-column";
+import { upsertCell } from "@mapform/backend/data/cells/upsert-cell";
+import { searchRows } from "@mapform/backend/data/rows/search-rows";
+import { updateRow } from "@mapform/backend/data/rows/update-row";
+import { updateProject } from "@mapform/backend/data/projects/update-project";
+import { updateProjectOrder } from "@mapform/backend/data/projects/update-project-order";
+import { deleteProject } from "@mapform/backend/data/projects/delete-project";
+import { createChat } from "@mapform/backend/data/chats/create-chat";
+import { getChat } from "@mapform/backend/data/chats/get-chat";
+import { createMessages } from "@mapform/backend/data/messages/create-messages";
+import { getMessages } from "@mapform/backend/data/messages/get-messages";
+import { listChats } from "@mapform/backend/data/chats/list-chats";
+import { getRowCount } from "@mapform/backend/data/usage/get-row-count";
+import { deleteChat } from "@mapform/backend/data/chats/delete-chat";
+import { search } from "@mapform/backend/data/stadia/search";
+import { details } from "@mapform/backend/data/stadia/details";
+import { reverseGeocode } from "@mapform/backend/data/stadia/reverse";
+import { forwardGeocode } from "@mapform/backend/data/stadia/forward";
+
 const ignoredWorkspaceSlugs = ["onboarding"];
 const ignoredTeamspaceSlugs = ["settings"];
 
@@ -119,56 +113,39 @@ const createUserAuthClient = () => {
     // Cells
     upsertCell: upsertCell(extendedClient),
 
+    // Chats
+    createChat: createChat(extendedClient),
+    deleteChat: deleteChat(extendedClient),
+    getChat: getChat(extendedClient),
+    listChats: listChats(extendedClient),
+
     // Columns
-    editColumn: editColumn(extendedClient),
     createColumn: createColumn(extendedClient),
     deleteColumn: deleteColumn(extendedClient),
-
-    // Datalayers
-    getFeatures: getFeatures(extendedClient),
-    getFeature: getFeature(extendedClient),
-
-    // Datasets
-    getDataset: getDataset(extendedClient),
-    createPoint: createPoint(extendedClient), // Note: for createUserAuthClient this is causing 'The inferred type of this node exceeds the maximum length the compiler will serialize'
-    createLine: createLine(extendedClient),
-    createPolygon: createPolygon(extendedClient),
-    deleteDataset: deleteDataset(extendedClient),
-    updateDataset: updateDataset(extendedClient),
-    createEmptyDataset: createEmptyDataset(extendedClient),
-    listTeamspaceDatasets: listTeamspaceDatasets(extendedClient),
-    createDatasetFromGeojson: createDatasetFromGeojson(extendedClient),
+    updateColumn: updateColumn(extendedClient),
 
     // Images
     uploadImage: uploadImage(extendedClient),
 
-    // Layers
-    upsertLayer: upsertLayer(extendedClient),
-    deleteLayer: deleteLayer(extendedClient),
-    updateLayerOrder: updateLayerOrder(extendedClient),
-
-    // Layers to Pages
-    createPageLayer: createPageLayer(extendedClient),
-    deletePageLayer: deletePageLayer(extendedClient),
-
-    // Pages
-    createPage: createPage(extendedClient),
-    deletePage: deletePage(extendedClient),
-    updatePage: updatePage(extendedClient),
-    updatePageOrder: updatePageOrder(extendedClient),
-    getPageWithLayers: getPageWithLayers(extendedClient),
+    // Messages
+    createMessages: createMessages(extendedClient),
+    getMessages: getMessages(extendedClient),
 
     // Projects
+    getProject: getProject(extendedClient),
     createProject: createProject(extendedClient),
-    deleteProject: deleteProject(extendedClient),
     updateProject: updateProject(extendedClient),
-    getRecentProjects: getRecentProjects(extendedClient),
-    getProjectWithPages: getProjectWithPages(extendedClient),
+    updateProjectOrder: updateProjectOrder(extendedClient),
+    deleteProject: deleteProject(extendedClient),
 
     // Rows
+    getRow: getRow(extendedClient),
     createRow: createRow(extendedClient),
+    updateRow: updateRow(extendedClient),
+    createRows: createRows(extendedClient),
     deleteRows: deleteRows(extendedClient),
     duplicateRows: duplicateRows(extendedClient),
+    searchRows: searchRows(extendedClient),
 
     // Stripe
     createBillingSession: createBillingSession(extendedClient),
@@ -180,6 +157,11 @@ const createUserAuthClient = () => {
     // Users
     updateCurrentUser: updateCurrentUser(extendedClient),
 
+    // Views
+    createView: createView(extendedClient),
+    deleteView: deleteView(extendedClient),
+    updateView: updateView(extendedClient),
+
     // Workspaces
     updateWorkspace: updateWorkspace(extendedClient),
     completeOnboarding: completeOnboarding(extendedClient),
@@ -189,8 +171,8 @@ const createUserAuthClient = () => {
     getUserWorkspaceMemberships: getUserWorkspaceMemberships(extendedClient),
 
     // Usage
-    getRowAndPageCount: getRowAndPageCount(extendedClient),
     getStorageUsage: getStorageUsage(extendedClient),
+    getRowCount: getRowCount(extendedClient),
   };
 };
 
@@ -207,21 +189,11 @@ const createPublicClient = () => {
     requestMagicLink: requestMagicLink(extendedClient),
     validateMagicLink: validateMagicLink(extendedClient),
 
-    // Cells
-    submitPage: submitPage(extendedClient),
-
-    // Datalayers
-    getFeatures: getFeatures(extendedClient),
-    getFeature: getFeature(extendedClient),
-
-    // Form Submissions
-    getSubmission: getSubmission(extendedClient),
-
-    // Rows
-    createSubmission: createSubmission(extendedClient),
-
-    // Projects
-    getProjectWithPages: getProjectWithPages(extendedClient),
+    // Stadia
+    search: search(extendedClient),
+    details: details(extendedClient),
+    reverseGeocode: reverseGeocode(extendedClient),
+    forwardGeocode: forwardGeocode(extendedClient),
 
     // Users
     getCurrentSession: getCurrentSession(extendedClient),

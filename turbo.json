@@ -13,7 +13,7 @@
     "DATABASE_URL_UNPOOLED",
 
     "NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN",
-    "GEOAPIFY_API_KEY",
+    "STADIA_API_KEY",
 
     "RESEND_API_KEY",
 
@@ -25,7 +25,11 @@
     "NEXT_PUBLIC_STRIPE_PRO_PRICE_ID_MONTHLY",
     "NEXT_PUBLIC_STRIPE_PRO_PRICE_ID_YEARLY",
 
-    "CRON_SECRET"
+    "CRON_SECRET",
+
+    "AI_GATEWAY_API_KEY",
+
+    "LINKUP_API_KEY"
   ],
   "globalDependencies": ["**/.env.*local"],
   "tasks": {

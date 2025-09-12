@@ -8,7 +8,7 @@ export async function createColumnAction(
 ) {
   const newColumn = await authClient.createColumn(params);
 
-  revalidatePath("/app/[wsSlug]/[tsSlug]/projects/[pId]/project", "page");
+  revalidatePath("/app/[wsSlug]/[pId]", "page");
 
   return newColumn;
 }

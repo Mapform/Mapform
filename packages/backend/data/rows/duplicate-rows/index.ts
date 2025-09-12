@@ -1,25 +1,20 @@
 "server-only";
 
-import { db } from "@mapform/db";
-import { eq, inArray, sql } from "@mapform/db/utils";
+import { db, sql } from "@mapform/db";
+import { eq, inArray } from "@mapform/db/utils";
 import {
-  pointCells,
   rows,
   cells,
   stringCells,
   booleanCells,
   dateCells,
-  richtextCells,
   numberCells,
   plans,
-  iconsCells,
-  polygonCells,
-  lineCells,
 } from "@mapform/db/schema";
 import { duplicateRowsSchema } from "./schema";
 import type { UserAuthClient } from "../../../lib/types";
 import { ServerError } from "../../../lib/server-error";
-import { getRowAndPageCount } from "../../usage/get-row-and-page-count";
+import { getRowCount } from "../../usage/get-row-count";
 
 export const duplicateRows = (authClient: UserAuthClient) =>
   authClient
@@ -27,6 +22,11 @@ export const duplicateRows = (authClient: UserAuthClient) =>
     .action(async ({ parsedInput: { rowIds }, ctx: { userAccess } }) => {
       const dataToDuplicate = await db.query.rows.findMany({
         where: inArray(rows.id, rowIds),
+        extras: {
+          geometry: sql<string>`ST_AsGeoJSON(${rows.geometry})::jsonb`.as(
+            "geometry",
+          ),
+        },
         with: {
           cells: {
             with: {
@@ -34,43 +34,9 @@ export const duplicateRows = (authClient: UserAuthClient) =>
               numberCell: true,
               booleanCell: true,
               dateCell: true,
-              richtextCell: true,
-              iconCell: true,
-              pointCell: {
-                columns: {
-                  id: true,
-                },
-                // TODO: Can remove this workaround once this is fixed: https://github.com/drizzle-team/drizzle-orm/pull/2778#issuecomment-2408519850
-                extras: {
-                  x: sql<number>`ST_X(${pointCells.value})`.as("x"),
-                  y: sql<number>`ST_Y(${pointCells.value})`.as("y"),
-                },
-              },
-              lineCell: {
-                columns: {
-                  id: true,
-                },
-                // TODO: Can remove this workaround once this is fixed: https://github.com/drizzle-team/drizzle-orm/pull/2778#issuecomment-2408519850
-                extras: {
-                  coordinates: sql<number[]>`ST_AsText(${lineCells.value})`.as(
-                    "coordinates",
-                  ),
-                },
-              },
-              polygonCell: {
-                columns: {
-                  id: true,
-                },
-                // TODO: Can remove this workaround once this is fixed: https://github.com/drizzle-team/drizzle-orm/pull/2778#issuecomment-2408519850
-                extras: {
-                  coordinates: sql<
-                    number[]
-                  >`ST_AsText(${polygonCells.value})`.as("coordinates"),
-                },
-              },
             },
           },
-          dataset: {
+          project: {
             with: {
               teamspace: {
                 columns: {
@@ -87,19 +53,19 @@ export const duplicateRows = (authClient: UserAuthClient) =>
         throw new Error("No rows found to duplicate");
       }
 
-      const teamspace = dataToDuplicate[0]?.dataset.teamspace;
+      const teamspace = dataToDuplicate[0]?.project.teamspace;
 
       // Validate that all rows are from the same teamspace
       if (
         !teamspace ||
-        dataToDuplicate.some((row) => row.dataset.teamspace.id !== teamspace.id)
+        dataToDuplicate.some((row) => row.project.teamspace.id !== teamspace.id)
       ) {
         throw new Error("Rows must be from the same teamspace");
       }
 
       // Check if user has access to the teamspace
       dataToDuplicate.forEach((row) => {
-        if (!userAccess.teamspace.checkAccessById(row.dataset.teamspace.id)) {
+        if (!userAccess.teamspace.checkAccessById(row.project.teamspace.id)) {
           throw new Error("Unauthorized");
         }
       });
@@ -108,23 +74,22 @@ export const duplicateRows = (authClient: UserAuthClient) =>
         db.query.plans.findFirst({
           where: eq(plans.workspaceSlug, teamspace.workspaceSlug),
         }),
-        getRowAndPageCount(authClient)({
+        getRowCount(authClient)({
           workspaceSlug: teamspace.workspaceSlug,
         }),
       ]);
 
-      const rowCount = counts?.data?.rowCount;
-      const pageCount = counts?.data?.pageCount;
+      const rowCount = counts?.data;
 
       if (!plan) {
         throw new Error("Plan not found.");
       }
 
-      if (rowCount === undefined || pageCount === undefined) {
-        throw new Error("Row count or page count is undefined.");
+      if (rowCount === undefined) {
+        throw new Error("Row count is undefined.");
       }
 
-      if (rowCount + pageCount + dataToDuplicate.length > plan.rowLimit) {
+      if (rowCount + dataToDuplicate.length > plan.rowLimit) {
         throw new ServerError(
           "Row limit exceeded. Delete some rows, or upgrade your plan.",
         );
@@ -136,7 +101,11 @@ export const duplicateRows = (authClient: UserAuthClient) =>
           .values(
             dataToDuplicate.map((row) => {
               return {
-                datasetId: row.datasetId,
+                name: row.name,
+                icon: row.icon,
+                description: row.description,
+                projectId: row.projectId,
+                geometry: row.geometry,
               };
             }),
           )
@@ -172,9 +141,6 @@ export const duplicateRows = (authClient: UserAuthClient) =>
             )
           : {};
 
-        const pointCellsToDuplicate = cellsToDuplicate.filter(
-          (cell) => cell.pointCell,
-        );
         const stringCellsToDuplicate = cellsToDuplicate.filter(
           (cell) => cell.stringCell,
         );
@@ -187,27 +153,8 @@ export const duplicateRows = (authClient: UserAuthClient) =>
         const numberCellsToDuplicate = cellsToDuplicate.filter(
           (cell) => cell.numberCell,
         );
-        const richtextCellsToDuplicate = cellsToDuplicate.filter(
-          (cell) => cell.richtextCell,
-        );
-        const iconCellsToDuplicate = cellsToDuplicate.filter(
-          (cell) => cell.iconCell,
-        );
 
         await Promise.all([
-          pointCellsToDuplicate.length > 0 &&
-            tx.insert(pointCells).values(
-              pointCellsToDuplicate.map((cell) => {
-                return {
-                  cellId: cellIdMap[cell.id]!,
-                  value: {
-                    x: cell.pointCell!.x,
-                    y: cell.pointCell!.y,
-                  },
-                };
-              }),
-            ),
-
           stringCellsToDuplicate.length > 0 &&
             tx.insert(stringCells).values(
               cellsToDuplicate
@@ -252,30 +199,6 @@ export const duplicateRows = (authClient: UserAuthClient) =>
                   return {
                     cellId: cellIdMap[cell.id]!,
                     value: cell.numberCell!.value,
-                  };
-                }),
-            ),
-
-          richtextCellsToDuplicate.length > 0 &&
-            tx.insert(richtextCells).values(
-              cellsToDuplicate
-                .filter((cell) => cell.richtextCell)
-                .map((cell) => {
-                  return {
-                    cellId: cellIdMap[cell.id]!,
-                    value: cell.richtextCell!.value,
-                  };
-                }),
-            ),
-
-          iconCellsToDuplicate.length > 0 &&
-            tx.insert(iconsCells).values(
-              cellsToDuplicate
-                .filter((cell) => cell.iconCell)
-                .map((cell) => {
-                  return {
-                    cellId: cellIdMap[cell.id]!,
-                    value: cell.iconCell!.value,
                   };
                 }),
             ),

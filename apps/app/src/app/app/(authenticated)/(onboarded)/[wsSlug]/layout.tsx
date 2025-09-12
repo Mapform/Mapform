@@ -2,27 +2,26 @@ import { cache } from "react";
 import { notFound } from "next/navigation";
 import { cookies } from "next/headers";
 import { authClient } from "~/lib/safe-action";
-import { TopNav } from "./top-nav";
 import { WorkspaceProvider } from "./workspace-context";
-import { LeftSidebar } from "./left-sidebar";
+import { AppSidebar } from "./app-sidebar";
+import { SidebarProvider } from "@mapform/ui/components/sidebar";
+import { SIDEBAR_WIDTH } from "~/constants/sidebars";
+import { Drawers } from "./drawers";
 
 export default async function WorkspaceLayout(props: {
-  params: Promise<{ wsSlug: string }>;
+  params: Promise<{ wsSlug: string; pId: string }>;
   children: React.ReactNode;
   nav?: React.ReactNode;
+  drawers?: React.ReactNode;
 }) {
   const cookieStore = await cookies();
   const leftSidebarCookie = cookieStore.get("sidebar-left:state");
-  const rightSidebarCookie = cookieStore.get("sidebar-right:state");
 
   const defaultLeftOpen = leftSidebarCookie
     ? leftSidebarCookie.value === "true"
     : true;
-  const defaultRightOpen = rightSidebarCookie
-    ? rightSidebarCookie.value === "true"
-    : true;
   const params = await props.params;
-  const { children, nav } = props;
+  const { children } = props;
 
   const [workspaceDirectory, workspaceMemberships] = await Promise.all([
     fetchWorkspaceDirectory(params.wsSlug),
@@ -32,18 +31,24 @@ export default async function WorkspaceLayout(props: {
   return (
     <WorkspaceProvider
       defaultLeftOpen={defaultLeftOpen}
-      defaultRightOpen={defaultRightOpen}
       workspaceDirectory={workspaceDirectory}
       workspaceMemberships={workspaceMemberships}
       workspaceSlug={params.wsSlug}
     >
-      <LeftSidebar />
-      <main className="flex flex-1 overflow-hidden">
-        <div className="flex flex-1 flex-col overflow-hidden">
-          <TopNav navSlot={nav} />
-          {children}
-        </div>
-      </main>
+      <SidebarProvider
+        defaultOpen={defaultLeftOpen}
+        width={`${SIDEBAR_WIDTH}px`}
+      >
+        <AppSidebar />
+        <main className="prose pointer-events-none relative flex max-w-none flex-1 overflow-hidden p-2 pl-0">
+          {/* Page-Based Drawers */}
+          {/* Drawers are rendered in the layout so that they don't unmount between route changes. NOTE: This means that ALL content will render in the drawers. If this is not desired, I could consider moving the drawer content into a Next.js SLOT. */}
+          <Drawers>{children}</Drawers>
+
+          {/* Query Param-Based Drawers */}
+          {props.drawers}
+        </main>
+      </SidebarProvider>
     </WorkspaceProvider>
   );
 }

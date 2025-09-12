@@ -24,7 +24,6 @@ import {
   AlertDescription,
 } from "@mapform/ui/components/alert";
 import { useAction } from "next-safe-action/hooks";
-import { toast } from "@mapform/ui/components/toaster";
 import { TriangleAlertIcon } from "lucide-react";
 import { updateWorkspaceAction } from "~/data/workspaces/update-workspace";
 import { env } from "~/env.mjs";
@@ -42,13 +41,6 @@ export function WorkspaceSettings() {
     resolver: zodResolver(updateWorkspaceSchema),
   });
   const { execute, isPending } = useAction(updateWorkspaceAction, {
-    onSuccess: () => {
-      toast({
-        title: "Success!",
-        description: "Your workspace has been updated.",
-      });
-    },
-
     onError: (res) => {
       // Set error message
       if (res.error.serverError) {
@@ -67,17 +59,9 @@ export function WorkspaceSettings() {
   return (
     <>
       <Form {...form}>
-        <form
-          className="flex flex-col py-12"
-          onSubmit={form.handleSubmit(onSubmit)}
-        >
-          <div className="@4xl:grid-cols-3 grid grid-cols-1 gap-x-8 pb-8">
-            <div className="pb-8">
-              <h2 className="text-md font-semibold">Workspace Settings</h2>
-              <p className="text-muted-foreground mt-1 text-sm">
-                Customize your workspace name and url.
-              </p>
-            </div>
+        <form className="flex flex-col" onSubmit={form.handleSubmit(onSubmit)}>
+          <div className="@4xl:grid-cols-3 grid grid-cols-1 gap-x-8 pb-4">
+            {/* <h3 className="text-md mt-0 font-semibold">Workspace Settings</h3> */}
             <div className="@4xl:col-span-2 grid-cols-1 space-y-6">
               <FormField
                 control={form.control}
@@ -154,7 +138,7 @@ export function WorkspaceSettings() {
             </div>
           </div>
           <Button className="ml-auto" disabled={isPending} type="submit">
-            Update
+            {isPending ? "Updating..." : "Update"}
           </Button>
         </form>
       </Form>

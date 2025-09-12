@@ -1,94 +1,30 @@
 "server-only";
 
-import { db } from "@mapform/db";
-import { datasets, pages, projects, teamspaces } from "@mapform/db/schema";
+import { db, sql } from "@mapform/db";
+import { mapViews, tableViews, projects } from "@mapform/db/schema";
 import { createProjectSchema } from "./schema";
 import type { UserAuthClient } from "../../../lib/types";
-import { ServerError } from "../../../lib/server-error";
-import { getRowAndPageCount } from "../../usage/get-row-and-page-count";
-import { eq } from "@mapform/db/utils";
-
-const INITIAL_VIEW_STATE = {
-  longitude: 0,
-  latitude: 0,
-  zoom: 0,
-  bearing: 0,
-  pitch: 0,
-};
+import { views } from "@mapform/db/schema/views/schema";
+import { count, eq } from "@mapform/db/utils";
 
 export const createProject = (authClient: UserAuthClient) =>
   authClient
     .schema(createProjectSchema)
     .action(
       async ({
-        parsedInput: { teamspaceId, formsEnabled, ...rest },
+        parsedInput: { teamspaceId, center, viewType, ...rest },
         ctx: { userAccess },
       }) => {
         if (!userAccess.teamspace.checkAccessById(teamspaceId)) {
           throw new Error("Unauthorized");
         }
 
-        const teamspace = await db.query.teamspaces.findFirst({
-          where: eq(teamspaces.id, teamspaceId),
-          with: {
-            workspace: {
-              with: {
-                plan: true,
-              },
-            },
-          },
-        });
-
-        if (!teamspace) {
-          throw new Error("Teamspace not found");
-        }
-
-        if (formsEnabled && !teamspace.workspace.plan?.stripeSubscriptionId) {
-          throw new ServerError("Upgrade your plan to enable forms.");
-        }
-
-        const rowAndPageCountResponse = await getRowAndPageCount(authClient)({
-          workspaceSlug: teamspace.workspaceSlug,
-        });
-
-        if (!rowAndPageCountResponse?.data) {
-          throw new Error("Row and page count not found");
-        }
-
-        const { rowCount, pageCount } = rowAndPageCountResponse.data;
-
-        if (rowCount === undefined || pageCount === undefined) {
-          throw new Error("Row and page count not found");
-        }
-
-        if (rowCount + pageCount >= teamspace.workspace.plan!.rowLimit) {
-          throw new ServerError(
-            "Row limit exceeded. Delete some rows, or upgrade your plan.",
-          );
-        }
+        const [projectCount] = await db
+          .select({ count: count() })
+          .from(projects)
+          .where(eq(projects.teamspaceId, teamspaceId));
 
         return db.transaction(async (tx) => {
-          let datasetId: string | undefined;
-          /**
-           * Create submissions dataset
-           */
-          if (formsEnabled) {
-            const [dataset] = await tx
-              .insert(datasets)
-              .values({
-                name: `Responses for ${rest.name}`,
-                teamspaceId,
-                type: "submissions",
-              })
-              .returning();
-
-            if (!dataset) {
-              throw new Error("Failed to create dataset");
-            }
-
-            datasetId = dataset.id;
-          }
-
           /**
            * Create project
            */
@@ -97,8 +33,11 @@ export const createProject = (authClient: UserAuthClient) =>
             .values({
               ...rest,
               teamspaceId,
-              formsEnabled,
-              datasetId,
+              position: projectCount?.count ?? 0,
+              center: sql.raw(`ST_GeomFromGeoJSON('{
+                "type": "Point",
+                "coordinates": ${JSON.stringify(center)}
+              }')`),
             })
             .returning();
 
@@ -106,36 +45,27 @@ export const createProject = (authClient: UserAuthClient) =>
             throw new Error("Failed to create project");
           }
 
-          /**
-           * Create default page
-           */
-          await Promise.all([
-            tx.insert(pages).values({
-              position: 1,
+          const [view] = await tx
+            .insert(views)
+            .values({
               projectId: project.id,
-              zoom: INITIAL_VIEW_STATE.zoom,
-              pitch: INITIAL_VIEW_STATE.pitch,
-              bearing: INITIAL_VIEW_STATE.bearing,
-              center: {
-                x: INITIAL_VIEW_STATE.longitude,
-                y: INITIAL_VIEW_STATE.latitude,
-              },
-            }),
+              type: viewType,
+            })
+            .returning();
 
-            formsEnabled &&
-              tx.insert(pages).values({
-                position: 2,
-                projectId: project.id,
-                zoom: INITIAL_VIEW_STATE.zoom,
-                pitch: INITIAL_VIEW_STATE.pitch,
-                bearing: INITIAL_VIEW_STATE.bearing,
-                center: {
-                  x: INITIAL_VIEW_STATE.longitude,
-                  y: INITIAL_VIEW_STATE.latitude,
-                },
-                pageType: "page_ending",
-              }),
-          ]);
+          if (!view) {
+            throw new Error("Failed to create view");
+          }
+
+          if (viewType === "table") {
+            await tx.insert(tableViews).values({
+              viewId: view.id,
+            });
+          } else if (viewType === "map") {
+            await tx.insert(mapViews).values({
+              viewId: view.id,
+            });
+          }
 
           return project;
         });

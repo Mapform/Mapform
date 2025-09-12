@@ -1,0 +1,2 @@
+ALTER TABLE "embedding" ADD COLUMN "created_at" timestamp with time zone DEFAULT now() NOT NULL;--> statement-breakpoint
+ALTER TABLE "embedding" ADD COLUMN "updated_at" timestamp with time zone DEFAULT now() NOT NULL;

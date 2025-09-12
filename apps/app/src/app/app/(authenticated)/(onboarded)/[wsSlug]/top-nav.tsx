@@ -6,14 +6,12 @@ import { PanelLeftCloseIcon, PanelLeftOpenIcon } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
-  TooltipProvider,
   TooltipTrigger,
 } from "@mapform/ui/components/tooltip";
 import { useParams, usePathname } from "next/navigation";
 import { cn } from "@mapform/lib/classnames";
-import { useSidebarLeft } from "@mapform/ui/components/sidebar";
-import { RenameProjectPopover } from "~/components/rename-project-popover";
-import { RenameDatasetPopover } from "~/components/rename-dataset-popover";
+import { useSidebar } from "@mapform/ui/components/sidebar";
+// import { RenameProjectPopover } from "~/components/rename-project-popover";
 import { useWorkspace } from "./workspace-context";
 
 interface TopNavProps {
@@ -27,7 +25,7 @@ export function TopNav({ navSlot }: TopNavProps) {
     pId?: string;
     dId?: string;
   }>();
-  const { open, setOpen } = useSidebarLeft();
+  const { open, setOpen } = useSidebar();
   const { workspaceDirectory } = useWorkspace();
   const pathname = usePathname();
 
@@ -35,7 +33,6 @@ export function TopNav({ navSlot }: TopNavProps) {
     (ts) => ts.slug === params.tsSlug,
   );
   const project = teamspaces?.projects.find((p) => p.id === params.pId);
-  const dataset = teamspaces?.datasets.find((d) => d.id === params.dId);
   const isSettingsPage = `/app/${params.wsSlug}/settings` === pathname;
 
   const breadcrumbs = [
@@ -57,43 +54,31 @@ export function TopNav({ navSlot }: TopNavProps) {
           },
         ]
       : []),
-    ...(dataset
-      ? [
-          {
-            name: dataset.name,
-            isDataset: true,
-          },
-        ]
-      : []),
   ];
 
   return (
     <div className="flex h-16 items-center px-4 py-2">
       <nav className="-mr-2 flex flex-1 items-center">
         <div className="mr-2 flex">
-          <TooltipProvider delayDuration={200}>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  className="-ml-2"
-                  onClick={() => {
-                    setOpen(!open);
-                  }}
-                  size="icon-sm"
-                  variant="ghost"
-                >
-                  {open ? (
-                    <PanelLeftCloseIcon className="size-5" />
-                  ) : (
-                    <PanelLeftOpenIcon className="size-5" />
-                  )}
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                {open ? "Hide" : "Show"} Navigation
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                className="-ml-2"
+                onClick={() => {
+                  setOpen(!open);
+                }}
+                size="icon-sm"
+                variant="ghost"
+              >
+                {open ? (
+                  <PanelLeftCloseIcon className="size-5" />
+                ) : (
+                  <PanelLeftOpenIcon className="size-5" />
+                )}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>{open ? "Hide" : "Show"} Navigation</TooltipContent>
+          </Tooltip>
         </div>
         <h3 className="flex items-center text-base font-medium leading-6 text-stone-900">
           {breadcrumbs.map((breadcrumb, index) => {
@@ -119,33 +104,19 @@ export function TopNav({ navSlot }: TopNavProps) {
               </>
             );
 
-            if (breadcrumb.isProject && project) {
-              return (
-                <RenameProjectPopover
-                  key={breadcrumb.name}
-                  project={{
-                    id: project.id,
-                    title: project.name,
-                  }}
-                >
-                  {content}
-                </RenameProjectPopover>
-              );
-            }
-
-            if (breadcrumb.isDataset && dataset) {
-              return (
-                <RenameDatasetPopover
-                  dataset={{
-                    id: dataset.id,
-                    title: dataset.name,
-                  }}
-                  key={breadcrumb.name}
-                >
-                  {content}
-                </RenameDatasetPopover>
-              );
-            }
+            // if (breadcrumb.isProject && project) {
+            //   return (
+            //     <RenameProjectPopover
+            //       key={breadcrumb.name}
+            //       project={{
+            //         id: project.id,
+            //         title: project.name,
+            //       }}
+            //     >
+            //       {content}
+            //     </RenameProjectPopover>
+            //   );
+            // }
 
             return <div key={breadcrumb.name}>{content}</div>;
           })}

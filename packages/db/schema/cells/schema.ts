@@ -3,16 +3,10 @@ import {
   pgTable,
   uuid,
   text,
-  jsonb,
   unique,
   boolean,
   numeric,
-  geometry,
-  index,
-  varchar,
-  customType,
 } from "drizzle-orm/pg-core";
-import type { DocumentContent } from "@mapform/blocknote";
 import { rows } from "../rows/schema";
 import { columns } from "../columns/schema";
 
@@ -23,6 +17,9 @@ export const cells = pgTable(
   "cell",
   {
     id: uuid("id").primaryKey().defaultRandom(),
+
+    // Don't need explicit 'type' descriminator on cells before its on the
+    // linked column table
 
     rowId: uuid("row_id")
       .notNull()
@@ -91,81 +88,6 @@ export const booleanCells = pgTable(
 );
 
 /**
- * POINT CELL
- */
-export const pointCells = pgTable(
-  "point_cell",
-  {
-    id: uuid("id").primaryKey().defaultRandom(),
-    value: geometry("value", { type: "point", mode: "xy" }),
-
-    cellId: uuid("cell_id")
-      .notNull()
-      .references(() => cells.id, { onDelete: "cascade" }),
-  },
-  (t) => [
-    index("point_spatial_index").using("gist", t.value),
-    unique("point_cell_unq").on(t.cellId),
-  ],
-);
-
-// Custom type for line geometry
-const lineGeometry = customType<{
-  data: { coordinates: [number, number][] };
-}>({
-  dataType() {
-    return "geometry(LineString, 4326)";
-  },
-});
-
-/**
- * LINE CELL
- */
-export const lineCells = pgTable(
-  "line_cell",
-  {
-    id: uuid("id").primaryKey().defaultRandom(),
-    value: lineGeometry("value"),
-
-    cellId: uuid("cell_id")
-      .notNull()
-      .references(() => cells.id, { onDelete: "cascade" }),
-  },
-  (t) => [
-    index("line_spatial_index").using("gist", t.value),
-    unique("line_cell_unq").on(t.cellId),
-  ],
-);
-
-// Custom type for polygon geometry
-const polygonGeometry = customType<{
-  data: { coordinates: [number, number][][] };
-}>({
-  dataType() {
-    return "geometry(Polygon, 4326)";
-  },
-});
-
-/**
- * POLYGON CELL
- */
-export const polygonCells = pgTable(
-  "polygon_cell",
-  {
-    id: uuid("id").primaryKey().defaultRandom(),
-    value: polygonGeometry("value"),
-
-    cellId: uuid("cell_id")
-      .notNull()
-      .references(() => cells.id, { onDelete: "cascade" }),
-  },
-  (t) => [
-    index("polygon_spatial_index").using("gist", t.value),
-    unique("polygon_cell_unq").on(t.cellId),
-  ],
-);
-
-/**
  * DATE CELL
  */
 export const dateCells = pgTable(
@@ -179,36 +101,4 @@ export const dateCells = pgTable(
       .references(() => cells.id, { onDelete: "cascade" }),
   },
   (t) => [unique("date_cell_unq").on(t.cellId)],
-);
-
-/**
- * RICHTEXT CELL
- */
-export const richtextCells = pgTable(
-  "richtext_cell",
-  {
-    id: uuid("id").primaryKey().defaultRandom(),
-    value: jsonb("value").$type<{ content: DocumentContent }>(),
-
-    cellId: uuid("cell_id")
-      .notNull()
-      .references(() => cells.id, { onDelete: "cascade" }),
-  },
-  (t) => [unique("richtext_cell_unq").on(t.cellId)],
-);
-
-/**
- * ICON CELL
- */
-export const iconsCells = pgTable(
-  "icon_cell",
-  {
-    id: uuid("id").primaryKey().defaultRandom(),
-    value: varchar("icon", { length: 256 }),
-
-    cellId: uuid("cell_id")
-      .notNull()
-      .references(() => cells.id, { onDelete: "cascade" }),
-  },
-  (t) => [unique("icon_cell_unq").on(t.cellId)],
 );

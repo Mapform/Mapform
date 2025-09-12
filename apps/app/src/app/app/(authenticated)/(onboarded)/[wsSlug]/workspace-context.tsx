@@ -1,22 +1,37 @@
 "use client";
 
-import { createContext, useContext } from "react";
+import React, {
+  createContext,
+  useContext,
+  useOptimistic,
+  startTransition,
+  useState,
+  useCallback,
+  useRef,
+} from "react";
 import type { GetUserWorkspaceMemberships } from "@mapform/backend/data/workspace-memberships/get-user-workspace-memberships";
 import type { WorkspaceDirectory } from "@mapform/backend/data/workspaces/get-workspace-directory";
+import { SidebarProvider } from "@mapform/ui/components/sidebar";
+import Map, { NavigationControl } from "react-map-gl/mapbox";
+import { env } from "~/*";
+import "mapbox-gl/dist/mapbox-gl.css";
 import {
-  SidebarLeftProvider,
-  SidebarRightProvider,
-} from "@mapform/ui/components/sidebar";
-import { useParams } from "next/navigation";
-import { RightSidebar } from "./right-sidebar";
+  POINTS_LAYER_ID,
+  POINTS_SYMBOLS_LAYER_ID,
+  LINES_LAYER_ID,
+  POLYGONS_FILL_LAYER_ID,
+  POLYGONS_OUTLINE_LAYER_ID,
+} from "~/lib/map/constants";
+import { MapContextMenu } from "./map-context-menu";
+import { useParamsContext } from "~/lib/params/client";
 
 export interface WorkspaceContextInterface {
   workspaceSlug: string;
-  workspaceDirectory: NonNullable<WorkspaceDirectory["data"]>;
   workspaceMemberships: NonNullable<GetUserWorkspaceMemberships["data"]>;
-  currentWorkspace:
-    | NonNullable<GetUserWorkspaceMemberships["data"]>[number]
-    | undefined;
+  workspaceDirectory: NonNullable<WorkspaceDirectory["data"]>;
+  updateWorkspaceDirectory: (
+    optimisticValue: Partial<NonNullable<WorkspaceDirectory["data"]>>,
+  ) => void;
 }
 
 export interface WorkspaceProviderProps {
@@ -29,50 +44,169 @@ export const WorkspaceContext = createContext<WorkspaceContextInterface>(
 );
 export const useWorkspace = () => useContext(WorkspaceContext);
 
+const accessToken = env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
+
 export function WorkspaceProvider({
   children,
   workspaceSlug,
-  workspaceDirectory,
+  workspaceDirectory: initialWorkspaceDirectory,
   workspaceMemberships,
   defaultLeftOpen,
-  defaultRightOpen,
 }: {
   defaultLeftOpen?: boolean;
-  defaultRightOpen?: boolean;
   workspaceMemberships: NonNullable<GetUserWorkspaceMemberships["data"]>;
   workspaceDirectory: NonNullable<WorkspaceDirectory["data"]>;
 } & WorkspaceProviderProps) {
-  const params = useParams<{
-    pId?: string;
-  }>();
-  /**
-   * This array can be used to determine if the current page has a drawer. We
-   * define it at the root (instead of at a Leaf node), so that we can
-   * immeditately render the initial drawer state. Otherwise, the drawer
-   * animates in after a delay when the client component loads, which looks
-   * weird.
-   */
-  const hasDrawer = [Boolean(params.pId)].some(Boolean);
-  // const pathname = usePathname();
-  const currentWorkspace = workspaceMemberships?.find(
+  const [contextMenu, setContextMenu] = useState<{
+    longitude: number;
+    latitude: number;
+    x: number;
+    y: number;
+  } | null>(null);
+  const { setQueryStates } = useParamsContext();
+  const [cursor, setCursor] = useState<string>("grab");
+  const currentWorkspace = workspaceMemberships.find(
     (membership) => membership.workspace.slug === workspaceSlug,
   );
+
+  if (!currentWorkspace) {
+    throw new Error("Current workspace not found");
+  }
+
+  const [workspaceDirectory, _updateWorkspaceDirectory] = useOptimistic<
+    typeof initialWorkspaceDirectory,
+    Partial<typeof initialWorkspaceDirectory>
+  >(initialWorkspaceDirectory, (workspaceDirectory, optimisticValue) => {
+    return {
+      ...workspaceDirectory,
+      ...optimisticValue,
+    };
+  });
+
+  const longPressTimerRef = useRef<number | null>(null);
+  const longPressTriggeredRef = useRef(false);
+
+  const cancelLongPress = () => {
+    if (longPressTimerRef.current !== null) {
+      clearTimeout(longPressTimerRef.current);
+      longPressTimerRef.current = null;
+    }
+  };
+
+  const startLongPress = (
+    event: mapboxgl.MapMouseEvent | mapboxgl.MapTouchEvent,
+    timeoutMs = 500,
+  ) => {
+    cancelLongPress();
+    const { lngLat } = event;
+    const longitude = lngLat.lng;
+    const latitude = lngLat.lat;
+
+    longPressTimerRef.current = window.setTimeout(async () => {
+      await setQueryStates({
+        latitude,
+        longitude,
+      });
+      longPressTriggeredRef.current = true;
+    }, timeoutMs);
+  };
+
+  const handleContextMenu = (event: mapboxgl.MapMouseEvent) => {
+    event.preventDefault(); // Prevent the browser's default context menu
+    setContextMenu({
+      longitude: event.lngLat.lng,
+      latitude: event.lngLat.lat,
+      x: event.point.x,
+      y: event.point.y,
+    });
+  };
+
+  const handleCloseContextMenu = () => {
+    setContextMenu(null);
+  };
+
+  const handleClick = (
+    event: mapboxgl.MapMouseEvent & {
+      features?: { properties: { id: string } }[];
+    },
+  ) => {
+    if (longPressTriggeredRef.current) {
+      longPressTriggeredRef.current = false;
+      return;
+    }
+    // Access clicked features from event.features
+    if (event.features && event.features.length > 0) {
+      const clickedFeature = event.features[0]; // Or iterate through all features
+      if (clickedFeature?.properties.id) {
+        void setQueryStates({ rowId: clickedFeature.properties.id });
+      }
+    }
+  };
+
+  const handleTouchStart = (event: mapboxgl.MapTouchEvent) => {
+    startLongPress(event);
+  };
+
+  const handleMouseDown = (event: mapboxgl.MapMouseEvent) => {
+    startLongPress(event);
+  };
+
+  const onMouseEnter = useCallback(() => setCursor("pointer"), []);
+  const onMouseLeave = useCallback(() => setCursor("grab"), []);
 
   return (
     <WorkspaceContext.Provider
       value={{
-        workspaceDirectory,
         workspaceMemberships,
         workspaceSlug,
-        currentWorkspace,
+        workspaceDirectory,
+        updateWorkspaceDirectory: (optimisticValue) => {
+          startTransition(() => {
+            _updateWorkspaceDirectory(optimisticValue);
+          });
+        },
       }}
     >
-      <SidebarLeftProvider defaultOpen={defaultLeftOpen}>
-        <SidebarRightProvider defaultOpen={defaultRightOpen}>
+      <Map
+        mapboxAccessToken={accessToken}
+        style={{ width: "100vw", height: "100vh" }}
+        mapStyle="mapbox://styles/nichaley/cmcyt7kfs005q01qn6vhrga96"
+        projection="globe"
+        logoPosition="bottom-right"
+        initialViewState={{
+          zoom: 2,
+        }}
+        cursor={cursor}
+        minZoom={2}
+        onContextMenu={handleContextMenu}
+        onTouchStart={handleTouchStart}
+        onMove={cancelLongPress}
+        onTouchMove={cancelLongPress}
+        onTouchEnd={cancelLongPress}
+        onTouchCancel={cancelLongPress}
+        onMouseDown={handleMouseDown}
+        onMouseUp={cancelLongPress}
+        onClick={handleClick}
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
+        interactiveLayerIds={[
+          POINTS_LAYER_ID,
+          POINTS_SYMBOLS_LAYER_ID,
+          LINES_LAYER_ID,
+          POLYGONS_FILL_LAYER_ID,
+          POLYGONS_OUTLINE_LAYER_ID,
+        ]}
+      >
+        <SidebarProvider defaultOpen={defaultLeftOpen}>
           {children}
-          {hasDrawer ? <RightSidebar /> : null}
-        </SidebarRightProvider>
-      </SidebarLeftProvider>
+        </SidebarProvider>
+        <NavigationControl position="top-right" />
+        <MapContextMenu
+          open={!!contextMenu}
+          onOpenChange={handleCloseContextMenu}
+          position={contextMenu ?? { x: 0, y: 0, longitude: 0, latitude: 0 }}
+        />
+      </Map>
     </WorkspaceContext.Provider>
   );
 }

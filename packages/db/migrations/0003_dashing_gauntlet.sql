@@ -1,1 +1,0 @@
-ALTER TABLE "string_cell" ADD CONSTRAINT "string_cell_unq" UNIQUE("cell_id");

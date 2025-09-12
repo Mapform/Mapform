@@ -8,8 +8,7 @@ export const deleteColumnAction = async (
 ) => {
   const result = await authClient.deleteColumn(params);
 
-  revalidatePath("/app/[wsSlug]/[tsSlug]/datasets/[dId]", "page");
-  revalidatePath("/app/[wsSlug]/[tsSlug]/projects/[pId]/project", "page");
+  revalidatePath("/app/[wsSlug]/[pId]", "page");
 
   return result;
 };
