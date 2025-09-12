@@ -51,7 +51,7 @@ export function PickLocationsMessage({ results }: PickLocationsMessageProps) {
     map.fitBounds(bounds, {
       padding: 50,
       duration: 1000,
-      maxZoom: 12,
+      maxZoom: 15,
     });
 
     hasFlownToRef.current = "flown";

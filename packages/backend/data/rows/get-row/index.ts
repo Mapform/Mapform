@@ -21,6 +21,8 @@ export const getRow = (authClient: UserAuthClient) =>
           name: true,
           description: true,
           geometry: true,
+          stadiaId: true,
+          osmId: true,
         },
         extras: {
           geometry: sql<Geometry>`ST_AsGeoJSON(${rows.geometry})::jsonb`.as(

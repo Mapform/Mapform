@@ -8,7 +8,7 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from "@mapform/ui/components/tooltip";
-import { ImagePlusIcon, SmilePlusIcon } from "lucide-react";
+import { ImagePlusIcon, LinkIcon, SmilePlusIcon } from "lucide-react";
 import {
   type CustomBlock,
   schema,
@@ -29,6 +29,7 @@ import {
   ImageUploaderTrigger,
 } from "./image-uploder";
 import { cn } from "@mapform/lib/classnames";
+import { Badge } from "@mapform/ui/components/badge";
 
 type Property =
   | {
@@ -63,6 +64,8 @@ interface FeatureProps {
     markdown: string | null;
   }) => void;
   rowId?: string;
+  stadiaId?: string;
+  osmId?: string;
 }
 
 export function Feature({
@@ -75,6 +78,8 @@ export function Feature({
   onIconChange,
   onDescriptionChange,
   rowId,
+  stadiaId,
+  osmId,
 }: FeatureProps) {
   const editor = useCreateBlockNote({
     schema,
