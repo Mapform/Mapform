@@ -51,13 +51,13 @@ function SearchDetailsInner({ details }: SearchDetailsProps) {
 
   const longitude = details?.features[0]?.geometry?.coordinates[0];
   const latitude = details?.features[0]?.geometry?.coordinates[1];
-  const place = details?.features[0]?.properties;
+  const feature = details?.features[0];
 
   useEffect(() => {
     // no-op here; map centering is handled inside PlaceDetailsContent
   }, []);
 
-  if (!longitude || !latitude || !place)
+  if (!longitude || !latitude || !feature)
     return (
       <>
         <MapDrawerToolbar>
@@ -88,7 +88,7 @@ function SearchDetailsInner({ details }: SearchDetailsProps) {
       <PlaceDetailsContent
         latitude={latitude}
         longitude={longitude}
-        place={place}
+        feature={feature}
         onClose={() => {
           void setQueryStates({ stadiaId: null });
         }}

@@ -56,7 +56,7 @@ function SearchDetailsInner({ coordinates, details }: CoordinatesProps) {
 
   const longitude = coordinates?.[1]!;
   const latitude = coordinates?.[0]!;
-  const place = details?.features[0]?.properties;
+  const feature = details?.features[0];
 
   useEffect(() => {
     // no-op here; map centering is handled inside PlaceDetailsContent
@@ -66,7 +66,7 @@ function SearchDetailsInner({ coordinates, details }: CoordinatesProps) {
     <PlaceDetailsContent
       latitude={latitude}
       longitude={longitude}
-      place={place}
+      feature={feature}
       onClose={() => {
         void setQueryStates({ latitude: null, longitude: null });
       }}

@@ -45,21 +45,19 @@ import { useWorkspace } from "../../workspace-context";
 import { useParamsContext } from "~/lib/params/client";
 import { useMapPadding } from "~/lib/map/use-map-padding";
 
-type PlaceProperties = NonNullable<
-  Details["data"]
->["features"][number]["properties"];
+type Feature = NonNullable<Details["data"]>["features"][number];
 
 interface PlaceDetailsContentProps {
   latitude: number;
   longitude: number;
-  place?: PlaceProperties;
+  feature?: Feature;
   onClose: () => void | Promise<void>;
 }
 
 export function PlaceDetailsContent({
   latitude,
   longitude,
-  place,
+  feature,
   onClose,
 }: PlaceDetailsContentProps) {
   const map = useMap();
@@ -75,16 +73,20 @@ export function PlaceDetailsContent({
   });
 
   const [projectComboboxOpen, setProjectComboboxOpen] = useState(false);
+  const properties = feature?.properties;
 
   const wikidataId =
-    place?.addendum?.osm?.wikidata ??
-    place?.addendum?.whosonfirstConcordances?.wikidataId ??
+    properties?.addendum?.osm?.wikidata ??
+    properties?.addendum?.whosonfirstConcordances?.wikidataId ??
     undefined;
 
   const website =
-    place?.addendum?.osm?.website ?? place?.addendum?.foursquare?.website;
-  const phone = place?.addendum?.osm?.phone ?? place?.addendum?.foursquare?.tel;
-  const address = place?.formattedAddressLine ?? place?.coarseLocation;
+    properties?.addendum?.osm?.website ??
+    properties?.addendum?.foursquare?.website;
+  const phone =
+    properties?.addendum?.osm?.phone ?? properties?.addendum?.foursquare?.tel;
+  const address =
+    properties?.formattedAddressLine ?? properties?.coarseLocation;
   const wikiData = useWikidataImages(wikidataId);
 
   useEffect(() => {
@@ -114,7 +116,7 @@ export function PlaceDetailsContent({
     execute({
       projectId,
       name: placeName,
-      stadiaId: place?.gid,
+      stadiaId: properties?.gid,
       osmId: wikidataId,
       geometry: {
         type: "Point",
@@ -123,7 +125,7 @@ export function PlaceDetailsContent({
     });
   };
 
-  const placeName = place?.name ?? "Marked Location";
+  const placeName = properties?.name ?? "Marked Location";
 
   return (
     <>
@@ -139,7 +141,7 @@ export function PlaceDetailsContent({
               execute({
                 projectId: pId,
                 name: placeName,
-                stadiaId: place?.gid,
+                stadiaId: properties?.gid,
                 geometry: {
                   type: "Point",
                   coordinates: [longitude, latitude],
