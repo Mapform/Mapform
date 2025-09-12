@@ -142,6 +142,7 @@ export function PlaceDetailsContent({
                 projectId: pId,
                 name: placeName,
                 stadiaId: properties?.gid,
+                osmId: wikidataId,
                 geometry: {
                   type: "Point",
                   coordinates: [longitude, latitude],

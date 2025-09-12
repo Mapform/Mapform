@@ -30,6 +30,7 @@ import {
 } from "./image-uploder";
 import { cn } from "@mapform/lib/classnames";
 import { Badge } from "@mapform/ui/components/badge";
+import { useWikidataImages } from "~/lib/wikidata-image";
 
 type Property =
   | {
@@ -64,7 +65,6 @@ interface FeatureProps {
     markdown: string | null;
   }) => void;
   rowId?: string;
-  stadiaId?: string;
   osmId?: string;
 }
 
@@ -78,7 +78,6 @@ export function Feature({
   onIconChange,
   onDescriptionChange,
   rowId,
-  stadiaId,
   osmId,
 }: FeatureProps) {
   const editor = useCreateBlockNote({
@@ -88,7 +87,9 @@ export function Feature({
       typeof description === "string" ? [] : (description as CustomBlock[]),
   });
 
-  const images = imageData?.images;
+  const wikiData = useWikidataImages(osmId);
+  console.log(111, osmId, wikiData.images);
+  const images = [...(imageData?.images ?? []), ...(wikiData.images ?? [])];
 
   // As per https://www.blocknotejs.org/docs/editor-api/converting-blocks#parsing-markdown-to-blocks
   useEffect(() => {
