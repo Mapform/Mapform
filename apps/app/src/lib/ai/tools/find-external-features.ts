@@ -5,12 +5,12 @@ import type { AIResultLocation } from "~/lib/types";
 
 export const findExternalFeatures = tool({
   description:
-    "Searches by name for external features (cities, landmarks, restaurants, etc.) using the Geoapify autocomplete API.",
+    "Forward geocoding (search) endpoint to search for addresses, points of interest, and administrative areas.",
   inputSchema: z.object({
     query: z
       .string()
       .describe(
-        "The query to search for. Examples: 'Paris France', 'Eiffel Tower', 'McDonalds', 'Hilton Hotel', 'Central Park', 'Times Square', etc.",
+        "The name or address of the place to search for. Examples: 'Paris, France', 'Eiffel Tower', '123 Main St. San Francisco, CA', etc.",
       ),
     bounds: z
       .array(z.number())
@@ -30,46 +30,51 @@ export async function findExternalFeaturesFunc(
   bounds?: number[],
 ) {
   try {
-    const findExternalFeaturesResults = await publicClient.search({
+    const findExternalFeaturesResults = await publicClient.forwardGeocode({
       query,
       bounds,
     });
 
-    const topResult = findExternalFeaturesResults?.data?.features[0];
+    const features = findExternalFeaturesResults?.data?.features ?? [];
 
-    if (!topResult?.properties.gid) {
-      return null;
-    }
-
-    const placeDetails = await publicClient.details({
-      id: topResult.properties.gid,
-    });
-
-    const place = placeDetails?.data?.features[0];
-    const placeDetailProperties = place?.properties;
-
-    if (!placeDetailProperties) {
+    if (!features.length) {
       return [];
     }
 
-    const wikidataId =
-      placeDetailProperties.addendum?.osm?.wikidata ??
-      placeDetailProperties.addendum?.whosonfirstConcordances?.wikidataId ??
-      "";
+    const detailedResults = await Promise.all(
+      features.map(async (feature) => {
+        const gid = feature.properties.gid;
+        if (!gid) return null;
 
-    return [
-      {
-        id: placeDetailProperties.gid,
-        name: topResult.properties.name,
-        address: placeDetailProperties.formattedAddressLine ?? "",
-        wikidataId: wikidataId,
-        coordinates: [
-          place.geometry?.coordinates[0],
-          place.geometry?.coordinates[1],
-        ] as [number, number],
-        source: "stadia",
-      },
-    ] satisfies AIResultLocation[];
+        const placeDetails = await publicClient.details({ id: gid });
+        const place = placeDetails?.data?.features[0];
+        const placeDetailProperties = place?.properties;
+        const coordinates = place?.geometry?.coordinates as
+          | [number, number]
+          | undefined;
+
+        if (!placeDetailProperties || !coordinates) return null;
+
+        const wikidataId =
+          placeDetailProperties.addendum?.osm?.wikidata ??
+          placeDetailProperties.addendum?.whosonfirstConcordances?.wikidataId ??
+          "";
+
+        return {
+          id: placeDetailProperties.gid,
+          name: feature.properties.name,
+          address:
+            placeDetailProperties.formattedAddressLine ??
+            placeDetailProperties.coarseLocation ??
+            undefined,
+          wikidataId,
+          coordinates,
+          source: "stadia",
+        } satisfies AIResultLocation;
+      }),
+    );
+
+    return detailedResults;
   } catch (error) {
     console.error("Error in address findExternalFeatures:", error);
     throw new Error(

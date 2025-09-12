@@ -8,7 +8,8 @@ const client = new LinkupClient({
 });
 
 export const webSearch = tool({
-  description: "Search the web for up-to-date information",
+  description:
+    "Search the web to find information for trip planning, restaurant recommendations, etc.",
   inputSchema: z.object({
     query: z.string().min(1).max(100).describe("The search query"),
   }),

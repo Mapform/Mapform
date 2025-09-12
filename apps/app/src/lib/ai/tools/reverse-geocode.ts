@@ -43,7 +43,10 @@ export async function reverseGeocodeFunc(lat: number, lng: number) {
     {
       id: feature.properties.gid,
       name: feature.properties.name,
-      address: feature.properties.formattedAddressLine,
+      address:
+        feature.properties.formattedAddressLine ??
+        feature.properties.coarseLocation ??
+        undefined,
       wikidataId,
       coordinates: [
         feature.geometry.coordinates[0],
