@@ -4,7 +4,7 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack & npx next-video sync -w",
+    "dev": "concurrently \"next dev --turbopack\" \"npx next-video sync -w\" \"inngest-cli dev\"",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -88,6 +88,7 @@
     "@types/unique-slug": "catalog:",
     "@types/uuid": "catalog:",
     "autoprefixer": "catalog:",
+    "concurrently": "^9.2.1",
     "postcss": "catalog:",
     "tailwindcss": "catalog:",
     "typescript": "catalog:",
