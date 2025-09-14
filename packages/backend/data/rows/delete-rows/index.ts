@@ -1,7 +1,7 @@
 "server-only";
 
 import { db } from "@mapform/db";
-import { rows } from "@mapform/db/schema";
+import { rows, blobs } from "@mapform/db/schema";
 import { deleteRowsSchema } from "./schema";
 import type { UserAuthClient } from "../../../lib/types";
 import { inArray } from "@mapform/db/utils";
@@ -32,7 +32,20 @@ export const deleteRows = (authClient: UserAuthClient) =>
         throw new Error("Unauthorized");
       }
 
-      return db.delete(rows).where(inArray(rows.id, rowIds)).returning({
-        id: rows.id,
+      return db.transaction(async (tx) => {
+        const now = new Date();
+        // Queue blobs linked to the rows
+        await tx
+          .update(blobs)
+          .set({ queuedForDeletionDate: now })
+          .where(inArray(blobs.rowId, rowIds));
+
+        // Delete rows
+        const deleted = await tx
+          .delete(rows)
+          .where(inArray(rows.id, rowIds))
+          .returning({ id: rows.id });
+
+        return deleted;
       });
     });
