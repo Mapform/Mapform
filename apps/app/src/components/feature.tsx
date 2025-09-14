@@ -162,7 +162,7 @@ export function Feature({
             ) : null}
             <TooltipContent>Add emoji</TooltipContent>
           </Tooltip>
-          {!images?.length && rowId ? (
+          {!images.length && rowId ? (
             <Tooltip>
               <ImageUploaderPopover>
                 <ImageUploaderTrigger asChild>
