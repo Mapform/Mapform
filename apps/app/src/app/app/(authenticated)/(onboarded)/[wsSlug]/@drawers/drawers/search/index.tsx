@@ -151,7 +151,7 @@ export function SearchInner({
                 </span>
                 <span className="text-muted-foreground ml-1 flex-shrink-0">
                   {" "}
-                  — From {result.projectName}
+                  — {result.projectName || "New Map"}
                 </span>
               </CommandItem>
             ))}
@@ -179,6 +179,7 @@ export function SearchInner({
                   {feature.properties.name}
                   {feature.properties.coarseLocation && (
                     <span className="text-muted-foreground ml-1 flex-shrink-0">
+                      {" — "}
                       {feature.properties.coarseLocation}
                     </span>
                   )}
