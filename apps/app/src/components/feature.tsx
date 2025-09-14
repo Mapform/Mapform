@@ -88,7 +88,6 @@ export function Feature({
   });
 
   const wikiData = useWikidataImages(osmId);
-  console.log(111, osmId, wikiData.images);
   const images = [...(imageData?.images ?? []), ...(wikiData.images ?? [])];
 
   // As per https://www.blocknotejs.org/docs/editor-api/converting-blocks#parsing-markdown-to-blocks
@@ -138,7 +137,7 @@ export function Feature({
             {icon ? (
               <div
                 className={cn("relative z-10 mb-2", {
-                  "-mt-12": images?.length,
+                  "-mt-12": images.length,
                 })}
               >
                 <EmojiPopover onIconChange={onIconChange}>

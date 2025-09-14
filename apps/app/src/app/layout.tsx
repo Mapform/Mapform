@@ -9,7 +9,6 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import { RootProviders } from "./root-providers";
 import { defaultMetadata, defaultViewport } from "./metadata";
 import { getCurrentSession } from "~/data/auth/get-current-session";
-import { MobileWarning } from "../components/mobile-warning";
 
 const inter = Inter({ subsets: ["latin"], display: "swap" });
 
@@ -33,7 +32,6 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={cn("h-full bg-white", inter.className)}>
         <RootProviders currentSessionPromise={currentSessionPromise}>
-          <MobileWarning />
           {children}
           <Toaster />
           <Analytics />
