@@ -8,6 +8,7 @@ import { blobs, projects, rows, workspaces } from "@mapform/db/schema";
 import { eq } from "@mapform/db/utils";
 import { ServerError } from "../../../lib/server-error";
 import { getStorageUsage } from "../../usage/get-storage-usage";
+import { env } from "../../../env.mjs";
 
 export const uploadImage = (authClient: UserAuthClient) =>
   authClient
@@ -121,10 +122,15 @@ export const uploadImage = (authClient: UserAuthClient) =>
         }
 
         const response = await db.transaction(async (tx) => {
-          const putResponse = await put(`${workspaceId}/${image.name}`, image, {
-            access: "public",
-            addRandomSuffix: true,
-          });
+          const envSegment = env.VERCEL_ENV ?? "development";
+          const putResponse = await put(
+            `${envSegment}/${workspaceId}/${image.name}`,
+            image,
+            {
+              access: "public",
+              addRandomSuffix: true,
+            },
+          );
 
           const [blob] = await tx
             .insert(blobs)
