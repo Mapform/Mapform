@@ -123,14 +123,18 @@ export const uploadImage = (authClient: UserAuthClient) =>
 
         const response = await db.transaction(async (tx) => {
           const envSegment = env.VERCEL_ENV ?? "development";
-          const putResponse = await put(
-            `${envSegment}/${workspaceId}/${image.name}`,
-            image,
-            {
-              access: "public",
-              addRandomSuffix: true,
-            },
-          );
+          const pathSegments = [
+            envSegment,
+            `workspaces/${workspaceId}`,
+            ...(projectId ? [`projects/${projectId}`] : []),
+            ...(rowId ? [`rows/${rowId}`] : []),
+            image.name,
+          ];
+
+          const putResponse = await put(pathSegments.join("/"), image, {
+            access: "public",
+            addRandomSuffix: true,
+          });
 
           const [blob] = await tx
             .insert(blobs)
