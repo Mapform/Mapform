@@ -24,7 +24,7 @@ export function ProjectMarkers() {
       <div className="absolute bottom-0 left-0 -translate-x-1/2 cursor-pointer">
         <div className="flex items-center gap-1.5 whitespace-nowrap rounded-md bg-white px-4 py-2 text-sm font-medium shadow-md">
           {p.icon ? <span>{p.icon}</span> : <MapIcon className="size-4" />}
-          <span>{p.name ?? "New Map"}</span>
+          <span>{p.name || "New Map"}</span>
         </div>
         <svg
           className="mx-auto -mt-1 drop-shadow-sm"

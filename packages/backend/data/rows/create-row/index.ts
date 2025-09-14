@@ -8,6 +8,7 @@ import { getRowCount } from "../../usage/get-row-count";
 import { eq } from "@mapform/db/utils";
 import { ServerError } from "../../../lib/server-error";
 import type { Geometry } from "geojson";
+import { inngest } from "../../../clients/inngest/client";
 
 export const createRow = (authClient: UserAuthClient) =>
   authClient
@@ -74,6 +75,25 @@ export const createRow = (authClient: UserAuthClient) =>
             ...props,
           })
           .returning();
+
+        if (!newRow) {
+          throw new Error("Failed to create row.");
+        }
+
+        await inngest.send({
+          name: "app/generate.embeddings",
+          data: {
+            rows: [
+              {
+                id: newRow.id,
+                icon: newRow.icon,
+                name: newRow.name,
+                description: newRow.description,
+                cells: [],
+              },
+            ],
+          },
+        });
 
         return newRow;
       },

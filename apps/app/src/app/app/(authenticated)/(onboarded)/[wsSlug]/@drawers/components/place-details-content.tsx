@@ -187,9 +187,9 @@ export function PlaceDetailsContent({
                           setProjectComboboxOpen(false);
                           handleAddToProject(project.id);
                         }}
-                        keywords={[project.name ?? "New Map"]}
+                        keywords={[project.name || "New Map"]}
                       >
-                        {project.name ?? "New Map"}
+                        {project.name || "New Map"}
                       </CommandItem>
                     ))}
                   </CommandGroup>
