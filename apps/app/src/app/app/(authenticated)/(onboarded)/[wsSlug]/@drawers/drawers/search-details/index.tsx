@@ -9,6 +9,7 @@ import { PlaceDetailsContent } from "../../components/place-details-content";
 import { useEffect } from "react";
 import { Marker } from "react-map-gl/mapbox";
 import type { Details } from "@mapform/backend/data/stadia/details";
+import { MapPositioner } from "~/lib/map/map-positioner";
 
 interface SearchDetailsProps {
   details: Details["data"];
@@ -24,30 +25,33 @@ export function SearchDetails({ details }: SearchDetailsProps) {
     <MapDrawer
       open={!!params.stadiaId}
       depth={drawerDepth.get("stadiaId") ?? 0}
-      viewState={{
-        ...(longitude && latitude && { center: [longitude, latitude] }),
-      }}
     >
-      {isPending ? (
-        <>
-          <MapDrawerToolbar>
-            <Button
-              className="ml-auto"
-              size="icon-sm"
-              type="button"
-              variant="ghost"
-              onClick={() => {
-                void setQueryStates({ stadiaId: null });
-              }}
-            >
-              <XIcon className="size-4" />
-            </Button>
-          </MapDrawerToolbar>
-          <BasicSkeleton className="p-6" />
-        </>
-      ) : (
-        <SearchDetailsInner details={details} />
-      )}
+      <MapPositioner
+        viewState={{
+          ...(longitude && latitude && { center: [longitude, latitude] }),
+        }}
+      >
+        {isPending ? (
+          <>
+            <MapDrawerToolbar>
+              <Button
+                className="ml-auto"
+                size="icon-sm"
+                type="button"
+                variant="ghost"
+                onClick={() => {
+                  void setQueryStates({ stadiaId: null });
+                }}
+              >
+                <XIcon className="size-4" />
+              </Button>
+            </MapDrawerToolbar>
+            <BasicSkeleton className="p-6" />
+          </>
+        ) : (
+          <SearchDetailsInner details={details} />
+        )}
+      </MapPositioner>
     </MapDrawer>
   );
 }
