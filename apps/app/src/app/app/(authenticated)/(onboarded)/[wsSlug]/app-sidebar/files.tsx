@@ -153,14 +153,14 @@ export function Files({
                           pathname === `/app/${workspaceSlug}/${project.id}`
                         }
                         onClick={() => {
+                          router.push(
+                            `/app/${workspaceSlug}/${project.id}?v=${project.views[0]!.id}`,
+                          );
+
                           map.current?.easeTo({
                             center: project.center.coordinates,
                             padding,
                           });
-
-                          router.push(
-                            `/app/${workspaceSlug}/${project.id}?v=${project.views[0]!.id}`,
-                          );
                         }}
                       >
                         <div>

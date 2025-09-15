@@ -33,7 +33,7 @@ export function Coordinates({ coordinates, details }: CoordinatesProps) {
               variant="ghost"
               onClick={() => {
                 console.log("clicked");
-                void setQueryStates({ latitude: null, longitude: null });
+                void setQueryStates({ marker: null });
               }}
             >
               <XIcon className="size-4" />
@@ -68,7 +68,7 @@ function SearchDetailsInner({ coordinates, details }: CoordinatesProps) {
       longitude={longitude}
       feature={feature}
       onClose={() => {
-        void setQueryStates({ latitude: null, longitude: null });
+        void setQueryStates({ marker: null });
       }}
     />
   );

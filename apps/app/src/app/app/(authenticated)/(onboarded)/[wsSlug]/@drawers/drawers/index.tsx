@@ -118,19 +118,20 @@ async function FeatureDrawer({ searchParams }: DealDrawerProps) {
 }
 
 async function CoordinatesDrawer({ searchParams }: DealDrawerProps) {
-  const { latitude, longitude } = await loadSearchParams(searchParams);
+  const { marker } = await loadSearchParams(searchParams);
 
-  const details =
-    latitude && longitude
-      ? await publicClient.reverseGeocode({
-          lat: latitude,
-          lng: longitude,
-        })
-      : null;
+  const [latitude, longitude] = marker?.split(",") ?? [];
+
+  const details = marker
+    ? await publicClient.reverseGeocode({
+        lat: Number(latitude),
+        lng: Number(longitude),
+      })
+    : null;
 
   return (
     <Coordinates
-      coordinates={latitude && longitude ? [latitude, longitude] : null}
+      coordinates={marker ? [Number(latitude), Number(longitude)] : null}
       details={details?.data}
     />
   );

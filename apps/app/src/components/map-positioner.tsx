@@ -22,20 +22,20 @@ export function MapPositioner({
   const map = useMap();
   const padding = useMapPadding();
 
-  useEffect(
-    () => {
-      if (!map.current) return;
+  // useEffect(
+  //   () => {
+  //     if (!map.current) return;
 
-      map.current.easeTo({
-        center,
-        padding,
-        ...(pitch !== undefined && { pitch }),
-        ...(bearing !== undefined && { bearing }),
-        ...(zoom !== undefined && { zoom }),
-      });
-    },
-    listenToChanges ? [center, padding, pitch, bearing, zoom] : [],
-  );
+  //     map.current.easeTo({
+  //       center,
+  //       padding,
+  //       ...(pitch !== undefined && { pitch }),
+  //       ...(bearing !== undefined && { bearing }),
+  //       ...(zoom !== undefined && { zoom }),
+  //     });
+  //   },
+  //   listenToChanges ? [center, padding, pitch, bearing, zoom] : [],
+  // );
 
   return <>{children}</>;
 }

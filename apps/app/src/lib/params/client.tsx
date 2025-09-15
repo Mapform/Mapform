@@ -82,6 +82,7 @@ export function getQueryParamsMapInOrder(
     "chatId",
     "rowId",
     "latitude",
+    "location",
   ]);
 
   let sequentialOrder = 0;
@@ -128,8 +129,11 @@ export const ParamsProvider = ({ children }: ParamsProviderProps) => {
       search,
       stadiaId,
       chatId,
-      latitude,
-      longitude,
+      zoom,
+      pitch,
+      bearing,
+      location,
+      marker,
     },
     setQueryStates,
   ] = useQueryStates(appSearchParams, { ...appSearchOptions, startTransition });
@@ -155,8 +159,11 @@ export const ParamsProvider = ({ children }: ParamsProviderProps) => {
           search,
           stadiaId,
           chatId,
-          latitude,
-          longitude,
+          zoom,
+          pitch,
+          bearing,
+          location,
+          marker,
         },
         setQueryStates,
         drawerDepth,

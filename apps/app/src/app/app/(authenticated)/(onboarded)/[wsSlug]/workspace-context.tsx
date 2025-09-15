@@ -151,6 +151,42 @@ export function WorkspaceProvider({
     startLongPress(event);
   };
 
+  const handleOnMoveEnd = (event: {
+    originalEvent?: unknown;
+    viewState: {
+      longitude: number;
+      latitude: number;
+      zoom: number;
+      pitch: number;
+      bearing: number;
+    };
+  }) => {
+    // Only sync URL for user-initiated interactions, not programmatic easeTo/flyTo
+    if (!event.originalEvent) {
+      return;
+    }
+    const { viewState } = event;
+    const longitude = viewState.longitude;
+    const latitude = viewState.latitude;
+    const zoom = viewState.zoom;
+    const pitch = viewState.pitch;
+    const bearing = viewState.bearing;
+
+    setTimeout(() => {
+      void setQueryStates(
+        {
+          location: `${latitude},${longitude}`,
+          zoom,
+          pitch,
+          bearing,
+        },
+        {
+          shallow: true,
+        },
+      );
+    }, 0);
+  };
+
   const onMouseEnter = useCallback(() => setCursor("pointer"), []);
   const onMouseLeave = useCallback(() => setCursor("grab"), []);
 
@@ -181,6 +217,7 @@ export function WorkspaceProvider({
         onContextMenu={handleContextMenu}
         onTouchStart={handleTouchStart}
         onMove={cancelLongPress}
+        onMoveEnd={handleOnMoveEnd}
         onTouchMove={cancelLongPress}
         onTouchEnd={cancelLongPress}
         onTouchCancel={cancelLongPress}

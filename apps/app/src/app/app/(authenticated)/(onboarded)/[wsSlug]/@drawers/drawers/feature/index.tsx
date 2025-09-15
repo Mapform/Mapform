@@ -61,14 +61,14 @@ export function Feature({ feature }: FeatureDrawerProps) {
   const longitude = featureService.optimisticState?.center.coordinates[0];
   const latitude = featureService.optimisticState?.center.coordinates[1];
 
-  useEffect(() => {
-    if (!longitude || !latitude) return;
+  // useEffect(() => {
+  //   if (!longitude || !latitude) return;
 
-    map.current?.easeTo({
-      center: [longitude, latitude],
-      padding,
-    });
-  }, [longitude, latitude, map, padding]);
+  //   map.current?.easeTo({
+  //     center: [longitude, latitude],
+  //     padding,
+  //   });
+  // }, [longitude, latitude, map, padding]);
 
   return (
     <>
