@@ -132,11 +132,13 @@ export function SearchInner({
                 key={result.id}
                 value={result.id}
                 onSelect={async () => {
-                  map.current?.easeTo({
-                    center: result.center.coordinates as [number, number],
-                    duration: 1000,
+                  await setQueryStates({
+                    rowId: result.id,
+                    location: null,
+                    zoom: null,
+                    pitch: null,
+                    bearing: null,
                   });
-                  await setQueryStates({ rowId: result.id });
                 }}
               >
                 {result.icon ? (
@@ -160,23 +162,12 @@ export function SearchInner({
                 key={feature.properties.gid}
                 value={feature.properties.gid}
                 onSelect={async () => {
-                  if (feature.bbox) {
-                    map.current?.fitBounds(
-                      feature.bbox as [number, number, number, number],
-                      {
-                        padding: 50,
-                        duration: 1000,
-                      },
-                    );
-                  } else {
-                    map.current?.easeTo({
-                      center: feature.geometry?.coordinates as [number, number],
-                      duration: 1000,
-                    });
-                  }
-
                   await setQueryStates({
                     stadiaId: feature.properties.gid,
+                    location: null,
+                    zoom: null,
+                    pitch: null,
+                    bearing: null,
                   });
                 }}
               >

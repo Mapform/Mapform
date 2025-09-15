@@ -2,7 +2,41 @@
 
 import { useMap } from "react-map-gl/mapbox";
 import { useViewState, type ViewState } from "~/lib/map/use-view-state";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
+
+type Padding = { left: number; right: number; top: number; bottom: number };
+type ComputedViewState = {
+  zoom?: number;
+  pitch?: number;
+  bearing?: number;
+  center?: [number, number];
+  padding: Padding;
+};
+
+function centersEqual(a?: [number, number], b?: [number, number]) {
+  if (!a && !b) return true;
+  if (!a || !b) return false;
+  return a[0] === b[0] && a[1] === b[1];
+}
+
+function paddingsEqual(a: Padding, b: Padding) {
+  return (
+    a.left === b.left &&
+    a.right === b.right &&
+    a.top === b.top &&
+    a.bottom === b.bottom
+  );
+}
+
+function viewStatesEqual(a: ComputedViewState, b: ComputedViewState) {
+  return (
+    a.zoom === b.zoom &&
+    a.pitch === b.pitch &&
+    a.bearing === b.bearing &&
+    centersEqual(a.center, b.center) &&
+    paddingsEqual(a.padding, b.padding)
+  );
+}
 
 export function MapPositioner({
   children,
@@ -13,9 +47,16 @@ export function MapPositioner({
 }) {
   const map = useMap();
   const _viewState = useViewState(viewState);
+  const previousViewStateRef = useRef<ComputedViewState | null>(null);
 
   useEffect(() => {
     if (!map.current) return;
+
+    const previous = previousViewStateRef.current;
+    const hasChanged =
+      !previous || !viewStatesEqual(_viewState as ComputedViewState, previous);
+
+    if (!hasChanged) return;
 
     map.current.easeTo({
       padding: _viewState.padding,
@@ -24,7 +65,9 @@ export function MapPositioner({
       ...(_viewState.bearing && { bearing: _viewState.bearing }),
       ...(_viewState.zoom && { zoom: _viewState.zoom }),
     });
-  }, [_viewState]);
+
+    previousViewStateRef.current = _viewState as ComputedViewState;
+  }, [_viewState, map]);
 
   return <>{children}</>;
 }
