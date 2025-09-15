@@ -160,6 +160,9 @@ export function Files({
                           map.current?.easeTo({
                             center: project.center.coordinates,
                             padding,
+                            zoom: project.zoom,
+                            pitch: project.pitch,
+                            bearing: project.bearing,
                           });
                         }}
                       >

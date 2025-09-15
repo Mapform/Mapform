@@ -63,7 +63,7 @@ export function WorkspaceProvider({
     x: number;
     y: number;
   } | null>(null);
-  const { setQueryStates } = useParamsContext();
+  const { setQueryStates, params } = useParamsContext();
   const [cursor, setCursor] = useState<string>("grab");
   const currentWorkspace = workspaceMemberships.find(
     (membership) => membership.workspace.slug === workspaceSlug,
@@ -190,6 +190,8 @@ export function WorkspaceProvider({
   const onMouseEnter = useCallback(() => setCursor("pointer"), []);
   const onMouseLeave = useCallback(() => setCursor("grab"), []);
 
+  const [latitude, longitude] = params.location?.split(",") ?? [];
+
   return (
     <WorkspaceContext.Provider
       value={{
@@ -210,7 +212,11 @@ export function WorkspaceProvider({
         projection="globe"
         logoPosition="bottom-right"
         initialViewState={{
-          zoom: 2,
+          zoom: params.zoom ?? 2,
+          latitude: latitude ? parseFloat(latitude) : undefined,
+          longitude: longitude ? parseFloat(longitude) : undefined,
+          pitch: params.pitch ?? 0,
+          bearing: params.bearing ?? 0,
         }}
         cursor={cursor}
         minZoom={2}
