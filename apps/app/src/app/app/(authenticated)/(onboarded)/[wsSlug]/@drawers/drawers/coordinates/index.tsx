@@ -22,7 +22,7 @@ export function Coordinates({ coordinates, details }: CoordinatesProps) {
   const latitude = coordinates?.[0];
 
   return (
-    <MapDrawer open={!!coordinates} depth={drawerDepth.get("stadiaId") ?? 0}>
+    <MapDrawer open={!!coordinates} depth={drawerDepth.get("marker") ?? 0}>
       <MapPositioner
         viewState={{
           ...(longitude && latitude && { center: [longitude, latitude] }),
