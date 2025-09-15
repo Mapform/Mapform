@@ -1,26 +1,15 @@
 import { tool } from "ai";
 import { z } from "zod";
+import { publicClient } from "~/lib/safe-action";
 import type { AIResultLocation } from "~/lib/types";
 
 export const returnBestResults = tool({
   description:
-    "Return the final evaluated location results to present to the user. ONLY results from the reverseGeocode, findInternalFeatures, and findExternalFeatures tools can be passed to this tool. Call this tool exactly once before finishing your response to display the selected location data.",
+    "Return the final evaluated location results to present to the user. Only return results that make sense based on the user query. ONLY results from the reverseGeocode, findInternalFeatures, and findExternalFeatures tools can be passed to this tool. Call this tool exactly once before finishing your response to display the selected location data.",
   inputSchema: z.object({
     finalResults: z.array(
       z.object({
         id: z.string().describe("The location ID."),
-        name: z.string().describe("The location name."),
-        address: z
-          .string()
-          .optional()
-          .describe(
-            "The location address. Do not try to infer this, this value must strictly come from the output of the input tool. Can be empty.",
-          ),
-        wikidataId: z
-          .string()
-          .optional()
-          .describe("The Wikidata ID of the place."),
-        coordinates: z.array(z.number()).describe("The location coordinates."),
         source: z
           .enum(["stadia", "mapform"])
           .describe("The source of the location."),
@@ -36,10 +25,45 @@ export const returnBestResults = tool({
    * input parameters. After calling this tool, the AI should describe the results
    * in its response to the user.
    */
-  execute: ({ finalResults, description }) => {
-    return {
-      results: finalResults as AIResultLocation[],
-      description,
-    };
+  execute: async ({ finalResults, description }) => {
+    const raw = await Promise.all(
+      finalResults.map(async (result) => {
+        // Enrich Stadia results with metadata
+        if (result.source === "stadia") {
+          const placeDetails = await publicClient.details({ id: result.id });
+
+          const place = placeDetails?.data?.features[0];
+          const placeDetailProperties = place?.properties;
+          const coordinates = place?.geometry?.coordinates as
+            | [number, number]
+            | undefined;
+
+          if (!placeDetailProperties || !coordinates) return null;
+
+          const wikidataId =
+            placeDetailProperties.addendum?.osm?.wikidata ??
+            placeDetailProperties.addendum?.whosonfirstConcordances
+              ?.wikidataId ??
+            "";
+
+          return {
+            source: "stadia",
+            id: placeDetailProperties.gid,
+            name: placeDetailProperties.name,
+            address: placeDetailProperties.formattedAddressLine,
+            wikidataId,
+            latitude: coordinates[1],
+            longitude: coordinates[0],
+          } satisfies AIResultLocation;
+        }
+
+        // Mapform results pass through
+        return result as AIResultLocation;
+      }),
+    );
+
+    const results = raw.filter((r): r is AIResultLocation => r !== null);
+
+    return { results, description };
   },
 });

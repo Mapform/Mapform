@@ -38,11 +38,22 @@ export type ChatMessage = UIMessage<
   ChatTools
 >;
 
-export type AIResultLocation = {
+interface StadiaAIResultLocation {
   id: string;
   name?: string;
   address?: string;
+  latitude?: number;
+  longitude?: number;
   wikidataId?: string;
-  coordinates: [number, number];
-  source: "stadia" | "mapform";
-};
+  source: "stadia";
+}
+
+interface MapformAIResultLocation {
+  id: string;
+  name?: string;
+  latitude?: number;
+  longitude?: number;
+  source: "mapform";
+}
+
+export type AIResultLocation = StadiaAIResultLocation | MapformAIResultLocation;

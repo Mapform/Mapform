@@ -12,19 +12,25 @@ interface PickLocationsMessageProps {
 
 // Component to handle a single feature with Wikidata image
 function FeatureWithImage({ result }: { result: AIResultLocation }) {
-  const wikidataData = useWikidataImages(result.wikidataId);
+  const wikidataData = useWikidataImages(
+    result.source === "stadia" ? result.wikidataId : undefined,
+  );
 
   return {
     id: result.id,
     name: result.name ?? "",
-    description: result.address ?? "",
-    coordinates: result.coordinates,
-    image: result.wikidataId
-      ? {
-          url: wikidataData.primaryImage?.imageUrl ?? "",
-          isLoading: wikidataData.isLoading,
-        }
-      : undefined,
+    description: result.source === "stadia" ? result.address : undefined,
+    coordinates:
+      result.latitude && result.longitude
+        ? [result.latitude, result.longitude]
+        : undefined,
+    image:
+      result.source === "stadia" && result.wikidataId
+        ? {
+            url: wikidataData.primaryImage?.imageUrl ?? "",
+            isLoading: wikidataData.isLoading,
+          }
+        : undefined,
     source: result.source,
   };
 }
@@ -45,7 +51,7 @@ export function PickLocationsMessage({ results }: PickLocationsMessageProps) {
     const bounds = new mapboxgl.LngLatBounds();
 
     results.forEach((result) => {
-      bounds.extend(result.coordinates);
+      bounds.extend([result.latitude, result.longitude]);
     });
 
     map.fitBounds(bounds, {
@@ -76,6 +82,7 @@ export function PickLocationsMessage({ results }: PickLocationsMessageProps) {
   return (
     <div>
       {results.map((r) => {
+        console.log(1111, r);
         const isHovered = hoveredFeature?.id === r.id;
 
         // The marker will be display by the Drawer component
@@ -84,8 +91,8 @@ export function PickLocationsMessage({ results }: PickLocationsMessageProps) {
         return (
           <Marker
             key={`${r.id}-${isHovered ? "hover" : "rest"}`}
-            longitude={r.coordinates[0]}
-            latitude={r.coordinates[1]}
+            longitude={r.longitude}
+            latitude={r.latitude}
             scale={isHovered ? 1.5 : 1}
             anchor="center"
             onClick={() => handleFeatureClick(r)}

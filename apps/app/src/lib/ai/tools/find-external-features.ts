@@ -10,7 +10,7 @@ export const findExternalFeatures = tool({
     query: z
       .string()
       .describe(
-        "The name or address of the place to search for. Examples: 'Paris, France', 'Eiffel Tower', '123 Main St. San Francisco, CA', etc.",
+        "The name or address of the place to search for. Queries must be kept simple. GOOD QUERY examples: 'Paris, France', 'Eiffel Tower', '123 Main St. San Francisco, CA', etc. BAD QUERY example: 'Maman Jeanne Montreal Ethiopian Restaurant address'.",
       ),
     bounds: z
       .array(z.number())
@@ -41,38 +41,29 @@ export async function findExternalFeaturesFunc(
       return [];
     }
 
-    const detailedResults = await Promise.all(
-      features.map(async (feature) => {
-        const gid = feature.properties.gid;
-        if (!gid) return null;
+    const detailedResults = features.map((feature) => {
+      const gid = feature.properties.gid;
+      if (!gid) return null;
 
-        const placeDetails = await publicClient.details({ id: gid });
-        const place = placeDetails?.data?.features[0];
-        const placeDetailProperties = place?.properties;
-        const coordinates = place?.geometry?.coordinates as
-          | [number, number]
-          | undefined;
+      const latitude = feature.geometry?.coordinates[0];
+      const longitude = feature.geometry?.coordinates[1];
+      const address =
+        feature.properties.formattedAddressLine ??
+        feature.properties.coarseLocation ??
+        undefined;
 
-        if (!placeDetailProperties || !coordinates) return null;
+      return {
+        id: gid,
+        name: feature.properties.name,
+        address,
+        latitude,
+        longitude,
+        source: "stadia",
+      } satisfies AIResultLocation;
+    });
 
-        const wikidataId =
-          placeDetailProperties.addendum?.osm?.wikidata ??
-          placeDetailProperties.addendum?.whosonfirstConcordances?.wikidataId ??
-          "";
-
-        return {
-          id: placeDetailProperties.gid,
-          name: feature.properties.name,
-          address:
-            placeDetailProperties.formattedAddressLine ??
-            placeDetailProperties.coarseLocation ??
-            undefined,
-          wikidataId,
-          coordinates,
-          source: "stadia",
-        } satisfies AIResultLocation;
-      }),
-    );
+    console.debug("findExternalFeatures query: ", query);
+    console.debug("findExternalFeatures detailedResults: ", detailedResults);
 
     return detailedResults;
   } catch (error) {

@@ -27,10 +27,6 @@ export async function reverseGeocodeFunc(lat: number, lng: number) {
 
   // Extract the first feature's properties
   const feature = placeDetails.data.features[0];
-  const wikidataId =
-    feature?.properties.addendum?.osm?.wikidata ??
-    feature?.properties.addendum?.whosonfirstConcordances?.wikidataId ??
-    "";
   // TODO: Handle other geometry types
   if (
     !feature ||
@@ -39,20 +35,22 @@ export async function reverseGeocodeFunc(lat: number, lng: number) {
     throw new Error("No place details found for the given coordinates");
   }
 
+  const address =
+    feature.properties.formattedAddressLine ??
+    feature.properties.coarseLocation ??
+    undefined;
+  const name = feature.properties.name;
+  const latitude = feature.geometry.coordinates[0];
+  const longitude = feature.geometry.coordinates[1];
+
   return [
     {
       id: feature.properties.gid,
-      name: feature.properties.name,
-      address:
-        feature.properties.formattedAddressLine ??
-        feature.properties.coarseLocation ??
-        undefined,
-      wikidataId,
-      coordinates: [
-        feature.geometry.coordinates[0],
-        feature.geometry.coordinates[1],
-      ] as [number, number],
       source: "stadia",
+      name,
+      address,
+      latitude,
+      longitude,
     },
   ] satisfies AIResultLocation[];
 }

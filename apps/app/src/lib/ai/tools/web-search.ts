@@ -17,12 +17,19 @@ export const webSearch = tool({
 });
 
 async function webSearchFunc(query: string) {
-  const { results } = await client.search({
-    query,
-    depth: "standard",
-    outputType: "searchResults",
-    includeImages: false,
-  });
+  const { results } = await client
+    .search({
+      query,
+      depth: "standard",
+      outputType: "searchResults",
+      includeImages: false,
+    })
+    .catch((error) => {
+      console.error("Error in webSearchFunc: ", error);
+      throw new Error("Failed to search the web");
+    });
+
+  console.debug("webSearchFunc results: ", results);
 
   return (results as TextSearchResult[]).map((result) => ({
     name: result.name,
