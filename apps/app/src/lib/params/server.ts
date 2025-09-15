@@ -16,8 +16,11 @@ export const appSearchParams = {
   search: parseAsString,
   stadiaId: parseAsString,
   chatId: parseAsString,
-  latitude: parseAsFloat,
-  longitude: parseAsFloat,
+  marker: parseAsString,
+  location: parseAsString,
+  zoom: parseAsFloat,
+  pitch: parseAsFloat,
+  bearing: parseAsFloat,
 };
 
 export const appSearchOptions = {
@@ -32,8 +35,11 @@ export const appSearchOptions = {
     search: "s",
     stadiaId: "sid",
     chatId: "c",
-    latitude: "lat",
-    longitude: "lng",
+    marker: "m",
+    location: "loc",
+    zoom: "z",
+    pitch: "pi",
+    bearing: "b",
   },
 };
 

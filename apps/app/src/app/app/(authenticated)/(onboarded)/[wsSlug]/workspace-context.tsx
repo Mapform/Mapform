@@ -8,6 +8,7 @@ import React, {
   useState,
   useCallback,
   useRef,
+  useMemo,
 } from "react";
 import type { GetUserWorkspaceMemberships } from "@mapform/backend/data/workspace-memberships/get-user-workspace-memberships";
 import type { WorkspaceDirectory } from "@mapform/backend/data/workspaces/get-workspace-directory";
@@ -24,6 +25,8 @@ import {
 } from "~/lib/map/constants";
 import { MapContextMenu } from "./map-context-menu";
 import { useParamsContext } from "~/lib/params/client";
+import { useParams, usePathname } from "next/navigation";
+import { DRAWER_WIDTH, SIDEBAR_WIDTH } from "~/constants/sidebars";
 
 export interface WorkspaceContextInterface {
   workspaceSlug: string;
@@ -32,6 +35,11 @@ export interface WorkspaceContextInterface {
   updateWorkspaceDirectory: (
     optimisticValue: Partial<NonNullable<WorkspaceDirectory["data"]>>,
   ) => void;
+  currentProject:
+    | NonNullable<
+        WorkspaceDirectory["data"]
+      >["teamspaces"][number]["projects"][number]
+    | undefined;
 }
 
 export interface WorkspaceProviderProps {
@@ -63,7 +71,11 @@ export function WorkspaceProvider({
     x: number;
     y: number;
   } | null>(null);
-  const { setQueryStates } = useParamsContext();
+  const { setQueryStates, params } = useParamsContext();
+  const pathParams = useParams<{
+    pId?: string;
+  }>();
+  const pathname = usePathname();
   const [cursor, setCursor] = useState<string>("grab");
   const currentWorkspace = workspaceMemberships.find(
     (membership) => membership.workspace.slug === workspaceSlug,
@@ -151,8 +163,100 @@ export function WorkspaceProvider({
     startLongPress(event);
   };
 
+  const handleOnMoveEnd = (event: {
+    originalEvent?: unknown;
+    viewState: {
+      longitude: number;
+      latitude: number;
+      zoom: number;
+      pitch: number;
+      bearing: number;
+    };
+  }) => {
+    // Only sync URL for user-initiated interactions, not programmatic easeTo/easeTo
+    if (!event.originalEvent) {
+      return;
+    }
+    const { viewState } = event;
+    const longitude = viewState.longitude;
+    const latitude = viewState.latitude;
+    const zoom = viewState.zoom;
+    const pitch = viewState.pitch;
+    const bearing = viewState.bearing;
+
+    setTimeout(() => {
+      void setQueryStates(
+        {
+          location: `${latitude},${longitude}`,
+          zoom,
+          pitch,
+          bearing,
+        },
+        {
+          shallow: true,
+        },
+      );
+    }, 0);
+  };
+
   const onMouseEnter = useCallback(() => setCursor("pointer"), []);
   const onMouseLeave = useCallback(() => setCursor("grab"), []);
+
+  const [latitude, longitude] = params.location?.split(",") ?? [];
+
+  const initialPadding = useMemo(
+    () => ({
+      left:
+        params.chatId ||
+        params.search ||
+        params.rowId ||
+        params.stadiaId ||
+        params.marker ||
+        pathParams.pId ||
+        pathname.includes("/settings")
+          ? SIDEBAR_WIDTH + DRAWER_WIDTH
+          : SIDEBAR_WIDTH,
+      top: 0,
+      bottom: 0,
+      right: 0,
+    }),
+    [
+      params.chatId,
+      params.search,
+      params.rowId,
+      params.stadiaId,
+      params.marker,
+      pathParams.pId,
+      pathname,
+    ],
+  );
+
+  const currentProject = workspaceDirectory.teamspaces
+    .flatMap((ts) => ts.projects)
+    .find((p) => p.id === pathParams.pId);
+
+  const initialViewState = useMemo(() => {
+    return {
+      zoom: params.zoom ?? currentProject?.zoom ?? 2,
+      latitude: latitude
+        ? Number(latitude)
+        : currentProject?.center.coordinates[1] ?? 0,
+      longitude: longitude
+        ? Number(longitude)
+        : currentProject?.center.coordinates[0] ?? 0,
+      pitch: params.pitch ?? currentProject?.pitch ?? 0,
+      bearing: params.bearing ?? currentProject?.bearing ?? 0,
+      padding: initialPadding,
+    };
+  }, [
+    currentProject,
+    latitude,
+    longitude,
+    initialPadding,
+    params.zoom,
+    params.pitch,
+    params.bearing,
+  ]);
 
   return (
     <WorkspaceContext.Provider
@@ -165,6 +269,7 @@ export function WorkspaceProvider({
             _updateWorkspaceDirectory(optimisticValue);
           });
         },
+        currentProject,
       }}
     >
       <Map
@@ -173,14 +278,13 @@ export function WorkspaceProvider({
         mapStyle="mapbox://styles/nichaley/cmcyt7kfs005q01qn6vhrga96"
         projection="globe"
         logoPosition="bottom-right"
-        initialViewState={{
-          zoom: 2,
-        }}
+        initialViewState={initialViewState}
         cursor={cursor}
         minZoom={2}
         onContextMenu={handleContextMenu}
         onTouchStart={handleTouchStart}
         onMove={cancelLongPress}
+        onMoveEnd={handleOnMoveEnd}
         onTouchMove={cancelLongPress}
         onTouchEnd={cancelLongPress}
         onTouchCancel={cancelLongPress}

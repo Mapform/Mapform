@@ -64,7 +64,7 @@ export function SearchInner({
   vectorSearchResults,
   previousChats,
 }: SearchProps) {
-  const { map } = useMap();
+  const map = useMap();
   const { params, setQueryStates, isPending } = useParamsContext();
   const [searchQuery, setSearchQuery] = useState(params.query);
   const debouncedSearchQuery = useDebounce(searchQuery, 200);
@@ -132,10 +132,12 @@ export function SearchInner({
                 key={result.id}
                 value={result.id}
                 onSelect={async () => {
-                  await setQueryStates({ rowId: result.id });
-                  map?.flyTo({
-                    center: result.center.coordinates as [number, number],
-                    duration: 500,
+                  await setQueryStates({
+                    rowId: result.id,
+                    location: null,
+                    zoom: null,
+                    pitch: null,
+                    bearing: null,
                   });
                 }}
               >
@@ -162,16 +164,11 @@ export function SearchInner({
                 onSelect={async () => {
                   await setQueryStates({
                     stadiaId: feature.properties.gid,
+                    location: null,
+                    zoom: null,
+                    pitch: null,
+                    bearing: null,
                   });
-                  if (feature.bbox) {
-                    map?.fitBounds(
-                      feature.bbox as [number, number, number, number],
-                      {
-                        padding: 50,
-                        duration: 1000,
-                      },
-                    );
-                  }
                 }}
               >
                 <GlobeIcon className="text-muted-foreground mr-2 size-4 flex-shrink-0" />

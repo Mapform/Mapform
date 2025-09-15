@@ -64,8 +64,7 @@ export function MapContextMenu({
           onClick={async () => {
             onOpenChange(false);
             await setQueryStates({
-              latitude: position.latitude,
-              longitude: position.longitude,
+              marker: `${position.latitude},${position.longitude}`,
             });
           }}
         >

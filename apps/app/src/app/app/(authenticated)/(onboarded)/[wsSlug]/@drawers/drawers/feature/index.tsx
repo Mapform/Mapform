@@ -16,7 +16,7 @@ import {
 import { updateRowAction } from "~/data/rows/update-row";
 import type { GetRow } from "@mapform/backend/data/rows/get-row";
 import type { UpdateRowSchema } from "@mapform/backend/data/rows/update-row/schema";
-import { Marker, useMap } from "react-map-gl/mapbox";
+import { Marker } from "react-map-gl/mapbox";
 import { BasicSkeleton } from "~/components/skeletons/basic";
 import { Feature as FeatureComponent } from "~/components/feature";
 import {
@@ -30,20 +30,16 @@ import {
 } from "@mapform/ui/components/dropdown-menu";
 import { openInAppleMaps } from "~/lib/external-links/apple";
 import { openInGoogleMaps } from "~/lib/external-links/google";
-import { useEffect } from "react";
 import { useAction } from "next-safe-action/hooks";
 import { deleteRowsAction } from "~/data/rows/delete-rows";
-import { useMapPadding } from "~/lib/map/use-map-padding";
+import { MapPositioner } from "~/lib/map/map-positioner";
 
 interface FeatureDrawerProps {
   feature: GetRow["data"];
 }
 
 export function Feature({ feature }: FeatureDrawerProps) {
-  const map = useMap();
-  const padding = useMapPadding(true);
   const { params, isPending, drawerDepth, setQueryStates } = useParamsContext();
-
   const featureService = useStateService<GetRow["data"], UpdateRowSchema>(
     updateRowAction,
     {
@@ -61,64 +57,61 @@ export function Feature({ feature }: FeatureDrawerProps) {
   const longitude = featureService.optimisticState?.center.coordinates[0];
   const latitude = featureService.optimisticState?.center.coordinates[1];
 
-  useEffect(() => {
-    if (!longitude || !latitude) return;
-
-    map.current?.easeTo({
-      center: [longitude, latitude],
-      padding,
-    });
-  }, [longitude, latitude, map, padding]);
-
   return (
     <>
       <MapDrawer open={!!params.rowId} depth={drawerDepth.get("rowId") ?? 0}>
-        {isPending ? (
-          <>
-            <MapDrawerToolbar>
-              <Button
-                className="ml-auto"
-                size="icon-sm"
-                type="button"
-                variant="ghost"
-                onClick={() => {
-                  void setQueryStates({ rowId: null });
-                }}
-              >
-                <XIcon className="size-4" />
-              </Button>
-            </MapDrawerToolbar>
-            <BasicSkeleton className="p-6" />
-          </>
-        ) : featureService.optimisticState ? (
-          <FeatureContent
-            featureService={featureService}
-            key={featureService.optimisticState.id}
-          />
-        ) : (
-          <>
-            <MapDrawerToolbar>
-              <Button
-                className="ml-auto"
-                size="icon-sm"
-                type="button"
-                variant="ghost"
-                onClick={() => {
-                  void setQueryStates({ rowId: null });
-                }}
-              >
-                <XIcon className="size-4" />
-              </Button>
-            </MapDrawerToolbar>
-            <div className="flex flex-1 flex-col justify-center rounded-lg bg-gray-50 p-8">
-              <div className="text-center">
-                <h3 className="text-foreground mt-2 text-sm font-medium">
-                  No feature found
-                </h3>
+        <MapPositioner
+          viewState={{
+            ...(longitude && latitude && { center: [longitude, latitude] }),
+          }}
+        >
+          {isPending && params.rowId !== featureService.optimisticState?.id ? (
+            <>
+              <MapDrawerToolbar>
+                <Button
+                  className="ml-auto"
+                  size="icon-sm"
+                  type="button"
+                  variant="ghost"
+                  onClick={() => {
+                    void setQueryStates({ rowId: null });
+                  }}
+                >
+                  <XIcon className="size-4" />
+                </Button>
+              </MapDrawerToolbar>
+              <BasicSkeleton className="p-6" />
+            </>
+          ) : featureService.optimisticState ? (
+            <FeatureContent
+              featureService={featureService}
+              key={featureService.optimisticState.id}
+            />
+          ) : (
+            <>
+              <MapDrawerToolbar>
+                <Button
+                  className="ml-auto"
+                  size="icon-sm"
+                  type="button"
+                  variant="ghost"
+                  onClick={() => {
+                    void setQueryStates({ rowId: null });
+                  }}
+                >
+                  <XIcon className="size-4" />
+                </Button>
+              </MapDrawerToolbar>
+              <div className="flex flex-1 flex-col justify-center rounded-lg bg-gray-50 p-8">
+                <div className="text-center">
+                  <h3 className="text-foreground mt-2 text-sm font-medium">
+                    No feature found
+                  </h3>
+                </div>
               </div>
-            </div>
-          </>
-        )}
+            </>
+          )}
+        </MapPositioner>
       </MapDrawer>
 
       {longitude && latitude && (

@@ -1,4 +1,4 @@
-import { MapPositioner } from "~/components/map-positioner";
+import { MapPositioner } from "~/lib/map/map-positioner";
 import { SettingsTabs } from "./settings-tabs";
 
 export default async function SettingsLayout({

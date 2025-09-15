@@ -6,9 +6,9 @@ import { Button } from "@mapform/ui/components/button";
 import { XIcon } from "lucide-react";
 import { BasicSkeleton } from "~/components/skeletons/basic";
 import { PlaceDetailsContent } from "../../components/place-details-content";
-import { useEffect } from "react";
 import { Marker } from "react-map-gl/mapbox";
 import type { Details } from "@mapform/backend/data/stadia/details";
+import { MapPositioner } from "~/lib/map/map-positioner";
 
 interface SearchDetailsProps {
   details: Details["data"];
@@ -17,31 +17,41 @@ interface SearchDetailsProps {
 export function SearchDetails({ details }: SearchDetailsProps) {
   const { params, drawerDepth, isPending, setQueryStates } = useParamsContext();
 
+  const longitude = details?.features[0]?.geometry?.coordinates[0];
+  const latitude = details?.features[0]?.geometry?.coordinates[1];
+
   return (
     <MapDrawer
       open={!!params.stadiaId}
       depth={drawerDepth.get("stadiaId") ?? 0}
     >
-      {isPending ? (
-        <>
-          <MapDrawerToolbar>
-            <Button
-              className="ml-auto"
-              size="icon-sm"
-              type="button"
-              variant="ghost"
-              onClick={() => {
-                void setQueryStates({ stadiaId: null });
-              }}
-            >
-              <XIcon className="size-4" />
-            </Button>
-          </MapDrawerToolbar>
-          <BasicSkeleton className="p-6" />
-        </>
-      ) : (
-        <SearchDetailsInner details={details} />
-      )}
+      <MapPositioner
+        viewState={{
+          ...(longitude && latitude && { center: [longitude, latitude] }),
+        }}
+      >
+        {isPending &&
+        details?.features[0]?.properties.gid !== params.stadiaId ? (
+          <>
+            <MapDrawerToolbar>
+              <Button
+                className="ml-auto"
+                size="icon-sm"
+                type="button"
+                variant="ghost"
+                onClick={() => {
+                  void setQueryStates({ stadiaId: null });
+                }}
+              >
+                <XIcon className="size-4" />
+              </Button>
+            </MapDrawerToolbar>
+            <BasicSkeleton className="p-6" />
+          </>
+        ) : (
+          <SearchDetailsInner details={details} />
+        )}
+      </MapPositioner>
     </MapDrawer>
   );
 }
@@ -52,10 +62,6 @@ function SearchDetailsInner({ details }: SearchDetailsProps) {
   const longitude = details?.features[0]?.geometry?.coordinates[0];
   const latitude = details?.features[0]?.geometry?.coordinates[1];
   const feature = details?.features[0];
-
-  useEffect(() => {
-    // no-op here; map centering is handled inside PlaceDetailsContent
-  }, []);
 
   if (!longitude || !latitude || !feature)
     return (

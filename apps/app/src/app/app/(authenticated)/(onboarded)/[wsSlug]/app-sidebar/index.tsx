@@ -111,18 +111,6 @@ export function AppSidebar() {
       plan: "Basic",
     })),
     navMain: [
-      // {
-      //   title: "Search",
-      //   onClick: () => {
-      //     void setQueryStates({
-      //       search: params.search === "1" ? null : "1",
-      //       chatId: null,
-      //       query: null,
-      //     });
-      //   },
-      //   icon: SearchIcon,
-      //   isActive: params.search === "1",
-      // },
       {
         title: "Home",
         onClick: () => {

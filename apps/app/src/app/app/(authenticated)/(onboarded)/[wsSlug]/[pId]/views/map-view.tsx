@@ -1,10 +1,8 @@
 import { useParamsContext } from "~/lib/params/client";
 import { useProject } from "../context";
-import { useMap } from "react-map-gl/mapbox";
 import { FeatureList } from "~/components/feature-list";
 
 export function MapView() {
-  const map = useMap();
   const { projectService } = useProject();
   const { setQueryStates } = useParamsContext();
 
@@ -21,11 +19,12 @@ export function MapView() {
     id: string;
     coordinates: [number, number];
   }) => {
-    void setQueryStates({ rowId: feature.id });
-
-    map.current?.flyTo({
-      center: feature.coordinates,
-      duration: 1000,
+    void setQueryStates({
+      rowId: feature.id,
+      location: null,
+      zoom: null,
+      pitch: null,
+      bearing: null,
     });
   };
 

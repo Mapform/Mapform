@@ -3,9 +3,9 @@
 import { cn } from "@mapform/lib/classnames";
 import { AnimatePresence, motion } from "motion/react";
 import { DRAWER_WIDTH } from "~/constants/sidebars";
+import { MapPositioner } from "~/lib/map/map-positioner";
 
 interface MapDrawerProps {
-  // isPending: boolean;
   open: boolean;
   initialOpen?: boolean;
   depth?: number;
