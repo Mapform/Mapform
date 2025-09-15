@@ -9,11 +9,12 @@ import React, {
   useCallback,
   useRef,
   useMemo,
+  useEffect,
 } from "react";
 import type { GetUserWorkspaceMemberships } from "@mapform/backend/data/workspace-memberships/get-user-workspace-memberships";
 import type { WorkspaceDirectory } from "@mapform/backend/data/workspaces/get-workspace-directory";
 import { SidebarProvider } from "@mapform/ui/components/sidebar";
-import Map, { NavigationControl } from "react-map-gl/mapbox";
+import Map, { NavigationControl, useMap } from "react-map-gl/mapbox";
 import { env } from "~/*";
 import "mapbox-gl/dist/mapbox-gl.css";
 import {
@@ -26,7 +27,7 @@ import {
 import { MapContextMenu } from "./map-context-menu";
 import { useParamsContext } from "~/lib/params/client";
 import { useParams, usePathname } from "next/navigation";
-import { DRAWER_WIDTH, SIDEBAR_WIDTH } from "~/constants/sidebars";
+import { useMapPadding } from "~/lib/map/use-map-padding";
 
 export interface WorkspaceContextInterface {
   workspaceSlug: string;
@@ -71,6 +72,7 @@ export function WorkspaceProvider({
     pId?: string;
   }>();
   const pathname = usePathname();
+  const map = useMap();
   const [cursor, setCursor] = useState<string>("grab");
   const currentWorkspace = workspaceMemberships.find(
     (membership) => membership.workspace.slug === workspaceSlug,
@@ -199,32 +201,7 @@ export function WorkspaceProvider({
 
   const [latitude, longitude] = params.location?.split(",") ?? [];
 
-  const initialPadding = useMemo(
-    () => ({
-      left:
-        params.chatId ||
-        params.search ||
-        params.rowId ||
-        params.stadiaId ||
-        params.marker ||
-        pathParams.pId ||
-        pathname.includes("/settings")
-          ? SIDEBAR_WIDTH + DRAWER_WIDTH
-          : SIDEBAR_WIDTH,
-      top: 0,
-      bottom: 0,
-      right: 0,
-    }),
-    [
-      params.chatId,
-      params.search,
-      params.rowId,
-      params.stadiaId,
-      params.marker,
-      pathParams.pId,
-      pathname,
-    ],
-  );
+  const initialPadding = useMapPadding();
 
   const currentProject = workspaceDirectory.teamspaces
     .flatMap((ts) => ts.projects)
@@ -252,6 +229,16 @@ export function WorkspaceProvider({
     params.bearing,
     params.zoom,
   ]);
+
+  useEffect(() => {
+    if (!map.current) return;
+
+    console.log(11111, initialPadding);
+
+    map.current.easeTo({
+      padding: initialPadding,
+    });
+  }, [initialPadding]);
 
   return (
     <WorkspaceContext.Provider
