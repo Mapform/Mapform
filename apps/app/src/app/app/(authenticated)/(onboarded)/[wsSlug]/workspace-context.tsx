@@ -35,6 +35,11 @@ export interface WorkspaceContextInterface {
   updateWorkspaceDirectory: (
     optimisticValue: Partial<NonNullable<WorkspaceDirectory["data"]>>,
   ) => void;
+  currentProject:
+    | NonNullable<
+        WorkspaceDirectory["data"]
+      >["teamspaces"][number]["projects"][number]
+    | undefined;
 }
 
 export interface WorkspaceProviderProps {
@@ -232,18 +237,26 @@ export function WorkspaceProvider({
 
   const initialViewState = useMemo(() => {
     return {
-      zoom: currentProject?.zoom ?? 2,
+      zoom: params.zoom ?? currentProject?.zoom ?? 2,
       latitude: latitude
         ? Number(latitude)
         : currentProject?.center.coordinates[1] ?? 0,
       longitude: longitude
         ? Number(longitude)
         : currentProject?.center.coordinates[0] ?? 0,
-      pitch: currentProject?.pitch ?? 0,
-      bearing: currentProject?.bearing ?? 0,
+      pitch: params.pitch ?? currentProject?.pitch ?? 0,
+      bearing: params.bearing ?? currentProject?.bearing ?? 0,
       padding: initialPadding,
     };
-  }, [currentProject, latitude, longitude, initialPadding]);
+  }, [
+    currentProject,
+    latitude,
+    longitude,
+    initialPadding,
+    params.zoom,
+    params.pitch,
+    params.bearing,
+  ]);
 
   return (
     <WorkspaceContext.Provider
@@ -256,6 +269,7 @@ export function WorkspaceProvider({
             _updateWorkspaceDirectory(optimisticValue);
           });
         },
+        currentProject,
       }}
     >
       <Map

@@ -28,12 +28,20 @@ export function Drawers({ children }: DrawersProps) {
     !params.stadiaId &&
     !params.marker;
 
+  console.log(11111, workspace.currentProject);
+
   return (
     <>
       <MapDrawer
         open={openDrawer}
         depth={drawerDepth.size}
         isFullWidth={isFullWidth}
+        viewState={{
+          center: workspace.currentProject?.center.coordinates,
+          zoom: workspace.currentProject?.zoom,
+          pitch: workspace.currentProject?.pitch,
+          bearing: workspace.currentProject?.bearing,
+        }}
       >
         {children}
       </MapDrawer>

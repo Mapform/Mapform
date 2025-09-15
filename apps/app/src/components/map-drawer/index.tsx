@@ -3,14 +3,16 @@
 import { cn } from "@mapform/lib/classnames";
 import { AnimatePresence, motion } from "motion/react";
 import { DRAWER_WIDTH } from "~/constants/sidebars";
+import { MapPositioner } from "~/lib/map/map-positioner";
+import type { ViewState } from "~/lib/map/use-view-state";
 
 interface MapDrawerProps {
-  // isPending: boolean;
   open: boolean;
   initialOpen?: boolean;
   depth?: number;
   children: React.ReactNode;
   isFullWidth?: boolean;
+  viewState?: Partial<ViewState>;
 }
 
 export function MapDrawer({
@@ -19,48 +21,51 @@ export function MapDrawer({
   depth = 0,
   children,
   isFullWidth = false,
+  viewState,
 }: MapDrawerProps) {
   const width = isFullWidth ? "calc(100% - 8px)" : DRAWER_WIDTH;
 
   return (
-    <AnimatePresence>
-      {open && (
-        <motion.div
-          className="pointer-events-auto absolute bottom-2 top-2 flex !select-text outline-none"
-          initial={initialOpen ? false : { x: -width, width, opacity: 0 }}
-          animate={{
-            x: 16 * depth,
-            width,
-            scale: 1 - depth * 0.012,
-            opacity: 1,
-          }}
-          exit={{ x: -width, width, opacity: 0 }}
-          transition={{
-            type: "spring",
-            stiffness: 300,
-            damping: 30,
-          }}
-          style={{
-            zIndex: 30 - depth,
-          }}
-        >
-          {/* Copy content with mask when when other drawers open on top */}
-          <div
-            className={cn(
-              "pointer-events-none absolute inset-0 z-50 rounded-lg bg-gray-950 transition-opacity duration-200",
-            )}
-            style={{
-              opacity: depth ? 0.4 + depth * 0.15 : 0,
+    <MapPositioner viewState={viewState}>
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            className="pointer-events-auto absolute bottom-2 top-2 flex !select-text outline-none"
+            initial={initialOpen ? false : { x: -width, width, opacity: 0 }}
+            animate={{
+              x: 16 * depth,
+              width,
+              scale: 1 - depth * 0.012,
+              opacity: 1,
             }}
-          />
-          <div className="bg-opacity-98 flex size-full grow flex-col rounded-lg border bg-white backdrop-blur-sm">
-            <div className="flex min-h-full flex-col overflow-y-auto">
-              {children}
+            exit={{ x: -width, width, opacity: 0 }}
+            transition={{
+              type: "spring",
+              stiffness: 300,
+              damping: 30,
+            }}
+            style={{
+              zIndex: 30 - depth,
+            }}
+          >
+            {/* Copy content with mask when when other drawers open on top */}
+            <div
+              className={cn(
+                "pointer-events-none absolute inset-0 z-50 rounded-lg bg-gray-950 transition-opacity duration-200",
+              )}
+              style={{
+                opacity: depth ? 0.4 + depth * 0.15 : 0,
+              }}
+            />
+            <div className="bg-opacity-98 flex size-full grow flex-col rounded-lg border bg-white backdrop-blur-sm">
+              <div className="flex min-h-full flex-col overflow-y-auto">
+                {children}
+              </div>
             </div>
-          </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </MapPositioner>
   );
 }
 

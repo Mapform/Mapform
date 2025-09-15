@@ -86,19 +86,6 @@ export function PlaceDetailsContent({
     properties?.formattedAddressLine ?? properties?.coarseLocation;
   const wikiData = useWikidataImages(wikidataId);
 
-  // useEffect(() => {
-  //   if (!longitude || !latitude) return;
-
-  //   try {
-  //     map.current?.easeTo({
-  //       center: [longitude, latitude],
-  //       padding,
-  //     });
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // }, [longitude, latitude, map, padding]);
-
   // Flatten all projects from all teamspaces
   const allProjects = workspaceDirectory.teamspaces
     .flatMap((teamspace) =>

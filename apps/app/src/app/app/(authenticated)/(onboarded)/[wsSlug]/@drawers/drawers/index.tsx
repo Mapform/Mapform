@@ -122,12 +122,16 @@ async function CoordinatesDrawer({ searchParams }: DealDrawerProps) {
 
   const [latitude, longitude] = marker?.split(",") ?? [];
 
+  console.log("marker", marker);
+
   const details = marker
     ? await publicClient.reverseGeocode({
         lat: Number(latitude),
         lng: Number(longitude),
       })
     : null;
+
+  console.log("details", details);
 
   return (
     <Coordinates

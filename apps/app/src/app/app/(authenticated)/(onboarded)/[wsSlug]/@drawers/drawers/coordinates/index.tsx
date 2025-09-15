@@ -6,10 +6,8 @@ import { Button } from "@mapform/ui/components/button";
 import { XIcon } from "lucide-react";
 import { BasicSkeleton } from "~/components/skeletons/basic";
 import { PlaceDetailsContent } from "../../components/place-details-content";
-import { useEffect } from "react";
-import { Marker, useMap } from "react-map-gl/mapbox";
+import { Marker } from "react-map-gl/mapbox";
 import type { Details } from "@mapform/backend/data/stadia/details";
-import { DRAWER_WIDTH, SIDEBAR_WIDTH } from "~/constants/sidebars";
 
 interface CoordinatesProps {
   coordinates: [number, number] | null;
@@ -17,27 +15,23 @@ interface CoordinatesProps {
 }
 
 export function Coordinates({ coordinates, details }: CoordinatesProps) {
-  const map = useMap();
-  const { drawerDepth, isPending, setQueryStates, params } = useParamsContext();
+  const { drawerDepth, isPending, setQueryStates } = useParamsContext();
 
   const longitude = coordinates?.[1];
   const latitude = coordinates?.[0];
 
-  useEffect(() => {
-    if (!longitude || !latitude || params.location) return;
-    map.current?.easeTo({
-      center: [longitude, latitude],
-      padding: {
-        left: SIDEBAR_WIDTH + DRAWER_WIDTH,
-        top: 0,
-        bottom: 0,
-        right: 0,
-      },
-    });
-  }, []);
+  console.log("upper viewState", {
+    ...(longitude && latitude && { center: [longitude, latitude] }),
+  });
 
   return (
-    <MapDrawer open={!!coordinates} depth={drawerDepth.get("stadiaId") ?? 0}>
+    <MapDrawer
+      open={!!coordinates}
+      depth={drawerDepth.get("stadiaId") ?? 0}
+      viewState={{
+        ...(longitude && latitude && { center: [longitude, latitude] }),
+      }}
+    >
       {isPending ? (
         <>
           <MapDrawerToolbar>
