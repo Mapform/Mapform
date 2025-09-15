@@ -61,15 +61,17 @@ export function Feature({ feature }: FeatureDrawerProps) {
 
   useEffect(() => {
     if (!longitude || !latitude || params.location) return;
-    map.current?.easeTo({
-      center: [longitude, latitude],
-      padding: {
-        left: SIDEBAR_WIDTH + DRAWER_WIDTH,
-        top: 0,
-        bottom: 0,
-        right: 0,
-      },
-    });
+    setTimeout(() => {
+      map.current?.easeTo({
+        center: [longitude, latitude],
+        padding: {
+          left: SIDEBAR_WIDTH + DRAWER_WIDTH,
+          top: 0,
+          bottom: 0,
+          right: 0,
+        },
+      });
+    }, 1000);
   }, []);
 
   return (

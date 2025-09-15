@@ -17,16 +17,15 @@ export function MapView() {
     source: "mapform" as const,
   }));
 
-  const handleFeatureClick = (feature: {
+  const handleFeatureClick = async (feature: {
     id: string;
     coordinates: [number, number];
   }) => {
-    void setQueryStates({ rowId: feature.id });
-
     map.current?.easeTo({
       center: feature.coordinates,
       duration: 1000,
     });
+    await setQueryStates({ rowId: feature.id });
   };
 
   return <FeatureList features={features} onClick={handleFeatureClick} />;

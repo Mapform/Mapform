@@ -27,11 +27,12 @@ export function MapDrawer({
   const padding = useMapPadding();
   const width = isFullWidth ? "calc(100% - 8px)" : DRAWER_WIDTH;
 
-  useEffect(() => {
-    map.current?.easeTo({
-      padding: padding,
-    });
-  }, [padding]);
+  // NOTE: This prevents other imeprative easeTo calls from being made
+  // useEffect(() => {
+  //   map.current?.easeTo({
+  //     padding: padding,
+  //   });
+  // }, [padding]);
 
   return (
     <AnimatePresence>
