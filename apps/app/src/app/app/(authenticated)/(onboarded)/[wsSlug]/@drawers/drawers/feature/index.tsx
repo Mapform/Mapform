@@ -16,7 +16,7 @@ import {
 import { updateRowAction } from "~/data/rows/update-row";
 import type { GetRow } from "@mapform/backend/data/rows/get-row";
 import type { UpdateRowSchema } from "@mapform/backend/data/rows/update-row/schema";
-import { Marker } from "react-map-gl/mapbox";
+import { Marker, useMap } from "react-map-gl/mapbox";
 import { BasicSkeleton } from "~/components/skeletons/basic";
 import { Feature as FeatureComponent } from "~/components/feature";
 import {
@@ -32,6 +32,8 @@ import { openInAppleMaps } from "~/lib/external-links/apple";
 import { openInGoogleMaps } from "~/lib/external-links/google";
 import { useAction } from "next-safe-action/hooks";
 import { deleteRowsAction } from "~/data/rows/delete-rows";
+import { DRAWER_WIDTH, SIDEBAR_WIDTH } from "~/constants/sidebars";
+import { useEffect } from "react";
 
 interface FeatureDrawerProps {
   feature: GetRow["data"];
@@ -39,7 +41,7 @@ interface FeatureDrawerProps {
 
 export function Feature({ feature }: FeatureDrawerProps) {
   const { params, isPending, drawerDepth, setQueryStates } = useParamsContext();
-
+  const map = useMap();
   const featureService = useStateService<GetRow["data"], UpdateRowSchema>(
     updateRowAction,
     {
@@ -57,14 +59,18 @@ export function Feature({ feature }: FeatureDrawerProps) {
   const longitude = featureService.optimisticState?.center.coordinates[0];
   const latitude = featureService.optimisticState?.center.coordinates[1];
 
-  // useEffect(() => {
-  //   if (!longitude || !latitude) return;
-
-  //   map.current?.easeTo({
-  //     center: [longitude, latitude],
-  //     padding,
-  //   });
-  // }, [longitude, latitude, map, padding]);
+  useEffect(() => {
+    if (!longitude || !latitude || params.location) return;
+    map.current?.easeTo({
+      center: [longitude, latitude],
+      padding: {
+        left: SIDEBAR_WIDTH + DRAWER_WIDTH,
+        top: 0,
+        bottom: 0,
+        right: 0,
+      },
+    });
+  }, []);
 
   return (
     <>

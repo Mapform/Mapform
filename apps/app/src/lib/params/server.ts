@@ -38,7 +38,7 @@ export const appSearchOptions = {
     marker: "m",
     location: "loc",
     zoom: "z",
-    pitch: "p",
+    pitch: "pi",
     bearing: "b",
   },
 };

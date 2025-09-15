@@ -8,6 +8,7 @@ import React, {
   useState,
   useCallback,
   useRef,
+  useMemo,
 } from "react";
 import type { GetUserWorkspaceMemberships } from "@mapform/backend/data/workspace-memberships/get-user-workspace-memberships";
 import type { WorkspaceDirectory } from "@mapform/backend/data/workspaces/get-workspace-directory";
@@ -167,7 +168,7 @@ export function WorkspaceProvider({
       bearing: number;
     };
   }) => {
-    // Only sync URL for user-initiated interactions, not programmatic easeTo/flyTo
+    // Only sync URL for user-initiated interactions, not programmatic easeTo/easeTo
     if (!event.originalEvent) {
       return;
     }
@@ -198,21 +199,51 @@ export function WorkspaceProvider({
 
   const [latitude, longitude] = params.location?.split(",") ?? [];
 
-  const initialPadding = {
-    left:
-      params.chatId ||
-      params.search ||
-      params.rowId ||
-      params.stadiaId ||
-      params.marker ||
-      pathParams.pId ||
-      pathname.includes("/settings")
-        ? SIDEBAR_WIDTH + DRAWER_WIDTH
-        : SIDEBAR_WIDTH,
-    top: 0,
-    bottom: 0,
-    right: 0,
-  };
+  const initialPadding = useMemo(
+    () => ({
+      left:
+        params.chatId ||
+        params.search ||
+        params.rowId ||
+        params.stadiaId ||
+        params.marker ||
+        pathParams.pId ||
+        pathname.includes("/settings")
+          ? SIDEBAR_WIDTH + DRAWER_WIDTH
+          : SIDEBAR_WIDTH,
+      top: 0,
+      bottom: 0,
+      right: 0,
+    }),
+    [
+      params.chatId,
+      params.search,
+      params.rowId,
+      params.stadiaId,
+      params.marker,
+      pathParams.pId,
+      pathname,
+    ],
+  );
+
+  const currentProject = workspaceDirectory.teamspaces
+    .flatMap((ts) => ts.projects)
+    .find((p) => p.id === pathParams.pId);
+
+  const initialViewState = useMemo(() => {
+    return {
+      zoom: currentProject?.zoom ?? 2,
+      latitude: latitude
+        ? Number(latitude)
+        : currentProject?.center.coordinates[1] ?? 0,
+      longitude: longitude
+        ? Number(longitude)
+        : currentProject?.center.coordinates[0] ?? 0,
+      pitch: currentProject?.pitch ?? 0,
+      bearing: currentProject?.bearing ?? 0,
+      padding: initialPadding,
+    };
+  }, [currentProject, latitude, longitude, initialPadding]);
 
   return (
     <WorkspaceContext.Provider
@@ -233,14 +264,7 @@ export function WorkspaceProvider({
         mapStyle="mapbox://styles/nichaley/cmcyt7kfs005q01qn6vhrga96"
         projection="globe"
         logoPosition="bottom-right"
-        initialViewState={{
-          zoom: params.zoom ?? 2,
-          latitude: latitude ? parseFloat(latitude) : undefined,
-          longitude: longitude ? parseFloat(longitude) : undefined,
-          pitch: params.pitch ?? 0,
-          bearing: params.bearing ?? 0,
-          padding: initialPadding,
-        }}
+        initialViewState={initialViewState}
         cursor={cursor}
         minZoom={2}
         onContextMenu={handleContextMenu}

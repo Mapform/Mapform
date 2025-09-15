@@ -23,7 +23,7 @@ export function MapView() {
   }) => {
     void setQueryStates({ rowId: feature.id });
 
-    map.current?.flyTo({
+    map.current?.easeTo({
       center: feature.coordinates,
       duration: 1000,
     });

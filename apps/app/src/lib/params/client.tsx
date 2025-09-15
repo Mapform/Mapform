@@ -81,8 +81,7 @@ export function getQueryParamsMapInOrder(
     "stadiaId",
     "chatId",
     "rowId",
-    "latitude",
-    "location",
+    "marker",
   ]);
 
   let sequentialOrder = 0;

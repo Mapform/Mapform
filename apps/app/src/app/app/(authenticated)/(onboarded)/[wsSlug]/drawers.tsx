@@ -26,8 +26,7 @@ export function Drawers({ children }: DrawersProps) {
     !params.search &&
     !params.rowId &&
     !params.stadiaId &&
-    !params.latitude &&
-    !params.longitude;
+    !params.marker;
 
   return (
     <>

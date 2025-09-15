@@ -7,8 +7,9 @@ import { XIcon } from "lucide-react";
 import { BasicSkeleton } from "~/components/skeletons/basic";
 import { PlaceDetailsContent } from "../../components/place-details-content";
 import { useEffect } from "react";
-import { Marker } from "react-map-gl/mapbox";
+import { Marker, useMap } from "react-map-gl/mapbox";
 import type { Details } from "@mapform/backend/data/stadia/details";
+import { DRAWER_WIDTH, SIDEBAR_WIDTH } from "~/constants/sidebars";
 
 interface SearchDetailsProps {
   details: Details["data"];
@@ -16,6 +17,23 @@ interface SearchDetailsProps {
 
 export function SearchDetails({ details }: SearchDetailsProps) {
   const { params, drawerDepth, isPending, setQueryStates } = useParamsContext();
+  const map = useMap();
+
+  const longitude = details?.features[0]?.geometry?.coordinates[0];
+  const latitude = details?.features[0]?.geometry?.coordinates[1];
+
+  useEffect(() => {
+    if (!longitude || !latitude || params.location) return;
+    map.current?.easeTo({
+      center: [longitude, latitude],
+      padding: {
+        left: SIDEBAR_WIDTH + DRAWER_WIDTH,
+        top: 0,
+        bottom: 0,
+        right: 0,
+      },
+    });
+  }, []);
 
   return (
     <MapDrawer

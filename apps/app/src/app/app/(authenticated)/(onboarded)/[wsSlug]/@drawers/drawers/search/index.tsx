@@ -48,6 +48,8 @@ export function Search({
 }: SearchProps) {
   const { params, drawerDepth } = useParamsContext();
 
+  console.log(111112222, searchResults);
+
   return (
     <MapDrawer open={!!params.search} depth={drawerDepth.get("search") ?? 0}>
       <SearchInner
@@ -64,7 +66,7 @@ export function SearchInner({
   vectorSearchResults,
   previousChats,
 }: SearchProps) {
-  const { map } = useMap();
+  const map = useMap();
   const { params, setQueryStates, isPending } = useParamsContext();
   const [searchQuery, setSearchQuery] = useState(params.query);
   const debouncedSearchQuery = useDebounce(searchQuery, 200);
@@ -132,11 +134,11 @@ export function SearchInner({
                 key={result.id}
                 value={result.id}
                 onSelect={async () => {
-                  await setQueryStates({ rowId: result.id });
-                  map?.flyTo({
+                  map.current?.easeTo({
                     center: result.center.coordinates as [number, number],
-                    duration: 500,
+                    duration: 1000,
                   });
+                  await setQueryStates({ rowId: result.id });
                 }}
               >
                 {result.icon ? (
@@ -160,18 +162,26 @@ export function SearchInner({
                 key={feature.properties.gid}
                 value={feature.properties.gid}
                 onSelect={async () => {
-                  await setQueryStates({
-                    stadiaId: feature.properties.gid,
-                  });
+                  console.log(1111, feature);
+
                   if (feature.bbox) {
-                    map?.fitBounds(
+                    map.current?.fitBounds(
                       feature.bbox as [number, number, number, number],
                       {
                         padding: 50,
                         duration: 1000,
                       },
                     );
+                  } else {
+                    map.current?.easeTo({
+                      center: feature.geometry?.coordinates as [number, number],
+                      duration: 1000,
+                    });
                   }
+
+                  await setQueryStates({
+                    stadiaId: feature.properties.gid,
+                  });
                 }}
               >
                 <GlobeIcon className="text-muted-foreground mr-2 size-4 flex-shrink-0" />
