@@ -21,10 +21,6 @@ export function Coordinates({ coordinates, details }: CoordinatesProps) {
   const longitude = coordinates?.[1];
   const latitude = coordinates?.[0];
 
-  console.log("upper viewState", {
-    ...(longitude && latitude && { center: [longitude, latitude] }),
-  });
-
   return (
     <MapDrawer open={!!coordinates} depth={drawerDepth.get("stadiaId") ?? 0}>
       <MapPositioner
@@ -41,7 +37,6 @@ export function Coordinates({ coordinates, details }: CoordinatesProps) {
                 type="button"
                 variant="ghost"
                 onClick={() => {
-                  console.log("clicked");
                   void setQueryStates({ marker: null });
                 }}
               >

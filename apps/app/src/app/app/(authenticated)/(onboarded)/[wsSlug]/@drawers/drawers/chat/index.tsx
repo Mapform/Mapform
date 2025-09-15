@@ -105,9 +105,6 @@ function ChatInner({ initialMessages }: ChatProps) {
     }
   }, [params.query, sendMessage, hasInitiatedNewChat, params.chatId, messages]);
 
-  console.log(messages);
-  console.log(status, error);
-
   return (
     <>
       <MapDrawerToolbar>

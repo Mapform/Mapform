@@ -17,8 +17,6 @@ export function MapPositioner({
   useEffect(() => {
     if (!map.current) return;
 
-    console.log(111113333, _viewState);
-
     map.current.easeTo({
       padding: _viewState.padding,
       ...(_viewState.center && { center: _viewState.center }),
