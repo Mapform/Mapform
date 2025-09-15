@@ -43,7 +43,6 @@ import { useParams } from "next/navigation";
 import type { Details } from "@mapform/backend/data/stadia/details";
 import { useWorkspace } from "../../workspace-context";
 import { useParamsContext } from "~/lib/params/client";
-import { useMapPadding } from "~/lib/map/use-map-padding";
 
 type Feature = NonNullable<Details["data"]>["features"][number];
 
@@ -60,8 +59,6 @@ export function PlaceDetailsContent({
   feature,
   onClose,
 }: PlaceDetailsContentProps) {
-  const map = useMap();
-  const padding = useMapPadding(true);
   const { setQueryStates } = useParamsContext();
   const { pId } = useParams<{ pId: string }>();
   const { workspaceDirectory } = useWorkspace();

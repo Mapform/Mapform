@@ -69,6 +69,7 @@ import { toast } from "@mapform/ui/components/toaster";
 import { useMap } from "react-map-gl/mapbox";
 import { useParamsContext } from "~/lib/params/client";
 import { Button } from "@mapform/ui/components/button";
+import { DRAWER_WIDTH, SIDEBAR_WIDTH } from "~/constants/sidebars";
 
 export function AppSidebar() {
   const map = useMap();
@@ -111,22 +112,22 @@ export function AppSidebar() {
       plan: "Basic",
     })),
     navMain: [
-      // {
-      //   title: "Search",
-      //   onClick: () => {
-      //     void setQueryStates({
-      //       search: params.search === "1" ? null : "1",
-      //       chatId: null,
-      //       query: null,
-      //     });
-      //   },
-      //   icon: SearchIcon,
-      //   isActive: params.search === "1",
-      // },
       {
         title: "Home",
         onClick: () => {
           router.push(`/app/${workspaceSlug}`);
+          map.current?.easeTo({
+            center: [0, 0],
+            padding: {
+              left: SIDEBAR_WIDTH,
+              top: 0,
+              bottom: 0,
+              right: 0,
+            },
+            zoom: 2,
+            pitch: 0,
+            bearing: 0,
+          });
         },
         icon: HomeIcon,
         isActive: pathname === `/app/${workspaceSlug}`,
@@ -135,6 +136,15 @@ export function AppSidebar() {
         title: "Settings",
         onClick: () => {
           router.push(`/app/${workspaceSlug}/settings`);
+
+          map.current?.easeTo({
+            padding: {
+              left: SIDEBAR_WIDTH + DRAWER_WIDTH,
+              top: 0,
+              bottom: 0,
+              right: 0,
+            },
+          });
         },
         icon: Settings2Icon,
         isActive: pathname === `/app/${workspaceSlug}/settings`,

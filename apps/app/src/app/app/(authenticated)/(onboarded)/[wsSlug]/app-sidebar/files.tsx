@@ -33,7 +33,7 @@ import {
 import { deleteProjectAction } from "~/data/projects/delete-project";
 import { toast } from "@mapform/ui/components/toaster";
 import { useMap } from "react-map-gl/mapbox";
-import { useMapPadding } from "~/lib/map/use-map-padding";
+import { DRAWER_WIDTH, SIDEBAR_WIDTH } from "~/constants/sidebars";
 
 export function Files({
   teamspace,
@@ -43,7 +43,6 @@ export function Files({
   const map = useMap();
   const router = useRouter();
   const pathname = usePathname();
-  const padding = useMapPadding(true);
   const { workspaceSlug, workspaceDirectory, updateWorkspaceDirectory } =
     useWorkspace();
 
@@ -159,7 +158,12 @@ export function Files({
 
                           map.current?.easeTo({
                             center: project.center.coordinates,
-                            padding,
+                            padding: {
+                              left: SIDEBAR_WIDTH + DRAWER_WIDTH,
+                              top: 0,
+                              bottom: 0,
+                              right: 0,
+                            },
                             zoom: project.zoom,
                             pitch: project.pitch,
                             bearing: project.bearing,

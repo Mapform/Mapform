@@ -16,7 +16,7 @@ import {
 import { updateRowAction } from "~/data/rows/update-row";
 import type { GetRow } from "@mapform/backend/data/rows/get-row";
 import type { UpdateRowSchema } from "@mapform/backend/data/rows/update-row/schema";
-import { Marker, useMap } from "react-map-gl/mapbox";
+import { Marker } from "react-map-gl/mapbox";
 import { BasicSkeleton } from "~/components/skeletons/basic";
 import { Feature as FeatureComponent } from "~/components/feature";
 import {
@@ -30,18 +30,14 @@ import {
 } from "@mapform/ui/components/dropdown-menu";
 import { openInAppleMaps } from "~/lib/external-links/apple";
 import { openInGoogleMaps } from "~/lib/external-links/google";
-import { useEffect } from "react";
 import { useAction } from "next-safe-action/hooks";
 import { deleteRowsAction } from "~/data/rows/delete-rows";
-import { useMapPadding } from "~/lib/map/use-map-padding";
 
 interface FeatureDrawerProps {
   feature: GetRow["data"];
 }
 
 export function Feature({ feature }: FeatureDrawerProps) {
-  const map = useMap();
-  const padding = useMapPadding(true);
   const { params, isPending, drawerDepth, setQueryStates } = useParamsContext();
 
   const featureService = useStateService<GetRow["data"], UpdateRowSchema>(

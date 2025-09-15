@@ -24,6 +24,8 @@ import {
 } from "~/lib/map/constants";
 import { MapContextMenu } from "./map-context-menu";
 import { useParamsContext } from "~/lib/params/client";
+import { useParams, usePathname } from "next/navigation";
+import { DRAWER_WIDTH, SIDEBAR_WIDTH } from "~/constants/sidebars";
 
 export interface WorkspaceContextInterface {
   workspaceSlug: string;
@@ -64,6 +66,10 @@ export function WorkspaceProvider({
     y: number;
   } | null>(null);
   const { setQueryStates, params } = useParamsContext();
+  const pathParams = useParams<{
+    pId?: string;
+  }>();
+  const pathname = usePathname();
   const [cursor, setCursor] = useState<string>("grab");
   const currentWorkspace = workspaceMemberships.find(
     (membership) => membership.workspace.slug === workspaceSlug,
@@ -192,6 +198,22 @@ export function WorkspaceProvider({
 
   const [latitude, longitude] = params.location?.split(",") ?? [];
 
+  const initialPadding = {
+    left:
+      params.chatId ||
+      params.search ||
+      params.rowId ||
+      params.stadiaId ||
+      params.marker ||
+      pathParams.pId ||
+      pathname.includes("/settings")
+        ? SIDEBAR_WIDTH + DRAWER_WIDTH
+        : SIDEBAR_WIDTH,
+    top: 0,
+    bottom: 0,
+    right: 0,
+  };
+
   return (
     <WorkspaceContext.Provider
       value={{
@@ -217,6 +239,7 @@ export function WorkspaceProvider({
           longitude: longitude ? parseFloat(longitude) : undefined,
           pitch: params.pitch ?? 0,
           bearing: params.bearing ?? 0,
+          padding: initialPadding,
         }}
         cursor={cursor}
         minZoom={2}
