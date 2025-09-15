@@ -65,7 +65,7 @@ export function Feature({ feature }: FeatureDrawerProps) {
             ...(longitude && latitude && { center: [longitude, latitude] }),
           }}
         >
-          {isPending ? (
+          {isPending && params.rowId !== featureService.optimisticState?.id ? (
             <>
               <MapDrawerToolbar>
                 <Button

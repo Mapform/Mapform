@@ -6,7 +6,6 @@ import { Button } from "@mapform/ui/components/button";
 import { XIcon } from "lucide-react";
 import { BasicSkeleton } from "~/components/skeletons/basic";
 import { PlaceDetailsContent } from "../../components/place-details-content";
-import { useEffect } from "react";
 import { Marker } from "react-map-gl/mapbox";
 import type { Details } from "@mapform/backend/data/stadia/details";
 import { MapPositioner } from "~/lib/map/map-positioner";
@@ -31,7 +30,8 @@ export function SearchDetails({ details }: SearchDetailsProps) {
           ...(longitude && latitude && { center: [longitude, latitude] }),
         }}
       >
-        {isPending ? (
+        {isPending &&
+        details?.features[0]?.properties.gid !== params.stadiaId ? (
           <>
             <MapDrawerToolbar>
               <Button
@@ -62,10 +62,6 @@ function SearchDetailsInner({ details }: SearchDetailsProps) {
   const longitude = details?.features[0]?.geometry?.coordinates[0];
   const latitude = details?.features[0]?.geometry?.coordinates[1];
   const feature = details?.features[0];
-
-  useEffect(() => {
-    // no-op here; map centering is handled inside PlaceDetailsContent
-  }, []);
 
   if (!longitude || !latitude || !feature)
     return (
