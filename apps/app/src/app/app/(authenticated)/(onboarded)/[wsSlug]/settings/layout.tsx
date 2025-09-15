@@ -11,7 +11,9 @@ export default async function SettingsLayout({
   const { wsSlug } = await params;
 
   return (
-    <MapPositioner>
+    <MapPositioner
+      viewState={{ center: [0, 0], zoom: 2, pitch: 0, bearing: 0 }}
+    >
       <div className="p-2">
         <SettingsTabs wsSlug={wsSlug} />
       </div>

@@ -60,10 +60,10 @@ export function MapPositioner({
 
     map.current.easeTo({
       padding: _viewState.padding,
-      ...(_viewState.center && { center: _viewState.center }),
-      ...(_viewState.pitch && { pitch: _viewState.pitch }),
-      ...(_viewState.bearing && { bearing: _viewState.bearing }),
-      ...(_viewState.zoom && { zoom: _viewState.zoom }),
+      ...(_viewState.center !== undefined && { center: _viewState.center }),
+      ...(_viewState.pitch !== undefined && { pitch: _viewState.pitch }),
+      ...(_viewState.bearing !== undefined && { bearing: _viewState.bearing }),
+      ...(_viewState.zoom !== undefined && { zoom: _viewState.zoom }),
     });
 
     previousViewStateRef.current = _viewState as ComputedViewState;
