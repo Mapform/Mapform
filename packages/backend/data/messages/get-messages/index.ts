@@ -23,7 +23,10 @@ export const getMessages = (authClient: UserAuthClient) =>
         throw new Error("Chat not found");
       }
 
-      return chat.messages;
+      return {
+        chatId: chat.id,
+        messages: chat.messages,
+      };
     });
 
 export type GetMessages = UnwrapReturn<typeof getMessages>;

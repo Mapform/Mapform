@@ -80,13 +80,24 @@ async function SearchDrawer({ searchParams, params }: DealDrawerProps) {
 async function ChatDrawer({ searchParams }: DealDrawerProps) {
   const { chatId } = await loadSearchParams(searchParams);
 
-  const messages = chatId
+  const chatWithMessages = chatId
     ? await authClient.getMessages({
         chatId,
       })
     : null;
 
-  return <Chat initialMessages={messages?.data as ChatMessage[]} />;
+  return (
+    <Chat
+      chatWithMessages={
+        chatWithMessages?.data as
+          | {
+              messages?: ChatMessage[] | undefined;
+              chatId: string;
+            }
+          | undefined
+      }
+    />
+  );
 }
 
 const getDetails = cache(async (id: string | null) => {

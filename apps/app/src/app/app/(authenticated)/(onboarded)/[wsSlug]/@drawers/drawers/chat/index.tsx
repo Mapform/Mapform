@@ -29,15 +29,15 @@ import { useParams } from "next/navigation";
 import { BasicSkeleton } from "~/components/skeletons/basic";
 
 interface ChatProps {
-  initialMessages?: ChatMessage[];
+  chatWithMessages?: { messages?: ChatMessage[]; chatId: string };
 }
 
-export function Chat({ initialMessages }: ChatProps) {
+export function Chat({ chatWithMessages }: ChatProps) {
   const { params, drawerDepth, isPending, setQueryStates } = useParamsContext();
 
   return (
     <MapDrawer open={!!params.chatId} depth={drawerDepth.get("chatId") ?? 0}>
-      {isPending ? (
+      {isPending && chatWithMessages?.chatId !== params.chatId ? (
         <>
           <MapDrawerToolbar>
             <Button
@@ -55,13 +55,13 @@ export function Chat({ initialMessages }: ChatProps) {
           <BasicSkeleton className="p-6" />
         </>
       ) : (
-        <ChatInner key={params.chatId} initialMessages={initialMessages} />
+        <ChatInner key={params.chatId} chatWithMessages={chatWithMessages} />
       )}
     </MapDrawer>
   );
 }
 
-function ChatInner({ initialMessages }: ChatProps) {
+function ChatInner({ chatWithMessages }: ChatProps) {
   const [input, setInput] = useState("");
   const [hasInitiatedNewChat, setHasInitiatedNewChat] = useState(false);
   const { pId } = useParams();
@@ -69,7 +69,7 @@ function ChatInner({ initialMessages }: ChatProps) {
 
   const { messages, sendMessage, status, stop, error } = useChat<ChatMessage>({
     id: params.chatId!,
-    messages: initialMessages ?? [],
+    messages: chatWithMessages?.messages ?? [],
     transport: new DefaultChatTransport({
       api: "/api/chat",
       prepareSendMessagesRequest({ messages, id }) {
