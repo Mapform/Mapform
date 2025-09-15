@@ -2,7 +2,10 @@
 
 import { cn } from "@mapform/lib/classnames";
 import { AnimatePresence, motion } from "motion/react";
+import { useEffect } from "react";
+import { useMap } from "react-map-gl/mapbox";
 import { DRAWER_WIDTH } from "~/constants/sidebars";
+import { useMapPadding } from "~/lib/map/use-map-padding";
 
 interface MapDrawerProps {
   // isPending: boolean;
@@ -20,7 +23,15 @@ export function MapDrawer({
   children,
   isFullWidth = false,
 }: MapDrawerProps) {
+  const map = useMap();
+  const padding = useMapPadding();
   const width = isFullWidth ? "calc(100% - 8px)" : DRAWER_WIDTH;
+
+  useEffect(() => {
+    map.current?.easeTo({
+      padding: padding,
+    });
+  }, [padding]);
 
   return (
     <AnimatePresence>

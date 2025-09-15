@@ -48,8 +48,6 @@ export function Search({
 }: SearchProps) {
   const { params, drawerDepth } = useParamsContext();
 
-  console.log(111112222, searchResults);
-
   return (
     <MapDrawer open={!!params.search} depth={drawerDepth.get("search") ?? 0}>
       <SearchInner
@@ -162,8 +160,6 @@ export function SearchInner({
                 key={feature.properties.gid}
                 value={feature.properties.gid}
                 onSelect={async () => {
-                  console.log(1111, feature);
-
                   if (feature.bbox) {
                     map.current?.fitBounds(
                       feature.bbox as [number, number, number, number],

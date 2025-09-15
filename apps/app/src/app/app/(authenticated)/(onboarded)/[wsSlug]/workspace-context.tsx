@@ -9,12 +9,11 @@ import React, {
   useCallback,
   useRef,
   useMemo,
-  useEffect,
 } from "react";
 import type { GetUserWorkspaceMemberships } from "@mapform/backend/data/workspace-memberships/get-user-workspace-memberships";
 import type { WorkspaceDirectory } from "@mapform/backend/data/workspaces/get-workspace-directory";
 import { SidebarProvider } from "@mapform/ui/components/sidebar";
-import Map, { NavigationControl, useMap } from "react-map-gl/mapbox";
+import Map, { NavigationControl } from "react-map-gl/mapbox";
 import { env } from "~/*";
 import "mapbox-gl/dist/mapbox-gl.css";
 import {
@@ -71,8 +70,6 @@ export function WorkspaceProvider({
   const pathParams = useParams<{
     pId?: string;
   }>();
-  const pathname = usePathname();
-  const map = useMap();
   const [cursor, setCursor] = useState<string>("grab");
   const currentWorkspace = workspaceMemberships.find(
     (membership) => membership.workspace.slug === workspaceSlug,
@@ -229,16 +226,6 @@ export function WorkspaceProvider({
     params.bearing,
     params.zoom,
   ]);
-
-  useEffect(() => {
-    if (!map.current) return;
-
-    console.log(11111, initialPadding);
-
-    map.current.easeTo({
-      padding: initialPadding,
-    });
-  }, [initialPadding]);
 
   return (
     <WorkspaceContext.Provider
