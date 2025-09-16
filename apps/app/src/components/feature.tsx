@@ -2,6 +2,8 @@ import { Blocknote, useCreateBlockNote } from "@mapform/blocknote";
 import type { Column } from "@mapform/db/schema";
 import { AutoSizeTextArea } from "@mapform/ui/components/autosize-text-area";
 import { Button } from "@mapform/ui/components/button";
+import { format } from "date-fns";
+import { enUS } from "date-fns/locale";
 import { EmojiPopover } from "@mapform/ui/components/emoji-picker";
 import {
   Tooltip,
@@ -37,12 +39,12 @@ type Property =
       rowId: string;
       columnName: string;
       columnType: Column["type"];
-      value: string | number | boolean | null;
+      value: string | number | boolean | Date | null;
     }
   | {
       columnType: Column["type"];
       columnName: string;
-      value: string | number | boolean | null;
+      value: string | number | boolean | Date | null;
     };
 
 interface FeatureProps {
@@ -85,6 +87,8 @@ export function Feature({
     initialContent:
       typeof description === "string" ? [] : (description as CustomBlock[]),
   });
+
+  console.log("properties", properties);
 
   const wikiData = useWikidataImages(osmId);
   const images = [...(imageData?.images ?? []), ...(wikiData.images ?? [])];
@@ -216,7 +220,9 @@ export function Feature({
                   />
                 </div>
                 <div className="col-span-2 text-wrap break-words">
-                  {property.value}
+                  {property.value instanceof Date
+                    ? format(property.value, "PP hh:mm b", { locale: enUS })
+                    : property.value}
                 </div>
               </div>
             ),

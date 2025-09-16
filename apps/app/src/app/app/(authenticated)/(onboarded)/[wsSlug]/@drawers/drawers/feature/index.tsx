@@ -236,6 +236,18 @@ const FeatureContent = ({
             imageUrl: blob.url,
           })),
         }}
+        properties={featureService.optimisticState!.cells.map((cell) => ({
+          columnId: cell.columnId,
+          rowId: cell.rowId,
+          columnName: cell.column.name,
+          columnType: cell.column.type,
+          value:
+            cell.stringCell?.value ??
+            cell.numberCell?.value ??
+            cell.booleanCell?.value ??
+            cell.dateCell?.value ??
+            null,
+        }))}
       />
     </div>
   );
