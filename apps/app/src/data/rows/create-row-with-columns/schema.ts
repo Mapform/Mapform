@@ -1,23 +1,18 @@
 import { z } from "zod";
+import { createRowSchema } from "@mapform/backend/data/rows/create-row/schema";
 import {
   columnTypeEnum,
-  insertCellSchema,
   insertStringCellSchema,
   insertBooleanCellSchema,
   insertNumberCellSchema,
   insertDateCellSchema,
 } from "@mapform/db/schema";
 
-const commonCellSchema = insertCellSchema
-  .pick({
-    rowId: true,
-  })
-  .extend({
-    columnId: insertCellSchema.shape.columnId.optional(),
-    columnName: z.string().optional(),
-  });
+const commonCellSchema = z.object({
+  columnName: z.string(),
+});
 
-const upsertCellBase = z.discriminatedUnion("type", [
+const upsertCellSchema = z.discriminatedUnion("type", [
   // String
   commonCellSchema.extend({
     type: z.literal(columnTypeEnum.enumValues[0]),
@@ -40,15 +35,10 @@ const upsertCellBase = z.discriminatedUnion("type", [
   }),
 ]);
 
-export const upsertCellSchema = upsertCellBase.superRefine((val, ctx) => {
-  const provided = (val.columnId ? 1 : 0) + (val.columnName ? 1 : 0);
-  if (provided !== 1) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: "Provide either columnId or columnName",
-      path: ["columnId"],
-    });
-  }
+export const createRowWithColumnsSchema = createRowSchema.extend({
+  cells: z.array(upsertCellSchema).optional().default([]),
 });
 
-export type UpsertCellSchema = z.infer<typeof upsertCellSchema>;
+export type CreateRowWithColumnsSchema = z.infer<
+  typeof createRowWithColumnsSchema
+>;

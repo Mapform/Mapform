@@ -1,19 +1,94 @@
 "use server";
 
 import { authDataService } from "~/lib/safe-action";
-import { createRowSchema } from "@mapform/backend/data/rows/create-row/schema";
+import { createRowWithColumnsSchema } from "./schema";
 
+/**
+ * NOTE: This is probably relatively inefficient, but shouldn't be a huge deal
+ * for now, esp. given most places don't have too many properties to be copied
+ * over.
+ */
 export const createRowWithColumnsAction = authDataService.authClient
-  .schema(createRowSchema)
-  .action(async ({ parsedInput: { projectId } }) => {
+  .schema(createRowWithColumnsSchema)
+  .action(async ({ parsedInput: { projectId, cells, ...rest } }) => {
     const result = await authDataService.$transaction(async (client) => {
+      console.log("cells", cells);
+      /**
+       * Get the project with its columns
+       */
       const project = await client.getProject({ projectId });
 
-      project?.data?.columns;
+      /**
+       * Get the columns that don't exist in the project
+       */
+      const nonExistingColumns = cells.filter(
+        (cell) =>
+          !project?.data?.columns.some((c) => c.name === cell.columnName),
+      );
 
-      const row = await client.createRow({ projectId });
+      /**
+       * Create the columns that don't exist in the project
+       */
+      await Promise.all(
+        nonExistingColumns.map(async (column) => {
+          await client.createColumn({
+            projectId,
+            name: column.columnName,
+            type: column.type,
+          });
+        }),
+      );
+
+      /**
+       * Create the row
+       */
+      const row = await client.createRow({ projectId, ...rest });
+      const rowId = row?.data?.id;
+
+      if (!rowId) {
+        throw new Error("Failed to create row");
+      }
+
+      /**
+       * Create the cells for the row
+       */
+      await Promise.all(
+        cells.map((cell) => {
+          switch (cell.type) {
+            case "string":
+              return client.upsertCell({
+                rowId,
+                columnName: cell.columnName,
+                type: "string",
+                value: cell.value,
+              });
+            case "number":
+              return client.upsertCell({
+                rowId,
+                columnName: cell.columnName,
+                type: "number",
+                value: cell.value,
+              });
+            case "bool":
+              return client.upsertCell({
+                rowId,
+                columnName: cell.columnName,
+                type: "bool",
+                value: cell.value,
+              });
+            case "date":
+              return client.upsertCell({
+                rowId,
+                columnName: cell.columnName,
+                type: "date",
+                value: cell.value,
+              });
+          }
+        }),
+      );
+
       return row;
     });
 
-    return result?.data;
+    return result.data;
   });

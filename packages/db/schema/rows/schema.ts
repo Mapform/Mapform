@@ -46,7 +46,7 @@ export const rows = pgTable("row", {
   icon: varchar("icon", { length: 256 }),
   // Only allow hex colors
   color: varchar("color", { length: 7 }).$type<`#${string}`>(),
-  geometry: geometry("geometry").$type<NonRecursiveGeometry>(),
+  geometry: geometry("geometry").$type<NonRecursiveGeometry>().notNull(),
 
   // Optional geoapify place id. Used when storing places from geoapify.
   stadiaId: varchar("stadia_id", { length: 256 }),

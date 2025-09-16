@@ -54,6 +54,8 @@ export function Feature({ feature }: FeatureDrawerProps) {
     },
   );
 
+  console.log(featureService.optimisticState);
+
   const longitude = featureService.optimisticState?.center.coordinates[0];
   const latitude = featureService.optimisticState?.center.coordinates[1];
 

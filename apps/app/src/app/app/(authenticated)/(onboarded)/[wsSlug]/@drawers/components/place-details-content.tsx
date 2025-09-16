@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { MapDrawerToolbar } from "~/components/map-drawer";
 import { Button } from "@mapform/ui/components/button";
 import {
@@ -105,6 +105,23 @@ export function PlaceDetailsContent({
         type: "Point",
         coordinates: [longitude, latitude],
       },
+      cells: [
+        {
+          columnName: "Address",
+          value: address,
+          type: "string",
+        },
+        {
+          columnName: "Phone",
+          value: phone,
+          type: "string",
+        },
+        {
+          columnName: "Website",
+          value: website,
+          type: "string",
+        },
+      ],
     });
   };
 
@@ -120,18 +137,7 @@ export function PlaceDetailsContent({
             type="button"
             variant="ghost"
             disabled={isPending}
-            onClick={() => {
-              execute({
-                projectId: pId,
-                name: placeName,
-                stadiaId: properties?.gid,
-                osmId: wikidataId,
-                geometry: {
-                  type: "Point",
-                  coordinates: [longitude, latitude],
-                },
-              });
-            }}
+            onClick={() => handleAddToProject(pId)}
           >
             {isPending ? (
               <Loader2Icon className="size-4 animate-spin" />
