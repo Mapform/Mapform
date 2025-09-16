@@ -51,8 +51,8 @@ interface StadiaAIResultLocation {
 interface MapformAIResultLocation {
   id: string;
   name?: string;
-  latitude?: number;
-  longitude?: number;
+  latitude: number;
+  longitude: number;
   source: "mapform";
 }
 

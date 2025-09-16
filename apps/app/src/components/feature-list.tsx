@@ -11,7 +11,8 @@ interface Feature {
   name: string;
   description?: string;
   icon?: string;
-  coordinates: [number, number];
+  latitude: number;
+  longitude: number;
   image?: {
     url: string;
     alt?: string;

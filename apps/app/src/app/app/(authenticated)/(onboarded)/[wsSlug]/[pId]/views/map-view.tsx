@@ -10,14 +10,16 @@ export function MapView() {
     id: row.id,
     name: row.name ?? "",
     icon: row.icon ?? undefined,
-    coordinates: row.center.coordinates as [number, number],
+    latitude: row.center.coordinates[0]!,
+    longitude: row.center.coordinates[1]!,
     image: row.blobs[0]?.url ? { url: row.blobs[0].url } : undefined,
     source: "mapform" as const,
   }));
 
   const handleFeatureClick = (feature: {
     id: string;
-    coordinates: [number, number];
+    latitude: number;
+    longitude: number;
   }) => {
     void setQueryStates({
       rowId: feature.id,

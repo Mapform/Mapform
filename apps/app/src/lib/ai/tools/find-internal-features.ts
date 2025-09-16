@@ -22,8 +22,8 @@ async function _findInternalFeatures(question: string) {
   return (results?.data?.map((row) => ({
     id: row.id,
     name: row.name || undefined,
-    latitude: row.center.coordinates[0],
-    longitude: row.center.coordinates[1],
+    latitude: row.center.coordinates[0]!,
+    longitude: row.center.coordinates[1]!,
     source: "mapform",
   })) || []) satisfies AIResultLocation[];
 }

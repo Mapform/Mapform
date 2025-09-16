@@ -20,10 +20,8 @@ function FeatureWithImage({ result }: { result: AIResultLocation }) {
     id: result.id,
     name: result.name ?? "",
     description: result.source === "stadia" ? result.address : undefined,
-    coordinates:
-      result.latitude && result.longitude
-        ? [result.latitude, result.longitude]
-        : undefined,
+    latitude: result.latitude,
+    longitude: result.longitude,
     image:
       result.source === "stadia" && result.wikidataId
         ? {
@@ -82,7 +80,6 @@ export function PickLocationsMessage({ results }: PickLocationsMessageProps) {
   return (
     <div>
       {results.map((r) => {
-        console.log(1111, r);
         const isHovered = hoveredFeature?.id === r.id;
 
         // The marker will be display by the Drawer component
