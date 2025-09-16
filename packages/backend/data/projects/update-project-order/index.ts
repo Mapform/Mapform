@@ -1,6 +1,5 @@
 "server-only";
 
-import { db } from "@mapform/db";
 import { eq, and, inArray } from "@mapform/db/utils";
 import { projects } from "@mapform/db/schema";
 import { updateProjectOrderSchema } from "./schema";
@@ -10,7 +9,10 @@ export const updateProjectOrder = (authClient: UserAuthClient) =>
   authClient
     .schema(updateProjectOrderSchema)
     .action(
-      async ({ parsedInput: { teamspaceId, projectOrder }, ctx: { user } }) => {
+      async ({
+        parsedInput: { teamspaceId, projectOrder },
+        ctx: { user, db },
+      }) => {
         const userTeamspaceIds = user.workspaceMemberships
           .map((m) => m.workspace.teamspaces.map((t) => t.id))
           .flat();

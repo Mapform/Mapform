@@ -1,6 +1,5 @@
 "server-only";
 
-import { db } from "@mapform/db";
 import { blobs, workspaces } from "@mapform/db/schema";
 import { and, eq, isNull, sum } from "@mapform/db/utils";
 import { getStorageUsageSchema } from "./schema";
@@ -17,7 +16,7 @@ export const getStorageUsage = (authClient: UserAuthClient | PublicClient) =>
         throw new Error("Unauthorized");
       }
 
-      const [response] = await db
+      const [response] = await ctx.db
         .select({ totalSize: sum(blobs.size).mapWith(Number) })
         .from(blobs)
         .leftJoin(workspaces, eq(workspaces.slug, workspaceSlug))

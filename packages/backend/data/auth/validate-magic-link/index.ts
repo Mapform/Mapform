@@ -1,6 +1,5 @@
 "server-only";
 
-import { db } from "@mapform/db";
 import { eq } from "@mapform/db/utils";
 import { validateMagicLinkSchema } from "./schema";
 import type { PublicClient } from "../../../lib/types";
@@ -12,7 +11,7 @@ import { ServerError } from "../../../lib/server-error";
 export const validateMagicLink = (authClient: PublicClient) =>
   authClient
     .schema(validateMagicLinkSchema)
-    .action(async ({ parsedInput: { token } }) => {
+    .action(async ({ parsedInput: { token }, ctx: { db } }) => {
       const hashedToken = hashToken(token);
       const magicLink = await db.query.magicLinks.findFirst({
         where: eq(magicLinks.token, hashedToken),

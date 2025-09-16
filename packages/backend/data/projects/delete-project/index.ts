@@ -1,6 +1,5 @@
 "server-only";
 
-import { db } from "@mapform/db";
 import { and, eq, inArray, or } from "@mapform/db/utils";
 import { projects, rows, blobs } from "@mapform/db/schema";
 import { deleteProjectSchema } from "./schema";
@@ -9,7 +8,7 @@ import type { UserAuthClient } from "../../../lib/types";
 export const deleteProject = (authClient: UserAuthClient) =>
   authClient
     .schema(deleteProjectSchema)
-    .action(async ({ parsedInput: { projectId }, ctx: { user } }) => {
+    .action(async ({ parsedInput: { projectId }, ctx: { user, db } }) => {
       const teamspaceIds = user.workspaceMemberships
         .map((m) => m.workspace.teamspaces.map((t) => t.id))
         .flat();

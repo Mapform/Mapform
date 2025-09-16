@@ -1,7 +1,7 @@
 "server-only";
 
-import { db, sql } from "@mapform/db";
-import { projects, workspaces, views } from "@mapform/db/schema";
+import { sql } from "@mapform/db";
+import { projects, workspaces } from "@mapform/db/schema";
 import { eq } from "@mapform/db/utils";
 import { getWorkspaceDirectorySchema } from "./schema";
 import type { Point } from "geojson";
@@ -10,7 +10,7 @@ import type { UserAuthClient, UnwrapReturn } from "../../../lib/types";
 export const getWorkspaceDirectory = (authClient: UserAuthClient) =>
   authClient
     .schema(getWorkspaceDirectorySchema)
-    .action(({ parsedInput: { slug } }) => {
+    .action(({ parsedInput: { slug }, ctx: { db } }) => {
       return db.query.workspaces.findFirst({
         where: eq(workspaces.slug, slug),
         columns: {

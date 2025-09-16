@@ -1,6 +1,5 @@
 "server-only";
 
-import { db } from "@mapform/db";
 import { columns, projects } from "@mapform/db/schema";
 import { createColumnSchema } from "./schema";
 import type { UserAuthClient } from "../../../lib/types";
@@ -10,7 +9,7 @@ export const createColumn = (authClient: UserAuthClient) =>
   authClient
     .schema(createColumnSchema)
     .action(
-      async ({ parsedInput: { name, projectId, type }, ctx: { user } }) => {
+      async ({ parsedInput: { name, projectId, type }, ctx: { user, db } }) => {
         const teamspaceIds = user.workspaceMemberships
           .map((m) => m.workspace.teamspaces.map((t) => t.id))
           .flat();

@@ -4,6 +4,7 @@ import {
   selectWorkspaceSchema,
   selectTeamspaceSchema,
 } from "@mapform/db/schema";
+import type { db } from "@mapform/db";
 import { z } from "zod";
 
 export const userAuthSchema = z.object({
@@ -41,6 +42,7 @@ export const userAuthSchema = z.object({
       checkAccessById: z.function().args(z.string()).returns(z.boolean()),
     }),
   }),
+  db: z.custom<typeof db>(),
 });
 
 export const apiAuthSchema = z.object({
@@ -48,7 +50,10 @@ export const apiAuthSchema = z.object({
   apiKey: z.string(),
 });
 
-export const publicSchema = z.object({ authType: z.literal("public") });
+export const publicSchema = z.object({
+  authType: z.literal("public"),
+  db: z.custom<typeof db>(),
+});
 
 export const publicOrUserAuthSchema = z.union([publicSchema, userAuthSchema]);
 

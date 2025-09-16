@@ -1,6 +1,5 @@
 "server-only";
 
-import { db } from "@mapform/db";
 import { views } from "@mapform/db/schema";
 import { updateViewSchema } from "./schema";
 import type { UserAuthClient } from "../../../lib/types";
@@ -10,7 +9,10 @@ export const updateView = (authClient: UserAuthClient) =>
   authClient
     .schema(updateViewSchema)
     .action(
-      async ({ parsedInput: { viewId, ...updates }, ctx: { userAccess } }) => {
+      async ({
+        parsedInput: { viewId, ...updates },
+        ctx: { userAccess, db },
+      }) => {
         // First get the view with its project and teamspace information
         const viewToUpdate = await db.query.views.findFirst({
           where: eq(views.id, viewId),

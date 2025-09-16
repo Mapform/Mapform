@@ -1,6 +1,6 @@
 "server-only";
 
-import { db, sql } from "@mapform/db";
+import { sql } from "@mapform/db";
 import { rows } from "@mapform/db/schema";
 import type { Geometry } from "geojson";
 import type { PointType } from "@mapform/db/schema/rows/schema";
@@ -11,7 +11,7 @@ import { eq } from "@mapform/db/utils";
 export const getRow = (authClient: UserAuthClient) =>
   authClient
     .schema(getRowSchema)
-    .action(async ({ parsedInput: { rowId }, ctx: { userAccess } }) => {
+    .action(async ({ parsedInput: { rowId }, ctx: { userAccess, db } }) => {
       // First get the rows with their teamspace information
       const row = await db.query.rows.findFirst({
         where: eq(rows.id, rowId),

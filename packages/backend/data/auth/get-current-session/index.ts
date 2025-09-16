@@ -1,6 +1,5 @@
 "server-only";
 
-import { db } from "@mapform/db";
 import { verifyToken } from "@mapform/auth/helpers/sessions";
 import type { PublicClient, UnwrapReturn } from "../../../lib/types";
 import { getCurrentSessionSchema } from "./schema";
@@ -10,7 +9,7 @@ import { eq } from "@mapform/db/utils";
 export const getCurrentSession = (authClient: PublicClient) =>
   authClient
     .schema(getCurrentSessionSchema)
-    .action(async ({ parsedInput: { token } }) => {
+    .action(async ({ parsedInput: { token }, ctx: { db } }) => {
       if (!token) {
         return null;
       }

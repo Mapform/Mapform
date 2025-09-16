@@ -1,6 +1,5 @@
 "server-only";
 
-import { db } from "@mapform/db";
 import type { UserAuthClient } from "../../../lib/types";
 import { uploadImageSchema } from "./schema";
 import { put } from "@vercel/blob";
@@ -24,7 +23,7 @@ export const uploadImage = (authClient: UserAuthClient) =>
           author,
           license,
         },
-        ctx: { userAccess },
+        ctx: { userAccess, db },
       }) => {
         if (!userAccess.workspace.checkAccessById(workspaceId)) {
           throw new Error("Unauthorized");

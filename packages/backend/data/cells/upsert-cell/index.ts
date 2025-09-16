@@ -1,6 +1,5 @@
 "server-only";
 
-import { db } from "@mapform/db";
 import {
   cells,
   numberCells,
@@ -22,7 +21,7 @@ export const upsertCell = (authClient: UserAuthClient) =>
     .action(
       async ({
         parsedInput: { rowId, columnId, type, value },
-        ctx: { user },
+        ctx: { user, db },
       }) => {
         const teamspaceIds = user.workspaceMemberships
           .map((m) => m.workspace.teamspaces.map((t) => t.id))

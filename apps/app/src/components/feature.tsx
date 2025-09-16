@@ -8,7 +8,7 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from "@mapform/ui/components/tooltip";
-import { ImagePlusIcon, LinkIcon, SmilePlusIcon } from "lucide-react";
+import { ImagePlusIcon, SmilePlusIcon } from "lucide-react";
 import {
   type CustomBlock,
   schema,
@@ -29,7 +29,6 @@ import {
   ImageUploaderTrigger,
 } from "./image-uploder";
 import { cn } from "@mapform/lib/classnames";
-import { Badge } from "@mapform/ui/components/badge";
 import { useWikidataImages } from "~/lib/wikidata-image";
 
 type Property =

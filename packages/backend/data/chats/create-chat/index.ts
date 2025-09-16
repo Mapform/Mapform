@@ -1,6 +1,5 @@
 "server-only";
 
-import { db } from "@mapform/db";
 import { chats, projects } from "@mapform/db/schema";
 import { createChatSchema } from "./schema";
 import type { UserAuthClient } from "../../../lib/types";
@@ -12,7 +11,7 @@ export const createChat = (authClient: UserAuthClient) =>
     .action(
       async ({
         parsedInput: { id, title, projectId },
-        ctx: { user, userAccess },
+        ctx: { user, userAccess, db },
       }) => {
         if (projectId) {
           const project = await db.query.projects.findFirst({
