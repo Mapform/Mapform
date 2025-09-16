@@ -52,6 +52,12 @@ export async function findExternalFeaturesFunc(
         feature.properties.coarseLocation ??
         undefined;
 
+      if (!latitude || !longitude) {
+        throw new Error(
+          "No latitude or longitude found for the given coordinates",
+        );
+      }
+
       return {
         id: gid,
         name: feature.properties.name,

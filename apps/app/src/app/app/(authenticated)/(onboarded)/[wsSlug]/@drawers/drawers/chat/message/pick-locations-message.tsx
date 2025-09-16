@@ -51,7 +51,7 @@ export function PickLocationsMessage({ results }: PickLocationsMessageProps) {
     const bounds = new mapboxgl.LngLatBounds();
 
     results.forEach((result) => {
-      bounds.extend([result.latitude, result.longitude]);
+      bounds.extend([result.longitude, result.latitude]);
     });
 
     map.fitBounds(bounds, {

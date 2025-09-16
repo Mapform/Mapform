@@ -43,6 +43,10 @@ export async function reverseGeocodeFunc(lat: number, lng: number) {
   const latitude = feature.geometry.coordinates[0];
   const longitude = feature.geometry.coordinates[1];
 
+  if (!latitude || !longitude) {
+    throw new Error("No latitude or longitude found for the given coordinates");
+  }
+
   return [
     {
       id: feature.properties.gid,

@@ -42,8 +42,8 @@ interface StadiaAIResultLocation {
   id: string;
   name?: string;
   address?: string;
-  latitude?: number;
-  longitude?: number;
+  latitude: number;
+  longitude: number;
   wikidataId?: string;
   source: "stadia";
 }
