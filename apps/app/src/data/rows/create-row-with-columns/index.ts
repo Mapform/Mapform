@@ -6,6 +6,7 @@ import { authClient } from "~/lib/safe-action";
 export const createRowWithColumnsAction = async (
   params: Last<Parameters<typeof authClient.createRow>>,
 ) => {
+  await authClient.$transaction(async (client) => {});
   // 1. Create row has properties included
   // 2. Check if columns are already created
   // 3. If not, create columns
