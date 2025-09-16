@@ -106,21 +106,38 @@ export function PlaceDetailsContent({
         coordinates: [longitude, latitude],
       },
       cells: [
-        {
-          columnName: "Address",
-          value: address,
-          type: "string",
-        },
-        {
-          columnName: "Phone",
-          value: phone,
-          type: "string",
-        },
-        {
-          columnName: "Website",
-          value: website,
-          type: "string",
-        },
+        ...(address
+          ? [
+              {
+                columnName: "Address",
+                value: address,
+                type: "string" as const,
+              },
+            ]
+          : []),
+        ...(phone
+          ? [
+              {
+                columnName: "Phone",
+                value: phone,
+                type: "string" as const,
+              },
+            ]
+          : []),
+        ...(website
+          ? [
+              {
+                columnName: "Website",
+                value: website,
+                type: "string" as const,
+              },
+              {
+                columnName: "Website",
+                value: website,
+                type: "string" as const,
+              },
+            ]
+          : []),
       ],
     });
   };
