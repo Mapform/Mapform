@@ -12,6 +12,7 @@ import {
   MessageContent as AIMessageContent,
 } from "@mapform/ui/components/ai-elements/message";
 import { Response } from "@mapform/ui/components/ai-elements/response";
+import { useMemo } from "react";
 import { PickLocationsMessage } from "./pick-locations-message";
 import { cn } from "@mapform/lib/classnames";
 import type { ToolUIPart } from "ai";
@@ -28,6 +29,51 @@ interface ChatMessageProps {
 }
 
 export function Message({ message }: ChatMessageProps) {
+  // Group consecutive location tool messages to avoid repeated lines
+  type MessagePart = ChatMessage["parts"][number];
+  type LocationToolType =
+    | "tool-findExternalFeatures"
+    | "tool-findInternalFeatures"
+    | "tool-reverseGeocode";
+  type LocationToolPart = Extract<MessagePart, { type: LocationToolType }>;
+
+  type GroupedItem =
+    | { kind: "single"; part: MessagePart }
+    | { kind: "group"; parts: LocationToolPart[] };
+
+  const groupedParts = useMemo<GroupedItem[]>(() => {
+    const result: GroupedItem[] = [];
+    let currentGroup: LocationToolPart[] = [];
+
+    for (const part of message.parts) {
+      if (
+        part.type === "tool-findExternalFeatures" ||
+        part.type === "tool-findInternalFeatures" ||
+        part.type === "tool-reverseGeocode"
+      ) {
+        currentGroup.push(part);
+      } else {
+        if (currentGroup.length > 1) {
+          result.push({ kind: "group", parts: currentGroup });
+        } else if (currentGroup.length === 1) {
+          const only = currentGroup[0]!;
+          result.push({ kind: "single", part: only });
+        }
+        currentGroup = [];
+        result.push({ kind: "single", part });
+      }
+    }
+
+    if (currentGroup.length > 1) {
+      result.push({ kind: "group", parts: currentGroup });
+    } else if (currentGroup.length === 1) {
+      const only = currentGroup[0]!;
+      result.push({ kind: "single", part: only });
+    }
+
+    return result;
+  }, [message.parts]);
+
   return (
     <AIMessage
       className={cn({
@@ -41,7 +87,37 @@ export function Message({ message }: ChatMessageProps) {
           "py-2.5": message.role === "user",
         })}
       >
-        {message.parts.map((part, index) => {
+        {groupedParts.map((item, index) => {
+          if (item.kind === "group") {
+            const hasStreaming = item.parts.some(
+              (p) =>
+                p.state === "input-streaming" || p.state === "input-available",
+            );
+            const allDone = item.parts.every(
+              (p) => p.state === "output-available",
+            );
+            const stateText = hasStreaming
+              ? "Mapping locations..."
+              : allDone
+                ? "Location found"
+                : "Location not found";
+
+            return (
+              <div
+                className="text-muted-foreground mb-4 flex w-full items-center gap-2 text-sm"
+                key={`group-${message.id}-${index}`}
+              >
+                <div className="flex items-center gap-2">
+                  <MapPinIcon className="size-4" />
+                </div>
+                <p className="my-0">
+                  {stateText} ({item.parts.length})
+                </p>
+              </div>
+            );
+          }
+
+          const part = item.part;
           /**
            * TEXT MESSAGES
            */
