@@ -1,12 +1,12 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { authClient } from "~/lib/safe-action";
+import { authDataService } from "~/lib/safe-action";
 
 export const createCheckoutSessionAction = async (
-  params: Last<Parameters<typeof authClient.createCheckoutSession>>,
+  params: Last<Parameters<typeof authDataService.createCheckoutSession>>,
 ) => {
-  const result = await authClient.createCheckoutSession(params);
+  const result = await authDataService.createCheckoutSession(params);
 
   if (!result?.data?.url) {
     return result;

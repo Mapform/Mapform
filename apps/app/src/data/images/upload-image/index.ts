@@ -1,12 +1,12 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { authClient } from "~/lib/safe-action";
+import { authDataService } from "~/lib/safe-action";
 
 export const uploadImageAction = async (
-  params: Last<Parameters<typeof authClient.uploadImage>>,
+  params: Last<Parameters<typeof authDataService.uploadImage>>,
 ) => {
-  const result = await authClient.uploadImage(params);
+  const result = await authDataService.uploadImage(params);
 
   revalidatePath("/app/[wsSlug]/[pId]", "page");
 

@@ -56,60 +56,62 @@ import { db } from "@mapform/db";
 const ignoredWorkspaceSlugs = ["onboarding"];
 const ignoredTeamspaceSlugs = ["settings"];
 
+export const authClient = baseClient
+  .use(async ({ next, ctx }) => {
+    const headersList = await headers();
+    const response = await internalGetCurrentSession();
+    const user = response?.data?.user;
+    const workspaceSlug = headersList.get("x-workspace-slug") ?? "";
+    const teamspaceSlug = headersList.get("x-teamspace-slug") ?? "";
+
+    if (!user) {
+      return redirect("/app/signin");
+    }
+
+    const userAccess = new UserAccess(user);
+
+    const hasAccessToCurrentWorkspace =
+      userAccess.workspace.checkAccessBySlug(workspaceSlug);
+    const hasAccessToTeamspace = userAccess.teamspace.checkAccessBySlug(
+      teamspaceSlug,
+      workspaceSlug,
+    );
+
+    if (
+      workspaceSlug &&
+      !hasAccessToCurrentWorkspace &&
+      !ignoredWorkspaceSlugs.includes(workspaceSlug)
+    ) {
+      return redirect("/app");
+    }
+
+    if (
+      teamspaceSlug &&
+      !hasAccessToTeamspace &&
+      !ignoredTeamspaceSlugs.includes(teamspaceSlug)
+    ) {
+      return redirect(`/app/${workspaceSlug}`);
+    }
+
+    return next({
+      ctx: {
+        ...ctx,
+        authType: "user" as const,
+        user,
+        userAccess,
+      },
+    });
+  })
+  .use(userAuthMiddlewareValidator);
+
 /**
  * Can be used with user authentication.
  */
-const createUserAuthClient = () => {
-  const extendedClient = baseClient
-    .use(async ({ next, ctx }) => {
-      const headersList = await headers();
-      const response = await internalGetCurrentSession();
-      const user = response?.data?.user;
-      const workspaceSlug = headersList.get("x-workspace-slug") ?? "";
-      const teamspaceSlug = headersList.get("x-teamspace-slug") ?? "";
-
-      if (!user) {
-        return redirect("/app/signin");
-      }
-
-      const userAccess = new UserAccess(user);
-
-      const hasAccessToCurrentWorkspace =
-        userAccess.workspace.checkAccessBySlug(workspaceSlug);
-      const hasAccessToTeamspace = userAccess.teamspace.checkAccessBySlug(
-        teamspaceSlug,
-        workspaceSlug,
-      );
-
-      if (
-        workspaceSlug &&
-        !hasAccessToCurrentWorkspace &&
-        !ignoredWorkspaceSlugs.includes(workspaceSlug)
-      ) {
-        return redirect("/app");
-      }
-
-      if (
-        teamspaceSlug &&
-        !hasAccessToTeamspace &&
-        !ignoredTeamspaceSlugs.includes(teamspaceSlug)
-      ) {
-        return redirect(`/app/${workspaceSlug}`);
-      }
-
-      return next({
-        ctx: {
-          ...ctx,
-          authType: "user" as const,
-          user,
-          userAccess,
-        },
-      });
-    })
-    .use(userAuthMiddlewareValidator);
+const createUserAuthDataService = () => {
+  const extendedClient = authClient;
 
   // Allow passing a custom client (e.g., one bound to a transaction)
-  const createClient = (client: typeof extendedClient = extendedClient) => ({
+  const createClient = (client: typeof extendedClient) => ({
     // Auth
     signOut: signOut(client),
 
@@ -195,33 +197,27 @@ const createUserAuthClient = () => {
         return fn(createClient(transactionalClient));
       });
     },
-    ...createClient(),
+    ...createClient(extendedClient),
+    authClient,
   };
 };
+export const authDataService = createUserAuthDataService();
 
-/**
- * Can be used without authentication.
- */
-const createPublicClient = () => {
-  const extendedClient = baseClient
-    .use(async ({ next }) => next({ ctx: { authType: "public" as const } }))
-    .use(publicMiddlewareValidator);
+export const publicClient = baseClient
+  .use(async ({ next }) => next({ ctx: { authType: "public" as const } }))
+  .use(publicMiddlewareValidator);
 
-  return {
-    // Auth
-    requestMagicLink: requestMagicLink(extendedClient),
-    validateMagicLink: validateMagicLink(extendedClient),
+export const publicDataService = {
+  // Auth
+  requestMagicLink: requestMagicLink(publicClient),
+  validateMagicLink: validateMagicLink(publicClient),
 
-    // Stadia
-    search: search(extendedClient),
-    details: details(extendedClient),
-    reverseGeocode: reverseGeocode(extendedClient),
-    forwardGeocode: forwardGeocode(extendedClient),
+  // Stadia
+  search: search(publicClient),
+  details: details(publicClient),
+  reverseGeocode: reverseGeocode(publicClient),
+  forwardGeocode: forwardGeocode(publicClient),
 
-    // Users
-    getCurrentSession: getCurrentSession(extendedClient),
-  };
+  // Users
+  getCurrentSession: getCurrentSession(publicClient),
 };
-
-export const authClient = createUserAuthClient();
-export const publicClient = createPublicClient();

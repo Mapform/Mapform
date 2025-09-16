@@ -1,6 +1,6 @@
 import { tool } from "ai";
 import { z } from "zod";
-import { authClient } from "~/lib/safe-action";
+import { authDataService } from "~/lib/safe-action";
 import type { AIResultLocation } from "~/lib/types";
 
 export const findInternalFeatures = tool({
@@ -13,7 +13,7 @@ export const findInternalFeatures = tool({
 });
 
 async function _findInternalFeatures(question: string) {
-  const results = await authClient.searchRows({
+  const results = await authDataService.searchRows({
     query: question,
     type: "workspace",
     workspaceSlug: "acme",

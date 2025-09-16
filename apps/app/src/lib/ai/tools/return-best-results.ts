@@ -1,6 +1,6 @@
 import { tool } from "ai";
 import { z } from "zod";
-import { publicClient } from "~/lib/safe-action";
+import { publicDataService } from "~/lib/safe-action";
 import type { AIResultLocation } from "~/lib/types";
 
 export const returnBestResults = tool({
@@ -30,7 +30,9 @@ export const returnBestResults = tool({
       finalResults.map(async (result) => {
         // Enrich Stadia results with metadata
         if (result.source === "stadia") {
-          const placeDetails = await publicClient.details({ id: result.id });
+          const placeDetails = await publicDataService.details({
+            id: result.id,
+          });
 
           const place = placeDetails?.data?.features[0];
           const placeDetailProperties = place?.properties;

@@ -2,12 +2,12 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { authClient } from "~/lib/safe-action";
+import { authDataService } from "~/lib/safe-action";
 
 export const deleteProjectAction = async (
-  params: Last<Parameters<typeof authClient.deleteProject>>,
+  params: Last<Parameters<typeof authDataService.deleteProject>>,
 ) => {
-  const result = await authClient.deleteProject(params);
+  const result = await authDataService.deleteProject(params);
   revalidatePath("/app/[wsSlug]", "page");
 
   if (params.redirect) {

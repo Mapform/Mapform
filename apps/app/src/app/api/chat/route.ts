@@ -1,5 +1,5 @@
 import type { UIMessage } from "ai";
-import { authClient } from "~/lib/safe-action";
+import { authDataService } from "~/lib/safe-action";
 import {
   streamText,
   convertToModelMessages,
@@ -33,7 +33,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ msg: "Unauthorized" }, { status: 401 });
   }
 
-  let chat = await authClient.getChat({
+  let chat = await authDataService.getChat({
     id,
   });
 
@@ -48,7 +48,7 @@ export async function POST(req: Request) {
       prompt: JSON.stringify(messages),
     });
 
-    const newChat = await authClient.createChat({
+    const newChat = await authDataService.createChat({
       id,
       title,
       projectId: projectId ?? null,
@@ -89,7 +89,7 @@ export async function POST(req: Request) {
     originalMessages: messages,
     generateMessageId: () => crypto.randomUUID(),
     onFinish: async ({ messages }) => {
-      await authClient.createMessages({
+      await authDataService.createMessages({
         messages: messages.map((m) => ({
           id: m.id,
           role: m.role,

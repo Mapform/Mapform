@@ -1,12 +1,12 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { authClient } from "~/lib/safe-action";
+import { authDataService } from "~/lib/safe-action";
 
 export const updateProjectAction = async (
-  params: Last<Parameters<typeof authClient.updateProject>>,
+  params: Last<Parameters<typeof authDataService.updateProject>>,
 ) => {
-  const result = await authClient.updateProject(params);
+  const result = await authDataService.updateProject(params);
 
   revalidatePath("/app/[wsSlug]/[tsSlug]/projects/[pId]/project", "page");
 

@@ -1,12 +1,12 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { authClient } from "~/lib/safe-action";
+import { authDataService } from "~/lib/safe-action";
 
 export const deleteColumnAction = async (
-  params: Last<Parameters<typeof authClient.deleteColumn>>,
+  params: Last<Parameters<typeof authDataService.deleteColumn>>,
 ) => {
-  const result = await authClient.deleteColumn(params);
+  const result = await authDataService.deleteColumn(params);
 
   revalidatePath("/app/[wsSlug]/[pId]", "page");
 

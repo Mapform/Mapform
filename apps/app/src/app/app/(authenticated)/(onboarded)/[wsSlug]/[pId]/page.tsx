@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { authClient } from "~/lib/safe-action";
+import { authDataService } from "~/lib/safe-action";
 import { ProjectProvider } from "./context";
 import { loadSearchParams } from "~/lib/params/server";
 import type { SearchParams } from "nuqs/server";
@@ -15,7 +15,7 @@ export default async function ViewPage(props: {
   const { viewId, perPage, page } = await loadSearchParams(props.searchParams);
 
   const [project] = await Promise.all([
-    authClient.getProject({
+    authDataService.getProject({
       projectId: params.pId,
       filter: {
         type: "page",

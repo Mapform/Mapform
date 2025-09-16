@@ -1,25 +1,19 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
-import { authClient } from "~/lib/safe-action";
-import type { CreateRowSchema } from "@mapform/backend/data/rows/create-row/schema";
+import { authDataService } from "~/lib/safe-action";
+import { createRowSchema } from "@mapform/backend/data/rows/create-row/schema";
 
-export const createRowWithColumnsAction = async (params: CreateRowSchema) => {
-  const result = await authClient.$transaction(async (client) => {
-    const project = await client.getProject({
-      projectId: params.projectId,
+export const createRowWithColumnsAction = authDataService.authClient
+  .schema(createRowSchema)
+  .action(async ({ parsedInput: { projectId } }) => {
+    const result = await authDataService.$transaction(async (client) => {
+      const project = await client.getProject({ projectId });
+
+      project?.data?.columns;
+
+      const row = await client.createRow({ projectId });
+      return row;
     });
 
-    console.log(1111, project);
-    return project;
+    return result?.data;
   });
-
-  // 1. Create row has properties included
-  // 2. Check if columns are already created
-  // 3. If not, create columns
-  // 4. Call createRow with the properties included
-  // Everything should be wrapped in a transaction
-  // const result = await authClient.createColumn(params);
-  // revalidatePath("/app/[wsSlug]/[pId]", "page");
-  return result;
-};

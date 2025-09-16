@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { publicClient } from "~/lib/safe-action";
+import { publicDataService } from "~/lib/safe-action";
 import { env } from "~/env.mjs";
 import { MagicLinkErrors } from "~/constants/magic-link-errors";
 
@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
     throw new Error("Token is required");
   }
 
-  const response = await publicClient.validateMagicLink({ token });
+  const response = await publicDataService.validateMagicLink({ token });
 
   if (response?.validationErrors) {
     return NextResponse.redirect(`${baseUrl}/app/signin?error=unknown`);

@@ -1,6 +1,6 @@
 import { tool } from "ai";
 import { z } from "zod";
-import { publicClient } from "~/lib/safe-action";
+import { publicDataService } from "~/lib/safe-action";
 import type { AIResultLocation } from "~/lib/types";
 
 export const findExternalFeatures = tool({
@@ -30,7 +30,7 @@ export async function findExternalFeaturesFunc(
   bounds?: number[],
 ) {
   try {
-    const findExternalFeaturesResults = await publicClient.forwardGeocode({
+    const findExternalFeaturesResults = await publicDataService.forwardGeocode({
       query,
       bounds,
     });
