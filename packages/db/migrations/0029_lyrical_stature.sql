@@ -1,0 +1,1 @@
+ALTER TABLE "column" ADD CONSTRAINT "column_project_id_name_unique" UNIQUE("project_id","name");
