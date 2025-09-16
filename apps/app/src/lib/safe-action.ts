@@ -179,9 +179,11 @@ const createUserAuthClient = () => {
   });
 
   return {
-    $transaction: (
-      fn: (transactionClient: ReturnType<typeof createClient>) => Promise<void>,
-    ) => {
+    $transaction: <R>(
+      fn: (
+        transactionClient: ReturnType<typeof createClient>,
+      ) => Promise<R> | R,
+    ): Promise<R> => {
       return db.transaction(async (tx) => {
         // Bind a client whose ctx.db is the transaction
         const transactionalClient = extendedClient.use(

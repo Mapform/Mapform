@@ -34,15 +34,14 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@mapform/ui/components/popover";
-import { useMap } from "react-map-gl/mapbox";
 import { openInGoogleMaps } from "~/lib/external-links/google";
 import { openInAppleMaps } from "~/lib/external-links/apple";
 import { useAction } from "next-safe-action/hooks";
-import { createRowAction } from "~/data/rows/create-row";
 import { useParams } from "next/navigation";
 import type { Details } from "@mapform/backend/data/stadia/details";
 import { useWorkspace } from "../../workspace-context";
 import { useParamsContext } from "~/lib/params/client";
+import { createRowWithColumnsAction } from "~/data/rows/create-row-with-columns";
 
 type Feature = NonNullable<Details["data"]>["features"][number];
 
@@ -62,7 +61,7 @@ export function PlaceDetailsContent({
   const { setQueryStates } = useParamsContext();
   const { pId } = useParams<{ pId: string }>();
   const { workspaceDirectory } = useWorkspace();
-  const { execute, isPending } = useAction(createRowAction, {
+  const { execute, isPending } = useAction(createRowWithColumnsAction, {
     onSuccess: async ({ data }) => {
       await onClose();
       await setQueryStates({ rowId: data?.id });
