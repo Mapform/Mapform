@@ -15,7 +15,7 @@ import {
   type CustomBlock,
   schema,
 } from "node_modules/@mapform/blocknote/schema";
-import { useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { PropertyColumnEditor } from "./properties/property-column-editor";
 import { PropertyValueEditor } from "./properties/property-value-editor";
 import {
@@ -36,6 +36,23 @@ import {
   PropertyAdder,
   PropertyAdderTrigger,
 } from "./properties/property-adder";
+import { useAction } from "next-safe-action/hooks";
+import { updateColumnOrderAction } from "~/data/columns/update-column-order";
+import {
+  DndContext,
+  PointerSensor,
+  closestCenter,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import type { DragEndEvent } from "@dnd-kit/core";
+import {
+  SortableContext,
+  arrayMove,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
+import { DragHandle, DragItem } from "./draggable";
 
 type Property =
   | {
@@ -95,7 +112,66 @@ export function Feature({
   });
 
   const wikiData = useWikidataImages(osmId);
-  const images = [...(imageData?.images ?? []), ...(wikiData.images ?? [])];
+  const images = [...(imageData?.images ?? []), ...wikiData.images];
+
+  const { executeAsync: updateColumnOrderAsync } = useAction(
+    updateColumnOrderAction,
+  );
+
+  // Extract column-backed properties and other properties
+  const columnProperties = useMemo(
+    () =>
+      (properties ?? []).filter(
+        (p): p is Extract<Property, { columnId: string }> => "columnId" in p,
+      ),
+    [properties],
+  );
+  const otherProperties = useMemo(
+    () => (properties ?? []).filter((p) => !("columnId" in p)),
+    [properties],
+  );
+
+  // Maintain local order for draggable column properties
+  const [orderedColumnIds, setOrderedColumnIds] = useState<string[]>(
+    columnProperties.map((p) => p.columnId),
+  );
+
+  // Sync when incoming properties change
+  useEffect(() => {
+    setOrderedColumnIds(columnProperties.map((p) => p.columnId));
+  }, [columnProperties]);
+
+  const orderedColumnProperties = useMemo(
+    () =>
+      orderedColumnIds
+        .map((id) => columnProperties.find((p) => p.columnId === id))
+        .filter(Boolean) as typeof columnProperties,
+    [orderedColumnIds, columnProperties],
+  );
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: { distance: 8 },
+    }),
+  );
+
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    const fromIndex = orderedColumnIds.indexOf(String(active.id));
+    const toIndex = orderedColumnIds.indexOf(String(over.id));
+    if (fromIndex === -1 || toIndex === -1) return;
+
+    const newOrder = arrayMove(orderedColumnIds, fromIndex, toIndex);
+    setOrderedColumnIds(newOrder);
+
+    // Persist to backend
+    await updateColumnOrderAsync({
+      projectId,
+      columnOrder: newOrder,
+    });
+  };
 
   // As per https://www.blocknotejs.org/docs/editor-api/converting-blocks#parsing-markdown-to-blocks
   useEffect(() => {
@@ -118,7 +194,7 @@ export function Feature({
       {imageData?.isLoading ? (
         <Skeleton className="mb-4 h-[200px] w-full" />
       ) : null}
-      {images.length ? (
+      {images.length > 0 ? (
         <Carousel className="m-0 mb-4">
           <CarouselContent className="m-0">
             {images.map((image) => (
@@ -169,7 +245,7 @@ export function Feature({
             ) : null}
             <TooltipContent>Add emoji</TooltipContent>
           </Tooltip>
-          {!images.length && rowId ? (
+          {images.length === 0 && rowId ? (
             <Tooltip>
               <ImageUploaderPopover>
                 <ImageUploaderTrigger asChild>
@@ -189,49 +265,67 @@ export function Feature({
           <AutoSizeTextArea
             className="text-3xl font-bold"
             placeholder="Untitled"
-            value={title ?? ""}
+            value={title}
             onChange={onTitleChange}
           />
         ) : (
-          <h1 className="text-3xl font-bold">{title ?? "Untitled"}</h1>
+          <h1 className="text-3xl font-bold">{title}</h1>
         )}
         <div className="mb-4 mt-2 flex flex-col">
-          {properties?.map((property) =>
-            "columnId" in property ? (
-              <div className="grid grid-cols-3 gap-4" key={property.columnId}>
-                <div className="col-span-1">
-                  <PropertyColumnEditor
-                    columnId={property.columnId}
-                    columnName={property.columnName}
-                    columnType={property.columnType}
-                  />
-                </div>
-                <div className="col-span-2 flex w-full items-center">
-                  <PropertyValueEditor
-                    columnId={property.columnId}
-                    rowId={property.rowId}
-                    type={property.columnType}
-                    value={property.value}
-                    emptyText="Empty"
-                  />
-                </div>
+          {columnProperties.length ? (
+            <DndContext
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}
+              sensors={sensors}
+              modifiers={[restrictToVerticalAxis]}
+            >
+              <SortableContext
+                items={orderedColumnIds}
+                strategy={verticalListSortingStrategy}
+              >
+                {orderedColumnProperties.map((property) => (
+                  <DragItem id={property.columnId} key={property.columnId}>
+                    <div className="grid grid-cols-3 gap-4">
+                      <div className="col-span-1">
+                        <DragHandle id={property.columnId}>
+                          <PropertyColumnEditor
+                            columnId={property.columnId}
+                            columnName={property.columnName}
+                            columnType={property.columnType}
+                          />
+                        </DragHandle>
+                      </div>
+                      <div className="col-span-2 flex w-full items-center">
+                        <PropertyValueEditor
+                          columnId={property.columnId}
+                          rowId={property.rowId}
+                          type={property.columnType}
+                          value={property.value}
+                          emptyText="Empty"
+                        />
+                      </div>
+                    </div>
+                  </DragItem>
+                ))}
+              </SortableContext>
+            </DndContext>
+          ) : null}
+
+          {otherProperties.map((property) => (
+            <div className="grid grid-cols-3 gap-4" key={property.columnName}>
+              <div className="col-span-1">
+                <PropertyColumnEditor
+                  columnName={property.columnName}
+                  columnType={property.columnType}
+                />
               </div>
-            ) : (
-              <div className="grid grid-cols-3 gap-4" key={property.columnName}>
-                <div className="col-span-1">
-                  <PropertyColumnEditor
-                    columnName={property.columnName}
-                    columnType={property.columnType}
-                  />
-                </div>
-                <div className="col-span-2 text-wrap break-words">
-                  {property.value instanceof Date
-                    ? format(property.value, "PP hh:mm b", { locale: enUS })
-                    : property.value}
-                </div>
+              <div className="col-span-2 text-wrap break-words">
+                {property.value instanceof Date
+                  ? format(property.value, "PP hh:mm b", { locale: enUS })
+                  : property.value}
               </div>
-            ),
-          )}
+            </div>
+          ))}
           <PropertyAdder projectId={projectId}>
             <PropertyAdderTrigger asChild>
               <Button
