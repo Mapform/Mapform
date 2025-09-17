@@ -118,14 +118,16 @@ async function SearchDetailsDrawer({ searchParams }: DealDrawerProps) {
   return <SearchDetails details={details?.data} />;
 }
 
-async function FeatureDrawer({ searchParams }: DealDrawerProps) {
+async function FeatureDrawer({ searchParams, params }: DealDrawerProps) {
+  const { pId } = await params;
   const { rowId } = await loadSearchParams(searchParams);
 
-  const [row] = await Promise.all([
+  const [row, project] = await Promise.all([
     rowId ? authDataService.getRow({ rowId }) : null,
+    pId ? authDataService.getProject({ projectId: pId }) : null,
   ]);
 
-  return <Feature feature={row?.data} />;
+  return <Feature feature={row?.data} project={project?.data} />;
 }
 
 async function CoordinatesDrawer({ searchParams }: DealDrawerProps) {

@@ -88,8 +88,6 @@ export function Feature({
       typeof description === "string" ? [] : (description as CustomBlock[]),
   });
 
-  console.log("properties", properties);
-
   const wikiData = useWikidataImages(osmId);
   const images = [...(imageData?.images ?? []), ...(wikiData.images ?? [])];
 

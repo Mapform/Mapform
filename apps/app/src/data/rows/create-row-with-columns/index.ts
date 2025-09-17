@@ -12,7 +12,6 @@ export const createRowWithColumnsAction = authDataService.authClient
   .schema(createRowWithColumnsSchema)
   .action(async ({ parsedInput: { projectId, cells, ...rest } }) => {
     const result = await authDataService.$transaction(async (client) => {
-      console.log("cells", cells);
       /**
        * Get the project with its columns
        */
@@ -25,6 +24,8 @@ export const createRowWithColumnsAction = authDataService.authClient
         (cell) =>
           !project?.data?.columns.some((c) => c.name === cell.columnName),
       );
+
+      console.log("nonExistingColumns", nonExistingColumns);
 
       /**
        * Create the columns that don't exist in the project
