@@ -175,7 +175,7 @@ export function PropertyValueEditor({
           onSubmit={form.handleSubmit(onSubmit)}
         >
           <Popover onOpenChange={handlePopoverOpenChange} open={open}>
-            <div className="hover:bg-muted w-full cursor-pointer rounded p-1.5">
+            <div className="hover:bg-muted w-full cursor-pointer rounded px-2 py-1">
               {renderCellContent()}
             </div>
             <PopoverAnchor />
