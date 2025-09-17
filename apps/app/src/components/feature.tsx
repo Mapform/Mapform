@@ -329,7 +329,7 @@ export function Feature({
           <PropertyAdder projectId={projectId}>
             <PropertyAdderTrigger asChild>
               <Button
-                className="hover:bg-muted cursor-pointer self-start rounded !py-1 !pl-2 !pr-3 text-sm"
+                className="hover:bg-muted cursor-pointer !gap-1.5 self-start rounded !py-1 !pl-2 !pr-3 text-sm"
                 variant="ghost"
               >
                 <PlusIcon className="size-4" /> New
