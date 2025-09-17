@@ -34,6 +34,7 @@ interface ValueEditorProps {
   type: (typeof columnTypeEnum.enumValues)[number];
   rowId?: string;
   columnId?: string;
+  emptyText?: string;
 }
 
 // Type-safe form schemas for each cell type
@@ -47,6 +48,7 @@ export function PropertyValueEditor({
   type,
   rowId,
   columnId,
+  emptyText = "",
 }: ValueEditorProps) {
   const cellEl = useRef<HTMLTableCellElement>(null);
 
@@ -76,26 +78,18 @@ export function PropertyValueEditor({
   );
 
   const renderCellContent = useCallback(() => {
-    const v = form.getValues();
-    const result = upsertCellSchema.safeParse(v);
-    if (!result.success) {
-      return <span>&nbsp;</span>;
-    }
-    const { type: parsedType, value } = result.data;
+    const { success, data } = upsertCellSchema.safeParse(form.getValues());
 
-    if (parsedType === "date") {
-      if (!value) {
-        return <span>&nbsp;</span>;
-      }
-      return format(new Date(value), "PP hh:mm b", { locale: enUS });
+    if (!success || !data.value) {
+      return <span className="text-muted-foreground">{emptyText}</span>;
     }
 
-    if (!value) {
-      return <span>&nbsp;</span>;
+    if (data.type === "date") {
+      return format(new Date(data.value), "PP hh:mm b", { locale: enUS });
     }
 
-    return value;
-  }, [form]);
+    return data.value;
+  }, [form, emptyText]);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
@@ -181,7 +175,9 @@ export function PropertyValueEditor({
           onSubmit={form.handleSubmit(onSubmit)}
         >
           <Popover onOpenChange={handlePopoverOpenChange} open={open}>
-            {renderCellContent()}
+            <div className="hover:bg-muted w-full cursor-pointer rounded p-1.5">
+              {renderCellContent()}
+            </div>
             <PopoverAnchor />
             <PopoverContent
               align="start"
