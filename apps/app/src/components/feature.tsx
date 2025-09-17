@@ -187,13 +187,13 @@ export function Feature({
         </div>
         {onTitleChange ? (
           <AutoSizeTextArea
-            className="text-4xl font-bold"
+            className="text-3xl font-bold"
             placeholder="Untitled"
             value={title ?? ""}
             onChange={onTitleChange}
           />
         ) : (
-          <h1 className="text-4xl font-bold">{title ?? "Untitled"}</h1>
+          <h1 className="text-3xl font-bold">{title ?? "Untitled"}</h1>
         )}
         <div className="mb-4 mt-2 flex flex-col">
           {properties?.map((property) =>
@@ -206,7 +206,7 @@ export function Feature({
                     columnType={property.columnType}
                   />
                 </div>
-                <div className="col-span-2">
+                <div className="col-span-2 flex items-center">
                   <PropertyValueEditor
                     columnId={property.columnId}
                     rowId={property.rowId}
@@ -234,8 +234,11 @@ export function Feature({
           )}
           <PropertyAdder projectId={projectId}>
             <PropertyAdderTrigger asChild>
-              <Button className="self-start" variant="ghost">
-                <PlusIcon className="size-4" /> Add property
+              <Button
+                className="hover:bg-muted cursor-pointer self-start rounded !py-1 !pl-2 !pr-3 text-sm"
+                variant="ghost"
+              >
+                <PlusIcon className="size-4" /> New
               </Button>
             </PropertyAdderTrigger>
           </PropertyAdder>

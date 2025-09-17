@@ -91,7 +91,7 @@ export function PropertyColumnEditor({
       }}
       open={open}
     >
-      <PopoverTrigger className="hover:bg-muted w-full cursor-pointer rounded px-2 py-1">
+      <PopoverTrigger className="hover:bg-muted w-full cursor-pointer rounded px-2 py-1 text-sm">
         <span className="flex items-center gap-1.5">
           <Icon className="size-4 flex-shrink-0" />{" "}
           <span className="truncate">{form.watch("name")}</span>

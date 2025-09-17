@@ -211,7 +211,7 @@ export function Views() {
           ) : null}
         </div>
         <AutoSizeTextArea
-          className="mb-2 text-4xl font-bold"
+          className="mb-2 text-3xl font-bold"
           placeholder="Untitled"
           value={projectService.optimisticState.name ?? ""}
           onChange={(value) => {

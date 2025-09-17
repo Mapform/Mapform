@@ -136,22 +136,24 @@ export function PropertyValueEditor({
   // Render boolean input inline (no popover needed)
   if (type === "bool") {
     return (
-      <Switch
-        checked={Boolean(draft)}
-        onCheckedChange={(e) => {
-          setDraft(e);
-          const payload = {
-            rowId,
-            columnId,
-            type,
-            value: e,
-          } as UpsertCellSchema;
-          const res = upsertCellSchema.safeParse(payload);
-          if (res.success) {
-            executeUpsertCell(res.data);
-          }
-        }}
-      />
+      <div className="flex items-center px-2">
+        <Switch
+          checked={Boolean(draft)}
+          onCheckedChange={(e) => {
+            setDraft(e);
+            const payload = {
+              rowId,
+              columnId,
+              type,
+              value: e,
+            } as UpsertCellSchema;
+            const res = upsertCellSchema.safeParse(payload);
+            if (res.success) {
+              executeUpsertCell(res.data);
+            }
+          }}
+        />
+      </div>
     );
   }
 
@@ -164,7 +166,7 @@ export function PropertyValueEditor({
     >
       <div onKeyDown={handleEditorKeyDown}>
         <Popover onOpenChange={handlePopoverOpenChange} open={open}>
-          <div className="hover:bg-muted w-full cursor-pointer rounded px-2 py-1">
+          <div className="hover:bg-muted w-full cursor-pointer rounded px-2 py-1 text-sm">
             {renderCellContent()}
           </div>
           <PopoverAnchor />
