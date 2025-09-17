@@ -105,6 +105,23 @@ export function PropertyValueEditor({
     [saveIfChanged],
   );
 
+  const commitValue = useCallback(
+    (next: PropertyValue) => {
+      setDraft(next);
+      const payload = {
+        rowId,
+        columnId,
+        type,
+        value: next,
+      } as UpsertCellSchema;
+      const res = upsertCellSchema.safeParse(payload);
+      if (res.success) {
+        executeUpsertCell(res.data);
+      }
+    },
+    [rowId, columnId, type, executeUpsertCell],
+  );
+
   const renderPopoverField = useCallback(() => {
     switch (type) {
       case "string":
@@ -136,22 +153,19 @@ export function PropertyValueEditor({
   // Render boolean input inline (no popover needed)
   if (type === "bool") {
     return (
-      <div className="flex items-center px-2">
+      <div
+        className="hover:bg-muted flex w-full cursor-pointer items-center rounded px-2 py-1"
+        onClick={(event) => {
+          const target = event.target as HTMLElement;
+          if (target.closest('[role="switch"]')) return;
+          const nextChecked = !draft;
+          commitValue(nextChecked);
+        }}
+      >
         <Switch
-          checked={Boolean(draft)}
-          onCheckedChange={(e) => {
-            setDraft(e);
-            const payload = {
-              rowId,
-              columnId,
-              type,
-              value: e,
-            } as UpsertCellSchema;
-            const res = upsertCellSchema.safeParse(payload);
-            if (res.success) {
-              executeUpsertCell(res.data);
-            }
-          }}
+          checked={!!draft}
+          onClick={(e) => e.stopPropagation()}
+          onCheckedChange={(e) => commitValue(e)}
         />
       </div>
     );
@@ -163,6 +177,7 @@ export function PropertyValueEditor({
       onKeyDown={handleKeyDown}
       ref={cellEl}
       tabIndex={0}
+      className="w-full"
     >
       <div onKeyDown={handleEditorKeyDown}>
         <Popover onOpenChange={handlePopoverOpenChange} open={open}>

@@ -206,7 +206,7 @@ export function Feature({
                     columnType={property.columnType}
                   />
                 </div>
-                <div className="col-span-2 flex items-center">
+                <div className="col-span-2 flex w-full items-center">
                   <PropertyValueEditor
                     columnId={property.columnId}
                     rowId={property.rowId}
