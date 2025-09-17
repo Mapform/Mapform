@@ -102,6 +102,7 @@ export function PropertyColumnEditor({
           <Form {...form}>
             <form
               className="flex flex-1 flex-col px-3 py-2.5"
+              autoComplete="off"
               onSubmit={form.handleSubmit(onSubmit)}
             >
               <FormField
@@ -116,6 +117,7 @@ export function PropertyColumnEditor({
                           name={field.name}
                           onChange={field.onChange}
                           placeholder={`${columnType.charAt(0).toUpperCase() + columnType.slice(1)} property`}
+                          autoComplete="off"
                           ref={field.ref}
                           s="sm"
                           value={field.value}

@@ -26,18 +26,24 @@ export const createColumn = (authClient: UserAuthClient) =>
           throw new Error("Project not found");
         }
 
-        const [projectCount] = await db
-          .select({ count: count() })
-          .from(columns)
-          .where(eq(columns.projectId, projectId));
+        const projectColumns = await db.query.columns.findMany({
+          where: eq(columns.projectId, projectId),
+        });
+
+        let columnName = name;
+        let i = 1;
+        while (projectColumns.some((c) => c.name === columnName)) {
+          columnName = `${name} ${i}`;
+          i++;
+        }
 
         const [newColumn] = await db
           .insert(columns)
           .values({
-            name,
+            name: columnName,
             projectId,
             type,
-            position: projectCount?.count ?? 0,
+            position: projectColumns.length,
           })
           .returning();
 
