@@ -71,7 +71,7 @@ export function PropertyColumnEditor({
   if (!columnId) {
     return (
       <span className="flex items-center gap-1.5">
-        <Icon className="size-4" />{" "}
+        <Icon className="size-4 flex-shrink-0" />{" "}
         <span className="truncate">{columnName}</span>
       </span>
     );
@@ -93,7 +93,7 @@ export function PropertyColumnEditor({
     >
       <PopoverTrigger className="hover:bg-muted w-full cursor-pointer rounded px-2 py-1">
         <span className="flex items-center gap-1.5">
-          <Icon className="size-4" />{" "}
+          <Icon className="size-4 flex-shrink-0" />{" "}
           <span className="truncate">{form.watch("name")}</span>
         </span>
       </PopoverTrigger>

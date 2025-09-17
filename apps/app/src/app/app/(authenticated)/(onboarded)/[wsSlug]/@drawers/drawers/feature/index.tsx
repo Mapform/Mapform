@@ -269,6 +269,7 @@ const FeatureContent = ({
           })),
         }}
         properties={properties}
+        projectId={featureService.optimisticState!.project.id}
       />
     </div>
   );

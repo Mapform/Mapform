@@ -10,7 +10,7 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from "@mapform/ui/components/tooltip";
-import { ImagePlusIcon, SmilePlusIcon } from "lucide-react";
+import { ImagePlusIcon, PlusIcon, SmilePlusIcon } from "lucide-react";
 import {
   type CustomBlock,
   schema,
@@ -32,6 +32,10 @@ import {
 } from "./image-uploder";
 import { cn } from "@mapform/lib/classnames";
 import { useWikidataImages } from "~/lib/wikidata-image";
+import {
+  PropertyAdder,
+  PropertyAdderTrigger,
+} from "./properties/property-adder";
 
 type Property =
   | {
@@ -67,6 +71,7 @@ interface FeatureProps {
   }) => void;
   rowId?: string;
   osmId?: string;
+  projectId: string;
 }
 
 export function Feature({
@@ -80,6 +85,7 @@ export function Feature({
   onDescriptionChange,
   rowId,
   osmId,
+  projectId,
 }: FeatureProps) {
   const editor = useCreateBlockNote({
     schema,
@@ -112,7 +118,7 @@ export function Feature({
       {imageData?.isLoading ? (
         <Skeleton className="mb-4 h-[200px] w-full" />
       ) : null}
-      {images?.length ? (
+      {images.length ? (
         <Carousel className="m-0 mb-4">
           <CarouselContent className="m-0">
             {images.map((image) => (
@@ -226,6 +232,13 @@ export function Feature({
               </div>
             ),
           )}
+          <PropertyAdder projectId={projectId}>
+            <PropertyAdderTrigger asChild>
+              <Button className="self-start" variant="ghost">
+                <PlusIcon className="size-4" /> Add property
+              </Button>
+            </PropertyAdderTrigger>
+          </PropertyAdder>
         </div>
         <Blocknote editor={editor} onChange={onDescriptionChange} />
       </div>
