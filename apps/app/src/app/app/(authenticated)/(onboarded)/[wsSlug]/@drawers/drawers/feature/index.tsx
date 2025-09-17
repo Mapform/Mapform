@@ -165,8 +165,6 @@ const FeatureContent = ({
       null,
   }));
 
-  console.log("featureService.optimisticState", featureService.optimisticState);
-
   return (
     <div>
       <MapDrawerToolbar>
