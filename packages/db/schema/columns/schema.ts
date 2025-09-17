@@ -5,6 +5,7 @@ import {
   text,
   pgEnum,
   unique,
+  smallint,
 } from "drizzle-orm/pg-core";
 import { projects } from "../projects/schema";
 
@@ -21,6 +22,7 @@ export const columns = pgTable(
     id: uuid("id").primaryKey().defaultRandom(),
     name: text("name").notNull(),
     type: columnTypeEnum("type").notNull(),
+    position: smallint("position").notNull().default(0),
 
     projectId: uuid("project_id")
       .notNull()

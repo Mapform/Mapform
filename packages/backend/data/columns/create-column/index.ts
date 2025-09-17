@@ -3,7 +3,7 @@
 import { columns, projects } from "@mapform/db/schema";
 import { createColumnSchema } from "./schema";
 import type { UserAuthClient } from "../../../lib/types";
-import { and, eq, inArray } from "@mapform/db/utils";
+import { and, count, eq, inArray } from "@mapform/db/utils";
 
 export const createColumn = (authClient: UserAuthClient) =>
   authClient
@@ -26,12 +26,18 @@ export const createColumn = (authClient: UserAuthClient) =>
           throw new Error("Project not found");
         }
 
+        const [projectCount] = await db
+          .select({ count: count() })
+          .from(columns)
+          .where(eq(columns.projectId, projectId));
+
         const [newColumn] = await db
           .insert(columns)
           .values({
             name,
             projectId,
             type,
+            position: projectCount?.count ?? 0,
           })
           .returning();
 

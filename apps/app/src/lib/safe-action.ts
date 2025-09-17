@@ -51,6 +51,7 @@ import { search } from "@mapform/backend/data/stadia/search";
 import { details } from "@mapform/backend/data/stadia/details";
 import { reverseGeocode } from "@mapform/backend/data/stadia/reverse";
 import { forwardGeocode } from "@mapform/backend/data/stadia/forward";
+import { updateColumnOrder } from "@mapform/backend/data/columns/update-column-order";
 import { db } from "@mapform/db";
 
 const ignoredWorkspaceSlugs = ["onboarding"];
@@ -128,6 +129,7 @@ const createUserAuthDataService = () => {
     createColumn: createColumn(client),
     deleteColumn: deleteColumn(client),
     updateColumn: updateColumn(client),
+    updateColumnOrder: updateColumnOrder(client),
 
     // Images
     uploadImage: uploadImage(client),
