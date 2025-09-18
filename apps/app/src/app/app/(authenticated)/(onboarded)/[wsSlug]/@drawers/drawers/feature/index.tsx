@@ -16,7 +16,7 @@ import {
 import { updateRowAction } from "~/data/rows/update-row";
 import type { GetRow } from "@mapform/backend/data/rows/get-row";
 import type { UpdateRowSchema } from "@mapform/backend/data/rows/update-row/schema";
-import { Marker } from "react-map-gl/mapbox";
+import { Marker } from "react-map-gl/maplibre";
 import { BasicSkeleton } from "~/components/skeletons/basic";
 import { Feature as FeatureComponent } from "~/components/feature";
 import {

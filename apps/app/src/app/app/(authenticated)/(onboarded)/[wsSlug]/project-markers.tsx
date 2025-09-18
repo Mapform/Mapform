@@ -1,6 +1,6 @@
 "use client";
 
-import { Marker } from "react-map-gl/mapbox";
+import { Marker } from "react-map-gl/maplibre";
 import { useWorkspace } from "./workspace-context";
 import { useRouter } from "next/navigation";
 import { MapIcon } from "lucide-react";

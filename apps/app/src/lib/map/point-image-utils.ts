@@ -1,3 +1,4 @@
+import type { Map } from "maplibre-gl";
 import { getImageId } from "./get-image-id";
 
 export function emojiToDataURL(emoji: string | null, color: string | null) {
@@ -37,7 +38,7 @@ export function emojiToDataURL(emoji: string | null, color: string | null) {
 }
 
 export async function loadPointImage(
-  map: mapboxgl.Map,
+  map: Map,
   emoji: string | null,
   color: string | null,
 ) {

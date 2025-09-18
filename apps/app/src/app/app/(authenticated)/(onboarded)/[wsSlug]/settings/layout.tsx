@@ -12,7 +12,7 @@ export default async function SettingsLayout({
 
   return (
     <MapPositioner
-      viewState={{ center: [0, 0], zoom: 2, pitch: 0, bearing: 0 }}
+      viewState={{ center: [0, 0], zoom: 2.5, pitch: 0, bearing: 0 }}
     >
       <div className="p-2">
         <SettingsTabs wsSlug={wsSlug} />

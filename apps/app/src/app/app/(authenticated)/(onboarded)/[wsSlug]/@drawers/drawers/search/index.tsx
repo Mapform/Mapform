@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import { MapDrawer, MapDrawerToolbar } from "~/components/map-drawer";
 import { useParamsContext } from "~/lib/params/client";
-import { useMap } from "react-map-gl/mapbox";
+import { useMap } from "react-map-gl/maplibre";
 import { useDebounce } from "@mapform/lib/hooks/use-debounce";
 import { useEffect, useState } from "react";
 import type { SearchRows } from "@mapform/backend/data/rows/search-rows";

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo } from "react";
-import { Layer, Source, useMap } from "react-map-gl/mapbox";
+import { Layer, Source, useMap } from "react-map-gl/maplibre";
 import { useProject } from "./context";
 import { rowsToGeoJSON } from "~/lib/rows-to-geojson";
 import type { Geometry } from "geojson";
@@ -13,6 +13,7 @@ import {
   POLYGONS_FILL_LAYER_ID,
   POLYGONS_OUTLINE_LAYER_ID,
 } from "~/lib/map/constants";
+import type { Map } from "maplibre-gl";
 
 export function MapData() {
   const { projectService } = useProject();
@@ -65,7 +66,7 @@ export function MapData() {
     const run = async () => {
       for (const emoji of iconsToLoad) {
         if (cancelled) return;
-        await loadPointImage(m as unknown as mapboxgl.Map, emoji, null);
+        await loadPointImage(m as unknown as Map, emoji, null);
       }
     };
 

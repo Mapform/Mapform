@@ -1,6 +1,6 @@
 "use client";
 
-import { useMap } from "react-map-gl/mapbox";
+import { useMap } from "react-map-gl/maplibre";
 import { useViewState, type ViewState } from "~/lib/map/use-view-state";
 import { useEffect, useRef } from "react";
 
