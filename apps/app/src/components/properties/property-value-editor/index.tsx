@@ -47,8 +47,22 @@ export function PropertyValueEditor({
   usePreventPageUnload(isPending);
 
   const saveIfChanged = useCallback(() => {
-    const payload = { rowId, columnId, type, value: draft } as UpsertCellSchema;
+    /**
+     * The number type is normalized to a string value. This is because
+     * drizzle-zod validates `numeric` columns as strings to preve
+     */
+    const normalizedValue =
+      type === "number" ? (draft == null ? null : String(draft)) : draft;
+    const payload = {
+      rowId,
+      columnId,
+      type,
+      value: normalizedValue,
+    } as UpsertCellSchema;
     const res = upsertCellSchema.safeParse(payload);
+
+    console.log("res", res, draft);
+
     if (res.success && value !== draft) {
       executeUpsertCell(res.data);
     }
@@ -107,11 +121,13 @@ export function PropertyValueEditor({
   const commitValue = useCallback(
     (next: PropertyValue) => {
       setDraft(next);
+      const normalizedValue =
+        type === "number" ? (next == null ? null : String(next)) : next;
       const payload = {
         rowId,
         columnId,
         type,
-        value: next,
+        value: normalizedValue,
       } as UpsertCellSchema;
       const res = upsertCellSchema.safeParse(payload);
       if (res.success) {
@@ -134,14 +150,14 @@ export function PropertyValueEditor({
         return (
           <NumberInput
             value={(draft as number | string | null | undefined) ?? null}
-            onChange={(v) => setDraft(v)}
+            onChange={setDraft}
           />
         );
       case "date":
         return (
           <DateInput
             value={(draft as Date | null | undefined) ?? null}
-            onChange={(v) => setDraft(v)}
+            onChange={setDraft}
           />
         );
       default:
