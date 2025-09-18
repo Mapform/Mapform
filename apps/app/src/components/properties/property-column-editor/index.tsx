@@ -82,7 +82,13 @@ export function PropertyColumnEditor({
       }}
       open={open}
     >
-      <PopoverTrigger className="hover:bg-muted w-full cursor-pointer rounded px-2 py-1 text-sm">
+      <PopoverTrigger
+        className="hover:bg-muted w-full cursor-pointer rounded px-2 py-1 text-sm"
+        onContextMenu={(e) => {
+          e.preventDefault();
+          setOpen(true);
+        }}
+      >
         <span className="flex items-center gap-1.5">
           <Icon className="size-4 flex-shrink-0" />{" "}
           <span className="truncate">{displayName}</span>

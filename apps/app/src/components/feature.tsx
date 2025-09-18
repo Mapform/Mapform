@@ -287,7 +287,10 @@ export function Feature({
                   <DragItem id={property.columnId} key={property.columnId}>
                     <div className="grid grid-cols-3 gap-4">
                       <div className="col-span-1">
-                        <DragHandle id={property.columnId}>
+                        <DragHandle
+                          className="cursor-pointer"
+                          id={property.columnId}
+                        >
                           <PropertyColumnEditor
                             columnId={property.columnId}
                             columnName={property.columnName}
@@ -326,16 +329,18 @@ export function Feature({
               </div>
             </div>
           ))}
-          <PropertyAdder projectId={projectId}>
-            <PropertyAdderTrigger asChild>
-              <Button
-                className="hover:bg-muted cursor-pointer !gap-1.5 self-start rounded !py-1 !pl-2 !pr-3 text-sm"
-                variant="ghost"
-              >
-                <PlusIcon className="size-4" /> New
-              </Button>
-            </PropertyAdderTrigger>
-          </PropertyAdder>
+          {columnProperties.length ? (
+            <PropertyAdder projectId={projectId}>
+              <PropertyAdderTrigger asChild>
+                <Button
+                  className="hover:bg-muted cursor-pointer !gap-1.5 self-start rounded !py-1 !pl-2 !pr-3 text-sm"
+                  variant="ghost"
+                >
+                  <PlusIcon className="size-4" /> New
+                </Button>
+              </PropertyAdderTrigger>
+            </PropertyAdder>
+          ) : null}
         </div>
         <Blocknote editor={editor} onChange={onDescriptionChange} />
       </div>
