@@ -160,7 +160,7 @@ export function Feature({
 
   const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
-    if (!over || active.id === over.id) return;
+    if (!over || !projectId || active.id === over.id) return;
 
     const fromIndex = orderedColumnIds.indexOf(String(active.id));
     const toIndex = orderedColumnIds.indexOf(String(over.id));
