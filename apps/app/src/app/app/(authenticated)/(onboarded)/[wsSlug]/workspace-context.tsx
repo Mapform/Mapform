@@ -237,7 +237,7 @@ export function WorkspaceProvider({
 
   const initialViewState = useMemo(() => {
     return {
-      zoom: params.zoom ?? currentProject?.zoom ?? 2,
+      zoom: params.zoom ?? currentProject?.zoom ?? 2.5,
       latitude: latitude
         ? Number(latitude)
         : currentProject?.center.coordinates[1] ?? 0,
@@ -275,13 +275,31 @@ export function WorkspaceProvider({
       <Map
         // mapboxAccessToken={accessToken}
         mapStyle={`https://api.maptiler.com/maps/streets/style.json?key=${env.NEXT_PUBLIC_MAPTILER_KEY}`}
-        style={{ width: "100vw", height: "100vh" }}
-        // mapStyle="mapbox://styles/nichaley/cmcyt7kfs005q01qn6vhrga96"
+        style={{ width: "100vw", height: "100vh", backgroundColor: "#06112c" }}
+        sky={{
+          "sky-color": "#199EF3",
+          "sky-horizon-blend": 0.5,
+          "horizon-color": "#ffffff",
+          "horizon-fog-blend": 0.5,
+          "fog-color": "#0000ff",
+          "fog-ground-blend": 0.5,
+          "atmosphere-blend": [
+            "interpolate",
+            ["linear"],
+            ["zoom"],
+            0,
+            1,
+            10,
+            1,
+            12,
+            0,
+          ],
+        }}
         projection="globe"
         logoPosition="bottom-right"
         initialViewState={initialViewState}
         cursor={cursor}
-        minZoom={2}
+        minZoom={2.5}
         onContextMenu={handleContextMenu}
         onTouchStart={handleTouchStart}
         onMove={cancelLongPress}
