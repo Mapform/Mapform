@@ -88,6 +88,7 @@ export function OnboardingForm({ email }: OnboardingFormProps) {
                     placeholder="Jane Doe"
                     ref={field.ref}
                     value={field.value ?? ""}
+                    autoComplete="off"
                   />
                 </FormControl>
                 <FormMessage />
@@ -120,6 +121,7 @@ export function OnboardingForm({ email }: OnboardingFormProps) {
                     placeholder="Acme Inc."
                     ref={field.ref}
                     value={field.value}
+                    autoComplete="off"
                   />
                 </FormControl>
                 {showSlugField ? null : (
@@ -162,6 +164,7 @@ export function OnboardingForm({ email }: OnboardingFormProps) {
                         placeholder="acme-inc"
                         ref={field.ref}
                         value={field.value}
+                        autoComplete="off"
                       />
                     </FormControl>
                     <FormDescription>
