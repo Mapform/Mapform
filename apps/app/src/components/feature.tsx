@@ -38,6 +38,7 @@ import {
 } from "./properties/property-adder";
 import { useAction } from "next-safe-action/hooks";
 import { updateColumnOrderAction } from "~/data/columns/update-column-order";
+import { usePreventPageUnload } from "@mapform/lib/hooks/use-prevent-page-unload";
 import {
   DndContext,
   PointerSensor,
@@ -114,9 +115,11 @@ export function Feature({
   const wikiData = useWikidataImages(osmId);
   const images = [...(imageData?.images ?? []), ...wikiData.images];
 
-  const { executeAsync: updateColumnOrderAsync } = useAction(
+  const { executeAsync: updateColumnOrderAsync, isPending } = useAction(
     updateColumnOrderAction,
   );
+
+  usePreventPageUnload(isPending);
 
   // Extract column-backed properties and other properties
   const columnProperties = useMemo(

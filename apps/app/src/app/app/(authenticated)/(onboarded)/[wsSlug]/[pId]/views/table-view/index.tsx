@@ -56,6 +56,7 @@ import {
 import { restrictToHorizontalAxis } from "@dnd-kit/modifiers";
 import { DragItem, DragHandle } from "~/components/draggable";
 import { updateColumnOrderAction } from "~/data/columns/update-column-order";
+import { usePreventPageUnload } from "@mapform/lib/hooks/use-prevent-page-unload";
 
 export function TableView() {
   const { projectService } = useProject();
@@ -63,9 +64,10 @@ export function TableView() {
     useAction(deleteRowsAction);
   const { execute: executeDuplicateRows, isPending: isPendingDuplicateRows } =
     useAction(duplicateRowsAction);
-  const { executeAsync: updateColumnOrderAsync } = useAction(
-    updateColumnOrderAction,
-  );
+  const {
+    executeAsync: updateColumnOrderAsync,
+    isPending: isPendingUpdateColumnOrder,
+  } = useAction(updateColumnOrderAction);
   const tableContainerRef = useRef<HTMLDivElement>(null);
   const {
     params: { perPage, page },
@@ -77,6 +79,10 @@ export function TableView() {
         distance: 8,
       },
     }),
+  );
+
+  usePreventPageUnload(
+    isPendingDeleteRows || isPendingDuplicateRows || isPendingUpdateColumnOrder,
   );
 
   const handleColumnDragEnd = async (event: DragEndEvent) => {
@@ -308,50 +314,53 @@ export function TableView() {
                 </TableRow>
               ))}
             </TableHeader>
-        <TableBody className="overflow-auto">
-          {table.getRowModel().rows.length ? (
-            table.getRowModel().rows.map((row) => (
-              <TableRow
-                data-state={row.getIsSelected() && "selected"}
-                key={row.id}
-              >
-                {row.getVisibleCells().map((cell) => {
-                  const value = cell.getValue()?.toString();
-                  const type = projectService.optimisticState.columns.find(
-                    (column) => column.id === cell.column.id,
-                  )?.type;
+            <TableBody className="overflow-auto">
+              {table.getRowModel().rows.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow
+                    data-state={row.getIsSelected() && "selected"}
+                    key={row.id}
+                  >
+                    {row.getVisibleCells().map((cell) => {
+                      const value = cell.getValue()?.toString();
+                      const type = projectService.optimisticState.columns.find(
+                        (column) => column.id === cell.column.id,
+                      )?.type;
 
-                  return (
-                    <TableCell key={cell.id}>
-                      {type ? (
-                        <PropertyValueEditor
-                          value={value ?? ""}
-                          type={type}
-                          rowId={row.id}
-                          columnId={cell.column.id}
-                        />
-                      ) : (
-                        <span className="text-muted-foreground">
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext(),
+                      return (
+                        <TableCell key={cell.id}>
+                          {type ? (
+                            <PropertyValueEditor
+                              value={value ?? ""}
+                              type={type}
+                              rowId={row.id}
+                              columnId={cell.column.id}
+                            />
+                          ) : (
+                            <span className="text-muted-foreground">
+                              {flexRender(
+                                cell.column.columnDef.cell,
+                                cell.getContext(),
+                              )}
+                            </span>
                           )}
-                        </span>
-                      )}
-                    </TableCell>
-                  );
-                })}
-              </TableRow>
-            ))
-          ) : (
-            <TableRow>
-              <TableCell className="h-24 text-center" colSpan={columns.length}>
-                <div className="flex flex-1 flex-col items-center gap-2 p-8 text-center">
-                  <PackageOpenIcon className="mx-auto size-6 text-gray-500" />
-                  <span className="text-foreground text-base font-medium">
-                    Map is empty
-                  </span>
-                  {/* <Button
+                        </TableCell>
+                      );
+                    })}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    className="h-24 text-center"
+                    colSpan={columns.length}
+                  >
+                    <div className="flex flex-1 flex-col items-center gap-2 p-8 text-center">
+                      <PackageOpenIcon className="mx-auto size-6 text-gray-500" />
+                      <span className="text-foreground text-base font-medium">
+                        Map is empty
+                      </span>
+                      {/* <Button
                       onClick={() => {
                         void setQueryStates({
                           search: "1",
@@ -363,10 +372,10 @@ export function TableView() {
                       <SparklesIcon className="size-4" />
                       Search or ask...
                     </Button> */}
-                </div>
-              </TableCell>
-            </TableRow>
-          )}
+                    </div>
+                  </TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </TableRoot>
         </SortableContext>
