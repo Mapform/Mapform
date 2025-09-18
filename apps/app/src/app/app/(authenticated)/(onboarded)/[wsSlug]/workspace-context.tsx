@@ -13,14 +13,12 @@ import React, {
 import type { GetUserWorkspaceMemberships } from "@mapform/backend/data/workspace-memberships/get-user-workspace-memberships";
 import type { WorkspaceDirectory } from "@mapform/backend/data/workspaces/get-workspace-directory";
 import { SidebarProvider } from "@mapform/ui/components/sidebar";
-// import Map, { NavigationControl } from "react-map-gl/maplibre";
 import type {
   MapLayerMouseEvent,
   MapLayerTouchEvent,
 } from "react-map-gl/maplibre";
 import { Map, NavigationControl } from "react-map-gl/maplibre";
 import { env } from "~/*";
-// import "mapbox-gl/dist/mapbox-gl.css";
 import "maplibre-gl/dist/maplibre-gl.css";
 import {
   POINTS_LAYER_ID,
@@ -273,9 +271,27 @@ export function WorkspaceProvider({
       }}
     >
       <Map
-        // mapboxAccessToken={accessToken}
         mapStyle={`https://api.maptiler.com/maps/streets/style.json?key=${env.NEXT_PUBLIC_MAPTILER_KEY}`}
-        style={{ width: "100vw", height: "100vh", backgroundColor: "#06112c" }}
+        style={{
+          width: "100vw",
+          height: "100vh",
+          backgroundImage: `linear-gradient(
+            315deg,
+            hsl(223deg 76% 10%) 0%,
+            hsl(222deg 77% 10%) 8%,
+            hsl(222deg 78% 10%) 16%,
+            hsl(222deg 79% 11%) 24%,
+            hsl(221deg 80% 11%) 32%,
+            hsl(221deg 80% 11%) 41%,
+            hsl(221deg 81% 11%) 49%,
+            hsl(221deg 81% 12%) 58%,
+            hsl(221deg 81% 12%) 66%,
+            hsl(222deg 81% 12%) 75%,
+            hsl(222deg 81% 13%) 83%,
+            hsl(222deg 80% 13%) 92%,
+            hsl(223deg 80% 14%) 100%
+          );`,
+        }}
         sky={{
           "sky-color": "#199EF3",
           "sky-horizon-blend": 0.5,

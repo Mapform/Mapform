@@ -3,7 +3,6 @@ import {
   PopoverAnchor,
   PopoverContent,
 } from "@mapform/ui/components/popover";
-import "mapbox-gl/dist/mapbox-gl.css";
 import { useAction } from "next-safe-action/hooks";
 import { useCallback, useRef, useState } from "react";
 import { usePreventPageUnload } from "@mapform/lib/hooks/use-prevent-page-unload";

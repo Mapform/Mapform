@@ -1,6 +1,6 @@
 import { useRef, useEffect, useState } from "react";
 import { Marker, useMap } from "react-map-gl/maplibre";
-import mapboxgl from "mapbox-gl";
+import maplibregl from "maplibre-gl";
 import { FeatureList } from "~/components/feature-list";
 import type { AIResultLocation } from "~/lib/types";
 import { useParamsContext } from "~/lib/params/client";
@@ -46,7 +46,7 @@ export function PickLocationsMessage({ results }: PickLocationsMessageProps) {
   useEffect(() => {
     if (!map || !results.length || hasFlownToRef.current) return;
 
-    const bounds = new mapboxgl.LngLatBounds();
+    const bounds = new maplibregl.LngLatBounds();
 
     results.forEach((result) => {
       bounds.extend([result.longitude, result.latitude]);
