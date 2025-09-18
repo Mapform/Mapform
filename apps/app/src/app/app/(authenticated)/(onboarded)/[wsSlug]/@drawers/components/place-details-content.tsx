@@ -277,7 +277,6 @@ export function PlaceDetailsContent({
               ] as const)
             : []),
         ]}
-        projectId={pId}
       />
     </>
   );

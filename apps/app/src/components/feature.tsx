@@ -89,7 +89,7 @@ interface FeatureProps {
   }) => void;
   rowId?: string;
   osmId?: string;
-  projectId: string;
+  projectId?: string;
 }
 
 export function Feature({
@@ -332,7 +332,7 @@ export function Feature({
               </div>
             </div>
           ))}
-          {columnProperties.length ? (
+          {projectId ? (
             <PropertyAdder projectId={projectId}>
               <PropertyAdderTrigger asChild>
                 <Button
