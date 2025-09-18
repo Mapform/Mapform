@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo } from "react";
-import { Layer, Source, useMap } from "react-map-gl/mapbox";
+import { Layer, Source, useMap } from "react-map-gl/maplibre";
 import { useProject } from "./context";
 import { rowsToGeoJSON } from "~/lib/rows-to-geojson";
 import type { Geometry } from "geojson";

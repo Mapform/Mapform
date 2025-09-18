@@ -58,7 +58,7 @@ import {
 } from "@mapform/ui/components/carousel";
 import Image from "next/image";
 import { cn } from "@mapform/lib/classnames";
-import { useMap } from "react-map-gl/mapbox";
+import { useMap } from "react-map-gl/maplibre";
 
 export function Views() {
   const map = useMap();

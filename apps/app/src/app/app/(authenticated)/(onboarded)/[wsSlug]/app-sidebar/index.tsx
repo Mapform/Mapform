@@ -66,7 +66,7 @@ import { Files } from "./files";
 import { createProjectAction } from "~/data/projects/create-project";
 import { useAction } from "next-safe-action/hooks";
 import { toast } from "@mapform/ui/components/toaster";
-import { useMap } from "react-map-gl/mapbox";
+import { useMap } from "react-map-gl/maplibre";
 import { useParamsContext } from "~/lib/params/client";
 import { Button } from "@mapform/ui/components/button";
 

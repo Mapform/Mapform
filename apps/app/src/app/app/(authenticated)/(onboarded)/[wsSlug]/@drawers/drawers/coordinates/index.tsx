@@ -6,7 +6,7 @@ import { Button } from "@mapform/ui/components/button";
 import { XIcon } from "lucide-react";
 import { BasicSkeleton } from "~/components/skeletons/basic";
 import { PlaceDetailsContent } from "../../components/place-details-content";
-import { Marker } from "react-map-gl/mapbox";
+import { Marker } from "react-map-gl/maplibre";
 import type { Details } from "@mapform/backend/data/stadia/details";
 import { MapPositioner } from "~/lib/map/map-positioner";
 

@@ -13,9 +13,15 @@ import React, {
 import type { GetUserWorkspaceMemberships } from "@mapform/backend/data/workspace-memberships/get-user-workspace-memberships";
 import type { WorkspaceDirectory } from "@mapform/backend/data/workspaces/get-workspace-directory";
 import { SidebarProvider } from "@mapform/ui/components/sidebar";
-import Map, { NavigationControl } from "react-map-gl/mapbox";
+// import Map, { NavigationControl } from "react-map-gl/maplibre";
+import type {
+  MapLayerMouseEvent,
+  MapLayerTouchEvent,
+} from "react-map-gl/maplibre";
+import { Map, NavigationControl } from "react-map-gl/maplibre";
 import { env } from "~/*";
-import "mapbox-gl/dist/mapbox-gl.css";
+// import "mapbox-gl/dist/mapbox-gl.css";
+import "maplibre-gl/dist/maplibre-gl.css";
 import {
   POINTS_LAYER_ID,
   POINTS_SYMBOLS_LAYER_ID,
@@ -51,8 +57,6 @@ export const WorkspaceContext = createContext<WorkspaceContextInterface>(
   {} as WorkspaceContextInterface,
 );
 export const useWorkspace = () => useContext(WorkspaceContext);
-
-const accessToken = env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
 
 export function WorkspaceProvider({
   children,
@@ -106,7 +110,7 @@ export function WorkspaceProvider({
   };
 
   const startLongPress = (
-    event: mapboxgl.MapMouseEvent | mapboxgl.MapTouchEvent,
+    event: MapLayerMouseEvent | MapLayerTouchEvent,
     timeoutMs = 500,
   ) => {
     cancelLongPress();
@@ -123,7 +127,7 @@ export function WorkspaceProvider({
     }, timeoutMs);
   };
 
-  const handleContextMenu = (event: mapboxgl.MapMouseEvent) => {
+  const handleContextMenu = (event: MapLayerMouseEvent) => {
     event.preventDefault(); // Prevent the browser's default context menu
     setContextMenu({
       longitude: event.lngLat.lng,
@@ -137,11 +141,7 @@ export function WorkspaceProvider({
     setContextMenu(null);
   };
 
-  const handleClick = (
-    event: mapboxgl.MapMouseEvent & {
-      features?: { properties: { id: string } }[];
-    },
-  ) => {
+  const handleClick = (event: MapLayerMouseEvent) => {
     if (longPressTriggeredRef.current) {
       longPressTriggeredRef.current = false;
       return;
@@ -155,11 +155,11 @@ export function WorkspaceProvider({
     }
   };
 
-  const handleTouchStart = (event: mapboxgl.MapTouchEvent) => {
+  const handleTouchStart = (event: MapLayerTouchEvent) => {
     startLongPress(event);
   };
 
-  const handleMouseDown = (event: mapboxgl.MapMouseEvent) => {
+  const handleMouseDown = (event: MapLayerMouseEvent) => {
     startLongPress(event);
   };
 
@@ -273,9 +273,10 @@ export function WorkspaceProvider({
       }}
     >
       <Map
-        mapboxAccessToken={accessToken}
+        // mapboxAccessToken={accessToken}
+        mapStyle={`https://api.maptiler.com/maps/streets/style.json?key=${env.NEXT_PUBLIC_MAPTILER_KEY}`}
         style={{ width: "100vw", height: "100vh" }}
-        mapStyle="mapbox://styles/nichaley/cmcyt7kfs005q01qn6vhrga96"
+        // mapStyle="mapbox://styles/nichaley/cmcyt7kfs005q01qn6vhrga96"
         projection="globe"
         logoPosition="bottom-right"
         initialViewState={initialViewState}

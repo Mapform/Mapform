@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState } from "react";
-import { Marker, useMap } from "react-map-gl/mapbox";
+import { Marker, useMap } from "react-map-gl/maplibre";
 import mapboxgl from "mapbox-gl";
 import { FeatureList } from "~/components/feature-list";
 import type { AIResultLocation } from "~/lib/types";
