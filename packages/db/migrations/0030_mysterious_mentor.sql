@@ -1,0 +1,1 @@
+ALTER TABLE "row" ALTER COLUMN "geometry" SET NOT NULL;

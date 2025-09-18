@@ -1,6 +1,5 @@
 "server-only";
 
-import { db } from "@mapform/db";
 import { eq } from "@mapform/db/utils";
 import { requestMagicLinkSchema } from "./schema";
 import type { PublicClient, UnwrapReturn } from "../../../lib/types";
@@ -14,7 +13,7 @@ const baseUrl = env.NEXT_PUBLIC_BASE_URL;
 export const requestMagicLink = (authClient: PublicClient) =>
   authClient
     .schema(requestMagicLinkSchema)
-    .action(async ({ parsedInput: { email } }) => {
+    .action(async ({ parsedInput: { email }, ctx: { db } }) => {
       // 1. Generate token
       const token = generateToken(32);
 

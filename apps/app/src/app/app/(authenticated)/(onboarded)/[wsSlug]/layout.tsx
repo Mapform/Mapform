@@ -1,7 +1,7 @@
 import { cache } from "react";
 import { notFound } from "next/navigation";
 import { cookies } from "next/headers";
-import { authClient } from "~/lib/safe-action";
+import { authDataService } from "~/lib/safe-action";
 import { WorkspaceProvider } from "./workspace-context";
 import { AppSidebar } from "./app-sidebar";
 import { SidebarProvider } from "@mapform/ui/components/sidebar";
@@ -57,9 +57,10 @@ export default async function WorkspaceLayout(props: {
  * Cached fetch functions
  */
 const fetchWorkspaceDirectory = cache(async (slug: string) => {
-  const getWorkspaceDirectoryResponse = await authClient.getWorkspaceDirectory({
-    slug,
-  });
+  const getWorkspaceDirectoryResponse =
+    await authDataService.getWorkspaceDirectory({
+      slug,
+    });
 
   const workspaceDirectory = getWorkspaceDirectoryResponse?.data;
 
@@ -72,7 +73,7 @@ const fetchWorkspaceDirectory = cache(async (slug: string) => {
 
 const fetchWorkspaceMemberships = cache(async () => {
   const workspaceMembershipsResponse =
-    await authClient.getUserWorkspaceMemberships({});
+    await authDataService.getUserWorkspaceMemberships({});
 
   const workspaceMemberships = workspaceMembershipsResponse?.data;
 

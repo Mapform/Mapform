@@ -1,6 +1,5 @@
 "server-only";
 
-import { db } from "@mapform/db";
 import { views } from "@mapform/db/schema";
 import { deleteViewSchema } from "./schema";
 import type { UserAuthClient } from "../../../lib/types";
@@ -9,7 +8,7 @@ import { eq } from "@mapform/db/utils";
 export const deleteView = (authClient: UserAuthClient) =>
   authClient
     .schema(deleteViewSchema)
-    .action(async ({ parsedInput: { viewId }, ctx: { userAccess } }) => {
+    .action(async ({ parsedInput: { viewId }, ctx: { userAccess, db } }) => {
       // First get the rows with their teamspace information
       const viewToDelete = await db.query.views.findFirst({
         where: eq(views.id, viewId),

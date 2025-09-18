@@ -1,12 +1,12 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { authClient } from "~/lib/safe-action";
+import { authDataService } from "~/lib/safe-action";
 
 export const updateRowAction = async (
-  params: Last<Parameters<typeof authClient.updateRow>>,
+  params: Last<Parameters<typeof authDataService.updateRow>>,
 ) => {
-  const result = await authClient.updateRow(params);
+  const result = await authDataService.updateRow(params);
 
   revalidatePath("/app/[wsSlug]/[pId]", "page");
 

@@ -1,6 +1,5 @@
 "server-only";
 
-import { db } from "@mapform/db";
 import type { UserAuthClient } from "../../../lib/types";
 import { updateImageSchema } from "./schema";
 import { blobs } from "@mapform/db/schema";
@@ -12,7 +11,7 @@ export const updateImage = (authClient: UserAuthClient) =>
     .action(
       async ({
         parsedInput: { url, workspaceId, queuedForDeletionDate },
-        ctx: { userAccess },
+        ctx: { userAccess, db },
       }) => {
         if (!userAccess.workspace.checkAccessById(workspaceId)) {
           throw new Error("Unauthorized");

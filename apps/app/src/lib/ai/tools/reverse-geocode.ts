@@ -1,6 +1,6 @@
 import { tool } from "ai";
 import { z } from "zod";
-import { publicClient } from "~/lib/safe-action";
+import { publicDataService } from "~/lib/safe-action";
 import type { AIResultLocation } from "~/lib/types";
 
 export const reverseGeocode = tool({
@@ -16,7 +16,7 @@ export const reverseGeocode = tool({
 });
 
 export async function reverseGeocodeFunc(lat: number, lng: number) {
-  const placeDetails = await publicClient.reverseGeocode({
+  const placeDetails = await publicDataService.reverseGeocode({
     lat,
     lng,
   });

@@ -51,154 +51,175 @@ import { search } from "@mapform/backend/data/stadia/search";
 import { details } from "@mapform/backend/data/stadia/details";
 import { reverseGeocode } from "@mapform/backend/data/stadia/reverse";
 import { forwardGeocode } from "@mapform/backend/data/stadia/forward";
+import { updateColumnOrder } from "@mapform/backend/data/columns/update-column-order";
+import { db } from "@mapform/db";
 
 const ignoredWorkspaceSlugs = ["onboarding"];
 const ignoredTeamspaceSlugs = ["settings"];
 
+export const authClient = baseClient
+  .use(async ({ next, ctx }) => {
+    const headersList = await headers();
+    const response = await internalGetCurrentSession();
+    const user = response?.data?.user;
+    const workspaceSlug = headersList.get("x-workspace-slug") ?? "";
+    const teamspaceSlug = headersList.get("x-teamspace-slug") ?? "";
+
+    if (!user) {
+      return redirect("/app/signin");
+    }
+
+    const userAccess = new UserAccess(user);
+
+    const hasAccessToCurrentWorkspace =
+      userAccess.workspace.checkAccessBySlug(workspaceSlug);
+    const hasAccessToTeamspace = userAccess.teamspace.checkAccessBySlug(
+      teamspaceSlug,
+      workspaceSlug,
+    );
+
+    if (
+      workspaceSlug &&
+      !hasAccessToCurrentWorkspace &&
+      !ignoredWorkspaceSlugs.includes(workspaceSlug)
+    ) {
+      return redirect("/app");
+    }
+
+    if (
+      teamspaceSlug &&
+      !hasAccessToTeamspace &&
+      !ignoredTeamspaceSlugs.includes(teamspaceSlug)
+    ) {
+      return redirect(`/app/${workspaceSlug}`);
+    }
+
+    return next({
+      ctx: {
+        ...ctx,
+        authType: "user" as const,
+        user,
+        userAccess,
+      },
+    });
+  })
+  .use(userAuthMiddlewareValidator);
+
 /**
  * Can be used with user authentication.
  */
-const createUserAuthClient = () => {
-  const extendedClient = baseClient
-    .use(async ({ next }) => {
-      const headersList = await headers();
-      const response = await internalGetCurrentSession();
-      const user = response?.data?.user;
-      const workspaceSlug = headersList.get("x-workspace-slug") ?? "";
-      const teamspaceSlug = headersList.get("x-teamspace-slug") ?? "";
+const createUserAuthDataService = () => {
+  const extendedClient = authClient;
 
-      if (!user) {
-        return redirect("/app/signin");
-      }
-
-      const userAccess = new UserAccess(user);
-
-      const hasAccessToCurrentWorkspace =
-        userAccess.workspace.checkAccessBySlug(workspaceSlug);
-      const hasAccessToTeamspace = userAccess.teamspace.checkAccessBySlug(
-        teamspaceSlug,
-        workspaceSlug,
-      );
-
-      if (
-        workspaceSlug &&
-        !hasAccessToCurrentWorkspace &&
-        !ignoredWorkspaceSlugs.includes(workspaceSlug)
-      ) {
-        return redirect("/app");
-      }
-
-      if (
-        teamspaceSlug &&
-        !hasAccessToTeamspace &&
-        !ignoredTeamspaceSlugs.includes(teamspaceSlug)
-      ) {
-        return redirect(`/app/${workspaceSlug}`);
-      }
-
-      return next({
-        ctx: {
-          authType: "user" as const,
-          user,
-          userAccess,
-        },
-      });
-    })
-    .use(userAuthMiddlewareValidator);
-
-  return {
+  // Allow passing a custom client (e.g., one bound to a transaction)
+  const createClient = (client: typeof extendedClient) => ({
     // Auth
-    signOut: signOut(extendedClient),
+    signOut: signOut(client),
 
     // Cells
-    upsertCell: upsertCell(extendedClient),
+    upsertCell: upsertCell(client),
 
     // Chats
-    createChat: createChat(extendedClient),
-    deleteChat: deleteChat(extendedClient),
-    getChat: getChat(extendedClient),
-    listChats: listChats(extendedClient),
+    createChat: createChat(client),
+    deleteChat: deleteChat(client),
+    getChat: getChat(client),
+    listChats: listChats(client),
 
     // Columns
-    createColumn: createColumn(extendedClient),
-    deleteColumn: deleteColumn(extendedClient),
-    updateColumn: updateColumn(extendedClient),
+    createColumn: createColumn(client),
+    deleteColumn: deleteColumn(client),
+    updateColumn: updateColumn(client),
+    updateColumnOrder: updateColumnOrder(client),
 
     // Images
-    uploadImage: uploadImage(extendedClient),
+    uploadImage: uploadImage(client),
 
     // Messages
-    createMessages: createMessages(extendedClient),
-    getMessages: getMessages(extendedClient),
+    createMessages: createMessages(client),
+    getMessages: getMessages(client),
 
     // Projects
-    getProject: getProject(extendedClient),
-    createProject: createProject(extendedClient),
-    updateProject: updateProject(extendedClient),
-    updateProjectOrder: updateProjectOrder(extendedClient),
-    deleteProject: deleteProject(extendedClient),
+    getProject: getProject(client),
+    createProject: createProject(client),
+    updateProject: updateProject(client),
+    updateProjectOrder: updateProjectOrder(client),
+    deleteProject: deleteProject(client),
 
     // Rows
-    getRow: getRow(extendedClient),
-    createRow: createRow(extendedClient),
-    updateRow: updateRow(extendedClient),
-    createRows: createRows(extendedClient),
-    deleteRows: deleteRows(extendedClient),
-    duplicateRows: duplicateRows(extendedClient),
-    searchRows: searchRows(extendedClient),
+    getRow: getRow(client),
+    createRow: createRow(client),
+    updateRow: updateRow(client),
+    createRows: createRows(client),
+    deleteRows: deleteRows(client),
+    duplicateRows: duplicateRows(client),
+    searchRows: searchRows(client),
 
     // Stripe
-    createBillingSession: createBillingSession(extendedClient),
-    createCheckoutSession: createCheckoutSession(extendedClient),
+    createBillingSession: createBillingSession(client),
+    createCheckoutSession: createCheckoutSession(client),
 
     // Teamspaces
-    getTeamspaceWithProjects: getTeamspaceWithProjects(extendedClient),
+    getTeamspaceWithProjects: getTeamspaceWithProjects(client),
 
     // Users
-    updateCurrentUser: updateCurrentUser(extendedClient),
+    updateCurrentUser: updateCurrentUser(client),
 
     // Views
-    createView: createView(extendedClient),
-    deleteView: deleteView(extendedClient),
-    updateView: updateView(extendedClient),
+    createView: createView(client),
+    deleteView: deleteView(client),
+    updateView: updateView(client),
 
     // Workspaces
-    updateWorkspace: updateWorkspace(extendedClient),
-    completeOnboarding: completeOnboarding(extendedClient),
-    getWorkspaceDirectory: getWorkspaceDirectory(extendedClient),
+    updateWorkspace: updateWorkspace(client),
+    completeOnboarding: completeOnboarding(client),
+    getWorkspaceDirectory: getWorkspaceDirectory(client),
 
     // Workspace Memberships
-    getUserWorkspaceMemberships: getUserWorkspaceMemberships(extendedClient),
+    getUserWorkspaceMemberships: getUserWorkspaceMemberships(client),
 
     // Usage
-    getStorageUsage: getStorageUsage(extendedClient),
-    getRowCount: getRowCount(extendedClient),
-  };
-};
-
-/**
- * Can be used without authentication.
- */
-const createPublicClient = () => {
-  const extendedClient = baseClient
-    .use(async ({ next }) => next({ ctx: { authType: "public" as const } }))
-    .use(publicMiddlewareValidator);
+    getStorageUsage: getStorageUsage(client),
+    getRowCount: getRowCount(client),
+  });
 
   return {
-    // Auth
-    requestMagicLink: requestMagicLink(extendedClient),
-    validateMagicLink: validateMagicLink(extendedClient),
+    $transaction: <R>(
+      fn: (
+        transactionClient: ReturnType<typeof createClient>,
+      ) => Promise<R> | R,
+    ): Promise<R> => {
+      return db.transaction(async (tx) => {
+        // Bind a client whose ctx.db is the transaction
+        const transactionalClient = extendedClient.use(
+          async ({ next, ctx }) => {
+            return next({ ctx: { ...ctx, db: tx } });
+          },
+        );
 
-    // Stadia
-    search: search(extendedClient),
-    details: details(extendedClient),
-    reverseGeocode: reverseGeocode(extendedClient),
-    forwardGeocode: forwardGeocode(extendedClient),
-
-    // Users
-    getCurrentSession: getCurrentSession(extendedClient),
+        return fn(createClient(transactionalClient));
+      });
+    },
+    ...createClient(extendedClient),
+    authClient,
   };
 };
+export const authDataService = createUserAuthDataService();
 
-export const authClient = createUserAuthClient();
-export const publicClient = createPublicClient();
+export const publicClient = baseClient
+  .use(async ({ next }) => next({ ctx: { authType: "public" as const } }))
+  .use(publicMiddlewareValidator);
+
+export const publicDataService = {
+  // Auth
+  requestMagicLink: requestMagicLink(publicClient),
+  validateMagicLink: validateMagicLink(publicClient),
+
+  // Stadia
+  search: search(publicClient),
+  details: details(publicClient),
+  reverseGeocode: reverseGeocode(publicClient),
+  forwardGeocode: forwardGeocode(publicClient),
+
+  // Users
+  getCurrentSession: getCurrentSession(publicClient),
+};

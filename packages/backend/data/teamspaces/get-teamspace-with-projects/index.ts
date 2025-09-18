@@ -1,6 +1,5 @@
 "server-only";
 
-import { db } from "@mapform/db";
 import { eq, and } from "@mapform/db/utils";
 import { teamspaces } from "@mapform/db/schema";
 import { getTeamspaceWithProjectsSchema } from "./schema";
@@ -12,7 +11,7 @@ export const getTeamspaceWithProjects = (authClient: UserAuthClient) =>
     .action(
       async ({
         parsedInput: { teamspaceSlug, workspaceSlug },
-        ctx: { userAccess },
+        ctx: { userAccess, db },
       }) => {
         if (
           !userAccess.teamspace.checkAccessBySlug(teamspaceSlug, workspaceSlug)

@@ -1,6 +1,5 @@
 "server-only";
 
-import { db } from "@mapform/db";
 import { rows, blobs } from "@mapform/db/schema";
 import { deleteRowsSchema } from "./schema";
 import type { UserAuthClient } from "../../../lib/types";
@@ -9,7 +8,7 @@ import { inArray } from "@mapform/db/utils";
 export const deleteRows = (authClient: UserAuthClient) =>
   authClient
     .schema(deleteRowsSchema)
-    .action(async ({ parsedInput: { rowIds }, ctx: { userAccess } }) => {
+    .action(async ({ parsedInput: { rowIds }, ctx: { userAccess, db } }) => {
       // First get the rows with their teamspace information
       const rowsToDelete = await db.query.rows.findMany({
         where: inArray(rows.id, rowIds),

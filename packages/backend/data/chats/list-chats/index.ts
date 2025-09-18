@@ -1,6 +1,5 @@
 "server-only";
 
-import { db } from "@mapform/db";
 import { chats } from "@mapform/db/schema";
 import { and, desc, eq, isNull } from "@mapform/db/utils";
 import { listChatsSchema } from "./schema";
@@ -9,7 +8,7 @@ import type { UserAuthClient, UnwrapReturn } from "../../../lib/types";
 export const listChats = (authClient: UserAuthClient) =>
   authClient
     .schema(listChatsSchema)
-    .action(async ({ parsedInput: { projectId }, ctx: { user } }) => {
+    .action(async ({ parsedInput: { projectId }, ctx: { user, db } }) => {
       return db.query.chats.findMany({
         where: and(
           eq(chats.userId, user.id),

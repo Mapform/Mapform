@@ -7,7 +7,7 @@ import {
 } from "@mapform/ui/components/tooltip";
 import { notFound } from "next/navigation";
 import { getWorkspaceDirectory } from "~/data/workspaces/get-workspace-directory";
-import { authClient } from "~/lib/safe-action";
+import { authDataService } from "~/lib/safe-action";
 
 async function fetchWorkspacePlan(workspaceSlug: string) {
   const response = await getWorkspaceDirectory({ slug: workspaceSlug });
@@ -21,7 +21,7 @@ async function fetchWorkspacePlan(workspaceSlug: string) {
 }
 
 async function fetchRowAndPageCount(workspaceSlug: string) {
-  const response = await authClient.getRowCount({ workspaceSlug });
+  const response = await authDataService.getRowCount({ workspaceSlug });
   const rowCount = response?.data;
 
   if (rowCount === undefined) {
@@ -32,7 +32,7 @@ async function fetchRowAndPageCount(workspaceSlug: string) {
 }
 
 async function fetchStorageUsage(workspaceSlug: string) {
-  const response = await authClient.getStorageUsage({ workspaceSlug });
+  const response = await authDataService.getStorageUsage({ workspaceSlug });
   const totalStorageBytes = response?.data?.totalStorageBytes;
 
   if (totalStorageBytes === undefined) {

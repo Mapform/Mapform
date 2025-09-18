@@ -40,6 +40,22 @@ import { deleteRowsAction } from "~/data/rows/delete-rows";
 import { duplicateRowsAction } from "~/data/rows/dupliate-rows";
 import { useAction } from "next-safe-action/hooks";
 import { useParamsContext } from "~/lib/params/client";
+import {
+  DndContext,
+  PointerSensor,
+  closestCenter,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import type { DragEndEvent } from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  horizontalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { restrictToHorizontalAxis } from "@dnd-kit/modifiers";
+import { DragItem, DragHandle } from "~/components/draggable";
+import { updateColumnOrderAction } from "~/data/columns/update-column-order";
 
 export function TableView() {
   const { projectService } = useProject();
@@ -47,10 +63,57 @@ export function TableView() {
     useAction(deleteRowsAction);
   const { execute: executeDuplicateRows, isPending: isPendingDuplicateRows } =
     useAction(duplicateRowsAction);
+  const { executeAsync: updateColumnOrderAsync } = useAction(
+    updateColumnOrderAction,
+  );
   const tableContainerRef = useRef<HTMLDivElement>(null);
   const {
     params: { perPage, page },
   } = useParamsContext();
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+  );
+
+  const handleColumnDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (!over || active.id === over.id) {
+      return;
+    }
+
+    const activeColumnIndex = projectService.optimisticState.columns.findIndex(
+      (column) => column.id === active.id,
+    );
+    const overColumnIndex = projectService.optimisticState.columns.findIndex(
+      (column) => column.id === over.id,
+    );
+
+    const newColumns = arrayMove(
+      projectService.optimisticState.columns,
+      activeColumnIndex,
+      overColumnIndex,
+    );
+
+    // Update optimistic state
+    projectService.setOptimisticState({
+      ...projectService.optimisticState,
+      columns: newColumns.map((column, index) => ({
+        ...column,
+        position: index,
+      })),
+    });
+
+    // Update backend
+    await updateColumnOrderAsync({
+      projectId: projectService.optimisticState.id,
+      columnOrder: newColumns.map((column) => column.id),
+    });
+  };
 
   const rows = useMemo(
     () =>
@@ -87,6 +150,11 @@ export function TableView() {
   );
 
   const columns = useMemo(() => {
+    // Sort columns by position
+    const sortedColumns = [...projectService.optimisticState.columns].sort(
+      (a, b) => (a.position ?? 0) - (b.position ?? 0),
+    );
+
     const columns = [
       {
         id: "name",
@@ -108,15 +176,19 @@ export function TableView() {
           );
         },
       },
-      ...projectService.optimisticState.columns.map((column) => ({
+      ...sortedColumns.map((column) => ({
         id: column.id,
         accessorKey: column.id,
         header: () => (
-          <PropertyColumnEditor
-            columnId={column.id}
-            columnName={column.name}
-            columnType={column.type}
-          />
+          <DragItem id={column.id}>
+            <DragHandle id={column.id}>
+              <PropertyColumnEditor
+                columnId={column.id}
+                columnName={column.name}
+                columnType={column.type}
+              />
+            </DragHandle>
+          </DragItem>
         ),
       })),
     ];
@@ -168,6 +240,11 @@ export function TableView() {
     ];
   }, [projectService.optimisticState.columns]);
 
+  const draggableColumnIds = useMemo(
+    () => projectService.optimisticState.columns.map((column) => column.id),
+    [projectService.optimisticState.columns],
+  );
+
   const table = useReactTable({
     data: rows ?? [],
     columns,
@@ -194,33 +271,43 @@ export function TableView() {
       className="relative flex flex-1 flex-col overflow-auto py-4"
       ref={tableContainerRef}
     >
-      <TableRoot className="border-b">
-        <TableHeader className="border-b">
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow className="border-none" key={headerGroup.id}>
-              {headerGroup.headers.map((header) => {
-                return (
-                  <TableHead
-                    className="flex-grow-0 truncate"
-                    key={header.id}
-                    style={{
-                      width: `${header.getSize()}px`,
-                      minWidth: `${header.getSize()}px`,
-                      maxWidth: `${header.getSize()}px`,
-                    }}
-                  >
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
-                  </TableHead>
-                );
-              })}
-            </TableRow>
-          ))}
-        </TableHeader>
+      <DndContext
+        collisionDetection={closestCenter}
+        onDragEnd={handleColumnDragEnd}
+        sensors={sensors}
+        modifiers={[restrictToHorizontalAxis]}
+      >
+        <SortableContext
+          items={draggableColumnIds}
+          strategy={horizontalListSortingStrategy}
+        >
+          <TableRoot className="border-b">
+            <TableHeader className="border-b">
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow className="border-none" key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => {
+                    return (
+                      <TableHead
+                        className="flex-grow-0 truncate"
+                        key={header.id}
+                        style={{
+                          width: `${header.getSize()}px`,
+                          minWidth: `${header.getSize()}px`,
+                          maxWidth: `${header.getSize()}px`,
+                        }}
+                      >
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            )}
+                      </TableHead>
+                    );
+                  })}
+                </TableRow>
+              ))}
+            </TableHeader>
         <TableBody className="overflow-auto">
           {table.getRowModel().rows.length ? (
             table.getRowModel().rows.map((row) => (
@@ -280,8 +367,10 @@ export function TableView() {
               </TableCell>
             </TableRow>
           )}
-        </TableBody>
-      </TableRoot>
+            </TableBody>
+          </TableRoot>
+        </SortableContext>
+      </DndContext>
       <div className="sticky -bottom-4 left-0 flex items-center pb-8">
         <button
           className="hover:bg-muted/50 flex h-10 flex-1 items-center text-left text-sm disabled:pointer-events-none disabled:opacity-50"

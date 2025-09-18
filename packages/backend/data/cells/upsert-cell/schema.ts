@@ -8,12 +8,16 @@ import {
   insertDateCellSchema,
 } from "@mapform/db/schema";
 
-const commonCellSchema = insertCellSchema.pick({
-  rowId: true,
-  columnId: true,
-});
+const commonCellSchema = insertCellSchema
+  .pick({
+    rowId: true,
+  })
+  .extend({
+    columnId: insertCellSchema.shape.columnId.optional(),
+    columnName: z.string().optional(),
+  });
 
-export const upsertCellSchema = z.discriminatedUnion("type", [
+const upsertCellBase = z.discriminatedUnion("type", [
   // String
   commonCellSchema.extend({
     type: z.literal(columnTypeEnum.enumValues[0]),
@@ -35,5 +39,16 @@ export const upsertCellSchema = z.discriminatedUnion("type", [
     value: insertDateCellSchema.shape.value,
   }),
 ]);
+
+export const upsertCellSchema = upsertCellBase.superRefine((val, ctx) => {
+  const provided = (val.columnId ? 1 : 0) + (val.columnName ? 1 : 0);
+  if (provided !== 1) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Provide either columnId or columnName",
+      path: ["columnId"],
+    });
+  }
+});
 
 export type UpsertCellSchema = z.infer<typeof upsertCellSchema>;

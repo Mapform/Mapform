@@ -1,6 +1,6 @@
 "server-only";
 
-import { db, sql } from "@mapform/db";
+import { sql } from "@mapform/db";
 import { eq, inArray } from "@mapform/db/utils";
 import {
   rows,
@@ -19,7 +19,7 @@ import { getRowCount } from "../../usage/get-row-count";
 export const duplicateRows = (authClient: UserAuthClient) =>
   authClient
     .schema(duplicateRowsSchema)
-    .action(async ({ parsedInput: { rowIds }, ctx: { userAccess } }) => {
+    .action(async ({ parsedInput: { rowIds }, ctx: { userAccess, db } }) => {
       const dataToDuplicate = await db.query.rows.findMany({
         where: inArray(rows.id, rowIds),
         extras: {

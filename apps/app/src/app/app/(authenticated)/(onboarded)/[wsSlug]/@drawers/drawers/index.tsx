@@ -3,7 +3,7 @@ import type { SearchParams } from "nuqs/server";
 import { loadSearchParams } from "~/lib/params/server";
 import { Search } from "./search";
 import { cache } from "react";
-import { authClient, publicClient } from "~/lib/safe-action";
+import { authDataService, publicDataService } from "~/lib/safe-action";
 import { Chat } from "./chat";
 import { SearchDetails } from "./search-details";
 import { Feature } from "./feature";
@@ -29,7 +29,7 @@ export function Drawers(props: DealDrawerProps) {
 
 const getSearchResults = cache(
   async (query: string, bounds?: [number, number, number, number]) => {
-    const searchResults = await publicClient.search({
+    const searchResults = await publicDataService.search({
       query,
       bounds,
     });
@@ -39,7 +39,7 @@ const getSearchResults = cache(
 
 const getVectorSearchResults = cache(
   async (query: string, workspaceSlug: string, projectId?: string) => {
-    const searchResults = await authClient.searchRows(
+    const searchResults = await authDataService.searchRows(
       projectId
         ? {
             query,
@@ -64,7 +64,7 @@ async function SearchDrawer({ searchParams, params }: DealDrawerProps) {
     [
       query && search ? getSearchResults(query, undefined) : null,
       query && search ? getVectorSearchResults(query, wsSlug, pId) : null,
-      authClient.listChats({ projectId: pId }),
+      authDataService.listChats({ projectId: pId }),
     ],
   );
 
@@ -81,7 +81,7 @@ async function ChatDrawer({ searchParams }: DealDrawerProps) {
   const { chatId } = await loadSearchParams(searchParams);
 
   const chatWithMessages = chatId
-    ? await authClient.getMessages({
+    ? await authDataService.getMessages({
         chatId,
       })
     : null;
@@ -103,7 +103,7 @@ async function ChatDrawer({ searchParams }: DealDrawerProps) {
 const getDetails = cache(async (id: string | null) => {
   if (!id) return null;
 
-  const placeDetails = await publicClient.details({
+  const placeDetails = await publicDataService.details({
     id,
   });
 
@@ -118,14 +118,16 @@ async function SearchDetailsDrawer({ searchParams }: DealDrawerProps) {
   return <SearchDetails details={details?.data} />;
 }
 
-async function FeatureDrawer({ searchParams }: DealDrawerProps) {
+async function FeatureDrawer({ searchParams, params }: DealDrawerProps) {
+  const { pId } = await params;
   const { rowId } = await loadSearchParams(searchParams);
 
-  const [row] = await Promise.all([
-    rowId ? authClient.getRow({ rowId }) : null,
+  const [row, project] = await Promise.all([
+    rowId ? authDataService.getRow({ rowId }) : null,
+    pId ? authDataService.getProject({ projectId: pId }) : null,
   ]);
 
-  return <Feature feature={row?.data} />;
+  return <Feature feature={row?.data} project={project?.data} />;
 }
 
 async function CoordinatesDrawer({ searchParams }: DealDrawerProps) {
@@ -134,7 +136,7 @@ async function CoordinatesDrawer({ searchParams }: DealDrawerProps) {
   const [latitude, longitude] = marker?.split(",") ?? [];
 
   const details = marker
-    ? await publicClient.reverseGeocode({
+    ? await publicDataService.reverseGeocode({
         lat: Number(latitude),
         lng: Number(longitude),
       })

@@ -1,6 +1,5 @@
 "server-only";
 
-import { db } from "@mapform/db";
 import { chats } from "@mapform/db/schema";
 import { deleteChatSchema } from "./schema";
 import type { UserAuthClient } from "../../../lib/types";
@@ -9,7 +8,7 @@ import { eq } from "@mapform/db/utils";
 export const deleteChat = (authClient: UserAuthClient) =>
   authClient
     .schema(deleteChatSchema)
-    .action(async ({ parsedInput: { id }, ctx: { user } }) => {
+    .action(async ({ parsedInput: { id }, ctx: { user, db } }) => {
       const chat = await db.query.chats.findFirst({
         where: eq(chats.id, id),
         with: {

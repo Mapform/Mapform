@@ -1,6 +1,6 @@
 "server-only";
 
-import { db, sql } from "@mapform/db";
+import { sql } from "@mapform/db";
 import { embed } from "ai";
 import { projects, rows, workspaces, embeddings } from "@mapform/db/schema";
 import { searchRowsSchema } from "./schema";
@@ -11,7 +11,7 @@ import type { Geometry, Point } from "geojson";
 export const searchRows = (authClient: UserAuthClient) =>
   authClient
     .schema(searchRowsSchema)
-    .action(async ({ parsedInput, ctx: { userAccess } }) => {
+    .action(async ({ parsedInput, ctx: { userAccess, db } }) => {
       const { query, type } = parsedInput;
       let projectIds: string[] = [];
 

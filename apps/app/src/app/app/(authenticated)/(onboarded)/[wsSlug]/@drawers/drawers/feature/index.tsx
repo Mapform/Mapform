@@ -33,12 +33,14 @@ import { openInGoogleMaps } from "~/lib/external-links/google";
 import { useAction } from "next-safe-action/hooks";
 import { deleteRowsAction } from "~/data/rows/delete-rows";
 import { MapPositioner } from "~/lib/map/map-positioner";
+import type { GetProject } from "@mapform/backend/data/projects/get-project";
 
 interface FeatureDrawerProps {
   feature: GetRow["data"];
+  project: GetProject["data"];
 }
 
-export function Feature({ feature }: FeatureDrawerProps) {
+export function Feature({ feature, project }: FeatureDrawerProps) {
   const { params, isPending, drawerDepth, setQueryStates } = useParamsContext();
   const featureService = useStateService<GetRow["data"], UpdateRowSchema>(
     updateRowAction,
@@ -85,6 +87,7 @@ export function Feature({ feature }: FeatureDrawerProps) {
           ) : featureService.optimisticState ? (
             <FeatureContent
               featureService={featureService}
+              project={project}
               key={featureService.optimisticState.id}
             />
           ) : (
@@ -123,8 +126,10 @@ export function Feature({ feature }: FeatureDrawerProps) {
 
 const FeatureContent = ({
   featureService,
+  project,
 }: {
   featureService: StateServiceProps<GetRow["data"], UpdateRowSchema>;
+  project: GetProject["data"];
 }) => {
   const { setQueryStates } = useParamsContext();
   const { executeAsync } = useAction(deleteRowsAction, {
@@ -132,6 +137,33 @@ const FeatureContent = ({
       void setQueryStates({ rowId: null });
     },
   });
+
+  const columns = project?.columns.map((column) => ({
+    columnId: column.id,
+    columnName: column.name,
+    columnType: column.type,
+  }));
+
+  const properties = columns?.map((column) => ({
+    columnId: column.columnId,
+    columnName: column.columnName,
+    columnType: column.columnType,
+    rowId: featureService.optimisticState!.id,
+    value:
+      featureService.optimisticState?.cells.find(
+        (cell) => cell.columnId === column.columnId,
+      )?.stringCell?.value ??
+      featureService.optimisticState?.cells.find(
+        (cell) => cell.columnId === column.columnId,
+      )?.numberCell?.value ??
+      featureService.optimisticState?.cells.find(
+        (cell) => cell.columnId === column.columnId,
+      )?.booleanCell?.value ??
+      featureService.optimisticState?.cells.find(
+        (cell) => cell.columnId === column.columnId,
+      )?.dateCell?.value ??
+      null,
+  }));
 
   return (
     <div>
@@ -234,6 +266,8 @@ const FeatureContent = ({
             imageUrl: blob.url,
           })),
         }}
+        properties={properties}
+        projectId={featureService.optimisticState!.project.id}
       />
     </div>
   );

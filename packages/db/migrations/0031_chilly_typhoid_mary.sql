@@ -1,0 +1,1 @@
+ALTER TABLE "column" ADD COLUMN "position" smallint DEFAULT 0 NOT NULL;

@@ -1,6 +1,6 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-import { publicClient } from "~/lib/safe-action";
+import { publicDataService } from "~/lib/safe-action";
 
 export async function GET(request: NextRequest) {
   try {
@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
       ? (bounds.split(",").map(Number) as [number, number, number, number])
       : undefined;
 
-    const searchResults = await publicClient.search({
+    const searchResults = await publicDataService.search({
       query,
       bounds: boundsArray,
     });

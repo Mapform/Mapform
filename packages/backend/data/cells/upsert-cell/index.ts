@@ -1,6 +1,5 @@
 "server-only";
 
-import { db } from "@mapform/db";
 import {
   cells,
   numberCells,
@@ -21,46 +20,55 @@ export const upsertCell = (authClient: UserAuthClient) =>
     .schema(upsertCellSchema)
     .action(
       async ({
-        parsedInput: { rowId, columnId, type, value },
-        ctx: { user },
+        parsedInput: { rowId, columnId, columnName, type, value },
+        ctx: { user, db },
       }) => {
         const teamspaceIds = user.workspaceMemberships
           .map((m) => m.workspace.teamspaces.map((t) => t.id))
           .flat();
 
-        // Check to make sure the cell is part of a project the user has access to
-        const [rowResult, columnResult] = await Promise.all([
-          db
-            .select()
-            .from(rows)
-            .leftJoin(projects, eq(projects.id, rows.projectId))
-            .leftJoin(teamspaces, eq(teamspaces.id, projects.teamspaceId))
-            .where(
-              and(eq(rows.id, rowId), inArray(teamspaces.id, teamspaceIds)),
-            ),
-          db
-            .select()
-            .from(columns)
-            .leftJoin(projects, eq(projects.id, columns.projectId))
-            .leftJoin(teamspaces, eq(teamspaces.id, projects.teamspaceId))
-            .where(
-              and(
-                eq(columns.id, columnId),
-                inArray(teamspaces.id, teamspaceIds),
-              ),
-            ),
-        ]);
+        // Authorize row access and get its projectId
+        const rowProject = await db
+          .select({ projectId: rows.projectId })
+          .from(rows)
+          .leftJoin(projects, eq(projects.id, rows.projectId))
+          .leftJoin(teamspaces, eq(teamspaces.id, projects.teamspaceId))
+          .where(and(eq(rows.id, rowId), inArray(teamspaces.id, teamspaceIds)));
 
-        if (!rowResult.length || !columnResult.length) {
+        if (!rowProject.length) {
           throw new Error("Unauthorized");
         }
+
+        const projectId = rowProject[0]!.projectId;
+
+        // Resolve column by id or name and ensure it belongs to the same project/teamspace
+        const resolvedColumn = await db
+          .select({ id: columns.id })
+          .from(columns)
+          .leftJoin(projects, eq(projects.id, columns.projectId))
+          .leftJoin(teamspaces, eq(teamspaces.id, projects.teamspaceId))
+          .where(
+            and(
+              columnId
+                ? eq(columns.id, columnId)
+                : eq(columns.name, columnName as string),
+              eq(columns.projectId, projectId),
+              inArray(teamspaces.id, teamspaceIds),
+            ),
+          );
+
+        if (!resolvedColumn.length) {
+          throw new Error("Column not found");
+        }
+
+        const resolvedColumnId = resolvedColumn[0]!.id;
 
         await db.transaction(async (tx) => {
           const [cell] = await tx
             .insert(cells)
             .values({
               rowId,
-              columnId,
+              columnId: resolvedColumnId,
             })
             .onConflictDoUpdate({
               target: [cells.rowId, cells.columnId],

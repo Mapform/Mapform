@@ -1,6 +1,5 @@
 "server-only";
 
-import { db } from "@mapform/db";
 import { projects } from "@mapform/db/schema";
 import { createViewSchema } from "./schema";
 import type { UserAuthClient } from "../../../lib/types";
@@ -11,7 +10,10 @@ export const createView = (authClient: UserAuthClient) =>
   authClient
     .schema(createViewSchema)
     .action(
-      async ({ parsedInput: { projectId, ...rest }, ctx: { userAccess } }) => {
+      async ({
+        parsedInput: { projectId, ...rest },
+        ctx: { userAccess, db },
+      }) => {
         const project = await db.query.projects.findFirst({
           where: eq(projects.id, projectId),
         });

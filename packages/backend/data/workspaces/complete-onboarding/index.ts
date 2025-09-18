@@ -1,6 +1,5 @@
 "server-only";
 
-import { db } from "@mapform/db";
 import { eq } from "@mapform/db/utils";
 import {
   users,
@@ -25,7 +24,7 @@ export const completeOnboarding = (authClient: UserAuthClient) =>
     .action(
       async ({
         parsedInput: { userName, workspaceName, workspaceSlug },
-        ctx: { user },
+        ctx: { user, db },
       }) => {
         return db
           .transaction(async (tx) => {

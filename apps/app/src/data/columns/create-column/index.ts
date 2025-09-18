@@ -1,12 +1,12 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { authClient } from "~/lib/safe-action";
+import { authDataService } from "~/lib/safe-action";
 
 export async function createColumnAction(
-  params: Last<Parameters<typeof authClient.createColumn>>,
+  params: Last<Parameters<typeof authDataService.createColumn>>,
 ) {
-  const newColumn = await authClient.createColumn(params);
+  const newColumn = await authDataService.createColumn(params);
 
   revalidatePath("/app/[wsSlug]/[pId]", "page");
 

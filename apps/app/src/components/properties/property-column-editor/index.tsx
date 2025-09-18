@@ -1,12 +1,4 @@
-import { useState } from "react";
-import {
-  useForm,
-  zodResolver,
-  Form,
-  FormControl,
-  FormField,
-  FormMessage,
-} from "@mapform/ui/components/form";
+import { useState, useCallback } from "react";
 import { Input } from "@mapform/ui/components/input";
 import {
   Popover,
@@ -15,7 +7,7 @@ import {
 } from "@mapform/ui/components/popover";
 import { Trash2Icon } from "lucide-react";
 import type { Column } from "@mapform/db/schema";
-import { useAction } from "next-safe-action/hooks";
+import { useAction, useOptimisticAction } from "next-safe-action/hooks";
 import { usePreventPageUnload } from "@mapform/lib/hooks/use-prevent-page-unload";
 import {
   AlertDialog,
@@ -28,10 +20,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@mapform/ui/components/alert-dialog";
-import {
-  updateColumnSchema,
-  type UpdateColumnSchema,
-} from "@mapform/backend/data/columns/update-column/schema";
 import { updateColumnAction } from "~/data/columns/update-column";
 import { deleteColumnAction } from "~/data/columns/delete-column";
 import { COLUMNS } from "~/constants/columns";
@@ -49,29 +37,33 @@ export function PropertyColumnEditor({
 }: PropertyColumnEditorProps) {
   const Icon = COLUMNS[columnType].icon;
   const [open, setOpen] = useState(false);
+  const [draftName, setDraftName] = useState(columnName);
   const { execute: executeDeleteColumn, isPending: isPendingDeleteColumn } =
     useAction(deleteColumnAction);
-  const { execute: executeEditColumn, isPending: isPendingEditColumn } =
-    useAction(updateColumnAction);
-  const form = useForm<UpdateColumnSchema>({
-    defaultValues: {
-      id: columnId,
-      name: columnName,
-    },
-    resolver: zodResolver(updateColumnSchema),
+  const {
+    execute: executeEditColumn,
+    optimisticState,
+    isPending: isPendingEditColumn,
+  } = useOptimisticAction(updateColumnAction, {
+    currentState: { name: columnName },
+    updateFn: (state, input) => ({ name: input.name }),
   });
 
-  const onSubmit = (values: UpdateColumnSchema) => {
-    setOpen(false);
-    executeEditColumn(values);
-  };
+  const displayName = optimisticState.name;
+
+  const commitIfChanged = useCallback(() => {
+    if (!columnId) return;
+    if (draftName !== columnName) {
+      executeEditColumn({ id: columnId, name: draftName });
+    }
+  }, [columnId, columnName, draftName, executeEditColumn]);
 
   usePreventPageUnload(isPendingDeleteColumn || isPendingEditColumn);
 
   if (!columnId) {
     return (
       <span className="flex items-center gap-1.5">
-        <Icon className="size-4" />{" "}
+        <Icon className="size-4 flex-shrink-0" />{" "}
         <span className="truncate">{columnName}</span>
       </span>
     );
@@ -82,57 +74,48 @@ export function PropertyColumnEditor({
       modal
       onOpenChange={(val) => {
         setOpen(val);
-        if (!val) {
-          const formValues = form.getValues();
-          if (formValues.name !== columnName) {
-            executeEditColumn({ id: columnId, name: formValues.name });
-          }
+        if (val) {
+          setDraftName(displayName);
+        } else {
+          commitIfChanged();
         }
       }}
       open={open}
     >
-      <PopoverTrigger className="w-full">
+      <PopoverTrigger
+        className="hover:bg-muted w-full cursor-pointer rounded px-2 py-1 text-sm"
+        onContextMenu={(e) => {
+          e.preventDefault();
+          setOpen(true);
+        }}
+      >
         <span className="flex items-center gap-1.5">
-          <Icon className="size-4" />{" "}
-          <span className="truncate">{form.watch("name")}</span>
+          <Icon className="size-4 flex-shrink-0" />{" "}
+          <span className="truncate">{displayName}</span>
         </span>
       </PopoverTrigger>
       <PopoverContent align="start" className="w-[240px] p-0" side="bottom">
         <div className="flex flex-col">
-          <Form {...form}>
-            <form
-              className="flex flex-1 flex-col px-3 py-2.5"
-              onSubmit={form.handleSubmit(onSubmit)}
-            >
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <>
-                    <div className="flex-1">
-                      <FormControl>
-                        <Input
-                          disabled={field.disabled}
-                          name={field.name}
-                          onChange={field.onChange}
-                          placeholder={`${columnType.charAt(0).toUpperCase() + columnType.slice(1)} property`}
-                          ref={field.ref}
-                          s="sm"
-                          value={field.value}
-                          variant="filled"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </div>
-                  </>
-                )}
-              />
-              {/* So that hitting enter submits the form */}
-              <button className="hidden" type="submit">
-                Submit
-              </button>
-            </form>
-          </Form>
+          <div className="flex flex-1 flex-col px-3 py-2.5">
+            <Input
+              autoComplete="off"
+              onChange={(e) => setDraftName(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  commitIfChanged();
+                  setOpen(false);
+                }
+                if (e.key === "Escape") {
+                  setDraftName(columnName);
+                  setOpen(false);
+                }
+              }}
+              placeholder={`${columnType.charAt(0).toUpperCase() + columnType.slice(1)} property`}
+              s="sm"
+              value={draftName}
+              variant="filled"
+            />
+          </div>
           <div className="border-t p-1">
             <AlertDialog>
               <AlertDialogTrigger asChild>
@@ -156,7 +139,7 @@ export function PropertyColumnEditor({
                   <AlertDialogAction
                     disabled={isPendingDeleteColumn}
                     onClick={() => {
-                      executeDeleteColumn({ id: columnId });
+                      if (columnId) executeDeleteColumn({ id: columnId });
                     }}
                   >
                     Continue

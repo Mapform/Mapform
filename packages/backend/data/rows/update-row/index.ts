@@ -1,6 +1,5 @@
 "server-only";
 
-import { db } from "@mapform/db";
 import { rows } from "@mapform/db/schema";
 import type { columnTypeEnum } from "@mapform/db/schema";
 import { updateRowSchema } from "./schema";
@@ -14,7 +13,7 @@ export const updateRow = (authClient: UserAuthClient) =>
     .action(
       async ({
         parsedInput: { id, name, description, descriptionAsMarkdown, icon },
-        ctx: { userAccess },
+        ctx: { userAccess, db },
       }) => {
         const existingRow = await db.query.rows.findFirst({
           where: eq(rows.id, id),

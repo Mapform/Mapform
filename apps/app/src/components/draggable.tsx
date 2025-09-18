@@ -1,13 +1,16 @@
 import React from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { cn } from "@mapform/lib/classnames";
 
 export function DragHandle({
   id,
   children,
+  className,
 }: {
   id: string;
   children: React.ReactNode;
+  className?: string;
 }) {
   const { attributes, listeners } = useSortable({
     id,
@@ -15,7 +18,7 @@ export function DragHandle({
 
   return (
     <div
-      className="cursor-move"
+      className={cn("cursor-move", className)}
       {...attributes}
       {...listeners}
       suppressHydrationWarning
@@ -41,7 +44,7 @@ export function DragItem({
   });
 
   const style = {
-    transform: CSS.Transform.toString(transform),
+    transform: CSS.Translate.toString(transform),
     transition,
   };
 
@@ -69,7 +72,7 @@ export function DraggableSidebarItem({
   });
 
   const style = {
-    transform: CSS.Transform.toString(transform),
+    transform: CSS.Translate.toString(transform),
     transition,
   };
 

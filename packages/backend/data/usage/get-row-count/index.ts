@@ -1,6 +1,5 @@
 "server-only";
 
-import { db } from "@mapform/db";
 import { projects, teamspaces, workspaces, rows } from "@mapform/db/schema";
 import { count, eq } from "@mapform/db/utils";
 import { getRowAndPageCountSchema } from "./schema";
@@ -17,7 +16,7 @@ export const getRowCount = (authClient: UserAuthClient | PublicClient) =>
         throw new Error("Unauthorized");
       }
 
-      const rowsResponse = await db
+      const rowsResponse = await ctx.db
         .select({ rowCount: count(rows.id) })
         .from(rows)
         .leftJoin(projects, eq(projects.id, rows.projectId))

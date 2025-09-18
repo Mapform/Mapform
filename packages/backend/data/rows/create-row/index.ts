@@ -1,6 +1,5 @@
 "server-only";
 
-import { db } from "@mapform/db";
 import { projects, rows } from "@mapform/db/schema";
 import { createRowSchema } from "./schema";
 import type { UserAuthClient } from "../../../lib/types";
@@ -16,7 +15,7 @@ export const createRow = (authClient: UserAuthClient) =>
     .action(
       async ({
         parsedInput: { projectId, geometry, ...props },
-        ctx: { userAccess },
+        ctx: { userAccess, db },
       }) => {
         const existingProject = await db.query.projects.findFirst({
           where: eq(projects.id, projectId),

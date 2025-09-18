@@ -1,12 +1,12 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { authClient } from "~/lib/safe-action";
+import { authDataService } from "~/lib/safe-action";
 
 export const completeOnboardingAction = async (
-  params: Last<Parameters<typeof authClient.completeOnboarding>>,
+  params: Last<Parameters<typeof authDataService.completeOnboarding>>,
 ) => {
-  const result = await authClient.completeOnboarding(params);
+  const result = await authDataService.completeOnboarding(params);
 
   if (!result?.serverError && !result?.validationErrors) {
     redirect(`/app/${params.workspaceSlug}`);

@@ -1,6 +1,6 @@
 "server-only";
 
-import { db, sql } from "@mapform/db";
+import { sql } from "@mapform/db";
 import { chats, messages } from "@mapform/db/schema";
 import { createMessagesSchema } from "./schema";
 import type { UserAuthClient } from "../../../lib/types";
@@ -12,7 +12,7 @@ export const createMessages = (authClient: UserAuthClient) =>
     .action(
       async ({
         parsedInput: { messages: insertMessages, chatId },
-        ctx: { user },
+        ctx: { user, db },
       }) => {
         const chat = await db.query.chats.findFirst({
           where: eq(chats.id, chatId),

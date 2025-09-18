@@ -1,5 +1,5 @@
 "use server";
 
-import { authClient } from "~/lib/safe-action";
+import { authDataService } from "~/lib/safe-action";
 
-export const createRowAction = authClient.createRow;
+export const createRowAction = authDataService.createRow;

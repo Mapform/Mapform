@@ -65,10 +65,18 @@ export function PickLocationsMessage({ results }: PickLocationsMessageProps) {
     if (feature.source === "stadia") {
       await setQueryStates({
         stadiaId: feature.id,
+        location: null,
+        zoom: null,
+        pitch: null,
+        bearing: null,
       });
     } else if (feature.source === "mapform") {
       await setQueryStates({
         rowId: feature.id,
+        location: null,
+        zoom: null,
+        pitch: null,
+        bearing: null,
       });
     }
   };

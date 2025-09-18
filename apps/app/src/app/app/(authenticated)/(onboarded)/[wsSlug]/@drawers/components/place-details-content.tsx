@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { MapDrawerToolbar } from "~/components/map-drawer";
 import { Button } from "@mapform/ui/components/button";
 import {
@@ -34,15 +34,14 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@mapform/ui/components/popover";
-import { useMap } from "react-map-gl/mapbox";
 import { openInGoogleMaps } from "~/lib/external-links/google";
 import { openInAppleMaps } from "~/lib/external-links/apple";
 import { useAction } from "next-safe-action/hooks";
-import { createRowAction } from "~/data/rows/create-row";
 import { useParams } from "next/navigation";
 import type { Details } from "@mapform/backend/data/stadia/details";
 import { useWorkspace } from "../../workspace-context";
 import { useParamsContext } from "~/lib/params/client";
+import { createRowWithColumnsAction } from "~/data/rows/create-row-with-columns";
 
 type Feature = NonNullable<Details["data"]>["features"][number];
 
@@ -62,7 +61,7 @@ export function PlaceDetailsContent({
   const { setQueryStates } = useParamsContext();
   const { pId } = useParams<{ pId: string }>();
   const { workspaceDirectory } = useWorkspace();
-  const { execute, isPending } = useAction(createRowAction, {
+  const { execute, isPending } = useAction(createRowWithColumnsAction, {
     onSuccess: async ({ data }) => {
       await onClose();
       await setQueryStates({ rowId: data?.id });
@@ -106,6 +105,40 @@ export function PlaceDetailsContent({
         type: "Point",
         coordinates: [longitude, latitude],
       },
+      cells: [
+        ...(address
+          ? [
+              {
+                columnName: "Address",
+                value: address,
+                type: "string" as const,
+              },
+            ]
+          : []),
+        ...(phone
+          ? [
+              {
+                columnName: "Phone",
+                value: phone,
+                type: "string" as const,
+              },
+            ]
+          : []),
+        ...(website
+          ? [
+              {
+                columnName: "Website",
+                value: website,
+                type: "string" as const,
+              },
+              {
+                columnName: "Website",
+                value: website,
+                type: "string" as const,
+              },
+            ]
+          : []),
+      ],
     });
   };
 
@@ -121,18 +154,7 @@ export function PlaceDetailsContent({
             type="button"
             variant="ghost"
             disabled={isPending}
-            onClick={() => {
-              execute({
-                projectId: pId,
-                name: placeName,
-                stadiaId: properties?.gid,
-                osmId: wikidataId,
-                geometry: {
-                  type: "Point",
-                  coordinates: [longitude, latitude],
-                },
-              });
-            }}
+            onClick={() => handleAddToProject(pId)}
           >
             {isPending ? (
               <Loader2Icon className="size-4 animate-spin" />
@@ -255,6 +277,7 @@ export function PlaceDetailsContent({
               ] as const)
             : []),
         ]}
+        projectId={pId}
       />
     </>
   );

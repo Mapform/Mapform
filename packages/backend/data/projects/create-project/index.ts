@@ -1,6 +1,6 @@
 "server-only";
 
-import { db, sql } from "@mapform/db";
+import { sql } from "@mapform/db";
 import { mapViews, tableViews, projects } from "@mapform/db/schema";
 import { createProjectSchema } from "./schema";
 import type { UserAuthClient } from "../../../lib/types";
@@ -13,7 +13,7 @@ export const createProject = (authClient: UserAuthClient) =>
     .action(
       async ({
         parsedInput: { teamspaceId, center, viewType, ...rest },
-        ctx: { userAccess },
+        ctx: { userAccess, db },
       }) => {
         if (!userAccess.teamspace.checkAccessById(teamspaceId)) {
           throw new Error("Unauthorized");

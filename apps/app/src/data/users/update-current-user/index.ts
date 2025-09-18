@@ -1,5 +1,5 @@
 "use server";
 
-import { authClient } from "~/lib/safe-action";
+import { authDataService } from "~/lib/safe-action";
 
-export const updateCurrentUserAction = authClient.updateCurrentUser;
+export const updateCurrentUserAction = authDataService.updateCurrentUser;

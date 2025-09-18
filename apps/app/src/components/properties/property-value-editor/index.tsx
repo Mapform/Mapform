@@ -1,13 +1,4 @@
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  useForm,
-  zodResolver,
-  type UseFormReturn,
-} from "@mapform/ui/components/form";
-import {
   Popover,
   PopoverAnchor,
   PopoverContent,
@@ -29,73 +20,56 @@ import StringInput from "./string-input";
 import NumberInput from "./number-input";
 import DateInput from "./date-input";
 
+type PropertyValue = string | number | boolean | Date | null | undefined;
+
 interface ValueEditorProps {
-  value: any;
+  value: PropertyValue;
   type: (typeof columnTypeEnum.enumValues)[number];
   rowId?: string;
   columnId?: string;
+  emptyText?: string;
 }
 
-// Type-safe form schemas for each cell type
-type StringCellSchema = Extract<UpsertCellSchema, { type: "string" }>;
-type NumberCellSchema = Extract<UpsertCellSchema, { type: "number" }>;
-type BoolCellSchema = Extract<UpsertCellSchema, { type: "bool" }>;
-type DateCellSchema = Extract<UpsertCellSchema, { type: "date" }>;
+//
 
 export function PropertyValueEditor({
   value,
   type,
   rowId,
   columnId,
+  emptyText = "",
 }: ValueEditorProps) {
   const cellEl = useRef<HTMLTableCellElement>(null);
 
-  const form = useForm<UpsertCellSchema>({
-    defaultValues: {
-      rowId,
-      columnId,
-      value,
-      type,
-    },
-    resolver: zodResolver(upsertCellSchema),
-  });
+  const [draft, setDraft] = useState<PropertyValue>(value);
   const { execute: executeUpsertCell, isPending } = useAction(upsertCellAction);
   const [open, setOpen] = useState(false);
 
   usePreventPageUnload(isPending);
 
-  const onSubmit = useCallback(
-    (values: UpsertCellSchema) => {
-      setOpen(false);
-
-      if (value !== values.value) {
-        executeUpsertCell(values);
-      }
-    },
-    [value, executeUpsertCell],
-  );
-
-  const renderCellContent = useCallback(() => {
-    const v = form.getValues();
-    const result = upsertCellSchema.safeParse(v);
-    if (!result.success) {
-      return <span>&nbsp;</span>;
+  const saveIfChanged = useCallback(() => {
+    const payload = { rowId, columnId, type, value: draft } as UpsertCellSchema;
+    const res = upsertCellSchema.safeParse(payload);
+    if (res.success && value !== draft) {
+      executeUpsertCell(res.data);
     }
-    const { type: parsedType, value } = result.data;
+  }, [rowId, columnId, type, draft, value, executeUpsertCell]);
 
-    if (parsedType === "date") {
-      if (!value) {
-        return <span>&nbsp;</span>;
-      }
-      return format(new Date(value), "PP hh:mm b", { locale: enUS });
+  const renderCellContent = useCallback((): React.ReactNode => {
+    if (draft == null || draft === "") {
+      return <span className="text-muted-foreground">{emptyText}</span>;
     }
 
-    if (!value) {
-      return <span>&nbsp;</span>;
+    if (type === "date") {
+      return format(new Date(draft as Date | string), "PP hh:mm b", {
+        locale: enUS,
+      });
     }
 
-    return value;
-  }, [form]);
+    return typeof draft === "string" || typeof draft === "number"
+      ? draft
+      : String(draft);
+  }, [draft, emptyText, type]);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
@@ -106,65 +80,94 @@ export function PropertyValueEditor({
     [open],
   );
 
-  const handleFormKeyDown = useCallback((e: React.KeyboardEvent) => {
-    if (e.key === "Escape") {
-      setOpen(false);
-      cellEl.current?.focus();
-    }
-  }, []);
+  const handleEditorKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setOpen(false);
+        cellEl.current?.focus();
+      }
+      if (e.key === "Enter" && open) {
+        saveIfChanged();
+        setOpen(false);
+        cellEl.current?.focus();
+      }
+    },
+    [open, saveIfChanged],
+  );
 
   const handlePopoverOpenChange = useCallback(
     (val: boolean) => {
       setOpen(val);
-      const formVal = form.getValues();
-
       if (!val) {
-        onSubmit(formVal);
+        saveIfChanged();
       }
     },
-    [form, onSubmit],
+    [saveIfChanged],
+  );
+
+  const commitValue = useCallback(
+    (next: PropertyValue) => {
+      setDraft(next);
+      const payload = {
+        rowId,
+        columnId,
+        type,
+        value: next,
+      } as UpsertCellSchema;
+      const res = upsertCellSchema.safeParse(payload);
+      if (res.success) {
+        executeUpsertCell(res.data);
+      }
+    },
+    [rowId, columnId, type, executeUpsertCell],
   );
 
   const renderPopoverField = useCallback(() => {
     switch (type) {
       case "string":
-        return <StringInput form={form as UseFormReturn<StringCellSchema>} />;
+        return (
+          <StringInput
+            value={(draft as string | null | undefined) ?? null}
+            onChange={setDraft}
+          />
+        );
       case "number":
-        return <NumberInput form={form as UseFormReturn<NumberCellSchema>} />;
+        return (
+          <NumberInput
+            value={(draft as number | string | null | undefined) ?? null}
+            onChange={(v) => setDraft(v)}
+          />
+        );
       case "date":
-        return <DateInput form={form as UseFormReturn<DateCellSchema>} />;
+        return (
+          <DateInput
+            value={(draft as Date | null | undefined) ?? null}
+            onChange={(v) => setDraft(v)}
+          />
+        );
       default:
         return null;
     }
-  }, [form, type]);
+  }, [draft, type]);
 
   // Render boolean input inline (no popover needed)
   if (type === "bool") {
     return (
-      <Form {...form}>
-        <form>
-          <FormField
-            control={form.control}
-            name="value"
-            render={({ field }) => (
-              <FormItem className="flex-1">
-                <FormControl>
-                  <Switch
-                    checked={Boolean(field.value)}
-                    name={field.name}
-                    onCheckedChange={(e) => {
-                      field.onChange(e);
-                      const formVal = form.getValues();
-                      executeUpsertCell(formVal);
-                    }}
-                    size="sm"
-                  />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-        </form>
-      </Form>
+      <div
+        className="hover:bg-muted flex w-full cursor-pointer items-center rounded px-2 py-1"
+        onClick={(event) => {
+          const target = event.target as HTMLElement;
+          if (target.closest('[role="switch"]')) return;
+          const nextChecked = !draft;
+          commitValue(nextChecked);
+        }}
+      >
+        <Switch
+          checked={!!draft}
+          onClick={(e) => e.stopPropagation()}
+          onCheckedChange={(e) => commitValue(e)}
+        />
+      </div>
     );
   }
 
@@ -174,25 +177,23 @@ export function PropertyValueEditor({
       onKeyDown={handleKeyDown}
       ref={cellEl}
       tabIndex={0}
+      className="w-full"
     >
-      <Form {...form}>
-        <form
-          onKeyDown={handleFormKeyDown}
-          onSubmit={form.handleSubmit(onSubmit)}
-        >
-          <Popover onOpenChange={handlePopoverOpenChange} open={open}>
+      <div onKeyDown={handleEditorKeyDown}>
+        <Popover onOpenChange={handlePopoverOpenChange} open={open}>
+          <div className="hover:bg-muted w-full cursor-pointer rounded px-2 py-1 text-sm">
             {renderCellContent()}
-            <PopoverAnchor />
-            <PopoverContent
-              align="start"
-              className="w-full min-w-72 overflow-hidden p-0"
-              side="top"
-            >
-              {renderPopoverField()}
-            </PopoverContent>
-          </Popover>
-        </form>
-      </Form>
+          </div>
+          <PopoverAnchor />
+          <PopoverContent
+            align="start"
+            className="w-full min-w-72 overflow-hidden p-0"
+            side="top"
+          >
+            {renderPopoverField()}
+          </PopoverContent>
+        </Popover>
+      </div>
     </div>
   );
 }

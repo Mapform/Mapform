@@ -1,5 +1,5 @@
 "use server";
 
-import { publicClient } from "~/lib/safe-action";
+import { publicDataService } from "~/lib/safe-action";
 
-export const requestMagicLinkAction = publicClient.requestMagicLink;
+export const requestMagicLinkAction = publicDataService.requestMagicLink;
