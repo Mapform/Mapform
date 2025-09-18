@@ -14,6 +14,7 @@ export function MapView() {
     longitude: row.center.coordinates[1]!,
     image: row.blobs[0]?.url ? { url: row.blobs[0].url } : undefined,
     source: "mapform" as const,
+    wikidataId: row.osmId ?? undefined,
   }));
 
   const handleFeatureClick = (feature: {

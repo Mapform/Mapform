@@ -69,6 +69,7 @@ export const getProject = (authClient: UserAuthClient) =>
               icon: true,
               name: true,
               geometry: true,
+              osmId: true,
             },
             extras: {
               geometry: sql<Geometry>`ST_AsGeoJSON(${rows.geometry})::jsonb`.as(
