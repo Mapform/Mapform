@@ -18,7 +18,6 @@ import {
 } from "lucide-react";
 import { MapDrawer, MapDrawerToolbar } from "~/components/map-drawer";
 import { useParamsContext } from "~/lib/params/client";
-import { useMap } from "react-map-gl/maplibre";
 import { useDebounce } from "@mapform/lib/hooks/use-debounce";
 import { useEffect, useState } from "react";
 import type { SearchRows } from "@mapform/backend/data/rows/search-rows";
@@ -32,6 +31,7 @@ import {
   ContextMenuTrigger,
 } from "@mapform/ui/components/context-menu";
 import { useAction } from "next-safe-action/hooks";
+import { createChatAction } from "~/data/chats/create-chat";
 import { deleteChatAction } from "~/data/chats/delete-chat";
 import { toast } from "@mapform/ui/components/toaster";
 
@@ -39,12 +39,14 @@ interface SearchProps {
   searchResults?: Search["data"];
   vectorSearchResults?: SearchRows["data"];
   previousChats?: ListChats["data"];
+  projectId?: string;
 }
 
 export function Search({
   searchResults,
   vectorSearchResults,
   previousChats,
+  projectId,
 }: SearchProps) {
   const { params, drawerDepth } = useParamsContext();
 
@@ -54,6 +56,7 @@ export function Search({
         searchResults={searchResults}
         vectorSearchResults={vectorSearchResults}
         previousChats={previousChats}
+        projectId={projectId}
       />
     </MapDrawer>
   );
@@ -63,11 +66,26 @@ export function SearchInner({
   searchResults,
   vectorSearchResults,
   previousChats,
+  projectId,
 }: SearchProps) {
-  const map = useMap();
   const { params, setQueryStates, isPending } = useParamsContext();
   const [searchQuery, setSearchQuery] = useState(params.query);
   const debouncedSearchQuery = useDebounce(searchQuery, 200);
+
+  const { execute: createChat, isPending: isCreatingChat } = useAction(
+    createChatAction,
+    {
+      onSuccess: ({ data }) => {
+        void setQueryStates({ chatId: data?.id });
+      },
+      onError: ({ error }) => {
+        toast({
+          title: "Uh oh! Something went wrong.",
+          description: error.serverError,
+        });
+      },
+    },
+  );
 
   const filteredFeatures = searchResults?.features;
 
@@ -83,7 +101,8 @@ export function SearchInner({
             className="hover:bg-muted focus-within:ring-ring focus-within:bg-muted relative flex flex-1 items-center rounded-md pl-3 pr-1 transition-all focus-within:ring-2"
             cmdk-input-wrapper=""
           >
-            {isPending && searchQuery && searchQuery.length > 0 ? (
+            {isCreatingChat ||
+            (isPending && searchQuery && searchQuery.length > 0) ? (
               <Loader2 className="mr-2 h-4 w-4 shrink-0 animate-spin opacity-50" />
             ) : (
               <SearchIcon className="mr-2 h-4 w-4 shrink-0 opacity-50" />
@@ -111,12 +130,10 @@ export function SearchInner({
           <CommandGroup>
             {searchQuery && (
               <CommandItem
-                onSelect={async () => {
-                  const randomId = crypto.randomUUID();
-
-                  await setQueryStates({
-                    query: searchQuery,
-                    chatId: randomId,
+                onSelect={() => {
+                  createChat({
+                    title: searchQuery,
+                    projectId: projectId ?? null,
                   });
                 }}
               >

@@ -10,7 +10,7 @@ export const createChat = (authClient: UserAuthClient) =>
     .schema(createChatSchema)
     .action(
       async ({
-        parsedInput: { id, title, projectId },
+        parsedInput: { title, projectId },
         ctx: { user, userAccess, db },
       }) => {
         if (projectId) {
@@ -29,22 +29,9 @@ export const createChat = (authClient: UserAuthClient) =>
 
         const [chat] = await db
           .insert(chats)
-          .values({ id, title, userId: user.id, projectId })
+          .values({ title, userId: user.id, projectId })
           .onConflictDoNothing()
           .returning();
-
-        // If a concurrent request created the chat first, return the existing one
-        if (!chat) {
-          const existingChat = await db.query.chats.findFirst({
-            where: and(eq(chats.id, id), eq(chats.userId, user.id)),
-          });
-
-          if (!existingChat) {
-            throw new Error("Failed to create chat");
-          }
-
-          return existingChat;
-        }
 
         return chat;
       },
