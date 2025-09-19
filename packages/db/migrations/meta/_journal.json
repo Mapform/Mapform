@@ -232,6 +232,13 @@
       "when": 1758206208770,
       "tag": "0032_married_killmonger",
       "breakpoints": true
+    },
+    {
+      "idx": 33,
+      "version": "7",
+      "when": 1758319345171,
+      "tag": "0033_tiny_vin_gonzales",
+      "breakpoints": true
     }
   ]
 }

@@ -6,8 +6,9 @@ import {
   generateText,
   stepCountIs,
   hasToolCall,
+  generateId,
 } from "ai";
-import { NextResponse } from "next/server";
+import { NextResponse, after } from "next/server";
 import { getCurrentSession } from "~/data/auth/get-current-session";
 import { SYSTEM_PROMPT } from "~/lib/ai/prompts";
 import { reverseGeocode } from "~/lib/ai/tools/reverse-geocode";
@@ -15,6 +16,7 @@ import { findInternalFeatures } from "~/lib/ai/tools/find-internal-features";
 import { findExternalFeatures } from "~/lib/ai/tools/find-external-features";
 import { returnBestResults } from "~/lib/ai/tools/return-best-results";
 import { webSearch } from "~/lib/ai/tools/web-search";
+import { createResumableStreamContext } from "resumable-stream";
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 60;
@@ -96,6 +98,23 @@ export async function POST(req: Request) {
           parts: m.parts,
         })),
         chatId: id,
+      });
+      // Clear the active stream when finished
+      await authDataService.updateChat({
+        id,
+        activeStreamId: null,
+      });
+    },
+    async consumeSseStream({ stream }) {
+      const streamId = generateId();
+      // Create a resumable stream from the SSE stream
+      const streamContext = createResumableStreamContext({ waitUntil: after });
+      await streamContext.createNewResumableStream(streamId, () => stream);
+
+      // Update the chat with the active stream ID
+      await authDataService.updateChat({
+        id,
+        activeStreamId: streamId,
       });
     },
   });

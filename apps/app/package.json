@@ -64,6 +64,8 @@
     "react-dom": "catalog:",
     "react-dropzone": "^14.3.8",
     "react-map-gl": "^8.0.4",
+    "redis": "^5.8.2",
+    "resumable-stream": "^2.2.4",
     "slugify": "catalog:",
     "stripe": "catalog:",
     "supercluster": "catalog:",

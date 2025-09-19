@@ -67,8 +67,9 @@ function ChatInner({ chatWithMessages }: ChatProps) {
   const { pId } = useParams();
   const { params, setQueryStates } = useParamsContext();
 
-  const { messages, sendMessage, status, stop, error } = useChat<ChatMessage>({
+  const { messages, sendMessage, status, stop } = useChat<ChatMessage>({
     id: params.chatId!,
+    resume: true,
     messages: chatWithMessages?.messages ?? [],
     transport: new DefaultChatTransport({
       api: "/api/chat",
@@ -97,6 +98,7 @@ function ChatInner({ chatWithMessages }: ChatProps) {
       params.chatId &&
       !messages.length
     ) {
+      console.log("initiating new chat");
       setHasInitiatedNewChat(true);
       void sendMessage({
         id: params.chatId,
