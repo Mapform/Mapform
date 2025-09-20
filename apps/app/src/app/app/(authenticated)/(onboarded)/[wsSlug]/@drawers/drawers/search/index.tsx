@@ -31,7 +31,6 @@ import {
   ContextMenuTrigger,
 } from "@mapform/ui/components/context-menu";
 import { useAction } from "next-safe-action/hooks";
-import { createChatAction } from "~/data/chats/create-chat";
 import { deleteChatAction } from "~/data/chats/delete-chat";
 import { toast } from "@mapform/ui/components/toaster";
 
@@ -39,14 +38,12 @@ interface SearchProps {
   searchResults?: Search["data"];
   vectorSearchResults?: SearchRows["data"];
   previousChats?: ListChats["data"];
-  projectId?: string;
 }
 
 export function Search({
   searchResults,
   vectorSearchResults,
   previousChats,
-  projectId,
 }: SearchProps) {
   const { params, drawerDepth } = useParamsContext();
 
@@ -56,7 +53,6 @@ export function Search({
         searchResults={searchResults}
         vectorSearchResults={vectorSearchResults}
         previousChats={previousChats}
-        projectId={projectId}
       />
     </MapDrawer>
   );
@@ -66,25 +62,9 @@ export function SearchInner({
   searchResults,
   vectorSearchResults,
   previousChats,
-  projectId,
 }: SearchProps) {
   const { params, setQueryStates, isPending } = useParamsContext();
   const debouncedSearchQuery = useDebounce(params.query, 200);
-
-  const { execute: createChat, isPending: isCreatingChat } = useAction(
-    createChatAction,
-    {
-      onSuccess: ({ data }) => {
-        void setQueryStates({ chatId: data?.id });
-      },
-      onError: ({ error }) => {
-        toast({
-          title: "Uh oh! Something went wrong.",
-          description: error.serverError,
-        });
-      },
-    },
-  );
 
   const filteredFeatures = searchResults?.features;
 
@@ -100,8 +80,7 @@ export function SearchInner({
             className="hover:bg-muted focus-within:ring-ring focus-within:bg-muted relative flex flex-1 items-center rounded-md pl-3 pr-1 transition-all focus-within:ring-2"
             cmdk-input-wrapper=""
           >
-            {isCreatingChat ||
-            (isPending && params.query && params.query.length > 0) ? (
+            {isPending && params.query && params.query.length > 0 ? (
               <Loader2 className="mr-2 h-4 w-4 shrink-0 animate-spin opacity-50" />
             ) : (
               <SearchIcon className="mr-2 h-4 w-4 shrink-0 opacity-50" />
@@ -131,14 +110,8 @@ export function SearchInner({
           <CommandGroup>
             {params.query && (
               <CommandItem
-                disabled={isCreatingChat || isPending}
                 onSelect={() => {
-                  if (isCreatingChat || isPending) return;
-                  console.log("creating chat", params.query);
-                  createChat({
-                    title: params.query ?? "New Chat",
-                    projectId: projectId ?? null,
-                  });
+                  void setQueryStates({ chatId: "new" });
                 }}
               >
                 <MessageCircle className="text-muted-foreground mr-2 size-4 flex-shrink-0" />

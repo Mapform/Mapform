@@ -42,6 +42,7 @@ export function Chat({ chatWithMessages }: ChatProps) {
     createChatAction,
     {
       onSuccess: ({ data }) => {
+        console.log("chat created", data);
         void setQueryStates({ chatId: data?.id });
       },
       onError: ({ error }) => {
@@ -53,10 +54,28 @@ export function Chat({ chatWithMessages }: ChatProps) {
     },
   );
 
+  useEffect(() => {
+    if (params.chatId === "new") {
+      console.log("creating chat", params.query);
+      createChat({
+        title: params.query ?? "New Chat",
+        projectId: pId ?? null,
+      });
+    }
+  }, [
+    chatWithMessages,
+    setQueryStates,
+    createChat,
+    pId,
+    params.chatId,
+    params.query,
+  ]);
+
   return (
     <MapDrawer open={!!params.chatId} depth={drawerDepth.get("chatId") ?? 0}>
-      {!chatWithMessages ||
-      (isPending && chatWithMessages.chatId !== params.chatId) ? (
+      {params.chatId === "new" ||
+      isCreatingChat ||
+      (isPending && chatWithMessages?.chatId !== params.chatId) ? (
         <>
           <MapDrawerToolbar>
             <Button
@@ -85,11 +104,6 @@ export function Chat({ chatWithMessages }: ChatProps) {
               <XIcon className="size-4" />
             </Button>
           </MapDrawerToolbar>
-          {!chatWithMessages ? (
-            <div>No chat found</div>
-          ) : (
-            <BasicSkeleton className="p-6" />
-          )}
           <BasicSkeleton className="p-6" />
         </>
       ) : (
