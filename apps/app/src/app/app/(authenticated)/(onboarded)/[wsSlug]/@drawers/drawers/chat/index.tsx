@@ -42,8 +42,7 @@ export function Chat({ chatWithMessages }: ChatProps) {
     createChatAction,
     {
       onSuccess: ({ data }) => {
-        console.log("chat created", data);
-        void setQueryStates({ chatId: data?.id });
+        void setQueryStates({ chatId: data?.id, query: null });
       },
       onError: ({ error }) => {
         toast({
@@ -54,6 +53,9 @@ export function Chat({ chatWithMessages }: ChatProps) {
     },
   );
 
+  /**
+   * Used to start a new chat
+   */
   useEffect(() => {
     if (isPending) return;
     if (params.chatId === "new") {
@@ -119,14 +121,6 @@ function ChatInner({ chatWithMessages }: ChatProps) {
   const [input, setInput] = useState("");
   const [hasInitiatedNewChat, setHasInitiatedNewChat] = useState(false);
   const { params, setQueryStates } = useParamsContext();
-  const { execute: createChat, isPending: isCreatingChat } = useAction(
-    createChatAction,
-    {
-      onSuccess: ({ data }) => {
-        void setQueryStates({ chatId: data?.id });
-      },
-    },
-  );
 
   const { messages, sendMessage, status, stop } = useChat<ChatMessage>({
     id: params.chatId!,
@@ -165,11 +159,9 @@ function ChatInner({ chatWithMessages }: ChatProps) {
           id: params.chatId,
           parts: [{ type: "text", text: params.query }],
         });
-        console.log("setting query to null");
         await setQueryStates({
           query: null,
         });
-        console.log("query set to null");
       }
     })();
   }, [
@@ -190,10 +182,7 @@ function ChatInner({ chatWithMessages }: ChatProps) {
           type="button"
           variant="ghost"
           onClick={() => {
-            createChat({
-              title: "New Chat",
-              projectId: pId ?? null,
-            });
+            void setQueryStates({ chatId: "new", query: null });
           }}
         >
           <SquarePenIcon className="size-4" />
