@@ -71,6 +71,8 @@ export function Chat({ chatWithMessages }: ChatProps) {
     params.query,
   ]);
 
+  console.log(1111, isPending, isCreatingChat);
+
   return (
     <MapDrawer open={!!params.chatId} depth={drawerDepth.get("chatId") ?? 0}>
       {params.chatId === "new" ||

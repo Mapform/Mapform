@@ -9,6 +9,8 @@ export const createChatAction = async (
   console.log("creating chat", params);
   const result = await authDataService.createChat(params);
 
+  console.log("chat created?", result);
+
   revalidatePath("/app/[wsSlug]", "page");
 
   return result;
