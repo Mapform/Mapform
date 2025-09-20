@@ -55,8 +55,8 @@ export function Chat({ chatWithMessages }: ChatProps) {
   );
 
   useEffect(() => {
+    if (isPending) return;
     if (params.chatId === "new") {
-      console.log("creating chat", params.query);
       createChat({
         title: params.query ?? "New Chat",
         projectId: pId ?? null,
@@ -69,9 +69,8 @@ export function Chat({ chatWithMessages }: ChatProps) {
     pId,
     params.chatId,
     params.query,
+    isPending,
   ]);
-
-  console.log(1111, isPending, isCreatingChat);
 
   return (
     <MapDrawer open={!!params.chatId} depth={drawerDepth.get("chatId") ?? 0}>
