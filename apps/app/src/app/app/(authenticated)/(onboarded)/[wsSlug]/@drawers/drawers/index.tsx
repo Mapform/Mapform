@@ -73,7 +73,6 @@ async function SearchDrawer({ searchParams, params }: DealDrawerProps) {
       searchResults={searchResults?.data}
       vectorSearchResults={vectorSearchResults?.data}
       previousChats={previousChats?.data}
-      projectId={pId}
     />
   );
 }

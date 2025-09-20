@@ -290,7 +290,7 @@ export function WorkspaceProvider({
             hsl(222deg 81% 13%) 83%,
             hsl(222deg 80% 13%) 92%,
             hsl(223deg 80% 14%) 100%
-          )`,
+          );`,
         }}
         sky={{
           "sky-color": "#199EF3",
