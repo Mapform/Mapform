@@ -27,19 +27,52 @@ import { Message } from "./message";
 import { DefaultChatTransport } from "ai";
 import { useParams } from "next/navigation";
 import { BasicSkeleton } from "~/components/skeletons/basic";
+import { toast } from "@mapform/ui/components/toaster";
+import { useAction } from "next-safe-action/hooks";
+import { createChatAction } from "~/data/chats/create-chat";
 
 interface ChatProps {
   chatWithMessages?: { messages?: ChatMessage[]; chatId: string };
 }
 
 export function Chat({ chatWithMessages }: ChatProps) {
+  const { pId } = useParams<{ pId?: string }>();
   const { params, drawerDepth, isPending, setQueryStates } = useParamsContext();
+  const { execute: createChat, isPending: isCreatingChat } = useAction(
+    createChatAction,
+    {
+      onSuccess: ({ data }) => {
+        void setQueryStates({ chatId: data?.id });
+      },
+      onError: ({ error }) => {
+        toast({
+          title: "Uh oh! Something went wrong.",
+          description: error.serverError,
+        });
+      },
+    },
+  );
 
   return (
     <MapDrawer open={!!params.chatId} depth={drawerDepth.get("chatId") ?? 0}>
-      {isPending && chatWithMessages?.chatId !== params.chatId ? (
+      {!chatWithMessages ||
+      (isPending && chatWithMessages.chatId !== params.chatId) ? (
         <>
           <MapDrawerToolbar>
+            <Button
+              className="ml-auto"
+              size="icon-sm"
+              type="button"
+              variant="ghost"
+              onClick={() => {
+                createChat({
+                  title: "New Chat",
+                  projectId: pId ?? null,
+                });
+              }}
+            >
+              <SquarePenIcon className="size-4" />
+            </Button>
             <Button
               className="ml-auto"
               size="icon-sm"
@@ -52,6 +85,11 @@ export function Chat({ chatWithMessages }: ChatProps) {
               <XIcon className="size-4" />
             </Button>
           </MapDrawerToolbar>
+          {!chatWithMessages ? (
+            <div>No chat found</div>
+          ) : (
+            <BasicSkeleton className="p-6" />
+          )}
           <BasicSkeleton className="p-6" />
         </>
       ) : (
@@ -62,10 +100,18 @@ export function Chat({ chatWithMessages }: ChatProps) {
 }
 
 function ChatInner({ chatWithMessages }: ChatProps) {
+  const { pId } = useParams<{ pId?: string }>();
   const [input, setInput] = useState("");
   const [hasInitiatedNewChat, setHasInitiatedNewChat] = useState(false);
-  const { pId } = useParams();
   const { params, setQueryStates } = useParamsContext();
+  const { execute: createChat, isPending: isCreatingChat } = useAction(
+    createChatAction,
+    {
+      onSuccess: ({ data }) => {
+        void setQueryStates({ chatId: data?.id });
+      },
+    },
+  );
 
   const { messages, sendMessage, status, stop } = useChat<ChatMessage>({
     id: params.chatId!,
@@ -92,20 +138,33 @@ function ChatInner({ chatWithMessages }: ChatProps) {
   };
 
   useEffect(() => {
-    if (
-      params.query &&
-      !hasInitiatedNewChat &&
-      params.chatId &&
-      !messages.length
-    ) {
-      console.log("initiating new chat");
-      setHasInitiatedNewChat(true);
-      void sendMessage({
-        id: params.chatId,
-        parts: [{ type: "text", text: params.query }],
-      });
-    }
-  }, [params.query, sendMessage, hasInitiatedNewChat, params.chatId, messages]);
+    void (async () => {
+      if (
+        params.query &&
+        !hasInitiatedNewChat &&
+        !messages.length &&
+        params.chatId
+      ) {
+        setHasInitiatedNewChat(true);
+        await sendMessage({
+          id: params.chatId,
+          parts: [{ type: "text", text: params.query }],
+        });
+        console.log("setting query to null");
+        await setQueryStates({
+          query: null,
+        });
+        console.log("query set to null");
+      }
+    })();
+  }, [
+    params.query,
+    sendMessage,
+    hasInitiatedNewChat,
+    params.chatId,
+    messages,
+    setQueryStates,
+  ]);
 
   return (
     <>
@@ -115,9 +174,11 @@ function ChatInner({ chatWithMessages }: ChatProps) {
           size="icon-sm"
           type="button"
           variant="ghost"
-          onClick={async () => {
-            const randomId = crypto.randomUUID();
-            await setQueryStates({ chatId: randomId, query: null });
+          onClick={() => {
+            createChat({
+              title: "New Chat",
+              projectId: pId ?? null,
+            });
           }}
         >
           <SquarePenIcon className="size-4" />
