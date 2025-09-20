@@ -137,21 +137,34 @@ function ChatInner({ chatWithMessages }: ChatProps) {
     setInput("");
   };
 
-  // useEffect(() => {
-  //   if (
-  //     params.query &&
-  //     !hasInitiatedNewChat &&
-  //     params.chatId &&
-  //     !messages.length
-  //   ) {
-  //     console.log("initiating new chat");
-  //     setHasInitiatedNewChat(true);
-  //     void sendMessage({
-  //       id: params.chatId,
-  //       parts: [{ type: "text", text: params.query }],
-  //     });
-  //   }
-  // }, [params.query, sendMessage, hasInitiatedNewChat, params.chatId, messages]);
+  useEffect(() => {
+    void (async () => {
+      if (
+        params.query &&
+        !hasInitiatedNewChat &&
+        !messages.length &&
+        params.chatId
+      ) {
+        setHasInitiatedNewChat(true);
+        await sendMessage({
+          id: params.chatId,
+          parts: [{ type: "text", text: params.query }],
+        });
+        console.log("setting query to null");
+        await setQueryStates({
+          query: null,
+        });
+        console.log("query set to null");
+      }
+    })();
+  }, [
+    params.query,
+    sendMessage,
+    hasInitiatedNewChat,
+    params.chatId,
+    messages,
+    setQueryStates,
+  ]);
 
   return (
     <>
@@ -161,7 +174,7 @@ function ChatInner({ chatWithMessages }: ChatProps) {
           size="icon-sm"
           type="button"
           variant="ghost"
-          onClick={async () => {
+          onClick={() => {
             createChat({
               title: "New Chat",
               projectId: pId ?? null,
