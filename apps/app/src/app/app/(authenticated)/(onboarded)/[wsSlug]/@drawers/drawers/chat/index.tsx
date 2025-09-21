@@ -37,21 +37,18 @@ interface ChatProps {
 
 export function Chat({ chatWithMessages }: ChatProps) {
   const { pId } = useParams<{ pId?: string }>();
-  const { params, drawerDepth, isPending, setQueryStates } = useParamsContext();
-  const { execute: createChat, isPending: isCreatingChat } = useAction(
-    createChatAction,
-    {
-      onSuccess: ({ data }) => {
-        void setQueryStates({ chatId: data?.id });
-      },
-      onError: ({ error }) => {
-        toast({
-          title: "Uh oh! Something went wrong.",
-          description: error.serverError,
-        });
-      },
+  const { params, isPending, setQueryStates } = useParamsContext();
+  const { execute: createChat } = useAction(createChatAction, {
+    onSuccess: ({ data }) => {
+      void setQueryStates({ chatId: data?.id });
     },
-  );
+    onError: ({ error }) => {
+      toast({
+        title: "Uh oh! Something went wrong.",
+        description: error.serverError,
+      });
+    },
+  });
 
   /**
    * Used to start a new chat
@@ -74,37 +71,36 @@ export function Chat({ chatWithMessages }: ChatProps) {
     isPending,
   ]);
 
-  return (
-    <MapDrawer open={!!params.chatId} depth={drawerDepth.get("chatId") ?? 0}>
-      {params.chatId === "new" ||
-      isCreatingChat ||
-      (isPending && chatWithMessages?.chatId !== params.chatId) ? (
-        <>
-          <MapDrawerToolbar>
-            <Button
-              className="ml-auto"
-              size="icon-sm"
-              type="button"
-              variant="ghost"
-              onClick={() => {
-                void setQueryStates({ chatId: null });
-              }}
-            >
-              <XIcon className="size-4" />
-            </Button>
-          </MapDrawerToolbar>
-          <BasicSkeleton className="p-6" />
-        </>
-      ) : (
-        <ChatInner key={params.chatId} chatWithMessages={chatWithMessages} />
-      )}
-    </MapDrawer>
-  );
+  if (
+    !chatWithMessages ||
+    (isPending && chatWithMessages.chatId !== params.chatId)
+  )
+    return (
+      <>
+        <MapDrawerToolbar>
+          <Button
+            className="ml-auto"
+            size="icon-sm"
+            type="button"
+            variant="ghost"
+            onClick={() => {
+              void setQueryStates({ chatId: null });
+            }}
+          >
+            <XIcon className="size-4" />
+          </Button>
+        </MapDrawerToolbar>
+        <BasicSkeleton className="p-6" />
+      </>
+    );
+
+  return <ChatInner key={params.chatId} chatWithMessages={chatWithMessages} />;
 }
 
 function ChatInner({ chatWithMessages }: ChatProps) {
   const [input, setInput] = useState("");
   const [hasInitiatedNewChat, setHasInitiatedNewChat] = useState(false);
+  const { isPending } = useParamsContext();
   const { params, setQueryStates } = useParamsContext();
 
   // Initialize chat with resumable transport.
@@ -138,6 +134,7 @@ function ChatInner({ chatWithMessages }: ChatProps) {
   useEffect(() => {
     void (async () => {
       if (
+        !isPending &&
         params.query &&
         !hasInitiatedNewChat &&
         !messages.length &&
@@ -151,6 +148,7 @@ function ChatInner({ chatWithMessages }: ChatProps) {
       }
     })();
   }, [
+    isPending,
     params.query,
     sendMessage,
     hasInitiatedNewChat,

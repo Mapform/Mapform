@@ -5,6 +5,7 @@ import { Search } from "./search";
 import { cache } from "react";
 import { authDataService, publicDataService } from "~/lib/safe-action";
 import { Chat } from "./chat";
+import { ChatDrawers } from "./chat/drawers";
 import { SearchDetails } from "./search-details";
 import { Feature } from "./feature";
 import type { ChatMessage } from "~/lib/types";
@@ -19,7 +20,9 @@ export function Drawers(props: DealDrawerProps) {
   return (
     <>
       <SearchDrawer {...props} />
-      <ChatDrawer {...props} />
+      <ChatDrawers>
+        <ChatDrawer {...props} />
+      </ChatDrawers>
       <SearchDetailsDrawer {...props} />
       <FeatureDrawer {...props} />
       <CoordinatesDrawer {...props} />
@@ -89,6 +92,7 @@ async function ChatDrawer({ searchParams }: DealDrawerProps) {
 
   return (
     <Chat
+      key={chatId}
       chatWithMessages={
         chatWithMessages?.data as
           | {
