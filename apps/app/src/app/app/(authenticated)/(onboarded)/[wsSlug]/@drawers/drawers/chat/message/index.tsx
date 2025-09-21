@@ -239,6 +239,7 @@ function ToolMessage({
   errorText: string;
 }) {
   const Icon = icon;
+
   return (
     <div className="text-muted-foreground mb-4 flex w-full items-center gap-2 text-sm">
       <div className="flex items-center gap-2">

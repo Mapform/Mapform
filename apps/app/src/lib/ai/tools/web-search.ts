@@ -11,7 +11,7 @@ export const webSearch = tool({
   description:
     "Search the web to find information for trip planning, restaurant recommendations, etc.",
   inputSchema: z.object({
-    query: z.string().min(1).max(100).describe("The search query"),
+    query: z.string().min(1).describe("The search query"),
   }),
   execute: async ({ query }) => webSearchFunc(query),
 });
