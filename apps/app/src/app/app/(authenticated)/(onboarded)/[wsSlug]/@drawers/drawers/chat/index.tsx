@@ -107,6 +107,9 @@ function ChatInner({ chatWithMessages }: ChatProps) {
   const [hasInitiatedNewChat, setHasInitiatedNewChat] = useState(false);
   const { params, setQueryStates } = useParamsContext();
 
+  // Initialize chat with resumable transport.
+  // Note: the hook may briefly set status to "submitted" while probing
+  // for a resumable stream; UI below avoids flashing during that handshake.
   const { messages, sendMessage, status, stop } = useChat<ChatMessage>({
     id: params.chatId!,
     resume: true,
@@ -131,6 +134,7 @@ function ChatInner({ chatWithMessages }: ChatProps) {
     setInput("");
   };
 
+  // Auto-seed a new chat once from the query, if present.
   useEffect(() => {
     void (async () => {
       if (
@@ -155,7 +159,9 @@ function ChatInner({ chatWithMessages }: ChatProps) {
     setQueryStates,
   ]);
 
-  // Derive UI behavior without extra state.
+  // - showSubmittingIndicator: only when the last message was by the user
+  //   to suppress the initial "submitted" during resume handshake.
+  // - showStop: when streaming, or submitted while awaiting a response.
   const lastMessage = messages[messages.length - 1];
   const isUserAwaitingResponse = lastMessage?.role === "user";
   const showSubmittingIndicator =
