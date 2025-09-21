@@ -155,6 +155,15 @@ function ChatInner({ chatWithMessages }: ChatProps) {
     setQueryStates,
   ]);
 
+  // Derive UI behavior without extra state.
+  const lastMessage = messages[messages.length - 1];
+  const isUserAwaitingResponse = lastMessage?.role === "user";
+  const showSubmittingIndicator =
+    status === "submitted" && isUserAwaitingResponse;
+  const showStop =
+    status === "streaming" ||
+    (status === "submitted" && isUserAwaitingResponse);
+
   return (
     <>
       <MapDrawerToolbar>
@@ -185,7 +194,7 @@ function ChatInner({ chatWithMessages }: ChatProps) {
           {messages.map((message) => (
             <Message key={message.id} message={message} status={status} />
           ))}
-          {status === "submitted" && (
+          {showSubmittingIndicator && (
             <div className="flex items-center">
               <Loader2 className="size-4 animate-spin" />
             </div>
@@ -216,16 +225,14 @@ function ChatInner({ chatWithMessages }: ChatProps) {
         />
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
-            key={
-              status === "streaming" || status === "submitted" ? "stop" : "send"
-            }
+            key={showStop ? "stop" : "send"}
             className="ml-auto"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.1, ease: "easeOut" }}
           >
-            {status === "streaming" || status === "submitted" ? (
+            {showStop ? (
               <Button type="button" size="icon" onClick={stop}>
                 <SquareIcon className="size-4" fill="currentColor" />
               </Button>
