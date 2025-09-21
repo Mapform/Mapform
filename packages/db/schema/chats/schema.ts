@@ -11,6 +11,7 @@ export const chats = pgTable("chat", {
   projectId: uuid("project_id").references(() => projects.id, {
     onDelete: "cascade",
   }),
+  activeStreamId: uuid("active_stream_id"),
 
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()

@@ -53,6 +53,7 @@ import { reverseGeocode } from "@mapform/backend/data/stadia/reverse";
 import { forwardGeocode } from "@mapform/backend/data/stadia/forward";
 import { updateColumnOrder } from "@mapform/backend/data/columns/update-column-order";
 import { db } from "@mapform/db";
+import { updateChat } from "@mapform/backend/data/chats/update-chat";
 
 const ignoredWorkspaceSlugs = ["onboarding"];
 const ignoredTeamspaceSlugs = ["settings"];
@@ -124,6 +125,7 @@ const createUserAuthDataService = () => {
     deleteChat: deleteChat(client),
     getChat: getChat(client),
     listChats: listChats(client),
+    updateChat: updateChat(client),
 
     // Columns
     createColumn: createColumn(client),

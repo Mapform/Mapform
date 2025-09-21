@@ -31,7 +31,9 @@
 
     "AI_GATEWAY_API_KEY",
 
-    "LINKUP_API_KEY"
+    "LINKUP_API_KEY",
+
+    "REDIS_URL"
   ],
   "globalDependencies": ["**/.env.*local"],
   "tasks": {

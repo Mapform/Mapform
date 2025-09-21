@@ -18,9 +18,8 @@ import {
 } from "lucide-react";
 import { MapDrawer, MapDrawerToolbar } from "~/components/map-drawer";
 import { useParamsContext } from "~/lib/params/client";
-import { useMap } from "react-map-gl/maplibre";
 import { useDebounce } from "@mapform/lib/hooks/use-debounce";
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import type { SearchRows } from "@mapform/backend/data/rows/search-rows";
 import type { Search } from "@mapform/backend/data/stadia/search";
 import { Button } from "@mapform/ui/components/button";
@@ -64,16 +63,19 @@ export function SearchInner({
   vectorSearchResults,
   previousChats,
 }: SearchProps) {
-  const map = useMap();
   const { params, setQueryStates, isPending } = useParamsContext();
-  const [searchQuery, setSearchQuery] = useState(params.query);
-  const debouncedSearchQuery = useDebounce(searchQuery, 200);
+  const [query, setQuery] = useState(params.query);
+  const debouncedSearchQuery = useDebounce(query, 200);
 
   const filteredFeatures = searchResults?.features;
 
   useEffect(() => {
     void setQueryStates({ query: debouncedSearchQuery });
   }, [debouncedSearchQuery, setQueryStates]);
+
+  useEffect(() => {
+    setQuery(params.query);
+  }, [params.query]);
 
   return (
     <>
@@ -83,7 +85,7 @@ export function SearchInner({
             className="hover:bg-muted focus-within:ring-ring focus-within:bg-muted relative flex flex-1 items-center rounded-md pl-3 pr-1 transition-all focus-within:ring-2"
             cmdk-input-wrapper=""
           >
-            {isPending && searchQuery && searchQuery.length > 0 ? (
+            {isPending && query && query.length > 0 ? (
               <Loader2 className="mr-2 h-4 w-4 shrink-0 animate-spin opacity-50" />
             ) : (
               <SearchIcon className="mr-2 h-4 w-4 shrink-0 opacity-50" />
@@ -91,8 +93,8 @@ export function SearchInner({
             <CommandPrimitive.Input
               className="placeholder:text-muted-foreground flex h-9 w-full rounded-md border-none bg-transparent px-1 py-3 pr-8 text-base outline-none focus:ring-0 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
               placeholder="Search or ask..."
-              onValueChange={setSearchQuery}
-              value={searchQuery ?? ""}
+              onValueChange={setQuery}
+              value={query ?? ""}
               autoFocus
             />
             <Button
@@ -109,19 +111,14 @@ export function SearchInner({
         </MapDrawerToolbar>
         <CommandList className="max-h-full p-2">
           <CommandGroup>
-            {searchQuery && (
+            {query && (
               <CommandItem
-                onSelect={async () => {
-                  const randomId = crypto.randomUUID();
-
-                  await setQueryStates({
-                    query: searchQuery,
-                    chatId: randomId,
-                  });
+                onSelect={() => {
+                  void setQueryStates({ chatId: "new", query });
                 }}
               >
                 <MessageCircle className="text-muted-foreground mr-2 size-4 flex-shrink-0" />
-                <span className="truncate">{searchQuery}</span>
+                <span className="truncate">{query}</span>
                 <span className="text-muted-foreground ml-1 flex-shrink-0">
                   — New Chat
                 </span>

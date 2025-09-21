@@ -12,6 +12,7 @@ export const env = createEnv({
     STRIPE_WEBHOOK_SECRET: z.string().min(1),
     AI_GATEWAY_API_KEY: z.string().min(1),
     LINKUP_API_KEY: z.string().min(1),
+    REDIS_URL: z.string().url().min(1),
   },
   client: {
     NEXT_PUBLIC_STRIPE_PRO_PRODUCT_ID: z.string().min(1),
@@ -41,5 +42,6 @@ export const env = createEnv({
     AI_GATEWAY_API_KEY: process.env.AI_GATEWAY_API_KEY,
     LINKUP_API_KEY: process.env.LINKUP_API_KEY,
     NEXT_PUBLIC_MAPTILER_KEY: process.env.NEXT_PUBLIC_MAPTILER_KEY,
+    REDIS_URL: process.env.REDIS_URL,
   },
 });

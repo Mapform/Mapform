@@ -27,17 +27,58 @@ import { Message } from "./message";
 import { DefaultChatTransport } from "ai";
 import { useParams } from "next/navigation";
 import { BasicSkeleton } from "~/components/skeletons/basic";
+import { toast } from "@mapform/ui/components/toaster";
+import { useAction } from "next-safe-action/hooks";
+import { createChatAction } from "~/data/chats/create-chat";
 
 interface ChatProps {
   chatWithMessages?: { messages?: ChatMessage[]; chatId: string };
 }
 
 export function Chat({ chatWithMessages }: ChatProps) {
+  const { pId } = useParams<{ pId?: string }>();
   const { params, drawerDepth, isPending, setQueryStates } = useParamsContext();
+  const { execute: createChat, isPending: isCreatingChat } = useAction(
+    createChatAction,
+    {
+      onSuccess: ({ data }) => {
+        void setQueryStates({ chatId: data?.id });
+      },
+      onError: ({ error }) => {
+        toast({
+          title: "Uh oh! Something went wrong.",
+          description: error.serverError,
+        });
+      },
+    },
+  );
+
+  /**
+   * Used to start a new chat
+   */
+  useEffect(() => {
+    if (isPending) return;
+    if (params.chatId === "new") {
+      createChat({
+        title: params.query ?? "New Chat",
+        projectId: pId ?? null,
+      });
+    }
+  }, [
+    chatWithMessages,
+    setQueryStates,
+    createChat,
+    pId,
+    params.chatId,
+    params.query,
+    isPending,
+  ]);
 
   return (
     <MapDrawer open={!!params.chatId} depth={drawerDepth.get("chatId") ?? 0}>
-      {isPending && chatWithMessages?.chatId !== params.chatId ? (
+      {params.chatId === "new" ||
+      isCreatingChat ||
+      (isPending && chatWithMessages?.chatId !== params.chatId) ? (
         <>
           <MapDrawerToolbar>
             <Button
@@ -64,17 +105,20 @@ export function Chat({ chatWithMessages }: ChatProps) {
 function ChatInner({ chatWithMessages }: ChatProps) {
   const [input, setInput] = useState("");
   const [hasInitiatedNewChat, setHasInitiatedNewChat] = useState(false);
-  const { pId } = useParams();
   const { params, setQueryStates } = useParamsContext();
 
-  const { messages, sendMessage, status, stop, error } = useChat<ChatMessage>({
+  // Initialize chat with resumable transport.
+  // Note: the hook may briefly set status to "submitted" while probing
+  // for a resumable stream; UI below avoids flashing during that handshake.
+  const { messages, sendMessage, status, stop } = useChat<ChatMessage>({
     id: params.chatId!,
+    resume: true,
     messages: chatWithMessages?.messages ?? [],
     transport: new DefaultChatTransport({
       api: "/api/chat",
       prepareSendMessagesRequest({ messages, id }) {
         return {
-          body: { messages, id, projectId: pId },
+          body: { messages, id },
         };
       },
     }),
@@ -90,20 +134,41 @@ function ChatInner({ chatWithMessages }: ChatProps) {
     setInput("");
   };
 
+  // Auto-seed a new chat once from the query, if present.
   useEffect(() => {
-    if (
-      params.query &&
-      !hasInitiatedNewChat &&
-      params.chatId &&
-      !messages.length
-    ) {
-      setHasInitiatedNewChat(true);
-      void sendMessage({
-        id: params.chatId,
-        parts: [{ type: "text", text: params.query }],
-      });
-    }
-  }, [params.query, sendMessage, hasInitiatedNewChat, params.chatId, messages]);
+    void (async () => {
+      if (
+        params.query &&
+        !hasInitiatedNewChat &&
+        !messages.length &&
+        params.chatId
+      ) {
+        setHasInitiatedNewChat(true);
+        await sendMessage({
+          id: params.chatId,
+          parts: [{ type: "text", text: params.query }],
+        });
+      }
+    })();
+  }, [
+    params.query,
+    sendMessage,
+    hasInitiatedNewChat,
+    params.chatId,
+    messages,
+    setQueryStates,
+  ]);
+
+  // - showSubmittingIndicator: only when the last message was by the user
+  //   to suppress the initial "submitted" during resume handshake.
+  // - showStop: when streaming, or submitted while awaiting a response.
+  const lastMessage = messages[messages.length - 1];
+  const isUserAwaitingResponse = lastMessage?.role === "user";
+  const showSubmittingIndicator =
+    status === "submitted" && isUserAwaitingResponse;
+  const showStop =
+    status === "streaming" ||
+    (status === "submitted" && isUserAwaitingResponse);
 
   return (
     <>
@@ -113,9 +178,8 @@ function ChatInner({ chatWithMessages }: ChatProps) {
           size="icon-sm"
           type="button"
           variant="ghost"
-          onClick={async () => {
-            const randomId = crypto.randomUUID();
-            await setQueryStates({ chatId: randomId, query: null });
+          onClick={() => {
+            void setQueryStates({ chatId: "new", query: null });
           }}
         >
           <SquarePenIcon className="size-4" />
@@ -136,7 +200,7 @@ function ChatInner({ chatWithMessages }: ChatProps) {
           {messages.map((message) => (
             <Message key={message.id} message={message} status={status} />
           ))}
-          {status === "submitted" && (
+          {showSubmittingIndicator && (
             <div className="flex items-center">
               <Loader2 className="size-4 animate-spin" />
             </div>
@@ -167,16 +231,14 @@ function ChatInner({ chatWithMessages }: ChatProps) {
         />
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
-            key={
-              status === "streaming" || status === "submitted" ? "stop" : "send"
-            }
+            key={showStop ? "stop" : "send"}
             className="ml-auto"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.1, ease: "easeOut" }}
           >
-            {status === "streaming" || status === "submitted" ? (
+            {showStop ? (
               <Button type="button" size="icon" onClick={stop}>
                 <SquareIcon className="size-4" fill="currentColor" />
               </Button>

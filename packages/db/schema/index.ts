@@ -13,7 +13,6 @@ export * from "./views/schema";
 export * from "./cells/schema";
 export * from "./chats/schema";
 export * from "./messages/schema";
-export * from "./streams/schema";
 export * from "./embeddings/schema";
 
 // RELATIONS
@@ -31,7 +30,6 @@ export * from "./views/relations";
 export * from "./cells/relations";
 export * from "./chats/relations";
 export * from "./messages/relations";
-export * from "./streams/relations";
 export * from "./embeddings/relations";
 
 // VALIDATIONS
@@ -48,5 +46,4 @@ export * from "./cells/validation";
 export * from "./views/validation";
 export * from "./chats/validation";
 export * from "./messages/validation";
-export * from "./streams/validation";
 export * from "./embeddings/validation";

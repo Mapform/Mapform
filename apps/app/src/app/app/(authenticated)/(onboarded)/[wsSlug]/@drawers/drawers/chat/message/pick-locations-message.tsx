@@ -52,11 +52,15 @@ export function PickLocationsMessage({ results }: PickLocationsMessageProps) {
       bounds.extend([result.longitude, result.latitude]);
     });
 
-    map.fitBounds(bounds, {
-      padding: 50,
-      duration: 1000,
-      maxZoom: 15,
-    });
+    try {
+      map.fitBounds(bounds, {
+        padding: 50,
+        duration: 1000,
+        maxZoom: 15,
+      });
+    } catch (error) {
+      console.error(error);
+    }
 
     hasFlownToRef.current = "flown";
   }, [map, results]);
