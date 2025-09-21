@@ -1,6 +1,6 @@
 "use client";
 
-import { MapDrawer, MapDrawerToolbar } from "~/components/map-drawer";
+import { MapDrawerToolbar } from "~/components/map-drawer";
 import { useParamsContext } from "~/lib/params/client";
 import { cn } from "@mapform/lib/classnames";
 import { AutoSizeTextArea } from "@mapform/ui/components/autosize-text-area";
