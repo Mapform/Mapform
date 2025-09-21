@@ -1,9 +1,9 @@
 "server-only";
 
-import { chats, projects } from "@mapform/db/schema";
+import { chats } from "@mapform/db/schema";
 import { updateChatSchema } from "./schema";
 import type { UserAuthClient } from "../../../lib/types";
-import { and, eq } from "@mapform/db/utils";
+import { eq } from "@mapform/db/utils";
 
 export const updateChat = (authClient: UserAuthClient) =>
   authClient

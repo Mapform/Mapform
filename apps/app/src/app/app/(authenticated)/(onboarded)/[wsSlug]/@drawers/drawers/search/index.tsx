@@ -73,6 +73,10 @@ export function SearchInner({
     void setQueryStates({ query: debouncedSearchQuery });
   }, [debouncedSearchQuery, setQueryStates]);
 
+  useEffect(() => {
+    setQuery(params.query);
+  }, [params.query]);
+
   return (
     <>
       <Command className="bg-transparent" shouldFilter={false}>
@@ -110,10 +114,7 @@ export function SearchInner({
             {query && (
               <CommandItem
                 onSelect={() => {
-                  void setQueryStates(
-                    { chatId: "new", query },
-                    { shallow: true },
-                  );
+                  void setQueryStates({ chatId: "new", query });
                 }}
               >
                 <MessageCircle className="text-muted-foreground mr-2 size-4 flex-shrink-0" />

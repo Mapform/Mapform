@@ -42,7 +42,7 @@ export function Chat({ chatWithMessages }: ChatProps) {
     createChatAction,
     {
       onSuccess: ({ data }) => {
-        void setQueryStates({ chatId: data?.id, query: null });
+        void setQueryStates({ chatId: data?.id });
       },
       onError: ({ error }) => {
         toast({
@@ -87,20 +87,6 @@ export function Chat({ chatWithMessages }: ChatProps) {
               type="button"
               variant="ghost"
               onClick={() => {
-                createChat({
-                  title: "New Chat",
-                  projectId: pId ?? null,
-                });
-              }}
-            >
-              <SquarePenIcon className="size-4" />
-            </Button>
-            <Button
-              className="ml-auto"
-              size="icon-sm"
-              type="button"
-              variant="ghost"
-              onClick={() => {
                 void setQueryStates({ chatId: null });
               }}
             >
@@ -117,7 +103,6 @@ export function Chat({ chatWithMessages }: ChatProps) {
 }
 
 function ChatInner({ chatWithMessages }: ChatProps) {
-  const { pId } = useParams<{ pId?: string }>();
   const [input, setInput] = useState("");
   const [hasInitiatedNewChat, setHasInitiatedNewChat] = useState(false);
   const { params, setQueryStates } = useParamsContext();
@@ -130,7 +115,7 @@ function ChatInner({ chatWithMessages }: ChatProps) {
       api: "/api/chat",
       prepareSendMessagesRequest({ messages, id }) {
         return {
-          body: { messages, id, projectId: pId },
+          body: { messages, id },
         };
       },
     }),
@@ -158,9 +143,6 @@ function ChatInner({ chatWithMessages }: ChatProps) {
         await sendMessage({
           id: params.chatId,
           parts: [{ type: "text", text: params.query }],
-        });
-        await setQueryStates({
-          query: null,
         });
       }
     })();

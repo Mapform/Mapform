@@ -3,10 +3,9 @@ import { authDataService } from "~/lib/safe-action";
 import {
   streamText,
   convertToModelMessages,
-  generateText,
-  stepCountIs,
   hasToolCall,
   generateId,
+  generateText,
 } from "ai";
 import { NextResponse, after } from "next/server";
 import { getCurrentSession } from "~/data/auth/get-current-session";
@@ -22,11 +21,7 @@ import { createResumableStreamContext } from "resumable-stream";
 export const maxDuration = 60;
 
 export async function POST(req: Request) {
-  const {
-    messages,
-    id,
-    projectId,
-  }: { messages: UIMessage[]; id: string; projectId?: string } =
+  const { messages, id }: { messages: UIMessage[]; id: string } =
     await req.json();
 
   const session = await getCurrentSession();
@@ -34,37 +29,6 @@ export async function POST(req: Request) {
   if (!session?.data?.user) {
     return NextResponse.json({ msg: "Unauthorized" }, { status: 401 });
   }
-
-  let chat = await authDataService.getChat({
-    id,
-  });
-
-  // if (!chat?.data) {
-  //   const { text: title } = await generateText({
-  //     model: "gpt-4o-mini",
-  //     system: `\n
-  //     - you will generate a short title based on the first message a user begins a conversation with
-  //     - ensure it is not more than 80 characters long
-  //     - the title should be a summary of the user's message
-  //     - do not use quotes or colons`,
-  //     prompt: JSON.stringify(messages),
-  //   });
-
-  //   const newChat = await authDataService.createChat({
-  //     id,
-  //     title,
-  //     projectId: projectId ?? null,
-  //   });
-
-  //   if (!newChat?.data) {
-  //     return NextResponse.json(
-  //       { msg: "Failed to create chat" },
-  //       { status: 500 },
-  //     );
-  //   }
-
-  //   chat = { data: newChat.data };
-  // }
 
   const result = streamText({
     model: "gpt-5-mini",
@@ -99,10 +63,30 @@ export async function POST(req: Request) {
         })),
         chatId: id,
       });
+
+      const userMessages = messages.filter((m) => m.role === "user");
+      const firstUserMessage = userMessages[0];
+      let title = null;
+
+      if (firstUserMessage && userMessages.length === 1) {
+        const result = await generateText({
+          model: "gpt-4o-mini",
+          system: `\n
+          - you will generate a short title based on the first message a user begins a conversation with
+          - ensure it is not more than 80 characters long
+          - the title should be a summary of the user's message
+          - do not use quotes or colons`,
+          prompt: JSON.stringify(firstUserMessage),
+        });
+
+        title = result.text;
+      }
+
       // Clear the active stream when finished
       await authDataService.updateChat({
         id,
         activeStreamId: null,
+        ...(title ? { title } : {}),
       });
     },
     async consumeSseStream({ stream }) {
