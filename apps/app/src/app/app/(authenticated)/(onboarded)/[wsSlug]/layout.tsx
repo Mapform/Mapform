@@ -9,7 +9,7 @@ import { SIDEBAR_WIDTH } from "~/constants/sidebars";
 import { Drawers } from "./drawers";
 
 export default async function WorkspaceLayout(props: {
-  params: Promise<{ wsSlug: string; pId: string }>;
+  params: Promise<{ wsSlug: string }>;
   children: React.ReactNode;
   nav?: React.ReactNode;
   drawers?: React.ReactNode;
