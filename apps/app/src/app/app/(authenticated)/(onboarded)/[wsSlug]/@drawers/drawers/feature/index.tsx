@@ -263,7 +263,7 @@ const FeatureContent = ({
         }}
         imageData={{
           images: featureService.optimisticState!.blobs.map((blob) => ({
-            imageUrl: blob.url,
+            url: blob.url,
           })),
         }}
         properties={properties}

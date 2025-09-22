@@ -80,8 +80,7 @@ function FeatureListItem({
 }) {
   const wikidata = useWikidataImages(feature.wikidataId);
 
-  const effectiveImageUrl =
-    feature.image?.url ?? wikidata.primaryImage?.imageUrl;
+  const effectiveImageUrl = feature.image?.url ?? wikidata.primaryImage?.url;
   const effectiveIsLoading = feature.image?.url
     ? Boolean(feature.image.isLoading)
     : wikidata.isLoading;

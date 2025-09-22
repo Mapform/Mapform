@@ -13,12 +13,12 @@ export interface WikidataAttribution {
 }
 
 export interface WikidataImageData {
-  imageUrl: string | null;
+  url: string | null;
   attribution: WikidataAttribution | null;
 }
 
 export interface WikidataImageItem {
-  imageUrl: string;
+  url: string;
   attribution: WikidataAttribution | null;
   property: string; // e.g., "P18", "P3451", etc.
   qualifiers?: Record<string, any>; // Additional qualifiers
@@ -48,22 +48,22 @@ export const fetchWikidataImage = async (
       `https://www.wikidata.org/w/api.php?action=wbgetentities&ids=${wikidataId}&format=json&origin=*`,
     );
 
-    if (!entityResponse.ok) return { imageUrl: null, attribution: null };
+    if (!entityResponse.ok) return { url: null, attribution: null };
 
     const entityData = await entityResponse.json();
     const entity = entityData.entities?.[wikidataId];
 
-    if (!entity) return { imageUrl: null, attribution: null };
+    if (!entity) return { url: null, attribution: null };
 
     // Look for image property (P18)
     const imageClaim = entity.claims?.P18?.[0];
-    if (!imageClaim) return { imageUrl: null, attribution: null };
+    if (!imageClaim) return { url: null, attribution: null };
 
     const imageFilename = imageClaim.mainsnak?.datavalue?.value;
-    if (!imageFilename) return { imageUrl: null, attribution: null };
+    if (!imageFilename) return { url: null, attribution: null };
 
     // Convert filename to URL
-    const imageUrl = `https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(imageFilename)}?width=800`;
+    const url = `https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(imageFilename)}?width=800`;
 
     // Fetch attribution data from Wikimedia Commons API
     const attribution = await fetchWikidataAttribution(
@@ -71,10 +71,10 @@ export const fetchWikidataImage = async (
       wikidataId,
     );
 
-    return { imageUrl, attribution };
+    return { url, attribution };
   } catch (error) {
     console.error("Error fetching Wikidata image:", error);
-    return { imageUrl: null, attribution: null };
+    return { url: null, attribution: null };
   }
 };
 
@@ -133,7 +133,7 @@ export const fetchWikidataImages = async (
         if (!imageFilename) continue;
 
         // Convert filename to URL
-        const imageUrl = `https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(imageFilename)}?width=800`;
+        const url = `https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(imageFilename)}?width=800`;
 
         // Fetch attribution data
         const attribution = await fetchWikidataAttribution(
@@ -142,7 +142,7 @@ export const fetchWikidataImages = async (
         );
 
         const imageItem: WikidataImageItem = {
-          imageUrl,
+          url,
           attribution,
           property,
           qualifiers: claim.qualifiers,
@@ -240,7 +240,7 @@ const fetchWikidataAttribution = async (
  */
 export const useWikidataImage = (wikidataId: string | undefined) => {
   const [imageData, setImageData] = useState<WikidataImageData>({
-    imageUrl: null,
+    url: null,
     attribution: null,
   });
   const [isLoading, setIsLoading] = useState(false);
@@ -249,7 +249,7 @@ export const useWikidataImage = (wikidataId: string | undefined) => {
   useEffect(() => {
     const loadImage = async () => {
       if (!wikidataId) {
-        setImageData({ imageUrl: null, attribution: null });
+        setImageData({ url: null, attribution: null });
         setError(null);
         return;
       }
@@ -264,7 +264,7 @@ export const useWikidataImage = (wikidataId: string | undefined) => {
         const errorMessage =
           err instanceof Error ? err.message : "Failed to load image";
         setError(errorMessage);
-        setImageData({ imageUrl: null, attribution: null });
+        setImageData({ url: null, attribution: null });
       } finally {
         setIsLoading(false);
       }
@@ -274,7 +274,7 @@ export const useWikidataImage = (wikidataId: string | undefined) => {
   }, [wikidataId]);
 
   return {
-    imageUrl: imageData.imageUrl,
+    url: imageData.url,
     attribution: imageData.attribution,
     isLoading,
     error,

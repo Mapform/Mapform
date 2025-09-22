@@ -54,6 +54,7 @@ import {
 } from "@dnd-kit/sortable";
 import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
 import { DragHandle, DragItem } from "./draggable";
+import { ImageLightbox } from "./image-lightbox";
 
 type Property =
   | {
@@ -75,7 +76,9 @@ interface FeatureProps {
   icon?: string;
   imageData?: {
     images: {
-      imageUrl: string;
+      url: string;
+      alt?: string;
+      attribution?: string;
     }[];
     isLoading?: boolean;
     error?: string | null;
@@ -113,7 +116,20 @@ export function Feature({
   });
 
   const wikiData = useWikidataImages(osmId);
-  const images = [...(imageData?.images ?? []), ...wikiData.images];
+  const images = [
+    ...(imageData?.images.map((image) => ({
+      url: image.url,
+      alt: image.alt,
+      attribution: image.attribution,
+      source: "internal" as const,
+    })) ?? []),
+    ...wikiData.images.map((image) => ({
+      url: image.url,
+      alt: image.attribution?.description,
+      attribution: image.attribution?.author,
+      source: "wikidata" as const,
+    })),
+  ];
 
   const { executeAsync: updateColumnOrderAsync, isPending } = useAction(
     updateColumnOrderAction,
@@ -203,15 +219,17 @@ export function Feature({
             {images.map((image) => (
               <CarouselItem
                 className="relative h-[200px] w-full flex-shrink-0 p-0"
-                key={image.imageUrl}
+                key={image.url}
               >
-                <Image
-                  className="m-0 size-full"
-                  src={image.imageUrl}
-                  alt={""}
-                  fill
-                  objectFit="cover"
-                />
+                <ImageLightbox activeImage={image} images={images}>
+                  <Image
+                    className="m-0 size-full"
+                    src={image.url}
+                    alt={""}
+                    fill
+                    objectFit="cover"
+                  />
+                </ImageLightbox>
               </CarouselItem>
             ))}
           </CarouselContent>
@@ -301,7 +319,7 @@ export function Feature({
                           />
                         </DragHandle>
                       </div>
-                      <div className="col-span-2 flex w-full items-center">
+                      <div className="col-span-2 flex w-full">
                         <PropertyValueEditor
                           columnId={property.columnId}
                           rowId={property.rowId}

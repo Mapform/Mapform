@@ -25,7 +25,7 @@ function FeatureWithImage({ result }: { result: AIResultLocation }) {
     image:
       result.source === "stadia" && result.wikidataId
         ? {
-            url: wikidataData.primaryImage?.imageUrl ?? "",
+            url: wikidataData.primaryImage?.url ?? "",
             isLoading: wikidataData.isLoading,
           }
         : undefined,

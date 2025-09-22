@@ -31,7 +31,7 @@ export function WelcomeTourContent({ className }: WelcomeTourProps) {
               <p>— Nic</p>
             </>
           ),
-          imageUrl: welcomeImage,
+          url: welcomeImage,
         },
       ]}
       className={className}
