@@ -15,16 +15,18 @@ export function WelcomeTourContent({ className }: WelcomeTourProps) {
           description: (
             <>
               <p>
-                You&apos;re about to try an early version of Mapform. After
-                running an initial beta earlier this summer, I decided to
-                simplify the tool and explore how AI might be used the enhance
-                the mapping experience. I&apos;ve also temporarily disabled
-                features like forms, sharing, and data imports in an effort to
-                get something out sooner. (I&apos;ll add them back in later.)
+                You&apos;re about to try an early version of Mapform. In this
+                version you will be able to:
               </p>
+              <ul>
+                <li>Create maps and locations</li>
+                <li>Modify location properties</li>
+                <li>Chat with your maps</li>
+              </ul>
               <p>
-                Hope you enjoy the change in direction and as always I would
-                love to hear your feedback.
+                Additional features like table views, data imports, sharing, and
+                mobile support are coming soon. As always, I would love to hear
+                your feedback.
               </p>
               <p>— Nic</p>
             </>

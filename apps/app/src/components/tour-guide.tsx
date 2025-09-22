@@ -122,17 +122,21 @@ export function TourContent({ steps }: TourGuideProps) {
         </AnimatePresence>
       </div>
       <AlertDialogFooter>
-        <AlertDialogCancel className="mr-auto" onClick={resetTour}>
-          Close
-        </AlertDialogCancel>
+        {steps.length > 1 ? (
+          <AlertDialogCancel className="mr-auto" onClick={resetTour}>
+            Close
+          </AlertDialogCancel>
+        ) : null}
         <div className="flex gap-2">
-          <Button
-            disabled={currentStepIndex === 0}
-            onClick={handleBack}
-            variant="outline"
-          >
-            Back
-          </Button>
+          {steps.length > 1 ? (
+            <Button
+              disabled={currentStepIndex === 0}
+              onClick={handleBack}
+              variant="outline"
+            >
+              Back
+            </Button>
+          ) : null}
           {currentStepIndex === steps.length - 1 ? (
             <AlertDialogAction onClick={handleNext}>
               Let&apos;s go
