@@ -47,10 +47,10 @@ export async function getSession() {
   return verifyToken(session);
 }
 
-export async function setSession(user: User) {
+export async function setSession(userId: string) {
   const expiresInOneDay = new Date(Date.now() + 24 * 60 * 60 * 1000);
   const session: SessionData = {
-    user: { id: user.id },
+    user: { id: userId },
     expires: expiresInOneDay.toISOString(),
   };
   const encryptedSession = await signToken(session);

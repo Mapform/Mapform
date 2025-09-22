@@ -53,5 +53,5 @@ export const validateMagicLink = (authClient: PublicClient) =>
       /**
        * Generate new session
        */
-      await setSession(user);
+      await setSession(user.id);
     });
