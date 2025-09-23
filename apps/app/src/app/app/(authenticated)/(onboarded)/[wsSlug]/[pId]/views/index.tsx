@@ -196,7 +196,7 @@ export function Views() {
                     <DropdownMenuContent>
                       <ImageUploaderTrigger asChild>
                         <DropdownMenuItem>
-                          <ImagePlusIcon className="size-4" /> Upload image
+                          <ImagePlusIcon className="size-4" /> New cover photo
                         </DropdownMenuItem>
                       </ImageUploaderTrigger>
                       <DropdownMenuSeparator />
