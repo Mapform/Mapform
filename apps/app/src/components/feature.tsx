@@ -68,6 +68,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@mapform/ui/components/dropdown-menu";
+import { deleteImageAction } from "~/data/images/delete-image";
+import { toast } from "@mapform/ui/components/toaster";
 
 type Property =
   | {
@@ -137,6 +139,18 @@ export function Feature({
   const { executeAsync: updateColumnOrderAsync, isPending } = useAction(
     updateColumnOrderAction,
   );
+
+  const { executeAsync: deleteImageAsync, isPending: isPendingDeleteImage } =
+    useAction(deleteImageAction, {
+      onError: ({ error }) => {
+        toast({
+          title: "Uh oh! Something went wrong.",
+          description:
+            error.serverError ?? "There was an error deleting the image.",
+          variant: "destructive",
+        });
+      },
+    });
 
   usePreventPageUnload(isPending);
 
@@ -268,7 +282,10 @@ export function Feature({
                         </DropdownMenuItem>
                       </ImageUploaderTrigger>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem>
+                      <DropdownMenuItem
+                        disabled={isPendingDeleteImage}
+                        onClick={() => deleteImageAsync({ url: image.url })}
+                      >
                         <Trash2Icon className="size-4" /> Delete
                       </DropdownMenuItem>
                     </DropdownMenuContent>

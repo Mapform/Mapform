@@ -9,6 +9,10 @@ import {
 import { projects } from "../projects/schema";
 import { rows } from "../rows/schema";
 
+/**
+ * Note: We do not store teamspaceId. For auth purposes, the teamspaceId is
+ * derived from the projectId or rowId.
+ */
 export const blobs = pgTable(
   "blob",
   {
