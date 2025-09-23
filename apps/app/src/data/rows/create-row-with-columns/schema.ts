@@ -1,5 +1,7 @@
 import { z } from "zod";
 import { createRowSchema } from "@mapform/backend/data/rows/create-row/schema";
+import { insertBlobSchema } from "@mapform/db/schema";
+import { fileSchema } from "@mapform/backend/data/images/upload-image/schema";
 import {
   columnTypeEnum,
   insertStringCellSchema,
@@ -37,6 +39,14 @@ const upsertCellSchema = z.discriminatedUnion("type", [
 
 export const createRowWithColumnsSchema = createRowSchema.extend({
   cells: z.array(upsertCellSchema).optional().default([]),
+  image: z
+    .object({
+      file: fileSchema,
+      title: insertBlobSchema.shape.title,
+      author: insertBlobSchema.shape.author,
+      license: insertBlobSchema.shape.license,
+    })
+    .optional(),
 });
 
 export type CreateRowWithColumnsSchema = z.infer<

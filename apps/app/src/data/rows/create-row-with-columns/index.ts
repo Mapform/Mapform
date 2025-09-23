@@ -8,24 +8,26 @@ import { createRowWithColumnsSchema } from "./schema";
  * for now, esp. given most places don't have too many properties to be copied
  * over.
  */
-export const createRowWithColumnsAction = authDataService.authClient
+export const createRowWithExtrasAction = authDataService.authClient
   .schema(createRowWithColumnsSchema)
-  .action(async ({ parsedInput: { projectId, cells, ...rest } }) => {
+  .action(async ({ parsedInput: { projectId, cells, image, ...rest } }) => {
     const result = await authDataService.$transaction(async (client) => {
       /**
        * Get the project with its columns
        */
       const project = await client.getProject({ projectId });
 
+      if (!project?.data) {
+        throw new Error("Project not found");
+      }
+
       /**
        * Get the columns that don't exist in the project
        */
       const nonExistingColumns = cells.filter(
         (cell) =>
-          !project?.data?.columns.some((c) => c.name === cell.columnName),
+          !project.data?.columns.some((c) => c.name === cell.columnName),
       );
-
-      console.log("nonExistingColumns", nonExistingColumns);
 
       /**
        * Create the columns that don't exist in the project
@@ -87,6 +89,17 @@ export const createRowWithColumnsAction = authDataService.authClient
           }
         }),
       );
+
+      if (image) {
+        await client.uploadImage({
+          workspaceId: project.data.teamspace.workspace.id,
+          image: image.file,
+          title: image.title,
+          author: image.author,
+          license: image.license,
+          rowId,
+        });
+      }
 
       return row;
     });

@@ -25,6 +25,7 @@ export const uploadImage = (authClient: UserAuthClient) =>
         },
         ctx: { userAccess, db },
       }) => {
+        console.log("image", image);
         if (!userAccess.workspace.checkAccessById(workspaceId)) {
           throw new Error("Unauthorized");
         }
@@ -38,6 +39,8 @@ export const uploadImage = (authClient: UserAuthClient) =>
         });
 
         let blobCount = 0;
+
+        console.log("projectId", projectId);
 
         if (projectId) {
           const project = await db.query.projects.findFirst({
@@ -88,6 +91,8 @@ export const uploadImage = (authClient: UserAuthClient) =>
             },
           });
 
+          console.log("row", row);
+
           if (!row) {
             throw new Error("Row not found");
           }
@@ -134,6 +139,8 @@ export const uploadImage = (authClient: UserAuthClient) =>
             access: "public",
             addRandomSuffix: true,
           });
+
+          console.log("putResponse", putResponse);
 
           const [blob] = await tx
             .insert(blobs)

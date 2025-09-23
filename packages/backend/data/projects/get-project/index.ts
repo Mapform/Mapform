@@ -45,6 +45,18 @@ export const getProject = (authClient: UserAuthClient) =>
               },
               columns: true,
               blobs: true,
+              teamspace: {
+                columns: {
+                  id: true,
+                },
+                with: {
+                  workspace: {
+                    columns: {
+                      id: true,
+                    },
+                  },
+                },
+              },
             },
             extras: {
               center:

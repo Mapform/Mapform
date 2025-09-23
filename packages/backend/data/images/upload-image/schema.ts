@@ -11,7 +11,7 @@ export const ACCEPTED_IMAGE_TYPES = [
 ];
 
 // Custom file validation schema
-const fileSchema = z
+export const fileSchema = z
   .custom<File>((val) => val instanceof File, {
     message: "Invalid file",
   })
