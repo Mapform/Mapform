@@ -221,7 +221,7 @@ export function Feature({
                 className="relative h-[200px] w-full flex-shrink-0 p-0"
                 key={image.url}
               >
-                <ImageLightbox activeImage={image} images={images}>
+                <ImageLightbox activeImage={image}>
                   <Image
                     className="m-0 size-full"
                     src={image.url}

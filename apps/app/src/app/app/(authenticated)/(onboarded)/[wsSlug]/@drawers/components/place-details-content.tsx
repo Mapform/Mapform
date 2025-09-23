@@ -131,11 +131,6 @@ export function PlaceDetailsContent({
                 value: website,
                 type: "string" as const,
               },
-              {
-                columnName: "Website",
-                value: website,
-                type: "string" as const,
-              },
             ]
           : []),
       ],
