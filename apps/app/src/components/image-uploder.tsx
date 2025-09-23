@@ -18,11 +18,15 @@ interface ImageUploaderContentProps {
   projectId?: string;
   rowId?: string;
   order?: number;
+  onUploadSuccess?: () => void;
+  onUploadError?: (error: string) => void;
 }
 
 export function ImageUploaderContent({
   projectId,
   rowId,
+  onUploadSuccess,
+  onUploadError,
 }: ImageUploaderContentProps) {
   const { workspaceDirectory } = useWorkspace();
 
@@ -32,6 +36,7 @@ export function ImageUploaderContent({
         title: "Image uploaded successfully",
         description: "Your image has been uploaded and is ready to use.",
       });
+      onUploadSuccess?.();
     },
     onError: ({ error }) => {
       toast({
@@ -40,6 +45,9 @@ export function ImageUploaderContent({
           error.serverError ?? "Failed to upload image. Please try again.",
         variant: "destructive",
       });
+      onUploadError?.(
+        error.serverError ?? "Failed to upload image. Please try again.",
+      );
     },
   });
 

@@ -291,7 +291,12 @@ export function Feature({
                     </DropdownMenuContent>
                   </DropdownMenu>
 
-                  <ImageUploaderContent rowId={rowId} />
+                  <ImageUploaderContent
+                    rowId={rowId}
+                    onUploadSuccess={() => {
+                      setOpenUploaderForUrl(null);
+                    }}
+                  />
                 </ImageUploaderPopover>
               </CarouselItem>
             ))}
@@ -339,7 +344,12 @@ export function Feature({
                     </Button>
                   </TooltipTrigger>
                 </ImageUploaderTrigger>
-                <ImageUploaderContent rowId={rowId} />
+                <ImageUploaderContent
+                  rowId={rowId}
+                  onUploadSuccess={() => {
+                    setOpenUploaderForUrl(null);
+                  }}
+                />
               </ImageUploaderPopover>
               <TooltipContent>Add cover photo</TooltipContent>
             </Tooltip>
