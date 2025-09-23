@@ -3,8 +3,9 @@
 import type { UserAuthClient } from "../../../lib/types";
 import { uploadImageSchema } from "./schema";
 import { put } from "@vercel/blob";
+import { sql } from "@mapform/db";
 import { blobs, projects, rows, workspaces } from "@mapform/db/schema";
-import { eq } from "@mapform/db/utils";
+import { eq, and, isNotNull } from "@mapform/db/utils";
 import { ServerError } from "../../../lib/server-error";
 import { getStorageUsage } from "../../usage/get-storage-usage";
 import { env } from "../../../env.mjs";
@@ -38,10 +39,6 @@ export const uploadImage = (authClient: UserAuthClient) =>
           },
         });
 
-        let blobCount = 0;
-
-        console.log("projectId", projectId);
-
         if (projectId) {
           const project = await db.query.projects.findFirst({
             where: eq(projects.id, projectId),
@@ -66,8 +63,6 @@ export const uploadImage = (authClient: UserAuthClient) =>
           if (project.teamspace.workspace.id !== workspaceId) {
             throw new Error("Project does not belong to this workspace");
           }
-
-          blobCount = project.blobs.length + 1;
         }
 
         if (rowId) {
@@ -91,8 +86,6 @@ export const uploadImage = (authClient: UserAuthClient) =>
             },
           });
 
-          console.log("row", row);
-
           if (!row) {
             throw new Error("Row not found");
           }
@@ -100,8 +93,6 @@ export const uploadImage = (authClient: UserAuthClient) =>
           if (row.project.teamspace.workspace.id !== workspaceId) {
             throw new Error("Row does not belong to this workspace");
           }
-
-          blobCount = row.blobs.length + 1;
         }
 
         if (!workspace || !workspace.plan) {
@@ -140,7 +131,20 @@ export const uploadImage = (authClient: UserAuthClient) =>
             addRandomSuffix: true,
           });
 
-          console.log("putResponse", putResponse);
+          // Shift existing image orders by +1 within the same scope so we can insert at 0
+          if (projectId || rowId) {
+            await tx
+              .update(blobs)
+              .set({ order: sql`${blobs.order} + 1` })
+              .where(
+                and(
+                  projectId
+                    ? eq(blobs.projectId, projectId)
+                    : eq(blobs.rowId, rowId!),
+                  isNotNull(blobs.order),
+                ),
+              );
+          }
 
           const [blob] = await tx
             .insert(blobs)
@@ -153,7 +157,7 @@ export const uploadImage = (authClient: UserAuthClient) =>
               title,
               author,
               license,
-              order: blobCount + 1,
+              order: 0,
             })
             .returning();
 
