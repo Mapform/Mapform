@@ -54,9 +54,11 @@ export const deleteImage = (authClient: UserAuthClient) =>
         // If this blob participated in ordered images, compact the sequence
         if (blob.order != null) {
           if (blob.projectId) {
+            // Safely shift remaining orders down by 1 using a two-phase bump to avoid
+            // transient unique conflicts on (project_id, order). See upload-image for context.
             await tx
               .update(blobs)
-              .set({ order: sql`${blobs.order} - 1` })
+              .set({ order: sql`${blobs.order} + 1000000` })
               .where(
                 and(
                   eq(blobs.projectId, blob.projectId),
@@ -64,10 +66,21 @@ export const deleteImage = (authClient: UserAuthClient) =>
                   gt(blobs.order, blob.order),
                 ),
               );
-          } else if (blob.rowId) {
+
             await tx
               .update(blobs)
-              .set({ order: sql`${blobs.order} - 1` })
+              .set({ order: sql`${blobs.order} - 1000001` })
+              .where(
+                and(
+                  eq(blobs.projectId, blob.projectId),
+                  gt(blobs.order, 999999),
+                ),
+              );
+          } else if (blob.rowId) {
+            // Safely shift remaining orders down by 1 for row scope
+            await tx
+              .update(blobs)
+              .set({ order: sql`${blobs.order} + 1000000` })
               .where(
                 and(
                   eq(blobs.rowId, blob.rowId),
@@ -75,6 +88,11 @@ export const deleteImage = (authClient: UserAuthClient) =>
                   gt(blobs.order, blob.order),
                 ),
               );
+
+            await tx
+              .update(blobs)
+              .set({ order: sql`${blobs.order} - 1000001` })
+              .where(and(eq(blobs.rowId, blob.rowId), gt(blobs.order, 999999)));
           }
         }
       });
