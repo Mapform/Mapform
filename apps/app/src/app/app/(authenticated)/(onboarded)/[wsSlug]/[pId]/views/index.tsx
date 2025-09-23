@@ -177,7 +177,7 @@ export function Views() {
                     setOpenUploaderForUrl(isOpen ? blob.url : null)
                   }
                 >
-                  <DropdownMenu modal>
+                  <DropdownMenu modal={false}>
                     <DropdownMenuTrigger asChild>
                       <ImageUploaderAnchor asChild>
                         <Button
@@ -212,7 +212,6 @@ export function Views() {
                   <ImageUploaderContent
                     projectId={projectService.optimisticState.id}
                     onUploadSuccess={() => {
-                      console.log("upload success");
                       setOpenUploaderForUrl(null);
                     }}
                   />
