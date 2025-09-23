@@ -5,7 +5,7 @@ import { uploadImageSchema } from "./schema";
 import { put } from "@vercel/blob";
 import { sql } from "@mapform/db";
 import { blobs, projects, rows, workspaces } from "@mapform/db/schema";
-import { eq, and, isNotNull } from "@mapform/db/utils";
+import { eq, and, isNotNull, gt } from "@mapform/db/utils";
 import { ServerError } from "../../../lib/server-error";
 import { getStorageUsage } from "../../usage/get-storage-usage";
 import { env } from "../../../env.mjs";
@@ -131,17 +131,34 @@ export const uploadImage = (authClient: UserAuthClient) =>
             addRandomSuffix: true,
           });
 
-          // Shift existing image orders by +1 within the same scope so we can insert at 0
+          // Safely shift existing image orders by +1 within the same scope
+          // without violating unique constraints. Eventually, drizzle should
+          // release support for 'deferrable', which will make this cleaner:
+          // https://github.com/drizzle-team/drizzle-orm/issues/1429
           if (projectId || rowId) {
+            // Phase 1: bump all existing orders by a large offset to avoid transient conflicts
             await tx
               .update(blobs)
-              .set({ order: sql`${blobs.order} + 1` })
+              .set({ order: sql`${blobs.order} + 1000000` })
               .where(
                 and(
                   projectId
                     ? eq(blobs.projectId, projectId)
                     : eq(blobs.rowId, rowId!),
                   isNotNull(blobs.order),
+                ),
+              );
+
+            // Phase 2: normalize back to +1 net shift
+            await tx
+              .update(blobs)
+              .set({ order: sql`${blobs.order} - 999999` })
+              .where(
+                and(
+                  projectId
+                    ? eq(blobs.projectId, projectId)
+                    : eq(blobs.rowId, rowId!),
+                  gt(blobs.order, 999999),
                 ),
               );
           }
