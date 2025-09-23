@@ -5,7 +5,7 @@ import { ImageIcon, PackageOpenIcon, SparklesIcon } from "lucide-react";
 import { cn } from "@mapform/lib/classnames";
 import { Button } from "@mapform/ui/components/button";
 import { useParamsContext } from "~/lib/params/client";
-import { useWikidataImages } from "~/lib/wikidata-image";
+import { useWikidataImage } from "~/lib/wikidata-image";
 
 interface Feature {
   id: string;
@@ -78,9 +78,9 @@ function FeatureListItem({
   onClick: (feature: Feature) => void;
   onHover?: (feature: Feature | null) => void;
 }) {
-  const wikidata = useWikidataImages(feature.wikidataId);
+  const wikidata = useWikidataImage(feature.wikidataId);
 
-  const effectiveImageUrl = feature.image?.url ?? wikidata.primaryImage?.url;
+  const effectiveImageUrl = feature.image?.url ?? wikidata.url;
   const effectiveIsLoading = feature.image?.url
     ? Boolean(feature.image.isLoading)
     : wikidata.isLoading;

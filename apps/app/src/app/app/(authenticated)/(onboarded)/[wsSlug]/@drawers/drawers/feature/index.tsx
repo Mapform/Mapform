@@ -238,7 +238,6 @@ const FeatureContent = ({
         title={featureService.optimisticState!.name ?? ""}
         description={featureService.optimisticState!.description ?? undefined}
         icon={featureService.optimisticState!.icon ?? undefined}
-        osmId={featureService.optimisticState!.osmId ?? undefined}
         onTitleChange={(value) => {
           featureService.execute({
             ...featureService.optimisticState,

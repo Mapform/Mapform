@@ -11,7 +11,7 @@ import {
   XIcon,
 } from "lucide-react";
 import { Feature } from "~/components/feature";
-import { useWikidataImages } from "~/lib/wikidata-image";
+import { useWikidataImage } from "~/lib/wikidata-image";
 import {
   DropdownMenu,
   DropdownMenuSubContent,
@@ -83,7 +83,7 @@ export function PlaceDetailsContent({
     properties?.addendum?.osm?.phone ?? properties?.addendum?.foursquare?.tel;
   const address =
     properties?.formattedAddressLine ?? properties?.coarseLocation;
-  const wikiData = useWikidataImages(wikidataId);
+  const wikiData = useWikidataImage(wikidataId);
 
   // Flatten all projects from all teamspaces
   const allProjects = workspaceDirectory.teamspaces
@@ -97,7 +97,7 @@ export function PlaceDetailsContent({
 
   const handleAddToProject = async (projectId: string) => {
     // Ensure we have a primary image URL to fetch
-    const originalUrl = wikiData.primaryImage?.url;
+    const originalUrl = wikiData.url;
     if (!originalUrl) return;
 
     try {
@@ -163,8 +163,8 @@ export function PlaceDetailsContent({
           file,
           // Optional attribution fields from Wikidata
           title: undefined,
-          author: wikiData.primaryImage?.attribution?.author,
-          license: wikiData.primaryImage?.attribution?.license,
+          author: wikiData.attribution?.author,
+          license: wikiData.attribution?.license,
         },
       });
     } catch (err) {
@@ -277,8 +277,16 @@ export function PlaceDetailsContent({
         </Button>
       </MapDrawerToolbar>
       <Feature
-        osmId={wikidataId}
         title={placeName}
+        imageData={{
+          images: [
+            {
+              url: wikiData.url ?? "",
+              alt: wikiData.attribution?.description,
+              attribution: wikiData.attribution?.author,
+            },
+          ],
+        }}
         properties={[
           ...(address
             ? ([

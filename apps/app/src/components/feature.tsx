@@ -31,7 +31,6 @@ import {
   ImageUploaderTrigger,
 } from "./image-uploder";
 import { cn } from "@mapform/lib/classnames";
-import { useWikidataImages } from "~/lib/wikidata-image";
 import {
   PropertyAdder,
   PropertyAdderTrigger,
@@ -91,7 +90,6 @@ interface FeatureProps {
     markdown: string | null;
   }) => void;
   rowId?: string;
-  osmId?: string;
   projectId?: string;
 }
 
@@ -105,7 +103,6 @@ export function Feature({
   onIconChange,
   onDescriptionChange,
   rowId,
-  osmId,
   projectId,
 }: FeatureProps) {
   const editor = useCreateBlockNote({
@@ -115,21 +112,13 @@ export function Feature({
       typeof description === "string" ? [] : (description as CustomBlock[]),
   });
 
-  const wikiData = useWikidataImages(osmId);
-  const images = [
-    ...(imageData?.images.map((image) => ({
+  const images =
+    imageData?.images.map((image) => ({
       url: image.url,
       alt: image.alt,
       attribution: image.attribution,
       source: "internal" as const,
-    })) ?? []),
-    ...wikiData.images.map((image) => ({
-      url: image.url,
-      alt: image.attribution?.description,
-      attribution: image.attribution?.author,
-      source: "wikidata" as const,
-    })),
-  ];
+    })) ?? [];
 
   const { executeAsync: updateColumnOrderAsync, isPending } = useAction(
     updateColumnOrderAction,

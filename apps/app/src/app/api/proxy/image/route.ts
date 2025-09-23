@@ -1,6 +1,9 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getCurrentSession } from "~/data/auth/get-current-session";
 
+/**
+ * Proxy image requests to Wikimedia Commons
+ */
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const url = searchParams.get("url");
