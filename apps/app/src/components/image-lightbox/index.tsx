@@ -1,6 +1,5 @@
 "use client";
 
-import { Button } from "@mapform/ui/components/button";
 import {
   Dialog,
   DialogClose,
@@ -9,7 +8,7 @@ import {
   DialogPrimitive,
   DialogTrigger,
 } from "@mapform/ui/components/dialog";
-import { ChevronLeftIcon, ChevronRightIcon, XIcon } from "lucide-react";
+import { XIcon } from "lucide-react";
 
 interface ImageLightboxProps {
   activeImage: {
@@ -19,16 +18,9 @@ interface ImageLightboxProps {
     source: "internal" | "wikidata";
   };
   children: React.ReactNode;
-  onNext?: () => void;
-  onPrevious?: () => void;
 }
 
-export function ImageLightbox({
-  activeImage,
-  children,
-  onNext,
-  onPrevious,
-}: ImageLightboxProps) {
+export function ImageLightbox({ activeImage, children }: ImageLightboxProps) {
   return (
     <Dialog>
       <DialogTrigger className="cursor-pointer" asChild>
@@ -49,20 +41,6 @@ export function ImageLightbox({
               alt={activeImage.alt ?? ""}
             />
           </div>
-          {onPrevious && (
-            <div className="absolute left-0 top-1/2 z-10 size-full -translate-y-1/2">
-              <Button variant="ghost" size="icon" onClick={onPrevious}>
-                <ChevronLeftIcon className="size-5" />
-              </Button>
-            </div>
-          )}
-          {onNext && (
-            <div className="absolute right-0 top-1/2 z-10 size-full -translate-y-1/2">
-              <Button variant="ghost" size="icon" onClick={onNext}>
-                <ChevronRightIcon className="size-5" />
-              </Button>
-            </div>
-          )}
         </DialogPrimitive.Content>
       </DialogPortal>
     </Dialog>
