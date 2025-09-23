@@ -10,7 +10,13 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from "@mapform/ui/components/tooltip";
-import { ImagePlusIcon, PlusIcon, SmilePlusIcon } from "lucide-react";
+import {
+  ImagePlusIcon,
+  PencilIcon,
+  PlusIcon,
+  SmilePlusIcon,
+  Trash2Icon,
+} from "lucide-react";
 import {
   type CustomBlock,
   schema,
@@ -27,6 +33,7 @@ import Image from "next/image";
 import { Skeleton } from "@mapform/ui/components/skeleton";
 import {
   ImageUploaderContent,
+  ImageUploaderAnchor,
   ImageUploaderPopover,
   ImageUploaderTrigger,
 } from "./image-uploder";
@@ -54,6 +61,13 @@ import {
 import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
 import { DragHandle, DragItem } from "./draggable";
 import { ImageLightbox } from "./image-lightbox";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@mapform/ui/components/dropdown-menu";
 
 type Property =
   | {
@@ -163,6 +177,11 @@ export function Feature({
     }),
   );
 
+  // Track which image's uploader popover is open so its Pencil button stays visible
+  const [openUploaderForUrl, setOpenUploaderForUrl] = useState<string | null>(
+    null,
+  );
+
   const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
     if (!over || !projectId || active.id === over.id) return;
@@ -207,7 +226,7 @@ export function Feature({
           <CarouselContent className="m-0">
             {images.map((image) => (
               <CarouselItem
-                className="relative h-[200px] w-full flex-shrink-0 p-0"
+                className="group relative h-[200px] w-full flex-shrink-0 p-0"
                 key={image.url}
               >
                 <ImageLightbox activeImage={image}>
@@ -219,6 +238,44 @@ export function Feature({
                     objectFit="cover"
                   />
                 </ImageLightbox>
+                <ImageUploaderPopover
+                  modal
+                  open={openUploaderForUrl === image.url}
+                  onOpenChange={(isOpen) =>
+                    setOpenUploaderForUrl(isOpen ? image.url : null)
+                  }
+                >
+                  <DropdownMenu modal>
+                    <DropdownMenuTrigger asChild>
+                      <ImageUploaderAnchor asChild>
+                        <Button
+                          className={cn(
+                            "absolute right-2 top-2 opacity-0 group-hover:opacity-100 data-[state=open]:opacity-100",
+                            openUploaderForUrl === image.url && "opacity-100",
+                          )}
+                          size="icon-sm"
+                          type="button"
+                          variant="outline"
+                        >
+                          <PencilIcon className="size-4" />
+                        </Button>
+                      </ImageUploaderAnchor>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                      <ImageUploaderTrigger asChild>
+                        <DropdownMenuItem>
+                          <ImagePlusIcon className="size-4" /> Upload image
+                        </DropdownMenuItem>
+                      </ImageUploaderTrigger>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem>
+                        <Trash2Icon className="size-4" /> Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+
+                  <ImageUploaderContent rowId={rowId} />
+                </ImageUploaderPopover>
               </CarouselItem>
             ))}
           </CarouselContent>

@@ -143,4 +143,5 @@ export function ImageUploaderContent({
 export {
   Popover as ImageUploaderPopover,
   PopoverTrigger as ImageUploaderTrigger,
+  PopoverAnchor as ImageUploaderAnchor,
 } from "@mapform/ui/components/popover";

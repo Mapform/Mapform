@@ -40,7 +40,7 @@ export function ImageLightbox({
           <XIcon className="size-5" />
           <span className="sr-only">Close</span>
         </DialogClose>
-        <DialogPrimitive.Content className="data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] fixed left-[50%] top-[50%] z-50 flex translate-x-[-50%] translate-y-[-50%] p-4 duration-200 sm:rounded-lg md:p-8">
+        <DialogPrimitive.Content className="data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] fixed left-[50%] top-[50%] z-50 flex translate-x-[-50%] translate-y-[-50%] p-4 outline-none duration-200 sm:rounded-lg md:p-8">
           <div className="relative flex max-h-[calc(100vh-4rem)] max-w-[calc(100vw-4rem)] items-center justify-center overflow-hidden">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
