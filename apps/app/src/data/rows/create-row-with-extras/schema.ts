@@ -42,9 +42,10 @@ export const createRowWithColumnsSchema = createRowSchema.extend({
   image: z
     .object({
       file: fileSchema,
-      title: insertBlobSchema.shape.title,
       author: insertBlobSchema.shape.author,
       license: insertBlobSchema.shape.license,
+      licenseUrl: insertBlobSchema.shape.licenseUrl,
+      sourceUrl: insertBlobSchema.shape.sourceUrl,
     })
     .optional(),
 });

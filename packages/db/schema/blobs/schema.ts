@@ -33,10 +33,10 @@ export const blobs = pgTable(
     }),
 
     // Optional attribution fields, mostly used when storing photos from wikidata
-    title: varchar("title", { length: 512 }),
     author: varchar("author", { length: 256 }),
-    // source: varchar("source", { length: 512 }),
     license: varchar("license", { length: 256 }),
+    licenseUrl: varchar("license_url", { length: 2048 }),
+    sourceUrl: varchar("source_url", { length: 2048 }),
 
     url: varchar("url", { length: 2048 }).unique().notNull(),
     // Size in bytes

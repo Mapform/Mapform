@@ -95,9 +95,10 @@ export const createRowWithExtrasAction = authDataService.authClient
         uploadImageResponse = await client.uploadImage({
           workspaceId: project.data.teamspace.workspace.id,
           image: image.file,
-          title: image.title,
           author: image.author,
           license: image.license,
+          licenseUrl: image.licenseUrl,
+          sourceUrl: image.sourceUrl,
           rowId,
         });
       }

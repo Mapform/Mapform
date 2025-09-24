@@ -169,10 +169,10 @@ export function PlaceDetailsContent({
         ],
         image: {
           file,
-          // Optional attribution fields from Wikidata
-          title: undefined,
           author: wikiData.attribution?.author,
           license: wikiData.attribution?.license,
+          licenseUrl: wikiData.attribution?.licenseUrl,
+          sourceUrl: wikiData.attribution?.sourceUrl,
         },
       });
     } catch (err) {
