@@ -41,7 +41,8 @@ import { useParams } from "next/navigation";
 import type { Details } from "@mapform/backend/data/stadia/details";
 import { useWorkspace } from "../../workspace-context";
 import { useParamsContext } from "~/lib/params/client";
-import { createRowWithExtrasAction } from "~/data/rows/create-row-with-columns";
+import { createRowWithExtrasAction } from "~/data/rows/create-row-with-extras";
+import { toast } from "@mapform/ui/components/toaster";
 
 type Feature = NonNullable<Details["data"]>["features"][number];
 
@@ -64,7 +65,14 @@ export function PlaceDetailsContent({
   const { execute, isPending } = useAction(createRowWithExtrasAction, {
     onSuccess: async ({ data }) => {
       await onClose();
-      await setQueryStates({ rowId: data?.id });
+      await setQueryStates({ rowId: data?.row.data?.id });
+
+      if (data?.uploadImageResponse?.serverError) {
+        toast({
+          title: "Failed to upload image",
+          description: data.uploadImageResponse.serverError,
+        });
+      }
     },
   });
 
@@ -279,13 +287,15 @@ export function PlaceDetailsContent({
       <Feature
         title={placeName}
         imageData={{
-          images: [
-            {
-              url: wikiData.url ?? "",
-              alt: wikiData.attribution?.description,
-              attribution: wikiData.attribution?.author,
-            },
-          ],
+          images: wikiData.url
+            ? [
+                {
+                  url: wikiData.url,
+                  alt: wikiData.attribution?.description,
+                  attribution: wikiData.attribution?.author,
+                },
+              ]
+            : [],
         }}
         properties={[
           ...(address

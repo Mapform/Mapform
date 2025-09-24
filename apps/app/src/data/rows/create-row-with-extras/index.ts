@@ -89,9 +89,10 @@ export const createRowWithExtrasAction = authDataService.authClient
           }
         }),
       );
+      let uploadImageResponse;
 
       if (image) {
-        await client.uploadImage({
+        uploadImageResponse = await client.uploadImage({
           workspaceId: project.data.teamspace.workspace.id,
           image: image.file,
           title: image.title,
@@ -101,8 +102,11 @@ export const createRowWithExtrasAction = authDataService.authClient
         });
       }
 
-      return row;
+      return {
+        row,
+        uploadImageResponse,
+      };
     });
 
-    return result.data;
+    return result;
   });

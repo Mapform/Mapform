@@ -26,7 +26,6 @@ export const uploadImage = (authClient: UserAuthClient) =>
         },
         ctx: { userAccess, db },
       }) => {
-        console.log("image", image);
         if (!userAccess.workspace.checkAccessById(workspaceId)) {
           throw new Error("Unauthorized");
         }
