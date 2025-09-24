@@ -77,6 +77,7 @@ export function PlaceDetailsContent({
   });
 
   const [projectComboboxOpen, setProjectComboboxOpen] = useState(false);
+  const [isAdding, setIsAdding] = useState(false);
   const properties = feature?.properties;
 
   const wikidataId =
@@ -104,30 +105,53 @@ export function PlaceDetailsContent({
     .sort((a, b) => a.position - b.position);
 
   const handleAddToProject = async (projectId: string) => {
-    // Ensure we have a primary image URL to fetch
-    const originalUrl = wikiData.url;
-    if (!originalUrl) return;
-
+    setIsAdding(true);
     try {
-      // Use same-origin proxy to fetch the image and avoid CORS
-      const fetchUrl = originalUrl;
+      const originalUrl = wikiData.url;
 
-      // Fetch via same-origin proxy to avoid CORS and get a Blob
-      const proxyUrl = `/api/proxy/image?url=${encodeURIComponent(fetchUrl)}`;
-      const response = await fetch(proxyUrl);
-      if (!response.ok) return;
+      let imagePayload:
+        | {
+            file: File;
+            author?: string;
+            license?: string;
+            licenseUrl?: string;
+            sourceUrl?: string;
+            description?: string;
+          }
+        | undefined;
 
-      const blob = await response.blob();
+      if (originalUrl) {
+        try {
+          const proxyUrl = `/api/proxy/image?url=${encodeURIComponent(originalUrl)}`;
+          const response = await fetch(proxyUrl);
+          if (response.ok) {
+            const blob = await response.blob();
 
-      const contentType = blob.type || "image/jpeg";
-      const extension = (contentType.split("/")[1] || "jpg").split(";")[0];
-      const safeName = (placeName || "image")
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/(^-|-$)/g, "");
-      const filename = `${safeName}-${wikidataId || "wikidata"}.${extension}`;
+            const contentType = blob.type || "image/jpeg";
+            const extension = (contentType.split("/")[1] || "jpg").split(
+              ";",
+            )[0];
+            const safeName = (placeName || "image")
+              .toLowerCase()
+              .replace(/[^a-z0-9]+/g, "-")
+              .replace(/(^-|-$)/g, "");
+            const filename = `${safeName}-${wikidataId || "wikidata"}.${extension}`;
 
-      const file = new File([blob], filename, { type: contentType });
+            const file = new File([blob], filename, { type: contentType });
+
+            imagePayload = {
+              file,
+              author: wikiData.attribution?.author,
+              license: wikiData.attribution?.license,
+              licenseUrl: wikiData.attribution?.licenseUrl,
+              sourceUrl: wikiData.attribution?.sourceUrl,
+              description: wikiData.attribution?.description,
+            };
+          }
+        } catch (err) {
+          console.error("Failed to fetch Wikidata image for upload", err);
+        }
+      }
 
       execute({
         projectId,
@@ -167,18 +191,12 @@ export function PlaceDetailsContent({
               ]
             : []),
         ],
-        image: {
-          file,
-          author: wikiData.attribution?.author,
-          license: wikiData.attribution?.license,
-          licenseUrl: wikiData.attribution?.licenseUrl,
-          sourceUrl: wikiData.attribution?.sourceUrl,
-          description: wikiData.attribution?.description,
-        },
+        ...(imagePayload ? { image: imagePayload } : {}),
       });
     } catch (err) {
-      console.error("Failed to fetch Wikidata image for upload", err);
-      return;
+      console.error("Failed to add place to project", err);
+    } finally {
+      setIsAdding(false);
     }
   };
 
@@ -193,10 +211,10 @@ export function PlaceDetailsContent({
             size="icon-sm"
             type="button"
             variant="ghost"
-            disabled={isPending}
+            disabled={isAdding || isPending}
             onClick={() => void handleAddToProject(pId)}
           >
-            {isPending ? (
+            {isAdding || isPending ? (
               <Loader2Icon className="size-4 animate-spin" />
             ) : (
               <PlusIcon className="size-4" />
@@ -214,9 +232,13 @@ export function PlaceDetailsContent({
                 size="icon-sm"
                 aria-expanded={projectComboboxOpen}
                 className="ml-auto"
-                disabled={isPending}
+                disabled={isAdding || isPending}
               >
-                <PlusIcon className="size-4" />
+                {isAdding || isPending ? (
+                  <Loader2Icon className="size-4 animate-spin" />
+                ) : (
+                  <PlusIcon className="size-4" />
+                )}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="p-0">
