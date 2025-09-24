@@ -31,5 +31,7 @@ export function MapView() {
     });
   };
 
-  return <FeatureList features={features} onClick={handleFeatureClick} />;
+  return (
+    <FeatureList editable features={features} onClick={handleFeatureClick} />
+  );
 }

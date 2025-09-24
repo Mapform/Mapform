@@ -1,10 +1,24 @@
 "use client";
 
 import Image from "next/image";
-import { ImageIcon, PackageOpenIcon, SparklesIcon } from "lucide-react";
+import {
+  ImageIcon,
+  PackageOpenIcon,
+  SparklesIcon,
+  Trash2Icon,
+  ArrowUpRightIcon,
+} from "lucide-react";
 import { cn } from "@mapform/lib/classnames";
 import { Button } from "@mapform/ui/components/button";
 import { useParamsContext } from "~/lib/params/client";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from "@mapform/ui/components/context-menu";
+import { useAction } from "next-safe-action/hooks";
+import { deleteRowsAction } from "~/data/rows/delete-rows";
 
 interface Feature {
   id: string;
@@ -24,11 +38,17 @@ interface Feature {
 
 interface FeatureListProps {
   features: Feature[];
+  editable?: boolean;
   onClick: (feature: Feature) => void;
   onHover?: (feature: Feature | null) => void;
 }
 
-export function FeatureList({ features, onClick, onHover }: FeatureListProps) {
+export function FeatureList({
+  features,
+  editable,
+  onClick,
+  onHover,
+}: FeatureListProps) {
   const { setQueryStates } = useParamsContext();
 
   if (!features.length) {
@@ -62,6 +82,7 @@ export function FeatureList({ features, onClick, onHover }: FeatureListProps) {
           feature={feature}
           onClick={onClick}
           onHover={onHover}
+          editable={editable}
         />
       ))}
     </ul>
@@ -72,53 +93,87 @@ function FeatureListItem({
   feature,
   onClick,
   onHover,
+  editable,
 }: {
   feature: Feature;
   onClick: (feature: Feature) => void;
   onHover?: (feature: Feature | null) => void;
+  editable?: boolean;
 }) {
+  const { setQueryStates } = useParamsContext();
+  const { executeAsync } = useAction(deleteRowsAction, {
+    onSuccess: () => {
+      void setQueryStates({ rowId: null });
+    },
+  });
   const effectiveImageUrl = feature.image?.url;
 
   return (
-    <li
-      className="m-0 flex cursor-pointer overflow-hidden rounded-lg border pl-0 transition-colors hover:border-gray-300 hover:bg-gray-50"
-      onClick={() => {
-        onClick(feature);
-      }}
-      onMouseEnter={() => onHover?.(feature)}
-      onMouseLeave={() => onHover?.(null)}
-    >
-      <div
-        className={cn(
-          "bg-muted relative flex size-16 flex-shrink-0 items-center justify-center",
-          {
-            "animate-pulse": feature.image?.isLoading,
-          },
+    <ContextMenu>
+      <ContextMenuTrigger asChild>
+        <li
+          className="m-0 flex cursor-pointer overflow-hidden rounded-lg border pl-0 transition-colors hover:border-gray-300 hover:bg-gray-50"
+          onClick={() => {
+            onClick(feature);
+          }}
+          onMouseEnter={() => onHover?.(feature)}
+          onMouseLeave={() => onHover?.(null)}
+        >
+          <div
+            className={cn(
+              "bg-muted relative flex size-16 flex-shrink-0 items-center justify-center",
+              {
+                "animate-pulse": feature.image?.isLoading,
+              },
+            )}
+          >
+            {effectiveImageUrl ? (
+              <Image
+                src={effectiveImageUrl}
+                alt={feature.image?.alt ?? ""}
+                fill
+                objectFit="cover"
+                className="m-0"
+              />
+            ) : (
+              <ImageIcon className="size-4 text-gray-400" />
+            )}
+          </div>
+          <div className="flex flex-col justify-center gap-1 truncate p-2">
+            <div className="flex truncate">
+              {feature.icon && <div className="mr-1">{feature.icon}</div>}
+              <h6 className="m-0 truncate font-medium">{feature.name}</h6>
+            </div>
+            {feature.description && (
+              <p className="m-0 truncate text-xs text-gray-500">
+                {feature.description}
+              </p>
+            )}
+          </div>
+        </li>
+      </ContextMenuTrigger>
+      <ContextMenuContent>
+        <ContextMenuItem
+          className="gap-2"
+          onClick={() => {
+            onClick(feature);
+          }}
+        >
+          <ArrowUpRightIcon className="size-4" /> Open
+        </ContextMenuItem>
+        {editable && (
+          <ContextMenuItem
+            className="gap-2"
+            onClick={() => {
+              void executeAsync({
+                rowIds: [feature.id],
+              });
+            }}
+          >
+            <Trash2Icon className="size-4" /> Delete
+          </ContextMenuItem>
         )}
-      >
-        {effectiveImageUrl ? (
-          <Image
-            src={effectiveImageUrl}
-            alt={feature.image?.alt ?? ""}
-            fill
-            objectFit="cover"
-            className="m-0"
-          />
-        ) : (
-          <ImageIcon className="size-4 text-gray-400" />
-        )}
-      </div>
-      <div className="flex flex-col justify-center gap-1 truncate p-2">
-        <div className="flex truncate">
-          {feature.icon && <div className="mr-1">{feature.icon}</div>}
-          <h6 className="m-0 truncate font-medium">{feature.name}</h6>
-        </div>
-        {feature.description && (
-          <p className="m-0 truncate text-xs text-gray-500">
-            {feature.description}
-          </p>
-        )}
-      </div>
-    </li>
+      </ContextMenuContent>
+    </ContextMenu>
   );
 }
