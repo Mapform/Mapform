@@ -173,6 +173,7 @@ export function PlaceDetailsContent({
           license: wikiData.attribution?.license,
           licenseUrl: wikiData.attribution?.licenseUrl,
           sourceUrl: wikiData.attribution?.sourceUrl,
+          description: wikiData.attribution?.description,
         },
       });
     } catch (err) {
@@ -291,8 +292,11 @@ export function PlaceDetailsContent({
             ? [
                 {
                   url: wikiData.url,
-                  alt: wikiData.attribution?.description,
-                  attribution: wikiData.attribution?.author,
+                  description: wikiData.attribution?.description,
+                  license: wikiData.attribution?.license,
+                  licenseUrl: wikiData.attribution?.licenseUrl,
+                  sourceUrl: wikiData.attribution?.sourceUrl,
+                  author: wikiData.attribution?.author,
                 },
               ]
             : [],

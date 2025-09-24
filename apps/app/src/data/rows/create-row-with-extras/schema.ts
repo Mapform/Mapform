@@ -46,6 +46,7 @@ export const createRowWithColumnsSchema = createRowSchema.extend({
       license: insertBlobSchema.shape.license,
       licenseUrl: insertBlobSchema.shape.licenseUrl,
       sourceUrl: insertBlobSchema.shape.sourceUrl,
+      description: insertBlobSchema.shape.description,
     })
     .optional(),
 });

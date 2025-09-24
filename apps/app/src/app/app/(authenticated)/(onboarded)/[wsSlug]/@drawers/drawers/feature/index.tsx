@@ -263,6 +263,11 @@ const FeatureContent = ({
         imageData={{
           images: featureService.optimisticState!.blobs.map((blob) => ({
             url: blob.url,
+            description: blob.description ?? undefined,
+            license: blob.license ?? undefined,
+            licenseUrl: blob.licenseUrl ?? undefined,
+            sourceUrl: blob.sourceUrl ?? undefined,
+            author: blob.author ?? undefined,
           })),
         }}
         properties={properties}

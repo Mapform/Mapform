@@ -99,6 +99,7 @@ export const createRowWithExtrasAction = authDataService.authClient
           license: image.license,
           licenseUrl: image.licenseUrl,
           sourceUrl: image.sourceUrl,
+          description: image.description,
           rowId,
         });
       }

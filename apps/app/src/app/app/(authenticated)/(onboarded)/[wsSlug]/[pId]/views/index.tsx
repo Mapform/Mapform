@@ -158,14 +158,18 @@ export function Views() {
                 <ImageLightbox
                   activeImage={{
                     url: blob.url,
-                    alt: blob.title ?? "",
+                    description: blob.description ?? undefined,
+                    license: blob.license ?? undefined,
+                    licenseUrl: blob.licenseUrl ?? undefined,
+                    sourceUrl: blob.sourceUrl ?? undefined,
+                    author: blob.author ?? undefined,
                     source: "internal",
                   }}
                 >
                   <Image
                     className="m-0 size-full"
                     src={blob.url}
-                    alt={blob.title ?? ""}
+                    alt={blob.description ?? ""}
                     fill
                     objectFit="cover"
                   />

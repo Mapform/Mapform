@@ -92,8 +92,11 @@ interface FeatureProps {
   imageData?: {
     images: {
       url: string;
-      alt?: string;
-      attribution?: string;
+      description?: string;
+      license?: string;
+      licenseUrl?: string;
+      sourceUrl?: string;
+      author?: string;
     }[];
     isLoading?: boolean;
     error?: string | null;
@@ -131,8 +134,11 @@ export function Feature({
   const images =
     imageData?.images.map((image) => ({
       url: image.url,
-      alt: image.alt,
-      attribution: image.attribution,
+      description: image.description,
+      license: image.license,
+      licenseUrl: image.licenseUrl,
+      sourceUrl: image.sourceUrl,
+      author: image.author,
       source: "internal" as const,
     })) ?? [];
 

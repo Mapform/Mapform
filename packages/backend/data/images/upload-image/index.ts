@@ -24,6 +24,7 @@ export const uploadImage = (authClient: UserAuthClient) =>
           license,
           licenseUrl,
           sourceUrl,
+          description,
         },
         ctx: { userAccess, db },
       }) => {
@@ -173,6 +174,7 @@ export const uploadImage = (authClient: UserAuthClient) =>
               rowId,
               licenseUrl,
               sourceUrl,
+              description,
               author,
               license,
               order: 0,

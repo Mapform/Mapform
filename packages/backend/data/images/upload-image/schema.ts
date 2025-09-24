@@ -41,6 +41,7 @@ export const uploadImageSchema = z
     license: insertBlobSchema.shape.license,
     licenseUrl: insertBlobSchema.shape.licenseUrl,
     sourceUrl: insertBlobSchema.shape.sourceUrl,
+    description: insertBlobSchema.shape.description,
     image: fileSchema,
   })
   .refine(
