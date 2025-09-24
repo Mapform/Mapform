@@ -7,14 +7,21 @@ import {
   SparklesIcon,
   Trash2Icon,
   ArrowUpRightIcon,
+  ExternalLinkIcon,
 } from "lucide-react";
 import { cn } from "@mapform/lib/classnames";
 import { Button } from "@mapform/ui/components/button";
 import { useParamsContext } from "~/lib/params/client";
+import { openInAppleMaps } from "~/lib/external-links/apple";
+import { openInGoogleMaps } from "~/lib/external-links/google";
 import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
+  ContextMenuSeparator,
+  ContextMenuSub,
+  ContextMenuSubContent,
+  ContextMenuSubTrigger,
   ContextMenuTrigger,
 } from "@mapform/ui/components/context-menu";
 import { useAction } from "next-safe-action/hooks";
@@ -153,14 +160,39 @@ function FeatureListItem({
         </li>
       </ContextMenuTrigger>
       <ContextMenuContent>
-        <ContextMenuItem
-          className="gap-2"
-          onClick={() => {
-            onClick(feature);
-          }}
-        >
-          <ArrowUpRightIcon className="size-4" /> Open
-        </ContextMenuItem>
+        <ContextMenuSub>
+          <ContextMenuSubTrigger>
+            <ArrowUpRightIcon className="mr-2 size-4" /> Open In
+          </ContextMenuSubTrigger>
+          <ContextMenuSubContent>
+            <ContextMenuItem
+              onClick={() => {
+                onClick(feature);
+              }}
+            >
+              New Drawer
+            </ContextMenuItem>
+            <ContextMenuSeparator />
+            <ContextMenuItem
+              onClick={() => {
+                openInGoogleMaps(feature.latitude, feature.longitude);
+              }}
+            >
+              Google Maps
+            </ContextMenuItem>
+            <ContextMenuItem
+              onClick={() => {
+                openInAppleMaps(
+                  feature.latitude,
+                  feature.longitude,
+                  feature.name,
+                );
+              }}
+            >
+              Apple Maps
+            </ContextMenuItem>
+          </ContextMenuSubContent>
+        </ContextMenuSub>
         {editable && (
           <ContextMenuItem
             className="gap-2"

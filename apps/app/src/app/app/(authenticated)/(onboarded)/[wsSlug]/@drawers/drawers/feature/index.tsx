@@ -5,7 +5,7 @@ import {
   EllipsisVerticalIcon,
   Trash2Icon,
   XIcon,
-  ExternalLinkIcon,
+  ArrowUpRightIcon,
 } from "lucide-react";
 import { MapDrawer, MapDrawerToolbar } from "~/components/map-drawer";
 import { useParamsContext } from "~/lib/params/client";
@@ -182,7 +182,7 @@ const FeatureContent = ({
           <DropdownMenuContent>
             <DropdownMenuSub>
               <DropdownMenuSubTrigger>
-                <ExternalLinkIcon className="size-4" /> Open In
+                <ArrowUpRightIcon className="size-4" /> Open In
               </DropdownMenuSubTrigger>
               <DropdownMenuSubContent>
                 <DropdownMenuItem
