@@ -8,7 +8,7 @@ export const updateProjectAction = async (
 ) => {
   const result = await authDataService.updateProject(params);
 
-  revalidatePath("/app/[wsSlug]/[tsSlug]/projects/[pId]/project", "page");
+  revalidatePath(`/app/[wsSlug]`, "page");
 
   return result;
 };
