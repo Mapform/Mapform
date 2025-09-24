@@ -15,6 +15,7 @@ import {
   ImportIcon,
   ImagePlusIcon,
   ScanIcon,
+  PencilIcon,
 } from "lucide-react";
 import { AutoSizeTextArea } from "@mapform/ui/components/autosize-text-area";
 import { useProject } from "../context";
@@ -23,6 +24,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
 } from "@mapform/ui/components/dropdown-menu";
 import { VIEWS } from "~/constants/views";
 import { useAction } from "next-safe-action/hooks";
@@ -50,6 +52,7 @@ import {
   ImageUploaderPopover,
   ImageUploaderTrigger,
   ImageUploaderContent,
+  ImageUploaderAnchor,
 } from "~/components/image-uploder";
 import {
   Carousel,
@@ -59,6 +62,9 @@ import {
 import Image from "next/image";
 import { cn } from "@mapform/lib/classnames";
 import { useMap } from "react-map-gl/maplibre";
+import { ImageLightbox } from "~/components/image-lightbox";
+import { deleteImageAction } from "~/data/images/delete-image";
+import { useState } from "react";
 
 export function Views() {
   const map = useMap();
@@ -77,6 +83,22 @@ export function Views() {
         });
       },
     },
+  );
+
+  const { executeAsync: deleteImageAsync, isPending: isPendingDeleteImage } =
+    useAction(deleteImageAction, {
+      onError: ({ error }) => {
+        toast({
+          title: "Uh oh! Something went wrong.",
+          description:
+            error.serverError ?? "There was an error deleting the image.",
+          variant: "destructive",
+        });
+      },
+    });
+
+  const [openUploaderForUrl, setOpenUploaderForUrl] = useState<string | null>(
+    null,
   );
 
   return (
@@ -130,16 +152,74 @@ export function Views() {
           <CarouselContent className="m-0">
             {projectService.optimisticState.blobs.map((blob) => (
               <CarouselItem
-                className="relative h-[200px] w-full flex-shrink-0 p-0"
+                className="group relative h-[200px] w-full flex-shrink-0 p-0"
                 key={blob.url}
               >
-                <Image
-                  className="m-0 size-full"
-                  src={blob.url}
-                  alt={blob.title ?? ""}
-                  fill
-                  objectFit="cover"
-                />
+                <ImageLightbox
+                  activeImage={{
+                    url: blob.url,
+                    description: blob.description ?? undefined,
+                    license: blob.license ?? undefined,
+                    licenseUrl: blob.licenseUrl ?? undefined,
+                    sourceUrl: blob.sourceUrl ?? undefined,
+                    author: blob.author ?? undefined,
+                    source: "internal",
+                  }}
+                >
+                  <Image
+                    className="m-0 size-full"
+                    src={blob.url}
+                    alt={blob.description ?? ""}
+                    fill
+                    objectFit="cover"
+                  />
+                </ImageLightbox>
+                <ImageUploaderPopover
+                  modal
+                  open={openUploaderForUrl === blob.url}
+                  onOpenChange={(isOpen) =>
+                    setOpenUploaderForUrl(isOpen ? blob.url : null)
+                  }
+                >
+                  <DropdownMenu modal={false}>
+                    <DropdownMenuTrigger asChild>
+                      <ImageUploaderAnchor asChild>
+                        <Button
+                          className={cn(
+                            "absolute right-2 top-2 opacity-0 group-hover:opacity-100 data-[state=open]:opacity-100",
+                            openUploaderForUrl === blob.url && "opacity-100",
+                          )}
+                          size="icon-sm"
+                          type="button"
+                          variant="outline"
+                        >
+                          <PencilIcon className="size-4" />
+                        </Button>
+                      </ImageUploaderAnchor>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                      <ImageUploaderTrigger asChild>
+                        <DropdownMenuItem>
+                          <ImagePlusIcon className="size-4" /> New cover photo
+                        </DropdownMenuItem>
+                      </ImageUploaderTrigger>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem
+                        disabled={isPendingDeleteImage}
+                        onClick={() => deleteImageAsync({ url: blob.url })}
+                      >
+                        <Trash2Icon className="size-4" /> Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+
+                  <ImageUploaderContent
+                    projectId={projectService.optimisticState.id}
+                    onUploadSuccess={() => {
+                      setOpenUploaderForUrl(null);
+                    }}
+                  />
+                </ImageUploaderPopover>
               </CarouselItem>
             ))}
           </CarouselContent>
@@ -204,6 +284,9 @@ export function Views() {
                 </ImageUploaderTrigger>
                 <ImageUploaderContent
                   projectId={projectService.optimisticState.id}
+                  onUploadSuccess={() => {
+                    setOpenUploaderForUrl(null);
+                  }}
                 />
               </ImageUploaderPopover>
               <TooltipContent>Add cover photo</TooltipContent>

@@ -9,6 +9,10 @@ import {
 import { projects } from "../projects/schema";
 import { rows } from "../rows/schema";
 
+/**
+ * Note: We do not store teamspaceId. For auth purposes, the teamspaceId is
+ * derived from the projectId or rowId.
+ */
 export const blobs = pgTable(
   "blob",
   {
@@ -29,10 +33,11 @@ export const blobs = pgTable(
     }),
 
     // Optional attribution fields, mostly used when storing photos from wikidata
-    title: varchar("title", { length: 512 }),
     author: varchar("author", { length: 256 }),
-    // source: varchar("source", { length: 512 }),
+    description: varchar("description", { length: 2048 }),
     license: varchar("license", { length: 256 }),
+    licenseUrl: varchar("license_url", { length: 2048 }),
+    sourceUrl: varchar("source_url", { length: 2048 }),
 
     url: varchar("url", { length: 2048 }).unique().notNull(),
     // Size in bytes

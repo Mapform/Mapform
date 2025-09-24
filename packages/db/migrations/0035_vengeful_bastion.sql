@@ -1,0 +1,1 @@
+ALTER TABLE "blob" ADD COLUMN "description" varchar(2048);

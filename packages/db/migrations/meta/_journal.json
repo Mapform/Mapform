@@ -239,6 +239,20 @@
       "when": 1758319345171,
       "tag": "0033_tiny_vin_gonzales",
       "breakpoints": true
+    },
+    {
+      "idx": 34,
+      "version": "7",
+      "when": 1758726104382,
+      "tag": "0034_fair_hydra",
+      "breakpoints": true
+    },
+    {
+      "idx": 35,
+      "version": "7",
+      "when": 1758727072852,
+      "tag": "0035_vengeful_bastion",
+      "breakpoints": true
     }
   ]
 }

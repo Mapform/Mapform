@@ -24,7 +24,7 @@ export interface TourStep {
   id: string;
   title: string;
   description: string | React.ReactNode;
-  imageUrl?: string | StaticImageData;
+  url?: string | StaticImageData;
   video?: Asset;
 }
 
@@ -67,12 +67,12 @@ export function TourContent({ steps }: TourGuideProps) {
     return null;
   }
 
-  if (currentStep.video && currentStep.imageUrl) {
-    throw new Error("Cannot have both video and imageUrl");
+  if (currentStep.video && currentStep.url) {
+    throw new Error("Cannot have both video and url");
   }
 
-  if (!currentStep.imageUrl && !currentStep.video) {
-    throw new Error("Must have either imageUrl or video");
+  if (!currentStep.url && !currentStep.video) {
+    throw new Error("Must have either url or video");
   }
 
   return (
@@ -92,9 +92,9 @@ export function TourContent({ steps }: TourGuideProps) {
                 Step {currentStepIndex + 1} of {steps.length}
               </div>
               <div className="relative aspect-video overflow-hidden rounded-md">
-                {currentStep.imageUrl && (
+                {currentStep.url && (
                   <Image
-                    src={currentStep.imageUrl}
+                    src={currentStep.url}
                     alt={currentStep.title}
                     className="h-full w-full object-cover"
                     fill

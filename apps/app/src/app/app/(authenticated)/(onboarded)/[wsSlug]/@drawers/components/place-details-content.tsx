@@ -11,7 +11,7 @@ import {
   XIcon,
 } from "lucide-react";
 import { Feature } from "~/components/feature";
-import { useWikidataImages } from "~/lib/wikidata-image";
+import { useWikidataImage } from "~/lib/wikidata-image";
 import {
   DropdownMenu,
   DropdownMenuSubContent,
@@ -41,7 +41,8 @@ import { useParams } from "next/navigation";
 import type { Details } from "@mapform/backend/data/stadia/details";
 import { useWorkspace } from "../../workspace-context";
 import { useParamsContext } from "~/lib/params/client";
-import { createRowWithColumnsAction } from "~/data/rows/create-row-with-columns";
+import { createRowWithExtrasAction } from "~/data/rows/create-row-with-extras";
+import { toast } from "@mapform/ui/components/toaster";
 
 type Feature = NonNullable<Details["data"]>["features"][number];
 
@@ -61,10 +62,17 @@ export function PlaceDetailsContent({
   const { setQueryStates } = useParamsContext();
   const { pId } = useParams<{ pId: string }>();
   const { workspaceDirectory } = useWorkspace();
-  const { execute, isPending } = useAction(createRowWithColumnsAction, {
+  const { execute, isPending } = useAction(createRowWithExtrasAction, {
     onSuccess: async ({ data }) => {
       await onClose();
-      await setQueryStates({ rowId: data?.id });
+      await setQueryStates({ rowId: data?.row.data?.id });
+
+      if (data?.uploadImageResponse?.serverError) {
+        toast({
+          title: "Failed to upload image",
+          description: data.uploadImageResponse.serverError,
+        });
+      }
     },
   });
 
@@ -83,7 +91,7 @@ export function PlaceDetailsContent({
     properties?.addendum?.osm?.phone ?? properties?.addendum?.foursquare?.tel;
   const address =
     properties?.formattedAddressLine ?? properties?.coarseLocation;
-  const wikiData = useWikidataImages(wikidataId);
+  const wikiData = useWikidataImage(wikidataId);
 
   // Flatten all projects from all teamspaces
   const allProjects = workspaceDirectory.teamspaces
@@ -95,51 +103,83 @@ export function PlaceDetailsContent({
     )
     .sort((a, b) => a.position - b.position);
 
-  const handleAddToProject = (projectId: string) => {
-    execute({
-      projectId,
-      name: placeName,
-      stadiaId: properties?.gid,
-      osmId: wikidataId,
-      geometry: {
-        type: "Point",
-        coordinates: [longitude, latitude],
-      },
-      cells: [
-        ...(address
-          ? [
-              {
-                columnName: "Address",
-                value: address,
-                type: "string" as const,
-              },
-            ]
-          : []),
-        ...(phone
-          ? [
-              {
-                columnName: "Phone",
-                value: phone,
-                type: "string" as const,
-              },
-            ]
-          : []),
-        ...(website
-          ? [
-              {
-                columnName: "Website",
-                value: website,
-                type: "string" as const,
-              },
-              {
-                columnName: "Website",
-                value: website,
-                type: "string" as const,
-              },
-            ]
-          : []),
-      ],
-    });
+  const handleAddToProject = async (projectId: string) => {
+    // Ensure we have a primary image URL to fetch
+    const originalUrl = wikiData.url;
+    if (!originalUrl) return;
+
+    try {
+      // Use same-origin proxy to fetch the image and avoid CORS
+      const fetchUrl = originalUrl;
+
+      // Fetch via same-origin proxy to avoid CORS and get a Blob
+      const proxyUrl = `/api/proxy/image?url=${encodeURIComponent(fetchUrl)}`;
+      const response = await fetch(proxyUrl);
+      if (!response.ok) return;
+
+      const blob = await response.blob();
+
+      const contentType = blob.type || "image/jpeg";
+      const extension = (contentType.split("/")[1] || "jpg").split(";")[0];
+      const safeName = (placeName || "image")
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/(^-|-$)/g, "");
+      const filename = `${safeName}-${wikidataId || "wikidata"}.${extension}`;
+
+      const file = new File([blob], filename, { type: contentType });
+
+      execute({
+        projectId,
+        name: placeName,
+        stadiaId: properties?.gid,
+        osmId: wikidataId,
+        geometry: {
+          type: "Point",
+          coordinates: [longitude, latitude],
+        },
+        cells: [
+          ...(address
+            ? [
+                {
+                  columnName: "Address",
+                  value: address,
+                  type: "string" as const,
+                },
+              ]
+            : []),
+          ...(phone
+            ? [
+                {
+                  columnName: "Phone",
+                  value: phone,
+                  type: "string" as const,
+                },
+              ]
+            : []),
+          ...(website
+            ? [
+                {
+                  columnName: "Website",
+                  value: website,
+                  type: "string" as const,
+                },
+              ]
+            : []),
+        ],
+        image: {
+          file,
+          author: wikiData.attribution?.author,
+          license: wikiData.attribution?.license,
+          licenseUrl: wikiData.attribution?.licenseUrl,
+          sourceUrl: wikiData.attribution?.sourceUrl,
+          description: wikiData.attribution?.description,
+        },
+      });
+    } catch (err) {
+      console.error("Failed to fetch Wikidata image for upload", err);
+      return;
+    }
   };
 
   const placeName = properties?.name ?? "Marked Location";
@@ -154,7 +194,7 @@ export function PlaceDetailsContent({
             type="button"
             variant="ghost"
             disabled={isPending}
-            onClick={() => handleAddToProject(pId)}
+            onClick={() => void handleAddToProject(pId)}
           >
             {isPending ? (
               <Loader2Icon className="size-4 animate-spin" />
@@ -191,7 +231,7 @@ export function PlaceDetailsContent({
                         value={`${project.id}`}
                         onSelect={() => {
                           setProjectComboboxOpen(false);
-                          handleAddToProject(project.id);
+                          void handleAddToProject(project.id);
                         }}
                         keywords={[project.name || "New Map"]}
                       >
@@ -246,8 +286,21 @@ export function PlaceDetailsContent({
         </Button>
       </MapDrawerToolbar>
       <Feature
-        imageData={wikiData}
         title={placeName}
+        imageData={{
+          images: wikiData.url
+            ? [
+                {
+                  url: wikiData.url,
+                  description: wikiData.attribution?.description,
+                  license: wikiData.attribution?.license,
+                  licenseUrl: wikiData.attribution?.licenseUrl,
+                  sourceUrl: wikiData.attribution?.sourceUrl,
+                  author: wikiData.attribution?.author,
+                },
+              ]
+            : [],
+        }}
         properties={[
           ...(address
             ? ([

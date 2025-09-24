@@ -238,7 +238,6 @@ const FeatureContent = ({
         title={featureService.optimisticState!.name ?? ""}
         description={featureService.optimisticState!.description ?? undefined}
         icon={featureService.optimisticState!.icon ?? undefined}
-        osmId={featureService.optimisticState!.osmId ?? undefined}
         onTitleChange={(value) => {
           featureService.execute({
             ...featureService.optimisticState,
@@ -263,7 +262,12 @@ const FeatureContent = ({
         }}
         imageData={{
           images: featureService.optimisticState!.blobs.map((blob) => ({
-            imageUrl: blob.url,
+            url: blob.url,
+            description: blob.description ?? undefined,
+            license: blob.license ?? undefined,
+            licenseUrl: blob.licenseUrl ?? undefined,
+            sourceUrl: blob.sourceUrl ?? undefined,
+            author: blob.author ?? undefined,
           })),
         }}
         properties={properties}

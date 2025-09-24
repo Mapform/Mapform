@@ -10,7 +10,13 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from "@mapform/ui/components/tooltip";
-import { ImagePlusIcon, PlusIcon, SmilePlusIcon } from "lucide-react";
+import {
+  ImagePlusIcon,
+  PencilIcon,
+  PlusIcon,
+  SmilePlusIcon,
+  Trash2Icon,
+} from "lucide-react";
 import {
   type CustomBlock,
   schema,
@@ -27,11 +33,11 @@ import Image from "next/image";
 import { Skeleton } from "@mapform/ui/components/skeleton";
 import {
   ImageUploaderContent,
+  ImageUploaderAnchor,
   ImageUploaderPopover,
   ImageUploaderTrigger,
 } from "./image-uploder";
 import { cn } from "@mapform/lib/classnames";
-import { useWikidataImages } from "~/lib/wikidata-image";
 import {
   PropertyAdder,
   PropertyAdderTrigger,
@@ -54,6 +60,16 @@ import {
 } from "@dnd-kit/sortable";
 import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
 import { DragHandle, DragItem } from "./draggable";
+import { ImageLightbox } from "./image-lightbox";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@mapform/ui/components/dropdown-menu";
+import { deleteImageAction } from "~/data/images/delete-image";
+import { toast } from "@mapform/ui/components/toaster";
 
 type Property =
   | {
@@ -75,7 +91,12 @@ interface FeatureProps {
   icon?: string;
   imageData?: {
     images: {
-      imageUrl: string;
+      url: string;
+      description?: string;
+      license?: string;
+      licenseUrl?: string;
+      sourceUrl?: string;
+      author?: string;
     }[];
     isLoading?: boolean;
     error?: string | null;
@@ -88,7 +109,6 @@ interface FeatureProps {
     markdown: string | null;
   }) => void;
   rowId?: string;
-  osmId?: string;
   projectId?: string;
 }
 
@@ -102,7 +122,6 @@ export function Feature({
   onIconChange,
   onDescriptionChange,
   rowId,
-  osmId,
   projectId,
 }: FeatureProps) {
   const editor = useCreateBlockNote({
@@ -112,12 +131,32 @@ export function Feature({
       typeof description === "string" ? [] : (description as CustomBlock[]),
   });
 
-  const wikiData = useWikidataImages(osmId);
-  const images = [...(imageData?.images ?? []), ...wikiData.images];
+  const images =
+    imageData?.images.map((image) => ({
+      url: image.url,
+      description: image.description,
+      license: image.license,
+      licenseUrl: image.licenseUrl,
+      sourceUrl: image.sourceUrl,
+      author: image.author,
+      source: "internal" as const,
+    })) ?? [];
 
   const { executeAsync: updateColumnOrderAsync, isPending } = useAction(
     updateColumnOrderAction,
   );
+
+  const { executeAsync: deleteImageAsync, isPending: isPendingDeleteImage } =
+    useAction(deleteImageAction, {
+      onError: ({ error }) => {
+        toast({
+          title: "Uh oh! Something went wrong.",
+          description:
+            error.serverError ?? "There was an error deleting the image.",
+          variant: "destructive",
+        });
+      },
+    });
 
   usePreventPageUnload(isPending);
 
@@ -156,6 +195,11 @@ export function Feature({
     useSensor(PointerSensor, {
       activationConstraint: { distance: 8 },
     }),
+  );
+
+  // Track which image's uploader popover is open so its Pencil button stays visible
+  const [openUploaderForUrl, setOpenUploaderForUrl] = useState<string | null>(
+    null,
   );
 
   const handleDragEnd = async (event: DragEndEvent) => {
@@ -202,16 +246,66 @@ export function Feature({
           <CarouselContent className="m-0">
             {images.map((image) => (
               <CarouselItem
-                className="relative h-[200px] w-full flex-shrink-0 p-0"
-                key={image.imageUrl}
+                className="group relative h-[200px] w-full flex-shrink-0 p-0"
+                key={image.url}
               >
-                <Image
-                  className="m-0 size-full"
-                  src={image.imageUrl}
-                  alt={""}
-                  fill
-                  objectFit="cover"
-                />
+                <ImageLightbox activeImage={image}>
+                  <Image
+                    className="m-0 size-full"
+                    src={image.url}
+                    alt={""}
+                    fill
+                    objectFit="cover"
+                  />
+                </ImageLightbox>
+                {projectId ? (
+                  <ImageUploaderPopover
+                    modal
+                    open={openUploaderForUrl === image.url}
+                    onOpenChange={(isOpen) =>
+                      setOpenUploaderForUrl(isOpen ? image.url : null)
+                    }
+                  >
+                    <DropdownMenu modal={false}>
+                      <DropdownMenuTrigger asChild>
+                        <ImageUploaderAnchor asChild>
+                          <Button
+                            className={cn(
+                              "absolute right-2 top-2 opacity-0 group-hover:opacity-100 data-[state=open]:opacity-100",
+                              openUploaderForUrl === image.url && "opacity-100",
+                            )}
+                            size="icon-sm"
+                            type="button"
+                            variant="outline"
+                          >
+                            <PencilIcon className="size-4" />
+                          </Button>
+                        </ImageUploaderAnchor>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent>
+                        <ImageUploaderTrigger asChild>
+                          <DropdownMenuItem>
+                            <ImagePlusIcon className="size-4" /> New cover photo
+                          </DropdownMenuItem>
+                        </ImageUploaderTrigger>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem
+                          disabled={isPendingDeleteImage}
+                          onClick={() => deleteImageAsync({ url: image.url })}
+                        >
+                          <Trash2Icon className="size-4" /> Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+
+                    <ImageUploaderContent
+                      rowId={rowId}
+                      onUploadSuccess={() => {
+                        setOpenUploaderForUrl(null);
+                      }}
+                    />
+                  </ImageUploaderPopover>
+                ) : null}
               </CarouselItem>
             ))}
           </CarouselContent>
@@ -258,7 +352,12 @@ export function Feature({
                     </Button>
                   </TooltipTrigger>
                 </ImageUploaderTrigger>
-                <ImageUploaderContent rowId={rowId} />
+                <ImageUploaderContent
+                  rowId={rowId}
+                  onUploadSuccess={() => {
+                    setOpenUploaderForUrl(null);
+                  }}
+                />
               </ImageUploaderPopover>
               <TooltipContent>Add cover photo</TooltipContent>
             </Tooltip>
@@ -301,7 +400,7 @@ export function Feature({
                           />
                         </DragHandle>
                       </div>
-                      <div className="col-span-2 flex w-full items-center">
+                      <div className="col-span-2 flex w-full">
                         <PropertyValueEditor
                           columnId={property.columnId}
                           rowId={property.rowId}

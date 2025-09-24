@@ -4,7 +4,7 @@ import maplibregl from "maplibre-gl";
 import { FeatureList } from "~/components/feature-list";
 import type { AIResultLocation } from "~/lib/types";
 import { useParamsContext } from "~/lib/params/client";
-import { useWikidataImages } from "~/lib/wikidata-image";
+import { useWikidataImage } from "~/lib/wikidata-image";
 
 interface PickLocationsMessageProps {
   results: AIResultLocation[];
@@ -12,7 +12,7 @@ interface PickLocationsMessageProps {
 
 // Component to handle a single feature with Wikidata image
 function FeatureWithImage({ result }: { result: AIResultLocation }) {
-  const wikidataData = useWikidataImages(
+  const wikidataData = useWikidataImage(
     result.source === "stadia" ? result.wikidataId : undefined,
   );
 
@@ -25,7 +25,7 @@ function FeatureWithImage({ result }: { result: AIResultLocation }) {
     image:
       result.source === "stadia" && result.wikidataId
         ? {
-            url: wikidataData.primaryImage?.imageUrl ?? "",
+            url: wikidataData.url ?? "",
             isLoading: wikidataData.isLoading,
           }
         : undefined,

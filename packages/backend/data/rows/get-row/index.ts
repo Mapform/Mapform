@@ -1,12 +1,12 @@
 "server-only";
 
 import { sql } from "@mapform/db";
-import { rows } from "@mapform/db/schema";
+import { blobs, rows } from "@mapform/db/schema";
 import type { Geometry } from "geojson";
 import type { PointType } from "@mapform/db/schema/rows/schema";
 import { getRowSchema } from "./schema";
 import type { UnwrapReturn, UserAuthClient } from "../../../lib/types";
-import { eq } from "@mapform/db/utils";
+import { asc, eq } from "@mapform/db/utils";
 
 export const getRow = (authClient: UserAuthClient) =>
   authClient
@@ -44,7 +44,9 @@ export const getRow = (authClient: UserAuthClient) =>
               column: true,
             },
           },
-          blobs: true,
+          blobs: {
+            orderBy: [asc(blobs.order), asc(blobs.createdAt)],
+          },
         },
       });
 

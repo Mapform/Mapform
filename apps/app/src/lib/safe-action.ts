@@ -54,6 +54,7 @@ import { forwardGeocode } from "@mapform/backend/data/stadia/forward";
 import { updateColumnOrder } from "@mapform/backend/data/columns/update-column-order";
 import { db } from "@mapform/db";
 import { updateChat } from "@mapform/backend/data/chats/update-chat";
+import { deleteImage } from "@mapform/backend/data/images/delete-image";
 
 const ignoredWorkspaceSlugs = ["onboarding"];
 const ignoredTeamspaceSlugs = ["settings"];
@@ -135,6 +136,7 @@ const createUserAuthDataService = () => {
 
     // Images
     uploadImage: uploadImage(client),
+    deleteImage: deleteImage(client),
 
     // Messages
     createMessages: createMessages(client),

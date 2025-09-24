@@ -11,7 +11,7 @@ export const ACCEPTED_IMAGE_TYPES = [
 ];
 
 // Custom file validation schema
-const fileSchema = z
+export const fileSchema = z
   .custom<File>((val) => val instanceof File, {
     message: "Invalid file",
   })
@@ -37,9 +37,11 @@ export const uploadImageSchema = z
     workspaceId: insertBlobSchema.shape.workspaceId,
     projectId: insertBlobSchema.shape.projectId,
     rowId: insertBlobSchema.shape.rowId,
-    title: insertBlobSchema.shape.title,
     author: insertBlobSchema.shape.author,
     license: insertBlobSchema.shape.license,
+    licenseUrl: insertBlobSchema.shape.licenseUrl,
+    sourceUrl: insertBlobSchema.shape.sourceUrl,
+    description: insertBlobSchema.shape.description,
     image: fileSchema,
   })
   .refine(

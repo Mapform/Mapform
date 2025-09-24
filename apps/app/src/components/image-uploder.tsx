@@ -13,16 +13,21 @@ import {
   MAX_FILE_SIZE,
   ACCEPTED_IMAGE_TYPES,
 } from "@mapform/backend/data/images/upload-image/schema";
+import type { FileRejection } from "react-dropzone";
 
 interface ImageUploaderContentProps {
   projectId?: string;
   rowId?: string;
   order?: number;
+  onUploadSuccess?: () => void;
+  onUploadError?: (error: string) => void;
 }
 
 export function ImageUploaderContent({
   projectId,
   rowId,
+  onUploadSuccess,
+  onUploadError,
 }: ImageUploaderContentProps) {
   const { workspaceDirectory } = useWorkspace();
 
@@ -32,6 +37,7 @@ export function ImageUploaderContent({
         title: "Image uploaded successfully",
         description: "Your image has been uploaded and is ready to use.",
       });
+      onUploadSuccess?.();
     },
     onError: ({ error }) => {
       toast({
@@ -40,6 +46,9 @@ export function ImageUploaderContent({
           error.serverError ?? "Failed to upload image. Please try again.",
         variant: "destructive",
       });
+      onUploadError?.(
+        error.serverError ?? "Failed to upload image. Please try again.",
+      );
     },
   });
 
@@ -68,13 +77,42 @@ export function ImageUploaderContent({
   );
 
   const onDrop = useCallback(
-    (acceptedFiles: File[]) => {
-      if (acceptedFiles.length === 0) return;
+    (acceptedFiles: File[], fileRejections: FileRejection[]) => {
+      if (acceptedFiles.length === 0) {
+        if (fileRejections.length > 0) {
+          const messages = new Set<string>();
+          for (const rejection of fileRejections) {
+            for (const error of rejection.errors) {
+              switch (error.code) {
+                case "file-too-large":
+                  messages.add("File size must be less than 2MB.");
+                  break;
+                case "file-invalid-type":
+                  messages.add(
+                    "Only .jpg, .jpeg, .png, .webp and .gif formats are supported.",
+                  );
+                  break;
+                case "too-many-files":
+                  messages.add("Only one file may be uploaded at a time.");
+                  break;
+                default:
+                  if (error.message) messages.add(error.message);
+              }
+            }
+          }
+          toast({
+            title: "No valid file selected",
+            description: Array.from(messages).join(" "),
+            variant: "destructive",
+          });
+        }
+        return;
+      }
 
       const file = acceptedFiles[0];
       if (!file) return;
 
-      // Validate file first
+      // Validate file first (extra safety)
       const validationError = validateFile(file);
       if (validationError) {
         toast({
@@ -96,6 +134,7 @@ export function ImageUploaderContent({
     accept: {
       "image/*": [".jpg", ".jpeg", ".png", ".webp", ".gif"],
     },
+    multiple: false,
     maxFiles: 1,
     maxSize: MAX_FILE_SIZE,
   });
@@ -119,7 +158,7 @@ export function ImageUploaderContent({
               : "border-muted-foreground/25 hover:border-primary/50",
           )}
         >
-          <input {...getInputProps()} />
+          <input {...getInputProps({ multiple: false })} />
           <ImageUpIcon className="text-muted-foreground mx-auto size-6" />
           <p className="mt-2 text-sm">
             {isDragActive ? (
@@ -143,4 +182,5 @@ export function ImageUploaderContent({
 export {
   Popover as ImageUploaderPopover,
   PopoverTrigger as ImageUploaderTrigger,
+  PopoverAnchor as ImageUploaderAnchor,
 } from "@mapform/ui/components/popover";

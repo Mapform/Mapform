@@ -13,12 +13,12 @@ export interface WikidataAttribution {
 }
 
 export interface WikidataImageData {
-  imageUrl: string | null;
+  url: string | null;
   attribution: WikidataAttribution | null;
 }
 
 export interface WikidataImageItem {
-  imageUrl: string;
+  url: string;
   attribution: WikidataAttribution | null;
   property: string; // e.g., "P18", "P3451", etc.
   qualifiers?: Record<string, any>; // Additional qualifiers
@@ -48,124 +48,30 @@ export const fetchWikidataImage = async (
       `https://www.wikidata.org/w/api.php?action=wbgetentities&ids=${wikidataId}&format=json&origin=*`,
     );
 
-    if (!entityResponse.ok) return { imageUrl: null, attribution: null };
+    if (!entityResponse.ok) return { url: null, attribution: null };
 
     const entityData = await entityResponse.json();
     const entity = entityData.entities?.[wikidataId];
 
-    if (!entity) return { imageUrl: null, attribution: null };
+    if (!entity) return { url: null, attribution: null };
 
     // Look for image property (P18)
     const imageClaim = entity.claims?.P18?.[0];
-    if (!imageClaim) return { imageUrl: null, attribution: null };
+    if (!imageClaim) return { url: null, attribution: null };
 
     const imageFilename = imageClaim.mainsnak?.datavalue?.value;
-    if (!imageFilename) return { imageUrl: null, attribution: null };
+    if (!imageFilename) return { url: null, attribution: null };
 
     // Convert filename to URL
-    const imageUrl = `https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(imageFilename)}?width=800`;
+    const url = `https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(imageFilename)}?width=800`;
 
     // Fetch attribution data from Wikimedia Commons API
-    const attribution = await fetchWikidataAttribution(
-      imageFilename,
-      wikidataId,
-    );
+    const attribution = await fetchWikidataAttribution(imageFilename);
 
-    return { imageUrl, attribution };
+    return { url, attribution };
   } catch (error) {
     console.error("Error fetching Wikidata image:", error);
-    return { imageUrl: null, attribution: null };
-  }
-};
-
-/**
- * Fetches multiple Wikidata images for a given Wikidata entity ID
- * @param wikidataId - The Wikidata entity ID (e.g., "Q12345")
- * @returns Promise<WikidataImagesData> - Multiple images with attribution data
- */
-export const fetchWikidataImages = async (
-  wikidataId: string,
-): Promise<WikidataImagesData> => {
-  try {
-    // Get the Wikidata entity
-    const entityResponse = await fetch(
-      `https://www.wikidata.org/w/api.php?action=wbgetentities&ids=${wikidataId}&format=json&origin=*`,
-    );
-
-    if (!entityResponse.ok) return { images: [], primaryImage: null };
-
-    const entityData = await entityResponse.json();
-    const entity = entityData.entities?.[wikidataId];
-
-    if (!entity) return { images: [], primaryImage: null };
-
-    const images: WikidataImageItem[] = [];
-    let primaryImage: WikidataImageItem | null = null;
-
-    // Common image properties to check
-    const imageProperties = [
-      "P18", // image
-      "P3451", // poster image
-      "P154", // logo image
-      "P41", // flag image
-      "P94", // coat of arms image
-      "P242", // locator map image
-      "P2716", // collage image
-      "P4291", // panoramic view
-      "P4292", // interior view
-      "P4293", // exterior view
-      "P4294", // aerial view
-      "P4295", // night view
-      "P4296", // seasonal view
-      "P4297", // historical view
-      "P4298", // detail view
-      "P4299", // close-up view
-      "P4300", // wide view
-    ];
-
-    // Process each image property
-    for (const property of imageProperties) {
-      const claims = entity.claims?.[property];
-      if (!claims) continue;
-
-      for (const claim of claims) {
-        const imageFilename = claim.mainsnak?.datavalue?.value;
-        if (!imageFilename) continue;
-
-        // Convert filename to URL
-        const imageUrl = `https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(imageFilename)}?width=800`;
-
-        // Fetch attribution data
-        const attribution = await fetchWikidataAttribution(
-          imageFilename,
-          wikidataId,
-        );
-
-        const imageItem: WikidataImageItem = {
-          imageUrl,
-          attribution,
-          property,
-          qualifiers: claim.qualifiers,
-          rank: claim.rank,
-        };
-
-        images.push(imageItem);
-
-        // Set primary image (P18 with preferred rank, or first P18, or first image)
-        if (!primaryImage) {
-          primaryImage = imageItem;
-        } else if (property === "P18" && claim.rank === "preferred") {
-          primaryImage = imageItem;
-        } else if (property === "P18" && primaryImage.property !== "P18") {
-          primaryImage = imageItem;
-        }
-      }
-    }
-
-    return { images, primaryImage };
-  } catch (error) {
-    console.error("Error fetching Wikidata images:", error);
-    return { images: [], primaryImage: null };
+    return { url: null, attribution: null };
   }
 };
 
@@ -177,7 +83,6 @@ export const fetchWikidataImages = async (
  */
 const fetchWikidataAttribution = async (
   imageFilename: string,
-  wikidataId: string,
 ): Promise<WikidataAttribution | null> => {
   try {
     // Fetch image info from Wikimedia Commons API
@@ -238,9 +143,12 @@ const fetchWikidataAttribution = async (
  * @param wikidataId - The Wikidata entity ID
  * @returns Object with image URL, attribution, loading state, and error state
  */
-export const useWikidataImage = (wikidataId: string | undefined) => {
+export const useWikidataImage = (
+  wikidataId: string | undefined,
+  enabled: boolean = true,
+) => {
   const [imageData, setImageData] = useState<WikidataImageData>({
-    imageUrl: null,
+    url: null,
     attribution: null,
   });
   const [isLoading, setIsLoading] = useState(false);
@@ -248,8 +156,8 @@ export const useWikidataImage = (wikidataId: string | undefined) => {
 
   useEffect(() => {
     const loadImage = async () => {
-      if (!wikidataId) {
-        setImageData({ imageUrl: null, attribution: null });
+      if (!wikidataId || !enabled) {
+        setImageData({ url: null, attribution: null });
         setError(null);
         return;
       }
@@ -264,66 +172,18 @@ export const useWikidataImage = (wikidataId: string | undefined) => {
         const errorMessage =
           err instanceof Error ? err.message : "Failed to load image";
         setError(errorMessage);
-        setImageData({ imageUrl: null, attribution: null });
+        setImageData({ url: null, attribution: null });
       } finally {
         setIsLoading(false);
       }
     };
 
     void loadImage();
-  }, [wikidataId]);
+  }, [wikidataId, enabled]);
 
   return {
-    imageUrl: imageData.imageUrl,
+    url: imageData.url,
     attribution: imageData.attribution,
-    isLoading,
-    error,
-  };
-};
-
-/**
- * Hook for managing multiple Wikidata images with attribution
- * @param wikidataId - The Wikidata entity ID
- * @returns Object with images array, primary image, loading state, and error state
- */
-export const useWikidataImages = (wikidataId: string | undefined) => {
-  const [imagesData, setImagesData] = useState<WikidataImagesData>({
-    images: [],
-    primaryImage: null,
-  });
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const loadImages = async () => {
-      if (!wikidataId) {
-        setImagesData({ images: [], primaryImage: null });
-        setError(null);
-        return;
-      }
-
-      setIsLoading(true);
-      setError(null);
-
-      try {
-        const data = await fetchWikidataImages(wikidataId);
-        setImagesData(data);
-      } catch (err) {
-        const errorMessage =
-          err instanceof Error ? err.message : "Failed to load images";
-        setError(errorMessage);
-        setImagesData({ images: [], primaryImage: null });
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    void loadImages();
-  }, [wikidataId]);
-
-  return {
-    images: imagesData.images,
-    primaryImage: imagesData.primaryImage,
     isLoading,
     error,
   };

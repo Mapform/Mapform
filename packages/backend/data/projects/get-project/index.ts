@@ -2,8 +2,8 @@
 
 import type { Geometry, Point } from "geojson";
 import { sql } from "@mapform/db";
-import { eq, and, inArray } from "@mapform/db/utils";
-import { projects, rows } from "@mapform/db/schema";
+import { eq, and, inArray, asc } from "@mapform/db/utils";
+import { projects, rows, blobs } from "@mapform/db/schema";
 import type { UnwrapReturn, UserAuthClient } from "../../../lib/types";
 import { getProjectSchema } from "./schema";
 
@@ -44,7 +44,21 @@ export const getProject = (authClient: UserAuthClient) =>
                 },
               },
               columns: true,
-              blobs: true,
+              blobs: {
+                orderBy: [asc(blobs.order), asc(blobs.createdAt)],
+              },
+              teamspace: {
+                columns: {
+                  id: true,
+                },
+                with: {
+                  workspace: {
+                    columns: {
+                      id: true,
+                    },
+                  },
+                },
+              },
             },
             extras: {
               center:
@@ -90,7 +104,9 @@ export const getProject = (authClient: UserAuthClient) =>
                   column: true,
                 },
               },
-              blobs: true,
+              blobs: {
+                orderBy: [asc(blobs.order), asc(blobs.createdAt)],
+              },
             },
           }),
           db.$count(rows, rowWhereOptions),

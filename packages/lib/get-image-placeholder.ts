@@ -1,7 +1,7 @@
 import { getPlaiceholder } from "plaiceholder";
 
-export async function getImagePlaceholder(imageUrl: string) {
-  const buffer = await fetch(imageUrl).then(async (res) => {
+export async function getImagePlaceholder(url: string) {
+  const buffer = await fetch(url).then(async (res) => {
     const arrayBuffer = await res.arrayBuffer();
     return Buffer.from(arrayBuffer);
   });
@@ -13,7 +13,7 @@ export async function getImagePlaceholder(imageUrl: string) {
   return {
     ...plaiceholder,
     img: {
-      src: imageUrl,
+      src: url,
       width,
       height,
     },
