@@ -252,52 +252,54 @@ export function Feature({
                     objectFit="cover"
                   />
                 </ImageLightbox>
-                <ImageUploaderPopover
-                  modal
-                  open={openUploaderForUrl === image.url}
-                  onOpenChange={(isOpen) =>
-                    setOpenUploaderForUrl(isOpen ? image.url : null)
-                  }
-                >
-                  <DropdownMenu modal={false}>
-                    <DropdownMenuTrigger asChild>
-                      <ImageUploaderAnchor asChild>
-                        <Button
-                          className={cn(
-                            "absolute right-2 top-2 opacity-0 group-hover:opacity-100 data-[state=open]:opacity-100",
-                            openUploaderForUrl === image.url && "opacity-100",
-                          )}
-                          size="icon-sm"
-                          type="button"
-                          variant="outline"
+                {projectId ? (
+                  <ImageUploaderPopover
+                    modal
+                    open={openUploaderForUrl === image.url}
+                    onOpenChange={(isOpen) =>
+                      setOpenUploaderForUrl(isOpen ? image.url : null)
+                    }
+                  >
+                    <DropdownMenu modal={false}>
+                      <DropdownMenuTrigger asChild>
+                        <ImageUploaderAnchor asChild>
+                          <Button
+                            className={cn(
+                              "absolute right-2 top-2 opacity-0 group-hover:opacity-100 data-[state=open]:opacity-100",
+                              openUploaderForUrl === image.url && "opacity-100",
+                            )}
+                            size="icon-sm"
+                            type="button"
+                            variant="outline"
+                          >
+                            <PencilIcon className="size-4" />
+                          </Button>
+                        </ImageUploaderAnchor>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent>
+                        <ImageUploaderTrigger asChild>
+                          <DropdownMenuItem>
+                            <ImagePlusIcon className="size-4" /> New cover photo
+                          </DropdownMenuItem>
+                        </ImageUploaderTrigger>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem
+                          disabled={isPendingDeleteImage}
+                          onClick={() => deleteImageAsync({ url: image.url })}
                         >
-                          <PencilIcon className="size-4" />
-                        </Button>
-                      </ImageUploaderAnchor>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                      <ImageUploaderTrigger asChild>
-                        <DropdownMenuItem>
-                          <ImagePlusIcon className="size-4" /> New cover photo
+                          <Trash2Icon className="size-4" /> Delete
                         </DropdownMenuItem>
-                      </ImageUploaderTrigger>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem
-                        disabled={isPendingDeleteImage}
-                        onClick={() => deleteImageAsync({ url: image.url })}
-                      >
-                        <Trash2Icon className="size-4" /> Delete
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
 
-                  <ImageUploaderContent
-                    rowId={rowId}
-                    onUploadSuccess={() => {
-                      setOpenUploaderForUrl(null);
-                    }}
-                  />
-                </ImageUploaderPopover>
+                    <ImageUploaderContent
+                      rowId={rowId}
+                      onUploadSuccess={() => {
+                        setOpenUploaderForUrl(null);
+                      }}
+                    />
+                  </ImageUploaderPopover>
+                ) : null}
               </CarouselItem>
             ))}
           </CarouselContent>
