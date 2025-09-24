@@ -259,7 +259,7 @@ export function Feature({
                     setOpenUploaderForUrl(isOpen ? image.url : null)
                   }
                 >
-                  <DropdownMenu modal>
+                  <DropdownMenu modal={false}>
                     <DropdownMenuTrigger asChild>
                       <ImageUploaderAnchor asChild>
                         <Button
