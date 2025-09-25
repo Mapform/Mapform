@@ -14,45 +14,86 @@ interface SearchDetailsProps {
   details: Details["data"];
 }
 
-export function SearchDetails({ details }: SearchDetailsProps) {
-  const { params, drawerDepth, isPending, setQueryStates } = useParamsContext();
-
-  const longitude = details?.features[0]?.geometry?.coordinates[0];
-  const latitude = details?.features[0]?.geometry?.coordinates[1];
+export function SearchDetailsWrapper({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const { params, drawerDepth } = useParamsContext();
 
   return (
     <MapDrawer
       open={!!params.stadiaId}
       depth={drawerDepth.get("stadiaId") ?? 0}
     >
-      <MapPositioner
-        viewState={{
-          ...(longitude && latitude && { center: [longitude, latitude] }),
-        }}
-      >
-        {isPending &&
-        details?.features[0]?.properties.gid !== params.stadiaId ? (
-          <>
-            <MapDrawerToolbar>
-              <Button
-                className="ml-auto"
-                size="icon-sm"
-                type="button"
-                variant="ghost"
-                onClick={() => {
-                  void setQueryStates({ stadiaId: null });
-                }}
-              >
-                <XIcon className="size-4" />
-              </Button>
-            </MapDrawerToolbar>
-            <BasicSkeleton className="p-6" />
-          </>
-        ) : (
-          <SearchDetailsInner details={details} />
-        )}
-      </MapPositioner>
+      {children}
     </MapDrawer>
+  );
+}
+
+export function SearchDetailsEmpty() {
+  const { setQueryStates } = useParamsContext();
+
+  return (
+    <>
+      <MapDrawerToolbar>
+        <Button
+          className="ml-auto"
+          size="icon-sm"
+          type="button"
+          variant="ghost"
+          onClick={() => {
+            void setQueryStates({ stadiaId: null });
+          }}
+        >
+          <XIcon className="size-4" />
+        </Button>
+      </MapDrawerToolbar>
+      <div className="flex flex-1 flex-col justify-center rounded-lg bg-gray-50 p-8">
+        <div className="text-center">
+          <h3 className="text-foreground mt-2 text-sm font-medium">
+            No feature found
+          </h3>
+        </div>
+      </div>
+    </>
+  );
+}
+
+export function SearchDetails({ details }: SearchDetailsProps) {
+  const { setQueryStates, drawerDepth } = useParamsContext();
+
+  const longitude = details?.features[0]?.geometry?.coordinates[0];
+  const latitude = details?.features[0]?.geometry?.coordinates[1];
+
+  return (
+    <MapPositioner
+      viewState={{
+        ...(longitude && latitude && { center: [longitude, latitude] }),
+      }}
+      disabled={drawerDepth.get("stadiaId") !== 0}
+    >
+      {details ? (
+        <SearchDetailsInner details={details} />
+      ) : (
+        <>
+          <MapDrawerToolbar>
+            <Button
+              className="ml-auto"
+              size="icon-sm"
+              type="button"
+              variant="ghost"
+              onClick={() => {
+                void setQueryStates({ stadiaId: null });
+              }}
+            >
+              <XIcon className="size-4" />
+            </Button>
+          </MapDrawerToolbar>
+          <BasicSkeleton className="p-6" />
+        </>
+      )}
+    </MapPositioner>
   );
 }
 

@@ -1,4 +1,4 @@
-import { MapPositioner } from "~/lib/map/map-positioner";
+import { ServerMapPositioner } from "~/lib/map/map-positioner";
 import { SettingsTabs } from "./settings-tabs";
 
 export default async function SettingsLayout({
@@ -11,13 +11,13 @@ export default async function SettingsLayout({
   const { wsSlug } = await params;
 
   return (
-    <MapPositioner
+    <ServerMapPositioner
       viewState={{ center: [0, 0], zoom: 2.5, pitch: 0, bearing: 0 }}
     >
       <div className="p-2">
         <SettingsTabs wsSlug={wsSlug} />
       </div>
       <div className="p-6">{children}</div>
-    </MapPositioner>
+    </ServerMapPositioner>
   );
 }

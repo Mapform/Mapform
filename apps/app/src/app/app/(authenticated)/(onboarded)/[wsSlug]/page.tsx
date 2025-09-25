@@ -4,7 +4,7 @@ import { getWorkspaceDirectory } from "~/data/workspaces/get-workspace-directory
 
 import { WelcomeTour } from "./welcome-tour";
 import { ProjectMarkers } from "./project-markers";
-import { MapPositioner } from "~/lib/map/map-positioner";
+import { ServerMapPositioner } from "~/lib/map/map-positioner";
 
 export default async function HomePage(props: {
   params: Promise<{ wsSlug: string }>;
@@ -22,11 +22,11 @@ export default async function HomePage(props: {
   }
 
   return (
-    <MapPositioner
+    <ServerMapPositioner
       viewState={{ center: [0, 0], zoom: 2.5, pitch: 0, bearing: 0 }}
     >
       <WelcomeTour />
       <ProjectMarkers />
-    </MapPositioner>
+    </ServerMapPositioner>
   );
 }

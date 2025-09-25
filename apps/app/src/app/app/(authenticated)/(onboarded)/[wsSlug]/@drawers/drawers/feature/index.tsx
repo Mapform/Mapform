@@ -17,7 +17,6 @@ import { updateRowAction } from "~/data/rows/update-row";
 import type { GetRow } from "@mapform/backend/data/rows/get-row";
 import type { UpdateRowSchema } from "@mapform/backend/data/rows/update-row/schema";
 import { Marker } from "react-map-gl/maplibre";
-import { BasicSkeleton } from "~/components/skeletons/basic";
 import { Feature as FeatureComponent } from "~/components/feature";
 import {
   DropdownMenu,
@@ -34,14 +33,53 @@ import { useAction } from "next-safe-action/hooks";
 import { deleteRowsAction } from "~/data/rows/delete-rows";
 import { MapPositioner } from "~/lib/map/map-positioner";
 import type { GetProject } from "@mapform/backend/data/projects/get-project";
+import { BasicSkeleton } from "~/components/skeletons/basic";
 
 interface FeatureDrawerProps {
   feature: GetRow["data"];
   project: GetProject["data"];
 }
 
-export function Feature({ feature, project }: FeatureDrawerProps) {
-  const { params, isPending, drawerDepth, setQueryStates } = useParamsContext();
+export function FeatureWrapper({ children }: { children: React.ReactNode }) {
+  const { params, drawerDepth } = useParamsContext();
+
+  return (
+    <MapDrawer open={!!params.rowId} depth={drawerDepth.get("rowId") ?? 0}>
+      {children}
+    </MapDrawer>
+  );
+}
+
+export function FeatureEmpty() {
+  const { setQueryStates } = useParamsContext();
+  return (
+    <>
+      <MapDrawerToolbar>
+        <Button
+          className="ml-auto"
+          size="icon-sm"
+          type="button"
+          variant="ghost"
+          onClick={() => {
+            void setQueryStates({ rowId: null });
+          }}
+        >
+          <XIcon className="size-4" />
+        </Button>
+      </MapDrawerToolbar>
+      <div className="flex flex-1 flex-col justify-center rounded-lg bg-gray-50 p-8">
+        <div className="text-center">
+          <h3 className="text-foreground mt-2 text-sm font-medium">
+            No feature found
+          </h3>
+        </div>
+      </div>
+    </>
+  );
+}
+
+export function FeatureContent({ feature, project }: FeatureDrawerProps) {
+  const { setQueryStates, drawerDepth } = useParamsContext();
   const featureService = useStateService<GetRow["data"], UpdateRowSchema>(
     updateRowAction,
     {
@@ -61,61 +99,37 @@ export function Feature({ feature, project }: FeatureDrawerProps) {
 
   return (
     <>
-      <MapDrawer open={!!params.rowId} depth={drawerDepth.get("rowId") ?? 0}>
-        <MapPositioner
-          viewState={{
-            ...(longitude && latitude && { center: [longitude, latitude] }),
-          }}
-        >
-          {isPending && params.rowId !== featureService.optimisticState?.id ? (
-            <>
-              <MapDrawerToolbar>
-                <Button
-                  className="ml-auto"
-                  size="icon-sm"
-                  type="button"
-                  variant="ghost"
-                  onClick={() => {
-                    void setQueryStates({ rowId: null });
-                  }}
-                >
-                  <XIcon className="size-4" />
-                </Button>
-              </MapDrawerToolbar>
-              <BasicSkeleton className="p-6" />
-            </>
-          ) : featureService.optimisticState ? (
-            <FeatureContent
-              featureService={featureService}
-              project={project}
-              key={featureService.optimisticState.id}
-            />
-          ) : (
-            <>
-              <MapDrawerToolbar>
-                <Button
-                  className="ml-auto"
-                  size="icon-sm"
-                  type="button"
-                  variant="ghost"
-                  onClick={() => {
-                    void setQueryStates({ rowId: null });
-                  }}
-                >
-                  <XIcon className="size-4" />
-                </Button>
-              </MapDrawerToolbar>
-              <div className="flex flex-1 flex-col justify-center rounded-lg bg-gray-50 p-8">
-                <div className="text-center">
-                  <h3 className="text-foreground mt-2 text-sm font-medium">
-                    No feature found
-                  </h3>
-                </div>
-              </div>
-            </>
-          )}
-        </MapPositioner>
-      </MapDrawer>
+      <MapPositioner
+        viewState={{
+          ...(longitude && latitude && { center: [longitude, latitude] }),
+        }}
+        disabled={drawerDepth.get("rowId") !== 0}
+      >
+        {featureService.optimisticState ? (
+          <FeatureContentInner
+            featureService={featureService}
+            project={project}
+            key={featureService.optimisticState.id}
+          />
+        ) : (
+          <div className="p-2">
+            <MapDrawerToolbar>
+              <Button
+                className="ml-auto"
+                size="icon-sm"
+                type="button"
+                variant="ghost"
+                onClick={() => {
+                  void setQueryStates({ rowId: null });
+                }}
+              >
+                <XIcon className="size-4" />
+              </Button>
+            </MapDrawerToolbar>
+            <BasicSkeleton className="p-4" />
+          </div>
+        )}
+      </MapPositioner>
 
       {longitude && latitude && (
         <Marker longitude={longitude} latitude={latitude} scale={1.5} />
@@ -124,7 +138,7 @@ export function Feature({ feature, project }: FeatureDrawerProps) {
   );
 }
 
-const FeatureContent = ({
+const FeatureContentInner = ({
   featureService,
   project,
 }: {

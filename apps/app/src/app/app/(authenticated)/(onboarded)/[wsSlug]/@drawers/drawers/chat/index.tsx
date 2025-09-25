@@ -1,6 +1,6 @@
 "use client";
 
-import { MapDrawerToolbar } from "~/components/map-drawer";
+import { MapDrawer, MapDrawerToolbar } from "~/components/map-drawer";
 import { useParamsContext } from "~/lib/params/client";
 import { cn } from "@mapform/lib/classnames";
 import { AutoSizeTextArea } from "@mapform/ui/components/autosize-text-area";
@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 
 import { useChat } from "@ai-sdk/react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AnimatePresence } from "motion/react";
 import * as motion from "motion/react-client";
 import type { ChatMessage } from "~/lib/types";
@@ -35,9 +35,19 @@ interface ChatProps {
   chatWithMessages?: { messages?: ChatMessage[]; chatId: string };
 }
 
+export function ChatWrapper({ children }: { children: React.ReactNode }) {
+  const { params, drawerDepth } = useParamsContext();
+
+  return (
+    <MapDrawer open={!!params.chatId} depth={drawerDepth.get("chatId") ?? 0}>
+      {children}
+    </MapDrawer>
+  );
+}
+
 export function Chat({ chatWithMessages }: ChatProps) {
   const { pId } = useParams<{ pId?: string }>();
-  const { params, isPending, setQueryStates } = useParamsContext();
+  const { params, setQueryStates } = useParamsContext();
   const { execute: createChat } = useAction(createChatAction, {
     onSuccess: ({ data }) => {
       void setQueryStates({ chatId: data?.id });
@@ -53,28 +63,21 @@ export function Chat({ chatWithMessages }: ChatProps) {
   /**
    * Used to start a new chat
    */
+  const hasCreatedChatRef = useRef(false);
   useEffect(() => {
-    if (isPending) return;
-    if (params.chatId === "new") {
+    if (params.chatId === "new" && !hasCreatedChatRef.current) {
+      hasCreatedChatRef.current = true;
       createChat({
         title: params.query ?? "New Chat",
         projectId: pId ?? null,
       });
     }
-  }, [
-    chatWithMessages,
-    setQueryStates,
-    createChat,
-    pId,
-    params.chatId,
-    params.query,
-    isPending,
-  ]);
+    if (params.chatId !== "new" && hasCreatedChatRef.current) {
+      hasCreatedChatRef.current = false;
+    }
+  }, [params.chatId, params.query, pId, createChat]);
 
-  if (
-    !chatWithMessages ||
-    (isPending && chatWithMessages.chatId !== params.chatId)
-  )
+  if (!chatWithMessages || chatWithMessages.chatId !== params.chatId)
     return (
       <>
         <MapDrawerToolbar>
@@ -100,7 +103,6 @@ export function Chat({ chatWithMessages }: ChatProps) {
 function ChatInner({ chatWithMessages }: ChatProps) {
   const [input, setInput] = useState("");
   const [hasInitiatedNewChat, setHasInitiatedNewChat] = useState(false);
-  const { isPending } = useParamsContext();
   const { params, setQueryStates } = useParamsContext();
 
   // Initialize chat with resumable transport.
@@ -134,7 +136,6 @@ function ChatInner({ chatWithMessages }: ChatProps) {
   useEffect(() => {
     void (async () => {
       if (
-        !isPending &&
         params.query &&
         !hasInitiatedNewChat &&
         !messages.length &&
@@ -148,7 +149,6 @@ function ChatInner({ chatWithMessages }: ChatProps) {
       }
     })();
   }, [
-    isPending,
     params.query,
     sendMessage,
     hasInitiatedNewChat,

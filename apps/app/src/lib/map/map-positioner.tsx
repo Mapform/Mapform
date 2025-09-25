@@ -3,6 +3,7 @@
 import { useMap } from "react-map-gl/maplibre";
 import { useViewState, type ViewState } from "~/lib/map/use-view-state";
 import { useEffect, useRef } from "react";
+import { useParamsContext } from "../params/client";
 
 type Padding = { left: number; right: number; top: number; bottom: number };
 type ComputedViewState = {
@@ -38,19 +39,24 @@ function viewStatesEqual(a: ComputedViewState, b: ComputedViewState) {
   );
 }
 
+interface MapPositionerProps {
+  children: React.ReactNode;
+  viewState?: Partial<ViewState>;
+  // We often want to disable the MapPositioner when the drawer in question is not the active drawer (ie. doesn't have drawerDepth === 0)
+  disabled?: boolean;
+}
+
 export function MapPositioner({
   children,
   viewState,
-}: {
-  children: React.ReactNode;
-  viewState?: Partial<ViewState>;
-}) {
+  disabled,
+}: MapPositionerProps) {
   const map = useMap();
   const _viewState = useViewState(viewState);
   const previousViewStateRef = useRef<ComputedViewState | null>(null);
 
   useEffect(() => {
-    if (!map.current) return;
+    if (!map.current || disabled) return;
 
     const previous = previousViewStateRef.current;
     const hasChanged =
@@ -67,7 +73,20 @@ export function MapPositioner({
     });
 
     previousViewStateRef.current = _viewState as ComputedViewState;
-  }, [_viewState, map]);
+  }, [_viewState, map, disabled]);
 
   return <>{children}</>;
+}
+
+export function ServerMapPositioner({
+  children,
+  viewState,
+}: Omit<MapPositionerProps, "disabled">) {
+  const { drawerDepth } = useParamsContext();
+
+  return (
+    <MapPositioner viewState={viewState} disabled={drawerDepth.size > 0}>
+      {children}
+    </MapPositioner>
+  );
 }

@@ -53,11 +53,13 @@ export function PickLocationsMessage({ results }: PickLocationsMessageProps) {
     });
 
     try {
-      map.fitBounds(bounds, {
-        padding: 50,
-        duration: 1000,
-        maxZoom: 15,
-      });
+      setTimeout(() => {
+        map.fitBounds(bounds, {
+          padding: 50,
+          duration: 1000,
+          maxZoom: 15,
+        });
+      }, 0);
     } catch (error) {
       console.error(error);
     }
