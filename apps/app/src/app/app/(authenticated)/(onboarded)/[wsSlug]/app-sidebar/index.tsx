@@ -75,7 +75,7 @@ export function AppSidebar() {
   const { user } = useAuth();
   const pathname = usePathname();
   const router = useRouter();
-  const { params, setQueryStates } = useParamsContext();
+  const { params, setQueryStates, drawerDepth } = useParamsContext();
   const { workspaceMemberships, workspaceDirectory, workspaceSlug } =
     useWorkspace();
   const [isProjectGuideOpen, setIsProjectGuideOpen] = useState(false);
@@ -197,7 +197,25 @@ export function AppSidebar() {
               <SidebarMenuItem className="flex items-center gap-1">
                 <SidebarMenuButton
                   className="bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground min-w-8 duration-200 ease-linear"
-                  onClick={() => {
+                  onClick={async () => {
+                    const searchDepth = drawerDepth.get("search");
+
+                    if (
+                      params.search === "1" &&
+                      searchDepth &&
+                      searchDepth > 0
+                    ) {
+                      await setQueryStates({
+                        search: null,
+                      });
+
+                      await setQueryStates({
+                        search: "1",
+                      });
+
+                      return;
+                    }
+
                     void setQueryStates({
                       search: params.search === "1" ? null : "1",
                       chatId: null,
