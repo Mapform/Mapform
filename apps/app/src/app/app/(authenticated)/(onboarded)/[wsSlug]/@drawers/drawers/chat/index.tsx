@@ -1,6 +1,6 @@
 "use client";
 
-import { MapDrawerToolbar } from "~/components/map-drawer";
+import { MapDrawer, MapDrawerToolbar } from "~/components/map-drawer";
 import { useParamsContext } from "~/lib/params/client";
 import { cn } from "@mapform/lib/classnames";
 import { AutoSizeTextArea } from "@mapform/ui/components/autosize-text-area";
@@ -33,6 +33,16 @@ import { createChatAction } from "~/data/chats/create-chat";
 
 interface ChatProps {
   chatWithMessages?: { messages?: ChatMessage[]; chatId: string };
+}
+
+export function ChatWrapper({ children }: { children: React.ReactNode }) {
+  const { params, drawerDepth } = useParamsContext();
+
+  return (
+    <MapDrawer open={!!params.chatId} depth={drawerDepth.get("chatId") ?? 0}>
+      {children}
+    </MapDrawer>
+  );
 }
 
 export function Chat({ chatWithMessages }: ChatProps) {

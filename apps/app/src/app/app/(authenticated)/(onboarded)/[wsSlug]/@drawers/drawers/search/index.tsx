@@ -40,25 +40,17 @@ interface SearchProps {
   previousChats?: ListChats["data"];
 }
 
-export function Search({
-  searchResults,
-  vectorSearchResults,
-  previousChats,
-}: SearchProps) {
+export function SearchWrapper({ children }: { children: React.ReactNode }) {
   const { params, drawerDepth } = useParamsContext();
 
   return (
     <MapDrawer open={!!params.search} depth={drawerDepth.get("search") ?? 0}>
-      <SearchInner
-        searchResults={searchResults}
-        vectorSearchResults={vectorSearchResults}
-        previousChats={previousChats}
-      />
+      {children}
     </MapDrawer>
   );
 }
 
-export function SearchInner({
+export function Search({
   searchResults,
   vectorSearchResults,
   previousChats,

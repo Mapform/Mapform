@@ -1,11 +1,10 @@
 import type { SearchParams } from "nuqs/server";
 
 import { loadSearchParams } from "~/lib/params/server";
-import { Search } from "./search";
+import { Search, SearchWrapper } from "./search";
 import { cache } from "react";
 import { authDataService, publicDataService } from "~/lib/safe-action";
-import { Chat } from "./chat";
-import { ChatDrawers } from "./chat/drawers";
+import { Chat, ChatWrapper } from "./chat";
 import {
   SearchDetails,
   SearchDetailsEmpty,
@@ -23,10 +22,13 @@ interface DealDrawerProps {
 export function Drawers(props: DealDrawerProps) {
   return (
     <>
-      <SearchDrawer {...props} />
-      <ChatDrawers>
+      <SearchWrapper>
+        <SearchDrawer {...props} />
+      </SearchWrapper>
+
+      <ChatWrapper>
         <ChatDrawer {...props} />
-      </ChatDrawers>
+      </ChatWrapper>
 
       <SearchDetailsWrapper>
         <SearchDetailsDrawer {...props} />
