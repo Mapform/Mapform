@@ -113,11 +113,13 @@ export function PickLocationsMessage({ results }: PickLocationsMessageProps) {
           />
         );
       })}
-      <FeatureList
-        features={results.map((r) => FeatureWithImage({ result: r }))}
-        onHover={handleFeatureHover}
-        onClick={handleFeatureClick}
-      />
+      {results.length > 0 && (
+        <FeatureList
+          features={results.map((r) => FeatureWithImage({ result: r }))}
+          onHover={handleFeatureHover}
+          onClick={handleFeatureClick}
+        />
+      )}
     </div>
   );
 }

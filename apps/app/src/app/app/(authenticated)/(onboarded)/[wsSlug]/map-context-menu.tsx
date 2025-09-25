@@ -52,7 +52,7 @@ export function MapContextMenu({
             onOpenChange(false);
             await setQueryStates({
               query: `What can you tell me about this location: ${position.longitude}, ${position.latitude}`,
-              chatId: crypto.randomUUID(),
+              chatId: "new",
             });
           }}
         >
