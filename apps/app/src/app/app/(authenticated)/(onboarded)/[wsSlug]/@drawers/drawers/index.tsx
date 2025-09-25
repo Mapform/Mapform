@@ -2,15 +2,18 @@ import type { SearchParams } from "nuqs/server";
 
 import { loadSearchParams } from "~/lib/params/server";
 import { Search } from "./search";
-import { cache, Suspense } from "react";
+import { cache } from "react";
 import { authDataService, publicDataService } from "~/lib/safe-action";
 import { Chat } from "./chat";
 import { ChatDrawers } from "./chat/drawers";
-import { SearchDetails } from "./search-details";
-import { Feature, FeatureWrapper, FeatureEmpty } from "./feature";
+import {
+  SearchDetails,
+  SearchDetailsEmpty,
+  SearchDetailsWrapper,
+} from "./search-details";
+import { FeatureWrapper, FeatureEmpty, FeatureContent } from "./feature";
 import type { ChatMessage } from "~/lib/types";
-import { Coordinates } from "./coordinates";
-import { BasicSkeleton } from "~/components/skeletons/basic";
+import { Coordinates, CoordinatesWrapper } from "./coordinates";
 
 interface DealDrawerProps {
   searchParams: Promise<SearchParams>;
@@ -24,11 +27,18 @@ export function Drawers(props: DealDrawerProps) {
       <ChatDrawers>
         <ChatDrawer {...props} />
       </ChatDrawers>
-      <SearchDetailsDrawer {...props} />
+
+      <SearchDetailsWrapper>
+        <SearchDetailsDrawer {...props} />
+      </SearchDetailsWrapper>
+
       <FeatureWrapper>
-        <FeatureDrawer {...props} />
+        <Feature {...props} />
       </FeatureWrapper>
-      <CoordinatesDrawer {...props} />
+
+      <CoordinatesWrapper>
+        <CoordinatesDrawer {...props} />
+      </CoordinatesWrapper>
     </>
   );
 }
@@ -123,10 +133,14 @@ async function SearchDetailsDrawer({ searchParams }: DealDrawerProps) {
 
   const details = await getDetails(stadiaId);
 
+  if (stadiaId && !details?.data) {
+    return <SearchDetailsEmpty />;
+  }
+
   return <SearchDetails details={details?.data} />;
 }
 
-async function FeatureDrawer({ searchParams, params }: DealDrawerProps) {
+async function Feature({ searchParams, params }: DealDrawerProps) {
   const { pId } = await params;
   const { rowId } = await loadSearchParams(searchParams);
 
@@ -139,7 +153,7 @@ async function FeatureDrawer({ searchParams, params }: DealDrawerProps) {
     return <FeatureEmpty />;
   }
 
-  return <Feature feature={row?.data} project={project?.data} />;
+  return <FeatureContent feature={row?.data} project={project?.data} />;
 }
 
 async function CoordinatesDrawer({ searchParams }: DealDrawerProps) {
@@ -157,7 +171,7 @@ async function CoordinatesDrawer({ searchParams }: DealDrawerProps) {
   return (
     <Coordinates
       coordinates={marker ? [Number(latitude), Number(longitude)] : null}
-      details={details?.data}
+      details={details ?? null}
     />
   );
 }

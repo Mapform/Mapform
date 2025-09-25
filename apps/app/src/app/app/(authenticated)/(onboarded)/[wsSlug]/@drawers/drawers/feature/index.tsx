@@ -78,7 +78,7 @@ export function FeatureEmpty() {
   );
 }
 
-export function Feature({ feature, project }: FeatureDrawerProps) {
+export function FeatureContent({ feature, project }: FeatureDrawerProps) {
   const { setQueryStates } = useParamsContext();
   const featureService = useStateService<GetRow["data"], UpdateRowSchema>(
     updateRowAction,
@@ -105,7 +105,7 @@ export function Feature({ feature, project }: FeatureDrawerProps) {
         }}
       >
         {featureService.optimisticState ? (
-          <FeatureContent
+          <FeatureContentInner
             featureService={featureService}
             project={project}
             key={featureService.optimisticState.id}
@@ -137,7 +137,7 @@ export function Feature({ feature, project }: FeatureDrawerProps) {
   );
 }
 
-const FeatureContent = ({
+const FeatureContentInner = ({
   featureService,
   project,
 }: {
