@@ -40,8 +40,18 @@ interface FeatureDrawerProps {
   project: GetProject["data"];
 }
 
+export function FeatureWrapper({ children }: { children: React.ReactNode }) {
+  const { params, drawerDepth } = useParamsContext();
+
+  return (
+    <MapDrawer open={!!params.rowId} depth={drawerDepth.get("rowId") ?? 0}>
+      {children}
+    </MapDrawer>
+  );
+}
+
 export function Feature({ feature, project }: FeatureDrawerProps) {
-  const { params, isPending, drawerDepth, setQueryStates } = useParamsContext();
+  const { setQueryStates } = useParamsContext();
   const featureService = useStateService<GetRow["data"], UpdateRowSchema>(
     updateRowAction,
     {
@@ -61,61 +71,42 @@ export function Feature({ feature, project }: FeatureDrawerProps) {
 
   return (
     <>
-      <MapDrawer open={!!params.rowId} depth={drawerDepth.get("rowId") ?? 0}>
-        <MapPositioner
-          viewState={{
-            ...(longitude && latitude && { center: [longitude, latitude] }),
-          }}
-        >
-          {isPending && params.rowId !== featureService.optimisticState?.id ? (
-            <>
-              <MapDrawerToolbar>
-                <Button
-                  className="ml-auto"
-                  size="icon-sm"
-                  type="button"
-                  variant="ghost"
-                  onClick={() => {
-                    void setQueryStates({ rowId: null });
-                  }}
-                >
-                  <XIcon className="size-4" />
-                </Button>
-              </MapDrawerToolbar>
-              <BasicSkeleton className="p-6" />
-            </>
-          ) : featureService.optimisticState ? (
-            <FeatureContent
-              featureService={featureService}
-              project={project}
-              key={featureService.optimisticState.id}
-            />
-          ) : (
-            <>
-              <MapDrawerToolbar>
-                <Button
-                  className="ml-auto"
-                  size="icon-sm"
-                  type="button"
-                  variant="ghost"
-                  onClick={() => {
-                    void setQueryStates({ rowId: null });
-                  }}
-                >
-                  <XIcon className="size-4" />
-                </Button>
-              </MapDrawerToolbar>
-              <div className="flex flex-1 flex-col justify-center rounded-lg bg-gray-50 p-8">
-                <div className="text-center">
-                  <h3 className="text-foreground mt-2 text-sm font-medium">
-                    No feature found
-                  </h3>
-                </div>
+      <MapPositioner
+        viewState={{
+          ...(longitude && latitude && { center: [longitude, latitude] }),
+        }}
+      >
+        {featureService.optimisticState ? (
+          <FeatureContent
+            featureService={featureService}
+            project={project}
+            key={featureService.optimisticState.id}
+          />
+        ) : (
+          <>
+            <MapDrawerToolbar>
+              <Button
+                className="ml-auto"
+                size="icon-sm"
+                type="button"
+                variant="ghost"
+                onClick={() => {
+                  void setQueryStates({ rowId: null });
+                }}
+              >
+                <XIcon className="size-4" />
+              </Button>
+            </MapDrawerToolbar>
+            <div className="flex flex-1 flex-col justify-center rounded-lg bg-gray-50 p-8">
+              <div className="text-center">
+                <h3 className="text-foreground mt-2 text-sm font-medium">
+                  No feature found
+                </h3>
               </div>
-            </>
-          )}
-        </MapPositioner>
-      </MapDrawer>
+            </div>
+          </>
+        )}
+      </MapPositioner>
 
       {longitude && latitude && (
         <Marker longitude={longitude} latitude={latitude} scale={1.5} />

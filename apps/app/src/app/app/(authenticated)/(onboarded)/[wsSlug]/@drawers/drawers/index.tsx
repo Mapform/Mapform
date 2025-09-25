@@ -2,21 +2,24 @@ import type { SearchParams } from "nuqs/server";
 
 import { loadSearchParams } from "~/lib/params/server";
 import { Search } from "./search";
-import { cache } from "react";
+import { cache, Suspense } from "react";
 import { authDataService, publicDataService } from "~/lib/safe-action";
 import { Chat } from "./chat";
 import { ChatDrawers } from "./chat/drawers";
 import { SearchDetails } from "./search-details";
-import { Feature } from "./feature";
+import { Feature, FeatureWrapper } from "./feature";
 import type { ChatMessage } from "~/lib/types";
 import { Coordinates } from "./coordinates";
+import { BasicSkeleton } from "~/components/skeletons/basic";
 
 interface DealDrawerProps {
   searchParams: Promise<SearchParams>;
   params: Promise<{ wsSlug: string; pId?: string }>;
 }
 
-export function Drawers(props: DealDrawerProps) {
+export async function Drawers(props: DealDrawerProps) {
+  const { rowId } = await loadSearchParams(props.searchParams);
+
   return (
     <>
       <SearchDrawer {...props} />
@@ -24,7 +27,14 @@ export function Drawers(props: DealDrawerProps) {
         <ChatDrawer {...props} />
       </ChatDrawers>
       <SearchDetailsDrawer {...props} />
-      <FeatureDrawer {...props} />
+      <FeatureWrapper>
+        <Suspense
+          key={rowId ?? "no-row"}
+          fallback={<BasicSkeleton className="p-6" />}
+        >
+          <FeatureDrawer {...props} />
+        </Suspense>
+      </FeatureWrapper>
       <CoordinatesDrawer {...props} />
     </>
   );
@@ -131,6 +141,8 @@ async function FeatureDrawer({ searchParams, params }: DealDrawerProps) {
     rowId ? authDataService.getRow({ rowId }) : null,
     pId ? authDataService.getProject({ projectId: pId }) : null,
   ]);
+
+  await new Promise((resolve) => setTimeout(resolve, 2000));
 
   return <Feature feature={row?.data} project={project?.data} />;
 }
