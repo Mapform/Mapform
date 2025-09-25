@@ -17,7 +17,6 @@ import { updateRowAction } from "~/data/rows/update-row";
 import type { GetRow } from "@mapform/backend/data/rows/get-row";
 import type { UpdateRowSchema } from "@mapform/backend/data/rows/update-row/schema";
 import { Marker } from "react-map-gl/maplibre";
-import { BasicSkeleton } from "~/components/skeletons/basic";
 import { Feature as FeatureComponent } from "~/components/feature";
 import {
   DropdownMenu,
@@ -34,6 +33,7 @@ import { useAction } from "next-safe-action/hooks";
 import { deleteRowsAction } from "~/data/rows/delete-rows";
 import { MapPositioner } from "~/lib/map/map-positioner";
 import type { GetProject } from "@mapform/backend/data/projects/get-project";
+import { BasicSkeleton } from "~/components/skeletons/basic";
 
 interface FeatureDrawerProps {
   feature: GetRow["data"];
@@ -47,6 +47,34 @@ export function FeatureWrapper({ children }: { children: React.ReactNode }) {
     <MapDrawer open={!!params.rowId} depth={drawerDepth.get("rowId") ?? 0}>
       {children}
     </MapDrawer>
+  );
+}
+
+export function FeatureEmpty() {
+  const { setQueryStates } = useParamsContext();
+  return (
+    <>
+      <MapDrawerToolbar>
+        <Button
+          className="ml-auto"
+          size="icon-sm"
+          type="button"
+          variant="ghost"
+          onClick={() => {
+            void setQueryStates({ rowId: null });
+          }}
+        >
+          <XIcon className="size-4" />
+        </Button>
+      </MapDrawerToolbar>
+      <div className="flex flex-1 flex-col justify-center rounded-lg bg-gray-50 p-8">
+        <div className="text-center">
+          <h3 className="text-foreground mt-2 text-sm font-medium">
+            No feature found
+          </h3>
+        </div>
+      </div>
+    </>
   );
 }
 
@@ -83,7 +111,7 @@ export function Feature({ feature, project }: FeatureDrawerProps) {
             key={featureService.optimisticState.id}
           />
         ) : (
-          <>
+          <div className="p-2">
             <MapDrawerToolbar>
               <Button
                 className="ml-auto"
@@ -97,14 +125,8 @@ export function Feature({ feature, project }: FeatureDrawerProps) {
                 <XIcon className="size-4" />
               </Button>
             </MapDrawerToolbar>
-            <div className="flex flex-1 flex-col justify-center rounded-lg bg-gray-50 p-8">
-              <div className="text-center">
-                <h3 className="text-foreground mt-2 text-sm font-medium">
-                  No feature found
-                </h3>
-              </div>
-            </div>
-          </>
+            <BasicSkeleton className="p-4" />
+          </div>
         )}
       </MapPositioner>
 

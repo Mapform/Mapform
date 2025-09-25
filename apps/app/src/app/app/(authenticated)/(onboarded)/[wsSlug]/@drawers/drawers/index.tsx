@@ -7,7 +7,7 @@ import { authDataService, publicDataService } from "~/lib/safe-action";
 import { Chat } from "./chat";
 import { ChatDrawers } from "./chat/drawers";
 import { SearchDetails } from "./search-details";
-import { Feature, FeatureWrapper } from "./feature";
+import { Feature, FeatureWrapper, FeatureEmpty } from "./feature";
 import type { ChatMessage } from "~/lib/types";
 import { Coordinates } from "./coordinates";
 import { BasicSkeleton } from "~/components/skeletons/basic";
@@ -17,9 +17,7 @@ interface DealDrawerProps {
   params: Promise<{ wsSlug: string; pId?: string }>;
 }
 
-export async function Drawers(props: DealDrawerProps) {
-  const { rowId } = await loadSearchParams(props.searchParams);
-
+export function Drawers(props: DealDrawerProps) {
   return (
     <>
       <SearchDrawer {...props} />
@@ -28,12 +26,7 @@ export async function Drawers(props: DealDrawerProps) {
       </ChatDrawers>
       <SearchDetailsDrawer {...props} />
       <FeatureWrapper>
-        <Suspense
-          key={rowId ?? "no-row"}
-          fallback={<BasicSkeleton className="p-6" />}
-        >
-          <FeatureDrawer {...props} />
-        </Suspense>
+        <FeatureDrawer {...props} />
       </FeatureWrapper>
       <CoordinatesDrawer {...props} />
     </>
@@ -142,7 +135,9 @@ async function FeatureDrawer({ searchParams, params }: DealDrawerProps) {
     pId ? authDataService.getProject({ projectId: pId }) : null,
   ]);
 
-  await new Promise((resolve) => setTimeout(resolve, 2000));
+  if (rowId && (!row?.data || !project?.data)) {
+    return <FeatureEmpty />;
+  }
 
   return <Feature feature={row?.data} project={project?.data} />;
 }
