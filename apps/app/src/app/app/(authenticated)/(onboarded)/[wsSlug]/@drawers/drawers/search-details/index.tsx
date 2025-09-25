@@ -61,7 +61,7 @@ export function SearchDetailsEmpty() {
 }
 
 export function SearchDetails({ details }: SearchDetailsProps) {
-  const { setQueryStates } = useParamsContext();
+  const { setQueryStates, drawerDepth } = useParamsContext();
 
   const longitude = details?.features[0]?.geometry?.coordinates[0];
   const latitude = details?.features[0]?.geometry?.coordinates[1];
@@ -71,6 +71,7 @@ export function SearchDetails({ details }: SearchDetailsProps) {
       viewState={{
         ...(longitude && latitude && { center: [longitude, latitude] }),
       }}
+      disabled={drawerDepth.get("stadiaId") !== 0}
     >
       {details ? (
         <SearchDetailsInner details={details} />

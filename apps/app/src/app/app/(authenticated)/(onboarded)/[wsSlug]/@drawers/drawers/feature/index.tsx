@@ -79,7 +79,7 @@ export function FeatureEmpty() {
 }
 
 export function FeatureContent({ feature, project }: FeatureDrawerProps) {
-  const { setQueryStates } = useParamsContext();
+  const { setQueryStates, drawerDepth } = useParamsContext();
   const featureService = useStateService<GetRow["data"], UpdateRowSchema>(
     updateRowAction,
     {
@@ -103,6 +103,7 @@ export function FeatureContent({ feature, project }: FeatureDrawerProps) {
         viewState={{
           ...(longitude && latitude && { center: [longitude, latitude] }),
         }}
+        disabled={drawerDepth.get("rowId") !== 0}
       >
         {featureService.optimisticState ? (
           <FeatureContentInner

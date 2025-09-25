@@ -57,7 +57,7 @@ export function CoordinatesEmpty() {
 }
 
 export function Coordinates({ coordinates, details }: CoordinatesProps) {
-  const { setQueryStates } = useParamsContext();
+  const { setQueryStates, drawerDepth } = useParamsContext();
 
   const longitude = coordinates?.[1];
   const latitude = coordinates?.[0];
@@ -68,6 +68,7 @@ export function Coordinates({ coordinates, details }: CoordinatesProps) {
         viewState={{
           ...(longitude && latitude && { center: [longitude, latitude] }),
         }}
+        disabled={drawerDepth.get("marker") !== 0}
       >
         {coordinates && details ? (
           <SearchDetailsInner coordinates={coordinates} details={details} />
