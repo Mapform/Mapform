@@ -1,6 +1,7 @@
 "server-only";
 
 import { eq } from "@mapform/db/utils";
+import { sql } from "@mapform/db";
 import {
   users,
   workspaces,
@@ -8,6 +9,9 @@ import {
   workspaceMemberships,
   teamspaceMemberships,
   plans,
+  projects,
+  views,
+  mapViews,
 } from "@mapform/db/schema";
 import Stripe from "stripe";
 import { PLANS } from "@mapform/lib/constants/plans";
@@ -77,6 +81,53 @@ export const completeOnboarding = (authClient: UserAuthClient) =>
               teamspaceId: teamspace.id,
               role: "owner",
             });
+
+            // Scaffold two default projects with a default map view each
+            const defaultCenter = sql.raw(
+              `ST_GeomFromGeoJSON('{"type":"Point","coordinates":[0,0]}')`,
+            );
+
+            const [wantToGo] = await tx
+              .insert(projects)
+              .values({
+                name: "Want to go",
+                icon: "🌎",
+                teamspaceId: teamspace.id,
+                position: 1,
+                center: defaultCenter,
+              })
+              .returning();
+
+            if (wantToGo) {
+              const [wtgView] = await tx
+                .insert(views)
+                .values({ projectId: wantToGo.id, type: "map" })
+                .returning();
+              if (wtgView) {
+                await tx.insert(mapViews).values({ viewId: wtgView.id });
+              }
+            }
+
+            const [favourites] = await tx
+              .insert(projects)
+              .values({
+                name: "Favourites",
+                icon: "⭐️",
+                teamspaceId: teamspace.id,
+                position: 0,
+                center: defaultCenter,
+              })
+              .returning();
+
+            if (favourites) {
+              const [favView] = await tx
+                .insert(views)
+                .values({ projectId: favourites.id, type: "map" })
+                .returning();
+              if (favView) {
+                await tx.insert(mapViews).values({ viewId: favView.id });
+              }
+            }
 
             // Create Stripe customer
             const customer = await stripe.customers.create({
