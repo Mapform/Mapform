@@ -27,7 +27,7 @@ export function MapDrawer({
       <AnimatePresence>
         {open && (
           <motion.div
-            className="bg-background bg-opacity-98 group pointer-events-auto absolute top-0 z-10 mt-[calc(100vh-200px)] flex min-h-screen !w-full flex-col rounded-t-xl bg-white pb-20 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] outline-none backdrop-blur-sm transition-[filter,width,padding-left] duration-[250] [--y-from:200px] [--y-to:0]"
+            className="bg-background bg-opacity-98 group pointer-events-auto absolute top-0 z-10 mt-[calc(100dvh-200px)] flex min-h-dvh !w-full flex-col rounded-t-xl bg-white pb-20 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] outline-none backdrop-blur-sm transition-[filter,width,padding-left] duration-[250] [--y-from:200px] [--y-to:0]"
             layoutScroll
             animate="open"
             initial="closed"
