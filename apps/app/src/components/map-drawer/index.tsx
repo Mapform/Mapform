@@ -27,7 +27,7 @@ export function MapDrawer({
       <AnimatePresence>
         {open && (
           <motion.div
-            className="bg-background group pointer-events-auto absolute top-8 z-10 mt-[calc(100vh-200px)] flex min-h-[200px] min-h-screen !w-full flex-col overflow-y-auto rounded-t-xl pb-20 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] outline-none transition-[filter,width,padding-left] duration-[250] [--y-from:200px] [--y-to:0]"
+            className="bg-background group pointer-events-auto absolute top-8 z-10 mt-[calc(100vh-200px)] flex min-h-screen !w-full flex-col rounded-t-xl pb-20 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] outline-none transition-[filter,width,padding-left] duration-[250] [--y-from:200px] [--y-to:0]"
             layoutScroll
             animate="open"
             initial="closed"
@@ -47,11 +47,11 @@ export function MapDrawer({
                 x: "var(--x-from, 0)",
               },
             }}
+            style={{
+              zIndex: 30 - depth,
+            }}
           >
-            <div className="flex min-h-full flex-col overflow-y-auto">
-              <div className="mx-auto mt-2 h-1.5 w-12 rounded-full bg-gray-200"></div>
-              {children}
-            </div>
+            <div className="flex min-h-full flex-col">{children}</div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -110,7 +110,13 @@ export function MapDrawerToolbar({
   className?: string;
 }) {
   return (
-    <div className={cn("sticky top-0 z-10 flex w-full p-2", className)}>
+    <div
+      className={cn(
+        "sticky top-8 z-10 flex w-full rounded-t-xl bg-white p-2",
+        className,
+      )}
+    >
+      <div className="absolute left-1/2 top-2 mx-auto h-1.5 w-12 -translate-x-1/2 rounded-full bg-gray-200" />
       {children}
     </div>
   );
