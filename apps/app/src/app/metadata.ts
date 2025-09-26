@@ -14,6 +14,13 @@ export const defaultMetadata: Metadata = {
 
 export const defaultViewport: Viewport = {
   colorScheme: "light",
+  width: "device-width",
+  height: "device-height",
+  initialScale: 1,
+  maximumScale: 1,
+  minimumScale: 1,
+  userScalable: false,
+  viewportFit: "cover",
 };
 
 // TODO: Implement
