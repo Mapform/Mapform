@@ -106,17 +106,17 @@ export function MapDrawerToolbar({
   children,
   className,
 }: {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   className?: string;
 }) {
   return (
     <div
       className={cn(
-        "sticky top-8 z-10 flex w-full rounded-t-xl bg-white p-2",
+        "sticky top-0 z-10 flex w-full rounded-t-xl bg-white p-2",
         className,
       )}
     >
-      <div className="absolute left-1/2 top-2 mx-auto h-1.5 w-12 -translate-x-1/2 rounded-full bg-gray-200" />
+      <div className="absolute left-1/2 top-2 mx-auto h-1.5 w-12 -translate-x-1/2 rounded-full bg-gray-200 md:hidden" />
       {children}
     </div>
   );
