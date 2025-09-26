@@ -10,16 +10,23 @@ import { useParamsContext } from "~/lib/params/client";
 import { useWorkspace } from "./workspace-context";
 import { useAuth } from "~/app/root-providers";
 import { useMap } from "react-map-gl/maplibre";
+import { useRouter } from "next/navigation";
 
 export function MobileMenu() {
   const map = useMap();
+  const router = useRouter();
   const { user } = useAuth();
   const { params } = useParamsContext();
   const { openMobile, setOpenMobile } = useSidebar();
   const { drawerDepth, setQueryStates } = useParamsContext();
-  const { workspaceDirectory } = useWorkspace();
+  const { workspaceDirectory, workspaceSlug } = useWorkspace();
 
   const { execute, isPending } = useAction(createProjectAction, {
+    onSuccess: ({ data }) => {
+      if (data) {
+        router.push(`/app/${workspaceSlug}/${data.id}`);
+      }
+    },
     onError: ({ error }) => {
       toast({
         title: "Uh oh! Something went wrong.",
