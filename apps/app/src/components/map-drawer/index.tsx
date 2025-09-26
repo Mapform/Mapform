@@ -20,16 +20,14 @@ export function MapDrawer({
   children,
   isFullWidth = false,
 }: MapDrawerProps) {
-  const width = isFullWidth ? "calc(100% - 8px)" : DRAWER_WIDTH;
   const isMobile = useIsMobile();
 
   if (isMobile) {
-    console.log("isMobile", isMobile);
     return (
       <AnimatePresence>
         {open && (
           <motion.div
-            className="bg-background group pointer-events-auto absolute top-8 z-[999999] mt-[calc(100vh-100px)] flex min-h-[200px] w-full flex-col overflow-y-auto rounded-t-xl pb-20 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] outline-none transition-[filter,width,padding-left] duration-[250] [--y-from:200px] [--y-to:0]"
+            className="bg-background group pointer-events-auto absolute top-8 z-[999999] mt-[calc(100vh-100px)] flex min-h-[200px] !w-full flex-col overflow-y-auto rounded-t-xl pb-20 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] outline-none transition-[filter,width,padding-left] duration-[250] [--y-from:200px] [--y-to:0]"
             layoutScroll
             animate="open"
             initial="closed"
@@ -51,6 +49,7 @@ export function MapDrawer({
             }}
           >
             <div className="flex min-h-full flex-col overflow-y-auto">
+              <div className="mx-auto mt-2 h-1.5 w-12 rounded-full bg-gray-200"></div>
               {children}
             </div>
           </motion.div>
@@ -58,6 +57,8 @@ export function MapDrawer({
       </AnimatePresence>
     );
   }
+
+  const width = isFullWidth ? "calc(100% - 8px)" : DRAWER_WIDTH;
 
   return (
     <AnimatePresence>
