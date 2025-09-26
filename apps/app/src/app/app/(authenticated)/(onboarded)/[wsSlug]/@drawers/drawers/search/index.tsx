@@ -72,7 +72,7 @@ export function Search({
   return (
     <>
       <Command className="bg-transparent" shouldFilter={false}>
-        <MapDrawerToolbar className="border-b">
+        <MapDrawerToolbar className="border-b max-md:pt-6">
           <div
             className="hover:bg-muted focus-within:ring-ring focus-within:bg-muted relative flex flex-1 items-center rounded-md pl-3 pr-1 transition-all focus-within:ring-2"
             cmdk-input-wrapper=""

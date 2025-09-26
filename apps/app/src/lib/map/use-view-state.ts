@@ -1,7 +1,12 @@
 import { useParams, usePathname } from "next/navigation";
 import { useMemo } from "react";
-import { DRAWER_WIDTH, SIDEBAR_WIDTH } from "~/constants/sidebars";
+import {
+  DRAWER_HEIGHT_MOBILE,
+  DRAWER_WIDTH,
+  SIDEBAR_WIDTH,
+} from "~/constants/sidebars";
 import { useParamsContext } from "~/lib/params/client";
+import { useIsMobile } from "@mapform/lib/hooks/use-is-mobile";
 
 export interface ViewState {
   zoom: number;
@@ -17,9 +22,24 @@ export function useViewState(viewState?: Partial<ViewState>) {
   const pathname = usePathname();
   const { params } = useParamsContext();
   const isSettings = pathname.includes("/settings");
+  const isMobile = useIsMobile();
 
-  const paddingSegments = useMemo(
-    () => [
+  const paddingSegments = useMemo(() => {
+    if (isMobile) {
+      return [
+        ...(params.chatId ||
+        params.search ||
+        params.rowId ||
+        params.stadiaId ||
+        params.marker ||
+        pathParams.pId ||
+        isSettings
+          ? [DRAWER_HEIGHT_MOBILE]
+          : []),
+      ];
+    }
+
+    return [
       SIDEBAR_WIDTH,
       ...(params.chatId ||
       params.search ||
@@ -30,17 +50,17 @@ export function useViewState(viewState?: Partial<ViewState>) {
       isSettings
         ? [DRAWER_WIDTH]
         : []),
-    ],
-    [
-      params.chatId,
-      params.search,
-      params.rowId,
-      params.stadiaId,
-      params.marker,
-      pathParams.pId,
-      isSettings,
-    ],
-  );
+    ];
+  }, [
+    params.chatId,
+    params.search,
+    params.rowId,
+    params.stadiaId,
+    params.marker,
+    pathParams.pId,
+    isSettings,
+    isMobile,
+  ]);
 
   const totalPadding = useMemo(() => {
     return paddingSegments.reduce((acc, curr) => acc + curr, 0);
@@ -68,10 +88,10 @@ export function useViewState(viewState?: Partial<ViewState>) {
       pitch: params.pitch ?? viewStatePitch,
       bearing: params.bearing ?? viewStateBearing,
       padding: {
-        left: totalPadding,
+        left: isMobile ? 0 : totalPadding,
         right: 0,
         top: 0,
-        bottom: 0,
+        bottom: isMobile ? totalPadding : 0,
       },
     };
   }, [
@@ -84,6 +104,7 @@ export function useViewState(viewState?: Partial<ViewState>) {
     viewStatePitch,
     viewStateBearing,
     totalPadding,
+    isMobile,
   ]);
 
   return memoizedViewState;

@@ -3,7 +3,7 @@
 import { cn } from "@mapform/lib/classnames";
 import { AnimatePresence, motion } from "motion/react";
 import { DRAWER_WIDTH } from "~/constants/sidebars";
-import { MapPositioner } from "~/lib/map/map-positioner";
+import { useIsMobile } from "@mapform/lib/hooks/use-is-mobile";
 
 interface MapDrawerProps {
   open: boolean;
@@ -20,6 +20,44 @@ export function MapDrawer({
   children,
   isFullWidth = false,
 }: MapDrawerProps) {
+  const isMobile = useIsMobile();
+
+  if (isMobile) {
+    return (
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            className="bg-background bg-opacity-98 group pointer-events-auto absolute top-0 z-10 mt-[calc(100vh-200px)] flex min-h-screen !w-full flex-col rounded-t-xl bg-white pb-20 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] outline-none backdrop-blur-sm transition-[filter,width,padding-left] duration-[250] [--y-from:200px] [--y-to:0]"
+            layoutScroll
+            animate="open"
+            initial="closed"
+            exit="closed"
+            transition={{
+              duration: 0.25,
+            }}
+            variants={{
+              open: {
+                opacity: 1,
+                y: "var(--y-to, 0)",
+                x: "var(--x-to, 0)",
+              },
+              closed: {
+                opacity: 0,
+                y: "var(--y-from, 0)",
+                x: "var(--x-from, 0)",
+              },
+            }}
+            style={{
+              zIndex: 30 - depth,
+            }}
+          >
+            <div className="flex min-h-full flex-col">{children}</div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    );
+  }
+
   const width = isFullWidth ? "calc(100% - 8px)" : DRAWER_WIDTH;
 
   return (
@@ -68,11 +106,17 @@ export function MapDrawerToolbar({
   children,
   className,
 }: {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   className?: string;
 }) {
   return (
-    <div className={cn("sticky top-0 z-10 flex w-full p-2", className)}>
+    <div
+      className={cn(
+        "max-md:bg-opacity-98 sticky top-0 z-10 flex w-full rounded-t-xl p-2 max-md:bg-white max-md:backdrop-blur-sm",
+        className,
+      )}
+    >
+      <div className="absolute left-1/2 top-2 mx-auto h-1.5 w-12 -translate-x-1/2 rounded-full bg-gray-200 md:hidden" />
       {children}
     </div>
   );

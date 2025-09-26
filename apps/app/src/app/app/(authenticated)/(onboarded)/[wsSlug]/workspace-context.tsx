@@ -31,6 +31,7 @@ import { MapContextMenu } from "./map-context-menu";
 import { useParamsContext } from "~/lib/params/client";
 import { useParams, usePathname } from "next/navigation";
 import { DRAWER_WIDTH, SIDEBAR_WIDTH } from "~/constants/sidebars";
+import { useIsMobile } from "@mapform/lib/hooks/use-is-mobile";
 
 export interface WorkspaceContextInterface {
   workspaceSlug: string;
@@ -78,6 +79,7 @@ export function WorkspaceProvider({
     pId?: string;
   }>();
   const pathname = usePathname();
+  const isMobile = useIsMobile();
   const [cursor, setCursor] = useState<string>("grab");
   const currentWorkspace = workspaceMemberships.find(
     (membership) => membership.workspace.slug === workspaceSlug,
@@ -211,14 +213,17 @@ export function WorkspaceProvider({
         params.stadiaId ||
         params.marker ||
         pathParams.pId ||
-        pathname.includes("/settings")
-          ? SIDEBAR_WIDTH + DRAWER_WIDTH
-          : SIDEBAR_WIDTH,
+        isMobile
+          ? 0
+          : pathname.includes("/settings")
+            ? SIDEBAR_WIDTH + DRAWER_WIDTH
+            : SIDEBAR_WIDTH,
       top: 0,
       bottom: 0,
       right: 0,
     }),
     [
+      isMobile,
       params.chatId,
       params.search,
       params.rowId,
@@ -235,7 +240,7 @@ export function WorkspaceProvider({
 
   const initialViewState = useMemo(() => {
     return {
-      zoom: params.zoom ?? currentProject?.zoom ?? 2.5,
+      zoom: params.zoom ?? currentProject?.zoom ?? 0,
       latitude: latitude
         ? Number(latitude)
         : currentProject?.center.coordinates[1] ?? 0,
@@ -255,6 +260,8 @@ export function WorkspaceProvider({
     params.pitch,
     params.bearing,
   ]);
+
+  const minZoom = isMobile ? 1.2 : 2.5;
 
   return (
     <WorkspaceContext.Provider
@@ -315,7 +322,7 @@ export function WorkspaceProvider({
         logoPosition="bottom-right"
         initialViewState={initialViewState}
         cursor={cursor}
-        minZoom={2.5}
+        minZoom={minZoom}
         onContextMenu={handleContextMenu}
         onTouchStart={handleTouchStart}
         onMove={cancelLongPress}
@@ -336,15 +343,18 @@ export function WorkspaceProvider({
           POLYGONS_OUTLINE_LAYER_ID,
         ]}
       >
-        <SidebarProvider defaultOpen={defaultLeftOpen}>
-          {children}
-        </SidebarProvider>
-        <NavigationControl position="top-right" />
-        <MapContextMenu
-          open={!!contextMenu}
-          onOpenChange={handleCloseContextMenu}
-          position={contextMenu ?? { x: 0, y: 0, longitude: 0, latitude: 0 }}
-        />
+        {/* Needed for mobile */}
+        <div className="h-full overflow-y-auto">
+          <SidebarProvider defaultOpen={defaultLeftOpen}>
+            {children}
+          </SidebarProvider>
+          <NavigationControl position="top-right" />
+          <MapContextMenu
+            open={!!contextMenu}
+            onOpenChange={handleCloseContextMenu}
+            position={contextMenu ?? { x: 0, y: 0, longitude: 0, latitude: 0 }}
+          />
+        </div>
       </Map>
     </WorkspaceContext.Provider>
   );

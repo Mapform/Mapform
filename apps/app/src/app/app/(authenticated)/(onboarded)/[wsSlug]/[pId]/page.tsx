@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { authDataService } from "~/lib/safe-action";
 import { ProjectProvider } from "./context";
 import { loadSearchParams } from "~/lib/params/server";
@@ -35,8 +35,16 @@ export default async function ViewPage(props: {
     return notFound();
   }
 
-  if (!activeView) {
+  if (project.data.views.length === 0) {
     return notFound();
+  }
+
+  if (!activeView) {
+    const firstView = project.data.views[0];
+    if (!firstView) {
+      return notFound();
+    }
+    return redirect(`/app/${params.wsSlug}/${params.pId}?v=${firstView.id}`);
   }
 
   return (

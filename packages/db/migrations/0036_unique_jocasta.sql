@@ -1,0 +1,1 @@
+ALTER TABLE "project" ALTER COLUMN "zoom" SET DEFAULT 0;

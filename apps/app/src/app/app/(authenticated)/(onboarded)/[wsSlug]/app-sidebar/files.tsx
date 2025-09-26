@@ -2,6 +2,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@mapform/ui/components/sidebar";
 import { MapIcon, Trash2Icon } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
@@ -38,6 +39,7 @@ export function Files({
 }: {
   teamspace: NonNullable<WorkspaceDirectory["data"]>["teamspaces"][number];
 }) {
+  const { setOpenMobile } = useSidebar();
   const router = useRouter();
   const pathname = usePathname();
   const { workspaceSlug, workspaceDirectory, updateWorkspaceDirectory } =
@@ -149,6 +151,7 @@ export function Files({
                           pathname === `/app/${workspaceSlug}/${project.id}`
                         }
                         onClick={() => {
+                          setOpenMobile(false);
                           router.push(
                             `/app/${workspaceSlug}/${project.id}?v=${project.views[0]!.id}`,
                           );
