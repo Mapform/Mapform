@@ -8,7 +8,7 @@ export default function AuthenticatedLayout({
   return (
     <>
       {children}
-      <MobileWarning />
+      {/* <MobileWarning /> */}
     </>
   );
 }

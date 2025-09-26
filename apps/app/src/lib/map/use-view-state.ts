@@ -2,6 +2,7 @@ import { useParams, usePathname } from "next/navigation";
 import { useMemo } from "react";
 import { DRAWER_WIDTH, SIDEBAR_WIDTH } from "~/constants/sidebars";
 import { useParamsContext } from "~/lib/params/client";
+import { useIsMobile } from "@mapform/lib/hooks/use-is-mobile";
 
 export interface ViewState {
   zoom: number;
@@ -17,10 +18,11 @@ export function useViewState(viewState?: Partial<ViewState>) {
   const pathname = usePathname();
   const { params } = useParamsContext();
   const isSettings = pathname.includes("/settings");
+  const isMobile = useIsMobile();
 
   const paddingSegments = useMemo(
     () => [
-      SIDEBAR_WIDTH,
+      isMobile ? 0 : SIDEBAR_WIDTH,
       ...(params.chatId ||
       params.search ||
       params.rowId ||
@@ -28,7 +30,7 @@ export function useViewState(viewState?: Partial<ViewState>) {
       params.marker ||
       pathParams.pId ||
       isSettings
-        ? [DRAWER_WIDTH]
+        ? [isMobile ? 0 : DRAWER_WIDTH]
         : []),
     ],
     [
@@ -39,6 +41,7 @@ export function useViewState(viewState?: Partial<ViewState>) {
       params.marker,
       pathParams.pId,
       isSettings,
+      isMobile,
     ],
   );
 

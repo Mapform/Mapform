@@ -3,7 +3,7 @@
 import { cn } from "@mapform/lib/classnames";
 import { AnimatePresence, motion } from "motion/react";
 import { DRAWER_WIDTH } from "~/constants/sidebars";
-import { MapPositioner } from "~/lib/map/map-positioner";
+import { useIsMobile } from "@mapform/lib/hooks/use-is-mobile";
 
 interface MapDrawerProps {
   open: boolean;
@@ -21,6 +21,43 @@ export function MapDrawer({
   isFullWidth = false,
 }: MapDrawerProps) {
   const width = isFullWidth ? "calc(100% - 8px)" : DRAWER_WIDTH;
+  const isMobile = useIsMobile();
+
+  if (isMobile) {
+    console.log("isMobile", isMobile);
+    return (
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            className="bg-background group pointer-events-auto absolute top-8 z-[999999] mt-[calc(100vh-100px)] flex min-h-[200px] w-full flex-col overflow-y-auto rounded-t-xl pb-20 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] outline-none transition-[filter,width,padding-left] duration-[250] [--y-from:200px] [--y-to:0]"
+            layoutScroll
+            animate="open"
+            initial="closed"
+            exit="closed"
+            transition={{
+              duration: 0.25,
+            }}
+            variants={{
+              open: {
+                opacity: 1,
+                y: "var(--y-to, 0)",
+                x: "var(--x-to, 0)",
+              },
+              closed: {
+                opacity: 0,
+                y: "var(--y-from, 0)",
+                x: "var(--x-from, 0)",
+              },
+            }}
+          >
+            <div className="flex min-h-full flex-col overflow-y-auto">
+              {children}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    );
+  }
 
   return (
     <AnimatePresence>
