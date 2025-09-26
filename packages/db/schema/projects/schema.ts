@@ -30,7 +30,7 @@ export const projects = pgTable("project", {
   center: pointGeometry("center").notNull(),
   pitch: doublePrecision("pitch").notNull().default(0),
   bearing: doublePrecision("bearing").notNull().default(0),
-  zoom: doublePrecision("zoom").notNull().default(2.5),
+  zoom: doublePrecision("zoom").notNull().default(0),
 
   visibility: visibilityEnum("visibility").default("closed").notNull(),
 

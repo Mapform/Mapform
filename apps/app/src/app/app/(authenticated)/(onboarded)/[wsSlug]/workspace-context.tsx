@@ -240,7 +240,7 @@ export function WorkspaceProvider({
 
   const initialViewState = useMemo(() => {
     return {
-      zoom: params.zoom ?? currentProject?.zoom ?? 2.5,
+      zoom: params.zoom ?? currentProject?.zoom ?? 0,
       latitude: latitude
         ? Number(latitude)
         : currentProject?.center.coordinates[1] ?? 0,
@@ -260,6 +260,8 @@ export function WorkspaceProvider({
     params.pitch,
     params.bearing,
   ]);
+
+  const minZoom = isMobile ? 1.2 : 2.5;
 
   return (
     <WorkspaceContext.Provider
@@ -320,7 +322,7 @@ export function WorkspaceProvider({
         logoPosition="bottom-right"
         initialViewState={initialViewState}
         cursor={cursor}
-        minZoom={2.5}
+        minZoom={minZoom}
         onContextMenu={handleContextMenu}
         onTouchStart={handleTouchStart}
         onMove={cancelLongPress}
