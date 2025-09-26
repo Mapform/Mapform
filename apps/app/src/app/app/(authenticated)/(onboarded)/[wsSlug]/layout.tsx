@@ -7,6 +7,7 @@ import { AppSidebar } from "./app-sidebar";
 import { SidebarProvider } from "@mapform/ui/components/sidebar";
 import { SIDEBAR_WIDTH } from "~/constants/sidebars";
 import { Drawers } from "./drawers";
+import { MobileMenu } from "./mobile-menu";
 
 export default async function WorkspaceLayout(props: {
   params: Promise<{ wsSlug: string }>;
@@ -48,6 +49,8 @@ export default async function WorkspaceLayout(props: {
           {/* Query Param-Based Drawers */}
           {props.drawers}
         </main>
+
+        <MobileMenu />
       </SidebarProvider>
     </WorkspaceProvider>
   );
