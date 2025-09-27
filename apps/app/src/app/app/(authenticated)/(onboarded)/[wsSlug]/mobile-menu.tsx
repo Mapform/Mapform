@@ -3,7 +3,7 @@
 import { Button } from "@mapform/ui/components/button";
 import { useSidebar } from "@mapform/ui/components/sidebar";
 import { toast } from "@mapform/ui/components/toaster";
-import { MapPlusIcon, MenuIcon, SparklesIcon } from "lucide-react";
+import { Loader2Icon, MapPlusIcon, MenuIcon, SparklesIcon } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import { createProjectAction } from "~/data/projects/create-project";
 import { useParamsContext } from "~/lib/params/client";
@@ -94,7 +94,11 @@ export function MobileMenu() {
           });
         }}
       >
-        <MapPlusIcon className="size-4" />
+        {isPending ? (
+          <Loader2Icon className="size-4 animate-spin" />
+        ) : (
+          <MapPlusIcon className="size-4" />
+        )}
       </Button>
     </div>
   );

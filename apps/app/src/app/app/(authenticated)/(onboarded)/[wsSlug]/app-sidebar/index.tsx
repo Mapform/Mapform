@@ -43,6 +43,7 @@ import {
   SparkleIcon,
   SparklesIcon,
   MapPlusIcon,
+  Loader2Icon,
 } from "lucide-react";
 import {
   Collapsible,
@@ -259,7 +260,11 @@ export function AppSidebar() {
                     });
                   }}
                 >
-                  <MapPlusIcon />
+                  {isPending ? (
+                    <Loader2Icon className="size-4 animate-spin" />
+                  ) : (
+                    <MapPlusIcon />
+                  )}
                   <span className="sr-only">Create Map</span>
                 </Button>
               </SidebarMenuItem>
