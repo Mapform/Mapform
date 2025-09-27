@@ -27,7 +27,7 @@ export function MapDrawer({
       <>
         {open && depth === 0 && (
           <motion.div
-            className="bg-background bg-opacity-98 group pointer-events-auto relative z-10 mt-[calc(100dvh-200px)] flex min-h-dvh !w-full flex-col rounded-t-xl bg-white pb-20 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] outline-none backdrop-blur-sm transition-[filter,width,padding-left] duration-[250] [--y-from:200px] [--y-to:0]"
+            className="bg-background bg-opacity-98 group pointer-events-auto relative z-10 mt-[calc(100dvh-200px)] flex h-fit min-h-dvh !w-full flex-col rounded-t-xl bg-white pb-20 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] outline-none backdrop-blur-sm transition-[filter,width,padding-left] duration-[250] [--y-from:200px] [--y-to:0]"
             layoutScroll
             animate="open"
             initial="closed"
@@ -110,7 +110,7 @@ export function MapDrawerToolbar({
   return (
     <div
       className={cn(
-        "max-md:bg-opacity-98 sticky top-0 z-10 flex w-full rounded-t-xl p-2 max-md:bg-white max-md:backdrop-blur-sm",
+        "bg-opacity-98 sticky top-0 z-10 flex w-full rounded-t-xl bg-white p-2 backdrop-blur-sm",
         className,
       )}
     >
