@@ -33,6 +33,18 @@ import {
 } from "@mapform/ui/components/context-menu";
 import { deleteProjectAction } from "~/data/projects/delete-project";
 import { toast } from "@mapform/ui/components/toaster";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogTrigger,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from "@mapform/ui/components/alert-dialog";
+import { Button } from "@mapform/ui/components/button";
 
 export function Files({
   teamspace,
@@ -140,47 +152,65 @@ export function Files({
         <SidebarMenu>
           {teamspace.projects.map((project) => (
             <DragItem key={project.id} id={project.id}>
-              <DragHandle id={project.id}>
-                <ContextMenu>
-                  <ContextMenuTrigger>
-                    <SidebarMenuItem>
-                      <SidebarMenuButton
-                        asChild
-                        className="cursor-pointer"
-                        isActive={
-                          pathname === `/app/${workspaceSlug}/${project.id}`
-                        }
-                        onClick={() => {
-                          setOpenMobile(false);
-                          router.push(
-                            `/app/${workspaceSlug}/${project.id}?v=${project.views[0]!.id}`,
-                          );
-                        }}
-                      >
-                        <div>
-                          {project.icon ? (
-                            <span>{project.icon}</span>
-                          ) : (
-                            <MapIcon />
-                          )}
-                          <span>{project.name || "New Map"}</span>
-                        </div>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  </ContextMenuTrigger>
-                  <ContextMenuContent>
-                    <ContextMenuItem
+              <AlertDialog>
+                <DragHandle id={project.id}>
+                  <ContextMenu modal={false}>
+                    <ContextMenuTrigger>
+                      <SidebarMenuItem>
+                        <SidebarMenuButton
+                          asChild
+                          className="cursor-pointer"
+                          isActive={
+                            pathname === `/app/${workspaceSlug}/${project.id}`
+                          }
+                          onClick={() => {
+                            setOpenMobile(false);
+                            router.push(
+                              `/app/${workspaceSlug}/${project.id}?v=${project.views[0]!.id}`,
+                            );
+                          }}
+                        >
+                          <div>
+                            {project.icon ? (
+                              <span>{project.icon}</span>
+                            ) : (
+                              <MapIcon />
+                            )}
+                            <span>{project.name || "New Map"}</span>
+                          </div>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    </ContextMenuTrigger>
+                    <ContextMenuContent>
+                      <AlertDialogTrigger asChild>
+                        <ContextMenuItem disabled={isDeletingProject}>
+                          <Trash2Icon className="mr-2 size-4" />
+                          Delete
+                        </ContextMenuItem>
+                      </AlertDialogTrigger>
+                    </ContextMenuContent>
+                  </ContextMenu>
+                </DragHandle>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      All associated data will be lost.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <Button
                       disabled={isDeletingProject}
                       onClick={() => {
                         void handleDeleteProject(project.id);
                       }}
                     >
-                      <Trash2Icon className="mr-2 size-4" />
                       Delete
-                    </ContextMenuItem>
-                  </ContextMenuContent>
-                </ContextMenu>
-              </DragHandle>
+                    </Button>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </DragItem>
           ))}
         </SidebarMenu>
