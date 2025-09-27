@@ -71,8 +71,7 @@ export function Search({
 
   return (
     <>
-      {/* Overflow visible fixes issue where default Command overflow would prevent MapDrawerToolbar static styling from working */}
-      <Command className="overflow-visible bg-transparent" shouldFilter={false}>
+      <Command className="bg-transparent" shouldFilter={false}>
         <MapDrawerToolbar className="border-b max-md:pt-6">
           <div
             className="hover:bg-muted focus-within:ring-ring focus-within:bg-muted relative flex flex-1 items-center rounded-md pl-3 pr-1 transition-all focus-within:ring-2"
