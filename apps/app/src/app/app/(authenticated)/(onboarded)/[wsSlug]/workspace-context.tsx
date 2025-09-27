@@ -265,6 +265,10 @@ export function WorkspaceProvider({
     params.bearing,
   ]);
 
+  const minZoom = useMemo(() => {
+    return isMobile ? 0 : 2;
+  }, [isMobile]);
+
   return (
     <WorkspaceContext.Provider
       value={{
@@ -325,7 +329,7 @@ export function WorkspaceProvider({
         initialViewState={initialViewState}
         attributionControl={false}
         cursor={cursor}
-        minZoom={1}
+        minZoom={minZoom}
         onContextMenu={handleContextMenu}
         onTouchStart={handleTouchStart}
         onMove={cancelLongPress}
