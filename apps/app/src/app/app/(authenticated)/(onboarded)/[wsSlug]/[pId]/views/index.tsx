@@ -65,6 +65,11 @@ import { useMap } from "react-map-gl/maplibre";
 import { ImageLightbox } from "~/components/image-lightbox";
 import { deleteImageAction } from "~/data/images/delete-image";
 import { useState } from "react";
+import {
+  DeleteProject,
+  DeleteProjectContent,
+  DeleteProjectTrigger,
+} from "~/components/delete-project";
 
 export function Views() {
   const map = useMap();
@@ -105,43 +110,56 @@ export function Views() {
     <div className="flex h-full flex-col">
       <MapDrawerToolbar>
         <Import>
-          <DropdownMenu modal={false}>
-            <DropdownMenuTrigger asChild>
-              <Button className="ml-auto" variant="ghost" size="icon">
-                <EllipsisVerticalIcon className="size-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              {/* TODO: Renable when imports working again */}
-              {/* <ImportTrigger asChild>
+          <DeleteProject>
+            <DropdownMenu modal={false}>
+              <DropdownMenuTrigger asChild>
+                <Button className="ml-auto" variant="ghost" size="icon">
+                  <EllipsisVerticalIcon className="size-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                {/* TODO: Renable when imports working again */}
+                {/* <ImportTrigger asChild>
                 <DropdownMenuItem>
                   <ImportIcon className="size-4" />
                   Import
                 </DropdownMenuItem>
               </ImportTrigger> */}
-              <DropdownMenuItem
-                onClick={() => {
-                  projectService.execute({
-                    ...projectService.optimisticState,
-                    id: projectService.optimisticState.id,
-                    center: {
-                      coordinates: map.current?.getCenter().toArray() as [
-                        number,
-                        number,
-                      ],
-                    },
-                    pitch: map.current?.getPitch(),
-                    bearing: map.current?.getBearing(),
-                    zoom: map.current?.getZoom(),
-                  });
-                }}
-              >
-                <ScanIcon className="size-4" />
-                Set Default View
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-            <ImportContent />
-          </DropdownMenu>
+                <DropdownMenuItem
+                  onClick={() => {
+                    projectService.execute({
+                      ...projectService.optimisticState,
+                      id: projectService.optimisticState.id,
+                      center: {
+                        coordinates: map.current?.getCenter().toArray() as [
+                          number,
+                          number,
+                        ],
+                      },
+                      pitch: map.current?.getPitch(),
+                      bearing: map.current?.getBearing(),
+                      zoom: map.current?.getZoom(),
+                    });
+                  }}
+                >
+                  <ScanIcon className="size-4" />
+                  Set Default View
+                </DropdownMenuItem>
+                <DeleteProjectTrigger asChild>
+                  <DropdownMenuItem>
+                    <Trash2Icon className="size-4" /> Delete
+                  </DropdownMenuItem>
+                </DeleteProjectTrigger>
+              </DropdownMenuContent>
+              <ImportContent />
+            </DropdownMenu>
+            <DeleteProjectContent
+              project={{
+                id: projectService.optimisticState.id,
+                teamspaceId: projectService.optimisticState.teamspaceId,
+              }}
+            />
+          </DeleteProject>
         </Import>
         {/* <Button className="ml-auto" variant="ghost" size="icon">
           <XIcon className="size-4" />

@@ -34,17 +34,10 @@ import {
 import { deleteProjectAction } from "~/data/projects/delete-project";
 import { toast } from "@mapform/ui/components/toaster";
 import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogTrigger,
-  AlertDialogCancel,
-  AlertDialogAction,
-} from "@mapform/ui/components/alert-dialog";
-import { Button } from "@mapform/ui/components/button";
+  DeleteProject,
+  DeleteProjectContent,
+  DeleteProjectTrigger,
+} from "~/components/delete-project";
 
 export function Files({
   teamspace,
@@ -152,7 +145,7 @@ export function Files({
         <SidebarMenu>
           {teamspace.projects.map((project) => (
             <DragItem key={project.id} id={project.id}>
-              <AlertDialog>
+              <DeleteProject>
                 <DragHandle id={project.id}>
                   <ContextMenu modal={false}>
                     <ContextMenuTrigger>
@@ -182,35 +175,22 @@ export function Files({
                       </SidebarMenuItem>
                     </ContextMenuTrigger>
                     <ContextMenuContent>
-                      <AlertDialogTrigger asChild>
+                      <DeleteProjectTrigger asChild>
                         <ContextMenuItem disabled={isDeletingProject}>
                           <Trash2Icon className="mr-2 size-4" />
                           Delete
                         </ContextMenuItem>
-                      </AlertDialogTrigger>
+                      </DeleteProjectTrigger>
                     </ContextMenuContent>
                   </ContextMenu>
                 </DragHandle>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      All associated data will be lost.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <Button
-                      disabled={isDeletingProject}
-                      onClick={() => {
-                        void handleDeleteProject(project.id);
-                      }}
-                    >
-                      Delete
-                    </Button>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
+                <DeleteProjectContent
+                  project={{
+                    id: project.id,
+                    teamspaceId: teamspace.id,
+                  }}
+                />
+              </DeleteProject>
             </DragItem>
           ))}
         </SidebarMenu>

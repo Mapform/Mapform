@@ -66,7 +66,7 @@ export function DeleteProjectContent({
             });
           }}
         >
-          Continue
+          Delete
         </AlertDialogAction>
       </AlertDialogFooter>
     </AlertDialogContent>
