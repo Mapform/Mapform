@@ -49,7 +49,7 @@ export function MapDrawer({
               zIndex: 30 - depth,
             }}
           >
-            <div className="flex min-h-full flex-col">{children}</div>
+            <div className="flex min-h-full flex-1 flex-col">{children}</div>
           </motion.div>
         )}
       </>
