@@ -140,7 +140,7 @@ export function ImageUploaderContent({
   });
 
   return (
-    <PopoverContent className="flex h-40 w-96 flex-col items-center justify-center p-2">
+    <PopoverContent className="flex h-40 w-80 flex-col items-center justify-center p-2">
       {isExecuting ? (
         <div className="flex size-full flex-col items-center justify-center">
           <Loader2Icon className="size-4 animate-spin" />
@@ -165,8 +165,7 @@ export function ImageUploaderContent({
               "Drop your image here"
             ) : (
               <>
-                Drag and drop an image here, or{" "}
-                <span className="underline">browse</span>
+                Drag image or <span className="underline">browse</span>
               </>
             )}
           </p>
