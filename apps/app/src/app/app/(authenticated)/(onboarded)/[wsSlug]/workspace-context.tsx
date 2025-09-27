@@ -265,8 +265,6 @@ export function WorkspaceProvider({
     params.bearing,
   ]);
 
-  const minZoom = isMobile ? 1.2 : 2.5;
-
   return (
     <WorkspaceContext.Provider
       value={{
@@ -326,7 +324,7 @@ export function WorkspaceProvider({
         logoPosition="bottom-right"
         initialViewState={initialViewState}
         cursor={cursor}
-        minZoom={minZoom}
+        minZoom={1}
         onContextMenu={handleContextMenu}
         onTouchStart={handleTouchStart}
         onMove={cancelLongPress}
