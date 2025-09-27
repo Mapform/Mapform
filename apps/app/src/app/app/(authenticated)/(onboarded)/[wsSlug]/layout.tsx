@@ -42,18 +42,16 @@ export default async function WorkspaceLayout(props: {
         width={`${SIDEBAR_WIDTH}px`}
       >
         <AppSidebar />
-        <div className="flex h-dvh w-dvw flex-col overflow-hidden max-md:pt-6">
-          <main className="prose pointer-events-none relative flex max-w-none flex-1 overflow-auto pl-0 md:overflow-hidden">
-            <AnimatePresence>
-              {/* Page-Based Drawers */}
-              {/* Drawers are rendered in the layout so that they don't unmount between route changes. NOTE: This means that ALL content will render in the drawers. If this is not desired, I could consider moving the drawer content into a Next.js SLOT. */}
-              <Drawers>{children}</Drawers>
+        <main className="prose pointer-events-none flex max-w-none flex-1">
+          <AnimatePresence>
+            {/* Page-Based Drawers */}
+            {/* Drawers are rendered in the layout so that they don't unmount between route changes. NOTE: This means that ALL content will render in the drawers. If this is not desired, I could consider moving the drawer content into a Next.js SLOT. */}
+            <Drawers>{children}</Drawers>
 
-              {/* Query Param-Based Drawers */}
-              {props.drawers}
-            </AnimatePresence>
-          </main>
-        </div>
+            {/* Query Param-Based Drawers */}
+            {props.drawers}
+          </AnimatePresence>
+        </main>
 
         <MobileMenu />
       </SidebarProvider>
