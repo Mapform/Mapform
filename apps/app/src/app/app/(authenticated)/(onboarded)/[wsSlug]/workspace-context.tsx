@@ -281,6 +281,7 @@ export function WorkspaceProvider({
     >
       <Map
         mapStyle={`https://api.maptiler.com/maps/streets/style.json?key=${env.NEXT_PUBLIC_MAPTILER_KEY}`}
+        key={isMobile ? "mobile" : "desktop"}
         style={{
           width: "100vw",
           height: "100vh",
