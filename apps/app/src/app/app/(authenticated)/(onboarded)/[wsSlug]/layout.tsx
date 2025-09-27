@@ -8,6 +8,7 @@ import { SidebarProvider } from "@mapform/ui/components/sidebar";
 import { SIDEBAR_WIDTH } from "~/constants/sidebars";
 import { Drawers } from "./drawers";
 import { MobileMenu } from "./mobile-menu";
+import { AnimatePresence } from "motion/react";
 
 export default async function WorkspaceLayout(props: {
   params: Promise<{ wsSlug: string }>;
@@ -42,12 +43,14 @@ export default async function WorkspaceLayout(props: {
       >
         <AppSidebar />
         <main className="prose pointer-events-none relative flex max-w-none flex-1 overflow-y-auto pl-0 md:overflow-hidden">
-          {/* Page-Based Drawers */}
-          {/* Drawers are rendered in the layout so that they don't unmount between route changes. NOTE: This means that ALL content will render in the drawers. If this is not desired, I could consider moving the drawer content into a Next.js SLOT. */}
-          <Drawers>{children}</Drawers>
+          <AnimatePresence>
+            {/* Page-Based Drawers */}
+            {/* Drawers are rendered in the layout so that they don't unmount between route changes. NOTE: This means that ALL content will render in the drawers. If this is not desired, I could consider moving the drawer content into a Next.js SLOT. */}
+            <Drawers>{children}</Drawers>
 
-          {/* Query Param-Based Drawers */}
-          {props.drawers}
+            {/* Query Param-Based Drawers */}
+            {props.drawers}
+          </AnimatePresence>
         </main>
 
         <MobileMenu />

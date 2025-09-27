@@ -24,10 +24,10 @@ export function MapDrawer({
 
   if (isMobile) {
     return (
-      <AnimatePresence>
-        {open && (
+      <>
+        {open && depth === 0 && (
           <motion.div
-            className="bg-background bg-opacity-98 group pointer-events-auto absolute top-0 z-10 mt-[calc(100dvh-200px)] flex min-h-dvh !w-full flex-col rounded-t-xl bg-white pb-20 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] outline-none backdrop-blur-sm transition-[filter,width,padding-left] duration-[250] [--y-from:200px] [--y-to:0]"
+            className="bg-background bg-opacity-98 group pointer-events-auto relative z-10 mt-[calc(100dvh-200px)] flex min-h-dvh !w-full flex-col rounded-t-xl bg-white pb-20 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] outline-none backdrop-blur-sm transition-[filter,width,padding-left] duration-[250] [--y-from:200px] [--y-to:0]"
             layoutScroll
             animate="open"
             initial="closed"
@@ -39,12 +39,10 @@ export function MapDrawer({
               open: {
                 opacity: 1,
                 y: "var(--y-to, 0)",
-                x: "var(--x-to, 0)",
               },
               closed: {
                 opacity: 0,
                 y: "var(--y-from, 0)",
-                x: "var(--x-from, 0)",
               },
             }}
             style={{
@@ -54,7 +52,7 @@ export function MapDrawer({
             <div className="flex min-h-full flex-col">{children}</div>
           </motion.div>
         )}
-      </AnimatePresence>
+      </>
     );
   }
 
