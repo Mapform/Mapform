@@ -17,7 +17,11 @@ import type {
   MapLayerMouseEvent,
   MapLayerTouchEvent,
 } from "react-map-gl/maplibre";
-import { Map, NavigationControl } from "react-map-gl/maplibre";
+import {
+  AttributionControl,
+  Map,
+  NavigationControl,
+} from "react-map-gl/maplibre";
 import { env } from "~/*";
 import "maplibre-gl/dist/maplibre-gl.css";
 import {
@@ -316,9 +320,9 @@ export function WorkspaceProvider({
             0,
           ],
         }}
-        projection="globe"
-        logoPosition="bottom-right"
+        projection={isMobile ? "mercator" : "globe"}
         initialViewState={initialViewState}
+        attributionControl={false}
         cursor={cursor}
         minZoom={1}
         onContextMenu={handleContextMenu}
@@ -353,6 +357,7 @@ export function WorkspaceProvider({
             position={contextMenu ?? { x: 0, y: 0, longitude: 0, latitude: 0 }}
           />
         </div>
+        <AttributionControl position={isMobile ? "top-left" : "bottom-right"} />
       </Map>
     </WorkspaceContext.Provider>
   );
