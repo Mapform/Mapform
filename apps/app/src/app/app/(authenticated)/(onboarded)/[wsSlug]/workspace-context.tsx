@@ -17,7 +17,11 @@ import type {
   MapLayerMouseEvent,
   MapLayerTouchEvent,
 } from "react-map-gl/maplibre";
-import { Map, NavigationControl } from "react-map-gl/maplibre";
+import {
+  AttributionControl,
+  Map,
+  NavigationControl,
+} from "react-map-gl/maplibre";
 import { env } from "~/*";
 import "maplibre-gl/dist/maplibre-gl.css";
 import {
@@ -335,6 +339,7 @@ export function WorkspaceProvider({
         onClick={handleClick}
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
+        attributionControl={false}
         interactiveLayerIds={[
           POINTS_LAYER_ID,
           POINTS_SYMBOLS_LAYER_ID,
@@ -355,6 +360,7 @@ export function WorkspaceProvider({
             position={contextMenu ?? { x: 0, y: 0, longitude: 0, latitude: 0 }}
           />
         </div>
+        <AttributionControl position={isMobile ? "top-left" : "bottom-right"} />
       </Map>
     </WorkspaceContext.Provider>
   );
