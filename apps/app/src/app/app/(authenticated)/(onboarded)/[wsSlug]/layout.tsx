@@ -42,7 +42,7 @@ export default async function WorkspaceLayout(props: {
         width={`${SIDEBAR_WIDTH}px`}
       >
         <AppSidebar />
-        <main className="prose max-md:ios-momentum pointer-events-none flex flex-1 max-md:z-10 max-md:max-w-none max-md:overflow-y-auto max-md:overscroll-contain md:pointer-events-none">
+        <main className="prose ios-momentum">
           <AnimatePresence>
             {/* Page-Based Drawers */}
             {/* Drawers are rendered in the layout so that they don't unmount between route changes. NOTE: This means that ALL content will render in the drawers. If this is not desired, I could consider moving the drawer content into a Next.js SLOT. */}
