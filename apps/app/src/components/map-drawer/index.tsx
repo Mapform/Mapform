@@ -27,7 +27,7 @@ export function MapDrawer({
       <>
         {open && depth === 0 && (
           <motion.div
-            className="bg-background bg-opacity-98 group pointer-events-auto relative z-10 mt-[calc(100dvh-200px)] flex min-h-dvh !w-full flex-col rounded-t-xl bg-white pb-20 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] outline-none backdrop-blur-sm transition-[filter,width,padding-left] duration-[250] [--y-from:200px] [--y-to:0]"
+            className="bg-background bg-opacity-98 group relative z-10 mt-[calc(100dvh-200px)] flex h-fit min-h-dvh !w-dvw flex-col bg-white pb-20 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] outline-none backdrop-blur-sm transition-[filter,width,padding-left] duration-[250] [--y-from:200px] [--y-to:0]"
             layoutScroll
             animate="open"
             initial="closed"
@@ -62,7 +62,7 @@ export function MapDrawer({
     <AnimatePresence>
       {open && (
         <motion.div
-          className="pointer-events-auto absolute bottom-2 top-2 flex !select-text outline-none"
+          className="absolute bottom-2 top-2 flex !select-text outline-none"
           initial={initialOpen ? false : { x: -width, width, opacity: 0 }}
           animate={{
             x: 16 * depth,
@@ -89,7 +89,7 @@ export function MapDrawer({
               opacity: depth ? 0.4 + depth * 0.15 : 0,
             }}
           />
-          <div className="bg-opacity-98 flex size-full grow flex-col rounded-lg border bg-white backdrop-blur-sm">
+          <div className="bg-opacity-98 flex size-full grow flex-col overflow-hidden rounded-lg border bg-white backdrop-blur-sm">
             <div className="flex min-h-full flex-col overflow-y-auto">
               {children}
             </div>
@@ -110,7 +110,7 @@ export function MapDrawerToolbar({
   return (
     <div
       className={cn(
-        "max-md:bg-opacity-98 sticky top-0 z-10 flex w-full rounded-t-xl p-2 max-md:bg-white max-md:backdrop-blur-sm",
+        "bg-opacity-98 sticky top-0 z-10 flex w-full bg-white p-2 backdrop-blur-sm",
         className,
       )}
     >

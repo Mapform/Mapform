@@ -98,6 +98,11 @@
     -ms-overflow-style: none; /* IE and Edge */
     scrollbar-width: none; /* Firefox */
   }
+
+  /* Enable iOS momentum scrolling on overflow containers */
+  .ios-momentum {
+    -webkit-overflow-scrolling: touch;
+  }
 }
 
 @layer components {
