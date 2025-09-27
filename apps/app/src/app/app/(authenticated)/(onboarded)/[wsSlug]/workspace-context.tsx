@@ -29,7 +29,7 @@ import {
 } from "~/lib/map/constants";
 import { MapContextMenu } from "./map-context-menu";
 import { useParamsContext } from "~/lib/params/client";
-import { useParams, usePathname } from "next/navigation";
+import { notFound, useParams, usePathname } from "next/navigation";
 import { DRAWER_WIDTH, SIDEBAR_WIDTH } from "~/constants/sidebars";
 import { useIsMobile } from "@mapform/lib/hooks/use-is-mobile";
 
@@ -86,7 +86,7 @@ export function WorkspaceProvider({
   );
 
   if (!currentWorkspace) {
-    throw new Error("Current workspace not found");
+    notFound();
   }
 
   const [workspaceDirectory, _updateWorkspaceDirectory] = useOptimistic<
