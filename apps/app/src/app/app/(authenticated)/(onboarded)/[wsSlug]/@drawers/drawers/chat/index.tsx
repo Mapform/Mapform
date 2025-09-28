@@ -17,6 +17,7 @@ import {
   SquarePenIcon,
   AlertCircleIcon,
   XIcon,
+  ClockFadingIcon,
 } from "lucide-react";
 
 import { useChat } from "@ai-sdk/react";
@@ -37,6 +38,7 @@ import {
   AlertDescription,
   AlertIcon,
 } from "@mapform/ui/components/alert";
+import Link from "next/link";
 
 interface ChatProps {
   chatWithMessages?: { messages?: ChatMessage[]; chatId: string };
@@ -243,9 +245,10 @@ function ChatInner({ chatWithMessages, usage }: ChatProps) {
       <div className="bg-background flex flex-shrink-0 flex-col max-md:sticky max-md:bottom-0">
         {hasReachedTokenLimit && (
           <Alert className="rounded-none border-t">
-            <AlertIcon icon={AlertCircleIcon} />
+            <AlertIcon icon={ClockFadingIcon} />
             <AlertDescription>
-              You have reached your daily token limit.
+              You have reached your daily token limit. To increase your limit
+              please <Link href="mailto:support@mapform.co">reach out</Link>.
             </AlertDescription>
           </Alert>
         )}
