@@ -10,7 +10,11 @@ import type { UserAuthClient, UnwrapReturn } from "../../../lib/types";
 export const getWorkspaceDirectory = (authClient: UserAuthClient) =>
   authClient
     .schema(getWorkspaceDirectorySchema)
-    .action(({ parsedInput: { slug }, ctx: { db } }) => {
+    .action(({ parsedInput: { slug }, ctx: { db, userAccess } }) => {
+      if (!userAccess.workspace.checkAccessBySlug(slug)) {
+        throw new Error("Unauthorized");
+      }
+
       return db.query.workspaces.findFirst({
         where: eq(workspaces.slug, slug),
         columns: {

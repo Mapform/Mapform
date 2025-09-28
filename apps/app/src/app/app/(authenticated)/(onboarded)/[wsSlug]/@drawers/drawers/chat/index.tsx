@@ -30,6 +30,7 @@ import { BasicSkeleton } from "~/components/skeletons/basic";
 import { toast } from "@mapform/ui/components/toaster";
 import { useAction } from "next-safe-action/hooks";
 import { createChatAction } from "~/data/chats/create-chat";
+import { useWorkspace } from "../../../workspace-context";
 
 interface ChatProps {
   chatWithMessages?: { messages?: ChatMessage[]; chatId: string };
@@ -104,6 +105,7 @@ function ChatInner({ chatWithMessages }: ChatProps) {
   const [input, setInput] = useState("");
   const [hasInitiatedNewChat, setHasInitiatedNewChat] = useState(false);
   const { params, setQueryStates } = useParamsContext();
+  const { workspaceSlug } = useWorkspace();
 
   // Initialize chat with resumable transport.
   // Note: the hook may briefly set status to "submitted" while probing
@@ -117,6 +119,7 @@ function ChatInner({ chatWithMessages }: ChatProps) {
       prepareSendMessagesRequest({ messages, id }) {
         return {
           body: { messages, id },
+          headers: { "x-workspace-slug": workspaceSlug },
         };
       },
     }),

@@ -121,32 +121,30 @@ export default async function UsagePage(props: {
         </div>
       </div>
 
-      {tokenLimit > 0 && (
-        <div className="inline-flex w-full flex-col gap-3">
-          <Label>AI Tokens Used (daily)</Label>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger className="w-full">
-                <div className="h-3 w-full overflow-hidden rounded-full bg-gray-100">
-                  <div
-                    className="bg-primary h-full rounded-full transition-all"
-                    style={{ width: `${Math.min(100, tokenUsagePercentage)}%` }}
-                  />
-                </div>
-              </TooltipTrigger>
-              <TooltipContent>
-                <span>
-                  {tokensUsed} / {tokenLimit} Tokens •{" "}
-                  {Math.round(tokenUsagePercentage)}% used
-                </span>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-          <div className="text-muted-foreground text-sm">
-            Daily AI tokens available for your workspace plan.
-          </div>
+      <div className="inline-flex w-full flex-col gap-3">
+        <Label>AI Tokens Used (daily)</Label>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger className="w-full">
+              <div className="h-3 w-full overflow-hidden rounded-full bg-gray-100">
+                <div
+                  className="bg-primary h-full rounded-full transition-all"
+                  style={{ width: `${Math.min(100, tokenUsagePercentage)}%` }}
+                />
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>
+              <span>
+                {tokensUsed} / {tokenLimit} Tokens •{" "}
+                {Math.round(tokenUsagePercentage)}% used
+              </span>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+        <div className="text-muted-foreground text-sm">
+          Daily AI tokens available for your workspace plan.
         </div>
-      )}
+      </div>
     </div>
   );
 }

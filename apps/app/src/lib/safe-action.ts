@@ -58,45 +58,16 @@ import { db } from "@mapform/db";
 import { updateChat } from "@mapform/backend/data/chats/update-chat";
 import { deleteImage } from "@mapform/backend/data/images/delete-image";
 
-const ignoredWorkspaceSlugs = ["onboarding"];
-const ignoredTeamspaceSlugs = ["settings"];
-
 export const authClient = baseClient
   .use(async ({ next, ctx }) => {
-    const headersList = await headers();
     const response = await internalGetCurrentSession();
     const user = response?.data?.user;
-    const workspaceSlug = headersList.get("x-workspace-slug") ?? "";
-    const teamspaceSlug = headersList.get("x-teamspace-slug") ?? "";
 
     if (!user) {
       return redirect("/app/signin");
     }
 
     const userAccess = new UserAccess(user);
-
-    const hasAccessToCurrentWorkspace =
-      userAccess.workspace.checkAccessBySlug(workspaceSlug);
-    const hasAccessToTeamspace = userAccess.teamspace.checkAccessBySlug(
-      teamspaceSlug,
-      workspaceSlug,
-    );
-
-    if (
-      workspaceSlug &&
-      !hasAccessToCurrentWorkspace &&
-      !ignoredWorkspaceSlugs.includes(workspaceSlug)
-    ) {
-      return redirect("/app");
-    }
-
-    if (
-      teamspaceSlug &&
-      !hasAccessToTeamspace &&
-      !ignoredTeamspaceSlugs.includes(teamspaceSlug)
-    ) {
-      return redirect(`/app/${workspaceSlug}`);
-    }
 
     return next({
       ctx: {
