@@ -214,7 +214,7 @@ function ChatInner({ chatWithMessages }: ChatProps) {
       </Conversation>
 
       <form
-        className="relative flex flex-shrink-0 flex-col gap-2 border-t p-4"
+        className="bg-background relative flex flex-shrink-0 flex-col gap-2 border-t p-4 max-md:sticky max-md:bottom-0"
         onSubmit={(e) => {
           e.preventDefault();
           handleSubmit();
