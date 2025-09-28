@@ -83,14 +83,15 @@ export default async function UsagePage(props: {
             </TooltipTrigger>
             <TooltipContent>
               <span>
-                {rowsUsed} / {rowLimit} Rows • {Math.round(rowUsagePercentage)}%
-                used
+                {rowsUsed} / {rowLimit} Features •{" "}
+                {Math.round(rowUsagePercentage)}% used
               </span>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
         <div className="text-muted-foreground text-sm">
-          The number of lines, shapes, and places you have added to your maps.
+          The number of features (places, lines, shapes, etc.) you have added to
+          your maps.
         </div>
       </div>
 
@@ -122,7 +123,7 @@ export default async function UsagePage(props: {
       </div>
 
       <div className="inline-flex w-full flex-col gap-3">
-        <Label>AI Tokens Used (daily)</Label>
+        <Label>AI Tokens Used (Daily)</Label>
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger className="w-full">
