@@ -40,6 +40,10 @@ export function MobileMenu() {
     (teamspace) => teamspace.isPrivate && teamspace.ownerUserId === user?.id,
   );
 
+  if (drawerDepth.size > 0) {
+    return null;
+  }
+
   return (
     <div className="fixed bottom-4 left-1/2 z-50 mx-auto flex max-w-[calc(100%-2rem)] -translate-x-1/2 gap-1 rounded-full border bg-white/90 px-3 py-1 shadow-md backdrop-blur-sm md:hidden">
       <Button
