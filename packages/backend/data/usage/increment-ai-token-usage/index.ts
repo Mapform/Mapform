@@ -1,7 +1,7 @@
 "server-only";
 
 import { aiTokenUsage } from "@mapform/db/schema";
-import { and, eq, sql } from "@mapform/db/utils";
+import { sql } from "@mapform/db/utils";
 import type { UserAuthClient } from "../../../lib/types";
 import { z } from "zod";
 

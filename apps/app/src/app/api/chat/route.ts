@@ -36,8 +36,6 @@ export async function POST(req: Request) {
   const headersList = await getHeaders();
   const workspaceSlug = headersList.get("x-workspace-slug");
 
-  console.log("workspaceSlug", workspaceSlug);
-
   if (!workspaceSlug) {
     return NextResponse.json(
       { msg: "Workspace slug is required" },
