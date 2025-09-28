@@ -104,8 +104,6 @@ async function ChatDrawer({ searchParams, params }: DealDrawerProps) {
     authDataService.getAiTokenUsage({ workspaceSlug: wsSlug }),
   ]);
 
-  console.log(222, usage?.data);
-
   return (
     <Chat
       key={chatId}

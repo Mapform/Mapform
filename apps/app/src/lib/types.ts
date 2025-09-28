@@ -19,17 +19,9 @@ export type ChatTools = {
 export type MessageMetadata = z.infer<typeof messageMetadataSchema>;
 
 export type CustomUIDataTypes = {
-  textDelta: string;
-  imageDelta: string;
-  sheetDelta: string;
-  codeDelta: string;
-  suggestion: null;
-  appendMessage: string;
-  id: string;
-  title: string;
-  kind: null;
-  clear: null;
-  finish: null;
+  "ai-token-usage": {
+    tokens: number;
+  };
 };
 
 export type ChatMessage = UIMessage<

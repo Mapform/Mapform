@@ -2,10 +2,12 @@ import type { UIMessage } from "ai";
 import { authDataService } from "~/lib/safe-action";
 import {
   streamText,
+  createUIMessageStream,
   convertToModelMessages,
   hasToolCall,
   generateId,
   generateText,
+  createUIMessageStreamResponse,
 } from "ai";
 import { NextResponse, after } from "next/server";
 import { headers as getHeaders } from "next/headers";
@@ -67,40 +69,51 @@ export async function POST(req: Request) {
     console.warn("Failed to check AI token limits", e);
   }
 
-  const result = streamText({
-    model: "gpt-5-mini",
-    system: SYSTEM_PROMPT,
-    messages: convertToModelMessages(messages),
-    tools: {
-      findInternalFeatures,
-      reverseGeocode,
-      findExternalFeatures,
-      returnBestResults,
-      webSearch,
-    },
-    // stopWhen: [stepCountIs(7), hasToolCall("returnBestResults")],
-    stopWhen: hasToolCall("returnBestResults"),
-    providerOptions: {
-      openai: {
-        reasoningEffort: "low",
-        reasoningSummary: "detailed",
-      },
-    },
-    onFinish: async ({ usage }) => {
-      const totalTokens = usage.totalTokens;
+  const stream = createUIMessageStream({
+    execute: ({ writer }) => {
+      const result = streamText({
+        model: "gpt-5-mini",
+        system: SYSTEM_PROMPT,
+        messages: convertToModelMessages(messages),
+        tools: {
+          findInternalFeatures,
+          reverseGeocode,
+          findExternalFeatures,
+          returnBestResults,
+          webSearch,
+        },
+        // stopWhen: [stepCountIs(7), hasToolCall("returnBestResults")],
+        stopWhen: hasToolCall("returnBestResults"),
+        providerOptions: {
+          openai: {
+            reasoningEffort: "low",
+            reasoningSummary: "detailed",
+          },
+        },
+        onFinish: async ({ usage }) => {
+          const totalTokens = usage.totalTokens;
 
-      if (workspaceSlug && totalTokens && totalTokens > 0) {
-        await authDataService.incrementAiTokenUsage({
-          workspaceSlug,
-          tokens: totalTokens,
-        });
-      }
-    },
-  });
+          if (workspaceSlug && totalTokens && totalTokens > 0) {
+            const result = await authDataService.incrementAiTokenUsage({
+              workspaceSlug,
+              tokens: totalTokens,
+            });
 
-  const response = result.toUIMessageStreamResponse({
+            console.log(99999, result);
+
+            if (result?.data?.tokensUsed) {
+              writer.write({
+                type: "data-ai-token-usage",
+                data: { tokens: result.data.tokensUsed },
+              });
+            }
+          }
+        },
+      });
+
+      writer.merge(result.toUIMessageStream());
+    },
     originalMessages: messages,
-    generateMessageId: () => crypto.randomUUID(),
     onFinish: async ({ messages }) => {
       await authDataService.createMessages({
         messages: messages.map((m) => ({
@@ -136,7 +149,11 @@ export async function POST(req: Request) {
         ...(title ? { title } : {}),
       });
     },
-    async consumeSseStream({ stream }) {
+  });
+
+  return createUIMessageStreamResponse({
+    stream,
+    consumeSseStream: async ({ stream }) => {
       const streamId = generateId();
       // Create a resumable stream from the SSE stream
       const streamContext = createResumableStreamContext({ waitUntil: after });
@@ -147,10 +164,70 @@ export async function POST(req: Request) {
         id,
         activeStreamId: streamId,
       });
-
-      // No token metrics available in this callback across all providers
     },
   });
 
-  return response;
+  // const response = stream.toUIMessageStreamResponse({
+  //   originalMessages: messages,
+  //   generateMessageId: () => crypto.randomUUID(),
+  //   messageMetadata: ({ part }) => {
+  //     if (part.type === "finish") {
+  //       const total = part.totalUsage.totalTokens;
+  //       console.log(111, total);
+  //       return total ? { tokensUsed: total } : undefined;
+  //     }
+  //   },
+
+  //   onFinish: async ({ messages }) => {
+  //     await authDataService.createMessages({
+  //       messages: messages.map((m) => ({
+  //         id: m.id,
+  //         role: m.role,
+  //         parts: m.parts,
+  //       })),
+  //       chatId: id,
+  //     });
+
+  //     const userMessages = messages.filter((m) => m.role === "user");
+  //     const firstUserMessage = userMessages[0];
+  //     let title = null;
+
+  //     if (firstUserMessage && userMessages.length === 1) {
+  //       const result = await generateText({
+  //         model: "gpt-4o-mini",
+  //         system: `\n
+  //         - you will generate a short title based on the first message a user begins a conversation with
+  //         - ensure it is not more than 80 characters long
+  //         - the title should be a summary of the user's message
+  //         - do not use quotes or colons`,
+  //         prompt: JSON.stringify(firstUserMessage),
+  //       });
+
+  //       title = result.text;
+  //     }
+
+  //     // Clear the active stream when finished
+  //     await authDataService.updateChat({
+  //       id,
+  //       activeStreamId: null,
+  //       ...(title ? { title } : {}),
+  //     });
+  //   },
+  //   async consumeSseStream({ stream }) {
+  // const streamId = generateId();
+  // // Create a resumable stream from the SSE stream
+  // const streamContext = createResumableStreamContext({ waitUntil: after });
+  // await streamContext.createNewResumableStream(streamId, () => stream);
+
+  // // Update the chat with the active stream ID
+  // await authDataService.updateChat({
+  //   id,
+  //   activeStreamId: streamId,
+  // });
+
+  //     // No token metrics available in this callback across all providers
+  //   },
+  // });
+
+  // return response;
 }

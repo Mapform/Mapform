@@ -123,7 +123,7 @@ function ChatInner({ chatWithMessages, usage }: ChatProps) {
   // Initialize chat with resumable transport.
   // Note: the hook may briefly set status to "submitted" while probing
   // for a resumable stream; UI below avoids flashing during that handshake.
-  const { messages, sendMessage, status, stop } = useChat<ChatMessage>({
+  const { messages, sendMessage, status, stop, error } = useChat<ChatMessage>({
     id: params.chatId!,
     resume: true,
     messages: chatWithMessages?.messages ?? [],
@@ -137,7 +137,15 @@ function ChatInner({ chatWithMessages, usage }: ChatProps) {
       },
     }),
     generateId: () => crypto.randomUUID(),
+    onData: (x) => {
+      console.log(222, x);
+    },
+    onFinish: (x) => {
+      console.log(333, x);
+    },
   });
+
+  console.log("ERROR", error);
 
   const handleSubmit = () => {
     if (status === "streaming" || status === "submitted" || !input) {
@@ -188,8 +196,6 @@ function ChatInner({ chatWithMessages, usage }: ChatProps) {
   const hasReachedTokenLimit = Boolean(
     tokenLimit && (usage?.tokensUsed ?? 0) >= tokenLimit,
   );
-
-  console.log(111, usage?.tokensUsed, tokenLimit);
 
   return (
     <>
