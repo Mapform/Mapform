@@ -8,6 +8,7 @@ import {
   generateText,
 } from "ai";
 import { NextResponse, after } from "next/server";
+import { headers as getHeaders } from "next/headers";
 import { getCurrentSession } from "~/data/auth/get-current-session";
 import { SYSTEM_PROMPT } from "~/lib/ai/prompts";
 import { reverseGeocode } from "~/lib/ai/tools/reverse-geocode";
@@ -21,13 +22,49 @@ import { createResumableStreamContext } from "resumable-stream";
 export const maxDuration = 60;
 
 export async function POST(req: Request) {
-  const { messages, id }: { messages: UIMessage[]; id: string } =
-    await req.json();
+  const { messages, id } = (await req.json()) as {
+    messages: UIMessage[];
+    id: string;
+  };
 
   const session = await getCurrentSession();
 
   if (!session?.data?.user) {
     return NextResponse.json({ msg: "Unauthorized" }, { status: 401 });
+  }
+
+  const headersList = await getHeaders();
+  const workspaceSlug = headersList.get("x-workspace-slug");
+
+  if (!workspaceSlug) {
+    return NextResponse.json(
+      { msg: "Workspace slug is required" },
+      { status: 400 },
+    );
+  }
+
+  // Enforce token limit before generating
+  try {
+    const directory = await authDataService.getWorkspaceDirectory({
+      slug: workspaceSlug,
+    });
+    const plan = directory?.data?.plan;
+
+    if (plan?.dailyAiTokenLimit) {
+      const usage = await authDataService.getAiTokenUsage({ workspaceSlug });
+      const used = usage?.data?.tokensUsed ?? 0;
+
+      if (used >= plan.dailyAiTokenLimit) {
+        return NextResponse.json(
+          {
+            msg: "Daily AI token limit reached. Upgrade your plan or try again tomorrow.",
+          },
+          { status: 429 },
+        );
+      }
+    }
+  } catch (e) {
+    console.warn("Failed to check AI token limits", e);
   }
 
   const result = streamText({
@@ -48,6 +85,16 @@ export async function POST(req: Request) {
         reasoningEffort: "low",
         reasoningSummary: "detailed",
       },
+    },
+    onFinish: async ({ usage }) => {
+      const totalTokens = usage.totalTokens;
+
+      if (workspaceSlug && totalTokens && totalTokens > 0) {
+        await authDataService.incrementAiTokenUsage({
+          workspaceSlug,
+          tokens: totalTokens,
+        });
+      }
     },
   });
 
@@ -100,6 +147,8 @@ export async function POST(req: Request) {
         id,
         activeStreamId: streamId,
       });
+
+      // No token metrics available in this callback across all providers
     },
   });
 

@@ -140,6 +140,7 @@ export const completeOnboarding = (authClient: UserAuthClient) =>
               workspaceSlug: workspace.slug,
               stripeCustomerId: customer.id,
               rowLimit: PLANS.basic.rowLimit,
+              dailyAiTokenLimit: PLANS.basic.dailyAiTokenLimit,
             });
 
             return workspace;
