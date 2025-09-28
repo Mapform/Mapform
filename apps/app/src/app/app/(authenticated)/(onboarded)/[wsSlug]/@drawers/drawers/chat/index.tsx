@@ -15,6 +15,7 @@ import {
   SendIcon,
   SquareIcon,
   SquarePenIcon,
+  AlertCircleIcon,
   XIcon,
 } from "lucide-react";
 
@@ -31,9 +32,15 @@ import { toast } from "@mapform/ui/components/toaster";
 import { useAction } from "next-safe-action/hooks";
 import { createChatAction } from "~/data/chats/create-chat";
 import { useWorkspace } from "../../../workspace-context";
+import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
+} from "@mapform/ui/components/alert";
 
 interface ChatProps {
   chatWithMessages?: { messages?: ChatMessage[]; chatId: string };
+  usage?: { tokensUsed: number };
 }
 
 export function ChatWrapper({ children }: { children: React.ReactNode }) {
@@ -46,7 +53,7 @@ export function ChatWrapper({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function Chat({ chatWithMessages }: ChatProps) {
+export function Chat({ chatWithMessages, usage }: ChatProps) {
   const { pId } = useParams<{ pId?: string }>();
   const { params, setQueryStates } = useParamsContext();
   const { execute: createChat } = useAction(createChatAction, {
@@ -98,14 +105,20 @@ export function Chat({ chatWithMessages }: ChatProps) {
       </>
     );
 
-  return <ChatInner key={params.chatId} chatWithMessages={chatWithMessages} />;
+  return (
+    <ChatInner
+      usage={usage}
+      key={params.chatId}
+      chatWithMessages={chatWithMessages}
+    />
+  );
 }
 
-function ChatInner({ chatWithMessages }: ChatProps) {
+function ChatInner({ chatWithMessages, usage }: ChatProps) {
   const [input, setInput] = useState("");
   const [hasInitiatedNewChat, setHasInitiatedNewChat] = useState(false);
   const { params, setQueryStates } = useParamsContext();
-  const { workspaceSlug } = useWorkspace();
+  const { workspaceSlug, workspaceDirectory } = useWorkspace();
 
   // Initialize chat with resumable transport.
   // Note: the hook may briefly set status to "submitted" while probing
@@ -171,6 +184,13 @@ function ChatInner({ chatWithMessages }: ChatProps) {
     status === "streaming" ||
     (status === "submitted" && isUserAwaitingResponse);
 
+  const tokenLimit = workspaceDirectory.plan?.dailyAiTokenLimit;
+  const hasReachedTokenLimit = Boolean(
+    tokenLimit && (usage?.tokensUsed ?? 0) >= tokenLimit,
+  );
+
+  console.log(111, usage?.tokensUsed, tokenLimit);
+
   return (
     <>
       <MapDrawerToolbar>
@@ -213,49 +233,68 @@ function ChatInner({ chatWithMessages }: ChatProps) {
         <ConversationScrollButton />
       </Conversation>
 
-      <form
-        className="bg-background relative flex flex-shrink-0 flex-col gap-2 border-t p-4 max-md:sticky max-md:bottom-0"
-        onSubmit={(e) => {
-          e.preventDefault();
-          handleSubmit();
-        }}
-      >
-        <AutoSizeTextArea
-          value={input}
-          onChange={(value) => setInput(value)}
-          onEnter={handleSubmit}
+      <div className="bg-background flex flex-shrink-0 flex-col max-md:sticky max-md:bottom-0">
+        {hasReachedTokenLimit && (
+          <Alert className="rounded-none border-t">
+            <AlertIcon icon={AlertCircleIcon} />
+            <AlertDescription>
+              You have reached your daily token limit.
+            </AlertDescription>
+          </Alert>
+        )}
+
+        <form
           className={cn(
-            "bg-muted w-full border-none pl-10 shadow-none !ring-0",
+            "relative flex flex-shrink-0 flex-col gap-2 border-t p-4",
+            hasReachedTokenLimit && "opacity-50",
           )}
-          placeholder="Ask anything..."
-          autoFocus
-        />
-        <AnimatePresence mode="wait" initial={false}>
-          <motion.div
-            key={showStop ? "stop" : "send"}
-            className="ml-auto"
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            transition={{ duration: 0.1, ease: "easeOut" }}
-          >
-            {showStop ? (
-              <Button type="button" size="icon" onClick={stop}>
-                <SquareIcon className="size-4" fill="currentColor" />
-              </Button>
-            ) : (
-              <Button
-                className="ml-auto"
-                type="submit"
-                size="icon"
-                disabled={!input}
-              >
-                <SendIcon className="size-4" />
-              </Button>
+          onSubmit={(e) => {
+            if (hasReachedTokenLimit) {
+              return;
+            }
+
+            e.preventDefault();
+            handleSubmit();
+          }}
+        >
+          <AutoSizeTextArea
+            value={input}
+            onChange={(value) => setInput(value)}
+            onEnter={handleSubmit}
+            disabled={hasReachedTokenLimit}
+            className={cn(
+              "bg-muted w-full border-none pl-10 shadow-none !ring-0",
             )}
-          </motion.div>
-        </AnimatePresence>
-      </form>
+            placeholder="Ask anything..."
+            autoFocus
+          />
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.div
+              key={showStop ? "stop" : "send"}
+              className="ml-auto"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.1, ease: "easeOut" }}
+            >
+              {showStop ? (
+                <Button type="button" size="icon" onClick={stop}>
+                  <SquareIcon className="size-4" fill="currentColor" />
+                </Button>
+              ) : (
+                <Button
+                  className="ml-auto"
+                  type="submit"
+                  size="icon"
+                  disabled={!input || hasReachedTokenLimit}
+                >
+                  <SendIcon className="size-4" />
+                </Button>
+              )}
+            </motion.div>
+          </AnimatePresence>
+        </form>
+      </div>
     </>
   );
 }

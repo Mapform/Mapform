@@ -95,15 +95,16 @@ async function SearchDrawer({ searchParams, params }: DealDrawerProps) {
   );
 }
 
-async function ChatDrawer({ searchParams }: DealDrawerProps) {
+async function ChatDrawer({ searchParams, params }: DealDrawerProps) {
+  const { wsSlug } = await params;
   const { chatId } = await loadSearchParams(searchParams);
 
-  const chatWithMessages =
-    chatId && chatId !== "new"
-      ? await authDataService.getMessages({
-          chatId,
-        })
-      : null;
+  const [chatWithMessages, usage] = await Promise.all([
+    chatId && chatId !== "new" ? authDataService.getMessages({ chatId }) : null,
+    authDataService.getAiTokenUsage({ workspaceSlug: wsSlug }),
+  ]);
+
+  console.log(222, usage?.data);
 
   return (
     <Chat
@@ -116,6 +117,7 @@ async function ChatDrawer({ searchParams }: DealDrawerProps) {
             }
           | undefined
       }
+      usage={usage?.data}
     />
   );
 }

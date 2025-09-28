@@ -11,6 +11,7 @@ interface AutoSizeTextAreaProps {
   onEnter?: () => void;
   placeholder?: string;
   autoFocus?: boolean;
+  disabled?: boolean;
 }
 
 export function AutoSizeTextArea({
@@ -20,6 +21,7 @@ export function AutoSizeTextArea({
   className,
   placeholder = "Untitled",
   autoFocus = false,
+  disabled = false,
 }: AutoSizeTextAreaProps) {
   const { ref, bounds } = useMeasure<HTMLTextAreaElement>();
 
@@ -40,6 +42,7 @@ export function AutoSizeTextArea({
         className,
         "w-full resize-none border-0 border-transparent bg-transparent p-0 outline-none focus:border-transparent focus:ring-0",
       )}
+      disabled={disabled}
       onChange={(e) => {
         onChange(e.target.value);
         updateHeight();
