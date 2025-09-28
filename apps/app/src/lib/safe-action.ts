@@ -46,6 +46,8 @@ import { createMessages } from "@mapform/backend/data/messages/create-messages";
 import { getMessages } from "@mapform/backend/data/messages/get-messages";
 import { listChats } from "@mapform/backend/data/chats/list-chats";
 import { getRowCount } from "@mapform/backend/data/usage/get-row-count";
+import { getAiTokenUsage } from "@mapform/backend/data/usage/get-ai-token-usage";
+import { incrementAiTokenUsage } from "@mapform/backend/data/usage/increment-ai-token-usage";
 import { deleteChat } from "@mapform/backend/data/chats/delete-chat";
 import { search } from "@mapform/backend/data/stadia/search";
 import { details } from "@mapform/backend/data/stadia/details";
@@ -56,45 +58,16 @@ import { db } from "@mapform/db";
 import { updateChat } from "@mapform/backend/data/chats/update-chat";
 import { deleteImage } from "@mapform/backend/data/images/delete-image";
 
-const ignoredWorkspaceSlugs = ["onboarding"];
-const ignoredTeamspaceSlugs = ["settings"];
-
 export const authClient = baseClient
   .use(async ({ next, ctx }) => {
-    const headersList = await headers();
     const response = await internalGetCurrentSession();
     const user = response?.data?.user;
-    const workspaceSlug = headersList.get("x-workspace-slug") ?? "";
-    const teamspaceSlug = headersList.get("x-teamspace-slug") ?? "";
 
     if (!user) {
       return redirect("/app/signin");
     }
 
     const userAccess = new UserAccess(user);
-
-    const hasAccessToCurrentWorkspace =
-      userAccess.workspace.checkAccessBySlug(workspaceSlug);
-    const hasAccessToTeamspace = userAccess.teamspace.checkAccessBySlug(
-      teamspaceSlug,
-      workspaceSlug,
-    );
-
-    if (
-      workspaceSlug &&
-      !hasAccessToCurrentWorkspace &&
-      !ignoredWorkspaceSlugs.includes(workspaceSlug)
-    ) {
-      return redirect("/app");
-    }
-
-    if (
-      teamspaceSlug &&
-      !hasAccessToTeamspace &&
-      !ignoredTeamspaceSlugs.includes(teamspaceSlug)
-    ) {
-      return redirect(`/app/${workspaceSlug}`);
-    }
 
     return next({
       ctx: {
@@ -184,6 +157,8 @@ const createUserAuthDataService = () => {
     // Usage
     getStorageUsage: getStorageUsage(client),
     getRowCount: getRowCount(client),
+    getAiTokenUsage: getAiTokenUsage(client),
+    incrementAiTokenUsage: incrementAiTokenUsage(client),
   });
 
   return {

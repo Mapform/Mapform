@@ -28,6 +28,8 @@ export const plans = pgTable(
       .notNull()
       .default(10 * 1000 * 1000),
 
+    dailyAiTokenLimit: integer("daily_ai_token_limit"),
+
     workspaceSlug: varchar("workspace_slug")
       .notNull()
       .references(() => workspaces.slug, {

@@ -14,6 +14,7 @@ export * from "./cells/schema";
 export * from "./chats/schema";
 export * from "./messages/schema";
 export * from "./embeddings/schema";
+export * from "./usage/schema";
 
 // RELATIONS
 export * from "./users/relations";
@@ -47,3 +48,4 @@ export * from "./views/validation";
 export * from "./chats/validation";
 export * from "./messages/validation";
 export * from "./embeddings/validation";
+export * from "./usage/validation";

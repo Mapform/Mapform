@@ -24,9 +24,8 @@ export function WelcomeTourContent({ className }: WelcomeTourProps) {
                 <li>Chat with your maps</li>
               </ul>
               <p>
-                Additional features like table views, data imports, sharing, and
-                mobile support are coming soon. As always, I would love to hear
-                your feedback.
+                Additional features like table views, data imports, and sharing
+                are coming soon. As always, I would love to hear your feedback.
               </p>
               <p>— Nic</p>
             </>

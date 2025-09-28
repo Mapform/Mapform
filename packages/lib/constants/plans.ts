@@ -5,13 +5,13 @@ export const PLANS = {
     id: null,
     name: "Basic",
     rowLimit: 100,
-    monthlySessions: 50,
     storageLimit: 10 * MB_IN_BYTES, // 10 MB
+    dailyAiTokenLimit: 100000,
   },
   pro: {
     name: "Pro",
-    rowLimit: 1000,
-    monthlySessions: 500,
+    rowLimit: 10000,
     storageLimit: 100 * MB_IN_BYTES, // 100 MB
+    dailyAiTokenLimit: 1000000,
   },
 };

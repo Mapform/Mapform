@@ -2,12 +2,15 @@ import type { UIMessage } from "ai";
 import { authDataService } from "~/lib/safe-action";
 import {
   streamText,
+  createUIMessageStream,
   convertToModelMessages,
   hasToolCall,
   generateId,
   generateText,
+  createUIMessageStreamResponse,
 } from "ai";
 import { NextResponse, after } from "next/server";
+import { headers as getHeaders } from "next/headers";
 import { getCurrentSession } from "~/data/auth/get-current-session";
 import { SYSTEM_PROMPT } from "~/lib/ai/prompts";
 import { reverseGeocode } from "~/lib/ai/tools/reverse-geocode";
@@ -21,8 +24,10 @@ import { createResumableStreamContext } from "resumable-stream";
 export const maxDuration = 60;
 
 export async function POST(req: Request) {
-  const { messages, id }: { messages: UIMessage[]; id: string } =
-    await req.json();
+  const { messages, id } = (await req.json()) as {
+    messages: UIMessage[];
+    id: string;
+  };
 
   const session = await getCurrentSession();
 
@@ -30,30 +35,89 @@ export async function POST(req: Request) {
     return NextResponse.json({ msg: "Unauthorized" }, { status: 401 });
   }
 
-  const result = streamText({
-    model: "gpt-5-mini",
-    system: SYSTEM_PROMPT,
-    messages: convertToModelMessages(messages),
-    tools: {
-      findInternalFeatures,
-      reverseGeocode,
-      findExternalFeatures,
-      returnBestResults,
-      webSearch,
-    },
-    // stopWhen: [stepCountIs(7), hasToolCall("returnBestResults")],
-    stopWhen: hasToolCall("returnBestResults"),
-    providerOptions: {
-      openai: {
-        reasoningEffort: "low",
-        reasoningSummary: "detailed",
-      },
-    },
-  });
+  const headersList = await getHeaders();
+  const workspaceSlug = headersList.get("x-workspace-slug");
 
-  const response = result.toUIMessageStreamResponse({
+  if (!workspaceSlug) {
+    return NextResponse.json(
+      { msg: "Workspace slug is required" },
+      { status: 400 },
+    );
+  }
+
+  // Enforce token limit before generating
+  try {
+    const directory = await authDataService.getWorkspaceDirectory({
+      slug: workspaceSlug,
+    });
+    const plan = directory?.data?.plan;
+
+    if (plan?.dailyAiTokenLimit) {
+      const usage = await authDataService.getAiTokenUsage({ workspaceSlug });
+      const used = usage?.data?.tokensUsed ?? 0;
+
+      if (used >= plan.dailyAiTokenLimit) {
+        return NextResponse.json(
+          {
+            msg: "Daily AI token limit reached. Upgrade your plan or try again tomorrow.",
+          },
+          { status: 429 },
+        );
+      }
+    }
+  } catch (e) {
+    console.warn("Failed to check AI token limits", e);
+  }
+
+  const stream = createUIMessageStream({
+    execute: ({ writer }) => {
+      // As per: https://ai-sdk.dev/docs/ai-sdk-ui/chatbot-message-persistence#option-2-setting-ids-with-createuimessagestream
+      writer.write({
+        type: "start",
+        messageId: crypto.randomUUID(), // Generate server-side ID for persistence
+      });
+
+      const result = streamText({
+        model: "gpt-5-mini",
+        system: SYSTEM_PROMPT,
+        messages: convertToModelMessages(messages),
+        tools: {
+          findInternalFeatures,
+          reverseGeocode,
+          findExternalFeatures,
+          returnBestResults,
+          webSearch,
+        },
+        // stopWhen: [stepCountIs(7), hasToolCall("returnBestResults")],
+        stopWhen: hasToolCall("returnBestResults"),
+        providerOptions: {
+          openai: {
+            reasoningEffort: "low",
+            reasoningSummary: "detailed",
+          },
+        },
+        onFinish: async ({ usage }) => {
+          const totalTokens = usage.totalTokens;
+
+          if (workspaceSlug && totalTokens && totalTokens > 0) {
+            const result = await authDataService.incrementAiTokenUsage({
+              workspaceSlug,
+              tokens: totalTokens,
+            });
+
+            if (result?.data?.tokensUsed) {
+              writer.write({
+                type: "data-ai-token-usage",
+                data: { tokens: result.data.tokensUsed },
+              });
+            }
+          }
+        },
+      });
+
+      writer.merge(result.toUIMessageStream({ sendStart: false }));
+    },
     originalMessages: messages,
-    generateMessageId: () => crypto.randomUUID(),
     onFinish: async ({ messages }) => {
       await authDataService.createMessages({
         messages: messages.map((m) => ({
@@ -89,7 +153,11 @@ export async function POST(req: Request) {
         ...(title ? { title } : {}),
       });
     },
-    async consumeSseStream({ stream }) {
+  });
+
+  return createUIMessageStreamResponse({
+    stream,
+    consumeSseStream: async ({ stream }) => {
       const streamId = generateId();
       // Create a resumable stream from the SSE stream
       const streamContext = createResumableStreamContext({ waitUntil: after });
@@ -102,6 +170,4 @@ export async function POST(req: Request) {
       });
     },
   });
-
-  return response;
 }
