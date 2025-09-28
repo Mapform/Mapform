@@ -127,6 +127,7 @@ function ChatInner({ chatWithMessages, usage }: ChatProps) {
   const { messages, sendMessage, status, stop, error } = useChat<ChatMessage>({
     id: params.chatId!,
     resume: true,
+    experimental_throttle: 50,
     messages: chatWithMessages?.messages ?? [],
     transport: new DefaultChatTransport({
       api: "/api/chat",
