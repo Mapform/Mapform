@@ -71,6 +71,12 @@ export async function POST(req: Request) {
 
   const stream = createUIMessageStream({
     execute: ({ writer }) => {
+      // As per: https://ai-sdk.dev/docs/ai-sdk-ui/chatbot-message-persistence#option-2-setting-ids-with-createuimessagestream
+      writer.write({
+        type: "start",
+        messageId: crypto.randomUUID(), // Generate server-side ID for persistence
+      });
+
       const result = streamText({
         model: "gpt-5-mini",
         system: SYSTEM_PROMPT,
@@ -99,8 +105,6 @@ export async function POST(req: Request) {
               tokens: totalTokens,
             });
 
-            console.log(99999, result);
-
             if (result?.data?.tokensUsed) {
               writer.write({
                 type: "data-ai-token-usage",
@@ -111,7 +115,7 @@ export async function POST(req: Request) {
         },
       });
 
-      writer.merge(result.toUIMessageStream());
+      writer.merge(result.toUIMessageStream({ sendStart: false }));
     },
     originalMessages: messages,
     onFinish: async ({ messages }) => {
@@ -166,68 +170,4 @@ export async function POST(req: Request) {
       });
     },
   });
-
-  // const response = stream.toUIMessageStreamResponse({
-  //   originalMessages: messages,
-  //   generateMessageId: () => crypto.randomUUID(),
-  //   messageMetadata: ({ part }) => {
-  //     if (part.type === "finish") {
-  //       const total = part.totalUsage.totalTokens;
-  //       console.log(111, total);
-  //       return total ? { tokensUsed: total } : undefined;
-  //     }
-  //   },
-
-  //   onFinish: async ({ messages }) => {
-  //     await authDataService.createMessages({
-  //       messages: messages.map((m) => ({
-  //         id: m.id,
-  //         role: m.role,
-  //         parts: m.parts,
-  //       })),
-  //       chatId: id,
-  //     });
-
-  //     const userMessages = messages.filter((m) => m.role === "user");
-  //     const firstUserMessage = userMessages[0];
-  //     let title = null;
-
-  //     if (firstUserMessage && userMessages.length === 1) {
-  //       const result = await generateText({
-  //         model: "gpt-4o-mini",
-  //         system: `\n
-  //         - you will generate a short title based on the first message a user begins a conversation with
-  //         - ensure it is not more than 80 characters long
-  //         - the title should be a summary of the user's message
-  //         - do not use quotes or colons`,
-  //         prompt: JSON.stringify(firstUserMessage),
-  //       });
-
-  //       title = result.text;
-  //     }
-
-  //     // Clear the active stream when finished
-  //     await authDataService.updateChat({
-  //       id,
-  //       activeStreamId: null,
-  //       ...(title ? { title } : {}),
-  //     });
-  //   },
-  //   async consumeSseStream({ stream }) {
-  // const streamId = generateId();
-  // // Create a resumable stream from the SSE stream
-  // const streamContext = createResumableStreamContext({ waitUntil: after });
-  // await streamContext.createNewResumableStream(streamId, () => stream);
-
-  // // Update the chat with the active stream ID
-  // await authDataService.updateChat({
-  //   id,
-  //   activeStreamId: streamId,
-  // });
-
-  //     // No token metrics available in this callback across all providers
-  //   },
-  // });
-
-  // return response;
 }

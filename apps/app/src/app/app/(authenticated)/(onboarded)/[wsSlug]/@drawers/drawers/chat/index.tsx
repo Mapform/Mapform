@@ -116,6 +116,7 @@ export function Chat({ chatWithMessages, usage }: ChatProps) {
 
 function ChatInner({ chatWithMessages, usage }: ChatProps) {
   const [input, setInput] = useState("");
+  const [currentUsage, setCurrentUsage] = useState(usage?.tokensUsed ?? 0);
   const [hasInitiatedNewChat, setHasInitiatedNewChat] = useState(false);
   const { params, setQueryStates } = useParamsContext();
   const { workspaceSlug, workspaceDirectory } = useWorkspace();
@@ -137,11 +138,10 @@ function ChatInner({ chatWithMessages, usage }: ChatProps) {
       },
     }),
     generateId: () => crypto.randomUUID(),
-    onData: (x) => {
-      console.log(222, x);
-    },
-    onFinish: (x) => {
-      console.log(333, x);
+    onData: (data) => {
+      if (data.type === "data-ai-token-usage") {
+        setCurrentUsage((data.data as { tokens: number }).tokens);
+      }
     },
   });
 
@@ -194,7 +194,7 @@ function ChatInner({ chatWithMessages, usage }: ChatProps) {
 
   const tokenLimit = workspaceDirectory.plan?.dailyAiTokenLimit;
   const hasReachedTokenLimit = Boolean(
-    tokenLimit && (usage?.tokensUsed ?? 0) >= tokenLimit,
+    tokenLimit && currentUsage >= tokenLimit,
   );
 
   return (
@@ -233,7 +233,7 @@ function ChatInner({ chatWithMessages, usage }: ChatProps) {
             </div>
           )}
           {status === "error" && (
-            <div className="flex animate-pulse items-center text-sm">Error</div>
+            <div className="flex items-center text-sm">Error</div>
           )}
         </ConversationContent>
         <ConversationScrollButton />
