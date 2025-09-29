@@ -129,11 +129,11 @@ export function Search({
                 <DropdownMenuContent>
                   <DropdownMenuItem>
                     <LocateIcon className="size-4" />
-                    Map Center
+                    Map center
                   </DropdownMenuItem>
                   <DropdownMenuItem>
                     <NavigationIcon className="size-4" />
-                    Your Location
+                    Your location
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>

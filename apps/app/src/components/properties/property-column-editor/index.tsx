@@ -62,7 +62,7 @@ export function PropertyColumnEditor({
 
   if (!columnId) {
     return (
-      <span className="flex items-center gap-1.5 text-sm">
+      <span className="flex items-center gap-1.5">
         <Icon className="size-4 flex-shrink-0" />{" "}
         <span className="truncate">{columnName}</span>
       </span>

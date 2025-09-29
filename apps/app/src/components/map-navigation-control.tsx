@@ -30,6 +30,8 @@ export function MapNavigationControl() {
   const mapRef = useMap();
   const map = mapRef.current;
   const [bearing, setBearing] = useState<number>(0);
+  const [navigatorPermissionGranted, setNavigatorPermissionGranted] =
+    useState<boolean>(false);
 
   useEffect(() => {
     if (!map) return;
@@ -48,6 +50,41 @@ export function MapNavigationControl() {
     };
   }, [map]);
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (!("geolocation" in navigator)) {
+      setNavigatorPermissionGranted(false);
+      return;
+    }
+
+    let isMounted = true;
+    let permissionStatus: PermissionStatus | null = null;
+    let handleChange: (() => void) | null = null;
+
+    navigator.permissions
+      .query({ name: "geolocation" as PermissionName })
+      .then((status) => {
+        if (!isMounted) return;
+        permissionStatus = status;
+        setNavigatorPermissionGranted(status.state === "granted");
+        handleChange = () => {
+          setNavigatorPermissionGranted(status.state === "granted");
+        };
+        status.addEventListener("change", handleChange);
+      })
+      .catch(() => {
+        if (!isMounted) return;
+        setNavigatorPermissionGranted(false);
+      });
+
+    return () => {
+      isMounted = false;
+      if (permissionStatus && handleChange) {
+        permissionStatus.removeEventListener("change", handleChange);
+      }
+    };
+  }, []);
+
   const handleZoomIn = () => {
     if (!map) return;
     map.zoomIn({ duration: 200 });
@@ -64,7 +101,6 @@ export function MapNavigationControl() {
   };
 
   const handleLocate = () => {
-    console.log("handleLocate", "geolocation" in navigator);
     if (!map) return;
     if (!("geolocation" in navigator)) return;
     navigator.geolocation.getCurrentPosition(
@@ -73,7 +109,7 @@ export function MapNavigationControl() {
         map.easeTo({
           center: [longitude, latitude],
           zoom: Math.max(12, map.getZoom()),
-          duration: 600,
+          duration: 500,
         });
       },
       () => {
@@ -107,7 +143,7 @@ export function MapNavigationControl() {
       </div>
       <div className="flex flex-col gap-2">
         <ControlButton label="My location" onClick={handleLocate}>
-          {"geolocation" in navigator ? (
+          {navigatorPermissionGranted ? (
             <NavigationIcon className="size-4 text-blue-500" />
           ) : (
             <NavigationOffIcon className="size-4" />
