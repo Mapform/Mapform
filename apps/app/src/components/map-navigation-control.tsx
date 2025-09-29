@@ -5,7 +5,7 @@ import { useMap } from "react-map-gl/maplibre";
 import { Plus, Minus, NavigationOffIcon, NavigationIcon } from "lucide-react";
 import Image from "next/image";
 import Compass from "public/static/images/compass.svg";
-import { cn } from "@mapform/lib/classnames";
+import { Button } from "@mapform/ui/components/button";
 
 type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   label: string;
@@ -14,14 +14,13 @@ type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
 
 function ControlButton({ label, className, ...props }: ButtonProps) {
   return (
-    <button
+    <Button
       type="button"
       aria-label={label}
       title={label}
-      className={cn(
-        "flex size-8 items-center justify-center rounded-md border bg-white/95 shadow-sm backdrop-blur-sm transition-colors",
-        className,
-      )}
+      className={className}
+      variant="outline"
+      size="icon-sm"
       {...props}
     />
   );
@@ -30,7 +29,7 @@ function ControlButton({ label, className, ...props }: ButtonProps) {
 export function MapNavigationControl() {
   const mapRef = useMap();
   const map = mapRef.current;
-  const [bearing, setBearing] = useState(0);
+  const [bearing, setBearing] = useState<number>(0);
 
   useEffect(() => {
     if (!map) return;
@@ -89,20 +88,19 @@ export function MapNavigationControl() {
       <div
         role="group"
         aria-label="Zoom controls"
-        className="inline-flex flex-col overflow-hidden rounded-md border bg-white/95 shadow-sm backdrop-blur-sm"
+        className="inline-flex w-8 flex-col divide-y overflow-hidden rounded-md border bg-white shadow-sm"
       >
         <ControlButton
           label="Zoom in"
           onClick={handleZoomIn}
-          className="rounded-none border-0 bg-transparent hover:bg-black/5"
+          className="w-full rounded-none border-0 bg-transparent"
         >
           <Plus className="size-4" />
         </ControlButton>
-        <div className="h-px w-full bg-black/10" />
         <ControlButton
           label="Zoom out"
           onClick={handleZoomOut}
-          className="rounded-none border-0 bg-transparent hover:bg-black/5"
+          className="w-full rounded-none border-0 bg-transparent"
         >
           <Minus className="size-4" />
         </ControlButton>
@@ -120,9 +118,12 @@ export function MapNavigationControl() {
           className="rounded-full"
           onClick={handleResetNorth}
         >
-          <div className="relative size-8">
+          <div
+            className="relative size-8"
+            style={{ transform: `rotate(${-bearing}deg)` }}
+          >
             <svg
-              className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+              className="absolute left-1/2 top-1/2 !size-full -translate-x-1/2 -translate-y-1/2"
               viewBox="0 0 32 32"
               width="32"
               height="32"
