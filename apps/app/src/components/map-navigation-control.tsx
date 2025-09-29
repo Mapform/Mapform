@@ -6,6 +6,9 @@ import { Plus, Minus, NavigationOffIcon, NavigationIcon } from "lucide-react";
 import Image from "next/image";
 import Compass from "public/static/images/compass.svg";
 import { Button } from "@mapform/ui/components/button";
+import { useGeolocation } from "@mapform/lib/hooks/use-geolocation";
+import type { GeolocationCoords } from "@mapform/lib/hooks/use-geolocation";
+import { useRef } from "react";
 
 type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   label: string;
@@ -30,12 +33,13 @@ export function MapNavigationControl() {
   const mapRef = useMap();
   const map = mapRef.current;
   const [bearing, setBearing] = useState<number>(0);
-  const [navigatorPermissionGranted, setNavigatorPermissionGranted] =
-    useState<boolean>(false);
-  const [userLocation, setUserLocation] = useState<{
-    latitude: number;
-    longitude: number;
-  } | null>(null);
+  const {
+    coords,
+    permissionGranted: navigatorPermissionGranted,
+    getCurrentPosition,
+  } = useGeolocation();
+  const userLocation: GeolocationCoords | null = coords;
+  const shouldCenterOnNextFixRef = useRef<boolean>(false);
 
   useEffect(() => {
     if (!map) return;
@@ -54,40 +58,7 @@ export function MapNavigationControl() {
     };
   }, [map]);
 
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    if (!("geolocation" in navigator)) {
-      setNavigatorPermissionGranted(false);
-      return;
-    }
-
-    let isMounted = true;
-    let permissionStatus: PermissionStatus | null = null;
-    let handleChange: (() => void) | null = null;
-
-    navigator.permissions
-      .query({ name: "geolocation" as PermissionName })
-      .then((status) => {
-        if (!isMounted) return;
-        permissionStatus = status;
-        setNavigatorPermissionGranted(status.state === "granted");
-        handleChange = () => {
-          setNavigatorPermissionGranted(status.state === "granted");
-        };
-        status.addEventListener("change", handleChange);
-      })
-      .catch(() => {
-        if (!isMounted) return;
-        setNavigatorPermissionGranted(false);
-      });
-
-    return () => {
-      isMounted = false;
-      if (permissionStatus && handleChange) {
-        permissionStatus.removeEventListener("change", handleChange);
-      }
-    };
-  }, []);
+  // Permission state handled by useGeolocation
 
   const handleZoomIn = () => {
     if (!map) return;
@@ -104,77 +75,26 @@ export function MapNavigationControl() {
     map.resetNorth({ duration: 300 });
   };
 
-  useEffect(() => {
-    if (!navigatorPermissionGranted || !("geolocation" in navigator)) {
-      setUserLocation(null);
-      return;
-    }
-
-    let cancelled = false;
-    let watchId: number | null = null;
-
-    const setFromPosition = (pos: GeolocationPosition) => {
-      if (cancelled) return;
-      setUserLocation({
-        latitude: pos.coords.latitude,
-        longitude: pos.coords.longitude,
-      });
-    };
-
-    const options: PositionOptions = {
-      enableHighAccuracy: true,
-      timeout: 8000,
-      maximumAge: 0,
-    };
-
-    navigator.geolocation.getCurrentPosition(
-      setFromPosition,
-      () => {
-        // Fallback for some browsers (e.g., iOS Safari): use a short watch and clear after first fix
-        watchId = navigator.geolocation.watchPosition(
-          (pos) => {
-            setFromPosition(pos);
-            if (watchId !== null) {
-              navigator.geolocation.clearWatch(watchId);
-              watchId = null;
-            }
-          },
-          () => {
-            if (!cancelled) setUserLocation(null);
-          },
-          options,
-        );
-      },
-      options,
-    );
-
-    return () => {
-      cancelled = true;
-      if (watchId !== null) {
-        navigator.geolocation.clearWatch(watchId);
-      }
-    };
-  }, [navigatorPermissionGranted]);
+  // Location retrieval handled by useGeolocation
 
   const handleLocate = () => {
     if (!map) return;
-    if (!("geolocation" in navigator)) return;
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const { latitude, longitude } = pos.coords;
-        setUserLocation({ latitude, longitude });
-        map.easeTo({
-          center: [longitude, latitude],
-          zoom: Math.max(12, map.getZoom()),
-          duration: 500,
-        });
-      },
-      () => {
-        // noop on error
-      },
-      { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 },
-    );
+    shouldCenterOnNextFixRef.current = true;
+    getCurrentPosition();
   };
+
+  useEffect(() => {
+    if (!map) return;
+    if (!userLocation) return;
+    if (!shouldCenterOnNextFixRef.current) return;
+    const { latitude, longitude } = userLocation;
+    shouldCenterOnNextFixRef.current = false;
+    map.easeTo({
+      center: [longitude, latitude],
+      zoom: Math.max(12, map.getZoom()),
+      duration: 500,
+    });
+  }, [map, userLocation]);
 
   return (
     <>
@@ -255,7 +175,7 @@ export function MapNavigationControl() {
           </ControlButton>
         </div>
       </div>
-      {userLocation && (
+      {userLocation !== null && (
         <Marker
           longitude={userLocation.longitude}
           latitude={userLocation.latitude}

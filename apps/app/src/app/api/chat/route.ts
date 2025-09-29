@@ -25,8 +25,9 @@ export const maxDuration = 60;
 
 export async function POST(req: Request) {
   const { messages, id } = (await req.json()) as {
-    messages: UIMessage[];
     id: string;
+    messages: UIMessage[];
+    center: { lat: number; lng: number };
   };
 
   const session = await getCurrentSession();

@@ -40,6 +40,7 @@ import {
 import Link from "next/link";
 import { MapPositioner } from "~/lib/map/map-positioner";
 import { Badge } from "@mapform/ui/components/badge";
+import { useMap } from "react-map-gl/maplibre";
 
 interface ChatProps {
   chatWithMessages?: {
@@ -122,16 +123,22 @@ export function Chat({ chatWithMessages, usage }: ChatProps) {
 }
 
 function ChatInner({ chatWithMessages, usage }: ChatProps) {
+  const map = useMap();
   const [input, setInput] = useState("");
   const [currentUsage, setCurrentUsage] = useState(usage?.tokensUsed ?? 0);
   const [hasInitiatedNewChat, setHasInitiatedNewChat] = useState(false);
   const { params, setQueryStates, drawerDepth } = useParamsContext();
   const { workspaceSlug, workspaceDirectory } = useWorkspace();
 
+  const center = {
+    lat: map.current?.getCenter().toArray()[1],
+    lng: map.current?.getCenter().toArray()[0],
+  };
+
   // Initialize chat with resumable transport.
   // Note: the hook may briefly set status to "submitted" while probing
   // for a resumable stream; UI below avoids flashing during that handshake.
-  const { messages, sendMessage, status, stop, error } = useChat<ChatMessage>({
+  const { messages, sendMessage, status, stop } = useChat<ChatMessage>({
     id: params.chatId!,
     resume: true,
     experimental_throttle: 50,
@@ -140,7 +147,7 @@ function ChatInner({ chatWithMessages, usage }: ChatProps) {
       api: "/api/chat",
       prepareSendMessagesRequest({ messages, id }) {
         return {
-          body: { messages, id },
+          body: { messages, id, center },
           headers: { "x-workspace-slug": workspaceSlug },
         };
       },
