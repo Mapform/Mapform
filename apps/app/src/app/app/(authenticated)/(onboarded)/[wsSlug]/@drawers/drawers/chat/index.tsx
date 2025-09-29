@@ -96,9 +96,6 @@ export function Chat({ chatWithMessages, usage }: ChatProps) {
     return (
       <>
         <MapDrawerToolbar>
-          <Badge variant="secondary">
-            {chatWithMessages?.chatTitle ?? "New Chat"}
-          </Badge>
           <Button
             className="ml-auto"
             size="icon-sm"
@@ -155,8 +152,6 @@ function ChatInner({ chatWithMessages, usage }: ChatProps) {
       }
     },
   });
-
-  console.log("ERROR", error);
 
   const handleSubmit = () => {
     if (status === "streaming" || status === "submitted" || !input) {

@@ -34,6 +34,7 @@ import { deleteRowsAction } from "~/data/rows/delete-rows";
 import { MapPositioner } from "~/lib/map/map-positioner";
 import type { GetProject } from "@mapform/backend/data/projects/get-project";
 import { BasicSkeleton } from "~/components/skeletons/basic";
+import { Badge } from "@mapform/ui/components/badge";
 
 interface FeatureDrawerProps {
   feature: GetRow["data"];
@@ -182,6 +183,12 @@ const FeatureContentInner = ({
   return (
     <div>
       <MapDrawerToolbar>
+        <Badge className="gap-1.5" variant="secondary">
+          <span>{featureService.optimisticState?.project.icon}</span>
+          <span>
+            {featureService.optimisticState?.project.name ?? "New Map"}
+          </span>
+        </Badge>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
