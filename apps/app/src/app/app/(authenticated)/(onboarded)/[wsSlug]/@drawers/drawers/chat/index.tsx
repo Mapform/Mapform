@@ -119,8 +119,6 @@ export function Chat({ chatWithMessages, usage }: ChatProps) {
       </>
     );
 
-  console.log(1111, coords, permissionGranted);
-
   return (
     <ChatInner
       usage={usage}
@@ -159,7 +157,6 @@ function ChatInner({
     transport: new DefaultChatTransport({
       api: "/api/chat",
       prepareSendMessagesRequest({ messages, id }) {
-        console.log(2222, center, userCenter);
         return {
           body: {
             messages,
