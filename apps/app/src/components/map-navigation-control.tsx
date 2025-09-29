@@ -7,7 +7,6 @@ import Image from "next/image";
 import Compass from "public/static/images/compass.svg";
 import { Button } from "@mapform/ui/components/button";
 import { useGeolocation } from "@mapform/lib/hooks/use-geolocation";
-import type { GeolocationCoords } from "@mapform/lib/hooks/use-geolocation";
 import { useRef } from "react";
 
 type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
@@ -33,13 +32,11 @@ export function MapNavigationControl() {
   const mapRef = useMap();
   const map = mapRef.current;
   const [bearing, setBearing] = useState<number>(0);
-  const {
-    coords,
-    permissionGranted: navigatorPermissionGranted,
-    getCurrentPosition,
-  } = useGeolocation();
-  const userLocation: GeolocationCoords | null = coords;
+  const { coords, getCurrentPosition } = useGeolocation();
+  const userLocation: { latitude: number; longitude: number } | null = coords;
   const shouldCenterOnNextFixRef = useRef<boolean>(false);
+
+  console.log("userLocation", coords);
 
   useEffect(() => {
     if (!map) return;
@@ -87,10 +84,10 @@ export function MapNavigationControl() {
     if (!map) return;
     if (!userLocation) return;
     if (!shouldCenterOnNextFixRef.current) return;
-    const { lat, lng } = userLocation;
+    const { latitude, longitude } = userLocation;
     shouldCenterOnNextFixRef.current = false;
     map.easeTo({
-      center: [lng, lat],
+      center: [longitude, latitude],
       zoom: Math.max(12, map.getZoom()),
       duration: 500,
     });
@@ -121,7 +118,7 @@ export function MapNavigationControl() {
         </div>
         <div className="flex flex-col gap-2">
           <ControlButton label="My location" onClick={handleLocate}>
-            {navigatorPermissionGranted ? (
+            {coords ? (
               <NavigationIcon className="size-4 text-blue-500" />
             ) : (
               <NavigationOffIcon className="size-4" />
@@ -177,8 +174,8 @@ export function MapNavigationControl() {
       </div>
       {userLocation !== null && (
         <Marker
-          longitude={userLocation.lng}
-          latitude={userLocation.lat}
+          longitude={userLocation.longitude}
+          latitude={userLocation.latitude}
           anchor="center"
         >
           <div className="relative size-8">

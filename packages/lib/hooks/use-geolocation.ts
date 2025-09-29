@@ -1,180 +1,91 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
-export interface GeolocationCoords {
-  lat: number;
-  lng: number;
-  accuracy?: number;
-}
+export type GeolocationState = {
+  isLoading: boolean;
+  accuracy: number | null;
+  altitude: number | null;
+  altitudeAccuracy: number | null;
+  heading: number | null;
+  coords: {
+    latitude: number;
+    longitude: number;
+  } | null;
+  speed: number | null;
+  timestamp: number | null;
+  error: GeolocationPositionError | null;
+};
 
-export interface UseGeolocationOptions {
-  highAccuracy?: boolean;
-  timeoutMs?: number;
-  maximumAgeMs?: number;
-  watch?: boolean;
-}
-
-export interface UseGeolocationResult {
-  coords: GeolocationCoords | null;
-  permissionGranted: boolean;
-  isSupported: boolean;
-  getCurrentPosition: () => void;
-}
-
-/**
- * useGeolocation
- * A resilient, browser-friendly hook for retrieving user location with optional watch fallback.
- */
 export function useGeolocation(
-  options: UseGeolocationOptions = {},
-): UseGeolocationResult {
-  const {
-    highAccuracy = true,
-    timeoutMs = 8000,
-    maximumAgeMs = 0,
-    watch = true,
-  } = options;
+  options: PositionOptions = {
+    enableHighAccuracy: true,
+    timeout: 5000,
+    maximumAge: 0,
+  },
+) {
+  const [state, setState] = useState<GeolocationState>({
+    isLoading: true,
+    accuracy: null,
+    altitude: null,
+    altitudeAccuracy: null,
+    heading: null,
+    coords: null,
+    speed: null,
+    timestamp: null,
+    error: null,
+  });
 
-  const [coords, setCoords] = useState<GeolocationCoords | null>(null);
-  const [permissionGranted, setPermissionGranted] = useState<boolean>(false);
-  const isSupported =
-    typeof window !== "undefined" && "geolocation" in navigator;
-  const watchIdRef = useRef<number | null>(null);
-  const isMountedRef = useRef(true);
-  const hasRequestedCurrentOnceRef = useRef(false);
-
-  useEffect(() => {
-    return () => {
-      isMountedRef.current = false;
-      if (watchIdRef.current !== null && isSupported) {
-        navigator.geolocation.clearWatch(watchIdRef.current);
-      }
-    };
-  }, [isSupported]);
-
-  // Track permission state when available
-  useEffect(() => {
-    if (!isSupported) {
-      setPermissionGranted(false);
-      return;
-    }
-
-    let permissionStatus: PermissionStatus | null = null;
-    const handleChange = () => {
-      if (!permissionStatus) return;
-      setPermissionGranted(permissionStatus.state === "granted");
-    };
-
-    navigator.permissions
-      .query({ name: "geolocation" as PermissionName })
-      .then((status) => {
-        if (!isMountedRef.current) return;
-        permissionStatus = status;
-        setPermissionGranted(status.state === "granted");
-        status.addEventListener("change", handleChange);
-      })
-      .catch(() => {
-        if (!isMountedRef.current) return;
-        // If Permissions API fails, we can't know upfront. Keep false until success.
-        setPermissionGranted(false);
+  const onSuccess = useCallback(
+    ({ coords, timestamp }: GeolocationPosition) => {
+      setState({
+        isLoading: false,
+        timestamp,
+        coords,
+        altitude: coords.altitude,
+        accuracy: coords.accuracy,
+        altitudeAccuracy: coords.altitudeAccuracy,
+        heading: coords.heading,
+        speed: coords.speed,
+        error: null,
       });
+    },
+    [],
+  );
 
-    return () => {
-      if (permissionStatus) {
-        permissionStatus.removeEventListener("change", handleChange);
-      }
-    };
-  }, [isSupported]);
+  const onError = useCallback((error: GeolocationPositionError) => {
+    setState((s) => ({
+      ...s,
+      isLoading: false,
+      error,
+    }));
+  }, []);
 
-  // If permission becomes granted but we still don't have coords, proactively fetch once
+  const getCurrentPosition = useCallback(() => {
+    navigator.geolocation.getCurrentPosition(onSuccess, onError, options);
+  }, [onSuccess, onError, options]);
+
   useEffect(() => {
-    if (!isSupported) return;
-    if (permissionGranted && !coords && !hasRequestedCurrentOnceRef.current) {
-      hasRequestedCurrentOnceRef.current = true;
-      // Triggers a one-time retrieval; falls back to a short watch on platforms like iOS Safari
-      getCurrentPosition();
-    }
-  }, [isSupported, permissionGranted, coords]);
-
-  const positionOptions: PositionOptions = {
-    enableHighAccuracy: highAccuracy,
-    timeout: timeoutMs,
-    maximumAge: maximumAgeMs,
-  };
-
-  const applyPosition = (pos: GeolocationPosition) => {
-    if (!isMountedRef.current) return;
-    setCoords({
-      lat: pos.coords.latitude,
-      lng: pos.coords.longitude,
-      accuracy:
-        typeof pos.coords.accuracy === "number"
-          ? pos.coords.accuracy
-          : undefined,
-    });
-  };
-
-  const startWatchFallback = () => {
-    if (!isSupported) return;
-    // Use a short watch and clear after the first fix
-    watchIdRef.current = navigator.geolocation.watchPosition(
-      (pos) => {
-        applyPosition(pos);
-        if (watchIdRef.current !== null) {
-          navigator.geolocation.clearWatch(watchIdRef.current);
-          watchIdRef.current = null;
+    navigator.permissions
+      .query({ name: "geolocation" })
+      .then((result) => {
+        console.log("result", result);
+        if (result.state === "granted") {
+          console.log("granted");
+          getCurrentPosition();
         }
-      },
-      () => {
-        if (!isMountedRef.current) return;
-        setCoords(null);
-      },
-      positionOptions,
-    );
-  };
 
-  const getCurrentPosition = () => {
-    if (!isSupported) return;
-    navigator.geolocation.getCurrentPosition(
-      applyPosition,
-      () => {
-        // Fallback for some browsers (e.g., iOS Safari)
-        startWatchFallback();
-      },
-      positionOptions,
-    );
-  };
-
-  // Optional continuous watch
-  useEffect(() => {
-    if (!isSupported || !watch) return;
-    watchIdRef.current = navigator.geolocation.watchPosition(
-      applyPosition,
-      () => {
-        if (!isMountedRef.current) return;
-        setCoords(null);
-      },
-      positionOptions,
-    );
-    return () => {
-      if (watchIdRef.current !== null) {
-        navigator.geolocation.clearWatch(watchIdRef.current);
-        watchIdRef.current = null;
-      }
-    };
-  }, [
-    isSupported,
-    watch,
-    positionOptions.enableHighAccuracy,
-    positionOptions.timeout,
-    positionOptions.maximumAge,
-  ]);
+        result.onchange = () => {
+          if (result.state === "granted") {
+            getCurrentPosition();
+          }
+        };
+      })
+      .catch((error) => {
+        console.error("Error querying geolocation permission", error);
+      });
+  }, []);
 
   return {
-    coords,
-    permissionGranted,
-    isSupported,
+    ...state,
     getCurrentPosition,
   };
 }
-
-export default useGeolocation;

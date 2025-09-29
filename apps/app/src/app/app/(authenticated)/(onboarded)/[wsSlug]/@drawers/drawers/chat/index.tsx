@@ -63,7 +63,7 @@ export function ChatWrapper({ children }: { children: React.ReactNode }) {
 }
 
 export function Chat({ chatWithMessages, usage }: ChatProps) {
-  const { coords, permissionGranted } = useGeolocation();
+  const { coords } = useGeolocation();
   const { pId } = useParams<{ pId?: string }>();
   const { params, setQueryStates } = useParamsContext();
   const { execute: createChat } = useAction(createChatAction, {
@@ -95,11 +95,7 @@ export function Chat({ chatWithMessages, usage }: ChatProps) {
     }
   }, [params.chatId, params.query, pId, createChat]);
 
-  if (
-    !chatWithMessages ||
-    chatWithMessages.chatId !== params.chatId ||
-    (permissionGranted && !coords)
-  )
+  if (!chatWithMessages || chatWithMessages.chatId !== params.chatId || !coords)
     return (
       <>
         <MapDrawerToolbar>
@@ -133,7 +129,7 @@ function ChatInner({
   chatWithMessages,
   usage,
   userCenter,
-}: ChatProps & { userCenter: { lat: number; lng: number } | null }) {
+}: ChatProps & { userCenter: { latitude: number; longitude: number } | null }) {
   const map = useMap();
   const [input, setInput] = useState("");
   const [currentUsage, setCurrentUsage] = useState(usage?.tokensUsed ?? 0);
