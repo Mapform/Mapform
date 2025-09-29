@@ -17,11 +17,8 @@ import type {
   MapLayerMouseEvent,
   MapLayerTouchEvent,
 } from "react-map-gl/maplibre";
-import {
-  AttributionControl,
-  Map,
-  NavigationControl,
-} from "react-map-gl/maplibre";
+import { AttributionControl, Map } from "react-map-gl/maplibre";
+import MapNavigationControl from "~/components/map-navigation-control";
 import { env } from "~/*";
 import "maplibre-gl/dist/maplibre-gl.css";
 import {
@@ -355,7 +352,7 @@ export function WorkspaceProvider({
           <SidebarProvider defaultOpen={defaultLeftOpen}>
             {children}
           </SidebarProvider>
-          <NavigationControl position="top-right" />
+          <MapNavigationControl />
           <MapContextMenu
             open={!!contextMenu}
             onOpenChange={handleCloseContextMenu}

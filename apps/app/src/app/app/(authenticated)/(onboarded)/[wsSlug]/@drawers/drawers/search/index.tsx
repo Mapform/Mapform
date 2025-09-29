@@ -12,8 +12,8 @@ import {
   GlobeIcon,
   Loader2,
   LocateIcon,
-  MapPinnedIcon,
   MessageCircle,
+  NavigationIcon,
   PlusIcon,
   SearchIcon,
   SendIcon,
@@ -128,11 +128,11 @@ export function Search({
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
                   <DropdownMenuItem>
-                    <MapPinnedIcon className="size-4" />
+                    <LocateIcon className="size-4" />
                     Map Center
                   </DropdownMenuItem>
                   <DropdownMenuItem>
-                    <LocateIcon className="size-4" />
+                    <NavigationIcon className="size-4" />
                     Your Location
                   </DropdownMenuItem>
                 </DropdownMenuContent>
