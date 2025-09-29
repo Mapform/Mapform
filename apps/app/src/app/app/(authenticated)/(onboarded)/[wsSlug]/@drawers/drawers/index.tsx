@@ -148,19 +148,21 @@ async function Feature({ searchParams }: DealDrawerProps) {
 
   const row = rowId ? await authDataService.getRow({ rowId }) : null;
 
-  if (!row?.data) {
+  if (rowId && !row?.data) {
     return <FeatureEmpty />;
   }
 
-  const project = await authDataService.getProject({
-    projectId: row.data.project.id,
-  });
+  const project = row?.data?.project.id
+    ? await authDataService.getProject({
+        projectId: row.data.project.id,
+      })
+    : null;
 
-  if (!project?.data) {
+  if (row?.data?.project.id && !project?.data) {
     return <FeatureEmpty />;
   }
 
-  return <FeatureContent feature={row.data} project={project.data} />;
+  return <FeatureContent feature={row?.data} project={project?.data} />;
 }
 
 async function CoordinatesDrawer({ searchParams }: DealDrawerProps) {
