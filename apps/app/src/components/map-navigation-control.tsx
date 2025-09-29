@@ -33,10 +33,8 @@ export function MapNavigationControl() {
   const map = mapRef.current;
   const [bearing, setBearing] = useState<number>(0);
   const { coords, getCurrentPosition } = useGeolocation();
-  const userLocation: { latitude: number; longitude: number } | null = coords;
+  const userLocation: { lat: number; lng: number } | null = coords;
   const shouldCenterOnNextFixRef = useRef<boolean>(false);
-
-  console.log("userLocation", coords);
 
   useEffect(() => {
     if (!map) return;
@@ -84,10 +82,10 @@ export function MapNavigationControl() {
     if (!map) return;
     if (!userLocation) return;
     if (!shouldCenterOnNextFixRef.current) return;
-    const { latitude, longitude } = userLocation;
+    const { lat, lng } = userLocation;
     shouldCenterOnNextFixRef.current = false;
     map.easeTo({
-      center: [longitude, latitude],
+      center: [lng, lat],
       zoom: Math.max(12, map.getZoom()),
       duration: 500,
     });
@@ -174,8 +172,8 @@ export function MapNavigationControl() {
       </div>
       {userLocation !== null && (
         <Marker
-          longitude={userLocation.longitude}
-          latitude={userLocation.latitude}
+          longitude={userLocation.lng}
+          latitude={userLocation.lat}
           anchor="center"
         >
           <div className="relative size-8">

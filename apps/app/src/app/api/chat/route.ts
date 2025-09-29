@@ -31,8 +31,6 @@ export async function POST(req: Request) {
     userCenter: { lat: number; lng: number };
   };
 
-  console.log(1111, id, mapCenter, userCenter);
-
   const session = await getCurrentSession();
 
   if (!session?.data?.user) {

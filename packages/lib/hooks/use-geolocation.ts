@@ -7,8 +7,8 @@ export type GeolocationState = {
   altitudeAccuracy: number | null;
   heading: number | null;
   coords: {
-    latitude: number;
-    longitude: number;
+    lat: number;
+    lng: number;
   } | null;
   speed: number | null;
   timestamp: number | null;
@@ -39,7 +39,10 @@ export function useGeolocation(
       setState({
         isLoading: false,
         timestamp,
-        coords,
+        coords: {
+          lat: coords.latitude,
+          lng: coords.longitude,
+        },
         altitude: coords.altitude,
         accuracy: coords.accuracy,
         altitudeAccuracy: coords.altitudeAccuracy,

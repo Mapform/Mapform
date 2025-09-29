@@ -63,7 +63,7 @@ export function ChatWrapper({ children }: { children: React.ReactNode }) {
 }
 
 export function Chat({ chatWithMessages, usage }: ChatProps) {
-  const { coords } = useGeolocation();
+  const { coords, isLoading: isLoadingGeolocation } = useGeolocation();
   const { pId } = useParams<{ pId?: string }>();
   const { params, setQueryStates } = useParamsContext();
   const { execute: createChat } = useAction(createChatAction, {
@@ -95,7 +95,11 @@ export function Chat({ chatWithMessages, usage }: ChatProps) {
     }
   }, [params.chatId, params.query, pId, createChat]);
 
-  if (!chatWithMessages || chatWithMessages.chatId !== params.chatId || !coords)
+  if (
+    !chatWithMessages ||
+    chatWithMessages.chatId !== params.chatId ||
+    isLoadingGeolocation
+  )
     return (
       <>
         <MapDrawerToolbar>
