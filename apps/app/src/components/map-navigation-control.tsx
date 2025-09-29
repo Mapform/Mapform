@@ -105,28 +105,63 @@ export function MapNavigationControl() {
   };
 
   useEffect(() => {
-    if (!navigatorPermissionGranted) {
+    if (!navigatorPermissionGranted || !("geolocation" in navigator)) {
       setUserLocation(null);
       return;
     }
-    if (!("geolocation" in navigator)) {
-      setUserLocation(null);
-      return;
-    }
+
+    let cancelled = false;
+    let watchId: number | null = null;
+
+    const setFromPosition = (pos: GeolocationPosition) => {
+      if (cancelled) return;
+      setUserLocation({
+        latitude: pos.coords.latitude,
+        longitude: pos.coords.longitude,
+      });
+    };
+
+    const options: PositionOptions = {
+      enableHighAccuracy: true,
+      timeout: 8000,
+      maximumAge: 0,
+    };
+
     navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        setUserLocation({
-          latitude: pos.coords.latitude,
-          longitude: pos.coords.longitude,
-        });
-      },
+      setFromPosition,
       () => {
-        setUserLocation(null);
+        // Fallback for some browsers (e.g., iOS Safari): use a short watch and clear after first fix
+        watchId = navigator.geolocation.watchPosition(
+          (pos) => {
+            setFromPosition(pos);
+            if (watchId !== null) {
+              navigator.geolocation.clearWatch(watchId);
+              watchId = null;
+            }
+          },
+          () => {
+            if (!cancelled) setUserLocation(null);
+          },
+          options,
+        );
       },
+      options,
     );
+
+    return () => {
+      cancelled = true;
+      if (watchId !== null) {
+        navigator.geolocation.clearWatch(watchId);
+      }
+    };
   }, [navigatorPermissionGranted]);
 
-  console.log("userLocation", navigatorPermissionGranted, userLocation);
+  console.log(
+    "userLocation",
+    navigatorPermissionGranted,
+    "geolocation" in navigator,
+    userLocation,
+  );
 
   const handleLocate = () => {
     if (!map) return;
@@ -134,6 +169,7 @@ export function MapNavigationControl() {
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         const { latitude, longitude } = pos.coords;
+        setUserLocation({ latitude, longitude });
         map.easeTo({
           center: [longitude, latitude],
           zoom: Math.max(12, map.getZoom()),
