@@ -143,20 +143,24 @@ async function SearchDetailsDrawer({ searchParams }: DealDrawerProps) {
   return <SearchDetails details={details?.data} />;
 }
 
-async function Feature({ searchParams, params }: DealDrawerProps) {
-  const { pId } = await params;
+async function Feature({ searchParams }: DealDrawerProps) {
   const { rowId } = await loadSearchParams(searchParams);
 
-  const [row, project] = await Promise.all([
-    rowId ? authDataService.getRow({ rowId }) : null,
-    pId ? authDataService.getProject({ projectId: pId }) : null,
-  ]);
+  const row = rowId ? await authDataService.getRow({ rowId }) : null;
 
-  if (rowId && (!row?.data || !project?.data)) {
+  if (!row?.data) {
     return <FeatureEmpty />;
   }
 
-  return <FeatureContent feature={row?.data} project={project?.data} />;
+  const project = await authDataService.getProject({
+    projectId: row.data.project.id,
+  });
+
+  if (!project?.data) {
+    return <FeatureEmpty />;
+  }
+
+  return <FeatureContent feature={row.data} project={project.data} />;
 }
 
 async function CoordinatesDrawer({ searchParams }: DealDrawerProps) {
