@@ -417,7 +417,10 @@ export function Feature({
           ) : null}
 
           {otherProperties.map((property) => (
-            <div className="grid grid-cols-3 gap-4" key={property.columnName}>
+            <div
+              className="grid grid-cols-3 gap-4 text-sm"
+              key={property.columnName}
+            >
               <div className="col-span-1">
                 <PropertyColumnEditor
                   columnName={property.columnName}
