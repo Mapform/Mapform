@@ -113,7 +113,7 @@ export function FeatureContent({ feature, project }: FeatureDrawerProps) {
             key={featureService.optimisticState.id}
           />
         ) : (
-          <div className="p-2">
+          <>
             <MapDrawerToolbar>
               <Button
                 className="ml-auto"
@@ -128,7 +128,7 @@ export function FeatureContent({ feature, project }: FeatureDrawerProps) {
               </Button>
             </MapDrawerToolbar>
             <BasicSkeleton className="p-4" />
-          </div>
+          </>
         )}
       </MapPositioner>
 
