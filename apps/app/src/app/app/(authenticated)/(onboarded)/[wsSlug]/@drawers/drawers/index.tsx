@@ -112,6 +112,7 @@ async function ChatDrawer({ searchParams, params }: DealDrawerProps) {
           | {
               messages?: ChatMessage[] | undefined;
               chatId: string;
+              chatTitle: string;
             }
           | undefined
       }

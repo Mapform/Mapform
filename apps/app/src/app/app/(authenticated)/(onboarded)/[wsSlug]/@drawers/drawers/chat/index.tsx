@@ -39,9 +39,14 @@ import {
 } from "@mapform/ui/components/alert";
 import Link from "next/link";
 import { MapPositioner } from "~/lib/map/map-positioner";
+import { Badge } from "@mapform/ui/components/badge";
 
 interface ChatProps {
-  chatWithMessages?: { messages?: ChatMessage[]; chatId: string };
+  chatWithMessages?: {
+    messages?: ChatMessage[];
+    chatId: string;
+    chatTitle: string;
+  };
   usage?: { tokensUsed: number };
 }
 
@@ -91,6 +96,9 @@ export function Chat({ chatWithMessages, usage }: ChatProps) {
     return (
       <>
         <MapDrawerToolbar>
+          <Badge variant="secondary">
+            {chatWithMessages?.chatTitle ?? "New Chat"}
+          </Badge>
           <Button
             className="ml-auto"
             size="icon-sm"
@@ -202,7 +210,10 @@ function ChatInner({ chatWithMessages, usage }: ChatProps) {
 
   return (
     <MapPositioner disabled={drawerDepth.get("chatId") !== 0}>
-      <MapDrawerToolbar>
+      <MapDrawerToolbar className="max-w-full overflow-hidden">
+        <Badge className="truncate" variant="secondary">
+          {chatWithMessages?.chatTitle ?? "New Chat"}
+        </Badge>
         <Button
           className="ml-auto"
           size="icon-sm"
