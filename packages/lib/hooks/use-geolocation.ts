@@ -64,24 +64,40 @@ export function useGeolocation(
   }, [onSuccess, onError, options]);
 
   useEffect(() => {
+    const resultHandler = (result: PermissionStatus) => {
+      if (result.state === "granted") {
+        getCurrentPosition();
+      } else {
+        setState((s) => ({
+          ...s,
+          coords: null,
+          isLoading: false,
+        }));
+      }
+    };
+
     navigator.permissions
       .query({ name: "geolocation" })
       .then((result) => {
-        console.log("result", result);
-        if (result.state === "granted") {
-          console.log("granted");
-          getCurrentPosition();
-        }
+        resultHandler(result);
 
         result.onchange = () => {
-          if (result.state === "granted") {
-            getCurrentPosition();
-          }
+          resultHandler(result);
         };
       })
       .catch((error) => {
         console.error("Error querying geolocation permission", error);
       });
+
+    const watchId = navigator.geolocation.watchPosition(
+      onSuccess,
+      onError,
+      options,
+    );
+
+    return () => {
+      navigator.geolocation.clearWatch(watchId);
+    };
   }, []);
 
   return {
