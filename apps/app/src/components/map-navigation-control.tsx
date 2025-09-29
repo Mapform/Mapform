@@ -156,13 +156,6 @@ export function MapNavigationControl() {
     };
   }, [navigatorPermissionGranted]);
 
-  console.log(
-    "userLocation",
-    navigatorPermissionGranted,
-    "geolocation" in navigator,
-    userLocation,
-  );
-
   const handleLocate = () => {
     if (!map) return;
     if (!("geolocation" in navigator)) return;

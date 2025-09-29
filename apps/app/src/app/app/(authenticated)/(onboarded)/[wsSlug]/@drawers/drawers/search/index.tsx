@@ -44,6 +44,7 @@ import {
   DropdownMenuTrigger,
 } from "@mapform/ui/components/dropdown-menu";
 import { MapPositioner } from "~/lib/map/map-positioner";
+import { useMap } from "react-map-gl/maplibre";
 
 interface SearchProps {
   searchResults?: Search["data"];
@@ -66,6 +67,7 @@ export function Search({
   vectorSearchResults,
   previousChats,
 }: SearchProps) {
+  const map = useMap();
   const { params, setQueryStates, isPending, drawerDepth } = useParamsContext();
   const [query, setQuery] = useState(params.query);
   const debouncedSearchQuery = useDebounce(query, 200);
@@ -73,8 +75,13 @@ export function Search({
   const filteredFeatures = searchResults?.features;
 
   useEffect(() => {
-    void setQueryStates({ query: debouncedSearchQuery });
-  }, [debouncedSearchQuery, setQueryStates]);
+    const center = map.current?.getCenter().toArray().reverse();
+    void setQueryStates({
+      query: debouncedSearchQuery,
+      // Set the location explicitly so the server can use it for searching
+      center: center as [number, number],
+    });
+  }, [debouncedSearchQuery, setQueryStates, map]);
 
   useEffect(() => {
     setQuery(params.query);
