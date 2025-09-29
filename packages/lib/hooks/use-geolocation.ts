@@ -40,6 +40,7 @@ export function useGeolocation(
     typeof window !== "undefined" && "geolocation" in navigator;
   const watchIdRef = useRef<number | null>(null);
   const isMountedRef = useRef(true);
+  const hasRequestedCurrentOnceRef = useRef(false);
 
   useEffect(() => {
     return () => {
@@ -83,6 +84,16 @@ export function useGeolocation(
       }
     };
   }, [isSupported]);
+
+  // If permission becomes granted but we still don't have coords, proactively fetch once
+  useEffect(() => {
+    if (!isSupported) return;
+    if (permissionGranted && !coords && !hasRequestedCurrentOnceRef.current) {
+      hasRequestedCurrentOnceRef.current = true;
+      // Triggers a one-time retrieval; falls back to a short watch on platforms like iOS Safari
+      getCurrentPosition();
+    }
+  }, [isSupported, permissionGranted, coords]);
 
   const positionOptions: PositionOptions = {
     enableHighAccuracy: highAccuracy,

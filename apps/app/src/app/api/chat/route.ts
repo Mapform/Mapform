@@ -24,12 +24,14 @@ import { createResumableStreamContext } from "resumable-stream";
 export const maxDuration = 60;
 
 export async function POST(req: Request) {
-  const { messages, id, center, userCenter } = (await req.json()) as {
+  const { messages, id, mapCenter, userCenter } = (await req.json()) as {
     id: string;
     messages: UIMessage[];
-    center: { lat: number; lng: number };
+    mapCenter: { lat: number; lng: number };
     userCenter: { lat: number; lng: number };
   };
+
+  console.log(1111, id, mapCenter, userCenter);
 
   const session = await getCurrentSession();
 
@@ -81,7 +83,7 @@ export async function POST(req: Request) {
 
       const result = streamText({
         model: "gpt-5-mini",
-        system: getSystemPrompt(center, userCenter),
+        system: getSystemPrompt(mapCenter, userCenter),
         messages: convertToModelMessages(messages),
         tools: {
           findRawInternalFeatures,

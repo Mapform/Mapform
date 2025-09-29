@@ -63,6 +63,7 @@ export function ChatWrapper({ children }: { children: React.ReactNode }) {
 }
 
 export function Chat({ chatWithMessages, usage }: ChatProps) {
+  const { coords, permissionGranted } = useGeolocation();
   const { pId } = useParams<{ pId?: string }>();
   const { params, setQueryStates } = useParamsContext();
   const { execute: createChat } = useAction(createChatAction, {
@@ -94,7 +95,11 @@ export function Chat({ chatWithMessages, usage }: ChatProps) {
     }
   }, [params.chatId, params.query, pId, createChat]);
 
-  if (!chatWithMessages || chatWithMessages.chatId !== params.chatId)
+  if (
+    !chatWithMessages ||
+    chatWithMessages.chatId !== params.chatId ||
+    (permissionGranted && !coords)
+  )
     return (
       <>
         <MapDrawerToolbar>
@@ -114,23 +119,29 @@ export function Chat({ chatWithMessages, usage }: ChatProps) {
       </>
     );
 
+  console.log(1111, coords, permissionGranted);
+
   return (
     <ChatInner
       usage={usage}
       key={params.chatId}
       chatWithMessages={chatWithMessages}
+      userCenter={coords}
     />
   );
 }
 
-function ChatInner({ chatWithMessages, usage }: ChatProps) {
+function ChatInner({
+  chatWithMessages,
+  usage,
+  userCenter,
+}: ChatProps & { userCenter: { lat: number; lng: number } | null }) {
   const map = useMap();
   const [input, setInput] = useState("");
   const [currentUsage, setCurrentUsage] = useState(usage?.tokensUsed ?? 0);
   const [hasInitiatedNewChat, setHasInitiatedNewChat] = useState(false);
   const { params, setQueryStates, drawerDepth } = useParamsContext();
   const { workspaceSlug, workspaceDirectory } = useWorkspace();
-  const { coords } = useGeolocation();
 
   const center = {
     lat: map.current?.getCenter().toArray()[1],
@@ -148,8 +159,14 @@ function ChatInner({ chatWithMessages, usage }: ChatProps) {
     transport: new DefaultChatTransport({
       api: "/api/chat",
       prepareSendMessagesRequest({ messages, id }) {
+        console.log(2222, center, userCenter);
         return {
-          body: { messages, id, center, userCenter: coords },
+          body: {
+            messages,
+            id,
+            mapCenter: center,
+            userCenter,
+          },
           headers: { "x-workspace-slug": workspaceSlug },
         };
       },
