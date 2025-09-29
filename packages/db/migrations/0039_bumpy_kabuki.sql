@@ -1,0 +1,1 @@
+ALTER TABLE "plan" ALTER COLUMN "daily_ai_token_limit" SET NOT NULL;
