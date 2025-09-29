@@ -129,7 +129,7 @@ export function Search({
                 <DropdownMenuContent>
                   <DropdownMenuItem>
                     <MapPinnedIcon className="size-4" />
-                    Map Location
+                    Map Center
                   </DropdownMenuItem>
                   <DropdownMenuItem>
                     <LocateIcon className="size-4" />

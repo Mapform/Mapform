@@ -204,7 +204,7 @@ export function Views() {
                       <ImageUploaderAnchor asChild>
                         <Button
                           className={cn(
-                            "absolute right-2 top-2 opacity-0 group-hover:opacity-100 data-[state=open]:opacity-100",
+                            "absolute right-3 top-3 opacity-0 group-hover:opacity-100 data-[state=open]:opacity-100",
                             openUploaderForUrl === blob.url && "opacity-100",
                           )}
                           size="icon-sm"
