@@ -87,10 +87,10 @@ export function MapNavigationControl() {
     if (!map) return;
     if (!userLocation) return;
     if (!shouldCenterOnNextFixRef.current) return;
-    const { latitude, longitude } = userLocation;
+    const { lat, lng } = userLocation;
     shouldCenterOnNextFixRef.current = false;
     map.easeTo({
-      center: [longitude, latitude],
+      center: [lng, lat],
       zoom: Math.max(12, map.getZoom()),
       duration: 500,
     });
@@ -177,8 +177,8 @@ export function MapNavigationControl() {
       </div>
       {userLocation !== null && (
         <Marker
-          longitude={userLocation.longitude}
-          latitude={userLocation.latitude}
+          longitude={userLocation.lng}
+          latitude={userLocation.lat}
           anchor="center"
         >
           <div className="relative size-8">

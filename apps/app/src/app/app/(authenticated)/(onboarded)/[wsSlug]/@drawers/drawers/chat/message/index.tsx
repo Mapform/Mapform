@@ -32,8 +32,8 @@ export function Message({ message }: ChatMessageProps) {
   // Group consecutive location tool messages to avoid repeated lines
   type MessagePart = ChatMessage["parts"][number];
   type LocationToolType =
-    | "tool-findExternalFeatures"
-    | "tool-findInternalFeatures"
+    | "tool-findRawExternalFeatures"
+    | "tool-findRawInternalFeatures"
     | "tool-reverseGeocode";
   type LocationToolPart = Extract<MessagePart, { type: LocationToolType }>;
 
@@ -47,8 +47,8 @@ export function Message({ message }: ChatMessageProps) {
 
     for (const part of message.parts) {
       if (
-        part.type === "tool-findExternalFeatures" ||
-        part.type === "tool-findInternalFeatures" ||
+        part.type === "tool-findRawExternalFeatures" ||
+        part.type === "tool-findRawInternalFeatures" ||
         part.type === "tool-reverseGeocode"
       ) {
         currentGroup.push(part);
@@ -189,8 +189,8 @@ export function Message({ message }: ChatMessageProps) {
           }
 
           if (
-            part.type === "tool-findExternalFeatures" ||
-            part.type === "tool-findInternalFeatures" ||
+            part.type === "tool-findRawExternalFeatures" ||
+            part.type === "tool-findRawInternalFeatures" ||
             part.type === "tool-reverseGeocode"
           ) {
             return (

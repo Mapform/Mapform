@@ -41,6 +41,7 @@ import Link from "next/link";
 import { MapPositioner } from "~/lib/map/map-positioner";
 import { Badge } from "@mapform/ui/components/badge";
 import { useMap } from "react-map-gl/maplibre";
+import { useGeolocation } from "@mapform/lib/hooks/use-geolocation";
 
 interface ChatProps {
   chatWithMessages?: {
@@ -129,6 +130,7 @@ function ChatInner({ chatWithMessages, usage }: ChatProps) {
   const [hasInitiatedNewChat, setHasInitiatedNewChat] = useState(false);
   const { params, setQueryStates, drawerDepth } = useParamsContext();
   const { workspaceSlug, workspaceDirectory } = useWorkspace();
+  const { coords } = useGeolocation();
 
   const center = {
     lat: map.current?.getCenter().toArray()[1],
@@ -147,7 +149,7 @@ function ChatInner({ chatWithMessages, usage }: ChatProps) {
       api: "/api/chat",
       prepareSendMessagesRequest({ messages, id }) {
         return {
-          body: { messages, id, center },
+          body: { messages, id, center, userCenter: coords },
           headers: { "x-workspace-slug": workspaceSlug },
         };
       },

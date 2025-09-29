@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 
 export interface GeolocationCoords {
-  latitude: number;
-  longitude: number;
+  lat: number;
+  lng: number;
   accuracy?: number;
 }
 
@@ -93,8 +93,8 @@ export function useGeolocation(
   const applyPosition = (pos: GeolocationPosition) => {
     if (!isMountedRef.current) return;
     setCoords({
-      latitude: pos.coords.latitude,
-      longitude: pos.coords.longitude,
+      lat: pos.coords.latitude,
+      lng: pos.coords.longitude,
       accuracy:
         typeof pos.coords.accuracy === "number"
           ? pos.coords.accuracy

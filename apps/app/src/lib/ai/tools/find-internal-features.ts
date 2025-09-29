@@ -3,16 +3,16 @@ import { z } from "zod";
 import { authDataService } from "~/lib/safe-action";
 import type { AIResultLocation } from "~/lib/types";
 
-export const findInternalFeatures = tool({
+export const findRawInternalFeatures = tool({
   description:
     "Searches for internal features (cities, landmarks, restaurants, etc.) that the user has saved in their workspace.",
   inputSchema: z.object({
     question: z.string().describe("the users question"),
   }),
-  execute: async ({ question }) => _findInternalFeatures(question),
+  execute: async ({ question }) => _findRawInternalFeatures(question),
 });
 
-async function _findInternalFeatures(question: string) {
+async function _findRawInternalFeatures(question: string) {
   const results = await authDataService.searchRows({
     query: question,
     type: "workspace",
@@ -29,5 +29,5 @@ async function _findInternalFeatures(question: string) {
 }
 
 export type GetInformationResponse = Awaited<
-  ReturnType<typeof _findInternalFeatures>
+  ReturnType<typeof _findRawInternalFeatures>
 >;
