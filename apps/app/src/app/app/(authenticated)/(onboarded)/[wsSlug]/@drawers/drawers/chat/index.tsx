@@ -15,7 +15,6 @@ import {
   SendIcon,
   SquareIcon,
   SquarePenIcon,
-  AlertCircleIcon,
   XIcon,
   ClockFadingIcon,
 } from "lucide-react";
@@ -39,6 +38,7 @@ import {
   AlertIcon,
 } from "@mapform/ui/components/alert";
 import Link from "next/link";
+import { MapPositioner } from "~/lib/map/map-positioner";
 
 interface ChatProps {
   chatWithMessages?: { messages?: ChatMessage[]; chatId: string };
@@ -120,7 +120,7 @@ function ChatInner({ chatWithMessages, usage }: ChatProps) {
   const [input, setInput] = useState("");
   const [currentUsage, setCurrentUsage] = useState(usage?.tokensUsed ?? 0);
   const [hasInitiatedNewChat, setHasInitiatedNewChat] = useState(false);
-  const { params, setQueryStates } = useParamsContext();
+  const { params, setQueryStates, drawerDepth } = useParamsContext();
   const { workspaceSlug, workspaceDirectory } = useWorkspace();
 
   // Initialize chat with resumable transport.
@@ -201,7 +201,7 @@ function ChatInner({ chatWithMessages, usage }: ChatProps) {
   );
 
   return (
-    <>
+    <MapPositioner disabled={drawerDepth.get("chatId") !== 0}>
       <MapDrawerToolbar>
         <Button
           className="ml-auto"
@@ -305,6 +305,6 @@ function ChatInner({ chatWithMessages, usage }: ChatProps) {
           </AnimatePresence>
         </form>
       </div>
-    </>
+    </MapPositioner>
   );
 }

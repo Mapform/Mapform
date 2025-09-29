@@ -43,6 +43,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@mapform/ui/components/dropdown-menu";
+import { MapPositioner } from "~/lib/map/map-positioner";
 
 interface SearchProps {
   searchResults?: Search["data"];
@@ -65,7 +66,7 @@ export function Search({
   vectorSearchResults,
   previousChats,
 }: SearchProps) {
-  const { params, setQueryStates, isPending } = useParamsContext();
+  const { params, setQueryStates, isPending, drawerDepth } = useParamsContext();
   const [query, setQuery] = useState(params.query);
   const debouncedSearchQuery = useDebounce(query, 200);
 
@@ -80,7 +81,7 @@ export function Search({
   }, [params.query]);
 
   return (
-    <>
+    <MapPositioner disabled={drawerDepth.get("search") !== 0}>
       <Command className="bg-transparent" shouldFilter={false}>
         <MapDrawerToolbar className="border-b max-md:pt-6">
           <div
@@ -223,7 +224,7 @@ export function Search({
           )}
         </CommandList>
       </Command>
-    </>
+    </MapPositioner>
   );
 }
 
