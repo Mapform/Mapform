@@ -11,6 +11,8 @@ import {
   BoxIcon,
   GlobeIcon,
   Loader2,
+  LocateIcon,
+  MapPinnedIcon,
   MessageCircle,
   PlusIcon,
   SearchIcon,
@@ -35,6 +37,12 @@ import {
 import { useAction } from "next-safe-action/hooks";
 import { deleteChatAction } from "~/data/chats/delete-chat";
 import { toast } from "@mapform/ui/components/toaster";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@mapform/ui/components/dropdown-menu";
 
 interface SearchProps {
   searchResults?: Search["data"];
@@ -76,7 +84,7 @@ export function Search({
       <Command className="bg-transparent" shouldFilter={false}>
         <MapDrawerToolbar className="border-b max-md:pt-6">
           <div
-            className="relative flex flex-1 flex-col gap-2 rounded-md"
+            className="relative flex flex-1 flex-col gap-2 rounded-md pl-1"
             cmdk-input-wrapper=""
           >
             <div className="flex flex-1 items-center">
@@ -104,16 +112,30 @@ export function Search({
               </Button>
             </div>
             <div className="flex justify-between">
-              <Button
-                className="text-muted-foreground !p-0"
-                style={{
-                  background: "none",
-                }}
-                variant="ghost"
-              >
-                <PlusIcon className="size-4" />
-                Add Context
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    className="text-muted-foreground !p-0"
+                    style={{
+                      background: "none",
+                    }}
+                    variant="ghost"
+                  >
+                    <PlusIcon className="size-4" />
+                    Add Context
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem>
+                    <MapPinnedIcon className="size-4" />
+                    Map Location
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <LocateIcon className="size-4" />
+                    Your Location
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
               <Button className="ml-auto" type="submit" size="icon">
                 <SendIcon className="size-4" />
               </Button>

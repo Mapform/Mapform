@@ -110,7 +110,7 @@ export function MapDrawerToolbar({
   return (
     <div
       className={cn(
-        "bg-opacity-98 sticky top-0 z-10 flex w-full bg-white p-4 backdrop-blur-sm",
+        "bg-opacity-98 sticky top-0 z-10 flex w-full bg-white p-3 backdrop-blur-sm",
         className,
       )}
     >
