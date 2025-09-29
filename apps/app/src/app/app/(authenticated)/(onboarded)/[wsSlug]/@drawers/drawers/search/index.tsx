@@ -82,7 +82,7 @@ export function Search({
 
   return (
     <MapPositioner disabled={drawerDepth.get("search") !== 0}>
-      <Command className="bg-transparent" shouldFilter={false}>
+      <Command className="overflow-visible bg-transparent" shouldFilter={false}>
         <MapDrawerToolbar className="border-b">
           <div
             className="relative flex flex-1 flex-col gap-2 rounded-md pl-1"
