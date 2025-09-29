@@ -155,7 +155,7 @@ export function MapNavigationControl() {
               })}
             </svg>
             <div className="flex h-full w-full items-center justify-center">
-              <Image src={Compass} alt="Compass" className="size-[22px]" />
+              <Image src={Compass} alt="Compass" className="size-5" />
             </div>
           </div>
         </ControlButton>
