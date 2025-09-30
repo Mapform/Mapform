@@ -115,9 +115,20 @@ export function Search({
               <AddContextDropdown />
               <Button
                 className="ml-auto"
-                type="submit"
                 size="icon-sm"
                 disabled={!query}
+                onClick={() => {
+                  // Find the input and trigger Enter key event
+                  const input = document.querySelector("input[cmdk-input]");
+                  if (input) {
+                    const event = new KeyboardEvent("keydown", {
+                      key: "Enter",
+                      code: "Enter",
+                      bubbles: true,
+                    });
+                    input.dispatchEvent(event);
+                  }
+                }}
               >
                 <ArrowUpIcon className="size-4" />
               </Button>
