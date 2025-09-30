@@ -92,7 +92,7 @@ async function SearchDrawer({ searchParams, params }: DealDrawerProps) {
     [
       query && search ? getSearchResults(query, undefined, center) : null,
       query && search ? getVectorSearchResults(query, wsSlug, pId) : null,
-      authDataService.listChats({ projectId: pId }),
+      authDataService.listChats({}),
     ],
   );
 
