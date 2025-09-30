@@ -48,9 +48,13 @@ export function PickLocationsMessage({ results }: PickLocationsMessageProps) {
 
     const bounds = new maplibregl.LngLatBounds();
 
-    results.forEach((result) => {
-      bounds.extend([result.longitude, result.latitude]);
-    });
+    try {
+      results.forEach((result) => {
+        bounds.extend([result.longitude, result.latitude]);
+      });
+    } catch (error) {
+      console.error("Error extending bounds: ", error);
+    }
 
     try {
       setTimeout(() => {
@@ -98,6 +102,13 @@ export function PickLocationsMessage({ results }: PickLocationsMessageProps) {
 
         // The marker will be display by the Drawer component
         if (r.id === activeFeatureId) return null;
+        if (
+          typeof r.longitude !== "number" ||
+          typeof r.latitude !== "number" ||
+          isNaN(r.longitude) ||
+          isNaN(r.latitude)
+        )
+          return null;
 
         return (
           <Marker

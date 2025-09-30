@@ -193,6 +193,7 @@ export function Message({ message }: ChatMessageProps) {
             part.type === "tool-findRawInternalFeatures" ||
             part.type === "tool-reverseGeocode"
           ) {
+            console.debug("ToolMessage part: ", message);
             return (
               <ToolMessage
                 key={`${message.id}-${index}`}

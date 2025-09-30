@@ -10,6 +10,10 @@ export const returnBestResults = tool({
     finalResults: z.array(
       z.object({
         id: z.string().describe("The location ID."),
+        name: z.string().optional().describe("The location name."),
+        address: z.string().optional().describe("The location address."),
+        latitude: z.number().describe("The location latitude."),
+        longitude: z.number().describe("The location longitude."),
         source: z
           .enum(["stadia", "mapform"])
           .describe("The source of the location."),
