@@ -133,7 +133,7 @@ function ChatInner({
   chatWithMessages,
   usage,
   userCenter,
-}: ChatProps & { userCenter: { latitude: number; longitude: number } | null }) {
+}: ChatProps & { userCenter: { lat: number; lng: number } | null }) {
   const map = useMap();
   const [input, setInput] = useState("");
   const [currentUsage, setCurrentUsage] = useState(usage?.tokensUsed ?? 0);
@@ -141,7 +141,7 @@ function ChatInner({
   const { params, setQueryStates, drawerDepth } = useParamsContext();
   const { workspaceSlug, workspaceDirectory } = useWorkspace();
 
-  const center = {
+  const mapCenter = {
     lat: map.current?.getCenter().toArray()[1],
     lng: map.current?.getCenter().toArray()[0],
   };
@@ -159,9 +159,9 @@ function ChatInner({
       prepareSendMessagesRequest({ messages, id }) {
         return {
           body: {
-            messages,
             id,
-            mapCenter: center,
+            messages,
+            mapCenter,
             userCenter,
           },
           headers: { "x-workspace-slug": workspaceSlug },

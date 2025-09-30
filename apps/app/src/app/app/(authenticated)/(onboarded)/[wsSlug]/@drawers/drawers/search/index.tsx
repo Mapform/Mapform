@@ -12,6 +12,7 @@ import {
   GlobeIcon,
   Loader2,
   LocateIcon,
+  MapIcon,
   MessageCircle,
   NavigationIcon,
   PlusIcon,
@@ -41,10 +42,14 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@mapform/ui/components/dropdown-menu";
 import { MapPositioner } from "~/lib/map/map-positioner";
 import { useMap } from "react-map-gl/maplibre";
+import { useWorkspace } from "../../../workspace-context";
 
 interface SearchProps {
   searchResults?: Search["data"];
@@ -68,6 +73,7 @@ export function Search({
   previousChats,
 }: SearchProps) {
   const map = useMap();
+  const { workspaceDirectory } = useWorkspace();
   const { params, setQueryStates, isPending, drawerDepth } = useParamsContext();
   const [query, setQuery] = useState(params.query);
   const debouncedSearchQuery = useDebounce(query, 200);
@@ -134,6 +140,28 @@ export function Search({
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
+                  <DropdownMenuSub>
+                    <DropdownMenuSubTrigger>
+                      <MapIcon className="size-4" />
+                      Maps
+                    </DropdownMenuSubTrigger>
+                    <DropdownMenuSubContent>
+                      {workspaceDirectory.teamspaces
+                        .flatMap((teamspace) =>
+                          teamspace.projects.flatMap((project) => project),
+                        )
+                        .map((project) => (
+                          <DropdownMenuItem key={project.id}>
+                            {project.icon ? (
+                              <span>{project.icon}</span>
+                            ) : (
+                              <MapIcon className="size-4" />
+                            )}
+                            {project.name || "New Map"}
+                          </DropdownMenuItem>
+                        ))}
+                    </DropdownMenuSubContent>
+                  </DropdownMenuSub>
                   <DropdownMenuItem>
                     <LocateIcon className="size-4" />
                     Map center
