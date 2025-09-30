@@ -229,9 +229,11 @@ function ChatInner({
   return (
     <MapPositioner disabled={drawerDepth.get("chatId") !== 0}>
       <MapDrawerToolbar className="flex max-w-full overflow-hidden">
-        <Badge className="mr-2 truncate" variant="secondary">
-          {chatWithMessages?.chatTitle ?? "New Chat"}
-        </Badge>
+        <div className="mr-2 flex flex-1 truncate">
+          <Badge className="w-full truncate" variant="secondary">
+            {chatWithMessages?.chatTitle ?? "New Chat"}
+          </Badge>
+        </div>
         <Button
           className="ml-auto"
           size="icon-sm"

@@ -183,12 +183,14 @@ const FeatureContentInner = ({
   return (
     <div>
       <MapDrawerToolbar className="flex max-w-full overflow-hidden">
-        <Badge className="mr-2 truncate" variant="secondary">
-          <span>{featureService.optimisticState?.project.icon}</span>
-          <span className="ml-1.5">
-            {featureService.optimisticState?.project.name ?? "New Map"}
-          </span>
-        </Badge>
+        <div className="mr-2 flex flex-1 truncate">
+          <Badge className="w-full truncate" variant="secondary">
+            <span>{featureService.optimisticState?.project.icon}</span>
+            <span className="ml-1.5">
+              {featureService.optimisticState?.project.name ?? "New Map"}
+            </span>
+          </Badge>
+        </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
