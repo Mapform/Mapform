@@ -416,24 +416,26 @@ export function Feature({
             </DndContext>
           ) : null}
 
-          {otherProperties.map((property) => (
-            <div
-              className="grid grid-cols-3 gap-4 text-sm"
-              key={property.columnName}
-            >
-              <div className="col-span-1">
-                <PropertyColumnEditor
-                  columnName={property.columnName}
-                  columnType={property.columnType}
-                />
+          <div className="flex flex-col gap-2">
+            {otherProperties.map((property) => (
+              <div
+                className="grid grid-cols-3 gap-4 text-sm"
+                key={property.columnName}
+              >
+                <div className="col-span-1">
+                  <PropertyColumnEditor
+                    columnName={property.columnName}
+                    columnType={property.columnType}
+                  />
+                </div>
+                <div className="col-span-2 text-wrap break-words">
+                  {property.value instanceof Date
+                    ? format(property.value, "PP hh:mm b", { locale: enUS })
+                    : property.value}
+                </div>
               </div>
-              <div className="col-span-2 text-wrap break-words">
-                {property.value instanceof Date
-                  ? format(property.value, "PP hh:mm b", { locale: enUS })
-                  : property.value}
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
           {projectId ? (
             <PropertyAdder projectId={projectId}>
               <PropertyAdderTrigger asChild>
