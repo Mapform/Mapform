@@ -118,7 +118,7 @@ export function Search({
               <Button
                 className="absolute right-0 top-0"
                 variant="ghost"
-                size="icon"
+                size="icon-sm"
                 onClick={() => {
                   void setQueryStates({ search: null, query: null });
                 }}
@@ -176,7 +176,7 @@ export function Search({
               <Button
                 className="ml-auto"
                 type="submit"
-                size="icon"
+                size="icon-sm"
                 disabled={!query}
               >
                 <ArrowUpIcon className="size-4" />

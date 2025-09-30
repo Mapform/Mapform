@@ -113,7 +113,7 @@ export function Views() {
           <DeleteProject>
             <DropdownMenu modal={false}>
               <DropdownMenuTrigger asChild>
-                <Button className="ml-auto" variant="ghost" size="icon">
+                <Button className="ml-auto" variant="ghost" size="icon-sm">
                   <EllipsisVerticalIcon className="size-4" />
                 </Button>
               </DropdownMenuTrigger>

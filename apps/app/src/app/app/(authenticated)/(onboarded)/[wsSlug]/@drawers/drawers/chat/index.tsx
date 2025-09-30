@@ -324,7 +324,7 @@ function ChatInner({
                 <Button
                   className="ml-auto"
                   type="submit"
-                  size="icon"
+                  size="icon-sm"
                   disabled={!input || hasReachedTokenLimit}
                 >
                   <ArrowUpIcon className="size-4" />
