@@ -75,7 +75,7 @@ export function MapNavigationControl() {
   const handleLocate = () => {
     if (!map) return;
     shouldCenterOnNextFixRef.current = true;
-    getCurrentPosition();
+    void getCurrentPosition();
   };
 
   useEffect(() => {

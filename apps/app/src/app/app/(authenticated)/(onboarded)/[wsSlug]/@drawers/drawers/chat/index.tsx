@@ -98,7 +98,7 @@ export function Chat({ chatWithMessages, usage }: ChatProps) {
   if (
     !chatWithMessages ||
     chatWithMessages.chatId !== params.chatId ||
-    isLoadingGeolocation
+    (params.chatOptions?.userCenter && isLoadingGeolocation)
   )
     return (
       <>

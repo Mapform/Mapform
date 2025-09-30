@@ -9,6 +9,7 @@ import {
 import z from "zod";
 
 const chatOptionsSchema = z.object({
+  firstMessage: z.string().optional(),
   mapCenter: z.boolean().optional(),
   userCenter: z.boolean().optional(),
   projects: z.array(z.string()).optional(),

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 export type GeolocationState = {
   isLoading: boolean;
@@ -62,14 +62,28 @@ export function useGeolocation(
     }));
   }, []);
 
-  const getCurrentPosition = useCallback(() => {
-    navigator.geolocation.getCurrentPosition(onSuccess, onError, options);
-  }, [onSuccess, onError, options]);
+  const stableOptions = useMemo<PositionOptions>(() => options, [options]);
+
+  const getCurrentPosition = useCallback((): Promise<GeolocationPosition> => {
+    return new Promise((resolve, reject) => {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          onSuccess(position);
+          resolve(position);
+        },
+        (error) => {
+          onError(error);
+          reject(new Error(error.message));
+        },
+        stableOptions,
+      );
+    });
+  }, [onSuccess, onError, stableOptions]);
 
   useEffect(() => {
     const resultHandler = (result: PermissionStatus) => {
       if (result.state === "granted") {
-        getCurrentPosition();
+        void getCurrentPosition();
       } else {
         setState((s) => ({
           ...s,
@@ -91,17 +105,7 @@ export function useGeolocation(
       .catch((error) => {
         console.error("Error querying geolocation permission", error);
       });
-
-    const watchId = navigator.geolocation.watchPosition(
-      onSuccess,
-      onError,
-      options,
-    );
-
-    return () => {
-      navigator.geolocation.clearWatch(watchId);
-    };
-  }, []);
+  }, [getCurrentPosition, onError, onSuccess, stableOptions]);
 
   return {
     ...state,

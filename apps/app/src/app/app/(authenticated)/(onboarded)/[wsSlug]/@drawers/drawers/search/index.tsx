@@ -42,7 +42,6 @@ import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
@@ -51,7 +50,7 @@ import {
 import { MapPositioner } from "~/lib/map/map-positioner";
 import { useMap } from "react-map-gl/maplibre";
 import { useWorkspace } from "../../../workspace-context";
-import { Badge } from "@mapform/ui/components/badge";
+import { useGeolocation } from "@mapform/lib/hooks/use-geolocation";
 
 interface SearchProps {
   searchResults?: Search["data"];
@@ -79,6 +78,7 @@ export function Search({
   const { params, setQueryStates, isPending, drawerDepth } = useParamsContext();
   const [query, setQuery] = useState(params.query);
   const debouncedSearchQuery = useDebounce(query, 200);
+  const { getCurrentPosition, coords } = useGeolocation();
 
   const filteredFeatures = searchResults?.features;
 
@@ -205,7 +205,11 @@ export function Search({
                   </DropdownMenuCheckboxItem>
                   <DropdownMenuCheckboxItem
                     checked={params.chatOptions?.userCenter}
-                    onCheckedChange={(checked) => {
+                    onCheckedChange={async (checked) => {
+                      if (checked && !coords) {
+                        await getCurrentPosition();
+                      }
+
                       void setQueryStates({
                         chatOptions: {
                           ...params.chatOptions,
@@ -240,7 +244,14 @@ export function Search({
             {query && (
               <CommandItem
                 onSelect={() => {
-                  void setQueryStates({ chatId: "new", query });
+                  void setQueryStates({
+                    chatId: "new",
+                    query: null,
+                    chatOptions: {
+                      ...params.chatOptions,
+                      firstMessage: query,
+                    },
+                  });
                 }}
               >
                 <MessageCircle className="text-muted-foreground mr-2 size-4 flex-shrink-0" />
