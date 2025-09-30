@@ -51,7 +51,7 @@ import {
 } from "@mapform/ui/components/collapsible";
 import { Avatar, AvatarFallback } from "@mapform/ui/components/avatar";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { useParams, usePathname, useRouter } from "next/navigation";
 import { signOutAction } from "~/data/auth/sign-out";
 import { useAuth } from "~/app/root-providers";
 import { useWorkspace } from "../workspace-context";
@@ -71,12 +71,15 @@ import { toast } from "@mapform/ui/components/toaster";
 import { useMap } from "react-map-gl/maplibre";
 import { useParamsContext } from "~/lib/params/client";
 import { Button } from "@mapform/ui/components/button";
+import { useGeolocation } from "@mapform/lib/hooks/use-geolocation";
 
 export function AppSidebar() {
   const map = useMap();
   const { user } = useAuth();
   const pathname = usePathname();
   const router = useRouter();
+  const { pId } = useParams<{ pId?: string }>();
+  const { coords } = useGeolocation();
   const { setOpenMobile } = useSidebar();
   const { params, setQueryStates, drawerDepth } = useParamsContext();
   const { workspaceMemberships, workspaceDirectory, workspaceSlug } =
@@ -230,6 +233,15 @@ export function AppSidebar() {
                       search: params.search === "1" ? null : "1",
                       chatId: null,
                       query: null,
+                      chatOptions:
+                        params.search !== "1"
+                          ? {
+                              firstMessage: null,
+                              mapCenter: true,
+                              userCenter: !!coords,
+                              projects: pId ? [pId] : null,
+                            }
+                          : null,
                     });
                   }}
                 >
