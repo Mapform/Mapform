@@ -10,7 +10,7 @@ export const findRawExternalFeatures = tool({
     query: z
       .string()
       .describe(
-        "The name or address of the place to search for. Queries must be kept simple. GOOD QUERY examples: 'Paris, France', 'Eiffel Tower', '123 Main St. San Francisco, CA', etc. BAD QUERY example: 'Maman Jeanne Montreal Ethiopian Restaurant address'.",
+        "The name or address of the place to search for. Queries must be kept simple. GOOD QUERY examples: 'Paris, France', 'Eiffel Tower', '123 Main St. San Francisco, CA', etc. BAD QUERY examples: 'Restaurants near Mile End Montreal', 'Maman Jeanne Montreal Ethiopian Restaurant address'.",
       ),
     bounds: z
       .array(z.number())
