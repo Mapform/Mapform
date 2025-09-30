@@ -88,14 +88,14 @@ export function Chat({ chatWithMessages, usage }: ChatProps) {
     if (params.chatId === "new" && !hasCreatedChatRef.current) {
       hasCreatedChatRef.current = true;
       createChat({
-        title: params.query ?? "New Chat",
+        title: params.chatOptions?.firstMessage ?? "New Chat",
         projectId: pId ?? null,
       });
     }
     if (params.chatId !== "new" && hasCreatedChatRef.current) {
       hasCreatedChatRef.current = false;
     }
-  }, [params.chatId, params.query, pId, createChat]);
+  }, [params.chatId, params.chatOptions?.firstMessage, pId, createChat]);
 
   if (
     !chatWithMessages ||
@@ -192,7 +192,7 @@ function ChatInner({
   useEffect(() => {
     void (async () => {
       if (
-        params.query &&
+        params.chatOptions?.firstMessage &&
         !hasInitiatedNewChat &&
         !messages.length &&
         params.chatId
@@ -200,12 +200,12 @@ function ChatInner({
         setHasInitiatedNewChat(true);
         await sendMessage({
           id: params.chatId,
-          parts: [{ type: "text", text: params.query }],
+          parts: [{ type: "text", text: params.chatOptions.firstMessage }],
         });
       }
     })();
   }, [
-    params.query,
+    params.chatOptions?.firstMessage,
     sendMessage,
     hasInitiatedNewChat,
     params.chatId,
@@ -243,7 +243,13 @@ function ChatInner({
           type="button"
           variant="ghost"
           onClick={() => {
-            void setQueryStates({ chatId: "new", query: null });
+            void setQueryStates({
+              chatId: "new",
+              chatOptions: {
+                ...params.chatOptions,
+                firstMessage: null,
+              },
+            });
           }}
         >
           <SquarePenIcon className="size-4" />
