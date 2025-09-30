@@ -183,9 +183,9 @@ const FeatureContentInner = ({
   return (
     <div>
       <MapDrawerToolbar className="flex max-w-full overflow-hidden">
-        <Badge className="mr-2 flex-1 gap-1.5 truncate" variant="secondary">
+        <Badge className="mr-2 truncate" variant="secondary">
           <span>{featureService.optimisticState?.project.icon}</span>
-          <span>
+          <span className="ml-1.5">
             {featureService.optimisticState?.project.name ?? "New Map"}
           </span>
         </Badge>

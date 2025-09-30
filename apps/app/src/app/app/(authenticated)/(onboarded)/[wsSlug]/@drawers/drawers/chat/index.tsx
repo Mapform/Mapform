@@ -12,7 +12,7 @@ import {
 } from "@mapform/ui/components/ai-elements/conversation";
 import {
   Loader2,
-  SendIcon,
+  ArrowUpIcon,
   SquareIcon,
   SquarePenIcon,
   XIcon,
@@ -229,7 +229,7 @@ function ChatInner({
   return (
     <MapPositioner disabled={drawerDepth.get("chatId") !== 0}>
       <MapDrawerToolbar className="flex max-w-full overflow-hidden">
-        <Badge className="mr-2 flex-1 truncate" variant="secondary">
+        <Badge className="mr-2 truncate" variant="secondary">
           {chatWithMessages?.chatTitle ?? "New Chat"}
         </Badge>
         <Button
@@ -327,7 +327,7 @@ function ChatInner({
                   size="icon"
                   disabled={!input || hasReachedTokenLimit}
                 >
-                  <SendIcon className="size-4" />
+                  <ArrowUpIcon className="size-4" />
                 </Button>
               )}
             </motion.div>

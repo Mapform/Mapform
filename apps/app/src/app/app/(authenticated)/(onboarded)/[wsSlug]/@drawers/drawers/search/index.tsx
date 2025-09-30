@@ -8,6 +8,7 @@ import {
   CommandPrimitive,
 } from "@mapform/ui/components/command";
 import {
+  ArrowUpIcon,
   BoxIcon,
   GlobeIcon,
   Loader2,
@@ -17,7 +18,6 @@ import {
   NavigationIcon,
   PlusIcon,
   SearchIcon,
-  SendIcon,
   TrashIcon,
   XIcon,
 } from "lucide-react";
@@ -173,8 +173,13 @@ export function Search({
                   </DropdownMenuCheckboxItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-              <Button className="ml-auto" type="submit" size="icon">
-                <SendIcon className="size-4" />
+              <Button
+                className="ml-auto"
+                type="submit"
+                size="icon"
+                disabled={!query}
+              >
+                <ArrowUpIcon className="size-4" />
               </Button>
             </div>
           </div>
