@@ -40,6 +40,7 @@ import { deleteChatAction } from "~/data/chats/delete-chat";
 import { toast } from "@mapform/ui/components/toaster";
 import {
   DropdownMenu,
+  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSub,
@@ -151,25 +152,25 @@ export function Search({
                           teamspace.projects.flatMap((project) => project),
                         )
                         .map((project) => (
-                          <DropdownMenuItem key={project.id}>
+                          <DropdownMenuCheckboxItem key={project.id}>
                             {project.icon ? (
                               <span>{project.icon}</span>
                             ) : (
                               <MapIcon className="size-4" />
                             )}
                             {project.name || "New Map"}
-                          </DropdownMenuItem>
+                          </DropdownMenuCheckboxItem>
                         ))}
                     </DropdownMenuSubContent>
                   </DropdownMenuSub>
-                  <DropdownMenuItem>
+                  <DropdownMenuCheckboxItem>
                     <LocateIcon className="size-4" />
                     Map center
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
+                  </DropdownMenuCheckboxItem>
+                  <DropdownMenuCheckboxItem>
                     <NavigationIcon className="size-4" />
                     Your location
-                  </DropdownMenuItem>
+                  </DropdownMenuCheckboxItem>
                 </DropdownMenuContent>
               </DropdownMenu>
               <Button className="ml-auto" type="submit" size="icon">
