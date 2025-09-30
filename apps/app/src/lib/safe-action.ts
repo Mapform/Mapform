@@ -22,7 +22,6 @@ import {
   publicMiddlewareValidator,
   userAuthMiddlewareValidator,
 } from "@mapform/backend";
-import { headers } from "next/headers";
 import { updateCurrentUser } from "@mapform/backend/data/users/update-current-user";
 import { createProject } from "@mapform/backend/data/projects/create-project";
 import { createView } from "@mapform/backend/data/views/create-view";

@@ -51,6 +51,7 @@ import {
 import { MapPositioner } from "~/lib/map/map-positioner";
 import { useMap } from "react-map-gl/maplibre";
 import { useWorkspace } from "../../../workspace-context";
+import { Badge } from "@mapform/ui/components/badge";
 
 interface SearchProps {
   searchResults?: Search["data"];
@@ -93,6 +94,11 @@ export function Search({
   useEffect(() => {
     setQuery(params.query);
   }, [params.query]);
+
+  const chatOptionsCount =
+    (params.chatOptions?.projects?.length ?? 0) +
+    (params.chatOptions?.mapCenter ? 1 : 0) +
+    (params.chatOptions?.userCenter ? 1 : 0);
 
   return (
     <MapPositioner disabled={drawerDepth.get("search") !== 0}>
@@ -152,7 +158,27 @@ export function Search({
                           teamspace.projects.flatMap((project) => project),
                         )
                         .map((project) => (
-                          <DropdownMenuCheckboxItem key={project.id}>
+                          <DropdownMenuCheckboxItem
+                            key={project.id}
+                            checked={params.chatOptions?.projects?.includes(
+                              project.id,
+                            )}
+                            onCheckedChange={(checked) => {
+                              void setQueryStates({
+                                chatOptions: {
+                                  ...params.chatOptions,
+                                  projects: checked
+                                    ? [
+                                        ...(params.chatOptions?.projects ?? []),
+                                        project.id,
+                                      ]
+                                    : params.chatOptions?.projects?.filter(
+                                        (p) => p !== project.id,
+                                      ),
+                                },
+                              });
+                            }}
+                          >
                             {project.icon ? (
                               <span>{project.icon}</span>
                             ) : (
@@ -163,16 +189,41 @@ export function Search({
                         ))}
                     </DropdownMenuSubContent>
                   </DropdownMenuSub>
-                  <DropdownMenuCheckboxItem>
+                  <DropdownMenuCheckboxItem
+                    checked={params.chatOptions?.mapCenter}
+                    onCheckedChange={(checked) => {
+                      void setQueryStates({
+                        chatOptions: {
+                          ...params.chatOptions,
+                          mapCenter: checked,
+                        },
+                      });
+                    }}
+                  >
                     <LocateIcon className="size-4" />
                     Map center
                   </DropdownMenuCheckboxItem>
-                  <DropdownMenuCheckboxItem>
+                  <DropdownMenuCheckboxItem
+                    checked={params.chatOptions?.userCenter}
+                    onCheckedChange={(checked) => {
+                      void setQueryStates({
+                        chatOptions: {
+                          ...params.chatOptions,
+                          userCenter: checked,
+                        },
+                      });
+                    }}
+                  >
                     <NavigationIcon className="size-4" />
                     Your location
                   </DropdownMenuCheckboxItem>
                 </DropdownMenuContent>
               </DropdownMenu>
+              {chatOptionsCount > 0 && (
+                <div className="bg-muted ml-2 inline flex-grow-0 self-center rounded-md px-2 py-1 font-mono text-xs">
+                  {chatOptionsCount}
+                </div>
+              )}
               <Button
                 className="ml-auto"
                 type="submit"

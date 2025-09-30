@@ -133,6 +133,7 @@ export const ParamsProvider = ({ children }: ParamsProviderProps) => {
       bearing,
       location,
       marker,
+      chatOptions,
     },
     setQueryStates,
   ] = useQueryStates(appSearchParams, { ...appSearchOptions, startTransition });
@@ -163,6 +164,7 @@ export const ParamsProvider = ({ children }: ParamsProviderProps) => {
           bearing,
           location,
           marker,
+          chatOptions,
         },
         setQueryStates,
         drawerDepth,
