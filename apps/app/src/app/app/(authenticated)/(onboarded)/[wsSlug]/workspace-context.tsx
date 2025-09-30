@@ -82,6 +82,7 @@ export function WorkspaceProvider({
   const pathname = usePathname();
   const isMobile = useIsMobile();
   const [cursor, setCursor] = useState<string>("grab");
+  const [isMapLoaded, setIsMapLoaded] = useState(false);
   const currentWorkspace = workspaceMemberships.find(
     (membership) => membership.workspace.slug === workspaceSlug,
   );
@@ -266,6 +267,10 @@ export function WorkspaceProvider({
     return isMobile ? 0 : 2;
   }, [isMobile]);
 
+  const handleOnLoad = () => {
+    setIsMapLoaded(true);
+  };
+
   return (
     <WorkspaceContext.Provider
       value={{
@@ -286,6 +291,9 @@ export function WorkspaceProvider({
         style={{
           width: "100vw",
           height: "100vh",
+          opacity: isMapLoaded ? 1 : 0,
+          transition: "opacity 300ms ease-in-out",
+          willChange: "opacity",
           backgroundImage: `linear-gradient(
             315deg,
             hsl(240deg 50% 3%) 0%,
@@ -327,6 +335,7 @@ export function WorkspaceProvider({
         attributionControl={false}
         cursor={cursor}
         minZoom={minZoom}
+        onLoad={handleOnLoad}
         onContextMenu={handleContextMenu}
         onTouchStart={handleTouchStart}
         onMove={cancelLongPress}
