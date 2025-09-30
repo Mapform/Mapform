@@ -16,19 +16,17 @@ export const searchRows = (authClient: UserAuthClient) =>
       let projectIds: string[] = [];
 
       if (type === "project") {
-        const project = await db.query.projects.findFirst({
-          where: eq(projects.id, parsedInput.projectId),
+        const foundProjects = await db.query.projects.findMany({
+          where: inArray(projects.id, parsedInput.projectIds),
         });
 
-        if (!project) {
-          throw new Error("Project not found");
-        }
+        foundProjects.forEach((project) => {
+          if (!userAccess.teamspace.checkAccessById(project.teamspaceId)) {
+            throw new Error("You are not a member of this project");
+          }
+        });
 
-        if (!userAccess.teamspace.checkAccessById(project.teamspaceId)) {
-          throw new Error("You are not a member of this project");
-        }
-
-        projectIds = [parsedInput.projectId];
+        projectIds = foundProjects.map((project) => project.id);
       } else if (type === "workspace") {
         // Check workspace access
         if (

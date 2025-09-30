@@ -61,12 +61,12 @@ const getSearchResults = cache(
 );
 
 const getVectorSearchResults = cache(
-  async (query: string, workspaceSlug: string, projectId?: string) => {
+  async (query: string, workspaceSlug: string, projectIds?: string[]) => {
     const searchResults = await authDataService.searchRows(
-      projectId
+      projectIds
         ? {
             query,
-            projectId,
+            projectIds,
             type: "project",
           }
         : {
@@ -80,18 +80,23 @@ const getVectorSearchResults = cache(
 );
 
 async function SearchDrawer({ searchParams, params }: DealDrawerProps) {
-  const { query, search, location } = await loadSearchParams(searchParams);
-  const { wsSlug, pId } = await params;
+  const { query, search, location, chatOptions } =
+    await loadSearchParams(searchParams);
+  const { wsSlug } = await params;
 
   const center = {
     lat: Number(location?.split(",")[0]),
     lng: Number(location?.split(",")[1]),
   };
 
+  const projectIds = chatOptions?.projects;
+
   const [searchResults, vectorSearchResults, previousChats] = await Promise.all(
     [
       query && search ? getSearchResults(query, undefined, center) : null,
-      query && search ? getVectorSearchResults(query, wsSlug, pId) : null,
+      query && search
+        ? getVectorSearchResults(query, wsSlug, projectIds)
+        : null,
       authDataService.listChats({}),
     ],
   );

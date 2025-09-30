@@ -4,7 +4,7 @@ export const searchRowsSchema = z.discriminatedUnion("type", [
   z.object({
     type: z.literal("project"),
     query: z.string(),
-    projectId: z.string(),
+    projectIds: z.string().array(),
   }),
   z.object({
     type: z.literal("workspace"),
