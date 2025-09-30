@@ -107,7 +107,7 @@ export function Views() {
   );
 
   return (
-    <div className="flex h-full flex-col">
+    <>
       <MapDrawerToolbar>
         <Import>
           <DeleteProject>
@@ -418,6 +418,6 @@ export function Views() {
           </Tabs>
         </div>
       </div>
-    </div>
+    </>
   );
 }
