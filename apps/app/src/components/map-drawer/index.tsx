@@ -109,7 +109,7 @@ export function MapDrawerToolbar({
 }) {
   return (
     <div
-      className={cn("sticky top-0 z-10 flex w-full bg-white p-3", className)}
+      className={cn("sticky top-0 z-20 flex w-full bg-white p-3", className)}
     >
       <div className="absolute left-1/2 top-2 mx-auto h-1.5 w-12 -translate-x-1/2 rounded-full bg-gray-200 md:hidden" />
       {children}

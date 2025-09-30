@@ -288,19 +288,19 @@ export function WorkspaceProvider({
           height: "100vh",
           backgroundImage: `linear-gradient(
             315deg,
-            hsl(240deg 43% 10%) 0%,
-            hsl(239deg 43% 10%) 8%,
-            hsl(238deg 43% 11%) 17%,
-            hsl(238deg 44% 11%) 25%,
-            hsl(237deg 45% 12%) 33%,
-            hsl(236deg 45% 12%) 42%,
-            hsl(236deg 45% 13%) 50%,
-            hsl(237deg 45% 13%) 58%,
-            hsl(237deg 45% 14%) 67%,
-            hsl(238deg 45% 14%) 75%,
-            hsl(238deg 45% 15%) 83%,
-            hsl(239deg 44% 15%) 92%,
-            hsl(240deg 44% 16%) 100%
+            hsl(240deg 50% 3%) 0%,
+            hsl(241deg 47% 4%) 8%,
+            hsl(242deg 44% 6%) 17%,
+            hsl(244deg 41% 7%) 25%,
+            hsl(245deg 39% 8%) 33%,
+            hsl(244deg 37% 8%) 42%,
+            hsl(244deg 37% 9%) 50%,
+            hsl(242deg 37% 10%) 58%,
+            hsl(241deg 37% 11%) 67%,
+            hsl(239deg 38% 12%) 75%,
+            hsl(239deg 39% 13%) 83%,
+            hsl(239deg 39% 13%) 92%,
+            hsl(240deg 40% 14%) 100%
           )`,
         }}
         sky={{
