@@ -84,7 +84,7 @@ export async function POST(req: Request) {
       });
 
       const result = streamText({
-        model: "gpt-5",
+        model: "gpt-5-mini",
         system: getSystemPrompt(mapCenter, userCenter, ipLocation, projects),
         messages: convertToModelMessages(messages),
         tools: {
