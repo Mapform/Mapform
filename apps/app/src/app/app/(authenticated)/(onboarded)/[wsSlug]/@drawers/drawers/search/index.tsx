@@ -8,6 +8,7 @@ import {
   CommandPrimitive,
 } from "@mapform/ui/components/command";
 import {
+  ArrowUpIcon,
   BoxIcon,
   GlobeIcon,
   Loader2,
@@ -33,6 +34,9 @@ import {
 import { useAction } from "next-safe-action/hooks";
 import { deleteChatAction } from "~/data/chats/delete-chat";
 import { toast } from "@mapform/ui/components/toaster";
+import { MapPositioner } from "~/lib/map/map-positioner";
+import { useMap } from "react-map-gl/maplibre";
+import { AddContextDropdown } from "~/components/add-context-dropdown";
 
 interface SearchProps {
   searchResults?: Search["data"];
@@ -55,50 +59,69 @@ export function Search({
   vectorSearchResults,
   previousChats,
 }: SearchProps) {
-  const { params, setQueryStates, isPending } = useParamsContext();
+  const map = useMap();
+  const { params, setQueryStates, isPending, drawerDepth } = useParamsContext();
   const [query, setQuery] = useState(params.query);
   const debouncedSearchQuery = useDebounce(query, 200);
 
   const filteredFeatures = searchResults?.features;
 
   useEffect(() => {
-    void setQueryStates({ query: debouncedSearchQuery });
-  }, [debouncedSearchQuery, setQueryStates]);
+    const center = map.current?.getCenter().toArray().reverse();
+    void setQueryStates({
+      query: debouncedSearchQuery,
+      // Set the location explicitly so the server can use it for searching
+      center: center as [number, number],
+    });
+  }, [debouncedSearchQuery, setQueryStates, map]);
 
   useEffect(() => {
     setQuery(params.query);
   }, [params.query]);
 
   return (
-    <>
-      <Command className="bg-transparent" shouldFilter={false}>
-        <MapDrawerToolbar className="border-b max-md:pt-6">
+    <MapPositioner disabled={drawerDepth.get("search") !== 0}>
+      <Command className="overflow-visible bg-transparent" shouldFilter={false}>
+        <MapDrawerToolbar className="border-b">
           <div
-            className="hover:bg-muted focus-within:ring-ring focus-within:bg-muted relative flex flex-1 items-center rounded-md pl-3 pr-1 transition-all focus-within:ring-2"
+            className="relative flex flex-1 flex-col gap-2 rounded-md pl-1"
             cmdk-input-wrapper=""
           >
-            {isPending && query && query.length > 0 ? (
-              <Loader2 className="mr-2 h-4 w-4 shrink-0 animate-spin opacity-50" />
-            ) : (
-              <SearchIcon className="mr-2 h-4 w-4 shrink-0 opacity-50" />
-            )}
-            <CommandPrimitive.Input
-              className="placeholder:text-muted-foreground flex h-9 w-full rounded-md border-none bg-transparent px-1 py-3 pr-8 text-base outline-none focus:ring-0 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
-              placeholder="Search or ask..."
-              onValueChange={setQuery}
-              value={query ?? ""}
-              autoFocus
-            />
-            <Button
-              className="absolute right-0 top-0"
-              variant="ghost"
-              size="icon"
-              onClick={() => {
-                void setQueryStates({ search: null, query: null });
-              }}
-            >
-              <XIcon className="size-4" />
-            </Button>
+            <div className="flex flex-1 items-center">
+              {isPending && query && query.length > 0 ? (
+                <Loader2 className="mr-2 h-4 w-4 shrink-0 animate-spin opacity-50" />
+              ) : (
+                <SearchIcon className="mr-2 size-4 shrink-0 opacity-50" />
+              )}
+              <CommandPrimitive.Input
+                className="placeholder:text-muted-foreground flex h-9 w-full rounded-md border-none bg-transparent py-3 pl-0 pr-8 !text-base outline-none focus:ring-0 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+                placeholder="Search or ask..."
+                onValueChange={setQuery}
+                value={query ?? ""}
+                autoFocus
+              />
+              <Button
+                className="absolute right-0 top-0"
+                variant="ghost"
+                size="icon-sm"
+                onClick={() => {
+                  void setQueryStates({ search: null, query: null });
+                }}
+              >
+                <XIcon className="size-4" />
+              </Button>
+            </div>
+            <div className="flex justify-between">
+              <AddContextDropdown />
+              <Button
+                className="ml-auto"
+                type="submit"
+                size="icon-sm"
+                disabled={!query}
+              >
+                <ArrowUpIcon className="size-4" />
+              </Button>
+            </div>
           </div>
         </MapDrawerToolbar>
         <CommandList className="max-h-full p-2">
@@ -106,7 +129,14 @@ export function Search({
             {query && (
               <CommandItem
                 onSelect={() => {
-                  void setQueryStates({ chatId: "new", query });
+                  void setQueryStates({
+                    chatId: "new",
+                    query: null,
+                    chatOptions: {
+                      ...params.chatOptions,
+                      firstMessage: query,
+                    },
+                  });
                 }}
               >
                 <MessageCircle className="text-muted-foreground mr-2 size-4 flex-shrink-0" />
@@ -182,7 +212,7 @@ export function Search({
           )}
         </CommandList>
       </Command>
-    </>
+    </MapPositioner>
   );
 }
 

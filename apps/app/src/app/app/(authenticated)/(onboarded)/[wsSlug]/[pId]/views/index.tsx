@@ -113,7 +113,7 @@ export function Views() {
           <DeleteProject>
             <DropdownMenu modal={false}>
               <DropdownMenuTrigger asChild>
-                <Button className="ml-auto" variant="ghost" size="icon">
+                <Button className="ml-auto" variant="ghost" size="icon-sm">
                   <EllipsisVerticalIcon className="size-4" />
                 </Button>
               </DropdownMenuTrigger>
@@ -204,7 +204,7 @@ export function Views() {
                       <ImageUploaderAnchor asChild>
                         <Button
                           className={cn(
-                            "absolute right-2 top-2 opacity-0 group-hover:opacity-100 data-[state=open]:opacity-100",
+                            "absolute right-3 top-3 opacity-0 group-hover:opacity-100 data-[state=open]:opacity-100",
                             openUploaderForUrl === blob.url && "opacity-100",
                           )}
                           size="icon-sm"

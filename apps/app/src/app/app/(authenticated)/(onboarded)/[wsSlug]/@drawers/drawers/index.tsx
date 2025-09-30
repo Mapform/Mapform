@@ -46,10 +46,15 @@ export function Drawers(props: DealDrawerProps) {
 }
 
 const getSearchResults = cache(
-  async (query: string, bounds?: [number, number, number, number]) => {
+  async (
+    query: string,
+    bounds?: [number, number, number, number],
+    center?: { lat: number; lng: number },
+  ) => {
     const searchResults = await publicDataService.search({
       query,
       bounds,
+      center,
     });
     return searchResults;
   },
@@ -75,14 +80,19 @@ const getVectorSearchResults = cache(
 );
 
 async function SearchDrawer({ searchParams, params }: DealDrawerProps) {
-  const { query, search } = await loadSearchParams(searchParams);
+  const { query, search, location } = await loadSearchParams(searchParams);
   const { wsSlug, pId } = await params;
+
+  const center = {
+    lat: Number(location?.split(",")[0]),
+    lng: Number(location?.split(",")[1]),
+  };
 
   const [searchResults, vectorSearchResults, previousChats] = await Promise.all(
     [
-      query && search ? getSearchResults(query, undefined) : null,
+      query && search ? getSearchResults(query, undefined, center) : null,
       query && search ? getVectorSearchResults(query, wsSlug, pId) : null,
-      authDataService.listChats({ projectId: pId }),
+      authDataService.listChats({}),
     ],
   );
 
@@ -112,6 +122,7 @@ async function ChatDrawer({ searchParams, params }: DealDrawerProps) {
           | {
               messages?: ChatMessage[] | undefined;
               chatId: string;
+              chatTitle: string;
             }
           | undefined
       }
@@ -142,16 +153,22 @@ async function SearchDetailsDrawer({ searchParams }: DealDrawerProps) {
   return <SearchDetails details={details?.data} />;
 }
 
-async function Feature({ searchParams, params }: DealDrawerProps) {
-  const { pId } = await params;
+async function Feature({ searchParams }: DealDrawerProps) {
   const { rowId } = await loadSearchParams(searchParams);
 
-  const [row, project] = await Promise.all([
-    rowId ? authDataService.getRow({ rowId }) : null,
-    pId ? authDataService.getProject({ projectId: pId }) : null,
-  ]);
+  const row = rowId ? await authDataService.getRow({ rowId }) : null;
 
-  if (rowId && (!row?.data || !project?.data)) {
+  if (rowId && !row?.data) {
+    return <FeatureEmpty />;
+  }
+
+  const project = row?.data?.project.id
+    ? await authDataService.getProject({
+        projectId: row.data.project.id,
+      })
+    : null;
+
+  if (row?.data?.project.id && !project?.data) {
     return <FeatureEmpty />;
   }
 

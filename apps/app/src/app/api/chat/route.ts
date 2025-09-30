@@ -12,22 +12,27 @@ import {
 import { NextResponse, after } from "next/server";
 import { headers as getHeaders } from "next/headers";
 import { getCurrentSession } from "~/data/auth/get-current-session";
-import { SYSTEM_PROMPT } from "~/lib/ai/prompts";
+import { getSystemPrompt } from "~/lib/ai/prompts";
 import { reverseGeocode } from "~/lib/ai/tools/reverse-geocode";
-import { findInternalFeatures } from "~/lib/ai/tools/find-internal-features";
-import { findExternalFeatures } from "~/lib/ai/tools/find-external-features";
+import { findRawInternalFeatures } from "~/lib/ai/tools/find-internal-features";
+import { findRawExternalFeatures } from "~/lib/ai/tools/find-external-features";
 import { returnBestResults } from "~/lib/ai/tools/return-best-results";
 import { webSearch } from "~/lib/ai/tools/web-search";
 import { createResumableStreamContext } from "resumable-stream";
+import { geolocation } from "@vercel/functions";
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 60;
 
 export async function POST(req: Request) {
-  const { messages, id } = (await req.json()) as {
-    messages: UIMessage[];
-    id: string;
-  };
+  const { messages, id, mapCenter, userCenter, projects } =
+    (await req.json()) as {
+      id: string;
+      messages: UIMessage[];
+      mapCenter?: { lat: number; lng: number } | null;
+      userCenter?: { lat: number; lng: number } | null;
+      projects?: string[] | null;
+    };
 
   const session = await getCurrentSession();
 
@@ -37,6 +42,7 @@ export async function POST(req: Request) {
 
   const headersList = await getHeaders();
   const workspaceSlug = headersList.get("x-workspace-slug");
+  const ipLocation = geolocation(req);
 
   if (!workspaceSlug) {
     return NextResponse.json(
@@ -79,12 +85,12 @@ export async function POST(req: Request) {
 
       const result = streamText({
         model: "gpt-5-mini",
-        system: SYSTEM_PROMPT,
+        system: getSystemPrompt(mapCenter, userCenter, ipLocation, projects),
         messages: convertToModelMessages(messages),
         tools: {
-          findInternalFeatures,
+          findRawInternalFeatures,
           reverseGeocode,
-          findExternalFeatures,
+          findRawExternalFeatures,
           returnBestResults,
           webSearch,
         },

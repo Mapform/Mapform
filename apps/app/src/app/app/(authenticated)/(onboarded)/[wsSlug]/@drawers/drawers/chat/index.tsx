@@ -12,10 +12,9 @@ import {
 } from "@mapform/ui/components/ai-elements/conversation";
 import {
   Loader2,
-  SendIcon,
+  ArrowUpIcon,
   SquareIcon,
   SquarePenIcon,
-  AlertCircleIcon,
   XIcon,
   ClockFadingIcon,
 } from "lucide-react";
@@ -39,9 +38,19 @@ import {
   AlertIcon,
 } from "@mapform/ui/components/alert";
 import Link from "next/link";
+import { MapPositioner } from "~/lib/map/map-positioner";
+import { Badge } from "@mapform/ui/components/badge";
+import { useMap } from "react-map-gl/maplibre";
+import { useGeolocation } from "@mapform/lib/hooks/use-geolocation";
+import { AddContextDropdown } from "~/components/add-context-dropdown";
+import { nullish } from "node_modules/zod/dist/esm/v4/core/util";
 
 interface ChatProps {
-  chatWithMessages?: { messages?: ChatMessage[]; chatId: string };
+  chatWithMessages?: {
+    messages?: ChatMessage[];
+    chatId: string;
+    chatTitle: string;
+  };
   usage?: { tokensUsed: number };
 }
 
@@ -56,6 +65,7 @@ export function ChatWrapper({ children }: { children: React.ReactNode }) {
 }
 
 export function Chat({ chatWithMessages, usage }: ChatProps) {
+  const { coords, isLoading: isLoadingGeolocation } = useGeolocation();
   const { pId } = useParams<{ pId?: string }>();
   const { params, setQueryStates } = useParamsContext();
   const { execute: createChat } = useAction(createChatAction, {
@@ -78,16 +88,20 @@ export function Chat({ chatWithMessages, usage }: ChatProps) {
     if (params.chatId === "new" && !hasCreatedChatRef.current) {
       hasCreatedChatRef.current = true;
       createChat({
-        title: params.query ?? "New Chat",
+        title: params.chatOptions?.firstMessage ?? "New Chat",
         projectId: pId ?? null,
       });
     }
     if (params.chatId !== "new" && hasCreatedChatRef.current) {
       hasCreatedChatRef.current = false;
     }
-  }, [params.chatId, params.query, pId, createChat]);
+  }, [params.chatId, params.chatOptions?.firstMessage, pId, createChat]);
 
-  if (!chatWithMessages || chatWithMessages.chatId !== params.chatId)
+  if (
+    !chatWithMessages ||
+    chatWithMessages.chatId !== params.chatId ||
+    (params.chatOptions?.userCenter && isLoadingGeolocation)
+  )
     return (
       <>
         <MapDrawerToolbar>
@@ -112,21 +126,32 @@ export function Chat({ chatWithMessages, usage }: ChatProps) {
       usage={usage}
       key={params.chatId}
       chatWithMessages={chatWithMessages}
+      userCenter={coords}
     />
   );
 }
 
-function ChatInner({ chatWithMessages, usage }: ChatProps) {
+function ChatInner({
+  chatWithMessages,
+  usage,
+  userCenter,
+}: ChatProps & { userCenter: { lat: number; lng: number } | null }) {
+  const map = useMap();
   const [input, setInput] = useState("");
   const [currentUsage, setCurrentUsage] = useState(usage?.tokensUsed ?? 0);
   const [hasInitiatedNewChat, setHasInitiatedNewChat] = useState(false);
-  const { params, setQueryStates } = useParamsContext();
+  const { params, setQueryStates, drawerDepth } = useParamsContext();
   const { workspaceSlug, workspaceDirectory } = useWorkspace();
+
+  const mapCenter = {
+    lat: map.current?.getCenter().toArray()[1],
+    lng: map.current?.getCenter().toArray()[0],
+  };
 
   // Initialize chat with resumable transport.
   // Note: the hook may briefly set status to "submitted" while probing
   // for a resumable stream; UI below avoids flashing during that handshake.
-  const { messages, sendMessage, status, stop, error } = useChat<ChatMessage>({
+  const { messages, sendMessage, status, stop } = useChat<ChatMessage>({
     id: params.chatId!,
     resume: true,
     experimental_throttle: 50,
@@ -135,7 +160,13 @@ function ChatInner({ chatWithMessages, usage }: ChatProps) {
       api: "/api/chat",
       prepareSendMessagesRequest({ messages, id }) {
         return {
-          body: { messages, id },
+          body: {
+            id,
+            messages,
+            mapCenter: params.chatOptions?.mapCenter ? mapCenter : null,
+            userCenter: params.chatOptions?.userCenter ? userCenter : null,
+            projects: params.chatOptions?.projects ?? nullish,
+          },
           headers: { "x-workspace-slug": workspaceSlug },
         };
       },
@@ -147,8 +178,6 @@ function ChatInner({ chatWithMessages, usage }: ChatProps) {
       }
     },
   });
-
-  console.log("ERROR", error);
 
   const handleSubmit = () => {
     if (status === "streaming" || status === "submitted" || !input) {
@@ -163,7 +192,7 @@ function ChatInner({ chatWithMessages, usage }: ChatProps) {
   useEffect(() => {
     void (async () => {
       if (
-        params.query &&
+        params.chatOptions?.firstMessage &&
         !hasInitiatedNewChat &&
         !messages.length &&
         params.chatId
@@ -171,12 +200,12 @@ function ChatInner({ chatWithMessages, usage }: ChatProps) {
         setHasInitiatedNewChat(true);
         await sendMessage({
           id: params.chatId,
-          parts: [{ type: "text", text: params.query }],
+          parts: [{ type: "text", text: params.chatOptions.firstMessage }],
         });
       }
     })();
   }, [
-    params.query,
+    params.chatOptions?.firstMessage,
     sendMessage,
     hasInitiatedNewChat,
     params.chatId,
@@ -201,15 +230,26 @@ function ChatInner({ chatWithMessages, usage }: ChatProps) {
   );
 
   return (
-    <>
-      <MapDrawerToolbar>
+    <MapPositioner disabled={drawerDepth.get("chatId") !== 0}>
+      <MapDrawerToolbar className="flex max-w-full overflow-hidden">
+        <div className="mr-2 flex flex-1 truncate">
+          <Badge className="max-w-full truncate" variant="secondary">
+            {chatWithMessages?.chatTitle ?? "New Chat"}
+          </Badge>
+        </div>
         <Button
           className="ml-auto"
           size="icon-sm"
           type="button"
           variant="ghost"
           onClick={() => {
-            void setQueryStates({ chatId: "new", query: null });
+            void setQueryStates({
+              chatId: "new",
+              chatOptions: {
+                ...params.chatOptions,
+                firstMessage: null,
+              },
+            });
           }}
         >
           <SquarePenIcon className="size-4" />
@@ -255,7 +295,7 @@ function ChatInner({ chatWithMessages, usage }: ChatProps) {
 
         <form
           className={cn(
-            "relative flex flex-shrink-0 flex-col gap-2 border-t p-4",
+            "relative flex flex-shrink-0 flex-col gap-2 border-t p-3",
             hasReachedTokenLimit && "opacity-50",
           )}
           onSubmit={(e) => {
@@ -278,33 +318,36 @@ function ChatInner({ chatWithMessages, usage }: ChatProps) {
             placeholder="Ask anything..."
             autoFocus
           />
-          <AnimatePresence mode="wait" initial={false}>
-            <motion.div
-              key={showStop ? "stop" : "send"}
-              className="ml-auto"
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ duration: 0.1, ease: "easeOut" }}
-            >
-              {showStop ? (
-                <Button type="button" size="icon" onClick={stop}>
-                  <SquareIcon className="size-4" fill="currentColor" />
-                </Button>
-              ) : (
-                <Button
-                  className="ml-auto"
-                  type="submit"
-                  size="icon"
-                  disabled={!input || hasReachedTokenLimit}
-                >
-                  <SendIcon className="size-4" />
-                </Button>
-              )}
-            </motion.div>
-          </AnimatePresence>
+          <div className="flex">
+            <AddContextDropdown />
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={showStop ? "stop" : "send"}
+                className="ml-auto"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.1, ease: "easeOut" }}
+              >
+                {showStop ? (
+                  <Button type="button" size="icon" onClick={stop}>
+                    <SquareIcon className="size-4" fill="currentColor" />
+                  </Button>
+                ) : (
+                  <Button
+                    className="ml-auto"
+                    type="submit"
+                    size="icon-sm"
+                    disabled={!input || hasReachedTokenLimit}
+                  >
+                    <ArrowUpIcon className="size-4" />
+                  </Button>
+                )}
+              </motion.div>
+            </AnimatePresence>
+          </div>
         </form>
       </div>
-    </>
+    </MapPositioner>
   );
 }

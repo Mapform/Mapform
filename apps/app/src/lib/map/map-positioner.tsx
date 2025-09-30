@@ -42,7 +42,8 @@ function viewStatesEqual(a: ComputedViewState, b: ComputedViewState) {
 interface MapPositionerProps {
   children: React.ReactNode;
   viewState?: Partial<ViewState>;
-  // We often want to disable the MapPositioner when the drawer in question is not the active drawer (ie. doesn't have drawerDepth === 0)
+  // We often want to disable the MapPositioner when the drawer in question is
+  // not the active drawer (ie. doesn't have drawerDepth === 0)
   disabled?: boolean;
 }
 

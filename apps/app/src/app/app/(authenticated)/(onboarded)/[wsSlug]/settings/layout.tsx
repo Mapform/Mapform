@@ -14,7 +14,7 @@ export default async function SettingsLayout({
     <ServerMapPositioner
       viewState={{ center: [0, 0], zoom: 0, pitch: 0, bearing: 0 }}
     >
-      <div className="p-2">
+      <div className="p-3">
         <SettingsTabs wsSlug={wsSlug} />
       </div>
       <div className="p-6">{children}</div>

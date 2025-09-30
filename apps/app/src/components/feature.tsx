@@ -271,7 +271,7 @@ export function Feature({
                         <ImageUploaderAnchor asChild>
                           <Button
                             className={cn(
-                              "absolute right-2 top-2 opacity-0 group-hover:opacity-100 data-[state=open]:opacity-100",
+                              "absolute right-3 top-3 opacity-0 group-hover:opacity-100 data-[state=open]:opacity-100",
                               openUploaderForUrl === image.url && "opacity-100",
                             )}
                             size="icon-sm"
@@ -417,7 +417,10 @@ export function Feature({
           ) : null}
 
           {otherProperties.map((property) => (
-            <div className="grid grid-cols-3 gap-4" key={property.columnName}>
+            <div
+              className="grid grid-cols-3 gap-4 text-sm"
+              key={property.columnName}
+            >
               <div className="col-span-1">
                 <PropertyColumnEditor
                   columnName={property.columnName}

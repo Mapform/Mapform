@@ -24,6 +24,7 @@ export const getMessages = (authClient: UserAuthClient) =>
 
       return {
         chatId: chat.id,
+        chatTitle: chat.title,
         messages: chat.messages,
       };
     });

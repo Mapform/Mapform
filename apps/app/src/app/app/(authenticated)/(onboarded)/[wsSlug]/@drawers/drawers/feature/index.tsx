@@ -34,6 +34,7 @@ import { deleteRowsAction } from "~/data/rows/delete-rows";
 import { MapPositioner } from "~/lib/map/map-positioner";
 import type { GetProject } from "@mapform/backend/data/projects/get-project";
 import { BasicSkeleton } from "~/components/skeletons/basic";
+import { Badge } from "@mapform/ui/components/badge";
 
 interface FeatureDrawerProps {
   feature: GetRow["data"];
@@ -112,7 +113,7 @@ export function FeatureContent({ feature, project }: FeatureDrawerProps) {
             key={featureService.optimisticState.id}
           />
         ) : (
-          <div className="p-2">
+          <>
             <MapDrawerToolbar>
               <Button
                 className="ml-auto"
@@ -127,7 +128,7 @@ export function FeatureContent({ feature, project }: FeatureDrawerProps) {
               </Button>
             </MapDrawerToolbar>
             <BasicSkeleton className="p-4" />
-          </div>
+          </>
         )}
       </MapPositioner>
 
@@ -181,7 +182,15 @@ const FeatureContentInner = ({
 
   return (
     <div>
-      <MapDrawerToolbar>
+      <MapDrawerToolbar className="flex max-w-full overflow-hidden">
+        <div className="mr-2 flex flex-1 truncate">
+          <Badge className="max-w-full truncate" variant="secondary">
+            <span>{featureService.optimisticState?.project.icon}</span>
+            <span className="ml-1.5">
+              {featureService.optimisticState?.project.name ?? "New Map"}
+            </span>
+          </Badge>
+        </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button

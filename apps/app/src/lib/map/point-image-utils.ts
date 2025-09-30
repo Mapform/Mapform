@@ -48,7 +48,7 @@ export async function loadPointImage(
     const img = new Image();
     img.onload = () => {
       if (map.hasImage(imageId)) {
-        console.log("Image already exists, skipping", imageId);
+        // Do nothing
       } else {
         map.addImage(imageId, img, { pixelRatio: 2 }); // Adjust for HiDPI
       }

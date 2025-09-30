@@ -2,9 +2,18 @@ import {
   createLoader,
   parseAsFloat,
   parseAsInteger,
+  parseAsJson,
   parseAsString,
   type SearchParams,
 } from "nuqs/server";
+import z from "zod";
+
+const chatOptionsSchema = z.object({
+  firstMessage: z.string().optional(),
+  mapCenter: z.boolean().optional(),
+  userCenter: z.boolean().optional(),
+  projects: z.array(z.string()).optional(),
+});
 
 // Describe your search params, and reuse this in useQueryStates / createSerializer:
 export const appSearchParams = {
@@ -21,6 +30,7 @@ export const appSearchParams = {
   zoom: parseAsFloat,
   pitch: parseAsFloat,
   bearing: parseAsFloat,
+  chatOptions: parseAsJson((value) => chatOptionsSchema.parse(value)),
 };
 
 export const appSearchOptions = {
@@ -40,6 +50,7 @@ export const appSearchOptions = {
     zoom: "z",
     pitch: "pi",
     bearing: "b",
+    chatOptions: "co",
   },
 };
 

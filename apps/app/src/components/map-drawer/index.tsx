@@ -27,7 +27,7 @@ export function MapDrawer({
       <>
         {open && depth === 0 && (
           <motion.div
-            className="bg-background bg-opacity-98 group relative z-10 mt-[calc(100dvh-200px)] flex h-fit min-h-dvh !w-dvw flex-col bg-white pb-20 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] outline-none backdrop-blur-sm transition-[filter,width,padding-left] duration-[250] [--y-from:200px] [--y-to:0]"
+            className="bg-background group relative z-10 mt-[calc(100dvh-200px)] flex h-fit min-h-dvh !w-dvw flex-col bg-white pb-20 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] outline-none transition-[filter,width,padding-left] duration-[250] [--y-from:200px] [--y-to:0]"
             layoutScroll
             animate="open"
             initial="closed"
@@ -89,7 +89,7 @@ export function MapDrawer({
               opacity: depth ? 0.4 + depth * 0.15 : 0,
             }}
           />
-          <div className="bg-opacity-98 flex size-full grow flex-col overflow-hidden rounded-lg border bg-white backdrop-blur-sm">
+          <div className="flex size-full grow flex-col overflow-hidden rounded-lg border bg-white">
             <div className="flex min-h-full flex-col overflow-y-auto">
               {children}
             </div>
@@ -109,10 +109,7 @@ export function MapDrawerToolbar({
 }) {
   return (
     <div
-      className={cn(
-        "bg-opacity-98 sticky top-0 z-10 flex w-full bg-white p-2 backdrop-blur-sm",
-        className,
-      )}
+      className={cn("sticky top-0 z-10 flex w-full bg-white p-3", className)}
     >
       <div className="absolute left-1/2 top-2 mx-auto h-1.5 w-12 -translate-x-1/2 rounded-full bg-gray-200 md:hidden" />
       {children}

@@ -3,14 +3,14 @@ import { z } from "zod";
 import { publicDataService } from "~/lib/safe-action";
 import type { AIResultLocation } from "~/lib/types";
 
-export const findExternalFeatures = tool({
+export const findRawExternalFeatures = tool({
   description:
     "Forward geocoding (search) endpoint to search for addresses, points of interest, and administrative areas.",
   inputSchema: z.object({
     query: z
       .string()
       .describe(
-        "The name or address of the place to search for. Queries must be kept simple. GOOD QUERY examples: 'Paris, France', 'Eiffel Tower', '123 Main St. San Francisco, CA', etc. BAD QUERY example: 'Maman Jeanne Montreal Ethiopian Restaurant address'.",
+        "The name or address of the place to search for. Queries must be kept simple. GOOD QUERY examples: 'Paris, France', 'Eiffel Tower', '123 Main St. San Francisco, CA', etc. BAD QUERY examples: 'Restaurants near Mile End Montreal', 'Maman Jeanne Montreal Ethiopian Restaurant address'.",
       ),
     bounds: z
       .array(z.number())
@@ -18,24 +18,36 @@ export const findExternalFeatures = tool({
       .describe(
         "Optional bounds to filter results to a specific geographic area.",
       ),
+    center: z
+      .object({
+        lat: z.number(),
+        lng: z.number(),
+      })
+      .optional()
+      .describe(
+        "Optional center to bias results towards a specific geographic area.",
+      ),
   }),
   execute: async ({ query, bounds }) => {
-    const results = await findExternalFeaturesFunc(query, bounds);
+    const results = await findRawExternalFeaturesFunc(query, bounds);
     return results;
   },
 });
 
-export async function findExternalFeaturesFunc(
+export async function findRawExternalFeaturesFunc(
   query: string,
   bounds?: number[],
+  center?: { lat: number; lng: number },
 ) {
   try {
-    const findExternalFeaturesResults = await publicDataService.forwardGeocode({
-      query,
-      bounds,
-    });
+    const findRawExternalFeaturesResults =
+      await publicDataService.forwardGeocode({
+        query,
+        bounds,
+        center,
+      });
 
-    const features = findExternalFeaturesResults?.data?.features ?? [];
+    const features = findRawExternalFeaturesResults?.data?.features ?? [];
 
     if (!features.length) {
       return [];
@@ -68,18 +80,18 @@ export async function findExternalFeaturesFunc(
       } satisfies AIResultLocation;
     });
 
-    console.debug("findExternalFeatures query: ", query);
-    console.debug("findExternalFeatures detailedResults: ", detailedResults);
+    console.debug("findRawExternalFeatures query: ", query);
+    console.debug("findRawExternalFeatures detailedResults: ", detailedResults);
 
     return detailedResults;
   } catch (error) {
-    console.error("Error in address findExternalFeatures:", error);
+    console.error("Error in address findRawExternalFeatures:", error);
     throw new Error(
       `Failed to search places: ${error instanceof Error ? error.message : "Unknown error"}`,
     );
   }
 }
 
-export type findExternalFeaturesResponse = NonNullable<
-  Awaited<ReturnType<typeof findExternalFeaturesFunc>>
+export type findRawExternalFeaturesResponse = NonNullable<
+  Awaited<ReturnType<typeof findRawExternalFeaturesFunc>>
 >;
