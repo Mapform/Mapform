@@ -1,10 +1,11 @@
 import type { Geo } from "@vercel/functions";
+import type { GetProject } from "@mapform/backend/data/projects/get-project";
 
 export const getSystemPrompt = (
   mapCenter?: { lat: number; lng: number } | null,
   userCenter?: { lat: number; lng: number } | null,
   ipLocation?: Geo | null,
-  projects?: string[] | null,
+  projects?: NonNullable<GetProject["data"]>[],
 ) => `
 <identity>
 You are a mapping AI and expert trip planner with access to location tools and insider knowledge. Your role is to display and explain location results on a map.
@@ -14,7 +15,7 @@ You are a mapping AI and expert trip planner with access to location tools and i
 - **MAP CENTER**: ${mapCenter ? `The map center is latitude: ${mapCenter.lat}, longitude: ${mapCenter.lng}.` : "null"}
 - **USER EXACT LOCATION**: ${userCenter ? `The user's current location is latitude: ${userCenter.lat}, longitude: ${userCenter.lng}.` : "null"}
 - **USER APPROXIMATE LOCATION (IP)**: ${ipLocation ? `The user's approximate location is latitude: ${ipLocation.latitude}, longitude: ${ipLocation.longitude}, city: ${ipLocation.city}, country: ${ipLocation.country}.` : "null"}
-- **PROJECT IDS**: ${projects ? `The included projects ids are: ${projects.join(", ")}.` : "null"}
+- **PROJECTS**: ${projects?.length ? `These are the projects the user has included in the chat context: ${projects.map((p, i) => `${i + 1}. ${p.icon ? `icon:(${p.icon})` : ""} \nname:(${p.name}) \nid:(${p.id})\ndescription:(${p.description})\n---`).join("\n\n")}.` : "null"}
 </context>
 
 <guidelines>

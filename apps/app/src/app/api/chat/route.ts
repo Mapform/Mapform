@@ -20,6 +20,7 @@ import { returnBestResults } from "~/lib/ai/tools/return-best-results";
 import { webSearch } from "~/lib/ai/tools/web-search";
 import { createResumableStreamContext } from "resumable-stream";
 import { geolocation } from "@vercel/functions";
+import { notEmpty } from "@mapform/lib/not-empty";
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 60;
@@ -75,6 +76,16 @@ export async function POST(req: Request) {
     console.warn("Failed to check AI token limits", e);
   }
 
+  const projectsData = await Promise.all(
+    projects?.map((project) =>
+      authDataService.getProject({ projectId: project }),
+    ) ?? [],
+  );
+
+  const refinedProjects = projectsData
+    .map((project) => project?.data)
+    .filter(notEmpty);
+
   const stream = createUIMessageStream({
     execute: ({ writer }) => {
       // As per: https://ai-sdk.dev/docs/ai-sdk-ui/chatbot-message-persistence#option-2-setting-ids-with-createuimessagestream
@@ -85,7 +96,12 @@ export async function POST(req: Request) {
 
       const result = streamText({
         model: "gpt-5-mini",
-        system: getSystemPrompt(mapCenter, userCenter, ipLocation, projects),
+        system: getSystemPrompt(
+          mapCenter,
+          userCenter,
+          ipLocation,
+          refinedProjects,
+        ),
         messages: convertToModelMessages(messages),
         tools: {
           findRawInternalFeatures,
