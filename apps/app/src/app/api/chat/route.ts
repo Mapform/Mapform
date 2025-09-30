@@ -19,17 +19,20 @@ import { findRawExternalFeatures } from "~/lib/ai/tools/find-external-features";
 import { returnBestResults } from "~/lib/ai/tools/return-best-results";
 import { webSearch } from "~/lib/ai/tools/web-search";
 import { createResumableStreamContext } from "resumable-stream";
+import { geolocation } from "@vercel/functions";
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 60;
 
 export async function POST(req: Request) {
-  const { messages, id, mapCenter, userCenter } = (await req.json()) as {
-    id: string;
-    messages: UIMessage[];
-    mapCenter: { lat: number; lng: number };
-    userCenter: { lat: number; lng: number };
-  };
+  const { messages, id, mapCenter, userCenter, projects } =
+    (await req.json()) as {
+      id: string;
+      messages: UIMessage[];
+      mapCenter?: { lat: number; lng: number } | null;
+      userCenter?: { lat: number; lng: number } | null;
+      projects?: string[] | null;
+    };
 
   const session = await getCurrentSession();
 
@@ -39,6 +42,7 @@ export async function POST(req: Request) {
 
   const headersList = await getHeaders();
   const workspaceSlug = headersList.get("x-workspace-slug");
+  const ipLocation = geolocation(req);
 
   if (!workspaceSlug) {
     return NextResponse.json(
@@ -81,7 +85,7 @@ export async function POST(req: Request) {
 
       const result = streamText({
         model: "gpt-5-mini",
-        system: getSystemPrompt(mapCenter, userCenter),
+        system: getSystemPrompt(mapCenter, userCenter, ipLocation, projects),
         messages: convertToModelMessages(messages),
         tools: {
           findRawInternalFeatures,

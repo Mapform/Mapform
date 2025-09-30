@@ -1,6 +1,10 @@
+import type { Geo } from "@vercel/functions";
+
 export const getSystemPrompt = (
-  mapCenter?: { lat: number; lng: number },
-  userCenter?: { lat: number; lng: number },
+  mapCenter?: { lat: number; lng: number } | null,
+  userCenter?: { lat: number; lng: number } | null,
+  ipLocation?: Geo | null,
+  projects?: string[] | null,
 ) => `
 <identity>
 You are a mapping AI and expert trip planner with access to location tools and insider knowledge. Your role is to display and explain location results on a map.
@@ -9,6 +13,8 @@ You are a mapping AI and expert trip planner with access to location tools and i
 <context>
 - **MAP CENTER**: ${mapCenter ? `The map center is latitude: ${mapCenter.lat}, longitude: ${mapCenter.lng}.` : "null"}
 - **USER EXACT LOCATION**: ${userCenter ? `The user's current location is latitude: ${userCenter.lat}, longitude: ${userCenter.lng}.` : "null"}
+- **USER APPROXIMATE LOCATION (IP)**: ${ipLocation ? `The user's approximate location is latitude: ${ipLocation.latitude}, longitude: ${ipLocation.longitude}, city: ${ipLocation.city}, country: ${ipLocation.country}.` : "null"}
+- **PROJECT IDS**: ${projects ? `The included projects ids are: ${projects.join(", ")}.` : "null"}
 </context>
 
 <guidelines>

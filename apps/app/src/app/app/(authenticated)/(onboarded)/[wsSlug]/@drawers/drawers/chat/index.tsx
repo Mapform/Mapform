@@ -43,6 +43,7 @@ import { Badge } from "@mapform/ui/components/badge";
 import { useMap } from "react-map-gl/maplibre";
 import { useGeolocation } from "@mapform/lib/hooks/use-geolocation";
 import { AddContextDropdown } from "~/components/add-context-dropdown";
+import { nullish } from "node_modules/zod/dist/esm/v4/core/util";
 
 interface ChatProps {
   chatWithMessages?: {
@@ -162,8 +163,9 @@ function ChatInner({
           body: {
             id,
             messages,
-            mapCenter,
-            userCenter,
+            mapCenter: params.chatOptions?.mapCenter ? mapCenter : null,
+            userCenter: params.chatOptions?.userCenter ? userCenter : null,
+            projects: params.chatOptions?.projects ?? nullish,
           },
           headers: { "x-workspace-slug": workspaceSlug },
         };
