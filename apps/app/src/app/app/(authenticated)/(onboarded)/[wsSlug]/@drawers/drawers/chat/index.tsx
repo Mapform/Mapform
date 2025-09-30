@@ -42,6 +42,7 @@ import { MapPositioner } from "~/lib/map/map-positioner";
 import { Badge } from "@mapform/ui/components/badge";
 import { useMap } from "react-map-gl/maplibre";
 import { useGeolocation } from "@mapform/lib/hooks/use-geolocation";
+import { AddContextDropdown } from "~/components/add-context-dropdown";
 
 interface ChatProps {
   chatWithMessages?: {
@@ -309,31 +310,34 @@ function ChatInner({
             placeholder="Ask anything..."
             autoFocus
           />
-          <AnimatePresence mode="wait" initial={false}>
-            <motion.div
-              key={showStop ? "stop" : "send"}
-              className="ml-auto"
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ duration: 0.1, ease: "easeOut" }}
-            >
-              {showStop ? (
-                <Button type="button" size="icon" onClick={stop}>
-                  <SquareIcon className="size-4" fill="currentColor" />
-                </Button>
-              ) : (
-                <Button
-                  className="ml-auto"
-                  type="submit"
-                  size="icon-sm"
-                  disabled={!input || hasReachedTokenLimit}
-                >
-                  <ArrowUpIcon className="size-4" />
-                </Button>
-              )}
-            </motion.div>
-          </AnimatePresence>
+          <div className="flex">
+            <AddContextDropdown />
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={showStop ? "stop" : "send"}
+                className="ml-auto"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.1, ease: "easeOut" }}
+              >
+                {showStop ? (
+                  <Button type="button" size="icon" onClick={stop}>
+                    <SquareIcon className="size-4" fill="currentColor" />
+                  </Button>
+                ) : (
+                  <Button
+                    className="ml-auto"
+                    type="submit"
+                    size="icon-sm"
+                    disabled={!input || hasReachedTokenLimit}
+                  >
+                    <ArrowUpIcon className="size-4" />
+                  </Button>
+                )}
+              </motion.div>
+            </AnimatePresence>
+          </div>
         </form>
       </div>
     </MapPositioner>

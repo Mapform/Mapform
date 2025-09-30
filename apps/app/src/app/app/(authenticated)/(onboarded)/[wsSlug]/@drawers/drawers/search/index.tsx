@@ -12,11 +12,7 @@ import {
   BoxIcon,
   GlobeIcon,
   Loader2,
-  LocateIcon,
-  MapIcon,
   MessageCircle,
-  NavigationIcon,
-  PlusIcon,
   SearchIcon,
   TrashIcon,
   XIcon,
@@ -38,19 +34,9 @@ import {
 import { useAction } from "next-safe-action/hooks";
 import { deleteChatAction } from "~/data/chats/delete-chat";
 import { toast } from "@mapform/ui/components/toaster";
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
-  DropdownMenuTrigger,
-} from "@mapform/ui/components/dropdown-menu";
 import { MapPositioner } from "~/lib/map/map-positioner";
 import { useMap } from "react-map-gl/maplibre";
-import { useWorkspace } from "../../../workspace-context";
-import { useGeolocation } from "@mapform/lib/hooks/use-geolocation";
+import { AddContextDropdown } from "~/components/add-context-dropdown";
 
 interface SearchProps {
   searchResults?: Search["data"];
@@ -74,11 +60,9 @@ export function Search({
   previousChats,
 }: SearchProps) {
   const map = useMap();
-  const { workspaceDirectory } = useWorkspace();
   const { params, setQueryStates, isPending, drawerDepth } = useParamsContext();
   const [query, setQuery] = useState(params.query);
   const debouncedSearchQuery = useDebounce(query, 200);
-  const { getCurrentPosition, coords } = useGeolocation();
 
   const filteredFeatures = searchResults?.features;
 
@@ -94,11 +78,6 @@ export function Search({
   useEffect(() => {
     setQuery(params.query);
   }, [params.query]);
-
-  const chatOptionsCount =
-    (params.chatOptions?.projects?.length ?? 0) +
-    (params.chatOptions?.mapCenter ? 1 : 0) +
-    (params.chatOptions?.userCenter ? 1 : 0);
 
   return (
     <MapPositioner disabled={drawerDepth.get("search") !== 0}>
@@ -133,101 +112,7 @@ export function Search({
               </Button>
             </div>
             <div className="flex justify-between">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    className="text-muted-foreground !p-0"
-                    style={{
-                      background: "none",
-                    }}
-                    variant="ghost"
-                  >
-                    <PlusIcon className="size-4" />
-                    Add Context
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <DropdownMenuSub>
-                    <DropdownMenuSubTrigger>
-                      <MapIcon className="size-4" />
-                      Maps
-                    </DropdownMenuSubTrigger>
-                    <DropdownMenuSubContent>
-                      {workspaceDirectory.teamspaces
-                        .flatMap((teamspace) =>
-                          teamspace.projects.flatMap((project) => project),
-                        )
-                        .map((project) => (
-                          <DropdownMenuCheckboxItem
-                            key={project.id}
-                            checked={params.chatOptions?.projects?.includes(
-                              project.id,
-                            )}
-                            onCheckedChange={(checked) => {
-                              void setQueryStates({
-                                chatOptions: {
-                                  ...params.chatOptions,
-                                  projects: checked
-                                    ? [
-                                        ...(params.chatOptions?.projects ?? []),
-                                        project.id,
-                                      ]
-                                    : params.chatOptions?.projects?.filter(
-                                        (p) => p !== project.id,
-                                      ),
-                                },
-                              });
-                            }}
-                          >
-                            {project.icon ? (
-                              <span>{project.icon}</span>
-                            ) : (
-                              <MapIcon className="size-4" />
-                            )}
-                            {project.name || "New Map"}
-                          </DropdownMenuCheckboxItem>
-                        ))}
-                    </DropdownMenuSubContent>
-                  </DropdownMenuSub>
-                  <DropdownMenuCheckboxItem
-                    checked={params.chatOptions?.mapCenter}
-                    onCheckedChange={(checked) => {
-                      void setQueryStates({
-                        chatOptions: {
-                          ...params.chatOptions,
-                          mapCenter: checked,
-                        },
-                      });
-                    }}
-                  >
-                    <LocateIcon className="size-4" />
-                    Map center
-                  </DropdownMenuCheckboxItem>
-                  <DropdownMenuCheckboxItem
-                    checked={params.chatOptions?.userCenter}
-                    onCheckedChange={async (checked) => {
-                      if (checked && !coords) {
-                        await getCurrentPosition();
-                      }
-
-                      void setQueryStates({
-                        chatOptions: {
-                          ...params.chatOptions,
-                          userCenter: checked,
-                        },
-                      });
-                    }}
-                  >
-                    <NavigationIcon className="size-4" />
-                    Your location
-                  </DropdownMenuCheckboxItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-              {chatOptionsCount > 0 && (
-                <div className="bg-muted ml-2 inline flex-grow-0 self-center rounded-md px-2 py-1 font-mono text-xs">
-                  {chatOptionsCount}
-                </div>
-              )}
+              <AddContextDropdown />
               <Button
                 className="ml-auto"
                 type="submit"

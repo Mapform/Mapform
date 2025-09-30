@@ -105,7 +105,7 @@ export function useGeolocation(
       .catch((error) => {
         console.error("Error querying geolocation permission", error);
       });
-  }, [getCurrentPosition, onError, onSuccess, stableOptions]);
+  }, []);
 
   return {
     ...state,
