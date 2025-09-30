@@ -281,26 +281,26 @@ export function WorkspaceProvider({
       }}
     >
       <Map
-        mapStyle={`https://api.maptiler.com/maps/streets/style.json?key=${env.NEXT_PUBLIC_MAPTILER_KEY}`}
+        mapStyle={`https://api.maptiler.com/maps/01995d1c-5731-75c6-b896-6004a7af5c7f/style.json?key=${env.NEXT_PUBLIC_MAPTILER_KEY}`}
         key={isMobile ? "mobile" : "desktop"}
         style={{
           width: "100vw",
           height: "100vh",
           backgroundImage: `linear-gradient(
             315deg,
-            hsl(223deg 76% 10%) 0%,
-            hsl(222deg 77% 10%) 8%,
-            hsl(222deg 78% 10%) 16%,
-            hsl(222deg 79% 11%) 24%,
-            hsl(221deg 80% 11%) 32%,
-            hsl(221deg 80% 11%) 41%,
-            hsl(221deg 81% 11%) 49%,
-            hsl(221deg 81% 12%) 58%,
-            hsl(221deg 81% 12%) 66%,
-            hsl(222deg 81% 12%) 75%,
-            hsl(222deg 81% 13%) 83%,
-            hsl(222deg 80% 13%) 92%,
-            hsl(223deg 80% 14%) 100%
+            hsl(240deg 43% 10%) 0%,
+            hsl(239deg 43% 10%) 8%,
+            hsl(238deg 43% 11%) 17%,
+            hsl(238deg 44% 11%) 25%,
+            hsl(237deg 45% 12%) 33%,
+            hsl(236deg 45% 12%) 42%,
+            hsl(236deg 45% 13%) 50%,
+            hsl(237deg 45% 13%) 58%,
+            hsl(237deg 45% 14%) 67%,
+            hsl(238deg 45% 14%) 75%,
+            hsl(238deg 45% 15%) 83%,
+            hsl(239deg 44% 15%) 92%,
+            hsl(240deg 44% 16%) 100%
           )`,
         }}
         sky={{
