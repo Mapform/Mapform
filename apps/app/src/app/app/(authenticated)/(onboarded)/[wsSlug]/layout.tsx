@@ -49,7 +49,7 @@ export default async function WorkspaceLayout(props: {
             <Drawers>{children}</Drawers>
 
             {/* Query Param-Based Drawers */}
-            {props.drawers}
+            <div key="drawers">{props.drawers}</div>
           </AnimatePresence>
         </main>
 
