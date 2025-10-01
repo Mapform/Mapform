@@ -19,50 +19,26 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenuAction,
-  SidebarGroupAction,
   useSidebar,
 } from "@mapform/ui/components/sidebar";
 import {
   ChevronsUpDown,
   GalleryVerticalEnd,
   HomeIcon,
-  BoxIcon,
   Settings2Icon,
-  ChevronRightIcon,
   LogOutIcon,
   PlusIcon,
-  BookOpenIcon,
-  BookMarkedIcon,
   HelpCircleIcon,
-  CirclePlusIcon,
-  FolderIcon,
-  FolderOpenIcon,
-  EarthIcon,
-  SearchIcon,
-  SparkleIcon,
   SparklesIcon,
   MapPlusIcon,
   Loader2Icon,
 } from "lucide-react";
-import {
-  Collapsible,
-  CollapsibleTrigger,
-} from "@mapform/ui/components/collapsible";
 import { Avatar, AvatarFallback } from "@mapform/ui/components/avatar";
 import Link from "next/link";
 import { useParams, usePathname, useRouter } from "next/navigation";
 import { signOutAction } from "~/data/auth/sign-out";
 import { useAuth } from "~/app/root-providers";
 import { useWorkspace } from "../workspace-context";
-import {
-  ProjectTour,
-  ProjectTourContent,
-} from "~/components/tours/project-tour";
-import {
-  WelcomeTour as WT,
-  WelcomeTourContent,
-} from "~/components/tours/welcome-tour";
 import { useState } from "react";
 import { Files } from "./files";
 import { createProjectAction } from "~/data/projects/create-project";
@@ -323,46 +299,6 @@ export function AppSidebar() {
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>
-          {/* TODO: Add guides back in when it makes sense */}
-          {/* <SidebarMenuItem>
-            <DropdownMenu modal={false}>
-              <DropdownMenuTrigger asChild>
-                <SidebarMenuButton>
-                  <BookMarkedIcon />
-                  Guides
-                </SidebarMenuButton>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="center" side="right" sideOffset={4}>
-                <DropdownMenuItem
-                  className="gap-2"
-                  onClick={() => {
-                    setIsWelcomeGuideOpen(true);
-                  }}
-                >
-                  <BookOpenIcon className="size-4" />
-                  Welcome Note
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  className="gap-2"
-                  onClick={() => {
-                    setIsProjectGuideOpen(true);
-                  }}
-                >
-                  <EarthIcon className="size-4" />
-                  Projects Overview
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            <WT open={isWelcomeGuideOpen} onOpenChange={setIsWelcomeGuideOpen}>
-              <WelcomeTourContent />
-            </WT>
-            <ProjectTour
-              open={isProjectGuideOpen}
-              onOpenChange={setIsProjectGuideOpen}
-            >
-              <ProjectTourContent />
-            </ProjectTour>
-          </SidebarMenuItem> */}
           <SidebarMenuItem>
             <Link href="mailto:support@mapform.co">
               <SidebarMenuButton>

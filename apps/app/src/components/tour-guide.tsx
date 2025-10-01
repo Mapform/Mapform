@@ -76,7 +76,7 @@ export function TourContent({ steps }: TourGuideProps) {
   }
 
   return (
-    <AlertDialogContent className="max-h-[90vh] w-full max-w-screen-sm overflow-hidden overflow-y-auto">
+    <AlertDialogContent className="w-full max-w-screen-md overflow-hidden overflow-y-auto max-md:h-screen max-md:p-4 md:max-h-[90vh]">
       <div className="relative">
         <AnimatePresence mode="wait">
           <motion.div
@@ -87,41 +87,39 @@ export function TourContent({ steps }: TourGuideProps) {
             transition={{ duration: 0.3, ease: "easeInOut" }}
             className="w-full"
           >
-            <AlertDialogHeader>
-              <div className="text-muted-foreground text-sm">
-                Step {currentStepIndex + 1} of {steps.length}
-              </div>
-              <div className="relative aspect-video overflow-hidden rounded-md">
-                {currentStep.url && (
-                  <Image
-                    src={currentStep.url}
-                    alt={currentStep.title}
-                    className="h-full w-full object-cover"
-                    fill
-                  />
-                )}
-                {currentStep.video && (
-                  <Video
-                    className="size-full"
-                    src={currentStep.video}
-                    autoPlay
-                    muted
-                    loop
-                    controls={false}
-                  />
-                )}
-              </div>
-              <AlertDialogTitle className="pt-2">
-                {currentStep.title}
-              </AlertDialogTitle>
-              <AlertDialogDescription className="prose prose-sm whitespace-pre-wrap">
-                {currentStep.description}
-              </AlertDialogDescription>
+            <AlertDialogHeader className="text-muted-foreground mb-2 text-left text-sm">
+              Step {currentStepIndex + 1} of {steps.length}
             </AlertDialogHeader>
+            <div className="relative aspect-video overflow-hidden rounded-md">
+              {currentStep.url && (
+                <Image
+                  src={currentStep.url}
+                  alt={currentStep.title}
+                  className="h-full w-full object-cover"
+                  fill
+                />
+              )}
+              {currentStep.video && (
+                <Video
+                  className="size-full"
+                  src={currentStep.video}
+                  autoPlay
+                  muted
+                  loop
+                  controls={false}
+                />
+              )}
+            </div>
+            <AlertDialogTitle className="mb-2 mt-4">
+              {currentStep.title}
+            </AlertDialogTitle>
+            <AlertDialogDescription className="prose prose-sm max-w-none whitespace-pre-wrap">
+              {currentStep.description}
+            </AlertDialogDescription>
           </motion.div>
         </AnimatePresence>
       </div>
-      <AlertDialogFooter>
+      <AlertDialogFooter className="mt-8 flex flex-row items-end">
         {steps.length > 1 ? (
           <AlertDialogCancel className="mr-auto" onClick={resetTour}>
             Close
