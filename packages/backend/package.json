@@ -17,6 +17,7 @@
     "inngest": "^3.39.2",
     "next-safe-action": "catalog:",
     "openai": "^5.7.0",
+    "resend": "catalog:",
     "slugify": "catalog:",
     "stripe": "catalog:",
     "uuid": "catalog:",
