@@ -12,7 +12,7 @@ import { updateCurrentUserAction } from "~/data/users/update-current-user";
 export function WelcomeTour() {
   const { user } = useAuth();
 
-  const [isTourOpen, setIsTourOpen] = useState(!user?.workspaceGuideCompleted);
+  const [isTourOpen, setIsTourOpen] = useState(true);
   const { execute } = useAction(updateCurrentUserAction);
 
   return (

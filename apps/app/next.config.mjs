@@ -15,5 +15,6 @@ const nextConfig = {
 };
 
 export default withNextVideo(nextConfig, {
-  provider: "vercel-blob",
+  // Default is MUX
+  // provider: "vercel-blob",
 });

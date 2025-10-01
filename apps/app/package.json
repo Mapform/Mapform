@@ -4,7 +4,7 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "concurrently \"next dev --turbopack\" \"npx next-video sync -w\" \"inngest-cli dev\"",
+    "dev": "concurrently \\\"next dev --turbopack\\\" \\\"npx next-video sync -w\\\" \\\"inngest-cli dev\\\" & npx next-video sync -w",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -58,7 +58,7 @@
     "next": "catalog:",
     "next-safe-action": "catalog:",
     "next-themes": "catalog:",
-    "next-video": "^2.2.0",
+    "next-video": "^2.5.0",
     "nuqs": "^2.4.3",
     "papaparse": "catalog:",
     "react": "catalog:",

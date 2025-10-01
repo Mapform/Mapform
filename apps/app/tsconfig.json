@@ -13,6 +13,7 @@
     "skipLibCheck": true
   },
   "include": [
+    "video.d.ts",
     ".eslintrc.js",
     "next-env.d.ts",
     "**/*.ts",
