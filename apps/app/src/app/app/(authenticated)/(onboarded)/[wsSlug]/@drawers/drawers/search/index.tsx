@@ -64,7 +64,7 @@ export function Search({
   const [query, setQuery] = useState(params.query);
   const debouncedSearchQuery = useDebounce(query, 200);
 
-  const filteredFeatures = searchResults?.features;
+  const filteredFeatures = searchResults;
 
   useEffect(() => {
     const center = map.current?.getCenter().toArray().reverse();
@@ -189,11 +189,11 @@ export function Search({
             ))}
             {filteredFeatures?.map((feature) => (
               <CommandItem
-                key={feature.properties.gid}
-                value={feature.properties.gid}
+                key={feature.place_id}
+                value={feature.place_id}
                 onSelect={async () => {
                   await setQueryStates({
-                    stadiaId: feature.properties.gid,
+                    stadiaId: feature.place_id,
                     location: null,
                     zoom: null,
                     pitch: null,
@@ -203,11 +203,11 @@ export function Search({
               >
                 <GlobeIcon className="text-muted-foreground mr-2 size-4 flex-shrink-0" />
                 <span className="truncate">
-                  {feature.properties.name}
-                  {feature.properties.coarseLocation && (
+                  {feature.display_place}
+                  {feature.display_address && (
                     <span className="text-muted-foreground ml-1 flex-shrink-0">
                       {" — "}
-                      {feature.properties.coarseLocation}
+                      {feature.display_address}
                     </span>
                   )}
                 </span>
