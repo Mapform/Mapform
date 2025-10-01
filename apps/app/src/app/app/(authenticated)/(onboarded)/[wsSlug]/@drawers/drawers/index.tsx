@@ -46,15 +46,10 @@ export function Drawers(props: DealDrawerProps) {
 }
 
 const getSearchResults = cache(
-  async (
-    query: string,
-    bounds?: [number, number, number, number],
-    center?: { lat: number; lng: number },
-  ) => {
+  async (query: string, bounds?: [number, number, number, number]) => {
     const searchResults = await publicDataService.search({
       query,
       bounds,
-      center,
     });
     return searchResults;
   },
@@ -80,20 +75,14 @@ const getVectorSearchResults = cache(
 );
 
 async function SearchDrawer({ searchParams, params }: DealDrawerProps) {
-  const { query, search, location, chatOptions } =
-    await loadSearchParams(searchParams);
+  const { query, search, chatOptions } = await loadSearchParams(searchParams);
   const { wsSlug } = await params;
-
-  const center = {
-    lat: Number(location?.split(",")[0]),
-    lng: Number(location?.split(",")[1]),
-  };
 
   const projectIds = chatOptions?.projects;
 
   const [searchResults, vectorSearchResults, previousChats] = await Promise.all(
     [
-      query && search ? getSearchResults(query, undefined, center) : null,
+      query && search ? getSearchResults(query, undefined) : null,
       query && search
         ? getVectorSearchResults(query, wsSlug, projectIds)
         : null,
@@ -140,7 +129,7 @@ const getDetails = cache(async (id: string | null) => {
   if (!id) return null;
 
   const placeDetails = await publicDataService.details({
-    id,
+    osmId: id,
   });
 
   return placeDetails;

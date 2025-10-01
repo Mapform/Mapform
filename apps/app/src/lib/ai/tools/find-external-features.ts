@@ -37,32 +37,27 @@ export const findRawExternalFeatures = tool({
 export async function findRawExternalFeaturesFunc(
   query: string,
   bounds?: number[],
-  center?: { lat: number; lng: number },
 ) {
   try {
     const findRawExternalFeaturesResults =
       await publicDataService.forwardGeocode({
         query,
         bounds,
-        center,
       });
 
-    const features = findRawExternalFeaturesResults?.data?.features ?? [];
+    const features = findRawExternalFeaturesResults?.data ?? [];
 
     if (!features.length) {
       return [];
     }
 
     const detailedResults = features.map((feature) => {
-      const gid = feature.properties.gid;
+      const gid = feature.place_id;
       if (!gid) return null;
 
-      const latitude = feature.geometry?.coordinates[0];
-      const longitude = feature.geometry?.coordinates[1];
-      const address =
-        feature.properties.formattedAddressLine ??
-        feature.properties.coarseLocation ??
-        undefined;
+      const latitude = feature.lat;
+      const longitude = feature.lon;
+      const address = feature.display_address;
 
       if (!latitude || !longitude) {
         throw new Error(
@@ -72,10 +67,10 @@ export async function findRawExternalFeaturesFunc(
 
       return {
         id: gid,
-        name: feature.properties.name,
+        name: feature.display_place,
         address,
-        latitude,
-        longitude,
+        latitude: Number(latitude),
+        longitude: Number(longitude),
         source: "stadia",
       } satisfies AIResultLocation;
     });

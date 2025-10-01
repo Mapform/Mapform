@@ -189,11 +189,11 @@ export function Search({
             ))}
             {filteredFeatures?.map((feature) => (
               <CommandItem
-                key={feature.place_id}
-                value={feature.place_id}
+                key={feature.osm_id}
+                value={feature.osm_id}
                 onSelect={async () => {
                   await setQueryStates({
-                    stadiaId: feature.place_id,
+                    stadiaId: `${feature.osm_type[0]!.toUpperCase()}${feature.osm_id}`,
                     location: null,
                     zoom: null,
                     pitch: null,
