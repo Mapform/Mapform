@@ -18,6 +18,7 @@
     "STADIA_API_KEY",
 
     "RESEND_API_KEY",
+    "RESEND_AUDIENCE_ID",
 
     "AUTH_SECRET",
 
