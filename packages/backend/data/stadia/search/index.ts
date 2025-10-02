@@ -16,12 +16,13 @@ export const search = (authClient: PublicClient) =>
       return api.autocompleteV2({
         text: query,
         lang: "en",
-        focusPointLon: center?.lng,
-        focusPointLat: center?.lat,
-        boundaryRectMinLon: bounds?.[0],
-        boundaryRectMinLat: bounds?.[1],
-        boundaryRectMaxLon: bounds?.[2],
-        boundaryRectMaxLat: bounds?.[3],
+        ...(center && { focusPointLon: center.lng, focusPointLat: center.lat }),
+        ...(bounds && {
+          boundaryRectMinLon: bounds[0],
+          boundaryRectMinLat: bounds[1],
+          boundaryRectMaxLon: bounds[2],
+          boundaryRectMaxLat: bounds[3],
+        }),
       });
     });
 

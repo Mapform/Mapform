@@ -46,11 +46,15 @@ export function Drawers(props: DealDrawerProps) {
 }
 
 const getSearchResults = cache(
-  async (
-    query: string,
-    bounds?: [number, number, number, number],
-    center?: { lat: number; lng: number },
-  ) => {
+  async ({
+    query,
+    bounds,
+    center,
+  }: {
+    query: string;
+    bounds?: [number, number, number, number];
+    center?: { lat: number; lng: number };
+  }) => {
     const searchResults = await publicDataService.search({
       query,
       bounds,
@@ -93,7 +97,7 @@ async function SearchDrawer({ searchParams, params }: DealDrawerProps) {
 
   const [searchResults, vectorSearchResults, previousChats] = await Promise.all(
     [
-      query && search ? getSearchResults(query, undefined, center) : null,
+      query && search ? getSearchResults({ query, center }) : null,
       query && search
         ? getVectorSearchResults(query, wsSlug, projectIds)
         : null,
