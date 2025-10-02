@@ -7,7 +7,6 @@ import {
   SparklesIcon,
   Trash2Icon,
   ArrowUpRightIcon,
-  ExternalLinkIcon,
 } from "lucide-react";
 import { cn } from "@mapform/lib/classnames";
 import { Button } from "@mapform/ui/components/button";
@@ -26,6 +25,8 @@ import {
 } from "@mapform/ui/components/context-menu";
 import { useAction } from "next-safe-action/hooks";
 import { deleteRowsAction } from "~/data/rows/delete-rows";
+import { useGeolocation } from "@mapform/lib/hooks/use-geolocation";
+import { useParams } from "next/navigation";
 
 interface Feature {
   id: string;
@@ -57,6 +58,8 @@ export function FeatureList({
   onHover,
 }: FeatureListProps) {
   const { setQueryStates } = useParamsContext();
+  const { coords } = useGeolocation();
+  const { pId } = useParams<{ pId?: string }>();
 
   if (!features.length) {
     return (
@@ -69,6 +72,14 @@ export function FeatureList({
           onClick={() => {
             void setQueryStates({
               search: "1",
+              chatId: null,
+              query: null,
+              chatOptions: {
+                firstMessage: null,
+                mapCenter: true,
+                userCenter: !!coords,
+                projects: pId ? [pId] : null,
+              },
             });
           }}
           size="sm"
