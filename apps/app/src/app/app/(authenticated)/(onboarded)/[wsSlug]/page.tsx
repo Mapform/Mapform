@@ -23,7 +23,7 @@ export default async function HomePage(props: {
 
   return (
     <ServerMapPositioner
-      viewState={{ center: [0, 0], zoom: 0, pitch: 0, bearing: 0 }}
+    // viewState={{ center: [0, 0], zoom: 0, pitch: 0, bearing: 0 }}
     >
       <WelcomeTour />
       <ProjectMarkers />

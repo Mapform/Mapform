@@ -65,11 +65,14 @@ export function MapPositioner({
 
     if (!hasChanged) return;
 
-    map.current.easeTo({
+    map.current.flyTo({
+      duration: 1000,
       padding: _viewState.padding,
       ...(_viewState.center !== undefined && { center: _viewState.center }),
       ...(_viewState.pitch !== undefined && { pitch: _viewState.pitch }),
-      ...(_viewState.bearing !== undefined && { bearing: _viewState.bearing }),
+      ...(_viewState.bearing !== undefined && {
+        bearing: _viewState.bearing,
+      }),
       ...(_viewState.zoom !== undefined && { zoom: _viewState.zoom }),
     });
 
