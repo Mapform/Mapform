@@ -67,11 +67,11 @@ export function Search({
   const filteredFeatures = searchResults?.features;
 
   useEffect(() => {
-    const center = map.current?.getCenter().toArray().reverse();
+    const center = map.current?.getCenter().toArray().reverse().join(",");
     void setQueryStates({
       query: debouncedSearchQuery,
       // Set the location explicitly so the server can use it for searching
-      center: center as [number, number],
+      location: center,
     });
   }, [debouncedSearchQuery, setQueryStates, map]);
 

@@ -88,10 +88,12 @@ async function SearchDrawer({ searchParams, params }: DealDrawerProps) {
     await loadSearchParams(searchParams);
   const { wsSlug } = await params;
 
-  const center = {
-    lat: Number(location?.split(",")[0]),
-    lng: Number(location?.split(",")[1]),
-  };
+  const center = location
+    ? {
+        lat: Number(location.split(",")[0]),
+        lng: Number(location.split(",")[1]),
+      }
+    : undefined;
 
   const projectIds = chatOptions?.projects;
 
