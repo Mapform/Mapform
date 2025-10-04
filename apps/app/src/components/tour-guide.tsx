@@ -76,7 +76,7 @@ export function TourContent({ steps }: TourGuideProps) {
   }
 
   return (
-    <AlertDialogContent className="w-full max-w-screen-md overflow-hidden overflow-y-auto max-md:h-dvh max-md:p-4 md:max-h-[90vh]">
+    <AlertDialogContent className="w-full overflow-hidden overflow-y-auto max-md:h-dvh max-md:p-4 md:max-h-[90vh] md:max-w-screen-md">
       <div className="relative">
         <AnimatePresence mode="wait">
           <motion.div
@@ -85,12 +85,12 @@ export function TourContent({ steps }: TourGuideProps) {
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: -100 * direction, opacity: 0 }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="w-full"
+            className="w-full overflow-hidden"
           >
             <AlertDialogHeader className="text-muted-foreground mb-2 text-left text-sm">
               Step {currentStepIndex + 1} of {steps.length}
             </AlertDialogHeader>
-            <div className="relative aspect-video overflow-hidden rounded-md touch-manipulation">
+            <div className="relative aspect-video overflow-hidden rounded-md">
               {currentStep.url && (
                 <Image
                   src={currentStep.url}
@@ -101,7 +101,7 @@ export function TourContent({ steps }: TourGuideProps) {
               )}
               {currentStep.video && (
                 <Video
-                  className="size-full pointer-events-none"
+                  className="size-full"
                   src={currentStep.video}
                   autoPlay
                   muted
