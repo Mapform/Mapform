@@ -295,7 +295,7 @@ function ChatInner({
 
         <form
           className={cn(
-            "relative flex flex-shrink-0 flex-col gap-2 border-t p-3",
+            "relative flex flex-shrink-0 flex-col gap-2 border-t p-3 pl-4",
             hasReachedTokenLimit && "opacity-50",
           )}
           onSubmit={(e) => {
