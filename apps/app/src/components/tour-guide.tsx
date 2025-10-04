@@ -107,6 +107,7 @@ export function TourContent({ steps }: TourGuideProps) {
                   muted
                   loop
                   controls={false}
+                  playsInline
                 />
               )}
             </div>
