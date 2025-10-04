@@ -76,7 +76,7 @@ export function TourContent({ steps }: TourGuideProps) {
   }
 
   return (
-    <AlertDialogContent className="w-full max-w-screen-md overflow-hidden overflow-y-auto max-md:h-screen max-md:p-4 md:max-h-[90vh]">
+    <AlertDialogContent className="w-full max-w-screen-md overflow-hidden overflow-y-auto max-md:h-dvh max-md:p-4 md:max-h-[90vh]">
       <div className="relative">
         <AnimatePresence mode="wait">
           <motion.div
