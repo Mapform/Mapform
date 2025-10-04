@@ -193,6 +193,7 @@ export function Demos() {
                         "delay-0 group-hover:translate-y-0": i === current,
                       },
                     )}
+                    style={{ contain: "layout paint" }}
                   >
                     {tab.media.type === "image" ? (
                       <Image
@@ -208,7 +209,7 @@ export function Demos() {
                       />
                     ) : (
                       <Video
-                        className="absolute inset-0 h-full w-full object-cover"
+                        className="pointer-events-none absolute inset-0 h-full w-full transform-gpu touch-none select-none object-cover"
                         src={tab.media.src as Asset}
                         autoPlay
                         muted
@@ -216,6 +217,10 @@ export function Demos() {
                         controls={false}
                         playsInline
                         preload="metadata"
+                        style={{
+                          WebkitTransform: "translateZ(0)",
+                          WebkitBackfaceVisibility: "hidden",
+                        }}
                       />
                     )}
                   </div>

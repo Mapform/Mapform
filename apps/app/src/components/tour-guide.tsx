@@ -90,7 +90,10 @@ export function TourContent({ steps }: TourGuideProps) {
             <AlertDialogHeader className="text-muted-foreground mb-2 text-left text-sm">
               Step {currentStepIndex + 1} of {steps.length}
             </AlertDialogHeader>
-            <div className="relative aspect-video overflow-hidden rounded-md">
+            <div
+              className="relative aspect-video overflow-hidden rounded-md"
+              style={{ contain: "layout paint" }}
+            >
               {currentStep.url && (
                 <Image
                   src={currentStep.url}
@@ -101,7 +104,7 @@ export function TourContent({ steps }: TourGuideProps) {
               )}
               {currentStep.video && (
                 <Video
-                  className="absolute inset-0 h-full w-full object-cover"
+                  className="pointer-events-none absolute inset-0 h-full w-full transform-gpu touch-none select-none object-cover"
                   src={currentStep.video}
                   autoPlay
                   muted
@@ -109,6 +112,10 @@ export function TourContent({ steps }: TourGuideProps) {
                   controls={false}
                   playsInline
                   preload="metadata"
+                  style={{
+                    WebkitTransform: "translateZ(0)",
+                    WebkitBackfaceVisibility: "hidden",
+                  }}
                 />
               )}
             </div>
