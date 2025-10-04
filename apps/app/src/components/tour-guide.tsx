@@ -90,7 +90,7 @@ export function TourContent({ steps }: TourGuideProps) {
             <AlertDialogHeader className="text-muted-foreground mb-2 text-left text-sm">
               Step {currentStepIndex + 1} of {steps.length}
             </AlertDialogHeader>
-            <div className="relative aspect-video overflow-hidden rounded-md">
+            <div className="relative aspect-video overflow-hidden rounded-md touch-manipulation">
               {currentStep.url && (
                 <Image
                   src={currentStep.url}
@@ -101,7 +101,7 @@ export function TourContent({ steps }: TourGuideProps) {
               )}
               {currentStep.video && (
                 <Video
-                  className="size-full"
+                  className="size-full pointer-events-none"
                   src={currentStep.video}
                   autoPlay
                   muted
