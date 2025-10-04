@@ -26,170 +26,192 @@ import { notEmpty } from "@mapform/lib/not-empty";
 export const maxDuration = 60;
 
 export async function POST(req: Request) {
-  const { messages, id, mapCenter, userCenter, projects } =
-    (await req.json()) as {
-      id: string;
-      messages: UIMessage[];
-      mapCenter?: { lat: number; lng: number } | null;
-      userCenter?: { lat: number; lng: number } | null;
-      projects?: string[] | null;
-    };
-
-  const session = await getCurrentSession();
-
-  if (!session?.data?.user) {
-    return NextResponse.json({ msg: "Unauthorized" }, { status: 401 });
-  }
-
-  const headersList = await getHeaders();
-  const workspaceSlug = headersList.get("x-workspace-slug");
-  const ipLocation = geolocation(req);
-
-  if (!workspaceSlug) {
-    return NextResponse.json(
-      { msg: "Workspace slug is required" },
-      { status: 400 },
-    );
-  }
-
-  // Enforce token limit before generating
   try {
-    const directory = await authDataService.getWorkspaceDirectory({
-      slug: workspaceSlug,
-    });
-    const plan = directory?.data?.plan;
+    const { messages, id, mapCenter, userCenter, projects } =
+      (await req.json()) as {
+        id: string;
+        messages: UIMessage[];
+        mapCenter?: { lat: number; lng: number } | null;
+        userCenter?: { lat: number; lng: number } | null;
+        projects?: string[] | null;
+      };
 
-    if (plan?.dailyAiTokenLimit) {
-      const usage = await authDataService.getAiTokenUsage({ workspaceSlug });
-      const used = usage?.data?.tokensUsed ?? 0;
+    const session = await getCurrentSession();
 
-      if (used >= plan.dailyAiTokenLimit) {
-        return NextResponse.json(
-          {
-            msg: "Daily AI token limit reached. Upgrade your plan or try again tomorrow.",
-          },
-          { status: 429 },
-        );
-      }
+    if (!session?.data?.user) {
+      return NextResponse.json({ msg: "Unauthorized" }, { status: 401 });
     }
-  } catch (e) {
-    console.warn("Failed to check AI token limits", e);
-  }
 
-  const projectsData = await Promise.all(
-    projects?.map((project) =>
-      authDataService.getProject({ projectId: project }),
-    ) ?? [],
-  );
+    const headersList = await getHeaders();
+    const workspaceSlug = headersList.get("x-workspace-slug");
+    const ipLocation = geolocation(req);
 
-  const refinedProjects = projectsData
-    .map((project) => project?.data)
-    .filter(notEmpty);
+    if (!workspaceSlug) {
+      return NextResponse.json(
+        { msg: "Workspace slug is required" },
+        { status: 400 },
+      );
+    }
 
-  const stream = createUIMessageStream({
-    execute: ({ writer }) => {
-      // As per: https://ai-sdk.dev/docs/ai-sdk-ui/chatbot-message-persistence#option-2-setting-ids-with-createuimessagestream
-      writer.write({
-        type: "start",
-        messageId: crypto.randomUUID(), // Generate server-side ID for persistence
+    // Enforce token limit before generating
+    try {
+      const directory = await authDataService.getWorkspaceDirectory({
+        slug: workspaceSlug,
       });
+      const plan = directory?.data?.plan;
 
-      const result = streamText({
-        model: "gpt-5-mini",
-        system: getSystemPrompt(
-          mapCenter,
-          userCenter,
-          ipLocation,
-          refinedProjects,
-        ),
-        messages: convertToModelMessages(messages),
-        tools: {
-          findRawInternalFeatures,
-          reverseGeocode,
-          findRawExternalFeatures,
-          returnBestResults,
-          webSearch,
-        },
-        // stopWhen: [stepCountIs(7), hasToolCall("returnBestResults")],
-        stopWhen: hasToolCall("returnBestResults"),
-        providerOptions: {
-          openai: {
-            reasoningEffort: "low",
-            reasoningSummary: "detailed",
+      if (plan?.dailyAiTokenLimit) {
+        const usage = await authDataService.getAiTokenUsage({ workspaceSlug });
+        const used = usage?.data?.tokensUsed ?? 0;
+
+        if (used >= plan.dailyAiTokenLimit) {
+          return NextResponse.json(
+            {
+              msg: "Daily AI token limit reached. Upgrade your plan or try again tomorrow.",
+            },
+            { status: 429 },
+          );
+        }
+      }
+    } catch (e) {
+      console.error("Failed to check AI token limits", e);
+    }
+
+    const projectsData = await Promise.all(
+      projects?.map((project) =>
+        authDataService.getProject({ projectId: project }),
+      ) ?? [],
+    );
+
+    const refinedProjects = projectsData
+      .map((project) => project?.data)
+      .filter(notEmpty);
+
+    const stream = createUIMessageStream({
+      execute: ({ writer }) => {
+        // As per: https://ai-sdk.dev/docs/ai-sdk-ui/chatbot-message-persistence#option-2-setting-ids-with-createuimessagestream
+        writer.write({
+          type: "start",
+          messageId: crypto.randomUUID(), // Generate server-side ID for persistence
+        });
+
+        const result = streamText({
+          model: "gpt-5-mini",
+          system: getSystemPrompt(
+            mapCenter,
+            userCenter,
+            ipLocation,
+            refinedProjects,
+          ),
+          messages: convertToModelMessages(messages),
+          tools: {
+            findRawInternalFeatures,
+            reverseGeocode,
+            findRawExternalFeatures,
+            returnBestResults,
+            webSearch,
           },
-        },
-        onFinish: async ({ usage }) => {
-          const totalTokens = usage.totalTokens;
+          // stopWhen: [stepCountIs(7), hasToolCall("returnBestResults")],
+          stopWhen: hasToolCall("returnBestResults"),
+          providerOptions: {
+            openai: {
+              reasoningEffort: "low",
+              reasoningSummary: "detailed",
+            },
+          },
+          onFinish: async ({ usage }) => {
+            try {
+              const totalTokens = usage.totalTokens;
 
-          if (workspaceSlug && totalTokens && totalTokens > 0) {
-            const result = await authDataService.incrementAiTokenUsage({
-              workspaceSlug,
-              tokens: totalTokens,
-            });
+              if (workspaceSlug && totalTokens && totalTokens > 0) {
+                const result = await authDataService.incrementAiTokenUsage({
+                  workspaceSlug,
+                  tokens: totalTokens,
+                });
 
-            if (result?.data?.tokensUsed) {
-              writer.write({
-                type: "data-ai-token-usage",
-                data: { tokens: result.data.tokensUsed },
-              });
+                if (result?.data?.tokensUsed) {
+                  writer.write({
+                    type: "data-ai-token-usage",
+                    data: { tokens: result.data.tokensUsed },
+                  });
+                }
+              }
+            } catch (e) {
+              console.error("Failed to increment AI token usage", e);
             }
-          }
-        },
-      });
+          },
+          onError: (error) => {
+            console.error("Stream text error:", error);
+          },
+        });
 
-      writer.merge(result.toUIMessageStream({ sendStart: false }));
-    },
-    originalMessages: messages,
-    onFinish: async ({ messages }) => {
-      await authDataService.createMessages({
-        messages: messages.map((m) => ({
-          id: m.id,
-          role: m.role,
-          parts: m.parts,
-        })),
-        chatId: id,
-      });
+        writer.merge(result.toUIMessageStream({ sendStart: false }));
+      },
+      originalMessages: messages,
+      onFinish: async ({ messages }) => {
+        try {
+          await authDataService.createMessages({
+            messages: messages.map((m) => ({
+              id: m.id,
+              role: m.role,
+              parts: m.parts,
+            })),
+            chatId: id,
+          });
 
-      const userMessages = messages.filter((m) => m.role === "user");
-      const firstUserMessage = userMessages[0];
-      let title = null;
+          const userMessages = messages.filter((m) => m.role === "user");
+          const firstUserMessage = userMessages[0];
+          let title = null;
 
-      if (firstUserMessage && userMessages.length === 1) {
-        const result = await generateText({
-          model: "gpt-4o-mini",
-          system: `\n
+          if (firstUserMessage && userMessages.length === 1) {
+            const result = await generateText({
+              model: "gpt-4o-mini",
+              system: `\n
           - you will generate a short title based on the first message a user begins a conversation with
           - ensure it is not more than 80 characters long
           - the title should be a summary of the user's message
           - do not use quotes or colons`,
-          prompt: JSON.stringify(firstUserMessage),
-        });
+              prompt: JSON.stringify(firstUserMessage),
+            });
 
-        title = result.text;
-      }
+            title = result.text;
+          }
 
-      // Clear the active stream when finished
-      await authDataService.updateChat({
-        id,
-        activeStreamId: null,
-        ...(title ? { title } : {}),
-      });
-    },
-  });
+          // Clear the active stream when finished
+          await authDataService.updateChat({
+            id,
+            activeStreamId: null,
+            ...(title ? { title } : {}),
+          });
+        } catch (e) {
+          console.error("Failed to finalize chat", e);
+        }
+      },
+    });
 
-  return createUIMessageStreamResponse({
-    stream,
-    consumeSseStream: async ({ stream }) => {
-      const streamId = generateId();
-      // Create a resumable stream from the SSE stream
-      const streamContext = createResumableStreamContext({ waitUntil: after });
-      await streamContext.createNewResumableStream(streamId, () => stream);
+    return createUIMessageStreamResponse({
+      stream,
+      consumeSseStream: async ({ stream }) => {
+        try {
+          const streamId = generateId();
+          // Create a resumable stream from the SSE stream
+          const streamContext = createResumableStreamContext({
+            waitUntil: after,
+          });
+          await streamContext.createNewResumableStream(streamId, () => stream);
 
-      // Update the chat with the active stream ID
-      await authDataService.updateChat({
-        id,
-        activeStreamId: streamId,
-      });
-    },
-  });
+          // Update the chat with the active stream ID
+          await authDataService.updateChat({
+            id,
+            activeStreamId: streamId,
+          });
+        } catch (e) {
+          console.error("Failed to setup resumable stream", e);
+        }
+      },
+    });
+  } catch (e) {
+    console.error("Chat API error:", e);
+    return NextResponse.json({ msg: "Internal server error" }, { status: 500 });
+  }
 }
