@@ -17,7 +17,7 @@ import { Button } from "@mapform/ui/components/button";
 import Image from "next/image";
 import { motion, AnimatePresence } from "motion/react";
 import type { StaticImageData } from "next/image";
-import Video from "next-video";
+import BackgroundVideo from "next-video/background-video";
 import type { Asset } from "next-video/dist/assets.js";
 
 export interface TourStep {
@@ -102,22 +102,7 @@ export function TourContent({ steps }: TourGuideProps) {
                   fill
                 />
               )}
-              {currentStep.video && (
-                <Video
-                  className="pointer-events-none absolute inset-0 h-full w-full transform-gpu touch-none select-none object-cover"
-                  src={currentStep.video}
-                  autoPlay
-                  muted
-                  loop
-                  controls={false}
-                  playsInline
-                  preload="metadata"
-                  style={{
-                    WebkitTransform: "translateZ(0)",
-                    WebkitBackfaceVisibility: "hidden",
-                  }}
-                />
-              )}
+              {currentStep.video && <BackgroundVideo src={currentStep.video} />}
             </div>
             <AlertDialogTitle className="mb-2 mt-4">
               {currentStep.title}
