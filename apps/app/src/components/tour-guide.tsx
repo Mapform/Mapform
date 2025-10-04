@@ -101,13 +101,14 @@ export function TourContent({ steps }: TourGuideProps) {
               )}
               {currentStep.video && (
                 <Video
-                  className="size-full"
+                  className="absolute inset-0 h-full w-full object-cover"
                   src={currentStep.video}
                   autoPlay
                   muted
                   loop
                   controls={false}
                   playsInline
+                  preload="metadata"
                 />
               )}
             </div>

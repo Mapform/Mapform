@@ -208,12 +208,14 @@ export function Demos() {
                       />
                     ) : (
                       <Video
-                        className="size-full"
+                        className="absolute inset-0 h-full w-full object-cover"
                         src={tab.media.src as Asset}
                         autoPlay
                         muted
                         loop
                         controls={false}
+                        playsInline
+                        preload="metadata"
                       />
                     )}
                   </div>
