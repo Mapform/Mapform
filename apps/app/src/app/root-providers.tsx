@@ -93,7 +93,8 @@ export function RootProviders({
           attribute="class"
           defaultTheme="light"
           disableTransitionOnChange
-          enableSystem
+          enableSystem={false}
+          forcedTheme="light"
         >
           <Suspense>
             <NuqsAdapter>

@@ -3,6 +3,7 @@ import sharedConfig from "@mapform/ui/tailwind.config.ts";
 
 const config: Partial<Config> = {
   presets: [sharedConfig],
+  darkMode: ["class"],
   content: [
     "./next.config.mjs",
     "./src/**/*.{ts,tsx}",
