@@ -93,7 +93,7 @@ export function MapNavigationControl() {
 
   return (
     <>
-      <div className="pointer-events-auto absolute right-2 top-2 flex flex-col gap-2">
+      <div className="pointer-events-auto fixed right-2 top-2 flex flex-col gap-2">
         <div
           role="group"
           aria-label="Zoom controls"
