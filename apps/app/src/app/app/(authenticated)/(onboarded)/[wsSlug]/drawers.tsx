@@ -15,6 +15,9 @@ export function Drawers({ children }: DrawersProps) {
   const workspace = useWorkspace();
 
   const openDrawer = pathname !== `/app/${workspace.workspaceSlug}`;
+  const isSettings = pathname.includes(
+    `/app/${workspace.workspaceSlug}/settings`,
+  );
 
   const isFullWidth =
     Boolean(
@@ -34,6 +37,7 @@ export function Drawers({ children }: DrawersProps) {
         open={openDrawer}
         depth={drawerDepth.size}
         isFullWidth={isFullWidth}
+        mobileInitialScrollPosition={isSettings ? "top" : "bottom"}
       >
         {children}
       </MapDrawer>
