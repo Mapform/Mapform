@@ -271,7 +271,10 @@ function ChatInner({
         </Button>
       </MapDrawerToolbar>
       <Conversation>
-        <ConversationContent className="px-6 pb-6">
+        <ConversationContent
+          className="px-6 pb-6"
+          mobileAutoScrollKey={messages.length}
+        >
           {messages.map((message) => (
             <Message key={message.id} message={message} status={status} />
           ))}

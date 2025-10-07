@@ -4,7 +4,7 @@ import { Button } from "../button";
 import { cn } from "@mapform/lib/classnames";
 import { ArrowDownIcon } from "lucide-react";
 import type { ComponentProps } from "react";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { StickToBottom, useStickToBottomContext } from "use-stick-to-bottom";
 import { useIsMobile } from "@mapform/lib/hooks/use-is-mobile";
 
@@ -22,7 +22,7 @@ export const Conversation = ({ className, ...props }: ConversationProps) => (
 
 export type ConversationContentProps = ComponentProps<
   typeof StickToBottom.Content
->;
+> & { mobileAutoScrollKey?: number | string };
 
 function ConversationMobileScrollBinder() {
   const { scrollRef } = useStickToBottomContext();
@@ -49,19 +49,47 @@ function ConversationMobileScrollBinder() {
 export const ConversationContent = ({
   className,
   children,
+  mobileAutoScrollKey,
   ...props
-}: ConversationContentProps) => (
-  <StickToBottom.Content className={cn("p-4", className)} {...props}>
-    {(context) => (
-      <>
-        <ConversationMobileScrollBinder />
-        {typeof children === "function"
-          ? (children as (ctx: unknown) => React.ReactNode)(context)
-          : children}
-      </>
-    )}
-  </StickToBottom.Content>
-);
+}: ConversationContentProps) => {
+  const { scrollToBottom } = useStickToBottomContext();
+  const isMobile = useIsMobile();
+  const hasRunInitialRef = useRef(false);
+
+  /**
+   * Added to get scrolling to work on mobile
+   */
+  useEffect(() => {
+    if (!isMobile) return;
+    const id = requestAnimationFrame(() => {
+      void scrollToBottom();
+    });
+    let timeoutId: number | undefined;
+    if (!hasRunInitialRef.current) {
+      hasRunInitialRef.current = true;
+      timeoutId = window.setTimeout(() => {
+        void scrollToBottom();
+      }, 180);
+    }
+    return () => {
+      cancelAnimationFrame(id);
+      if (timeoutId) window.clearTimeout(timeoutId);
+    };
+  }, [mobileAutoScrollKey, isMobile, scrollToBottom]);
+
+  return (
+    <StickToBottom.Content className={cn("p-4", className)} {...props}>
+      {(context) => (
+        <>
+          <ConversationMobileScrollBinder />
+          {typeof children === "function"
+            ? (children as (ctx: unknown) => React.ReactNode)(context)
+            : children}
+        </>
+      )}
+    </StickToBottom.Content>
+  );
+};
 
 export type ConversationScrollButtonProps = ComponentProps<typeof Button>;
 
