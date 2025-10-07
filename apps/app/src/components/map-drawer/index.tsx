@@ -44,7 +44,7 @@ export function MapDrawer({
             top: window.innerHeight - 200,
             behavior: "auto",
           });
-        }, 0);
+        }, 100);
       }
     }
   }, [isMobile, mobileInitialScrollPosition, open, depth]);
@@ -54,12 +54,12 @@ export function MapDrawer({
       <>
         {open && depth === 0 && (
           <div
-            className="z-10 h-dvh w-dvw overflow-y-auto"
+            className="pointer-events-none relative z-10 h-dvh w-dvw overflow-y-auto"
             data-map-scroll-container
           >
             <motion.div
               className={cn(
-                "bg-background group relative z-20 mt-[calc(100dvh-200px)] flex h-fit min-h-dvh !w-dvw flex-col bg-white pb-20 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] outline-none transition-[filter,width,padding-left] duration-[250] [--y-from:200px] [--y-to:0]",
+                "bg-background group pointer-events-auto relative z-20 mt-[calc(100dvh-200px)] flex h-fit min-h-dvh !w-dvw flex-col bg-white pb-20 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] outline-none transition-[filter,width,padding-left] duration-[250] [--y-from:200px] [--y-to:0]",
                 className,
               )}
               layoutScroll
