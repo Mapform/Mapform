@@ -129,7 +129,7 @@ export function MapDrawerToolbar({
     <div
       className={cn("sticky top-0 z-20 flex w-full bg-white p-3", className)}
     >
-      <div className="absolute left-1/2 top-[3px] mx-auto h-1.5 w-12 -translate-x-1/2 rounded-full bg-gray-200 md:hidden" />
+      <div className="bg-muted absolute left-1/2 top-[3px] mx-auto h-1.5 w-12 -translate-x-1/2 rounded-full md:hidden" />
       {children}
     </div>
   );
