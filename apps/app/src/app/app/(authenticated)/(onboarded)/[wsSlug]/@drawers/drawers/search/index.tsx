@@ -48,7 +48,11 @@ export function SearchWrapper({ children }: { children: React.ReactNode }) {
   const { params, drawerDepth } = useParamsContext();
 
   return (
-    <MapDrawer open={!!params.search} depth={drawerDepth.get("search") ?? 0}>
+    <MapDrawer
+      open={!!params.search}
+      depth={drawerDepth.get("search") ?? 0}
+      mobileInitialScrollPosition="top"
+    >
       {children}
     </MapDrawer>
   );

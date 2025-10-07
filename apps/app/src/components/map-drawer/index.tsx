@@ -4,6 +4,7 @@ import { cn } from "@mapform/lib/classnames";
 import { AnimatePresence, motion } from "motion/react";
 import { DRAWER_WIDTH } from "~/constants/sidebars";
 import { useIsMobile } from "@mapform/lib/hooks/use-is-mobile";
+import { useEffect } from "react";
 
 interface MapDrawerProps {
   open: boolean;
@@ -11,6 +12,8 @@ interface MapDrawerProps {
   depth?: number;
   children: React.ReactNode;
   isFullWidth?: boolean;
+  mobileInitialScrollPosition?: "top" | "bottom";
+  className?: string;
 }
 
 export function MapDrawer({
@@ -19,15 +22,42 @@ export function MapDrawer({
   depth = 0,
   children,
   isFullWidth = false,
+  mobileInitialScrollPosition = "top",
+  className,
 }: MapDrawerProps) {
   const isMobile = useIsMobile();
+
+  useEffect(() => {
+    if (!open || depth !== 0) return;
+
+    if (isMobile) {
+      const container = document.querySelector<HTMLElement>(
+        "[data-map-scroll-container]",
+      );
+      if (!container) return;
+
+      if (mobileInitialScrollPosition === "bottom") {
+        container.scrollTo({ top: 0, behavior: "auto" });
+      } else if (mobileInitialScrollPosition === "top") {
+        setTimeout(() => {
+          container.scrollTo({
+            top: window.innerHeight - 200,
+            behavior: "auto",
+          });
+        }, 0);
+      }
+    }
+  }, [isMobile, mobileInitialScrollPosition, open, depth]);
 
   if (isMobile) {
     return (
       <>
         {open && depth === 0 && (
           <motion.div
-            className="bg-background group relative z-10 mt-[calc(100dvh-200px)] flex h-fit min-h-dvh !w-dvw flex-col bg-white pb-20 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] outline-none transition-[filter,width,padding-left] duration-[250] [--y-from:200px] [--y-to:0]"
+            className={cn(
+              "bg-background group relative z-10 mt-[calc(100dvh-200px)] flex h-fit min-h-dvh !w-dvw flex-col bg-white pb-20 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] outline-none transition-[filter,width,padding-left] duration-[250] [--y-from:200px] [--y-to:0]",
+              className,
+            )}
             layoutScroll
             animate="open"
             initial="closed"
@@ -62,7 +92,10 @@ export function MapDrawer({
     <AnimatePresence>
       {open && (
         <motion.div
-          className="absolute bottom-2 top-2 flex !select-text outline-none"
+          className={cn(
+            "absolute bottom-2 top-2 flex !select-text outline-none",
+            className,
+          )}
           initial={initialOpen ? false : { x: -width, width, opacity: 0 }}
           animate={{
             x: 16 * depth,
@@ -109,7 +142,7 @@ export function MapDrawerToolbar({
     <div
       className={cn("sticky top-0 z-20 flex w-full bg-white p-3", className)}
     >
-      <div className="absolute left-1/2 top-2 mx-auto h-1.5 w-12 -translate-x-1/2 rounded-full bg-gray-200 md:hidden" />
+      <div className="bg-muted absolute left-1/2 top-[3px] mx-auto h-1.5 w-12 -translate-x-1/2 rounded-full md:hidden" />
       {children}
     </div>
   );

@@ -45,7 +45,11 @@ export function FeatureWrapper({ children }: { children: React.ReactNode }) {
   const { params, drawerDepth } = useParamsContext();
 
   return (
-    <MapDrawer open={!!params.rowId} depth={drawerDepth.get("rowId") ?? 0}>
+    <MapDrawer
+      open={!!params.rowId}
+      depth={drawerDepth.get("rowId") ?? 0}
+      mobileInitialScrollPosition="bottom"
+    >
       {children}
     </MapDrawer>
   );

@@ -357,7 +357,7 @@ export function WorkspaceProvider({
         ]}
       >
         {/* Needed for mobile */}
-        <div className="h-full overflow-y-auto">
+        <div className="h-full overflow-y-auto" data-map-scroll-container>
           <SidebarProvider defaultOpen={defaultLeftOpen}>
             {children}
           </SidebarProvider>
