@@ -4,6 +4,7 @@ import { cn } from "@mapform/lib/classnames";
 import { AnimatePresence, motion } from "motion/react";
 import { DRAWER_WIDTH } from "~/constants/sidebars";
 import { useIsMobile } from "@mapform/lib/hooks/use-is-mobile";
+import { useEffect } from "react";
 
 interface MapDrawerProps {
   open: boolean;
@@ -11,6 +12,7 @@ interface MapDrawerProps {
   depth?: number;
   children: React.ReactNode;
   isFullWidth?: boolean;
+  mobileInitialScrollPosition?: "top" | "bottom";
 }
 
 export function MapDrawer({
@@ -19,8 +21,26 @@ export function MapDrawer({
   depth = 0,
   children,
   isFullWidth = false,
+  mobileInitialScrollPosition = "top",
 }: MapDrawerProps) {
   const isMobile = useIsMobile();
+
+  useEffect(() => {
+    if (!open) return;
+
+    if (isMobile) {
+      const container = document.querySelector<HTMLElement>(
+        "[data-map-scroll-container]",
+      );
+      if (!container) return;
+
+      if (mobileInitialScrollPosition === "bottom") {
+        container.scrollTo({ top: 0, behavior: "auto" });
+      } else if (mobileInitialScrollPosition === "top") {
+        container.scrollTo({ top: container.scrollHeight, behavior: "auto" });
+      }
+    }
+  }, [isMobile, mobileInitialScrollPosition, open]);
 
   if (isMobile) {
     return (
