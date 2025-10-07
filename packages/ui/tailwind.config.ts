@@ -8,6 +8,7 @@ import plugin from "tailwindcss/plugin";
 
 const config: Config = {
   content: ["**/*.{js,ts,jsx,tsx}"],
+  darkMode: ["class"],
   theme: {
     container: {
       center: true,

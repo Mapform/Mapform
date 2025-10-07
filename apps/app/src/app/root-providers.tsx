@@ -91,9 +91,9 @@ export function RootProviders({
       <QueryClientProvider client={queryClient}>
         <ThemeProvider
           attribute="class"
-          defaultTheme="light"
+          enableSystem={false}
+          forcedTheme="light"
           disableTransitionOnChange
-          enableSystem
         >
           <Suspense>
             <NuqsAdapter>
