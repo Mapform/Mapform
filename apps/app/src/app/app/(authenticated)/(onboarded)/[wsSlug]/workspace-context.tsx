@@ -356,18 +356,15 @@ export function WorkspaceProvider({
           POLYGONS_OUTLINE_LAYER_ID,
         ]}
       >
-        {/* Needed for mobile */}
-        <div className="h-full overflow-y-auto" data-map-scroll-container>
-          <SidebarProvider defaultOpen={defaultLeftOpen}>
-            {children}
-          </SidebarProvider>
-          <MapNavigationControl />
-          <MapContextMenu
-            open={!!contextMenu}
-            onOpenChange={handleCloseContextMenu}
-            position={contextMenu ?? { x: 0, y: 0, longitude: 0, latitude: 0 }}
-          />
-        </div>
+        <SidebarProvider defaultOpen={defaultLeftOpen}>
+          {children}
+        </SidebarProvider>
+        <MapNavigationControl />
+        <MapContextMenu
+          open={!!contextMenu}
+          onOpenChange={handleCloseContextMenu}
+          position={contextMenu ?? { x: 0, y: 0, longitude: 0, latitude: 0 }}
+        />
         <AttributionControl position={isMobile ? "top-left" : "bottom-right"} />
       </Map>
     </WorkspaceContext.Provider>
