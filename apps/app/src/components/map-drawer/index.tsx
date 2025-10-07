@@ -37,7 +37,9 @@ export function MapDrawer({
       if (!container) return;
 
       if (mobileInitialScrollPosition === "bottom") {
-        container.scrollTo({ top: 0, behavior: "auto" });
+        setTimeout(() => {
+          container.scrollTo({ top: 0, behavior: "auto" });
+        }, 100);
       } else if (mobileInitialScrollPosition === "top") {
         setTimeout(() => {
           container.scrollTo({

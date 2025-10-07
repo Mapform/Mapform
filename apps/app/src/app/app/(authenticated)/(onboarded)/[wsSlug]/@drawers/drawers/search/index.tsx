@@ -20,7 +20,7 @@ import {
 import { MapDrawer, MapDrawerToolbar } from "~/components/map-drawer";
 import { useParamsContext } from "~/lib/params/client";
 import { useDebounce } from "@mapform/lib/hooks/use-debounce";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import type { SearchRows } from "@mapform/backend/data/rows/search-rows";
 import type { Search } from "@mapform/backend/data/stadia/search";
 import { Button } from "@mapform/ui/components/button";
@@ -67,6 +67,7 @@ export function Search({
   const { params, setQueryStates, isPending, drawerDepth } = useParamsContext();
   const [query, setQuery] = useState(params.query);
   const debouncedSearchQuery = useDebounce(query, 200);
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
   const filteredFeatures = searchResults?.features;
 
@@ -103,6 +104,19 @@ export function Search({
                 onValueChange={setQuery}
                 value={query ?? ""}
                 autoFocus
+                ref={inputRef}
+                onFocus={() => {
+                  // iOS fix to attempt to keep input visible when the keyboard opens
+                  const container = document.querySelector<HTMLElement>(
+                    "[data-map-scroll-container]",
+                  );
+                  if (!container) return;
+
+                  container.scrollTo({
+                    top: window.innerHeight - 200,
+                    behavior: "auto",
+                  });
+                }}
               />
               <Button
                 className="absolute right-0 top-0"
