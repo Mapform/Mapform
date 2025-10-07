@@ -53,39 +53,34 @@ export function MapDrawer({
     return (
       <>
         {open && depth === 0 && (
-          <div
-            className="z-50 h-dvh w-dvw transform-none overflow-y-auto"
-            data-map-scroll-container
+          <motion.div
+            className={cn(
+              "bg-background group relative z-20 mt-[calc(100dvh-200px)] flex h-fit min-h-dvh !w-dvw flex-col bg-white pb-20 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] outline-none transition-[filter,width,padding-left] duration-[250] [--y-from:200px] [--y-to:0]",
+              className,
+            )}
+            layoutScroll
+            animate="open"
+            initial="closed"
+            exit="closed"
+            transition={{
+              duration: 0.25,
+            }}
+            variants={{
+              open: {
+                opacity: 1,
+                y: "var(--y-to, 0)",
+              },
+              closed: {
+                opacity: 0,
+                y: "var(--y-from, 0)",
+              },
+            }}
+            style={{
+              zIndex: 30 - depth,
+            }}
           >
-            <motion.div
-              className={cn(
-                "bg-background group relative z-50 mt-[calc(100dvh-200px)] flex h-fit min-h-dvh !w-dvw flex-col bg-white pb-20 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] outline-none transition-[filter,width,padding-left] duration-[250] [--y-from:200px] [--y-to:0]",
-                className,
-              )}
-              layoutScroll
-              animate="open"
-              initial="closed"
-              exit="closed"
-              transition={{
-                duration: 0.25,
-              }}
-              variants={{
-                open: {
-                  opacity: 1,
-                  y: "var(--y-to, 0)",
-                },
-                closed: {
-                  opacity: 0,
-                  y: "var(--y-from, 0)",
-                },
-              }}
-              style={{
-                zIndex: 30 - depth,
-              }}
-            >
-              <div className="flex min-h-full flex-1 flex-col">{children}</div>
-            </motion.div>
-          </div>
+            <div className="flex min-h-full flex-1 flex-col">{children}</div>
+          </motion.div>
         )}
       </>
     );

@@ -356,16 +356,20 @@ export function WorkspaceProvider({
           POLYGONS_OUTLINE_LAYER_ID,
         ]}
       >
-        <SidebarProvider defaultOpen={defaultLeftOpen}>
-          {children}
-        </SidebarProvider>
-        <MapNavigationControl />
-        <MapContextMenu
-          open={!!contextMenu}
-          onOpenChange={handleCloseContextMenu}
-          position={contextMenu ?? { x: 0, y: 0, longitude: 0, latitude: 0 }}
-        />
-        <AttributionControl position={isMobile ? "top-left" : "bottom-right"} />
+        <div className="h-dvh w-dvw overflow-y-auto" data-map-scroll-container>
+          <SidebarProvider defaultOpen={defaultLeftOpen}>
+            {children}
+          </SidebarProvider>
+          <MapNavigationControl />
+          <MapContextMenu
+            open={!!contextMenu}
+            onOpenChange={handleCloseContextMenu}
+            position={contextMenu ?? { x: 0, y: 0, longitude: 0, latitude: 0 }}
+          />
+          <AttributionControl
+            position={isMobile ? "top-left" : "bottom-right"}
+          />
+        </div>
       </Map>
     </WorkspaceContext.Provider>
   );

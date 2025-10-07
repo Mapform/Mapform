@@ -12,10 +12,7 @@ export type ConversationProps = ComponentProps<typeof StickToBottom>;
 
 export const Conversation = ({ className, ...props }: ConversationProps) => (
   <StickToBottom
-    className={cn(
-      "relative flex-1 overflow-visible md:overflow-y-auto",
-      className,
-    )}
+    className={cn("relative flex-1 overflow-y-auto", className)}
     initial="smooth"
     resize="smooth"
     role="log"
@@ -27,9 +24,6 @@ export type ConversationContentProps = ComponentProps<
   typeof StickToBottom.Content
 >;
 
-/**
- * Custom scroll binder to handle special mobile behavior in Mapform
- */
 function ConversationMobileScrollBinder() {
   const { scrollRef } = useStickToBottomContext();
   const isMobile = useIsMobile();
