@@ -4,8 +4,9 @@ import { Button } from "../button";
 import { cn } from "@mapform/lib/classnames";
 import { ArrowDownIcon } from "lucide-react";
 import type { ComponentProps } from "react";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { StickToBottom, useStickToBottomContext } from "use-stick-to-bottom";
+import { useIsMobile } from "@mapform/lib/hooks/use-is-mobile";
 
 export type ConversationProps = ComponentProps<typeof StickToBottom>;
 
@@ -23,11 +24,43 @@ export type ConversationContentProps = ComponentProps<
   typeof StickToBottom.Content
 >;
 
+function ConversationMobileScrollBinder() {
+  const { scrollRef } = useStickToBottomContext();
+  const isMobile = useIsMobile();
+
+  useEffect(() => {
+    if (!isMobile) return;
+
+    const container = document.querySelector<HTMLElement>(
+      "[data-map-scroll-container]",
+    );
+    if (!container) return;
+
+    (scrollRef as unknown as (instance: HTMLElement | null) => void)(container);
+
+    return () => {
+      (scrollRef as unknown as (instance: HTMLElement | null) => void)(null);
+    };
+  }, [isMobile, scrollRef]);
+
+  return null;
+}
+
 export const ConversationContent = ({
   className,
+  children,
   ...props
 }: ConversationContentProps) => (
-  <StickToBottom.Content className={cn("p-4", className)} {...props} />
+  <StickToBottom.Content className={cn("p-4", className)} {...props}>
+    {(context) => (
+      <>
+        <ConversationMobileScrollBinder />
+        {typeof children === "function"
+          ? (children as (ctx: unknown) => React.ReactNode)(context)
+          : children}
+      </>
+    )}
+  </StickToBottom.Content>
 );
 
 export type ConversationScrollButtonProps = ComponentProps<typeof Button>;
@@ -39,7 +72,7 @@ export const ConversationScrollButton = ({
   const { isAtBottom, scrollToBottom } = useStickToBottomContext();
 
   const handleScrollToBottom = useCallback(() => {
-    scrollToBottom();
+    void scrollToBottom();
   }, [scrollToBottom]);
 
   return (

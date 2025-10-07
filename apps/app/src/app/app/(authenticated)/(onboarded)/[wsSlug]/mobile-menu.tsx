@@ -47,14 +47,14 @@ export function MobileMenu() {
   return (
     <div className="fixed bottom-4 left-1/2 z-50 mx-auto flex max-w-[calc(100%-2rem)] -translate-x-1/2 gap-1 rounded-full border bg-white/90 px-3 py-1 shadow-md backdrop-blur-sm md:hidden">
       <Button
-        size="icon"
+        size="icon-lg"
         variant="ghost"
         onClick={() => setOpenMobile(!openMobile)}
       >
-        <MenuIcon className="size-4" />
+        <MenuIcon className="size-5" />
       </Button>
       <Button
-        variant="secondary"
+        size="lg"
         onClick={async () => {
           const searchDepth = drawerDepth.get("search");
 
@@ -77,9 +77,10 @@ export function MobileMenu() {
           });
         }}
       >
-        <SparklesIcon className="size-4" /> Search and ask...
+        <SparklesIcon className="size-5" /> Search or ask...
       </Button>
       <Button
+        size="icon-lg"
         variant="ghost"
         disabled={isPending}
         onClick={() => {
@@ -99,9 +100,9 @@ export function MobileMenu() {
         }}
       >
         {isPending ? (
-          <Loader2Icon className="size-4 animate-spin" />
+          <Loader2Icon className="size-5 animate-spin" />
         ) : (
-          <MapPlusIcon className="size-4" />
+          <MapPlusIcon className="size-5" />
         )}
       </Button>
     </div>
