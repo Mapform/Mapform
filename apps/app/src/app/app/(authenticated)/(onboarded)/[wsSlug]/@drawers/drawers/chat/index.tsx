@@ -287,10 +287,7 @@ function ChatInner({
         <ConversationScrollButton />
       </Conversation>
 
-      <div
-        className="bg-background flex flex-shrink-0 flex-col max-md:sticky"
-        style={{ bottom: "env(safe-area-inset-bottom)" }}
-      >
+      <div className="bg-background flex flex-shrink-0 flex-col max-md:sticky max-md:bottom-0">
         {hasReachedTokenLimit && (
           <Alert className="rounded-none border-t">
             <AlertIcon icon={ClockFadingIcon} />
