@@ -25,6 +25,7 @@ export function SearchDetailsWrapper({
     <MapDrawer
       open={!!params.stadiaId}
       depth={drawerDepth.get("stadiaId") ?? 0}
+      mobileInitialScrollPosition="bottom"
     >
       {children}
     </MapDrawer>
