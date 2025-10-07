@@ -62,6 +62,7 @@ export function ChatWrapper({ children }: { children: React.ReactNode }) {
       open={!!params.chatId}
       depth={drawerDepth.get("chatId") ?? 0}
       mobileInitialScrollPosition="top"
+      className="pb-0"
     >
       {children}
     </MapDrawer>
