@@ -24,6 +24,9 @@ export type ConversationContentProps = ComponentProps<
   typeof StickToBottom.Content
 >;
 
+/**
+ * Custom scroll binder to handle special mobile behavior in Mapform
+ */
 function ConversationMobileScrollBinder() {
   const { scrollRef } = useStickToBottomContext();
   const isMobile = useIsMobile();
