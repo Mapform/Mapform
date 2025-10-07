@@ -54,7 +54,7 @@ export function MapDrawer({
       <>
         {open && depth === 0 && (
           <div
-            className="z-10 h-dvh w-dvw overflow-y-auto"
+            className="relative z-10 h-dvh w-dvw overflow-y-auto"
             data-map-scroll-container
           >
             <motion.div
