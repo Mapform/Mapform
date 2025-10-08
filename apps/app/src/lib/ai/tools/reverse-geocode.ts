@@ -55,6 +55,7 @@ export async function reverseGeocodeFunc(lat: number, lng: number) {
       address,
       latitude,
       longitude,
+      confidence: feature.properties.confidence ?? undefined,
     },
   ] satisfies AIResultLocation[];
 }

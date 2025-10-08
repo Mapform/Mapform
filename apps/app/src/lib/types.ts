@@ -38,6 +38,7 @@ interface StadiaAIResultLocation {
   longitude: number;
   wikidataId?: string;
   source: "stadia";
+  confidence?: number;
 }
 
 interface MapformAIResultLocation {
