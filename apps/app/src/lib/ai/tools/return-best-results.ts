@@ -30,8 +30,18 @@ export const returnBestResults = tool({
    * in its response to the user.
    */
   execute: async ({ finalResults, description }) => {
+    const uniqueFinalResults = (() => {
+      const seen = new Set<string>();
+      return finalResults.filter((r) => {
+        const key = `${r.source}:${r.id}`;
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+    })();
+
     const raw = await Promise.all(
-      finalResults.map(async (result) => {
+      uniqueFinalResults.map(async (result) => {
         // Enrich Stadia results with metadata
         if (result.source === "stadia") {
           const placeDetails = await publicDataService.details({
