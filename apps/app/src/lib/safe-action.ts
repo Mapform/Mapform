@@ -58,6 +58,9 @@ import { updateChat } from "@mapform/backend/data/chats/update-chat";
 import { deleteImage } from "@mapform/backend/data/images/delete-image";
 import { search as geoapifySearch } from "@mapform/backend/data/geoapify/search";
 import { forwardGeocode as geoapifyForwardGeocode } from "@mapform/backend/data/geoapify/forward";
+import { nearby as geoapifyNearby } from "@mapform/backend/data/geoapify/nearby";
+import { details as geoapifyDetails } from "@mapform/backend/data/geoapify/details";
+import { reverseGeocode as geoapifyReverseGeocode } from "@mapform/backend/data/geoapify/reverse";
 
 export const authClient = baseClient
   .use(async ({ next, ctx }) => {
@@ -203,6 +206,9 @@ export const publicDataService = {
   // Geoapify
   geoapifySearch: geoapifySearch(publicClient),
   geoapifyForwardGeocode: geoapifyForwardGeocode(publicClient),
+  geoapifyNearby: geoapifyNearby(publicClient),
+  geoapifyDetails: geoapifyDetails(publicClient),
+  geoapifyReverseGeocode: geoapifyReverseGeocode(publicClient),
 
   // Users
   getCurrentSession: getCurrentSession(publicClient),

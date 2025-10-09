@@ -38,7 +38,7 @@ import { openInGoogleMaps } from "~/lib/external-links/google";
 import { openInAppleMaps } from "~/lib/external-links/apple";
 import { useAction } from "next-safe-action/hooks";
 import { useParams } from "next/navigation";
-import type { Details } from "@mapform/backend/data/stadia/details";
+import type { Details } from "@mapform/backend/data/geoapify/details";
 import { useWorkspace } from "../../workspace-context";
 import { useParamsContext } from "~/lib/params/client";
 import { createRowWithExtrasAction } from "~/data/rows/create-row-with-extras";
@@ -80,18 +80,11 @@ export function PlaceDetailsContent({
   const [isAdding, setIsAdding] = useState(false);
   const properties = feature?.properties;
 
-  const wikidataId =
-    properties?.addendum?.osm?.wikidata ??
-    properties?.addendum?.whosonfirstConcordances?.wikidataId ??
-    undefined;
+  const wikidataId = properties?.datasource.raw.osm_id ?? undefined;
 
-  const website =
-    properties?.addendum?.osm?.website ??
-    properties?.addendum?.foursquare?.website;
-  const phone =
-    properties?.addendum?.osm?.phone ?? properties?.addendum?.foursquare?.tel;
-  const address =
-    properties?.formattedAddressLine ?? properties?.coarseLocation;
+  const website = properties?.website;
+  const phone = properties?.contact?.phone;
+  const address = properties?.address_line2;
   const wikiData = useWikidataImage(wikidataId);
 
   // Flatten all projects from all teamspaces
@@ -155,8 +148,8 @@ export function PlaceDetailsContent({
 
       execute({
         projectId,
-        name: placeName,
-        stadiaId: properties?.gid,
+        name: properties?.address_line1,
+        stadiaId: properties?.place_id,
         osmId: wikidataId,
         geometry: {
           type: "Point",
@@ -200,7 +193,7 @@ export function PlaceDetailsContent({
     }
   };
 
-  const placeName = properties?.name ?? "Marked Location";
+  const placeName = properties?.address_line1 ?? "Marked Location";
 
   return (
     <>

@@ -1,6 +1,6 @@
 import { reverseGeocodeSchema } from "./schema";
 import type { UnwrapReturn, PublicClient } from "../../../lib/types";
-import { geoapifyClient, geoapifyFeatureResponseSchema } from "../lib";
+import { geoapifyClient, geoapifyReverseResponseSchema } from "../lib";
 
 export const reverseGeocode = (authClient: PublicClient) =>
   authClient
@@ -12,7 +12,7 @@ export const reverseGeocode = (authClient: PublicClient) =>
           lng: lng,
         },
       });
-      return geoapifyFeatureResponseSchema.parse(response.data);
+      return geoapifyReverseResponseSchema.parse(response.data);
     });
 
 export type ReverseGeocode = UnwrapReturn<typeof reverseGeocode>;

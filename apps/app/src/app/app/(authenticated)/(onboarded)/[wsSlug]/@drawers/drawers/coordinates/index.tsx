@@ -7,7 +7,7 @@ import { XIcon } from "lucide-react";
 import { BasicSkeleton } from "~/components/skeletons/basic";
 import { PlaceDetailsContent } from "../../components/place-details-content";
 import { Marker } from "react-map-gl/maplibre";
-import type { ReverseGeocode } from "@mapform/backend/data/stadia/reverse";
+import type { ReverseGeocode } from "@mapform/backend/data/geoapify/reverse";
 import { MapPositioner } from "~/lib/map/map-positioner";
 
 interface CoordinatesProps {

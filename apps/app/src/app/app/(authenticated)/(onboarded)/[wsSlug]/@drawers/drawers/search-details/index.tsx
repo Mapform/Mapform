@@ -7,7 +7,7 @@ import { XIcon } from "lucide-react";
 import { BasicSkeleton } from "~/components/skeletons/basic";
 import { PlaceDetailsContent } from "../../components/place-details-content";
 import { Marker } from "react-map-gl/maplibre";
-import type { Details } from "@mapform/backend/data/stadia/details";
+import type { Details } from "@mapform/backend/data/geoapify/details";
 import { MapPositioner } from "~/lib/map/map-positioner";
 
 interface SearchDetailsProps {

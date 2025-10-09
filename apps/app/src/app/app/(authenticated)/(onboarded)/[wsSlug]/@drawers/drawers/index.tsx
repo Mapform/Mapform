@@ -48,7 +48,6 @@ export function Drawers(props: DealDrawerProps) {
 const getSearchResults = cache(
   async ({
     query,
-    bounds,
     center,
   }: {
     query: string;
@@ -145,7 +144,7 @@ async function ChatDrawer({ searchParams, params }: DealDrawerProps) {
 const getDetails = cache(async (id: string | null) => {
   if (!id) return null;
 
-  const placeDetails = await publicDataService.details({
+  const placeDetails = await publicDataService.geoapifyDetails({
     id,
   });
 
@@ -192,7 +191,7 @@ async function CoordinatesDrawer({ searchParams }: DealDrawerProps) {
   const [latitude, longitude] = marker?.split(",") ?? [];
 
   const details = marker
-    ? await publicDataService.reverseGeocode({
+    ? await publicDataService.geoapifyReverseGeocode({
         lat: Number(latitude),
         lng: Number(longitude),
       })

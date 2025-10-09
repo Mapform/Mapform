@@ -1,6 +1,6 @@
 import { nearbySchema } from "./schema";
 import type { UnwrapReturn, PublicClient } from "../../../lib/types";
-import { geoapifyClient, geoapifyFeatureResponseSchema } from "../lib";
+import { geoapifyClient, geoapifySearchResponseSchema } from "../lib";
 
 export const nearby = (authClient: PublicClient) =>
   authClient
@@ -13,7 +13,7 @@ export const nearby = (authClient: PublicClient) =>
           limit: limit,
         },
       });
-      return geoapifyFeatureResponseSchema.parse(response.data);
+      return geoapifySearchResponseSchema.parse(response.data);
     });
 
 export type Nearby = UnwrapReturn<typeof nearby>;

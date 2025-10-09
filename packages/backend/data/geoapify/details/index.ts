@@ -1,6 +1,6 @@
 import { detailsSchema } from "./schema";
 import type { UnwrapReturn, PublicClient } from "../../../lib/types";
-import { geoapifyClient, geoapifyFeatureResponseSchema } from "../lib";
+import { geoapifyClient, geoapifyDetailsResponseSchema } from "../lib";
 
 export const details = (authClient: PublicClient) =>
   authClient.schema(detailsSchema).action(async ({ parsedInput: { id } }) => {
@@ -10,7 +10,7 @@ export const details = (authClient: PublicClient) =>
       },
     });
 
-    return geoapifyFeatureResponseSchema.parse(response.data);
+    return geoapifyDetailsResponseSchema.parse(response.data);
   });
 
 export type Details = UnwrapReturn<typeof details>;

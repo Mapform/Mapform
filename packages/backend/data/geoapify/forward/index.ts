@@ -1,6 +1,6 @@
 import { forwardGeocodeSchema } from "./schema";
 import type { UnwrapReturn, PublicClient } from "../../../lib/types";
-import { geoapifyClient, geoapifyFeatureResponseSchema } from "../lib";
+import { geoapifyClient, geoapifyForwardResponseSchema } from "../lib";
 
 export const forwardGeocode = (authClient: PublicClient) =>
   authClient
@@ -13,7 +13,7 @@ export const forwardGeocode = (authClient: PublicClient) =>
           ...(center && { bias: `proximity:${center.lng},${center.lat}` }),
         },
       });
-      return geoapifyFeatureResponseSchema.parse(response.data);
+      return geoapifyForwardResponseSchema.parse(response.data);
     });
 
 export type ForwardGeocode = UnwrapReturn<typeof forwardGeocode>;

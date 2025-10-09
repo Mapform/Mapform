@@ -1,6 +1,6 @@
 import { searchSchema } from "./schema";
 import type { UnwrapReturn, PublicClient } from "../../../lib/types";
-import { geoapifyClient, geoapifyFeatureResponseSchema } from "../lib";
+import { geoapifyClient, geoapifySearchResponseSchema } from "../lib";
 
 export const search = (authClient: PublicClient) =>
   authClient
@@ -14,7 +14,7 @@ export const search = (authClient: PublicClient) =>
         },
       });
 
-      return geoapifyFeatureResponseSchema.parse(response.data);
+      return geoapifySearchResponseSchema.parse(response.data);
     });
 
 export type Search = UnwrapReturn<typeof search>;
