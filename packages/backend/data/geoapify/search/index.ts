@@ -6,14 +6,14 @@ export const search = (authClient: PublicClient) =>
   authClient
     .schema(searchSchema)
     .action(async ({ parsedInput: { query, limit = 5, center } }) => {
-      const response = await geoapifyClient.get("/geocode/autocomplete", {
+      const response = await geoapifyClient.get("/v1/geocode/autocomplete", {
         params: {
           text: query,
           limit: limit,
           ...(center && { bias: `proximity:${center.lng},${center.lat}` }),
         },
       });
-      console.log(1111, response.data?.features[0]);
+
       return geoapifyFeatureResponseSchema.parse(response.data);
     });
 

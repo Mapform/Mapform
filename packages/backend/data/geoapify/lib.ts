@@ -3,7 +3,7 @@ import axios from "axios";
 import { env } from "../../env.mjs";
 
 export const geoapifyClient = axios.create({
-  baseURL: "https://api.geoapify.com/v1",
+  baseURL: "https://api.geoapify.com",
   params: {
     apiKey: env.GEOAPIFY_API_KEY,
   },

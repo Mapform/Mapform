@@ -6,7 +6,7 @@ export const forwardGeocode = (authClient: PublicClient) =>
   authClient
     .schema(forwardGeocodeSchema)
     .action(async ({ parsedInput: { query, limit = 5, center } }) => {
-      const response = await geoapifyClient.get("/geocode/search", {
+      const response = await geoapifyClient.get("/v1/geocode/search", {
         params: {
           text: query,
           limit: limit,
