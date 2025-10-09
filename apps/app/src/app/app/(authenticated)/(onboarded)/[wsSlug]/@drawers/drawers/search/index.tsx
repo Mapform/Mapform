@@ -22,7 +22,7 @@ import { useParamsContext } from "~/lib/params/client";
 import { useDebounce } from "@mapform/lib/hooks/use-debounce";
 import { useState, useEffect, useRef } from "react";
 import type { SearchRows } from "@mapform/backend/data/rows/search-rows";
-import type { Search } from "@mapform/backend/data/stadia/search";
+import type { Search } from "@mapform/backend/data/geoapify/search";
 import { Button } from "@mapform/ui/components/button";
 import type { ListChats } from "@mapform/backend/data/chats/list-chats";
 import {
@@ -213,14 +213,14 @@ export function Search({
             ))}
             {filteredFeatures?.map((feature) => (
               <CommandItem
-                key={feature.properties.gid}
-                value={feature.properties.gid}
+                key={feature.properties.place_id}
+                value={feature.properties.place_id}
                 onSelect={async () => {
                   await setQueryStates({
                     stadiaId: null,
                   });
                   await setQueryStates({
-                    stadiaId: feature.properties.gid,
+                    stadiaId: feature.properties.place_id,
                     location: null,
                     zoom: null,
                     pitch: null,
@@ -230,11 +230,11 @@ export function Search({
               >
                 <GlobeIcon className="text-muted-foreground mr-2 size-4 flex-shrink-0" />
                 <span className="truncate">
-                  {feature.properties.name}
-                  {feature.properties.coarseLocation && (
+                  {feature.properties.address_line1}
+                  {feature.properties.address_line2 && (
                     <span className="text-muted-foreground ml-1 flex-shrink-0">
                       {" — "}
-                      {feature.properties.coarseLocation}
+                      {feature.properties.address_line2}
                     </span>
                   )}
                 </span>

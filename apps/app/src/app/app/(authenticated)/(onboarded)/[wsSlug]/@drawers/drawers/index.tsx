@@ -60,14 +60,7 @@ const getSearchResults = cache(
       center,
     });
 
-    console.log(222, results?.data?.features[0]);
-
-    const searchResults = await publicDataService.search({
-      query,
-      bounds,
-      center,
-    });
-    return searchResults;
+    return results;
   },
 );
 
