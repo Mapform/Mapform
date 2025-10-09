@@ -21,6 +21,33 @@ const basePropertiesSchema = z.object({
   category: z.string().optional(),
 });
 
+const baseGeometrySchema = z.union([
+  z.object({
+    type: z.literal("Point"),
+    coordinates: z.array(z.number()),
+  }),
+  z.object({
+    type: z.literal("Polygon"),
+    coordinates: z.array(z.array(z.array(z.number()))),
+  }),
+  z.object({
+    type: z.literal("LineString"),
+    coordinates: z.array(z.array(z.number())),
+  }),
+  z.object({
+    type: z.literal("MultiPolygon"),
+    coordinates: z.array(z.array(z.array(z.array(z.number())))),
+  }),
+  z.object({
+    type: z.literal("MultiLineString"),
+    coordinates: z.array(z.array(z.array(z.number()))),
+  }),
+  z.object({
+    type: z.literal("MultiPoint"),
+    coordinates: z.array(z.array(z.number())),
+  }),
+]);
+
 export const geoapifySearchResponseSchema = z.object({
   type: z.string(),
   features: z.array(
@@ -34,10 +61,7 @@ export const geoapifySearchResponseSchema = z.object({
         }),
       }),
       bbox: z.array(z.number()),
-      geometry: z.object({
-        type: z.string(),
-        coordinates: z.array(z.number()),
-      }),
+      geometry: baseGeometrySchema,
     }),
   ),
 });
@@ -62,15 +86,12 @@ export const geoapifyDetailsResponseSchema = z.object({
           .optional(),
         datasource: z.object({
           raw: z.object({
-            osm_id: z.string().optional(),
+            osm_id: z.number().optional(),
             osm_type: z.string().optional(),
           }),
         }),
       }),
-      geometry: z.object({
-        type: z.string(),
-        coordinates: z.array(z.number()),
-      }),
+      geometry: baseGeometrySchema,
     }),
   ),
 });

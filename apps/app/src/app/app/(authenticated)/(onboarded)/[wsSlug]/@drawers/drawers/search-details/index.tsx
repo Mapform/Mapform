@@ -64,8 +64,8 @@ export function SearchDetailsEmpty() {
 export function SearchDetails({ details }: SearchDetailsProps) {
   const { setQueryStates, drawerDepth } = useParamsContext();
 
-  const longitude = details?.features[0]?.geometry?.coordinates[0];
-  const latitude = details?.features[0]?.geometry?.coordinates[1];
+  const longitude = details?.features[0]?.properties?.lon;
+  const latitude = details?.features[0]?.properties?.lat;
 
   return (
     <MapPositioner
@@ -101,8 +101,8 @@ export function SearchDetails({ details }: SearchDetailsProps) {
 function SearchDetailsInner({ details }: SearchDetailsProps) {
   const { setQueryStates } = useParamsContext();
 
-  const longitude = details?.features[0]?.geometry?.coordinates[0];
-  const latitude = details?.features[0]?.geometry?.coordinates[1];
+  const longitude = details?.features[0]?.properties?.lon;
+  const latitude = details?.features[0]?.properties?.lat;
   const feature = details?.features[0];
 
   if (!longitude || !latitude || !feature)
