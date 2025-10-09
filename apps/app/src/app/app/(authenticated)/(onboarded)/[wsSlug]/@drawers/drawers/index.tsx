@@ -55,6 +55,13 @@ const getSearchResults = cache(
     bounds?: [number, number, number, number];
     center?: { lat: number; lng: number };
   }) => {
+    const results = await publicDataService.geoapifySearch({
+      query,
+      center,
+    });
+
+    console.log(222, results?.data?.features[0]);
+
     const searchResults = await publicDataService.search({
       query,
       bounds,

@@ -10,24 +10,29 @@ export const geoapifyClient = axios.create({
 });
 
 export const geoapifyFeatureResponseSchema = z.object({
-  name: z.string(),
-  formatted: z.string(),
-  address_line1: z.string(),
-  address_line2: z.string(),
-  category: z.string(),
-  datasource: z.object({
-    sourcename: z.string(),
-    attribution: z.string(),
-    license: z.string(),
-    url: z.string(),
-  }),
-  rank: z.object({
-    importance: z.number(),
-    confidence: z.number(),
-    confidence_city_level: z.number(),
-    match_type: z.string(),
-  }),
-  lat: z.number(),
-  lon: z.number(),
-  place_id: z.string(),
+  type: z.string(),
+  features: z.array(
+    z.object({
+      type: z.string(),
+      properties: z.object({
+        place_id: z.string(),
+        lat: z.number(),
+        lon: z.number(),
+        formatted: z.string(),
+        address_line1: z.string(),
+        address_line2: z.string(),
+        category: z.string().optional(),
+        rank: z.object({
+          importance: z.number(),
+          confidence: z.number(),
+          match_type: z.string(),
+        }),
+      }),
+      bbox: z.array(z.number()),
+      geometry: z.object({
+        type: z.string(),
+        coordinates: z.array(z.number()),
+      }),
+    }),
+  ),
 });

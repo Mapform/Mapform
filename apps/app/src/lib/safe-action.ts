@@ -56,6 +56,8 @@ import { updateColumnOrder } from "@mapform/backend/data/columns/update-column-o
 import { db } from "@mapform/db";
 import { updateChat } from "@mapform/backend/data/chats/update-chat";
 import { deleteImage } from "@mapform/backend/data/images/delete-image";
+import { search as geoapifySearch } from "@mapform/backend/data/geoapify/search";
+import { forwardGeocode as geoapifyForwardGeocode } from "@mapform/backend/data/geoapify/forward";
 
 export const authClient = baseClient
   .use(async ({ next, ctx }) => {
@@ -197,6 +199,10 @@ export const publicDataService = {
   details: details(publicClient),
   reverseGeocode: reverseGeocode(publicClient),
   forwardGeocode: forwardGeocode(publicClient),
+
+  // Geoapify
+  geoapifySearch: geoapifySearch(publicClient),
+  geoapifyForwardGeocode: geoapifyForwardGeocode(publicClient),
 
   // Users
   getCurrentSession: getCurrentSession(publicClient),
