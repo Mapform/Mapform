@@ -10,6 +10,7 @@ export const env = createEnv({
     STADIA_API_KEY: z.string().min(1),
     RESEND_API_KEY: z.string().min(1),
     RESEND_AUDIENCE_ID: z.string().min(1),
+    GEOAPIFY_API_KEY: z.string().min(1),
   },
   client: {
     NEXT_PUBLIC_BASE_URL: z.string().url().min(1),
@@ -23,5 +24,6 @@ export const env = createEnv({
     STADIA_API_KEY: process.env.STADIA_API_KEY,
     RESEND_API_KEY: process.env.RESEND_API_KEY,
     RESEND_AUDIENCE_ID: process.env.RESEND_AUDIENCE_ID,
+    GEOAPIFY_API_KEY: process.env.GEOAPIFY_API_KEY,
   },
 });

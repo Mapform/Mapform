@@ -14,6 +14,7 @@
     "@t3-oss/env-nextjs": "catalog:",
     "@vercel/blob": "catalog:",
     "ai": "catalog:",
+    "axios": "^1.12.2",
     "inngest": "^3.39.2",
     "next-safe-action": "catalog:",
     "openai": "^5.7.0",
