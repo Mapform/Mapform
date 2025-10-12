@@ -5,12 +5,12 @@ import type { AIResultLocation } from "~/lib/types";
 
 export const findRawExternalFeatures = tool({
   description:
-    "Forward geocoding (search) endpoint to search for addresses, points of interest, and administrative areas.",
+    "Forward geocoding (search) endpoint to search for addresses, points of interest, and administrative areas. The tool returns results in order of relevance. ",
   inputSchema: z.object({
     query: z
       .string()
       .describe(
-        "The name OR address of the place to search for. If you have both, ALWAYS search using the name. Queries must be kept simple. GOOD QUERY examples: 'Paris, France', 'Eiffel Tower', '123 Main St. San Francisco, CA', etc. BAD QUERY examples: 'Restaurants near Mile End Montreal', 'Maman Jeanne Montreal Ethiopian Restaurant address', 'La Banquise at 994 Rue Rachel E, Montreal'.",
+        "The name OR address of the place to search for. If you have both, ALWAYS search using the name. You can further constrain the query by appending adding the city name. Queries must be kept simple - no fuzzy searches! GOOD QUERY examples: 'Paris, France', 'Eiffel Tower', '123 Main St. San Francisco, CA', etc. BAD QUERY examples: 'Restaurants near Mile End Montreal', 'Maman Jeanne Montreal Ethiopian Restaurant address', 'La Banquise at 994 Rue Rachel E, Montreal'.",
       ),
     bounds: z
       .array(z.number())
@@ -25,7 +25,7 @@ export const findRawExternalFeatures = tool({
       })
       .optional()
       .describe(
-        "Optional center to bias results towards a specific geographic area.",
+        "Optional center to bias results towards a specific geographic area. Try to use this as much as possible. For example, if the user asks for restaurants in Montreal, you should use the lat and lng of Montreal.",
       ),
   }),
   execute: async ({ query, bounds }) => {
@@ -77,11 +77,9 @@ export async function findRawExternalFeaturesFunc(
         latitude,
         longitude,
         source: "stadia",
+        confidence: feature.properties.confidence ?? undefined,
       } satisfies AIResultLocation;
     });
-
-    console.debug("findRawExternalFeatures query: ", query);
-    console.debug("findRawExternalFeatures detailedResults: ", detailedResults);
 
     return detailedResults;
   } catch (error) {

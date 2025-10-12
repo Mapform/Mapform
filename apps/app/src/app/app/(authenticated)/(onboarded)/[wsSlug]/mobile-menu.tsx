@@ -10,12 +10,15 @@ import { useParamsContext } from "~/lib/params/client";
 import { useWorkspace } from "./workspace-context";
 import { useAuth } from "~/app/root-providers";
 import { useMap } from "react-map-gl/maplibre";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
+import { useGeolocation } from "@mapform/lib/hooks/use-geolocation";
 
 export function MobileMenu() {
   const map = useMap();
   const router = useRouter();
   const { user } = useAuth();
+  const { coords } = useGeolocation();
+  const { pId } = useParams<{ pId?: string }>();
   const { params } = useParamsContext();
   const { openMobile, setOpenMobile } = useSidebar();
   const { drawerDepth, setQueryStates } = useParamsContext();
@@ -74,6 +77,15 @@ export function MobileMenu() {
             search: params.search === "1" ? null : "1",
             chatId: null,
             query: null,
+            chatOptions:
+              params.search !== "1"
+                ? {
+                    firstMessage: null,
+                    mapCenter: true,
+                    userCenter: !!coords,
+                    projects: pId ? [pId] : null,
+                  }
+                : null,
           });
         }}
       >

@@ -157,7 +157,10 @@ export function Search({
           <CommandGroup>
             {query && (
               <CommandItem
-                onSelect={() => {
+                onSelect={async () => {
+                  await setQueryStates({
+                    chatId: null,
+                  });
                   void setQueryStates({
                     chatId: "new",
                     query: null,
@@ -180,6 +183,9 @@ export function Search({
                 key={result.id}
                 value={result.id}
                 onSelect={async () => {
+                  await setQueryStates({
+                    rowId: null,
+                  });
                   await setQueryStates({
                     rowId: result.id,
                     location: null,
@@ -210,6 +216,9 @@ export function Search({
                 key={feature.properties.gid}
                 value={feature.properties.gid}
                 onSelect={async () => {
+                  await setQueryStates({
+                    stadiaId: null,
+                  });
                   await setQueryStates({
                     stadiaId: feature.properties.gid,
                     location: null,
@@ -267,6 +276,9 @@ function ChatItem({ chat }: { chat: NonNullable<ListChats["data"]>[number] }) {
           value={chat.id}
           disabled={isDeletingChat}
           onSelect={async () => {
+            await setQueryStates({
+              chatId: null,
+            });
             await setQueryStates({ chatId: chat.id }, { shallow: false });
           }}
         >

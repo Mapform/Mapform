@@ -5,7 +5,7 @@ import type { AIResultLocation } from "~/lib/types";
 
 export const returnBestResults = tool({
   description:
-    "Return the final evaluated location results to present to the user. Only return results that make sense based on the user query. ONLY results from the reverseGeocode, findRawInternalFeatures, and findRawExternalFeatures tools can be passed to this tool. Call this tool exactly once before finishing your response to display the selected location data.",
+    "Return the final evaluated location results to present to the user. Only return results that make sense based on the user query. You can use the confidence score to help you decide which results to return. ONLY results from the reverseGeocode, findRawInternalFeatures, and findRawExternalFeatures tools can be passed to this tool. Call this tool exactly once before finishing your response to display the selected location data.",
   inputSchema: z.object({
     finalResults: z.array(
       z.object({
@@ -14,6 +14,7 @@ export const returnBestResults = tool({
         address: z.string().optional().describe("The location address."),
         latitude: z.number().describe("The location latitude."),
         longitude: z.number().describe("The location longitude."),
+        confidence: z.number().optional().describe("The location confidence."),
         source: z
           .enum(["stadia", "mapform"])
           .describe("The source of the location."),
@@ -30,8 +31,18 @@ export const returnBestResults = tool({
    * in its response to the user.
    */
   execute: async ({ finalResults, description }) => {
+    const uniqueFinalResults = (() => {
+      const seen = new Set<string>();
+      return finalResults.filter((r) => {
+        const key = `${r.source}:${r.id}`;
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+    })();
+
     const raw = await Promise.all(
-      finalResults.map(async (result) => {
+      uniqueFinalResults.map(async (result) => {
         // Enrich Stadia results with metadata
         if (result.source === "stadia") {
           const placeDetails = await publicDataService.details({

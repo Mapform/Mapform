@@ -168,6 +168,16 @@ export function Message({ message }: ChatMessageProps) {
             }
 
             if (part.state === "output-available") {
+              const uniqueFinalResults = (() => {
+                const seen = new Set<string>();
+                return part.output.results.filter((r) => {
+                  const key = `${r.source}:${r.id}`;
+                  if (seen.has(key)) return false;
+                  seen.add(key);
+                  return true;
+                });
+              })();
+
               return (
                 <>
                   <Response className="my-4">
@@ -175,7 +185,7 @@ export function Message({ message }: ChatMessageProps) {
                   </Response>
                   <PickLocationsMessage
                     key={part.toolCallId}
-                    results={part.output.results}
+                    results={uniqueFinalResults}
                   />
                 </>
               );
