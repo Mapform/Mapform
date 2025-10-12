@@ -336,7 +336,8 @@ export function WorkspaceProvider({
         cursor={cursor}
         minZoom={minZoom}
         onLoad={handleOnLoad}
-        onContextMenu={handleContextMenu}
+        // TODO: Disable for now since reverse-geocoding is being disabled
+        // onContextMenu={handleContextMenu}
         onTouchStart={handleTouchStart}
         onMove={cancelLongPress}
         onMoveEnd={handleOnMoveEnd}

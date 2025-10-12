@@ -106,7 +106,8 @@ export async function POST(req: Request) {
           messages: convertToModelMessages(messages),
           tools: {
             findRawInternalFeatures,
-            reverseGeocode,
+            // TODO: Disable for now since reverse-geocoding is being disabled
+            // reverseGeocode,
             findRawExternalFeatures,
             returnBestResults,
             webSearch,
