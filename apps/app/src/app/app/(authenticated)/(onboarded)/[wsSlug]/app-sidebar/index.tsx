@@ -1,53 +1,53 @@
 "use client";
 
+import { useGeolocation } from "@mapform/lib/hooks/use-geolocation";
+import { Avatar, AvatarFallback } from "@mapform/ui/components/avatar";
+import { Button } from "@mapform/ui/components/button";
 import {
   DropdownMenu,
-  DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from "@mapform/ui/components/dropdown-menu";
 import {
+  Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarHeader,
-  Sidebar,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
 } from "@mapform/ui/components/sidebar";
+import { toast } from "@mapform/ui/components/toaster";
 import {
   ChevronsUpDown,
   GalleryVerticalEnd,
-  HomeIcon,
-  Settings2Icon,
-  LogOutIcon,
-  PlusIcon,
   HelpCircleIcon,
-  SparklesIcon,
-  MapPlusIcon,
+  HomeIcon,
   Loader2Icon,
+  LogOutIcon,
+  MapPlusIcon,
+  PlusIcon,
+  Settings2Icon,
+  SparklesIcon,
 } from "lucide-react";
-import { Avatar, AvatarFallback } from "@mapform/ui/components/avatar";
 import Link from "next/link";
 import { useParams, usePathname, useRouter } from "next/navigation";
-import { signOutAction } from "~/data/auth/sign-out";
-import { useAuth } from "~/app/root-providers";
-import { useWorkspace } from "../workspace-context";
-import { useState } from "react";
-import { Files } from "./files";
-import { createProjectAction } from "~/data/projects/create-project";
 import { useAction } from "next-safe-action/hooks";
-import { toast } from "@mapform/ui/components/toaster";
+import { useState } from "react";
 import { useMap } from "react-map-gl/maplibre";
+import { useAuth } from "~/app/root-providers";
+import { signOutAction } from "~/data/auth/sign-out";
+import { createProjectAction } from "~/data/projects/create-project";
 import { useParamsContext } from "~/lib/params/client";
-import { Button } from "@mapform/ui/components/button";
-import { useGeolocation } from "@mapform/lib/hooks/use-geolocation";
+import { useWorkspace } from "../workspace-context";
+import { Files } from "./files";
 
 export function AppSidebar() {
   const map = useMap();
@@ -300,7 +300,7 @@ export function AppSidebar() {
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-            <Link href="mailto:support@mapform.co">
+            <Link href="mailto:hello@nichaley.com">
               <SidebarMenuButton>
                 <HelpCircleIcon className="size-4" />
                 Support

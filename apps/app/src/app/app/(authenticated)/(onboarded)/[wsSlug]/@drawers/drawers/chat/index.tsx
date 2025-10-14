@@ -1,49 +1,48 @@
 "use client";
 
-import { MapDrawer, MapDrawerToolbar } from "~/components/map-drawer";
-import { useParamsContext } from "~/lib/params/client";
+import { useChat } from "@ai-sdk/react";
 import { cn } from "@mapform/lib/classnames";
-import { AutoSizeTextArea } from "@mapform/ui/components/autosize-text-area";
-import { Button } from "@mapform/ui/components/button";
+import { useGeolocation } from "@mapform/lib/hooks/use-geolocation";
 import {
   Conversation,
   ConversationContent,
   ConversationScrollButton,
 } from "@mapform/ui/components/ai-elements/conversation";
 import {
-  Loader2,
-  ArrowUpIcon,
-  SquareIcon,
-  SquarePenIcon,
-  XIcon,
-  ClockFadingIcon,
-} from "lucide-react";
-
-import { useChat } from "@ai-sdk/react";
-import { useEffect, useRef, useState } from "react";
-import { AnimatePresence } from "motion/react";
-import * as motion from "motion/react-client";
-import type { ChatMessage } from "~/lib/types";
-import { Message } from "./message";
-import { DefaultChatTransport } from "ai";
-import { useParams } from "next/navigation";
-import { BasicSkeleton } from "~/components/skeletons/basic";
-import { toast } from "@mapform/ui/components/toaster";
-import { useAction } from "next-safe-action/hooks";
-import { createChatAction } from "~/data/chats/create-chat";
-import { useWorkspace } from "../../../workspace-context";
-import {
   Alert,
   AlertDescription,
   AlertIcon,
 } from "@mapform/ui/components/alert";
-import Link from "next/link";
-import { MapPositioner } from "~/lib/map/map-positioner";
+import { AutoSizeTextArea } from "@mapform/ui/components/autosize-text-area";
 import { Badge } from "@mapform/ui/components/badge";
-import { useMap } from "react-map-gl/maplibre";
-import { useGeolocation } from "@mapform/lib/hooks/use-geolocation";
-import { AddContextDropdown } from "~/components/add-context-dropdown";
+import { Button } from "@mapform/ui/components/button";
+import { toast } from "@mapform/ui/components/toaster";
+import { DefaultChatTransport } from "ai";
+import {
+  ArrowUpIcon,
+  ClockFadingIcon,
+  Loader2,
+  SquareIcon,
+  SquarePenIcon,
+  XIcon,
+} from "lucide-react";
+import { AnimatePresence } from "motion/react";
+import * as motion from "motion/react-client";
+import Link from "next/link";
+import { useParams } from "next/navigation";
+import { useAction } from "next-safe-action/hooks";
 import { nullish } from "node_modules/zod/dist/esm/v4/core/util";
+import { useEffect, useRef, useState } from "react";
+import { useMap } from "react-map-gl/maplibre";
+import { AddContextDropdown } from "~/components/add-context-dropdown";
+import { MapDrawer, MapDrawerToolbar } from "~/components/map-drawer";
+import { BasicSkeleton } from "~/components/skeletons/basic";
+import { createChatAction } from "~/data/chats/create-chat";
+import { MapPositioner } from "~/lib/map/map-positioner";
+import { useParamsContext } from "~/lib/params/client";
+import type { ChatMessage } from "~/lib/types";
+import { useWorkspace } from "../../../workspace-context";
+import { Message } from "./message";
 
 interface ChatProps {
   chatWithMessages?: {
@@ -296,7 +295,7 @@ function ChatInner({
             <AlertIcon icon={ClockFadingIcon} />
             <AlertDescription>
               You have reached your daily token limit. To increase your limit
-              please <Link href="mailto:support@mapform.co">reach out</Link>.
+              please <Link href="mailto:hello@nichaley.com">reach out</Link>.
             </AlertDescription>
           </Alert>
         )}

@@ -1,24 +1,24 @@
 "use client";
 
 import { Button } from "@mapform/ui/components/button";
-import Link from "next/link";
-// import { Tooltip, TooltipContent, TooltipTrigger } from "@mapform/ui/components/tooltip";
-import { Globe } from "./globe";
 import { ArrowUpRightIcon } from "lucide-react";
 import Image, { type StaticImageData } from "next/image";
-import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import fairmount from "public/static/images/fairmount.jpg";
-import leTrou from "public/static/images/letrou.jpg";
-import stViateur from "public/static/images/stviateur.jpg";
 import highLine from "public/static/images/highline.jpg";
-import tajMahal from "public/static/images/tajmahal.jpg";
+import leTrou from "public/static/images/letrou.jpg";
 import machuPicchu from "public/static/images/machupicchu.jpg";
+import met from "public/static/images/met.jpg";
 import petra from "public/static/images/petra.jpg";
 import statueOfLiberty from "public/static/images/statueofliberty.jpg";
-import met from "public/static/images/met.jpg";
+import stViateur from "public/static/images/stviateur.jpg";
+import tajMahal from "public/static/images/tajmahal.jpg";
 import tokyo1 from "public/static/images/tokyo1.jpg";
 import tokyo2 from "public/static/images/tokyo2.jpg";
 import tokyo3 from "public/static/images/tokyo3.jpg";
+import { useEffect, useMemo, useState } from "react";
+// import { Tooltip, TooltipContent, TooltipTrigger } from "@mapform/ui/components/tooltip";
+import { Globe } from "./globe";
 import Places from "./places";
 import { TextBox } from "./text-box";
 
@@ -221,7 +221,7 @@ export function Hero() {
                 </Button>
               </Link>
               <Link
-                href="mailto:contact@mapform.co?subject=I'd like to learn more about Mapform"
+                href="mailto:hello@nichaley.com?subject=I'd like to learn more about Mapform"
                 target="_blank"
               >
                 <Button
