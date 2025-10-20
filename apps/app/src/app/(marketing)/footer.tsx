@@ -1,6 +1,6 @@
 const navigation = {
   main: [
-    { name: "Contact", href: "mailto:contact@mapform.co" },
+    { name: "Contact", href: "mailto:hello@nichaley.com" },
     { name: "Changelog", href: "https://mapform.productlane.com/changelog" },
     { name: "Roadmap", href: "https://mapform.productlane.com/roadmap" },
     { name: "Terms of service", href: "/terms-of-use" },
