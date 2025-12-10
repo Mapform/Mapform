@@ -7,7 +7,7 @@
     "clsx": "catalog:",
     "lodash-es": "catalog:",
     "lucide-react": "catalog:",
-    "next": "catalog:",
+    "next": "15.5.7",
     "stripe": "catalog:",
     "tailwind-merge": "catalog:",
     "zod": "catalog:"
