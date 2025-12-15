@@ -1,26 +1,26 @@
+import { notEmpty } from "@mapform/lib/not-empty";
+import { geolocation } from "@vercel/functions";
 import type { UIMessage } from "ai";
-import { authDataService } from "~/lib/safe-action";
 import {
-  streamText,
-  createUIMessageStream,
   convertToModelMessages,
-  hasToolCall,
+  createUIMessageStream,
+  createUIMessageStreamResponse,
   generateId,
   generateText,
-  createUIMessageStreamResponse,
+  hasToolCall,
+  streamText,
 } from "ai";
-import { NextResponse, after } from "next/server";
 import { headers as getHeaders } from "next/headers";
+import { after, NextResponse } from "next/server";
+import { createResumableStreamContext } from "resumable-stream";
 import { getCurrentSession } from "~/data/auth/get-current-session";
 import { getSystemPrompt } from "~/lib/ai/prompts";
-import { reverseGeocode } from "~/lib/ai/tools/reverse-geocode";
-import { findRawInternalFeatures } from "~/lib/ai/tools/find-internal-features";
 import { findRawExternalFeatures } from "~/lib/ai/tools/find-external-features";
+import { findRawInternalFeatures } from "~/lib/ai/tools/find-internal-features";
 import { returnBestResults } from "~/lib/ai/tools/return-best-results";
+import { reverseGeocode } from "~/lib/ai/tools/reverse-geocode";
 import { webSearch } from "~/lib/ai/tools/web-search";
-import { createResumableStreamContext } from "resumable-stream";
-import { geolocation } from "@vercel/functions";
-import { notEmpty } from "@mapform/lib/not-empty";
+import { authDataService } from "~/lib/safe-action";
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 60;
@@ -107,7 +107,7 @@ export async function POST(req: Request) {
           tools: {
             findRawInternalFeatures,
             // TODO: Disable for now since reverse-geocoding is being disabled
-            // reverseGeocode,
+            reverseGeocode,
             findRawExternalFeatures,
             returnBestResults,
             webSearch,
