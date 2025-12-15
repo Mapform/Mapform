@@ -7,7 +7,8 @@ import { NextResponse } from "next/server";
 // Vercel cron jobs can only run at most once per hour
 // https://vercel.com/docs/cron-jobs#cron-expressions
 export const dynamic = "force-dynamic";
-export const maxDuration = 300; // 5 minutes max duration
+// Hobby plan serverless functions must have maxDuration between 1 and 60 seconds.
+export const maxDuration = 60;
 
 export async function GET(req: Request) {
   if (
