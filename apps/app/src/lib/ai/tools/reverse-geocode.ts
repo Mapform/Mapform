@@ -27,10 +27,13 @@ export async function reverseGeocodeFunc(lat: number, lng: number) {
 
   // Extract the first feature's properties
   const feature = placeDetails.data.features[0];
+  const coords = feature?.geometry?.coordinates;
   // TODO: Handle other geometry types
   if (
     !feature ||
-    (!feature.geometry?.coordinates[0] && !feature.geometry?.coordinates[1])
+    !coords ||
+    typeof coords[0] !== "number" ||
+    typeof coords[1] !== "number"
   ) {
     throw new Error("No place details found for the given coordinates");
   }
@@ -40,10 +43,11 @@ export async function reverseGeocodeFunc(lat: number, lng: number) {
     feature.properties.coarseLocation ??
     undefined;
   const name = feature.properties.name;
-  const latitude = feature.geometry.coordinates[0];
-  const longitude = feature.geometry.coordinates[1];
+  // GeoJSON coordinates are [longitude, latitude]
+  const longitude = coords[0];
+  const latitude = coords[1];
 
-  if (!latitude || !longitude) {
+  if (typeof latitude !== "number" || typeof longitude !== "number") {
     throw new Error("No latitude or longitude found for the given coordinates");
   }
 
