@@ -55,7 +55,7 @@
     "lucide-react": "catalog:",
     "maplibre-gl": "^5.7.2",
     "motion": "catalog:",
-    "next": "catalog:",
+    "next": "15.5.7",
     "next-safe-action": "catalog:",
     "next-themes": "catalog:",
     "next-video": "^2.5.0",

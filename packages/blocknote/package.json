@@ -20,7 +20,7 @@
     "@mapform/ui": "workspace:*",
     "@tanstack/react-query": "catalog:",
     "lucide-react": "catalog:",
-    "next": "catalog:",
+    "next": "15.5.7",
     "zod": "catalog:"
   },
   "devDependencies": {
